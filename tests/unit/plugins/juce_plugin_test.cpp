@@ -279,7 +279,7 @@ TEST_F (JucePluginTest, AsyncInstantiationFailure)
   EXPECT_EQ (error_message, "Plugin not found");
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Test processing without instantiation
   EngineProcessTimeInfo time_nfo{
@@ -323,7 +323,7 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
     }
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process a block
   EngineProcessTimeInfo time_nfo{
@@ -476,7 +476,7 @@ TEST_F (JucePluginTest, MidiProcessing)
       QCoreApplication::processEvents ();
     }
 
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process with MIDI input
   EngineProcessTimeInfo time_nfo{
@@ -544,7 +544,7 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
   float new_value = 0.75f;
   zrythm_param->setBaseValue (new_value);
 
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process with MIDI input
   EngineProcessTimeInfo time_nfo{
@@ -587,7 +587,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
       QCoreApplication::processEvents ();
     }
 
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Test with zero-length buffer
   EngineProcessTimeInfo zero_time_nfo{
@@ -1000,7 +1000,7 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
       QCoreApplication::processEvents ();
     }
 
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Create test audio signals
   const size_t            test_buffer_size = buffer_size_;
@@ -1104,7 +1104,7 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
       QCoreApplication::processEvents ();
     }
 
-  plugin_->prepare_for_processing (sample_rate_, buffer_size_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Create test audio signals for the full buffer
   const size_t            full_buffer_size = buffer_size_;

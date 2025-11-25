@@ -19,9 +19,20 @@ CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 
 void
 CVPort::prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
+  if (node != nullptr)
+    {
+      auto source_ports =
+        node->depends () | std::views::transform ([] (const auto &child_node) {
+          return dynamic_cast<CVPort *> (&child_node.get ().get_processable ());
+        })
+        | std::views::filter ([] (const auto * port) { return port != nullptr; });
+      set_port_sources (source_ports);
+    }
+
   size_t max = std::max (max_block_length, 1u);
   buf_.resize (max);
 
@@ -41,7 +52,7 @@ CVPort::process_block (
   EngineProcessTimeInfo  time_nfo,
   const dsp::ITransport &transport) noexcept
 {
-  for (const auto &[src_port, conn] : port_sources_)
+  for (const auto &[src_port, conn] : port_sources ())
     {
       if (!conn->enabled_)
         continue;

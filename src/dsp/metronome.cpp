@@ -134,11 +134,12 @@ Metronome::custom_process_block (
 
 void
 Metronome::custom_prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
   AudioSampleProcessor::custom_prepare_for_processing (
-    sample_rate, max_block_length);
+    node, sample_rate, max_block_length);
 }
 
 void

@@ -76,9 +76,10 @@ public:
   void process_block (
     EngineProcessTimeInfo  time_nfo,
     const dsp::ITransport &transport) noexcept final;
-  void
-  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
-    final;
+  void prepare_for_processing (
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length) final;
   void release_resources () final;
 
   // ============================================================================
@@ -94,8 +95,9 @@ protected:
     const dsp::ITransport &transport) noexcept [[clang::nonblocking]];
 
   virtual void custom_prepare_for_processing (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length)
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length)
   {
   }
 

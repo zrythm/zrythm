@@ -178,8 +178,9 @@ public:
   // ============================================================================
 
   void custom_prepare_for_processing (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) final;
+    const dsp::graph::GraphNode * node,
+    sample_rate_t                 sample_rate,
+    nframes_t                     max_block_length) final;
 
   [[gnu::hot]] void custom_process_block (
     EngineProcessTimeInfo  time_nfo,

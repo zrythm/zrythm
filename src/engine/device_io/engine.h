@@ -4,11 +4,11 @@
 #pragma once
 
 #include "dsp/audio_port.h"
+#include "dsp/graph_dispatcher.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
-#include "engine/session/graph_dispatcher.h"
 #include "utils/concurrency.h"
 #include "utils/types.h"
 
@@ -42,6 +42,7 @@ public:
     dsp::Transport                           &transport,
     const dsp::TempoMap                      &tempo_map,
     std::shared_ptr<juce::AudioDeviceManager> device_mgr,
+    dsp::DspGraphDispatcher                  &graph_dispatcher,
     QObject *                                 parent = nullptr);
 
   /**
@@ -167,6 +168,9 @@ private:
   dsp::Transport      &transport_;
   const dsp::TempoMap &tempo_map_;
 
+  /** The processing graph router. */
+  dsp::DspGraphDispatcher &graph_dispatcher_;
+
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
   /**
@@ -228,8 +232,5 @@ private:
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
   std::unique_ptr<AudioCallback> audio_callback_;
-
-  /** The processing graph router. */
-  std::unique_ptr<engine::session::DspGraphDispatcher> graph_dispatcher_;
 };
 }

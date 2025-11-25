@@ -25,8 +25,8 @@ protected:
       u8"StereoOut", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
 
     // Prepare for processing
-    mono_input->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    stereo_output->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    mono_input->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    stereo_output->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Fill with test data
     for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -104,7 +104,7 @@ TEST_F (AudioPortTest, LimitingFunctionality)
 {
   auto port = std::make_unique<AudioPort> (
     u8"TestPort", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
-  port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+  port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
   // Initially should not require limiting
   EXPECT_FALSE (port->requires_limiting ());

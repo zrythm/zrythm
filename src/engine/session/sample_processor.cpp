@@ -6,7 +6,6 @@
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/graph_dispatcher.h"
 #include "engine/session/project_graph_builder.h"
 #include "engine/session/sample_processor.h"
 #include "gui/backend/backend/project.h"

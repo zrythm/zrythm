@@ -26,7 +26,8 @@ protected:
     max_block_length_ = 1024;
 
     panic_proc_ = std::make_unique<MidiPanicProcessor> (*dependencies_, nullptr);
-    panic_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+    panic_proc_->prepare_for_processing (
+      nullptr, sample_rate_, max_block_length_);
 
     midi_out_ =
       panic_proc_->get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
@@ -103,14 +104,14 @@ TEST_F (MidiPanicProcessorTest, ResourceManagement)
 {
   // Test prepare/release cycle
   panic_proc_->release_resources ();
-  panic_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  panic_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Should handle multiple releases
   panic_proc_->release_resources ();
   panic_proc_->release_resources ();
 
   // Reinitialize and test functionality
-  panic_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  panic_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   panic_proc_->request_panic ();
   panic_proc_->process_block ({ 0, 0, 0, 512 }, *mock_transport_);
   EXPECT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);
@@ -129,7 +130,7 @@ TEST_F (MidiPanicProcessorTest, ZeroFramesProcessing)
 TEST_F (MidiPanicProcessorTest, LargeBufferHandling)
 {
   const int large_size = 8192;
-  panic_proc_->prepare_for_processing (sample_rate_, large_size);
+  panic_proc_->prepare_for_processing (nullptr, sample_rate_, large_size);
 
   panic_proc_->request_panic ();
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, large_size };

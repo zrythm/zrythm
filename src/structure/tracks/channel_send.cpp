@@ -104,8 +104,9 @@ ChannelSend::custom_process_block (
 
 void
 ChannelSend::custom_prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const dsp::graph::GraphNode * node,
+  sample_rate_t                 sample_rate,
+  nframes_t                     max_block_length)
 {
   processing_caches_ = std::make_unique<ChannelSendProcessingCaches> ();
 

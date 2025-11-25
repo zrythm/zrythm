@@ -36,9 +36,9 @@ protected:
     mod_source = mod_source_ref->get_object_as<CVPort> ();
 
     // Prepare for processing
-    macro_processor->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    mod_source->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    macro_param->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    macro_processor->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    mod_source->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    macro_param->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Set up test signal
     for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -97,9 +97,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
 {
   // Create connection between mod source and CV input
-  auto connection = std::make_unique<PortConnection> (
-    mod_source->get_uuid (), cv_in->get_uuid (), 1.0f, false, true);
-  cv_in->port_sources_.emplace_back (mod_source, std::move (connection));
+  std::array<CVPort *, 1> sources{ mod_source };
+  cv_in->set_port_sources (sources);
 
   // Set macro parameter value
   macro_param->setBaseValue (0.5f);
@@ -124,24 +123,22 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
 {
   // Create first connection
-  auto connection1 = std::make_unique<PortConnection> (
-    mod_source->get_uuid (), cv_in->get_uuid (), 1.0f, false, true);
-  cv_in->port_sources_.emplace_back (mod_source, std::move (connection1));
+  std::vector<CVPort *> sources{ mod_source };
+  cv_in->set_port_sources (sources);
 
   // Create second modulation source
   auto mod_source2_ref = port_registry.create_object<CVPort> (
     utils::Utf8String::from_utf8_encoded_string ("LFO2"), PortFlow::Output);
   auto mod_source2 = mod_source2_ref.get_object_as<CVPort> ();
-  mod_source2->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+  mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
     {
       mod_source2->buf_[i] = 0.25f;
     }
 
   // Create second connection
-  auto connection2 = std::make_unique<PortConnection> (
-    mod_source2->get_uuid (), cv_in->get_uuid (), 1.0f, false, true);
-  cv_in->port_sources_.emplace_back (mod_source2, std::move (connection2));
+  sources.push_back (mod_source2);
+  cv_in->set_port_sources (sources);
 
   // Set macro parameter value
   macro_param->setBaseValue (0.5f);
@@ -167,9 +164,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
 {
   // Create connection
-  auto connection = std::make_unique<PortConnection> (
-    mod_source->get_uuid (), cv_in->get_uuid (), 1.0f, false, true);
-  cv_in->port_sources_.emplace_back (mod_source, std::move (connection));
+  std::array<CVPort *, 1> sources{ mod_source };
+  cv_in->set_port_sources (sources);
 
   // Set macro to zero
   macro_param->setBaseValue (0.0f);

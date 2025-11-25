@@ -204,6 +204,24 @@ template <typename PortT> class PortConnectionsCacheMixin
 
 public:
   virtual ~PortConnectionsCacheMixin () = default;
+
+  auto &port_sources () const { return port_sources_; }
+
+  void set_port_sources (this auto &self, RangeOf<PortT *> auto source_ports)
+    [[clang::blocking]]
+  {
+    self.port_sources_.clear ();
+    for (const auto &source_port : source_ports)
+      {
+        self.port_sources_.push_back (
+          std::make_pair (
+            source_port,
+            std::make_unique<dsp::PortConnection> (
+              source_port->get_uuid (), self.get_uuid (), 1.f, true, true)));
+      }
+  }
+
+private:
   /**
    * @brief Caches filled when recalculating the graph.
    *

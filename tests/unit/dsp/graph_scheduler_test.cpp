@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <chrono>
 #include <thread>
 
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
-#include "utils/gtest_wrapper.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
 using namespace std::chrono_literals;
@@ -32,7 +31,7 @@ protected:
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (0));
-    ON_CALL (*processable_, prepare_for_processing (_, _))
+    ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
   }
@@ -137,7 +136,7 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
   auto collection = create_test_collection ();
 
   // Expect prepare to be called for each node
-  EXPECT_CALL (*processable_, prepare_for_processing (48000, 256)).Times (3);
+  EXPECT_CALL (*processable_, prepare_for_processing (_, 48000, 256)).Times (3);
 
   // Expect release to be called when scheduler is destroyed
   EXPECT_CALL (*processable_, release_resources ()).Times (3);
@@ -155,7 +154,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   auto collection = create_test_collection ();
 
   // First chain with initial parameters
-  EXPECT_CALL (*processable_, prepare_for_processing (48000, 256)).Times (3);
+  EXPECT_CALL (*processable_, prepare_for_processing (_, 48000, 256)).Times (3);
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
 
@@ -168,7 +167,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   // Expect prepare to be called with new parameters
   EXPECT_CALL (
-    *processable_, prepare_for_processing (new_sample_rate, new_block_length))
+    *processable_, prepare_for_processing (_, new_sample_rate, new_block_length))
     .Times (3);
 
   scheduler_->rechain_from_node_collection (

@@ -8,7 +8,6 @@
 #include "dsp/transport.h"
 #include "engine/device_io/engine.h"
 #include "engine/session/exporter.h"
-#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"

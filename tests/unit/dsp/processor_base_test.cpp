@@ -119,7 +119,7 @@ TEST_F (ProcessorBaseTest, ConstructionAndBasicProperties)
 
 TEST_F (ProcessorBaseTest, PrepareAndReleaseResources)
 {
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify ports are prepared
   auto input_port =
@@ -132,7 +132,7 @@ TEST_F (ProcessorBaseTest, PrepareAndReleaseResources)
 
 TEST_F (ProcessorBaseTest, Processing)
 {
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto input_port =
     processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
@@ -167,7 +167,7 @@ TEST_F (ProcessorBaseTest, Processing)
 
 TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
 {
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto input_port =
     processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
@@ -247,7 +247,7 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
     param_registry_->create_object<dsp::ProcessorParameter> (
       *port_registry_, dsp::ProcessorParameter::UniqueId (u8"unique-id"),
       dsp::ParameterRange::make_toggle (true), u8"my-toggle"));
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Serialize
   nlohmann::json j = *processor_;
@@ -257,7 +257,7 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
-  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+  deserialized.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify ports && params
   EXPECT_EQ (
@@ -273,7 +273,7 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
 
 TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
 {
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   graph::Graph graph;
 
@@ -289,7 +289,7 @@ TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
 
 TEST_F (ProcessorBaseTest, EdgeCases)
 {
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto * input_port =
     processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();

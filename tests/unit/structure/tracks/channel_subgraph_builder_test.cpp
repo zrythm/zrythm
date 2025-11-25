@@ -39,7 +39,7 @@ public:
   MOCK_METHOD (
     void,
     custom_prepare_for_processing,
-    (sample_rate_t, nframes_t),
+    (const dsp::graph::GraphNode *, sample_rate_t, nframes_t),
     (override));
   MOCK_METHOD (void, custom_release_resources, (), (override));
 };

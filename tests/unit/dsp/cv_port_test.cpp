@@ -25,8 +25,8 @@ protected:
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
 
-    input_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    output_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    input_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    output_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Fill output buffer with test signal
     for (nframes_t i = 0; i < BLOCK_LENGTH; i++)

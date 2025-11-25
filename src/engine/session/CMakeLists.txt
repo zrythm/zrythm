@@ -7,10 +7,6 @@ target_sources(zrythm_gui_lib
     control_room.cpp
     exporter.h
     exporter.cpp
-    graph_dispatcher.h
-    graph_dispatcher.cpp
-    graph_export.h
-    graph_export.cpp
     midi_mapping.h
     midi_mapping.cpp
     project_graph_builder.h

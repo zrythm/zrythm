@@ -33,6 +33,7 @@ target_sources(zrythm_test_helpers_lib
   PUBLIC
     FILE_SET HEADERS
     FILES
+      helpers/mock_audio_io_device.h
       helpers/mock_qobject.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h

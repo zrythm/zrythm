@@ -201,7 +201,7 @@ TEST_F (PluginTest, PrepareAndReleaseResources)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   EXPECT_TRUE (plugin_->prepare_called_);
   EXPECT_EQ (plugin_->last_sample_rate_, sample_rate_);
@@ -221,7 +221,7 @@ TEST_F (PluginTest, ProcessingWhenEnabled)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Create bypass parameter
   auto * bypass = plugin_->bypassParameter ();
@@ -250,7 +250,7 @@ TEST_F (PluginTest, ProcessingWhenBypassed)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Create bypass parameter and set to bypassed
   auto * bypass = plugin_->bypassParameter ();
@@ -278,7 +278,7 @@ TEST_F (PluginTest, ProcessingWhenInstantiationFailed)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Simulate instantiation failure
   plugin_->set_instantiation_failed (true);
@@ -305,7 +305,7 @@ TEST_F (PluginTest, CurrentlyEnabled)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Create bypass parameter
   auto * bypass = plugin_->bypassParameter ();
@@ -338,7 +338,7 @@ TEST_F (PluginTest, GenerateDefaultParameters)
   plugin_->set_configuration (config);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Test bypass parameter
   auto * bypass = plugin_->bypassParameter ();
@@ -453,7 +453,7 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   plugin_->add_output_port (audio_out);
 
   // Prepare for processing
-  plugin_->prepare_for_processing (sample_rate_, max_block_length_);
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Fill input buffer
   auto * in_port = audio_in.get_object_as<dsp::AudioPort> ();

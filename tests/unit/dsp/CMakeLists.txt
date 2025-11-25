@@ -15,6 +15,7 @@ add_executable(zrythm_dsp_unit_tests
   file_audio_source_test.cpp
   kmeter_dsp_test.cpp
   graph_builder_test.cpp
+  graph_dispatcher_test.cpp
   graph_export_test.cpp
   graph_helpers.h
   graph_node_test.cpp

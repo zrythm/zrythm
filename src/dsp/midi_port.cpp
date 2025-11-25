@@ -20,9 +20,21 @@ init_from (MidiPort &obj, const MidiPort &other, utils::ObjectCloneType clone_ty
 
 void
 MidiPort::prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
+  if (node != nullptr)
+    {
+      auto source_ports =
+        node->depends () | std::views::transform ([] (const auto &child_node) {
+          return dynamic_cast<MidiPort *> (
+            &child_node.get ().get_processable ());
+        })
+        | std::views::filter ([] (const auto * port) { return port != nullptr; });
+      set_port_sources (source_ports);
+    }
+
   constexpr auto max_midi_events = 24;
   midi_ring_ = std::make_unique<RingBuffer<dsp::MidiEvent>> (max_midi_events);
 }
@@ -219,7 +231,7 @@ MidiPort::process_block (
 #endif
 
   /* append data from each source */
-  for (const auto &[src_port, conn] : port_sources_)
+  for (const auto &[src_port, conn] : port_sources ())
     {
       if (!conn->enabled_)
         continue;

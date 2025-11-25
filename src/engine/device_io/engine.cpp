@@ -29,11 +29,9 @@
 #include <algorithm>
 #include <utility>
 
-#include "dsp/graph_scheduler.h"
 #include "dsp/transport.h"
 #include "engine/device_io/audio_callback.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/graph_dispatcher.h"
 
 namespace zrythm::engine::device_io
 {
@@ -42,8 +40,10 @@ AudioEngine::AudioEngine (
   dsp::Transport                           &transport,
   const dsp::TempoMap                      &tempo_map,
   std::shared_ptr<juce::AudioDeviceManager> device_mgr,
+  dsp::DspGraphDispatcher                  &graph_dispatcher,
   QObject *                                 parent)
     : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
+      graph_dispatcher_ (graph_dispatcher),
       device_manager_ (std::move (device_mgr)),
       monitor_out_ (
         u8"Monitor Out",
@@ -93,14 +93,12 @@ AudioEngine::AudioEngine (
               }
           },
           [this] (juce::AudioIODevice * dev) {
-            graph_dispatcher_->recalc_graph (false);
+            graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
-              static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
+              nullptr, static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
               dev->getCurrentBufferSizeSamples ());
           },
-          [this] () { monitor_out_.release_resources (); })),
-      graph_dispatcher_ (
-        std::make_unique<engine::session::DspGraphDispatcher> (this))
+          [this] () { monitor_out_.release_resources (); }))
 {
   midi_in_->set_symbol (u8"midi_in");
   monitor_out_.set_symbol (u8"monitor_out");
@@ -194,7 +192,7 @@ AudioEngine::
         .nframes_ = 1,
       };
 
-      graph_dispatcher_->start_cycle (
+      graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false);
       post_process (current_transport_state, 0, 1);
     }
@@ -286,7 +284,7 @@ AudioEngine::process_prepare (
     {
       update_transport_play_state (dsp::Transport::PlayState::Rolling);
       remaining_latency_preroll_ =
-        graph_dispatcher_->get_max_route_playback_latency ();
+        graph_dispatcher_.get_max_route_playback_latency ();
     }
 
   if (!exporting_ && !sem.is_acquired ())
@@ -373,7 +371,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         std::min (total_frames_remaining, remaining_latency_preroll_);
 
       /* loop through each route */
-      for (const auto start_node : graph_dispatcher_->current_trigger_nodes ())
+      for (const auto start_node : graph_dispatcher_.current_trigger_nodes ())
         {
           const auto route_latency = start_node.get ().route_playback_latency_;
 
@@ -408,7 +406,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
         split_time_nfo.g_start_frame_ + preroll_offset;
       split_time_nfo.local_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
-      graph_dispatcher_->start_cycle (
+      graph_dispatcher_.start_cycle (
         current_transport_state, split_time_nfo, remaining_latency_preroll_,
         true);
 
@@ -443,7 +441,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = countin_frames;
-            graph_dispatcher_->start_cycle (
+            graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
             consume_metronome_countin_samples (units::samples (countin_frames));
@@ -472,7 +470,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = preroll_frames;
-            graph_dispatcher_->start_cycle (
+            graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
             consume_recording_preroll_samples (units::samples (preroll_frames));
@@ -487,7 +485,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
                   split_time_nfo.g_start_frame_ + cur_offset;
                 split_time_nfo.local_offset_ = cur_offset;
                 split_time_nfo.nframes_ = remaining_frames;
-                graph_dispatcher_->start_cycle (
+                graph_dispatcher_.start_cycle (
                   current_transport_state, split_time_nfo,
                   remaining_latency_preroll_, true);
               }
@@ -500,7 +498,7 @@ AudioEngine::process (const nframes_t total_frames_to_process)
               split_time_nfo.g_start_frame_ + cur_offset;
             split_time_nfo.local_offset_ = cur_offset;
             split_time_nfo.nframes_ = total_frames_remaining;
-            graph_dispatcher_->start_cycle (
+            graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true);
           }

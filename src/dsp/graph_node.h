@@ -35,6 +35,7 @@
 
 namespace zrythm::dsp::graph
 {
+class GraphNode;
 
 /**
  * @brief Interface for objects that can be processed in the DSP graph.
@@ -70,11 +71,15 @@ public:
   /**
    * @brief Called to allocate resources required for processing.
    *
+   * @param node The node in the processing graph. Null means we are processing
+   * outside of a graph context and must be handled gracefully.
    * @param sample_rate
    * @param max_block_length
    */
-  virtual void
-  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
+  virtual void prepare_for_processing (
+    const GraphNode * node,
+    sample_rate_t     sample_rate,
+    nframes_t         max_block_length)
   {
   }
 

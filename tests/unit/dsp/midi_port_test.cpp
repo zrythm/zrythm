@@ -27,8 +27,8 @@ protected:
       utils::Utf8String (u8"MIDI Out"), PortFlow::Output);
 
     // Prepare for processing
-    input_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    output_port->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    input_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    output_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();

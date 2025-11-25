@@ -200,7 +200,7 @@ TEST_F (TrackProcessorTest, DisabledTrackProcessing)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Fill inputs with test data
   auto &stereo_in = processor.get_stereo_in_port ();
@@ -236,7 +236,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Disable monitoring so that input ports are ignored
   processor.get_monitor_audio_param ().setBaseValue (0.f);
@@ -278,7 +278,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Set input gain to 2.0
   auto &input_gain_param = processor.get_input_gain_param ();
@@ -327,7 +327,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMono)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable monitoring so that input ports are used on this audio track
   processor.get_monitor_audio_param ().setBaseValue (1.f);
@@ -384,7 +384,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Set output gain to 0.5
   auto &output_gain_param = processor.get_output_gain_param ();
@@ -441,7 +441,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Add some MIDI events to input
   auto &midi_in = processor.get_midi_in_port ();
@@ -619,7 +619,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Add some MIDI events to input
   auto &midi_in = processor.get_midi_in_port ();
@@ -706,7 +706,7 @@ TEST_F (TrackProcessorTest, RecordingCallback)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   processor.process_block (time_nfo, *transport_);
 
@@ -743,7 +743,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Add events to piano roll port
   auto &piano_roll = processor.get_piano_roll_port ();
@@ -790,7 +790,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
     .nframes_ = 512
   };
 
-  processor.prepare_for_processing (sample_rate_, 512);
+  processor.prepare_for_processing (nullptr, sample_rate_, 512);
 
   // Fill input buffers with test pattern
   auto &stereo_in = processor.get_stereo_in_port ();
@@ -856,7 +856,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Process with no input events
   processor.process_block (time_nfo, *transport_);
@@ -880,7 +880,7 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
     .nframes_ = 1024
   };
 
-  processor.prepare_for_processing (sample_rate_, 1024);
+  processor.prepare_for_processing (nullptr, sample_rate_, 1024);
 
   auto &stereo_in = processor.get_stereo_in_port ();
   for (size_t i = 0; i < time_nfo.nframes_; ++i)
@@ -913,7 +913,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Add multiple MIDI events
   auto &midi_in = processor.get_midi_in_port ();
@@ -995,7 +995,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   auto &midi_in = processor.get_midi_in_port ();
   midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
@@ -1079,7 +1079,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling so that events are taken into account
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1153,7 +1153,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyCustomMidiEventProvider)
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling so that events would be processed if they existed
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1202,7 +1202,7 @@ TEST_F (
     .nframes_ = 512
   };
 
-  processor.prepare_for_processing (sample_rate_, 512);
+  processor.prepare_for_processing (nullptr, sample_rate_, 512);
 
   // Enable rolling
   EXPECT_CALL (*transport_, get_play_state ())
@@ -1252,7 +1252,7 @@ TEST_F (
     .nframes_ = 256
   };
 
-  processor.prepare_for_processing (sample_rate_, block_length_);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling
   EXPECT_CALL (*transport_, get_play_state ())

@@ -42,7 +42,8 @@ protected:
 
   void prepare_processor ()
   {
-    processor_->prepare_for_processing (sample_rate_, max_block_length_);
+    processor_->prepare_for_processing (
+      nullptr, sample_rate_, max_block_length_);
   }
 
   std::unique_ptr<PortRegistry>               port_registry_;
@@ -490,7 +491,7 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
   processor_->add_sample_to_process (sample);
 
   // Prepare should clear the queue
-  processor_->prepare_for_processing (sample_rate_, max_block_length_);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // After prepare, the queue should be empty
   // We can verify this by processing and checking no samples are played

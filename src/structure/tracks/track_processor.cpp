@@ -903,9 +903,28 @@ TrackProcessor::custom_process_block (
 
 void
 TrackProcessor::custom_prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const dsp::graph::GraphNode * node,
+  sample_rate_t                 sample_rate,
+  nframes_t                     max_block_length)
 {
+  if (node != nullptr)
+    {
+// TODO: this must only be set on recordable tracks and we don't have a way to
+// check if the track is recordable here
+#if 0
+      set_handle_recording_callback (
+        [] (
+          const EngineProcessTimeInfo &time_nfo,
+          const dsp::MidiEventVector * midi_events,
+          std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
+            stereo_ports) {
+          // TODO (or refactor)
+          // RECORDING_MANAGER->handle_recording (
+          // tr, time_nfo, midi_events, stereo_ports);
+        });
+#endif
+    }
+
   processing_caches_ = std::make_unique<TrackProcessorProcessingCaches> ();
 
   if (is_audio ())

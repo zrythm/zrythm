@@ -41,14 +41,12 @@ protected:
     mod_source = mod_source_ref->get_object_as<CVPort> ();
 
     // Set up processing
-    param->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
-    mod_source->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+    param->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    mod_source->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Create connection between CV port and parameter
-    auto connection = std::make_unique<PortConnection> (
-      mod_source->get_uuid (), param_mod_input->get_uuid (), 1.0f, false, true);
-    param_mod_input->port_sources_.emplace_back (
-      mod_source, std::move (connection));
+    mod_sources.push_back (mod_source);
+    param_mod_input->set_port_sources (mod_sources);
 
     // Fill modulation source with test signal
     for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -71,6 +69,7 @@ protected:
   CVPort *                                       param_mod_input{};
   std::optional<PortUuidReference>               mod_source_ref;
   CVPort *                                       mod_source{};
+  std::vector<CVPort *>                          mod_sources;
   std::unique_ptr<graph_test::MockTransport>     mock_transport_;
 };
 
@@ -82,7 +81,7 @@ TEST_F (ProcessorParameterTest, BasicParameterSetup)
 TEST_F (ProcessorParameterTest, AutomationValueApplication)
 {
   // disable modulation
-  param_mod_input->port_sources_.front ().second->enabled_ = false;
+  param_mod_input->port_sources ().front ().second->enabled_ = false;
 
   const float auto_value = 0.8f;
   param->set_automation_provider ([&] (auto) {
@@ -103,13 +102,13 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
 TEST_F (ProcessorParameterTest, ModulationApplication)
 {
   // Enable modulation
-  param_mod_input->port_sources_.front ().second->enabled_ = true;
+  param_mod_input->port_sources ().front ().second->enabled_ = true;
 
   // Set base value to 0.5 (normalized)
   param->setBaseValue (0.5f);
 
   // Set modulation multiplier to 1.0 and bipolar to false
-  auto &conn = param_mod_input->port_sources_.front ().second;
+  auto &conn = param_mod_input->port_sources ().front ().second;
   conn->multiplier_ = 1.0f;
   conn->bipolar_ = false;
 
@@ -127,11 +126,11 @@ TEST_F (ProcessorParameterTest, ModulationApplication)
 
 TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
 {
-  param_mod_input->port_sources_.front ().second->enabled_ = true;
+  param_mod_input->port_sources ().front ().second->enabled_ = true;
   param->setBaseValue (0.5f);
 
   // Set modulation multiplier to 0.5
-  auto &conn = param_mod_input->port_sources_.front ().second;
+  auto &conn = param_mod_input->port_sources ().front ().second;
   conn->multiplier_ = 0.5f;
   conn->bipolar_ = false;
 
@@ -148,11 +147,11 @@ TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
 
 TEST_F (ProcessorParameterTest, BipolarModulation)
 {
-  param_mod_input->port_sources_.front ().second->enabled_ = true;
+  param_mod_input->port_sources ().front ().second->enabled_ = true;
   param->setBaseValue (0.5f);
 
   // Set bipolar modulation
-  auto &conn = param_mod_input->port_sources_.front ().second;
+  auto &conn = param_mod_input->port_sources ().front ().second;
   conn->multiplier_ = 1.0f;
   conn->bipolar_ = true;
 
@@ -174,9 +173,9 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
   param->set_automation_provider ([&] (auto) {
     return 0.7f; // Automation value
   });
-  param_mod_input->port_sources_.front ().second->enabled_ = true;
+  param_mod_input->port_sources ().front ().second->enabled_ = true;
 
-  auto &conn = param_mod_input->port_sources_.front ().second;
+  auto &conn = param_mod_input->port_sources ().front ().second;
   conn->multiplier_ = 1.0f;
   conn->bipolar_ = false;
 
@@ -197,7 +196,7 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
   auto mod_source2_ref = port_registry.create_object<CVPort> (
     utils::Utf8String::from_utf8_encoded_string ("LFO2"), PortFlow::Output);
   auto mod_source2 = mod_source2_ref.get_object_as<CVPort> ();
-  mod_source2->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH);
+  mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
   // Fill with different signal
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -206,16 +205,15 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
     }
 
   // Add second connection
-  auto connection2 = std::make_unique<PortConnection> (
-    mod_source2->get_uuid (), param_mod_input->get_uuid (), 0.5f, false, true);
-  param_mod_input->port_sources_.emplace_back (
-    mod_source2, std::move (connection2));
+  mod_sources.push_back (mod_source2);
+  param_mod_input->set_port_sources (mod_sources);
+  param_mod_input->port_sources ().back ().second->multiplier_ = 0.5f;
 
   param->setBaseValue (0.5f);
 
   // Enable both connections
-  param_mod_input->port_sources_[0].second->enabled_ = true;
-  param_mod_input->port_sources_[1].second->enabled_ = true;
+  param_mod_input->port_sources ()[0].second->enabled_ = true;
+  param_mod_input->port_sources ()[1].second->enabled_ = true;
 
   param->process_block (
     { .g_start_frame_ = 0,
@@ -253,7 +251,7 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
   param->setBaseValue (0.5f);
 
   // Enable modulation
-  param_mod_input->port_sources_.front ().second->enabled_ = true;
+  param_mod_input->port_sources ().front ().second->enabled_ = true;
 
   param->process_block (
     { .g_start_frame_ = 0,
@@ -331,7 +329,8 @@ TEST_F (ProcessorParameterTest, NodeNameVerification)
 
 TEST_F (ProcessorParameterTest, PreparationAndRelease)
 {
-  EXPECT_NO_THROW (param->prepare_for_processing (SAMPLE_RATE, BLOCK_LENGTH));
+  EXPECT_NO_THROW (
+    param->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH));
   EXPECT_NO_THROW (param->release_resources ());
 }
 
@@ -370,7 +369,8 @@ TEST_F (ProcessorParameterTest, DisabledAutomation)
 
 TEST_F (ProcessorParameterTest, NoModulationSources)
 {
-  param_mod_input->port_sources_.clear ();
+  std::vector<CVPort *> sources;
+  param_mod_input->set_port_sources (sources);
   param->setBaseValue (0.5f);
   param->process_block ({}, *mock_transport_);
   EXPECT_FLOAT_EQ (param->currentValue (), 0.5f);

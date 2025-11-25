@@ -97,9 +97,10 @@ public:
     const AudioPort       &other,
     utils::ObjectCloneType clone_type);
 
-  void
-  prepare_for_processing (sample_rate_t sample_rate, nframes_t max_block_length)
-    override;
+  void prepare_for_processing (
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length) override;
   void release_resources () override;
 
 private:

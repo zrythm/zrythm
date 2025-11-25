@@ -234,8 +234,9 @@ public:
   // ============================================================================
 
   void custom_prepare_for_processing (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override;
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length) override;
 
   void custom_release_resources () override;
 

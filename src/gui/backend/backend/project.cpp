@@ -6,7 +6,7 @@
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
 #include "engine/device_io/engine.h"
-#include "engine/session/graph_dispatcher.h"
+#include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
@@ -103,9 +103,12 @@ Project::Project (
           },
           this)),
       audio_engine_ (
-        utils::make_qobject_unique<
-          engine::device_io::
-            AudioEngine> (*transport_, tempo_map_, device_manager, this)),
+        utils::make_qobject_unique<engine::device_io::AudioEngine> (
+          *transport_,
+          tempo_map_,
+          device_manager,
+          graph_dispatcher_,
+          this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
@@ -147,7 +150,7 @@ Project::Project (
           [&] (EngineState &state, bool recalculate_graph) {
             if (recalculate_graph)
               {
-                audio_engine_->graph_dispatcher ()->recalc_graph (false);
+                audio_engine_->graph_dispatcher ().recalc_graph (false);
               }
             audio_engine_->resume (state);
           },
@@ -207,8 +210,7 @@ Project::Project (
             .top_level_window_provider_ = plugin_toplevel_window_provider,
             .audio_thread_checker_ =
               [this] () {
-                return audio_engine_->graph_dispatcher ()
-                  ->is_processing_thread ();
+                return audio_engine_->graph_dispatcher ().is_processing_thread ();
               } },
           this)),
       track_factory_ (
@@ -258,7 +260,20 @@ Project::Project (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
           *file_audio_source_registry_,
-          this))
+          this)),
+      graph_dispatcher_ (
+        std::unique_ptr<dsp::graph::IGraphBuilder> (
+          new ProjectGraphBuilder (*this)),
+        std::views::single (&audio_engine_->get_monitor_out_port ())
+          | std::ranges::to<std::vector<dsp::graph::IProcessable *>> (),
+        *device_manager_,
+        [this] (const std::function<void ()> &callable) {
+          bool engine_running = audio_engine_->running ();
+          audio_engine_->set_running (false);
+          auto lock = audio_engine_->get_processing_lock ();
+          callable ();
+          audio_engine_->set_running (engine_running);
+        })
 {
   const auto setup_metronome = [&] () {
     const auto load_metronome_sample = [] (QFile f) {
@@ -523,11 +538,7 @@ Project::Project (
   }
 }
 
-Project::~Project ()
-{
-  // Graph dispatcher needs to be deleted first
-  audio_engine_->graph_dispatcher ().reset ();
-}
+Project::~Project () = default;
 
 structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies () const
@@ -771,7 +782,7 @@ Project::activate ()
   // track_span.reconnect_ext_input_ports (*audio_engine_);
 
   /* reconnect graph */
-  audio_engine_->graph_dispatcher ()->recalc_graph (false);
+  audio_engine_->graph_dispatcher ().recalc_graph (false);
 
   /* fix audio regions in case running under a new sample rate */
   // fix_audio_regions ();
@@ -1907,7 +1918,7 @@ struct PluginBuilderForDeserialization
           },
           [this] () {
             return project_.audio_engine_->graph_dispatcher ()
-              ->is_processing_thread ();
+              .is_processing_thread ();
           },
           plugin_toplevel_window_provider);
       }

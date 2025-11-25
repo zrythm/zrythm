@@ -51,7 +51,7 @@ protected:
 TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
 {
   midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
-  midi_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors
   auto &midi_in = midi_proc_->get_midi_in_port (0);
@@ -74,7 +74,7 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
 TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
 {
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
-  audio_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors
   auto &in = audio_proc_->get_audio_in_port ();
@@ -113,8 +113,8 @@ TEST_F (PassthroughProcessorsTest, ResourceManagement)
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
 
   // Prepare resources
-  midi_proc_->prepare_for_processing (sample_rate_, max_block_length_);
-  audio_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify buffers are allocated
   auto &midi_in = midi_proc_->get_midi_in_port (0);
@@ -136,14 +136,15 @@ TEST_F (PassthroughProcessorsTest, JsonSerializationRoundtrip)
   // MIDI processor
   {
     MidiPassthroughProcessor orig (*dependencies_);
-    orig.prepare_for_processing (sample_rate_, max_block_length_);
+    orig.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
     nlohmann::json           j = orig;
     MidiPassthroughProcessor deserialized (*dependencies_);
     from_json (j, deserialized);
 
     // Reinitialize after deserialization
-    deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+    deserialized.prepare_for_processing (
+      nullptr, sample_rate_, max_block_length_);
 
     // Verify ports
     EXPECT_EQ (
@@ -157,14 +158,15 @@ TEST_F (PassthroughProcessorsTest, JsonSerializationRoundtrip)
   // Audio processor
   {
     StereoPassthroughProcessor orig (*dependencies_);
-    orig.prepare_for_processing (sample_rate_, max_block_length_);
+    orig.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
     nlohmann::json             j = orig;
     StereoPassthroughProcessor deserialized (*dependencies_);
     from_json (j, deserialized);
 
     // Reinitialize after deserialization
-    deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+    deserialized.prepare_for_processing (
+      nullptr, sample_rate_, max_block_length_);
 
     // Verify ports
     EXPECT_EQ (
@@ -181,8 +183,8 @@ TEST_F (PassthroughProcessorsTest, PortInitialization)
   midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
 
-  midi_proc_->prepare_for_processing (sample_rate_, max_block_length_);
-  audio_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify MIDI ports
   auto &midi_in = midi_proc_->get_midi_in_port (0);
@@ -207,8 +209,8 @@ TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
   midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
 
-  midi_proc_->prepare_for_processing (sample_rate_, max_block_length_);
-  audio_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, 0 };
 
@@ -221,7 +223,7 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
 {
   const int large_size = 8192;
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
-  audio_proc_->prepare_for_processing (sample_rate_, large_size);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, large_size);
 
   // Get ports
   auto &in = audio_proc_->get_audio_in_port ();
@@ -253,7 +255,7 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
 TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
 {
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
-  audio_proc_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors
   auto &in = audio_proc_->get_audio_in_port ();

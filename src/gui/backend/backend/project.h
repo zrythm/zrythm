@@ -54,7 +54,7 @@ using namespace zrythm;
 #define SNAP_GRID_TIMELINE (PROJECT->snapGridTimeline ())
 #define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
 #define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
-#define ROUTER (PROJECT->engine ()->graph_dispatcher ().get ())
+#define ROUTER (&PROJECT->engine ()->graph_dispatcher ())
 #define AUDIO_ENGINE (PROJECT->engine ())
 
 enum class ProjectPath
@@ -707,6 +707,14 @@ public:
 
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;
+
+  /**
+   * @brief Graph dispatcher.
+   *
+   * @note Needs to be deleted after the audio engine so placed here torwards
+   * the end.
+   */
+  dsp::DspGraphDispatcher graph_dispatcher_;
 
   /** Used when deserializing projects. */
   int format_major_ = 0;

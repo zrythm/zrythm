@@ -3,12 +3,12 @@
 
 #pragma once
 
+#include "dsp/graph_builder.h"
 #include "dsp/graph_scheduler.h"
-#include "engine/device_io/engine.h"
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
-namespace zrythm::engine::session
+namespace zrythm::dsp
 {
 
 /**
@@ -24,7 +24,13 @@ namespace zrythm::engine::session
 class DspGraphDispatcher final
 {
 public:
-  DspGraphDispatcher (device_io::AudioEngine * engine = nullptr);
+  using RunFunctionWithEngineLock = std::function<void (std::function<void ()>)>;
+
+  DspGraphDispatcher (
+    std::unique_ptr<graph::IGraphBuilder> graph_builder,
+    std::vector<graph::IProcessable *>    terminal_processables,
+    const juce::AudioDeviceManager       &device_manager,
+    RunFunctionWithEngineLock             run_function_with_engine_lock);
 
   /**
    * Recalculates the process acyclic directed graph.
@@ -58,7 +64,9 @@ public:
    */
   [[nodiscard, gnu::hot]] bool is_processing_kickoff_thread () const
   {
-    return current_thread_id.get () == process_kickoff_thread_;
+    return process_kickoff_thread_.has_value ()
+             ? current_thread_id.get () == process_kickoff_thread_.value ()
+             : false;
   }
 
   /**
@@ -126,7 +134,21 @@ private:
     [[clang::nonblocking]];
 
 private:
-  std::unique_ptr<dsp::graph::GraphScheduler> scheduler_;
+  std::unique_ptr<graph::IGraphBuilder> graph_builder_;
+  const juce::AudioDeviceManager       &device_manager_;
+
+  /**
+   * @brief Callable to call in a context where the audio processing engine is
+   * locked.
+   */
+  RunFunctionWithEngineLock run_function_with_engine_lock_;
+
+  /**
+   * @brief Terminal processables to prune the graph to.
+   */
+  std::vector<graph::IProcessable *> terminal_processables_;
+
+  std::unique_ptr<graph::GraphScheduler> scheduler_;
 
   /** Stored for the currently processing cycle */
   nframes_t max_route_playback_latency_ = 0;
@@ -136,13 +158,13 @@ private:
    *
    * Calculated as [max latency of all routes] minus [remaining latency from
    * engine].
+   *
+   * TODO: figure out if this is supposed to be used anywhere, or delete.
    */
   nframes_t global_offset_ = 0;
 
   /** ID of the thread that calls kicks off the cycle. */
-  unsigned int process_kickoff_thread_ = 0;
-
-  device_io::AudioEngine * audio_engine_{};
+  std::optional<unsigned int> process_kickoff_thread_;
 };
 
 }

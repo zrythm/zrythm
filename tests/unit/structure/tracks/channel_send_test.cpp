@@ -119,7 +119,7 @@ TEST_F (ChannelSendTest, ParameterFunctionality)
 
 TEST_F (ChannelSendTest, PrepareAndReleaseResources)
 {
-  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
@@ -135,7 +135,7 @@ TEST_F (ChannelSendTest, PrepareAndReleaseResources)
 
 TEST_F (ChannelSendTest, AudioProcessing)
 {
-  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
@@ -194,7 +194,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
 
 TEST_F (ChannelSendTest, MidiProcessing)
 {
-  midi_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &midi_in = midi_send_->get_midi_in_port ();
   auto &midi_out = midi_send_->get_midi_out_port ();
@@ -221,7 +221,7 @@ TEST_F (ChannelSendTest, MidiProcessing)
 
 TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
 {
-  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Set some parameter values
   audio_send_->amountParam ()->setBaseValue (0.75f);
@@ -238,7 +238,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
-  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+  deserialized.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify ports & params
   EXPECT_EQ (
@@ -257,7 +257,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
 
 TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
 {
-  midi_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Set some parameter values
   midi_send_->amountParam ()->setBaseValue (0.7f);
@@ -274,7 +274,7 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
-  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+  deserialized.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify properties
   EXPECT_EQ (
@@ -318,7 +318,7 @@ TEST_F (ChannelSendTest, DifferentSlotNumbers)
 TEST_F (ChannelSendTest, EdgeCases)
 {
   // Test with zero frames
-  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -356,7 +356,7 @@ TEST_F (ChannelSendTest, EdgeCases)
 
 TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 {
-  audio_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
@@ -428,7 +428,7 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 
 TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
 {
-  midi_send_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &midi_in = midi_send_->get_midi_in_port ();
   auto &midi_out = midi_send_->get_midi_out_port ();

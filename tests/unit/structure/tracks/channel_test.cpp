@@ -248,7 +248,8 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
     dsp::PortType::Audio, name_provider_, false, custom_should_be_muted);
 
   EXPECT_FALSE (callback_called); // Not called during construction
-  channel->fader ()->prepare_for_processing (sample_rate_, max_block_length_);
+  channel->fader ()->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
   channel->fader ()->process_block (
     { .g_start_frame_ = 0,
       .g_start_frame_w_offset_ = 0,

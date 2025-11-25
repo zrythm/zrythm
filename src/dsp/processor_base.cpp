@@ -57,8 +57,9 @@ ProcessorBase::add_parameter (const dsp::ProcessorParameterUuidReference &uuid)
 
 void
 ProcessorBase::prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
   processing_caches_ = std::make_unique<BaseProcessingCache> ();
   processing_caches_->sample_rate_ = sample_rate;
@@ -69,7 +70,7 @@ ProcessorBase::prepare_for_processing (
   processing_caches_->live_output_ports_.clear ();
 
   const auto port_visitor = [&] (auto &&port) {
-    port->prepare_for_processing (sample_rate, max_block_length);
+    port->prepare_for_processing (node, sample_rate, max_block_length);
   };
   for (const auto &in_ref : input_ports_)
     {
@@ -86,10 +87,10 @@ ProcessorBase::prepare_for_processing (
       processing_caches_->live_params_.push_back (
         param_ref.get_object_as<dsp::ProcessorParameter> ());
       processing_caches_->live_params_.back ()->prepare_for_processing (
-        sample_rate, max_block_length);
+        node, sample_rate, max_block_length);
     }
 
-  custom_prepare_for_processing (sample_rate, max_block_length);
+  custom_prepare_for_processing (node, sample_rate, max_block_length);
 }
 
 void

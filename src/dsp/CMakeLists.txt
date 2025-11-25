@@ -17,6 +17,7 @@ target_sources(zrythm_dsp_lib
     file_audio_source.cpp
     graph.cpp
     graph_builder.cpp
+    graph_dispatcher.cpp
     graph_export.cpp
     graph_node.cpp
     graph_pruner.cpp
@@ -61,6 +62,7 @@ target_sources(zrythm_dsp_lib
       file_audio_source.h
       graph.h
       graph_builder.h
+      graph_dispatcher.h
       graph_export.h
       graph_node.h
       graph_pruner.h

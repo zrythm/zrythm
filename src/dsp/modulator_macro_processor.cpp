@@ -65,7 +65,7 @@ ModulatorMacroProcessor::custom_process_block (
   const dsp::ITransport &transport) noexcept
 {
   /* if there are inputs, multiply by the knob value */
-  if (!processing_caches_->cv_in_->port_sources_.empty ())
+  if (!processing_caches_->cv_in_->port_sources ().empty ())
     {
       utils::float_ranges::copy (
         &processing_caches_->cv_out_->buf_[time_nfo.local_offset_],
@@ -86,8 +86,9 @@ ModulatorMacroProcessor::custom_process_block (
 
 void
 ModulatorMacroProcessor::custom_prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
   processing_caches_ = std::make_unique<ProcessingCaches> ();
   processing_caches_->macro_param_ = &get_macro_param ();

@@ -116,13 +116,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
    * ======================== */
 
   const auto &project = project_;
-  const auto &engine = project_.audio_engine_;
+  const auto &engine = project_->audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
-  auto * tracklist = project_.tracklist ();
-  auto * monitor_fader = project.controlRoom ()->monitorFader ();
+  auto * tracklist = project_->tracklist ();
+  auto * monitor_fader = project->controlRoom ()->monitorFader ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
-  auto * transport = project.getTransport ();
-  auto  &metronome = *project.metronome ();
+  auto * transport = project->getTransport ();
+  auto  &metronome = *project->metronome ();
   auto * midi_panic_processor = engine->midi_panic_processor ();
 
   const auto add_node_for_processable = [&] (auto &processable) {
@@ -314,8 +314,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             {
               {
                 process_track_connections (
-                  tr, graph, *this, *transport, project, initial_processor_node,
-                  *midi_panic_processor, monitor_fader);
+                  tr, graph, *this, *transport, *project,
+                  initial_processor_node, *midi_panic_processor, monitor_fader);
               }
 
               // connect the channel
@@ -394,11 +394,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // add additional custom connections from the PortConnectionsManager
   {
-    const auto &mgr = *project.port_connections_manager_;
+    const auto &mgr = *project->port_connections_manager_;
     for (const auto &conn : mgr.get_connections ())
       {
-        const auto src_port_var = *project.find_port_by_id (conn->src_id_);
-        const auto dest_port_var = *project.find_port_by_id (conn->dest_id_);
+        const auto src_port_var = *project->find_port_by_id (conn->src_id_);
+        const auto dest_port_var = *project->find_port_by_id (conn->dest_id_);
         std::visit (
           [&] (auto &&src_port, auto &&dest_port) {
             using SourcePortT = base_type<decltype (src_port)>;

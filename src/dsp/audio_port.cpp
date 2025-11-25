@@ -145,9 +145,21 @@ AudioPort::clear_buffer (std::size_t offset, std::size_t nframes)
 
 void
 AudioPort::prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
+  if (node != nullptr)
+    {
+      auto source_audio_ports =
+        node->depends () | std::views::transform ([] (const auto &child_node) {
+          return dynamic_cast<AudioPort *> (
+            &child_node.get ().get_processable ());
+        })
+        | std::views::filter ([] (const auto * port) { return port != nullptr; });
+      set_port_sources (source_audio_ports);
+    }
+
   size_t max = std::max (max_block_length, 1u);
   buf_ = std::make_unique<juce::AudioSampleBuffer> (
     num_channels_, static_cast<int> (max));
@@ -172,7 +184,7 @@ AudioPort::process_block (
   EngineProcessTimeInfo  time_nfo,
   const dsp::ITransport &transport) noexcept
 {
-  for (const auto &[_src_port, conn] : port_sources_)
+  for (const auto &[_src_port, conn] : port_sources ())
     {
       if (!conn->enabled_)
         continue;

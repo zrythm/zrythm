@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"
@@ -192,7 +191,7 @@ ProjectManager::createNewProject (
           [this, project] {
             project->setParent (this);
             setActiveProject (project);
-            project->audio_engine_->graph_dispatcher ()->recalc_graph (false);
+            project->audio_engine_->graph_dispatcher ().recalc_graph (false);
             project->audio_engine_->set_running (true);
             Q_EMIT projectLoaded (project);
           },

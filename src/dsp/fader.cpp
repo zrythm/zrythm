@@ -278,8 +278,9 @@ Fader::calculate_target_gain_rt () const
 
 void
 Fader::custom_prepare_for_processing (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  const graph::GraphNode * node,
+  sample_rate_t            sample_rate,
+  nframes_t                max_block_length)
 {
   processing_caches_ = std::make_unique<FaderProcessingCaches> ();
 

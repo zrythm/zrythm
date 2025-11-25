@@ -17,7 +17,7 @@ class Port;
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {
 public:
-  ProjectGraphBuilder (Project &project) : project_ (project) { }
+  ProjectGraphBuilder (Project &project) : project_ (&project) { }
 
   /**
    * Adds a new connection for the given src and dest ports and validates the
@@ -35,5 +35,5 @@ private:
   void build_graph_impl (dsp::graph::Graph &graph) override;
 
 private:
-  Project &project_;
+  Project * project_{};
 };

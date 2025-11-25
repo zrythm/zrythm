@@ -173,8 +173,9 @@ public:
   }
 
   void custom_prepare_for_processing (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length) override
   {
     samples_to_play_.clear ();
     audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();

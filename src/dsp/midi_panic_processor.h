@@ -53,8 +53,9 @@ public:
   }
 
   void custom_prepare_for_processing (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override
+    const graph::GraphNode * node,
+    sample_rate_t            sample_rate,
+    nframes_t                max_block_length) override
   {
     midi_out_ = get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }

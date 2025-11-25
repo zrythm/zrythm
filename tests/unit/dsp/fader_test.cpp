@@ -155,7 +155,8 @@ TEST_F (FaderTest, ParameterFunctionality)
 
 TEST_F (FaderTest, PrepareAndReleaseResources)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -171,7 +172,8 @@ TEST_F (FaderTest, PrepareAndReleaseResources)
 
 TEST_F (FaderTest, AudioProcessing)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -247,7 +249,7 @@ TEST_F (FaderTest, AudioProcessing)
 
 TEST_F (FaderTest, MidiProcessing)
 {
-  midi_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_fader_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto &midi_in = midi_fader_->get_midi_in_port ();
   auto &midi_out = midi_fader_->get_midi_out_port ();
@@ -274,7 +276,8 @@ TEST_F (FaderTest, MidiProcessing)
 
 TEST_F (FaderTest, MuteFunctionality)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -333,7 +336,8 @@ TEST_F (FaderTest, MuteFunctionality)
 
 TEST_F (FaderTest, BalanceFunctionality)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -416,7 +420,8 @@ TEST_F (FaderTest, BalanceFunctionality)
 
 TEST_F (FaderTest, SoloAndListenFunctionality)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -440,7 +445,8 @@ TEST_F (FaderTest, SoloAndListenFunctionality)
 
 TEST_F (FaderTest, MonoCompatibilityFunctionality)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -502,7 +508,8 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
 
 TEST_F (FaderTest, SwapPhaseFunctionality)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -587,7 +594,8 @@ TEST_F (FaderTest, MidiModeFunctionality)
 
 TEST_F (FaderTest, JsonSerializationRoundtrip)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   // Set some parameter values
   audio_fader_->gain ()->setBaseValue (0.75f);
@@ -612,7 +620,7 @@ TEST_F (FaderTest, JsonSerializationRoundtrip)
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
-  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+  deserialized.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify parameters
   EXPECT_NEAR (deserialized.gain ()->baseValue (), 0.75f, 0.001f);
@@ -630,7 +638,7 @@ TEST_F (FaderTest, JsonSerializationRoundtrip)
 
 TEST_F (FaderTest, JsonSerializationMidiRoundtrip)
 {
-  midi_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  midi_fader_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Set some parameter values
   midi_fader_->gain ()->setBaseValue (0.7f);
@@ -653,7 +661,7 @@ TEST_F (FaderTest, JsonSerializationMidiRoundtrip)
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
-  deserialized.prepare_for_processing (sample_rate_, max_block_length_);
+  deserialized.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify parameters
   EXPECT_NEAR (deserialized.gain ()->baseValue (), 0.7f, 0.001f);
@@ -675,7 +683,8 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
     dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
     [&should_mute] (bool solo_status) { return should_mute; });
 
-  fader_with_callback->prepare_for_processing (sample_rate_, max_block_length_);
+  fader_with_callback->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = fader_with_callback->get_stereo_in_port ();
   auto &stereo_out = fader_with_callback->get_stereo_out_port ();
@@ -747,7 +756,8 @@ TEST_F (FaderTest, PreProcessAudioCallback)
     };
 
   audio_fader_->set_preprocess_audio_callback (pre_process_cb);
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -794,7 +804,8 @@ TEST_F (FaderTest, MuteGainCallback)
   };
 
   audio_fader_->set_mute_gain_callback (mute_gain_cb);
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -845,7 +856,8 @@ TEST_F (FaderTest, MuteGainCallback)
 TEST_F (FaderTest, EdgeCases)
 {
   // Test with zero frames
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -893,7 +905,8 @@ TEST_F (FaderTest, EdgeCases)
 
 TEST_F (FaderTest, DbStringGetter)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -932,7 +945,8 @@ TEST_F (FaderTest, HardLimitingFunctionality)
     [] (bool solo_status) { return false; });
   EXPECT_TRUE (hard_limit_fader->hard_limiting_enabled ());
 
-  hard_limit_fader->prepare_for_processing (sample_rate_, max_block_length_);
+  hard_limit_fader->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = hard_limit_fader->get_stereo_in_port ();
   auto &stereo_out = hard_limit_fader->get_stereo_out_port ();
@@ -993,7 +1007,8 @@ TEST_F (FaderTest, HardLimitingFunctionality)
 
 TEST_F (FaderTest, GainSmoothing)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -1085,7 +1100,8 @@ TEST_F (FaderTest, GainSmoothing)
 
 TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -1168,7 +1184,8 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
 
 TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
 {
-  audio_fader_->prepare_for_processing (sample_rate_, max_block_length_);
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
