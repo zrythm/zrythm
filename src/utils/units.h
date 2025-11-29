@@ -55,6 +55,7 @@ constexpr auto quarter_notes = au::QuantityMaker<QuarterNote>{};
 // Define sample rate as a compound unit (samples per second)
 using SampleRate = decltype (Sample{} / au::Seconds{});
 constexpr auto sample_rate = samples / au::second;
+using sample_rate_t = au::QuantityI<SampleRate>;
 using precise_sample_rate_t = au::QuantityD<SampleRate>;
 
 // Define precise second using Au's built-in seconds

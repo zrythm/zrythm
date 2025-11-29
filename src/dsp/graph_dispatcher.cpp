@@ -148,7 +148,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
   if (!scheduler_ && !soft)
     {
       scheduler_ = std::make_unique<graph::GraphScheduler> (
-        sample_rate, buffer_size, std::nullopt,
+        sample_rate, buffer_size, true,
         device_manager_.getDeviceAudioWorkgroup ());
       rebuild_graph ();
       scheduler_->start_threads ();

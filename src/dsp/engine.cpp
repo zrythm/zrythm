@@ -195,7 +195,8 @@ AudioEngine::
 
       graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false);
-      post_process (current_transport_state, playhead_processing_guard, 0, 1);
+      advance_playhead_after_processing (
+        current_transport_state, playhead_processing_guard, 0, 1);
     }
 }
 
@@ -511,7 +512,7 @@ AudioEngine::process (
 
   /* run post-process code for the number of frames remaining after handling
    * preroll (if any) */
-  post_process (
+  advance_playhead_after_processing (
     current_transport_state, playhead_guard, total_frames_remaining,
     total_frames_to_process);
 
@@ -521,7 +522,7 @@ AudioEngine::process (
 }
 
 void
-AudioEngine::post_process (
+AudioEngine::advance_playhead_after_processing (
   dsp::Transport::TransportSnapshot  &transport_snapshot,
   const dsp::PlayheadProcessingGuard &playhead_guard,
   const nframes_t                     roll_nframes,

@@ -331,7 +331,7 @@ TEST_F (AudioEngineTest, PostProcessWithRollingStateUpdatesPlayhead)
 
   {
     dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-    engine->post_process (snapshot, guard, 128, 256);
+    engine->advance_playhead_after_processing (snapshot, guard, 128, 256);
   }
 
   // Playhead should have advanced by 128 samples
@@ -362,7 +362,7 @@ TEST_F (AudioEngineTest, PostProcessWithNonRollingStateDoesNotUpdatePlayhead)
 
   {
     dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-    engine->post_process (snapshot, guard, 128, 256);
+    engine->advance_playhead_after_processing (snapshot, guard, 128, 256);
   }
 
   // Playhead should not have advanced since transport is not rolling

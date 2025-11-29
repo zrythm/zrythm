@@ -22,6 +22,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_helpers.h
   graph_node_test.cpp
   graph_pruner_test.cpp
+  graph_renderer_test.cpp
   graph_scheduler_test.cpp
   graph_test.cpp
   metronome_test.cpp

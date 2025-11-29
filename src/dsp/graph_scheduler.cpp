@@ -34,25 +34,21 @@ namespace zrythm::dsp::graph
 {
 
 GraphScheduler::GraphScheduler (
-  sample_rate_t                                sample_rate,
-  nframes_t                                    max_block_length,
-  std::optional<juce::Thread::RealtimeOptions> rt_options,
-  std::optional<juce::AudioWorkgroup>          thread_workgroup)
+  sample_rate_t                       sample_rate,
+  nframes_t                           max_block_length,
+  bool                                realtime_threads,
+  std::optional<juce::AudioWorkgroup> thread_workgroup)
     : thread_workgroup_ (std::move (thread_workgroup)),
       sample_rate_ (sample_rate), max_block_length_ (max_block_length)
 {
-  if (rt_options)
-    {
-      realtime_thread_options_ = rt_options.value ();
-    }
-  else
+  if (realtime_threads)
     {
       realtime_thread_options_ =
-        juce::Thread::RealtimeOptions ().withPriority (9);
+        juce::Thread::RealtimeOptions ()
+          .withPriority (9)
+          .withApproximateAudioProcessingTime (
+            static_cast<int> (max_block_length), sample_rate);
     }
-  realtime_thread_options_ =
-    realtime_thread_options_.withApproximateAudioProcessingTime (
-      static_cast<int> (max_block_length), sample_rate);
 }
 
 void
@@ -152,16 +148,26 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
   auto start_thread = [&] (auto &thread) {
     try
       {
-        auto success = thread->startRealtimeThread (realtime_thread_options_);
-        if (!success)
+        const auto start_normal_thread = [&thread] () {
+          if (!thread->startThread ())
+            {
+              throw ZrythmException ("startThread failed");
+            }
+        };
+
+        if (realtime_thread_options_.has_value ())
           {
-            z_warning ("failed to start realtime thread, trying normal thread");
-            // fallback to non-realtime thread
-            success = thread->startThread ();
-            if (!success)
+            if (!thread->startRealtimeThread (realtime_thread_options_.value ()))
               {
-                throw ZrythmException ("startThread failed");
+                z_warning (
+                  "failed to start realtime thread, trying normal thread");
+                // fallback to non-realtime thread
+                start_normal_thread ();
               }
+          }
+        else
+          {
+            start_normal_thread ();
           }
       }
     catch (const ZrythmException &e)
@@ -180,7 +186,7 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
     // this fixes an internal JUCE race condition on first thread construction
     while (idle_thread_cnt_.load () < 1)
       {
-        std::this_thread::sleep_for (std::chrono::microseconds (100));
+        std::this_thread::sleep_for (10us);
       }
   });
   start_thread (main_thread_);
@@ -192,7 +198,7 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
       z_info (
         "waiting for all {} threads to go idle after creation (current idle {})...",
         threads_.size (), idle_thread_cnt_.load ());
-      std::this_thread::sleep_for (std::chrono::milliseconds (1));
+      std::this_thread::sleep_for (10us);
     }
 }
 
@@ -213,7 +219,7 @@ GraphScheduler::terminate_threads ()
   while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))
     {
       z_info ("waiting for threads to go idle...");
-      std::this_thread::sleep_for (std::chrono::milliseconds (1));
+      std::this_thread::sleep_for (1ms);
       if (++tries > max_tries)
         break;
     }

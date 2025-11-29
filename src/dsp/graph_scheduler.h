@@ -68,17 +68,13 @@ public:
    * @param sample_rate Sample rate.
    * @param max_block_length Maximum block length @ref run_cycle() is expected
    * to be called with.
-   * @param realtime_options Optional realtime options to pass to the created
-   * threads. If nullopt, the default options will be used.
-   * withApproximateAudioProcessingTime() will be appended by GraphScheduler
-   * automatically in either case based on @p max_block_length and @p
-   * sample_rate.
+   * @param realtime_threads Whether to use threads with realtime privileges.
    * @param thread_workgroup Optional workgroup (used on Mac).
    */
   GraphScheduler (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length,
-    std::optional<juce::Thread::RealtimeOptions> realtime_options = std::nullopt,
+    sample_rate_t                       sample_rate,
+    nframes_t                           max_block_length,
+    bool                                realtime_threads = true,
     std::optional<juce::AudioWorkgroup> thread_workgroup = std::nullopt);
   ~GraphScheduler ();
   Z_DISABLE_COPY_MOVE (GraphScheduler); // copy/move don't make sense here
@@ -90,7 +86,9 @@ public:
    * @warning Nodes added here are expected to be unique for their
    * IProcessable's. This means that an IProcessable-derived object may not be
    * in more than one graph at a time, otherwise @ref release_node_resources()
-   * may be called while another graph is using them.
+   * may be called while another graph is using them. FIXME: alleviate this but
+   * passing the graph to prepare_for_processing/release_resources and having
+   * each processable have a separate cache per graph.
    *
    * @param nodes Nodes to steal.
    * @param sample_rate The current sample rate to prepare the nodes for.
@@ -215,7 +213,7 @@ private:
    * @brief If this contains a value, realtime threads will be created with
    * these options, otherwise default options will be used.
    */
-  juce::Thread::RealtimeOptions realtime_thread_options_;
+  std::optional<juce::Thread::RealtimeOptions> realtime_thread_options_;
 
   /** Audio workgroup for threads. */
   std::optional<juce::AudioWorkgroup> thread_workgroup_;

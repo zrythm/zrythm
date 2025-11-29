@@ -78,7 +78,7 @@ GraphNode::compensate_latency (
    * if the position is before loop-end and position + frames is after
    * loop end (there is a loop inside the range), that should be handled
    * by the ports/processors instead */
-  z_return_if_fail (route_playback_latency_ >= remaining_preroll_frames);
+  assert (route_playback_latency_ >= remaining_preroll_frames);
   const auto playhead_pos = transport.get_playhead_position_in_audio_thread ();
   auto       adjusted_playhead_position =
     transport.get_playhead_position_after_adding_frames_in_audio_thread (

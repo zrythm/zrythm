@@ -23,6 +23,7 @@ target_sources(zrythm_dsp_lib
     graph_export.cpp
     graph_node.cpp
     graph_pruner.cpp
+    graph_renderer.cpp
     graph_scheduler.cpp
     graph_thread.cpp
     kmeter_dsp.cpp
@@ -70,6 +71,7 @@ target_sources(zrythm_dsp_lib
       graph_export.h
       graph_node.h
       graph_pruner.h
+      graph_renderer.h
       graph_scheduler.h
       graph_thread.h
       itransport.h

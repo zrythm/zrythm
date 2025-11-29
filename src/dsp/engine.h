@@ -115,13 +115,13 @@ public:
   -> ProcessReturnStatus;
 
   /**
-   * To be called after processing for common logic.
+   * @brief Advances the playhead if transport is rolling.
    *
    * @param roll_nframes Frames to roll (add to the playhead - if transport
    * rolling).
    * @param nframes Total frames for this processing cycle.
    */
-  [[gnu::hot]] void post_process (
+  [[gnu::hot]] void advance_playhead_after_processing (
     dsp::Transport::TransportSnapshot  &transport_snapshot,
     const dsp::PlayheadProcessingGuard &playhead_guard,
     nframes_t                           roll_nframes,
