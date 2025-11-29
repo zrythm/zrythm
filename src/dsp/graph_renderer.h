@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/graph_node.h"
 #include "utils/audio.h"
 #include "utils/units.h"
 

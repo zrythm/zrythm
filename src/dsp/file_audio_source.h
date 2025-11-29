@@ -8,6 +8,7 @@
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
 #include "utils/types.h"
+#include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::dsp
