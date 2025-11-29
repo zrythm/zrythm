@@ -3,12 +3,10 @@
 
 #pragma once
 
-#include <optional>
-#include <stop_token>
-
-#include "dsp/graph_scheduler.h"
 #include "utils/audio.h"
 #include "utils/units.h"
+
+#include <QPromise>
 
 namespace zrythm::dsp
 {
@@ -28,23 +26,30 @@ public:
       std::max (5u, std::thread::hardware_concurrency ()) - 4;
   };
 
-  GraphRenderer (RenderOptions options);
-
   /**
-   * @brief Renders the graph for the given range and returns the resulting
-   * audio, or nullopt if cancelled.
+   * @brief Executes render() asynchronously and returns a QFuture to control
+   * the task.
+   *
+   * @param options
+   * @param nodes
+   * @param range
+   */
+  static QFuture<juce::AudioSampleBuffer> render_run_async (
+    RenderOptions                options,
+    graph::GraphNodeCollection &&nodes,
+    SampleRange                  range);
+
+private:
+  /**
+   * @brief Renders the graph for the given range.
    *
    * @param nodes
    * @param range
-   * @return The resulting audio from the terminal AudioPort node, or nullopt if
-   * cancelled.
    */
-  [[nodiscard]] auto render (
-    graph::GraphNodeCollection &&nodes,
-    SampleRange                  range,
-    std::stop_token token = {}) -> std::optional<juce::AudioSampleBuffer>;
-
-private:
-  RenderOptions options_;
+  static void render (
+    QPromise<juce::AudioSampleBuffer> &promise,
+    RenderOptions                      options,
+    graph::GraphNodeCollection       &&nodes,
+    SampleRange                        range);
 };
 }

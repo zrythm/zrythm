@@ -4,27 +4,29 @@
 #include "dsp/audio_port.h"
 #include "dsp/ditherer.h"
 #include "dsp/graph_renderer.h"
+#include "dsp/graph_scheduler.h"
 #include "dsp/transport.h"
+
+#include <QtConcurrentRun>
 
 namespace zrythm::dsp
 {
-GraphRenderer::GraphRenderer (RenderOptions options) : options_ (options) { }
-
-auto
+void
 GraphRenderer::render (
-  graph::GraphNodeCollection &&nodes,
-  SampleRange                  range,
-  std::stop_token              token) -> std::optional<juce::AudioSampleBuffer>
+  QPromise<juce::AudioSampleBuffer> &promise,
+  RenderOptions                      options,
+  graph::GraphNodeCollection       &&nodes,
+  SampleRange                        range)
 {
   z_debug ("Rendering range {}...", range);
 
   graph::GraphScheduler graph_scheduler (
-    options_.sample_rate_, options_.block_length_.in (units::samples), false);
+    options.sample_rate_, options.block_length_.in (units::samples), false);
 
   graph_scheduler.rechain_from_node_collection (
-    std::move (nodes), options_.sample_rate_,
-    options_.block_length_.in (units::samples));
-  graph_scheduler.start_threads (options_.num_threads_);
+    std::move (nodes), options.sample_rate_,
+    options.block_length_.in (units::samples));
+  graph_scheduler.start_threads (options.num_threads_);
 
   // Update latencies and get max latency for preroll
   graph_scheduler.get_nodes ().update_latencies ();
@@ -43,14 +45,14 @@ GraphRenderer::render (
 
   // Initialize ditherer if needed
   dsp::Ditherer ditherer;
-  if (options_.dither_)
+  if (options.dither_)
     {
-      ditherer.reset (utils::audio::bit_depth_enum_to_int (options_.bit_depth_));
+      ditherer.reset (utils::audio::bit_depth_enum_to_int (options.bit_depth_));
     }
 
   // Create temporary buffer for processing each block
   utils::audio::AudioBuffer temp_buffer{
-    2, options_.block_length_.in<int> (units::samples)
+    2, options.block_length_.in<int> (units::samples)
   };
 
   // Setup transport snapshot for rendering
@@ -71,13 +73,15 @@ GraphRenderer::render (
   auto           current_pos = range.first;
   auto           latency_preroll_frames = max_latency_frames;
 
+  // Prepare for progress reporting
+  promise.setProgressRange (0, output.getNumSamples ());
+
   while (current_pos < range.second)
     {
-      // Return if cancelled
-      if (token.stop_requested ())
+      promise.suspendIfRequested ();
+      if (promise.isCanceled ())
         {
-          z_info ("Render cancelled");
-          return std::nullopt;
+          return;
         }
 
       // Calculate number of frames to process in this block
@@ -85,7 +89,7 @@ GraphRenderer::render (
       const auto nframes = [&] () {
         const auto num_frames = std::min (
           frames_remaining.in<signed_frame_t> (units::samples),
-          options_.block_length_.in<signed_frame_t> (units::samples));
+          options.block_length_.in<signed_frame_t> (units::samples));
         return latency_preroll_frames > 0
                  ? std::min (
                      static_cast<signed_frame_t> (latency_preroll_frames), num_frames)
@@ -133,7 +137,7 @@ GraphRenderer::render (
         }
 
       // Apply dithering if enabled
-      if (options_.dither_)
+      if (options.dither_)
         {
           ditherer.process (
             temp_buffer.getWritePointer (0), static_cast<int> (nframes));
@@ -164,10 +168,34 @@ GraphRenderer::render (
           latency_preroll_frames =
             static_cast<nframes_t> (latency_preroll_frames - nframes);
         }
+
+      // Update progress
+      promise.setProgressValue (static_cast<int> (covered_frames));
     }
 
   z_debug ("Rendered range {}", range);
 
-  return output;
+  promise.addResult (output);
+}
+
+QFuture<juce::AudioSampleBuffer>
+GraphRenderer::render_run_async (
+  RenderOptions                options,
+  graph::GraphNodeCollection &&nodes,
+  SampleRange                  range)
+{
+  // This is a hack to work around the fact that QtConcurrent::run only supports
+  // copyable arguments, and GraphNodeCollection is not copyable
+  return QtConcurrent::run (
+    [inner_nodes = std::move (nodes)] (
+      QPromise<juce::AudioSampleBuffer> &promise,
+      GraphRenderer::RenderOptions       inner_options,
+      GraphRenderer::SampleRange         inner_range) {
+      GraphRenderer::render (
+        promise, inner_options,
+        std::move (const_cast<graph::GraphNodeCollection &> (inner_nodes)),
+        inner_range);
+    },
+    options, range);
 }
 }
