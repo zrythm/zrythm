@@ -42,11 +42,11 @@ public:
   JucePlugin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
     StateDirectoryParentPathProvider              state_path_provider,
-    CreatePluginInstanceAsyncFunc   create_plugin_instance_async_func,
-    std::function<sample_rate_t ()> sample_rate_provider,
-    std::function<nframes_t ()>     buffer_size_provider,
-    PluginHostWindowFactory         top_level_window_provider,
-    QObject *                       parent = nullptr);
+    CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
+    std::function<units::sample_rate_t ()> sample_rate_provider,
+    std::function<nframes_t ()>            buffer_size_provider,
+    PluginHostWindowFactory                top_level_window_provider,
+    QObject *                              parent = nullptr);
 
   ~JucePlugin () override;
 
@@ -61,8 +61,8 @@ public:
 
 protected:
   void prepare_for_processing_impl (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override;
+    units::sample_rate_t sample_rate,
+    nframes_t            max_block_length) override;
 
   void process_impl (EngineProcessTimeInfo time_info) noexcept override;
 
@@ -151,8 +151,8 @@ private:
   std::unique_ptr<juce::AudioProcessorEditor> editor_;
   std::unique_ptr<plugins::IPluginHostWindow> top_level_window_;
 
-  std::function<sample_rate_t ()> sample_rate_provider_;
-  std::function<nframes_t ()>     buffer_size_provider_;
+  std::function<units::sample_rate_t ()> sample_rate_provider_;
+  std::function<nframes_t ()>            buffer_size_provider_;
 
   juce::AudioBuffer<float> juce_audio_buffer_;
   juce::MidiBuffer         juce_midi_buffer_;

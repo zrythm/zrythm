@@ -25,7 +25,7 @@ protected:
       AudioSampleProcessor> (ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
 
-    sample_rate_ = 48000;
+    sample_rate_ = units::sample_rate (48000);
     max_block_length_ = 1024;
 
     // Set up mock transport
@@ -49,7 +49,7 @@ protected:
   std::unique_ptr<PortRegistry>               port_registry_;
   std::unique_ptr<ProcessorParameterRegistry> param_registry_;
   std::unique_ptr<AudioSampleProcessor>       processor_;
-  sample_rate_t                               sample_rate_;
+  units::sample_rate_t                        sample_rate_;
   nframes_t                                   max_block_length_;
   std::unique_ptr<graph_test::MockTransport>  mock_transport_;
 };

@@ -80,7 +80,7 @@ ProcessorParameter::process_block (
 void
 ProcessorParameter::prepare_for_processing (
   const graph::GraphNode * node,
-  sample_rate_t            sample_rate,
+  units::sample_rate_t     sample_rate,
   nframes_t                max_block_length)
 {
   modulation_input_ = modulation_input_uuid_.get_object_as<dsp::CVPort> ();

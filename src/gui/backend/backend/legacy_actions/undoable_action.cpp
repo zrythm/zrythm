@@ -23,9 +23,9 @@ namespace zrythm::gui::actions
 {
 
 UndoableAction::UndoableAction (
-  Type               type,
-  dsp::FramesPerTick frames_per_tick,
-  sample_rate_t      sample_rate)
+  Type                 type,
+  dsp::FramesPerTick   frames_per_tick,
+  units::sample_rate_t sample_rate)
     : undoable_action_type_ (type), frames_per_tick_ (frames_per_tick),
       sample_rate_ (sample_rate)
 {

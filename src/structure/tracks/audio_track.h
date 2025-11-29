@@ -66,6 +66,6 @@ private:
    *
    * Not to be serialized.
    */
-  unsigned int samplerate_ = 0;
+  units::sample_rate_t samplerate_;
 };
 }

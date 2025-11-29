@@ -5,7 +5,7 @@
 
 #include "dsp/file_audio_source.h"
 #include "utils/hash.h"
-#include "utils/types.h"
+#include "utils/units.h"
 
 #include <boost/unordered/concurrent_flat_map.hpp>
 
@@ -32,6 +32,7 @@ public:
    * main project).
    */
   using ProjectPoolPathGetter = std::function<fs::path (bool backup)>;
+  using SampleRateGetter = std::function<units::sample_rate_t ()>;
 
   AudioPool (
     dsp::FileAudioSourceRegistry &file_audio_source_registry,

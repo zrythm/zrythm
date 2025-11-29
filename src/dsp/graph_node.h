@@ -77,9 +77,9 @@ public:
    * @param max_block_length
    */
   virtual void prepare_for_processing (
-    const GraphNode * node,
-    sample_rate_t     sample_rate,
-    nframes_t         max_block_length)
+    const GraphNode *    node,
+    units::sample_rate_t sample_rate,
+    nframes_t            max_block_length)
   {
   }
 

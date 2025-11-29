@@ -197,10 +197,10 @@ protected:
     return collection;
   }
 
-  sample_rate_t                                     sample_rate_{ 48000 };
-  size_t                                            max_block_length_{ 1024 };
-  std::unique_ptr<MockTransport>                    transport_;
-  std::unique_ptr<GraphScheduler>                   scheduler_;
+  units::sample_rate_t            sample_rate_{ units::sample_rate (48000) };
+  size_t                          max_block_length_{ 1024 };
+  std::unique_ptr<MockTransport>  transport_;
+  std::unique_ptr<GraphScheduler> scheduler_;
   std::vector<std::unique_ptr<MockProcessable>>     processables_;
   static std::shared_ptr<zrythm::utils::TestLogger> logger_;
 };

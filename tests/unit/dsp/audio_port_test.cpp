@@ -13,8 +13,8 @@ namespace zrythm::dsp
 class AudioPortTest : public ::testing::Test
 {
 protected:
-  static constexpr sample_rate_t SAMPLE_RATE = 44100;
-  static constexpr nframes_t     BLOCK_LENGTH = 256;
+  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr nframes_t BLOCK_LENGTH = 256;
 
   void SetUp () override
   {
@@ -35,7 +35,7 @@ protected:
           0.5f
           * std::sin (
             2.0f * std::numbers::pi_v<float> * 440.0f * static_cast<float> (i)
-            / static_cast<float> (SAMPLE_RATE));
+            / static_cast<float> (SAMPLE_RATE.in (units::sample_rate)));
 
         // For mono input, write to channel 0
         mono_input->buffers ()->setSample (0, static_cast<int> (i), sample);

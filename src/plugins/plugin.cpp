@@ -78,7 +78,7 @@ Plugin::set_configuration (const PluginConfiguration &setting)
 void
 Plugin::custom_prepare_for_processing (
   const dsp::graph::GraphNode * node,
-  sample_rate_t                 sample_rate,
+  units::sample_rate_t          sample_rate,
   nframes_t                     max_block_length)
 {
   init_param_caches ();

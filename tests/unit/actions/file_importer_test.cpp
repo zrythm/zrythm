@@ -101,9 +101,10 @@ protected:
         [] () { return dsp::CurveOptions::Algorithm::Exponent; }
     };
 
-    arranger_object_factory =
-      std::make_unique<structure::arrangement::ArrangerObjectFactory> (
-        obj_factory_deps, [] () { return 44100.0; }, [] () { return 120.0; });
+    arranger_object_factory = std::make_unique<
+      structure::arrangement::ArrangerObjectFactory> (
+      obj_factory_deps, [] () { return units::sample_rate (44100); },
+      [] () { return 120.0; });
 
     // Create track creator
     track_creator_ = std::make_unique<TrackCreator> (

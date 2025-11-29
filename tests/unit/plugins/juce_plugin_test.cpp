@@ -91,7 +91,7 @@ protected:
     param_registry_ =
       std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
 
-    sample_rate_ = 48000;
+    sample_rate_ = units::sample_rate (48000);
     buffer_size_ = 1024;
 
     // Set up mock transport
@@ -185,7 +185,7 @@ protected:
   std::unique_ptr<PluginDescriptor>                descriptor_;
   std::unique_ptr<PluginConfiguration>             config_;
   std::unique_ptr<MockAudioPluginInstance>         mock_plugin_;
-  sample_rate_t                                    sample_rate_{};
+  units::sample_rate_t                             sample_rate_{};
   nframes_t                                        buffer_size_{};
   std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
 
@@ -303,7 +303,9 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
   setupJucePlugin (true);
 
   // Setup processing expectations
-  EXPECT_CALL (*mock_plugin_, prepareToPlay (sample_rate_, buffer_size_))
+  EXPECT_CALL (
+    *mock_plugin_,
+    prepareToPlay (sample_rate_.in (units::sample_rate), buffer_size_))
     .Times (1);
   EXPECT_CALL (*mock_plugin_, processBlock (::testing::_, ::testing::_))
     .Times (1);

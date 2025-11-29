@@ -317,8 +317,9 @@ TEST_F (GraphRendererTest, RenderEmptyRange)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 0);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 0);
 }
 
 TEST_F (GraphRendererTest, RenderSingleBlock)
@@ -332,11 +333,12 @@ TEST_F (GraphRendererTest, RenderSingleBlock)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
 
   // Verify the sine wave samples are correct
-  verify_sine_wave_samples (result);
+  verify_sine_wave_samples (*result);
 }
 
 TEST_F (GraphRendererTest, RenderMultipleBlocks)
@@ -350,11 +352,12 @@ TEST_F (GraphRendererTest, RenderMultipleBlocks)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 512);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 512);
 
   // Verify the sine wave samples are correct across multiple blocks
-  verify_sine_wave_samples (result);
+  verify_sine_wave_samples (*result);
 }
 
 TEST_F (GraphRendererTest, RenderWithLatency)
@@ -379,17 +382,18 @@ TEST_F (GraphRendererTest, RenderWithLatency)
 
   // With latency compensation, max latency (128) should be added to range
   // So expected samples should be 256 + 128 = 384
-  EXPECT_EQ (result.getNumChannels (), 2);
-  ASSERT_EQ (result.getNumSamples (), 384);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  ASSERT_EQ (result->getNumSamples (), 384);
 
   // With latency compensation, first 128 samples should be silent
   // (latency preroll), then sine wave should start from sample 128
-  verify_samples_are_zero (result, 0, 128);
+  verify_samples_are_zero (*result, 0, 128);
 
   // Verify sine wave starts after latency compensation (from sample 128
   // onwards) The sine wave should start at the correct phase, accounting for
   // latency offset
-  verify_sine_wave_samples (result, 48000.0f, 440.0f, 0.1f, 128, 256);
+  verify_sine_wave_samples (*result, 48000.0f, 440.0f, 0.1f, 128, 256);
 }
 
 TEST_F (GraphRendererTest, RenderWithMixedLatency)
@@ -408,22 +412,23 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
 
   // With mixed latency, max latency (64) should be added to range
   // So expected samples should be 256 + 64 = 320
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 320);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 320);
 
   // With mixed latency, max latency (64) should be compensated for
   // First 64 samples should be silent (latency preroll)
-  verify_samples_are_zero (result, 0, latency);
+  verify_samples_are_zero (*result, 0, latency);
 
   // After latency compensation, both signals should be present
   // The no-latency signal should start at sample 64 with 660Hz frequency
   // The latency signal should also start at sample 64 with 440Hz frequency
   // Combined amplitude should be 0.1f (0.05f + 0.05f)
-  for (int ch = 0; ch < result.getNumChannels (); ++ch)
+  for (int ch = 0; ch < result->getNumChannels (); ++ch)
     {
       const auto channel_multiplier = static_cast<float> (ch + 1);
 
-      for (int i = latency; i < result.getNumSamples (); ++i)
+      for (int i = latency; i < result->getNumSamples (); ++i)
         {
           // Expected combined signal: both sine waves at half amplitude each
           const auto sample_440 =
@@ -438,7 +443,7 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
               * 660.0f * static_cast<float> (i - latency) / 48000.0f);
           const auto expected_sample = sample_440 + sample_660;
 
-          const auto actual_sample = result.getSample (ch, i);
+          const auto actual_sample = result->getSample (ch, i);
 
           EXPECT_NEAR (actual_sample, expected_sample, 1e-5f)
             << "Channel " << ch << ", Sample " << i
@@ -462,17 +467,18 @@ TEST_F (GraphRendererTest, RenderWithDithering)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
 
   // Verify that dithering is applied - samples should be quantized to 16-bit
   // levels but still follow the sine wave pattern approximately
-  for (int ch = 0; ch < result.getNumChannels (); ++ch)
+  for (int ch = 0; ch < result->getNumChannels (); ++ch)
     {
       const auto channel_multiplier = static_cast<float> (ch + 1);
 
       // Check a few samples to verify they're quantized to 16-bit levels
-      for (int i = 0; i < std::min (16, result.getNumSamples ()); ++i)
+      for (int i = 0; i < std::min (16, result->getNumSamples ()); ++i)
         {
           const auto expected_sample =
             0.1f * channel_multiplier
@@ -480,7 +486,7 @@ TEST_F (GraphRendererTest, RenderWithDithering)
               2.0f * std::numbers::pi_v<float>
               * 440.0f * static_cast<float> (i) / 48000.0f);
 
-          const auto actual_sample = result.getSample (ch, i);
+          const auto actual_sample = result->getSample (ch, i);
 
           // 16-bit quantization step size is approximately 1/32768
           constexpr auto quantization_step =
@@ -511,11 +517,12 @@ TEST_F (GraphRendererTest, RenderDifferentBlockLengths)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
 
   // Verify the sine wave samples are correct with different block lengths
-  verify_sine_wave_samples (result);
+  verify_sine_wave_samples (*result);
 }
 
 TEST_F (GraphRendererTest, ResourceManagement)
@@ -525,16 +532,19 @@ TEST_F (GraphRendererTest, ResourceManagement)
   auto          range = create_test_range (0, 256);
 
   // Expect resource management calls
-  EXPECT_CALL (*processable_, prepare_for_processing (_, 48000, 256)).Times (1);
+  EXPECT_CALL (
+    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    .Times (1);
   EXPECT_CALL (*processable_, release_resources ()).Times (1);
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
 
   // Verify the sine wave samples are correct
-  verify_sine_wave_samples (result);
+  verify_sine_wave_samples (*result);
 }
 
 TEST_F (GraphRendererTest, AudioPortCollection)
@@ -547,11 +557,12 @@ TEST_F (GraphRendererTest, AudioPortCollection)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
 
   // Verify the actual sine wave samples using the helper method
-  verify_sine_wave_samples (result);
+  verify_sine_wave_samples (*result);
 }
 
 TEST_F (GraphRendererTest, LargeRangeRendering)
@@ -566,11 +577,12 @@ TEST_F (GraphRendererTest, LargeRangeRendering)
 
   auto result = renderer.render (std::move (collection), range);
 
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 48000);
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 48000);
 
   // Verify a few samples from the beginning to ensure correctness
-  verify_sine_wave_samples (result, 48000.0f, 440.0f, 0.1f, 0, 16);
+  verify_sine_wave_samples (*result, 48000.0f, 440.0f, 0.1f, 0, 16);
 }
 
 TEST_F (GraphRendererTest, DifferentBitDepths)
@@ -593,15 +605,174 @@ TEST_F (GraphRendererTest, DifferentBitDepths)
 
       auto result = renderer.render (std::move (collection), range);
 
-      EXPECT_EQ (result.getNumChannels (), 2);
-      EXPECT_EQ (result.getNumSamples (), 256);
+      ASSERT_TRUE (result.has_value ());
+      EXPECT_EQ (result->getNumChannels (), 2);
+      EXPECT_EQ (result->getNumSamples (), 256);
 
       // Verify the sine wave samples are correct regardless of bit depth
-      verify_sine_wave_samples (result);
+      verify_sine_wave_samples (*result);
 
       // Reset mock for next iteration
       Mock::VerifyAndClearExpectations (processable_.get ());
     }
+}
+
+TEST_F (GraphRendererTest, RenderWithoutCancellationReturnsValidResult)
+{
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 256);
+
+  // Create a stop token that won't be cancelled
+  std::stop_source stop_source;
+  std::stop_token  token = stop_source.get_token ();
+
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+
+  auto result = renderer.render (std::move (collection), range, token);
+
+  // Should return a valid result when not cancelled
+  ASSERT_TRUE (result.has_value ());
+  EXPECT_EQ (result->getNumChannels (), 2);
+  EXPECT_EQ (result->getNumSamples (), 256);
+
+  // Verify the sine wave samples are correct
+  verify_sine_wave_samples (*result);
+}
+
+TEST_F (GraphRendererTest, RenderWithImmediateCancellation)
+{
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 512); // Multiple blocks
+
+  // Create a stop token and cancel it immediately
+  std::stop_source stop_source;
+  stop_source.request_stop ();
+  std::stop_token token = stop_source.get_token ();
+
+  // Process block should not be called due to immediate cancellation
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (0);
+
+  auto result = renderer.render (std::move (collection), range, token);
+
+  // Should return nullopt when cancelled immediately
+  EXPECT_FALSE (result.has_value ());
+}
+
+TEST_F (GraphRendererTest, RenderWithCancellationAfterFirstBlock)
+{
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 512); // 2 blocks
+
+  // Create a stop token
+  std::stop_source stop_source;
+  std::stop_token  token = stop_source.get_token ();
+
+  // Set up a mock that will request cancellation after first process_block call
+  EXPECT_CALL (*processable_, process_block (_, _))
+    .WillOnce ([&stop_source] (auto, const auto &) {
+      // Request cancellation after first block
+      stop_source.request_stop ();
+    });
+
+  auto result = renderer.render (std::move (collection), range, token);
+
+  // Should return nullopt when cancelled after first block
+  EXPECT_FALSE (result.has_value ());
+}
+
+TEST_F (GraphRendererTest, RenderWithCancellationDuringLatencyPreroll)
+{
+  // Setup processable with latency
+  ON_CALL (*processable_, get_single_playback_latency ())
+    .WillByDefault (Return (128));
+
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 256);
+
+  // Create a stop token
+  std::stop_source stop_source;
+  std::stop_token  token = stop_source.get_token ();
+
+  // Set up a mock that will request cancellation during latency preroll
+  EXPECT_CALL (*processable_, process_block (_, _))
+    .WillOnce ([&stop_source] (auto, const auto &) {
+      // Request cancellation during latency preroll processing
+      stop_source.request_stop ();
+    });
+
+  auto result = renderer.render (std::move (collection), range, token);
+
+  // Should return nullopt when cancelled during latency preroll
+  EXPECT_FALSE (result.has_value ());
+}
+
+TEST_F (GraphRendererTest, RenderWithCancellationInLargeRange)
+{
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 48000); // 1 second at 48kHz
+
+  // Create a stop token
+  std::stop_source stop_source;
+  std::stop_token  token = stop_source.get_token ();
+
+  // Set up a mock that will request cancellation after a few process_block calls
+  int call_count = 0;
+  EXPECT_CALL (*processable_, process_block (_, _))
+    .WillRepeatedly ([&stop_source, &call_count] (auto, const auto &) {
+      ++call_count;
+      // Request cancellation after 3 blocks
+      if (call_count >= 3)
+        {
+          stop_source.request_stop ();
+        }
+    });
+
+  auto result = renderer.render (std::move (collection), range, token);
+
+  // Should return nullopt when cancelled during large range processing
+  EXPECT_FALSE (result.has_value ());
+
+  // Verify that process_block was called a few times before cancellation
+  EXPECT_GE (call_count, 3);
+}
+
+TEST_F (GraphRendererTest, RenderWithMultipleCancellationTokens)
+{
+  GraphRenderer renderer (options_);
+  auto          collection = create_simple_test_collection ();
+  auto          range = create_test_range (0, 256);
+
+  // Test with default stop token (no cancellation)
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+
+  auto result1 = renderer.render (create_simple_test_collection (), range);
+
+  // Should return a valid result with default token
+  ASSERT_TRUE (result1.has_value ());
+  EXPECT_EQ (result1->getNumChannels (), 2);
+  EXPECT_EQ (result1->getNumSamples (), 256);
+
+  // Reset mock for next test
+  Mock::VerifyAndClearExpectations (processable_.get ());
+
+  // Test with explicitly non-cancelled token
+  std::stop_source stop_source;
+  std::stop_token  token = stop_source.get_token ();
+
+  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+
+  auto result2 =
+    renderer.render (create_simple_test_collection (), range, token);
+
+  // Should return a valid result with non-cancelled token
+  ASSERT_TRUE (result2.has_value ());
+  EXPECT_EQ (result2->getNumChannels (), 2);
+  EXPECT_EQ (result2->getNumSamples (), 256);
 }
 
 } // namespace zrythm::dsp

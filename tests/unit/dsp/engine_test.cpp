@@ -116,7 +116,7 @@ TEST_F (AudioEngineTest, GetSampleRateReturnsCorrectValue)
     *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
 
   // Should return the sample rate from the audio device
-  EXPECT_EQ (engine->get_sample_rate (), 48000);
+  EXPECT_EQ (engine->get_sample_rate ().in (units::sample_rate), 48000);
 }
 
 TEST_F (AudioEngineTest, ActivateWithTrueSetsStateToActive)

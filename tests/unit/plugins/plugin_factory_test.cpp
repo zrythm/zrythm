@@ -117,8 +117,8 @@ protected:
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
   std::unique_ptr<PluginFactory>                   factory_;
 
-  sample_rate_t sample_rate_{ 48000 };
-  nframes_t     buffer_size_{ 1024 };
+  units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
+  nframes_t            buffer_size_{ 1024 };
 };
 
 // Test basic factory construction
@@ -374,7 +374,7 @@ TEST_F (PluginFactoryTest, MultiplePluginsIndependent)
 TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
 {
   // Create custom providers
-  auto custom_sample_rate = 44100.0;
+  auto custom_sample_rate = units::sample_rate (44100);
   auto custom_buffer_size = 512;
 
   auto factory_deps = PluginFactory::CommonFactoryDependencies{

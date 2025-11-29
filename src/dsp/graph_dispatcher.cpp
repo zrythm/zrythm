@@ -113,8 +113,8 @@ DspGraphDispatcher::recalc_graph (bool soft)
 
   auto * current_device = device_manager_.getCurrentAudioDevice ();
 
-  const auto sample_rate =
-    static_cast<sample_rate_t> (current_device->getCurrentSampleRate ());
+  const auto sample_rate = units::sample_rate (
+    static_cast<int> (current_device->getCurrentSampleRate ()));
   const auto buffer_size = current_device->getCurrentBufferSizeSamples ();
 
   const auto rebuild_graph = [&] () {

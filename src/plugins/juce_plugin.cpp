@@ -18,11 +18,11 @@ namespace zrythm::plugins
 JucePlugin::JucePlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   StateDirectoryParentPathProvider              state_path_provider,
-  CreatePluginInstanceAsyncFunc   create_plugin_instance_async_func,
-  std::function<sample_rate_t ()> sample_rate_provider,
-  std::function<nframes_t ()>     buffer_size_provider,
-  PluginHostWindowFactory         top_level_window_provider,
-  QObject *                       parent)
+  CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
+  std::function<units::sample_rate_t ()> sample_rate_provider,
+  std::function<nframes_t ()>            buffer_size_provider,
+  PluginHostWindowFactory                top_level_window_provider,
+  QObject *                              parent)
     : Plugin (dependencies, std::move (state_path_provider), parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
@@ -102,7 +102,7 @@ JucePlugin::initialize_juce_plugin_async ()
   auto plugin_desc = descriptor.to_juce_description ();
 
   // Get current sample rate and buffer size
-  const double sample_rate = sample_rate_provider_ ();
+  const double sample_rate = sample_rate_provider_ ().in (units::sample_rate);
   const int    buffer_size = static_cast<int> (buffer_size_provider_ ());
 
   // Create plugin instance asynchronously
@@ -304,8 +304,8 @@ JucePlugin::get_single_playback_latency () const
 
 void
 JucePlugin::prepare_for_processing_impl (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  units::sample_rate_t sample_rate,
+  nframes_t            max_block_length)
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;
@@ -314,7 +314,8 @@ JucePlugin::prepare_for_processing_impl (
     {
       // Prepare JUCE plugin
       juce_plugin_->prepareToPlay (
-        sample_rate, static_cast<int> (max_block_length));
+        sample_rate.in (units::sample_rate),
+        static_cast<int> (max_block_length));
 
       // Resize audio buffers
       const int num_inputs = juce_plugin_->getTotalNumInputChannels ();

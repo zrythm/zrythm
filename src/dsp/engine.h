@@ -158,11 +158,11 @@ public:
     return dev->getCurrentBufferSizeSamples ();
   }
 
-  sample_rate_t get_sample_rate () const
+  units::sample_rate_t get_sample_rate () const
   {
     auto * dev = device_manager_->getCurrentAudioDevice ();
     assert (dev != nullptr);
-    return static_cast<sample_rate_t> (dev->getCurrentSampleRate ());
+    return units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ()));
   }
 
 private:

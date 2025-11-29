@@ -656,8 +656,8 @@ ClapPlugin::latencyChanged () noexcept
 
 void
 ClapPlugin::prepare_for_processing_impl (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  units::sample_rate_t sample_rate,
+  nframes_t            max_block_length)
 {
   assert (is_main_thread);
 
@@ -667,7 +667,8 @@ ClapPlugin::prepare_for_processing_impl (
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
   assert (!pimpl_->isPluginActive ());
-  if (!pimpl_->plugin_->activate (sample_rate, 1, max_block_length))
+  if (!pimpl_->plugin_->activate (
+        sample_rate.in (units::sample_rate), 1, max_block_length))
     {
       pimpl_->setPluginState (ClapPluginImpl::InactiveWithError);
       return;

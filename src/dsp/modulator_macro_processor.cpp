@@ -87,7 +87,7 @@ ModulatorMacroProcessor::custom_process_block (
 void
 ModulatorMacroProcessor::custom_prepare_for_processing (
   const graph::GraphNode * node,
-  sample_rate_t            sample_rate,
+  units::sample_rate_t     sample_rate,
   nframes_t                max_block_length)
 {
   processing_caches_ = std::make_unique<ProcessingCaches> ();

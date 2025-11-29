@@ -279,12 +279,12 @@ Fader::calculate_target_gain_rt () const
 void
 Fader::custom_prepare_for_processing (
   const graph::GraphNode * node,
-  sample_rate_t            sample_rate,
+  units::sample_rate_t     sample_rate,
   nframes_t                max_block_length)
 {
   processing_caches_ = std::make_unique<FaderProcessingCaches> ();
 
-  current_gain_.reset (static_cast<double> (sample_rate), 0.01);
+  current_gain_.reset (sample_rate.in<double> (units::sample_rate), 0.01);
 
   processing_caches_->amp_param_ =
     amp_id_.has_value () ? &get_amp_param () : nullptr;

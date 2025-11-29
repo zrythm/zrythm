@@ -168,7 +168,8 @@ TEST_F (MetronomeTest, PrepareForProcessing)
   auto metronome = create_metronome ();
 
   // Should not throw
-  EXPECT_NO_THROW (metronome->prepare_for_processing (nullptr, 44100, 256));
+  EXPECT_NO_THROW (metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), 256));
 }
 
 TEST_F (MetronomeTest, BasicPlaybackNoTicks)
@@ -186,7 +187,7 @@ TEST_F (MetronomeTest, BasicPlaybackNoTicks)
     .nframes_ = 256
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, 256);
+  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
   metronome->process_block (time_nfo, *transport_);
 
   // No samples should be queued when not rolling
@@ -208,7 +209,7 @@ TEST_F (MetronomeTest, BasicPlaybackWithTicks)
     .nframes_ = 256
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, 256);
+  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have queued an emphasis sample
@@ -240,7 +241,8 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
     .nframes_ = samples_per_beat * 4 // 4 beats
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 4);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 4);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have exactly 4 ticks: 1 bar tick + 3 beat ticks
@@ -287,7 +289,8 @@ TEST_F (MetronomeTest, LoopCrossing)
     .nframes_ = samples_per_beat * 2 // 2 beats
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 2);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 2);
   metronome->process_block (time_nfo, *transport_);
 
   // Should handle loop crossing correctly
@@ -330,7 +333,8 @@ TEST_F (MetronomeTest, CountinTicks)
     .nframes_ = samples_per_beat * 2
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 2);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 2);
   metronome->process_block (time_nfo, *transport_);
 
   // Should queue countin ticks
@@ -363,7 +367,8 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
     .nframes_ = samples_per_beat
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have queued samples with correct volume
@@ -387,7 +392,7 @@ TEST_F (MetronomeTest, EmptyRangeHandling)
     .nframes_ = 0 // Empty range
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, 256);
+  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
   metronome->process_block (time_nfo, *transport_);
 
   // Should handle empty range gracefully
@@ -416,7 +421,8 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
     .nframes_ = samples_per_beat * 3 // 3 beats in 3/4
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 3);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 3);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have 3 ticks: 1 bar tick + 2 beat ticks
@@ -445,7 +451,8 @@ TEST_F (MetronomeTest, HighTempo)
     .nframes_ = samples_per_beat * 4
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 4);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 4);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have 4 ticks at high tempo
@@ -485,7 +492,8 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
     .nframes_ = samples_per_beat * 4
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 4);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 4);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have no ticks when disabled
@@ -517,7 +525,8 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
     .nframes_ = samples_per_beat * 4
   };
 
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 4);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 4);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have ticks when enabled
@@ -549,7 +558,8 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   };
 
   // First process with enabled=true (default)
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat * 2);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat * 2);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have ticks
@@ -591,7 +601,8 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   };
 
   // First, enable metronome and process to queue samples
-  metronome->prepare_for_processing (nullptr, 44100, samples_per_beat);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), samples_per_beat);
   metronome->process_block (time_nfo, *transport_);
 
   // Should have queued samples

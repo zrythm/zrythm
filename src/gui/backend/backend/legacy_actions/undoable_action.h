@@ -65,9 +65,9 @@ public:
   UndoableAction () = default;
   UndoableAction (Type type);
   UndoableAction (
-    Type               type,
-    dsp::FramesPerTick frames_per_tick,
-    sample_rate_t      sample_rate);
+    Type                 type,
+    dsp::FramesPerTick   frames_per_tick,
+    units::sample_rate_t sample_rate);
   virtual ~UndoableAction () = default;
 
   /**
@@ -178,7 +178,7 @@ public:
    * Used to recalculate UndoableAction.frames_per_tick when the project is
    * loaded under a new samplerate.
    */
-  sample_rate_t sample_rate_ = 0;
+  units::sample_rate_t sample_rate_ = 0;
 
   /**
    * Number of actions to perform.

@@ -63,13 +63,13 @@ Stretcher::Stretcher () : pimpl_ (std::make_unique<Impl> ()) { }
 
 std::unique_ptr<Stretcher>
 Stretcher::create_rubberband (
-  unsigned samplerate,
-  unsigned channels,
-  double   time_ratio,
-  double   pitch_ratio,
-  bool     realtime)
+  units::sample_rate_t samplerate,
+  unsigned             channels,
+  double               time_ratio,
+  double               pitch_ratio,
+  bool                 realtime)
 {
-  if (samplerate <= 0)
+  if (samplerate <= units::sample_rate (0))
     {
       throw std::invalid_argument (
         fmt::format ("Invalid samplerate of {}", samplerate));
@@ -79,7 +79,7 @@ Stretcher::create_rubberband (
   auto &impl = *stretcher->pimpl_;
 
   impl.backend = Backend::Rubberband;
-  impl.samplerate = samplerate;
+  impl.samplerate = samplerate.in (units::sample_rate);
   impl.channels = channels;
   impl.is_realtime = realtime;
 
@@ -94,8 +94,9 @@ Stretcher::create_rubberband (
         | RubberBandOptionSmoothingOff | RubberBandOptionFormantShifted
         | RubberBandOptionPitchHighSpeed | RubberBandOptionChannelsApart;
       impl.block_size = 16000;
-      impl.rubberband_state =
-        rubberband_new (samplerate, channels, opts, time_ratio, pitch_ratio);
+      impl.rubberband_state = rubberband_new (
+        samplerate.in (units::sample_rate), channels, opts, time_ratio,
+        pitch_ratio);
 
       /* feed it samples so it is ready to use */
 #if 0
@@ -167,8 +168,9 @@ Stretcher::create_rubberband (
 #endif
         ;
       impl.block_size = 6000;
-      impl.rubberband_state =
-        rubberband_new (samplerate, channels, opts, time_ratio, pitch_ratio);
+      impl.rubberband_state = rubberband_new (
+        samplerate.in (units::sample_rate), channels, opts, time_ratio,
+        pitch_ratio);
       rubberband_set_max_process_size (impl.rubberband_state, impl.block_size);
     }
   rubberband_set_default_debug_level (0);

@@ -39,7 +39,7 @@ public:
   MOCK_METHOD (
     void,
     custom_prepare_for_processing,
-    (const dsp::graph::GraphNode *, sample_rate_t, nframes_t),
+    (const dsp::graph::GraphNode *, units::sample_rate_t, nframes_t),
     (override));
   MOCK_METHOD (void, custom_release_resources, (), (override));
 };
@@ -167,8 +167,8 @@ protected:
   Channel::NameProvider                            name_provider_;
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
   dsp::graph::Graph                                graph_;
-  sample_rate_t                                    sample_rate_{ 48000 };
-  nframes_t                                        max_block_length_{ 1024 };
+  units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
+  nframes_t            max_block_length_{ 1024 };
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;

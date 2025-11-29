@@ -40,8 +40,8 @@ protected:
   void load_state (std::optional<fs::path> abs_state_dir) override;
 
   void prepare_for_processing_impl (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override;
+    units::sample_rate_t sample_rate,
+    nframes_t            max_block_length) override;
 
   void process_impl (EngineProcessTimeInfo time_info) noexcept override;
 

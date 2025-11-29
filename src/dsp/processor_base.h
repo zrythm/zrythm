@@ -25,8 +25,8 @@ class ProcessorBase : public dsp::graph::IProcessable
 {
   struct BaseProcessingCache
   {
-    sample_rate_t sample_rate_{};
-    nframes_t     max_block_length_{};
+    units::sample_rate_t sample_rate_;
+    nframes_t            max_block_length_{};
 
     std::vector<dsp::ProcessorParameter *> live_params_;
     std::vector<dsp::PortPtrVariant>       live_input_ports_;
@@ -78,7 +78,7 @@ public:
     const dsp::ITransport &transport) noexcept final;
   void prepare_for_processing (
     const graph::GraphNode * node,
-    sample_rate_t            sample_rate,
+    units::sample_rate_t     sample_rate,
     nframes_t                max_block_length) final;
   void release_resources () final;
 
@@ -96,7 +96,7 @@ protected:
 
   virtual void custom_prepare_for_processing (
     const graph::GraphNode * node,
-    sample_rate_t            sample_rate,
+    units::sample_rate_t     sample_rate,
     nframes_t                max_block_length)
   {
   }

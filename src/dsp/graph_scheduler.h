@@ -72,7 +72,7 @@ public:
    * @param thread_workgroup Optional workgroup (used on Mac).
    */
   GraphScheduler (
-    sample_rate_t                       sample_rate,
+    units::sample_rate_t                sample_rate,
     nframes_t                           max_block_length,
     bool                                realtime_threads = true,
     std::optional<juce::AudioWorkgroup> thread_workgroup = std::nullopt);
@@ -96,7 +96,7 @@ public:
    */
   void rechain_from_node_collection (
     GraphNodeCollection &&nodes,
-    sample_rate_t         sample_rate,
+    units::sample_rate_t  sample_rate,
     nframes_t             max_block_length);
 
   /**
@@ -218,8 +218,8 @@ private:
   /** Audio workgroup for threads. */
   std::optional<juce::AudioWorkgroup> thread_workgroup_;
 
-  sample_rate_t sample_rate_;
-  nframes_t     max_block_length_;
+  units::sample_rate_t sample_rate_;
+  nframes_t            max_block_length_;
 };
 
 } // namespace zrythm::dsp::graph

@@ -23,7 +23,7 @@ protected:
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
     // Setup providers for factory
-    sample_rate_provider = [] () { return 44100.0; };
+    sample_rate_provider = [] () { return units::sample_rate (44100); };
     bpm_provider = [] () { return 120.0; };
 
     // Create factory

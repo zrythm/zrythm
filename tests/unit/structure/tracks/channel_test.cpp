@@ -92,9 +92,9 @@ protected:
   std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
   Channel::NameProvider                            name_provider_;
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
-  sample_rate_t                                    sample_rate_{ 48000 };
-  nframes_t                                        max_block_length_{ 1024 };
-  std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
+  units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
+  nframes_t            max_block_length_{ 1024 };
+  std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;

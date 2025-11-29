@@ -44,7 +44,8 @@ protected:
           .WillByDefault (Return (0));
         ON_CALL (
           *processables_.back (),
-          prepare_for_processing (An<const graph::GraphNode *> (), _, _))
+          prepare_for_processing (
+            An<const graph::GraphNode *> (), An<units::sample_rate_t> (), _))
           .WillByDefault (Return ());
         ON_CALL (*processables_.back (), release_resources ())
           .WillByDefault (Return ());
@@ -135,11 +136,17 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftFalse)
   create_dispatcher ();
 
   // Expect prepare_for_processing to be called for each node
-  EXPECT_CALL (*processables_[0], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[0],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[1], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[1],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[2], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[2],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
 
   // Adjust playback latency for a node
@@ -354,11 +361,17 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
   create_dispatcher ();
 
   // First recalculation
-  EXPECT_CALL (*processables_[0], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[0],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[1], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[1],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[2], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[2],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
 
   dispatcher_->recalc_graph (false);
@@ -368,11 +381,17 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
   EXPECT_CALL (*processables_[1], release_resources ()).Times (1);
   EXPECT_CALL (*processables_[2], release_resources ()).Times (1);
 
-  EXPECT_CALL (*processables_[0], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[0],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[1], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[1],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
-  EXPECT_CALL (*processables_[2], prepare_for_processing (_, 48000, 256))
+  EXPECT_CALL (
+    *processables_[2],
+    prepare_for_processing (_, units::sample_rate (48000), 256))
     .Times (1);
 
   dispatcher_->recalc_graph (false);

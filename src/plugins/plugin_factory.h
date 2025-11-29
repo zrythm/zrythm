@@ -50,11 +50,11 @@ public:
     dsp::ProcessorBase::ProcessorBaseDependencies processor_base_dependencies_;
     plugins::Plugin::StateDirectoryParentPathProvider state_dir_path_provider_;
     plugins::JucePlugin::CreatePluginInstanceAsyncFunc
-                                     create_plugin_instance_async_func_;
-    std::function<sample_rate_t ()>  sample_rate_provider_;
-    std::function<nframes_t ()>      buffer_size_provider_;
-    plugins::PluginHostWindowFactory top_level_window_provider_;
-    AudioThreadChecker               audio_thread_checker_;
+                                           create_plugin_instance_async_func_;
+    std::function<units::sample_rate_t ()> sample_rate_provider_;
+    std::function<nframes_t ()>            buffer_size_provider_;
+    plugins::PluginHostWindowFactory       top_level_window_provider_;
+    AudioThreadChecker                     audio_thread_checker_;
   };
 
   PluginFactory () = delete;

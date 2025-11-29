@@ -25,13 +25,13 @@ protected:
     // Create sample audio clip
     clip_id_ref = registry.create_object<FileAudioSource> (
       utils::audio::AudioBuffer (2, 100),
-      FileAudioSource::BitDepth::BIT_DEPTH_32, 44100, 120.0, u8"test_clip",
-      nullptr);
+      FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+      120.0, u8"test_clip", nullptr);
     clip_id = clip_id_ref->id ();
 
     // Setup AudioPool
     path_getter = [this] (bool /*backup*/) { return temp_dir; };
-    sample_rate_getter = [] { return 44100; };
+    sample_rate_getter = [] { return units::sample_rate (44100); };
     audio_pool =
       std::make_unique<AudioPool> (registry, path_getter, sample_rate_getter);
   }
@@ -48,7 +48,7 @@ protected:
   std::optional<FileAudioSourceUuidReference> clip_id_ref;
   FileAudioSource::Uuid                       clip_id;
   AudioPool::ProjectPoolPathGetter            path_getter;
-  SampleRateGetter                            sample_rate_getter;
+  AudioPool::SampleRateGetter                 sample_rate_getter;
   std::unique_ptr<AudioPool>                  audio_pool;
 };
 
@@ -114,7 +114,7 @@ TEST_F (AudioPoolTest, RemoveUnused)
   std::optional<FileAudioSourceUuidReference> unused_clip =
     registry.create_object<FileAudioSource> (
       utils::audio::AudioBuffer (2, 50), FileAudioSource::BitDepth::BIT_DEPTH_32,
-      44100, 120.0, u8"unused_clip", nullptr);
+      units::sample_rate (44100), 120.0, u8"unused_clip", nullptr);
   auto unused_path = audio_pool->get_clip_path (unused_clip->id (), false);
 
   // Write both clips
@@ -162,7 +162,8 @@ TEST_F (AudioPoolTest, WriteToDisk)
     {
       auto clip = registry.create_object<FileAudioSource> (
         utils::audio::AudioBuffer (2, 100 + i * 10),
-        FileAudioSource::BitDepth::BIT_DEPTH_32, 44100, 120.0,
+        FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+        120.0,
         utils::Utf8String::from_utf8_encoded_string (fmt::format ("clip_{}", i)),
         nullptr);
       clip_ids.emplace_back (std::move (clip));

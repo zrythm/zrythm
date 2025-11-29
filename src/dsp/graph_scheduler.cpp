@@ -34,7 +34,7 @@ namespace zrythm::dsp::graph
 {
 
 GraphScheduler::GraphScheduler (
-  sample_rate_t                       sample_rate,
+  units::sample_rate_t                sample_rate,
   nframes_t                           max_block_length,
   bool                                realtime_threads,
   std::optional<juce::AudioWorkgroup> thread_workgroup)
@@ -47,7 +47,8 @@ GraphScheduler::GraphScheduler (
         juce::Thread::RealtimeOptions ()
           .withPriority (9)
           .withApproximateAudioProcessingTime (
-            static_cast<int> (max_block_length), sample_rate);
+            static_cast<int> (max_block_length),
+            sample_rate.in (units::sample_rate));
     }
 }
 
@@ -74,7 +75,7 @@ GraphScheduler::trigger_node (GraphNode &node)
 void
 GraphScheduler::rechain_from_node_collection (
   GraphNodeCollection &&nodes,
-  sample_rate_t         sample_rate,
+  units::sample_rate_t  sample_rate,
   nframes_t             max_block_length)
 {
   z_debug ("rechaining graph...");

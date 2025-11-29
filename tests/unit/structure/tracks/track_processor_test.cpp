@@ -125,8 +125,8 @@ protected:
     .port_registry_ = port_registry_,
     .param_registry_ = param_registry_
   };
-  sample_rate_t sample_rate_{ 44100 };
-  nframes_t     block_length_{ 256 };
+  units::sample_rate_t sample_rate_{ units::sample_rate (44100) };
+  nframes_t            block_length_{ 256 };
 };
 
 TEST_F (TrackProcessorTest, AudioTrackInitialState)

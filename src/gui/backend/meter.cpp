@@ -55,13 +55,15 @@ MeterProcessor::setPort (QVariant port_var)
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_K;
                   kmeter_processor_ =
                     std::make_unique<zrythm::dsp::KMeterDsp> ();
-                  kmeter_processor_->init (AUDIO_ENGINE->get_sample_rate ());
+                  kmeter_processor_->init (
+                    AUDIO_ENGINE->get_sample_rate ().in (units::sample_rate));
                 }
               else
                 {
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
                   peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
-                  peak_processor_->init (AUDIO_ENGINE->get_sample_rate ());
+                  peak_processor_->init (
+                    AUDIO_ENGINE->get_sample_rate ().in (units::sample_rate));
                 }
 
               tmp_buf_.reserve (dsp::AudioPort::AUDIO_RING_SIZE);

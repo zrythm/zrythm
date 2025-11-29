@@ -57,9 +57,6 @@ using midi_byte_t = uint8_t;
 /** Frame count. */
 using nframes_t = uint32_t;
 
-/** Sample rate. */
-using sample_rate_t = uint32_t;
-
 /** MIDI time in global frames. */
 using midi_time_t = uint32_t;
 
@@ -328,8 +325,6 @@ iterate_tuple (Callable c, Tuple &&t)
 {
   std::apply ([&] (auto &&... args) { (c (args), ...); }, t);
 }
-
-using SampleRateGetter = std::function<sample_rate_t ()>;
 
 // We're using the C type here because MOC complains it can't find the type
 // otherwise (not even std::uint8_t)

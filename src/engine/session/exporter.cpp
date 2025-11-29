@@ -169,7 +169,8 @@ Exporter::export_audio (Settings &info)
 
   juce::AudioFormatWriterOptions options;
   options =
-    options.withSampleRate (AUDIO_ENGINE->get_sample_rate ())
+    options
+      .withSampleRate (AUDIO_ENGINE->get_sample_rate ().in (units::sample_rate))
       .withNumChannels (EXPORT_CHANNELS)
       .withBitsPerSample (utils::audio::bit_depth_enum_to_int (info.depth_))
       .withMetadataValues (metadata)

@@ -109,8 +109,8 @@ protected:
 
     auto source_ref = file_audio_source_registry.create_object<
       dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32, 44100, 120.f,
-      u8"SineTestSource");
+      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+      units::sample_rate (44100), 120.f, u8"SineTestSource");
 
     return registry.create_object<AudioSourceObject> (
       *tempo_map, file_audio_source_registry, source_ref);

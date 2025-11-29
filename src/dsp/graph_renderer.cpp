@@ -8,28 +8,28 @@
 
 namespace zrythm::dsp
 {
-GraphRenderer::GraphRenderer (RenderOptions options)
-    : options_ (options),
-      graph_scheduler_ (
-        options.sample_rate_.in (units::sample_rate),
-        options.block_length_.in (units::samples),
-        false)
-{
-}
+GraphRenderer::GraphRenderer (RenderOptions options) : options_ (options) { }
 
 auto
-GraphRenderer::render (graph::GraphNodeCollection &&nodes, SampleRange range)
-  -> juce::AudioSampleBuffer
+GraphRenderer::render (
+  graph::GraphNodeCollection &&nodes,
+  SampleRange                  range,
+  std::stop_token              token) -> std::optional<juce::AudioSampleBuffer>
 {
-  graph_scheduler_.rechain_from_node_collection (
-    std::move (nodes), options_.sample_rate_.in (units::sample_rate),
+  z_debug ("Rendering range {}...", range);
+
+  graph::GraphScheduler graph_scheduler (
+    options_.sample_rate_, options_.block_length_.in (units::samples), false);
+
+  graph_scheduler.rechain_from_node_collection (
+    std::move (nodes), options_.sample_rate_,
     options_.block_length_.in (units::samples));
-  graph_scheduler_.start_threads (options_.num_threads_);
+  graph_scheduler.start_threads (options_.num_threads_);
 
   // Update latencies and get max latency for preroll
-  graph_scheduler_.get_nodes ().update_latencies ();
+  graph_scheduler.get_nodes ().update_latencies ();
   auto max_latency_frames =
-    graph_scheduler_.get_nodes ().get_max_route_playback_latency ();
+    graph_scheduler.get_nodes ().get_max_route_playback_latency ();
 
   const auto total_frames = range.second - range.first;
   const auto num_samples = total_frames.in<int> (units::samples);
@@ -73,6 +73,13 @@ GraphRenderer::render (graph::GraphNodeCollection &&nodes, SampleRange range)
 
   while (current_pos < range.second)
     {
+      // Return if cancelled
+      if (token.stop_requested ())
+        {
+          z_info ("Render cancelled");
+          return std::nullopt;
+        }
+
       // Calculate number of frames to process in this block
       const auto frames_remaining = range.second - current_pos;
       const auto nframes = [&] () {
@@ -101,12 +108,12 @@ GraphRenderer::render (graph::GraphNodeCollection &&nodes, SampleRange range)
         }
 
       // Process block with latency compensation
-      graph_scheduler_.run_cycle (
+      graph_scheduler.run_cycle (
         time_nfo, latency_preroll_frames, transport_snapshot);
 
       // Collect audio from terminal nodes
       temp_buffer.clear ();
-      for (const auto &node : graph_scheduler_.get_nodes ().terminal_nodes_)
+      for (const auto &node : graph_scheduler.get_nodes ().terminal_nodes_)
         {
           auto &processable = node.get ().get_processable ();
           if (auto * audio_port = dynamic_cast<dsp::AudioPort *> (&processable))
@@ -159,7 +166,7 @@ GraphRenderer::render (graph::GraphNodeCollection &&nodes, SampleRange range)
         }
     }
 
-  graph_scheduler_.terminate_threads ();
+  z_debug ("Rendered range {}", range);
 
   return output;
 }

@@ -92,7 +92,8 @@ AudioEngine::AudioEngine (
         [this] (juce::AudioIODevice * dev) {
           graph_dispatcher_.recalc_graph (false);
           monitor_out_.prepare_for_processing (
-            nullptr, static_cast<sample_rate_t> (dev->getCurrentSampleRate ()),
+            nullptr,
+            units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ())),
             dev->getCurrentBufferSizeSamples ());
           callback_running_ = true;
         },
@@ -241,7 +242,8 @@ AudioEngine::activate (const bool activate)
   if (activate)
     {
       load_measurer_.reset (
-        get_sample_rate (), static_cast<int> (get_block_length ()));
+        get_sample_rate ().in (units::sample_rate),
+        static_cast<int> (get_block_length ()));
 
       device_manager_->addAudioCallback (&audio_callback_);
     }

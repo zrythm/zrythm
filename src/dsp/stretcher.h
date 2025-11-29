@@ -1,12 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_STRETCHER_H
-#define ZRYTHM_DSP_STRETCHER_H
+#pragma once
 
 #include <cstddef>
 
 #include "utils/audio.h"
+#include "utils/units.h"
 
 namespace zrythm::dsp
 {
@@ -43,11 +43,11 @@ public:
    * @throw std::runtime_error If parameters are invalid.
    */
   static std::unique_ptr<Stretcher> create_rubberband (
-    unsigned samplerate,
-    unsigned channels,
-    double   time_ratio,
-    double   pitch_ratio,
-    bool     realtime);
+    units::sample_rate_t samplerate,
+    unsigned             channels,
+    double               time_ratio,
+    double               pitch_ratio,
+    bool                 realtime);
 
 public:
   ~Stretcher ();
@@ -105,5 +105,3 @@ private:
 };
 
 } // namespace zrythm::dsp
-
-#endif

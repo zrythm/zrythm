@@ -54,7 +54,7 @@ protected:
     return collection;
   }
 
-  int                              sample_rate_{ 48000 };
+  units::sample_rate_t             sample_rate_{ units::sample_rate (48000) };
   int                              block_length_{ 256 };
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
@@ -136,7 +136,9 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
   auto collection = create_test_collection ();
 
   // Expect prepare to be called for each node
-  EXPECT_CALL (*processable_, prepare_for_processing (_, 48000, 256)).Times (3);
+  EXPECT_CALL (
+    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    .Times (3);
 
   // Expect release to be called when scheduler is destroyed
   EXPECT_CALL (*processable_, release_resources ()).Times (3);
@@ -154,7 +156,9 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   auto collection = create_test_collection ();
 
   // First chain with initial parameters
-  EXPECT_CALL (*processable_, prepare_for_processing (_, 48000, 256)).Times (3);
+  EXPECT_CALL (
+    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    .Times (3);
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
 
@@ -162,8 +166,8 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   auto new_collection = create_test_collection ();
 
   // Rechain with larger buffer size and different sample rate
-  const int new_sample_rate = 96000;
-  const int new_block_length = 512;
+  const auto new_sample_rate = units::sample_rate (96000);
+  const int  new_block_length = 512;
 
   // Expect prepare to be called with new parameters
   EXPECT_CALL (

@@ -20,7 +20,7 @@ CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 void
 CVPort::prepare_for_processing (
   const graph::GraphNode * node,
-  sample_rate_t            sample_rate,
+  units::sample_rate_t     sample_rate,
   nframes_t                max_block_length)
 {
   if (node != nullptr)

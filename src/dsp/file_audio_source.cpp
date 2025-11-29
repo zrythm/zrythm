@@ -16,10 +16,10 @@ namespace zrythm::dsp
 {
 
 FileAudioSource::FileAudioSource (
-  const fs::path &full_path,
-  sample_rate_t   project_sample_rate,
-  bpm_t           current_bpm,
-  QObject *       parent)
+  const fs::path      &full_path,
+  units::sample_rate_t project_sample_rate,
+  bpm_t                current_bpm,
+  QObject *            parent)
     : QObject (parent)
 {
   init_from_file (full_path, project_sample_rate, current_bpm);
@@ -28,7 +28,7 @@ FileAudioSource::FileAudioSource (
 FileAudioSource::FileAudioSource (
   const utils::audio::AudioBuffer &buf,
   BitDepth                         bit_depth,
-  sample_rate_t                    project_sample_rate,
+  units::sample_rate_t             project_sample_rate,
   bpm_t                            current_bpm,
   const utils::Utf8String         &name,
   QObject *                        parent)
@@ -40,7 +40,7 @@ FileAudioSource::FileAudioSource (
     }
 
   samplerate_ = project_sample_rate;
-  z_return_if_fail (samplerate_ > 0);
+  assert (samplerate_ > units::sample_rate (0));
   name_ = name;
   bit_depth_ = bit_depth;
   ch_frames_ = buf;
@@ -50,7 +50,7 @@ FileAudioSource::FileAudioSource (
 FileAudioSource::FileAudioSource (
   const channels_t         channels,
   const unsigned_frame_t   nframes,
-  sample_rate_t            project_sample_rate,
+  units::sample_rate_t     project_sample_rate,
   bpm_t                    current_bpm,
   const utils::Utf8String &name,
   QObject *                parent)
@@ -60,18 +60,18 @@ FileAudioSource::FileAudioSource (
   name_ = name;
   bpm_ = current_bpm;
   samplerate_ = project_sample_rate;
+  assert (samplerate_ > units::sample_rate (0));
   bit_depth_ = BitDepth::BIT_DEPTH_32;
-  z_return_if_fail (samplerate_ > 0);
 }
 
 void
 FileAudioSource::init_from_file (
   const fs::path      &full_path,
-  sample_rate_t        project_sample_rate,
+  units::sample_rate_t project_sample_rate,
   std::optional<bpm_t> bpm_to_set)
 {
   samplerate_ = project_sample_rate;
-  z_return_if_fail (samplerate_ > 0);
+  assert (samplerate_ > units::sample_rate (0));
 
   /* read metadata */
   AudioFile file (full_path);
@@ -90,7 +90,7 @@ FileAudioSource::init_from_file (
   try
     {
       /* read frames into project's samplerate */
-      file.read_full (ch_frames_, samplerate_);
+      file.read_full (ch_frames_, samplerate_.in (units::sample_rate));
     }
   catch (ZrythmException &e)
     {
@@ -207,7 +207,7 @@ FileAudioSourceWriter::finalize_buffered_write ()
 void
 FileAudioSourceWriter::write_to_file ()
 {
-  assert (source_.get_samplerate () > 0);
+  assert (source_.get_samplerate () > units::sample_rate (0));
   assert (frames_written_ < std::numeric_limits<size_t>::max ());
 
   // Use a static mutex to protect JUCE object creation to avoid data races
@@ -233,7 +233,7 @@ FileAudioSourceWriter::write_to_file ()
 
     juce::AudioFormatWriterOptions options;
     options =
-      options.withSampleRate (source_.get_samplerate ())
+      options.withSampleRate (source_.get_samplerate ().in (units::sample_rate))
         .withNumChannels (source_.get_num_channels ())
         .withBitsPerSample (
           utils::audio::bit_depth_enum_to_int (source_.get_bit_depth ()))

@@ -42,10 +42,10 @@ public:
    * @throw ZrythmException on error.
    */
   FileAudioSource (
-    const fs::path &full_path,
-    sample_rate_t   project_sample_rate,
-    bpm_t           current_bpm,
-    QObject *       parent = nullptr);
+    const fs::path      &full_path,
+    units::sample_rate_t project_sample_rate,
+    bpm_t                current_bpm,
+    QObject *            parent = nullptr);
 
   /**
    * Creates an audio clip by copying the given buffer.
@@ -56,7 +56,7 @@ public:
   FileAudioSource (
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
-    sample_rate_t                    project_sample_rate,
+    units::sample_rate_t             project_sample_rate,
     bpm_t                            current_bpm,
     const utils::Utf8String         &name,
     QObject *                        parent = nullptr);
@@ -74,7 +74,7 @@ public:
     unsigned_frame_t               nframes,
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
-    sample_rate_t                  project_sample_rate,
+    units::sample_rate_t           project_sample_rate,
     bpm_t                          current_bpm,
     const utils::Utf8String       &name,
     QObject *                      parent = nullptr)
@@ -100,7 +100,7 @@ public:
   FileAudioSource (
     channels_t               channels,
     unsigned_frame_t         nframes,
-    sample_rate_t            project_sample_rate,
+    units::sample_rate_t     project_sample_rate,
     bpm_t                    current_bpm,
     const utils::Utf8String &name,
     QObject *                parent = nullptr);
@@ -183,7 +183,7 @@ public:
    */
   void init_from_file (
     const fs::path      &full_path,
-    sample_rate_t        project_sample_rate,
+    units::sample_rate_t project_sample_rate,
     std::optional<bpm_t> bpm_to_set);
 
 private:
@@ -231,7 +231,7 @@ private:
    * Samplerate of the clip, or samplerate when the clip was imported into the
    * project.
    */
-  sample_rate_t samplerate_{};
+  units::sample_rate_t samplerate_;
 
   /**
    * Bit depth of the clip when the clip was imported into the project.

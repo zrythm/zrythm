@@ -904,7 +904,7 @@ TrackProcessor::custom_process_block (
 void
 TrackProcessor::custom_prepare_for_processing (
   const dsp::graph::GraphNode * node,
-  sample_rate_t                 sample_rate,
+  units::sample_rate_t          sample_rate,
   nframes_t                     max_block_length)
 {
   if (node != nullptr)

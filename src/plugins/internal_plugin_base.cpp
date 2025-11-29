@@ -60,8 +60,8 @@ InternalPluginBase::load_state (std::optional<fs::path> abs_state_dir)
 
 void
 InternalPluginBase::prepare_for_processing_impl (
-  sample_rate_t sample_rate,
-  nframes_t     max_block_length)
+  units::sample_rate_t sample_rate,
+  nframes_t            max_block_length)
 {
   // Minimal implementation - no special preparation needed
 }

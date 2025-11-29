@@ -13,7 +13,7 @@ namespace zrythm::structure::arrangement
 class ArrangerObjectFactory
 {
 public:
-  using SampleRateProvider = std::function<sample_rate_t ()>;
+  using SampleRateProvider = std::function<units::sample_rate_t ()>;
   using BpmProvider = std::function<bpm_t ()>;
 
   struct Dependencies
@@ -152,8 +152,9 @@ public:
       else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
         {
           auto file_audio_source =
-            dependencies_.file_audio_source_registry_
-              .create_object<dsp::FileAudioSource> (1, 1, 44100, 120, u8"dummy");
+            dependencies_.file_audio_source_registry_.create_object<
+              dsp::FileAudioSource> (
+              1, 1, units::sample_rate (44100), 120, u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
             file_audio_source);

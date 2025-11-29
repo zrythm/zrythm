@@ -18,7 +18,7 @@ public:
   MOCK_METHOD (
     void,
     prepare_for_processing,
-    (const graph::GraphNode *, sample_rate_t, nframes_t),
+    (const graph::GraphNode *, units::sample_rate_t, nframes_t),
     (override));
   MOCK_METHOD (
     void,

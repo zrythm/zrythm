@@ -99,7 +99,7 @@ public:
 
   void prepare_for_processing (
     const graph::GraphNode * node,
-    sample_rate_t            sample_rate,
+    units::sample_rate_t     sample_rate,
     nframes_t                max_block_length) override;
   void release_resources () override;
 

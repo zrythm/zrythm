@@ -48,7 +48,7 @@ protected:
           }
       }
 
-    project_sample_rate = 44100;
+    project_sample_rate = units::sample_rate (44100);
     current_bpm = 120.0;
   }
 
@@ -60,7 +60,7 @@ protected:
   std::unique_ptr<QTemporaryDir> temp_dir_obj;
   std::filesystem::path          temp_dir;
   std::filesystem::path          test_wav;
-  sample_rate_t                  project_sample_rate;
+  units::sample_rate_t           project_sample_rate;
   bpm_t                          current_bpm;
 };
 

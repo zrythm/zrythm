@@ -53,8 +53,8 @@ public:
   }
 
   void prepare_for_processing_impl (
-    sample_rate_t sample_rate,
-    nframes_t     max_block_length) override
+    units::sample_rate_t sample_rate,
+    nframes_t            max_block_length) override
   {
     prepare_called_ = true;
     last_sample_rate_ = sample_rate;
@@ -73,7 +73,7 @@ public:
   bool                    process_called_ = false;
   std::optional<fs::path> last_save_state_dir_;
   std::optional<fs::path> last_load_state_dir_;
-  sample_rate_t           last_sample_rate_ = 0;
+  units::sample_rate_t    last_sample_rate_;
   nframes_t               last_max_block_length_ = 0;
   EngineProcessTimeInfo   last_time_info_{
       .g_start_frame_ = 0,
@@ -111,10 +111,10 @@ protected:
 
   std::unique_ptr<dsp::PortRegistry>               port_registry_;
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  sample_rate_t                                    sample_rate_{ 48000 };
-  nframes_t                                        max_block_length_{ 1024 };
-  std::unique_ptr<TestPlugin>                      plugin_;
-  std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
+  units::sample_rate_t        sample_rate_{ units::sample_rate (48000) };
+  nframes_t                   max_block_length_{ 1024 };
+  std::unique_ptr<TestPlugin> plugin_;
+  std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
 };
 
 TEST_F (PluginTest, ConstructionAndBasicProperties)

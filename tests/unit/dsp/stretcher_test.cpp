@@ -11,16 +11,16 @@ class StretcherTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    sample_rate_ = 44100;
+    sample_rate_ = units::sample_rate (44100);
     channels_ = 2;
     time_ratio_ = 1.0;
     pitch_ratio_ = 1.0;
   }
 
-  sample_rate_t sample_rate_{};
-  unsigned int  channels_{};
-  double        time_ratio_{};
-  double        pitch_ratio_{};
+  units::sample_rate_t sample_rate_{};
+  unsigned int         channels_{};
+  double               time_ratio_{};
+  double               pitch_ratio_{};
 };
 
 TEST_F (StretcherTest, Creation)
@@ -38,7 +38,7 @@ TEST_F (StretcherTest, Creation)
   // Test invalid parameters
   EXPECT_ANY_THROW (
     Stretcher::create_rubberband (
-      0, channels_, time_ratio_, pitch_ratio_, false));
+      units::sample_rate (0), channels_, time_ratio_, pitch_ratio_, false));
 }
 
 TEST_F (StretcherTest, BasicStretching)
@@ -48,13 +48,14 @@ TEST_F (StretcherTest, BasicStretching)
   ASSERT_NE (stretcher, nullptr);
 
   // Create test signal (1 second of 440Hz sine wave)
-  const size_t       num_samples = sample_rate_;
+  const size_t       num_samples = sample_rate_.in (units::sample_rate);
   std::vector<float> in_samples_l (num_samples);
   std::vector<float> in_samples_r (num_samples);
 
   for (size_t i = 0; i < num_samples; i++)
     {
-      float t = static_cast<float> (i) / static_cast<float> (sample_rate_);
+      float t =
+        static_cast<float> (i) / sample_rate_.in<float> (units::sample_rate);
       in_samples_l[i] = std::sin (2.0f * std::numbers::pi_v<float> * 440.0f * t);
       in_samples_r[i] = in_samples_l[i];
     }

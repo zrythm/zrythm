@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <optional>
+#include <stop_token>
+
 #include "dsp/graph_scheduler.h"
 #include "utils/audio.h"
 #include "utils/units.h"
@@ -27,11 +30,21 @@ public:
 
   GraphRenderer (RenderOptions options);
 
-  auto render (graph::GraphNodeCollection &&nodes, SampleRange range)
-    -> juce::AudioSampleBuffer;
+  /**
+   * @brief Renders the graph for the given range and returns the resulting
+   * audio, or nullopt if cancelled.
+   *
+   * @param nodes
+   * @param range
+   * @return The resulting audio from the terminal AudioPort node, or nullopt if
+   * cancelled.
+   */
+  [[nodiscard]] auto render (
+    graph::GraphNodeCollection &&nodes,
+    SampleRange                  range,
+    std::stop_token token = {}) -> std::optional<juce::AudioSampleBuffer>;
 
 private:
-  RenderOptions         options_;
-  graph::GraphScheduler graph_scheduler_;
+  RenderOptions options_;
 };
 }

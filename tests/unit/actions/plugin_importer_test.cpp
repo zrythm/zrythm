@@ -220,8 +220,8 @@ protected:
   plugins::PluginFactory::InstantiationFinishedHandler
     instantiation_finished_handler_;
 
-  sample_rate_t sample_rate_{ 48000 };
-  nframes_t     buffer_size_{ 1024 };
+  units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
+  nframes_t            buffer_size_{ 1024 };
 };
 
 // Test basic construction

@@ -55,11 +55,11 @@ protected:
 
   std::unique_ptr<dsp::PortRegistry>               port_registry_;
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  sample_rate_t                                    sample_rate_{ 48000 };
-  nframes_t                                        max_block_length_{ 1024 };
-  std::unique_ptr<Fader>                           audio_fader_;
-  std::unique_ptr<Fader>                           midi_fader_;
-  std::unique_ptr<graph_test::MockTransport>       mock_transport_;
+  units::sample_rate_t   sample_rate_{ units::sample_rate (48000) };
+  nframes_t              max_block_length_{ 1024 };
+  std::unique_ptr<Fader> audio_fader_;
+  std::unique_ptr<Fader> midi_fader_;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
 };
 
 TEST_F (FaderTest, ConstructionAndBasicProperties)
