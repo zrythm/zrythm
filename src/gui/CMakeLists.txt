@@ -271,6 +271,7 @@ set(rel_qml_file_paths
   utils/ArrangerObjectHelpers.qml
   utils/DragUtils.qml
   utils/SelectionTracker.qml
+  views/ExportDialog.qml
   views/ProjectWindow.qml
 )
 set(qml_file_paths)

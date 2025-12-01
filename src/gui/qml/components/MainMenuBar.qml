@@ -13,6 +13,7 @@ MenuBar {
   required property AboutDialog aboutDialog
   required property DeviceManager deviceManager
   required property Project project
+  required property ExportDialog exportDialog
 
   Menu {
     title: qsTr("&File")
@@ -23,6 +24,10 @@ MenuBar {
 
     Action {
       text: qsTr("Export...")
+
+      onTriggered: {
+        root.exportDialog.open();
+      }
     }
   }
 
@@ -177,7 +182,7 @@ MenuBar {
     Action {
       text: qsTr("About Zrythm")
 
-      onTriggered: aboutDialog.open()
+      onTriggered: root.aboutDialog.open()
     }
   }
 }

@@ -53,6 +53,7 @@ ApplicationWindow {
 
     aboutDialog: aboutDialog
     deviceManager: root.deviceManager
+    exportDialog: exportDialog
     project: root.project
   }
 
@@ -69,6 +70,11 @@ ApplicationWindow {
 
   AboutDialog {
     id: aboutDialog
+
+  }
+
+  ExportDialog {
+    id: exportDialog
 
   }
 
