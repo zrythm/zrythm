@@ -25,17 +25,22 @@ class UndoStack : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
-  using UndoCommand = QUndoCommand;
+  /**
+   * @brief A function for requesting a callback with the engine paused.
+   *
+   * @see AudioEngine.run_function_with_paused_processing().
+   */
+  using CallbackWithPausedEngineRequester =
+    std::function<void (const std::function<void ()> &, bool)>;
 
   explicit UndoStack (
-    EngineStopRequester   engine_stop_requester,
-    EngineResumeRequester engine_resume_requester,
-    QObject *             parent = nullptr);
+    CallbackWithPausedEngineRequester callback_with_paused_engine_requester,
+    QObject *                         parent = nullptr);
 
   // all users of the undo stack should use these wrappers instead of
   // QUndoStack's push/undo/redo. all other functionality should handed off to
   // the underlying QUndoStack
-  void             push (UndoCommand * cmd);
+  void             push (QUndoCommand * cmd);
   Q_INVOKABLE void undo ();
   Q_INVOKABLE void redo ();
 
@@ -77,23 +82,33 @@ private:
 
   /**
    * @brief Returns whether any of the command's nested children requires
-   * pausing the graph.
+   * recalculating the processing graph.
    *
    * This implies the engine should be paused as well.
    */
-  bool command_or_children_require_graph_pause (const UndoCommand &cmd) const;
+  bool command_or_children_require_graph_recalculation (
+    const QUndoCommand &cmd) const;
 
   /**
    * @brief Returns whether any of the command's nested children requires
    * pausing the engine (but not the graph).
    */
-  bool command_or_children_require_engine_pause (const UndoCommand &cmd) const;
+  bool command_or_children_require_engine_pause (const QUndoCommand &cmd) const;
+
+  /**
+   * @brief Executes the given action on the given command with optionally
+   * recalculating the graph and pausing the engine if the command requires it.
+   *
+   * This is just a helper to avoid repeating ourselves in push/undo/redo.
+   */
+  void execute_with_engine_pause_if_needed (
+    const QUndoCommand           &cmd,
+    const std::function<void ()> &action);
 
 private:
   utils::QObjectUniquePtr<QUndoStack> stack_;
 
   // Engine operations
-  EngineStopRequester   engine_stop_requester_;
-  EngineResumeRequester engine_resume_requester_;
+  CallbackWithPausedEngineRequester callback_with_paused_engine_requester_;
 };
 };

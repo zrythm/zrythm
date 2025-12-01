@@ -144,15 +144,9 @@ Project::Project (
           this)),
       undo_stack_ (
         utils::make_qobject_unique<undo::UndoStack> (
-          [&] (EngineState &state) {
-            audio_engine_->wait_for_pause (state, false, true);
-          },
-          [&] (EngineState &state, bool recalculate_graph) {
-            if (recalculate_graph)
-              {
-                audio_engine_->graph_dispatcher ().recalc_graph (false);
-              }
-            audio_engine_->resume (state);
+          [&] (const std::function<void ()> &action, bool recalculate_graph) {
+            audio_engine_->execute_function_with_paused_processing_synchronously (
+              action, recalculate_graph);
           },
           this)),
       arranger_object_factory_ (
@@ -772,23 +766,9 @@ Project::activate ()
 
   audio_engine_->activate (true);
 
-  /* pause engine */
-  EngineState state{};
-  audio_engine_->wait_for_pause (state, true, false);
-
-  /* connect channel inputs to hardware and re-expose ports to
-   * backend. has to be done after engine activation */
-  // auto track_span = tracklist_->get_track_span ();
-  // track_span.reconnect_ext_input_ports (*audio_engine_);
-
-  /* reconnect graph */
-  audio_engine_->graph_dispatcher ().recalc_graph (false);
-
-  /* fix audio regions in case running under a new sample rate */
-  // fix_audio_regions ();
-
-  /* resume engine */
-  audio_engine_->resume (state);
+  // Pause and recalculate the graph
+  audio_engine_->execute_function_with_paused_processing_synchronously (
+    [] () { }, true);
 
   z_debug ("Project {} ({:p}) activated", title_, fmt::ptr (this));
 }

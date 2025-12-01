@@ -542,6 +542,21 @@ AudioEngine::advance_playhead_after_processing (
 }
 
 void
+AudioEngine::execute_function_with_paused_processing_synchronously (
+  const std::function<void ()> &func,
+  bool                          recalculate_graph)
+{
+  EngineState state{};
+  wait_for_pause (state, false, true);
+  func ();
+  if (recalculate_graph)
+    {
+      graph_dispatcher_.recalc_graph (false);
+    }
+  resume (state);
+}
+
+void
 AudioEngine::panic_all ()
 {
   z_info ("~ midi panic all ~");

@@ -162,9 +162,6 @@ struct EngineState
   /** Transport loop. */
   bool looping_;
 };
-using EngineStopRequester = std::function<void (EngineState &)>;
-using EngineResumeRequester =
-  std::function<void (EngineState &, bool recalculate_graph)>;
 
 enum class TimeFormat : std::uint8_t
 {
