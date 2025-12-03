@@ -63,6 +63,11 @@ class GraphScheduler
 
 public:
   /**
+   * @brief Request for a function to run on the main thread (blocking).
+   */
+  using RunOnMainThreadFunc = std::function<void (std::function<void ()>)>;
+
+  /**
    * @brief Construct a new Graph Scheduler.
    *
    * @param sample_rate Sample rate.
@@ -72,6 +77,7 @@ public:
    * @param thread_workgroup Optional workgroup (used on Mac).
    */
   GraphScheduler (
+    RunOnMainThreadFunc                 run_on_main_thread_func,
     units::sample_rate_t                sample_rate,
     nframes_t                           max_block_length,
     bool                                realtime_threads = true,
@@ -220,6 +226,8 @@ private:
 
   units::sample_rate_t sample_rate_;
   nframes_t            max_block_length_;
+
+  RunOnMainThreadFunc run_on_main_thread_func_;
 };
 
 } // namespace zrythm::dsp::graph

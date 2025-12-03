@@ -28,8 +28,9 @@ protected:
     // here before assigning processable_ to a new processable
     scheduler_.reset ();
     transport_ = std::make_unique<MockTransport> ();
-    scheduler_ =
-      std::make_unique<GraphScheduler> (sample_rate_, max_block_length_);
+    scheduler_ = std::make_unique<GraphScheduler> (
+      [] (std::function<void ()> func) { func (); }, sample_rate_,
+      max_block_length_);
 
     ON_CALL (*transport_, get_play_state ())
       .WillByDefault (Return (dsp::ITransport::PlayState::Rolling));

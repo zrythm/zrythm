@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph_renderer.h"
-#include "utils/audio.h"
+
+#include "helpers/scoped_qcoreapplication.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>
@@ -91,11 +92,10 @@ protected:
 
   void SetUp () override
   {
+    application_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
     // Setup default render options
     options_ = GraphRenderer::RenderOptions{
-      .bit_depth_ = utils::audio::BitDepth::BIT_DEPTH_16,
-      .dither_ = false,
       .sample_rate_ = units::sample_rate (48000),
       .block_length_ = units::samples (256),
       .num_threads_ = 2
@@ -282,10 +282,11 @@ protected:
       }
   }
 
-  GraphRenderer::RenderOptions                  options_;
-  std::unique_ptr<MockProcessable>              processable_;
-  std::unique_ptr<AudioPort>                    audio_port_;
-  std::unique_ptr<AudioPort>                    extra_audio_port_;
+  std::unique_ptr<test_helpers::ScopedQCoreApplication> application_;
+  GraphRenderer::RenderOptions                          options_;
+  std::unique_ptr<MockProcessable>                      processable_;
+  std::unique_ptr<AudioPort>                            audio_port_;
+  std::unique_ptr<AudioPort>                            extra_audio_port_;
   std::unique_ptr<AudioPort>                    extra_audio_port_for_summing_;
   std::vector<std::unique_ptr<MockProcessable>> mixed_latency_processables_;
   std::unique_ptr<SineWaveGenerator>            sine_generator_;
@@ -296,14 +297,18 @@ TEST_F (GraphRendererTest, RenderEmptyRange)
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 0);
 
+  bool fail_handler_called{};
   auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+    GraphRenderer::render_async (
+      options_, std::move (collection), [] (auto func) { func (); }, range)
+      .onFailed ([&fail_handler_called] () {
+        fail_handler_called = true;
+        return juce::AudioSampleBuffer{};
+      });
 
-  auto result = future.result ();
   future.waitForFinished ();
-
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 0);
+  EXPECT_TRUE (future.isFinished ());
+  EXPECT_TRUE (fail_handler_called);
 }
 
 TEST_F (GraphRendererTest, RenderSingleBlock)
@@ -314,8 +319,9 @@ TEST_F (GraphRendererTest, RenderSingleBlock)
   // Expect processing to be called once
   EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -335,8 +341,9 @@ TEST_F (GraphRendererTest, RenderMultipleBlocks)
   // Expect processing to be called twice
   EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -365,8 +372,9 @@ TEST_F (GraphRendererTest, RenderWithLatency)
     });
   EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -397,8 +405,9 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
   EXPECT_CALL (*mixed_latency_processables_[0], process_block (_, _)).Times (1);
   EXPECT_CALL (*mixed_latency_processables_[1], process_block (_, _)).Times (2);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -445,59 +454,6 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
     }
 }
 
-TEST_F (GraphRendererTest, RenderWithDithering)
-{
-  auto dither_options = options_;
-  dither_options.dither_ = true;
-  dither_options.bit_depth_ = utils::audio::BitDepth::BIT_DEPTH_16;
-
-  auto collection = create_simple_test_collection ();
-  auto range = create_test_range (0, 256);
-
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
-
-  auto future = GraphRenderer::render_run_async (
-    dither_options, std::move (collection), range);
-
-  auto result = future.result ();
-  future.waitForFinished ();
-
-  EXPECT_EQ (result.getNumChannels (), 2);
-  EXPECT_EQ (result.getNumSamples (), 256);
-
-  // Verify that dithering is applied - samples should be quantized to 16-bit
-  // levels but still follow the sine wave pattern approximately
-  for (int ch = 0; ch < result.getNumChannels (); ++ch)
-    {
-      const auto channel_multiplier = static_cast<float> (ch + 1);
-
-      // Check a few samples to verify they're quantized to 16-bit levels
-      for (int i = 0; i < std::min (16, result.getNumSamples ()); ++i)
-        {
-          const auto expected_sample =
-            0.1f * channel_multiplier
-            * std::sin (
-              2.0f * std::numbers::pi_v<float>
-              * 440.0f * static_cast<float> (i) / 48000.0f);
-
-          const auto actual_sample = result.getSample (ch, i);
-
-          // 16-bit quantization step size is approximately 1/32768
-          constexpr auto quantization_step =
-            (1.0f / 32768.0f) * 2.f; // make less precise
-
-          // The actual sample should be close to a quantized version of the
-          // expected
-          const auto quantized_expected =
-            std::round (expected_sample / quantization_step) * quantization_step;
-
-          EXPECT_NEAR (actual_sample, quantized_expected, quantization_step)
-            << "Channel " << ch << ", Sample " << i
-            << ": dithered sample should be quantized to 16-bit levels";
-        }
-    }
-}
-
 TEST_F (GraphRendererTest, RenderDifferentBlockLengths)
 {
   auto block_options = options_;
@@ -508,8 +464,9 @@ TEST_F (GraphRendererTest, RenderDifferentBlockLengths)
 
   EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
-  auto future = GraphRenderer::render_run_async (
-    block_options, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    block_options, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -532,8 +489,9 @@ TEST_F (GraphRendererTest, ResourceManagement)
     .Times (1);
   EXPECT_CALL (*processable_, release_resources ()).Times (1);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -552,8 +510,9 @@ TEST_F (GraphRendererTest, AudioPortCollection)
 
   EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -574,8 +533,9 @@ TEST_F (GraphRendererTest, LargeRangeRendering)
   EXPECT_CALL (*processable_, process_block (_, _))
     .Times (static_cast<int> (std::ceil (48000.0 / 256.0))); // 188 blocks
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -587,47 +547,14 @@ TEST_F (GraphRendererTest, LargeRangeRendering)
   verify_sine_wave_samples (result, 48000.0f, 440.0f, 0.1f, 0, 16);
 }
 
-TEST_F (GraphRendererTest, DifferentBitDepths)
-{
-  std::vector<utils::audio::BitDepth> bit_depths = {
-    utils::audio::BitDepth::BIT_DEPTH_8, utils::audio::BitDepth::BIT_DEPTH_16,
-    utils::audio::BitDepth::BIT_DEPTH_24, utils::audio::BitDepth::BIT_DEPTH_32
-  };
-
-  for (auto bit_depth : bit_depths)
-    {
-      auto depth_options = options_;
-      depth_options.bit_depth_ = bit_depth;
-
-      auto collection = create_simple_test_collection ();
-      auto range = create_test_range (0, 256);
-
-      EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
-
-      auto future = GraphRenderer::render_run_async (
-        depth_options, std::move (collection), range);
-
-      auto result = future.result ();
-      future.waitForFinished ();
-
-      EXPECT_EQ (result.getNumChannels (), 2);
-      EXPECT_EQ (result.getNumSamples (), 256);
-
-      // Verify the sine wave samples are correct regardless of bit depth
-      verify_sine_wave_samples (result);
-
-      // Reset mock for next iteration
-      Mock::VerifyAndClearExpectations (processable_.get ());
-    }
-}
-
 TEST_F (GraphRendererTest, RenderWithCancellation)
 {
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 512); // Multiple blocks
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   // Cancel immediately
   future.cancel ();
@@ -645,8 +572,9 @@ TEST_F (GraphRendererTest, RenderWithProgressReporting)
 
   EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
 
-  auto future =
-    GraphRenderer::render_run_async (options_, std::move (collection), range);
+  auto future = GraphRenderer::render_async (
+    options_, std::move (collection),
+    [] (std::function<void ()> func) { func (); }, range);
 
   // No progress yet
   EXPECT_EQ (future.progressValue (), 0);

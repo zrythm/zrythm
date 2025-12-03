@@ -25,7 +25,9 @@ protected:
   {
     transport_ = std::make_unique<MockTransport> ();
     processable_ = std::make_unique<MockProcessable> ();
-    scheduler_ = std::make_unique<GraphScheduler> (sample_rate_, block_length_);
+    scheduler_ = std::make_unique<GraphScheduler> (
+      [] (std::function<void ()> func) { func (); }, sample_rate_,
+      block_length_);
 
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));

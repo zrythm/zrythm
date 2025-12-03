@@ -27,10 +27,11 @@ public:
   using RunFunctionWithEngineLock = std::function<void (std::function<void ()>)>;
 
   DspGraphDispatcher (
-    std::unique_ptr<graph::IGraphBuilder> graph_builder,
-    std::vector<graph::IProcessable *>    terminal_processables,
-    const juce::AudioDeviceManager       &device_manager,
-    RunFunctionWithEngineLock             run_function_with_engine_lock);
+    std::unique_ptr<graph::IGraphBuilder>      graph_builder,
+    std::vector<graph::IProcessable *>         terminal_processables,
+    const juce::AudioDeviceManager            &device_manager,
+    RunFunctionWithEngineLock                  run_function_with_engine_lock,
+    graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread);
 
   /**
    * Recalculates the process acyclic directed graph.
@@ -165,6 +166,8 @@ private:
 
   /** ID of the thread that calls kicks off the cycle. */
   std::optional<unsigned int> process_kickoff_thread_;
+
+  graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread_;
 };
 
 }

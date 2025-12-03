@@ -34,12 +34,14 @@ namespace zrythm::dsp::graph
 {
 
 GraphScheduler::GraphScheduler (
+  RunOnMainThreadFunc                 run_on_main_thread_func,
   units::sample_rate_t                sample_rate,
   nframes_t                           max_block_length,
   bool                                realtime_threads,
   std::optional<juce::AudioWorkgroup> thread_workgroup)
     : thread_workgroup_ (std::move (thread_workgroup)),
-      sample_rate_ (sample_rate), max_block_length_ (max_block_length)
+      sample_rate_ (sample_rate), max_block_length_ (max_block_length),
+      run_on_main_thread_func_ (std::move (run_on_main_thread_func))
 {
   if (realtime_threads)
     {
@@ -298,11 +300,13 @@ GraphScheduler::prepare_nodes_for_processing ()
   z_debug (
     "preparing nodes for processing with sample rate {} and max block length {}",
     sample_rate_, max_block_length_);
-  for (auto &node : graph_nodes_.graph_nodes_)
-    {
-      node->get_processable ().prepare_for_processing (
-        node.get (), sample_rate_, max_block_length_);
-    }
+  run_on_main_thread_func_ ([&] () {
+    for (auto &node : graph_nodes_.graph_nodes_)
+      {
+        node->get_processable ().prepare_for_processing (
+          node.get (), sample_rate_, max_block_length_);
+      }
+  });
 
   graph_nodes_.update_latencies ();
 }
@@ -310,10 +314,12 @@ GraphScheduler::prepare_nodes_for_processing ()
 void
 GraphScheduler::release_node_resources ()
 {
-  for (auto &node : graph_nodes_.graph_nodes_)
-    {
-      node->get_processable ().release_resources ();
-    }
+  run_on_main_thread_func_ ([&] () {
+    for (auto &node : graph_nodes_.graph_nodes_)
+      {
+        node->get_processable ().release_resources ();
+      }
+  });
 }
 
 GraphScheduler::~GraphScheduler ()

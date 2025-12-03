@@ -68,7 +68,7 @@ protected:
 
     graph_dispatcher_ = std::make_unique<DspGraphDispatcher> (
       std::move (graph_builder_), terminal_processables, *audio_device_manager_,
-      run_function_with_engine_lock);
+      run_function_with_engine_lock, run_function_with_engine_lock);
   }
 
   // Mock implementation of IGraphBuilder for testing

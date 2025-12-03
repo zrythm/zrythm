@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/graph_node.h"
-#include "utils/audio.h"
 #include "utils/units.h"
 
 #include <QPromise>
@@ -14,13 +13,11 @@ namespace zrythm::dsp
 class GraphRenderer
 {
 public:
-  using BitDepth = utils::audio::BitDepth;
   using SampleRange = std::pair<units::sample_t, units::sample_t>;
+  using RunOnMainThread = std::function<void (std::function<void ()>)>;
 
   struct RenderOptions
   {
-    BitDepth             bit_depth_;
-    bool                 dither_;
     units::sample_rate_t sample_rate_;
     units::sample_t      block_length_;
     unsigned int         num_threads_ =
@@ -34,10 +31,13 @@ public:
    * @param options
    * @param nodes
    * @param range
+   * @param run_on_main_thread Used to invoke logic that needs to run on the
+   * main thread (like graph node prepare_for_processing, etc.).
    */
-  static QFuture<juce::AudioSampleBuffer> render_run_async (
+  static QFuture<juce::AudioSampleBuffer> render_async (
     RenderOptions                options,
     graph::GraphNodeCollection &&nodes,
+    RunOnMainThread              run_on_main_thread,
     SampleRange                  range);
 
 private:
@@ -51,6 +51,7 @@ private:
     QPromise<juce::AudioSampleBuffer> &promise,
     RenderOptions                      options,
     graph::GraphNodeCollection       &&nodes,
+    RunOnMainThread                    run_on_main_thread,
     SampleRange                        range);
 };
 }

@@ -91,7 +91,8 @@ protected:
   {
     dispatcher_ = std::make_unique<DspGraphDispatcher> (
       std::move (mock_graph_builder_), terminal_processables_,
-      *audio_device_manager_, run_function_with_engine_lock_);
+      *audio_device_manager_, run_function_with_engine_lock_,
+      [] (std::function<void ()> func) { func (); });
   }
 
   std::vector<std::unique_ptr<MockProcessable>> processables_;

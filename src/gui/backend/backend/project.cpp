@@ -267,6 +267,9 @@ Project::Project (
           auto lock = audio_engine_->get_processing_lock ();
           callable ();
           audio_engine_->set_running (engine_running);
+        },
+        [context = this] (std::function<void ()> func) {
+          QMetaObject::invokeMethod (context, func);
         })
 {
   const auto setup_metronome = [&] () {

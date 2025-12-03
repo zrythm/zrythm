@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <utility>
+
 #include "dsp/audio_port.h"
-#include "dsp/ditherer.h"
 #include "dsp/graph_renderer.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/transport.h"
@@ -16,12 +17,14 @@ GraphRenderer::render (
   QPromise<juce::AudioSampleBuffer> &promise,
   RenderOptions                      options,
   graph::GraphNodeCollection       &&nodes,
+  RunOnMainThread                    run_on_main_thread,
   SampleRange                        range)
 {
   z_debug ("Rendering range {}...", range);
 
   graph::GraphScheduler graph_scheduler (
-    options.sample_rate_, options.block_length_.in (units::samples), false);
+    std::move (run_on_main_thread), options.sample_rate_,
+    options.block_length_.in (units::samples), false);
 
   graph_scheduler.rechain_from_node_collection (
     std::move (nodes), options.sample_rate_,
@@ -36,19 +39,21 @@ GraphRenderer::render (
   const auto total_frames = range.second - range.first;
   const auto num_samples = total_frames.in<int> (units::samples);
 
+  // Handle empty range case
+  if (num_samples <= 0)
+    {
+      promise.setException (
+        std::make_exception_ptr (
+          std::runtime_error ("Cannot render empty range")));
+      return;
+    }
+
   // Initialize output buffer with latency preroll added
   const auto total_samples_with_latency = num_samples + max_latency_frames;
   juce::AudioSampleBuffer output{
     2, static_cast<int> (total_samples_with_latency)
   };
   output.clear ();
-
-  // Initialize ditherer if needed
-  dsp::Ditherer ditherer;
-  if (options.dither_)
-    {
-      ditherer.reset (utils::audio::bit_depth_enum_to_int (options.bit_depth_));
-    }
 
   // Create temporary buffer for processing each block
   utils::audio::AudioBuffer temp_buffer{
@@ -136,15 +141,6 @@ GraphRenderer::render (
             }
         }
 
-      // Apply dithering if enabled
-      if (options.dither_)
-        {
-          ditherer.process (
-            temp_buffer.getWritePointer (0), static_cast<int> (nframes));
-          ditherer.process (
-            temp_buffer.getWritePointer (1), static_cast<int> (nframes));
-        }
-
       // Copy to output buffer
       const auto output_offset = covered_frames;
       for (int ch = 0; ch < output.getNumChannels (); ++ch)
@@ -170,7 +166,9 @@ GraphRenderer::render (
         }
 
       // Update progress
-      promise.setProgressValue (static_cast<int> (covered_frames));
+      promise.setProgressValueAndText (
+        static_cast<int> (covered_frames),
+        QObject::tr ("Rendering to audio..."));
     }
 
   z_debug ("Rendered range {}", range);
@@ -179,9 +177,10 @@ GraphRenderer::render (
 }
 
 QFuture<juce::AudioSampleBuffer>
-GraphRenderer::render_run_async (
+GraphRenderer::render_async (
   RenderOptions                options,
   graph::GraphNodeCollection &&nodes,
+  RunOnMainThread              run_on_main_thread,
   SampleRange                  range)
 {
   // This is a hack to work around the fact that QtConcurrent::run only supports
@@ -190,12 +189,13 @@ GraphRenderer::render_run_async (
     [inner_nodes = std::move (nodes)] (
       QPromise<juce::AudioSampleBuffer> &promise,
       GraphRenderer::RenderOptions       inner_options,
+      RunOnMainThread                    inner_run_on_main_thread,
       GraphRenderer::SampleRange         inner_range) {
       GraphRenderer::render (
         promise, inner_options,
         std::move (const_cast<graph::GraphNodeCollection &> (inner_nodes)),
-        inner_range);
+        std::move (inner_run_on_main_thread), inner_range);
     },
-    options, range);
+    options, std::move (run_on_main_thread), range);
 }
 }
