@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "utils/audio_file_writer.h"
+#include "utils/io.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -19,18 +20,13 @@ class AudioFileWriterTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create test directory
-    test_dir_ =
-      std::filesystem::temp_directory_path () / "zrythm_audio_writer_test";
-    std::filesystem::create_directories (test_dir_);
+    // Create temporary directory for test files
+    temp_dir_ = utils::io::make_tmp_dir ();
+    temp_dir_path_ =
+      utils::Utf8String::from_qstring (temp_dir_->path ()).to_path ();
   }
 
-  void TearDown () override
-  {
-    // Clean up test directory
-    std::error_code ec;
-    std::filesystem::remove_all (test_dir_, ec);
-  }
+  void TearDown () override { }
 
   // Creates a test buffer with sine wave samples
   static juce::AudioSampleBuffer create_test_buffer (
@@ -95,12 +91,13 @@ protected:
     };
   }
 
-  std::filesystem::path test_dir_;
+  std::unique_ptr<QTemporaryDir> temp_dir_;
+  fs::path                       temp_dir_path_;
 };
 
 TEST_F (AudioFileWriterTest, WriteWavFile)
 {
-  const auto file_path = test_dir_ / "test_output.wav";
+  const auto file_path = temp_dir_path_ / "test_output.wav";
   auto       buffer = create_test_buffer (2, 1024);
   const auto options = create_test_options ();
 
@@ -116,7 +113,7 @@ TEST_F (AudioFileWriterTest, WriteWavFile)
 
 TEST_F (AudioFileWriterTest, WriteFlacFile)
 {
-  const auto file_path = test_dir_ / "test_output.flac";
+  const auto file_path = temp_dir_path_ / "test_output.flac";
   auto       buffer = create_test_buffer (2, 2048);
   const auto options = create_test_options ();
 
@@ -132,7 +129,7 @@ TEST_F (AudioFileWriterTest, WriteFlacFile)
 
 TEST_F (AudioFileWriterTest, WriteOggFile)
 {
-  const auto file_path = test_dir_ / "test_output.ogg";
+  const auto file_path = temp_dir_path_ / "test_output.ogg";
   auto       buffer = create_test_buffer (2, 1536);
   const auto options = create_test_options ();
 
@@ -148,7 +145,7 @@ TEST_F (AudioFileWriterTest, WriteOggFile)
 
 TEST_F (AudioFileWriterTest, WriteAiffFile)
 {
-  const auto file_path = test_dir_ / "test_output.aiff";
+  const auto file_path = temp_dir_path_ / "test_output.aiff";
   auto       buffer = create_test_buffer (2, 512);
   const auto options = create_test_options ();
 
@@ -169,7 +166,7 @@ TEST_F (AudioFileWriterTest, WriteWithDifferentBitDepths)
   for (auto bit_depth : bit_depths)
     {
       const auto file_path =
-        test_dir_ / ("test_depth_" + std::to_string (bit_depth) + ".wav");
+        temp_dir_path_ / ("test_depth_" + std::to_string (bit_depth) + ".wav");
       auto       buffer = create_test_buffer (2, 256);
       const auto options = create_test_options (48000, bit_depth);
 
@@ -191,7 +188,8 @@ TEST_F (AudioFileWriterTest, WriteWithDifferentChannels)
   for (auto num_channels : channel_counts)
     {
       const auto file_path =
-        test_dir_ / ("test_channels_" + std::to_string (num_channels) + ".wav");
+        temp_dir_path_
+        / ("test_channels_" + std::to_string (num_channels) + ".wav");
       auto       buffer = create_test_buffer (num_channels, 256);
       const auto options = create_test_options (48000, 16, num_channels);
 
@@ -209,7 +207,7 @@ TEST_F (AudioFileWriterTest, WriteWithDifferentChannels)
 
 TEST_F (AudioFileWriterTest, WriteWithProgressReporting)
 {
-  const auto file_path = test_dir_ / "test_progress.wav";
+  const auto file_path = temp_dir_path_ / "test_progress.wav";
   auto       buffer = create_test_buffer (2, 2048); // 4 blocks of 512
   const auto options = create_test_options ();
 
@@ -231,7 +229,7 @@ TEST_F (AudioFileWriterTest, WriteWithProgressReporting)
 
 TEST_F (AudioFileWriterTest, WriteWithCancellation)
 {
-  const auto file_path = test_dir_ / "test_cancel.wav";
+  const auto file_path = temp_dir_path_ / "test_cancel.wav";
   auto       buffer = create_test_buffer (2, 4096); // Large buffer
   const auto options = create_test_options ();
 
@@ -262,7 +260,7 @@ TEST_F (AudioFileWriterTest, WriteWithDifferentBlockSizes)
   for (auto block_size : block_sizes)
     {
       const auto file_path =
-        test_dir_ / ("test_block_" + std::to_string (block_size) + ".wav");
+        temp_dir_path_ / ("test_block_" + std::to_string (block_size) + ".wav");
       auto buffer = create_test_buffer (2, 1024);
       auto options = create_test_options ();
       options.block_length_ = units::samples (block_size);
@@ -280,7 +278,7 @@ TEST_F (AudioFileWriterTest, WriteWithDifferentBlockSizes)
 
 TEST_F (AudioFileWriterTest, WriteEmptyBuffer)
 {
-  const auto file_path = test_dir_ / "test_empty.wav";
+  const auto file_path = temp_dir_path_ / "test_empty.wav";
   auto       buffer = create_test_buffer (2, 0); // Empty buffer
   const auto options = create_test_options ();
 
@@ -296,7 +294,7 @@ TEST_F (AudioFileWriterTest, WriteEmptyBuffer)
 
 TEST_F (AudioFileWriterTest, WriteUnsupportedFormat)
 {
-  const auto file_path = test_dir_ / "test_unsupported.xyz";
+  const auto file_path = temp_dir_path_ / "test_unsupported.xyz";
   auto       buffer = create_test_buffer (2, 256);
   const auto options = create_test_options ();
 
