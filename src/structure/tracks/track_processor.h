@@ -132,7 +132,6 @@ public:
    * set this to true).
    */
   TrackProcessor (
-    const dsp::ITransport                 &transport,
     const dsp::TempoMap                   &tempo_map,
     PortType                               signal_type,
     TrackNameProvider                      track_name_provider,
@@ -319,6 +318,7 @@ public:
    */
   void fill_midi_events (
     const EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport       &transport,
     dsp::MidiEventVector        &midi_events);
 
   /**
@@ -331,6 +331,7 @@ public:
    */
   void fill_audio_events (
     const EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport       &transport,
     StereoPortPair               stereo_ports);
 
 private:
@@ -349,7 +350,9 @@ private:
    * Splits the cycle and handles recording for each
    * slot.
    */
-  void handle_recording (const EngineProcessTimeInfo &time_nfo);
+  void handle_recording (
+    const EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport       &transport);
 
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
@@ -369,8 +372,6 @@ private:
 #endif
 
 private:
-  const dsp::ITransport &transport_;
-
   const bool is_midi_;
   const bool is_audio_;
   const bool has_piano_roll_port_;

@@ -128,7 +128,6 @@ Track::make_track_processor (
     append_midi_inputs_to_outputs_func)
 {
   return utils::make_qobject_unique<TrackProcessor> (
-    base_dependencies_.transport_,
     base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_,
     [this] () { return get_name (); }, [this] () { return enabled (); },
     has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),

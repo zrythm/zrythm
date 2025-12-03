@@ -132,9 +132,8 @@ protected:
 TEST_F (TrackProcessorTest, AudioTrackInitialState)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Test Audio Track"; }, [] { return true; }, false, false,
-    true, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   EXPECT_TRUE (processor.is_audio ());
   EXPECT_FALSE (processor.is_midi ());
@@ -151,9 +150,8 @@ TEST_F (TrackProcessorTest, AudioTrackInitialState)
 TEST_F (TrackProcessorTest, MidiTrackInitialState)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Test MIDI Track"; }, [] { return true; }, true, false, false,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Test MIDI Track"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   EXPECT_FALSE (processor.is_audio ());
   EXPECT_TRUE (processor.is_midi ());
@@ -170,9 +168,8 @@ TEST_F (TrackProcessorTest, MidiTrackInitialState)
 TEST_F (TrackProcessorTest, MidiTrackWithCCInitialState)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Test MIDI Track with CC"; }, [] { return true; }, true, true,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Test MIDI Track with CC"; },
+    [] { return true; }, true, true, false, dependencies_);
 
   EXPECT_FALSE (processor.is_audio ());
   EXPECT_TRUE (processor.is_midi ());
@@ -189,9 +186,8 @@ TEST_F (TrackProcessorTest, MidiTrackWithCCInitialState)
 TEST_F (TrackProcessorTest, DisabledTrackProcessing)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Disabled Track"; }, [] { return false; }, false, false, true,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Disabled Track"; },
+    [] { return false; }, false, false, true, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -225,9 +221,8 @@ TEST_F (TrackProcessorTest, DisabledTrackProcessing)
 TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Audio Track"; }, [] { return true; }, false, false, true,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -267,9 +262,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
 TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Audio Track"; }, [] { return true; }, false, false, true,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -316,9 +310,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
 TEST_F (TrackProcessorTest, AudioTrackProcessingWithMono)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Audio Track Mono"; }, [] { return true; }, false, false,
-    true, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Track Mono"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -373,9 +366,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
         }
     };
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Audio Track Output"; }, [] { return true; }, false, false,
-    true, dependencies_, fill_events_cb);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Track Output"; },
+    [] { return true; }, false, false, true, dependencies_, fill_events_cb);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -430,9 +422,9 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
     };
 
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Transform"; }, [] { return true; }, true, false, false,
-    dependencies_, std::nullopt, transform_func);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Transform"; },
+    [] { return true; }, true, false, false, dependencies_, std::nullopt,
+    transform_func);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -498,9 +490,8 @@ TEST_F (TrackProcessorTest, JsonSerialization)
 {
   // Create an audio track processor
   TrackProcessor audio_processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Test Audio Track"; }, [] { return true; }, false, false,
-    true, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   // Set some parameter values
   audio_processor.get_input_gain_param ().setBaseValue (
@@ -517,7 +508,7 @@ TEST_F (TrackProcessorTest, JsonSerialization)
 
   // Deserialize back to a new processor
   TrackProcessor deserialized_processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
+    *tempo_map_, dsp::PortType::Audio,
     [] { return u8"Deserialized Audio Track"; }, [] { return true; }, false,
     false, true, dependencies_);
   from_json (j, deserialized_processor);
@@ -546,9 +537,8 @@ TEST_F (TrackProcessorTest, JsonSerializationMidiTrack)
 {
   // Create a MIDI track processor with CC support
   TrackProcessor midi_processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Test MIDI Track"; }, [] { return true; }, true, true, false,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Test MIDI Track"; },
+    [] { return true; }, true, true, false, dependencies_);
 
   // Set some MIDI CC parameter values
   midi_processor.get_midi_cc_param (0, 1).setBaseValue (
@@ -564,9 +554,8 @@ TEST_F (TrackProcessorTest, JsonSerializationMidiTrack)
 
   // Deserialize back to a new processor
   TrackProcessor deserialized_processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Deserialized MIDI Track"; }, [] { return true; }, true, true,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Deserialized MIDI Track"; },
+    [] { return true; }, true, true, false, dependencies_);
   from_json (j, deserialized_processor);
 
   // Verify deserialized processor has same state
@@ -608,9 +597,9 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
     };
 
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Append"; }, [] { return true; }, true, false, false,
-    dependencies_, std::nullopt, std::nullopt, append_func);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Append"; },
+    [] { return true; }, true, false, false, dependencies_, std::nullopt,
+    std::nullopt, append_func);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -694,9 +683,9 @@ TEST_F (TrackProcessorTest, RecordingCallback)
     };
 
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Recording Track"; }, [] { return true; }, false, false, true,
-    dependencies_, std::nullopt, std::nullopt, std::nullopt);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Track"; },
+    [] { return true; }, false, false, true, dependencies_, std::nullopt,
+    std::nullopt, std::nullopt);
   processor.set_handle_recording_callback (recording_cb);
 
   EngineProcessTimeInfo time_nfo{
@@ -718,9 +707,8 @@ TEST_F (TrackProcessorTest, RecordingCallback)
 TEST_F (TrackProcessorTest, GetFullDesignationForPort)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Test Track"; }, [] { return true; }, false, false, true,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   const auto &ports = processor.get_input_ports ();
   ASSERT_FALSE (ports.empty ());
@@ -732,9 +720,8 @@ TEST_F (TrackProcessorTest, GetFullDesignationForPort)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Piano Roll"; }, [] { return true; }, true, false, false,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Piano Roll"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -778,9 +765,9 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
     };
 
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Audio Recording"; }, [] { return true; }, false, false, true,
-    dependencies_, std::nullopt, std::nullopt, std::nullopt);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Recording"; },
+    [] { return true; }, false, false, true, dependencies_, std::nullopt,
+    std::nullopt, std::nullopt);
   processor.set_handle_recording_callback (recording_cb);
 
   EngineProcessTimeInfo time_nfo{
@@ -816,9 +803,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithCCParameters)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI CC Track"; }, [] { return true; }, true, true, false,
-    dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI CC Track"; },
+    [] { return true; }, true, true, false, dependencies_);
 
   // Test CC parameter access
   auto &cc_param =
@@ -835,9 +821,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithCCParameters)
 TEST_F (TrackProcessorTest, AudioTrackProcessingHasZeroLatency)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Zero Latency Track"; }, [] { return true; }, false, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Zero Latency Track"; },
+    [] { return true; }, false, false, false, dependencies_);
 
   EXPECT_EQ (processor.get_single_playback_latency (), 0);
 }
@@ -845,9 +830,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingHasZeroLatency)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Empty MIDI Track"; }, [] { return true; }, true, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Empty MIDI Track"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -869,9 +853,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
 TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Large Buffer Track"; }, [] { return true; }, false, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Large Buffer Track"; },
+    [] { return true; }, false, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -902,9 +885,8 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Multi MIDI Track"; }, [] { return true; }, true, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Multi MIDI Track"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -931,9 +913,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
 TEST_F (TrackProcessorTest, AudioTrackParameterRangeValidation)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Audio,
-    [] { return u8"Param Range Track"; }, [] { return true; }, false, false,
-    true, dependencies_);
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Param Range Track"; },
+    [] { return true; }, false, false, true, dependencies_);
 
   // Test input gain parameter range
   auto &input_gain_param = processor.get_input_gain_param ();
@@ -984,9 +965,9 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
     };
 
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Transform Append"; }, [] { return true; }, true, false,
-    false, dependencies_, std::nullopt, transform_func, append_func);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Transform Append"; },
+    [] { return true; }, true, false, false, dependencies_, std::nullopt,
+    transform_func, append_func);
 
   EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = 0,
@@ -1050,9 +1031,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Custom Provider"; }, [] { return true; }, true, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Custom Provider"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   // Create a MIDI sequence with note events
   juce::MidiMessageSequence midi_sequence;
@@ -1133,9 +1113,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyCustomMidiEventProvider)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Empty Provider"; }, [] { return true; }, true, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Empty Provider"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   // Set empty MIDI sequence
   juce::MidiMessageSequence empty_sequence;
@@ -1171,9 +1150,8 @@ TEST_F (
   MidiTrackProcessingWithMultipleCustomMidiEventProviders)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"MIDI Multiple Provider"; }, [] { return true; }, true, false,
-    false, dependencies_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Multiple Provider"; },
+    [] { return true; }, true, false, false, dependencies_);
 
   // Create a MIDI sequence with multiple events
   juce::MidiMessageSequence midi_sequence;
@@ -1220,7 +1198,7 @@ TEST_F (
   MidiTrackProcessingWithOverlappingCustomMidiEventProviders)
 {
   TrackProcessor processor (
-    *transport_, *tempo_map_, dsp::PortType::Midi,
+    *tempo_map_, dsp::PortType::Midi,
     [] { return u8"MIDI Overlapping Provider"; }, [] { return true; }, true,
     false, false, dependencies_);
 
