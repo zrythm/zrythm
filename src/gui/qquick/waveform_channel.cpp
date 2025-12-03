@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/waveform_channel.h"
+#include "gui/qquick/waveform_channel.h"
 
-namespace zrythm::gui
+namespace zrythm::gui::qquick
 {
 
 WaveformChannel::WaveformChannel (

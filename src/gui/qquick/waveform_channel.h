@@ -7,7 +7,7 @@
 #include <QVector>
 #include <QtQmlIntegration>
 
-namespace zrythm::gui
+namespace zrythm::gui::qquick
 {
 
 /**

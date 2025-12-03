@@ -25,9 +25,10 @@ Control {
   SpectrumAnalyzerProcessor {
     id: spectrumAnalyzer
 
+    audioEngine: root.audioEngine
     fftSize: root.fft_size
-    stereoPort: root.stereoPort
     sampleRate: root.sampleRate
+    stereoPort: root.stereoPort
 
     onSpectrumDataChanged: canvas.requestPaint()
   }

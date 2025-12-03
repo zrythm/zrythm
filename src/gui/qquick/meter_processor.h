@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/engine.h"
 #include "dsp/kmeter_dsp.h"
 #include "dsp/peak_dsp.h"
 #include "dsp/port.h"
@@ -14,24 +15,8 @@
 
 #include <boost/container/static_vector.hpp>
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
-
-enum class MeterAlgorithm
+namespace zrythm::gui::qquick
 {
-  /** Use default algorithm for the port. */
-  METER_ALGORITHM_AUTO,
-
-  METER_ALGORITHM_DIGITAL_PEAK,
-
-  /** @note True peak is intensive, only use it where needed (mixer). */
-  METER_ALGORITHM_TRUE_PEAK,
-  METER_ALGORITHM_RMS,
-  METER_ALGORITHM_K,
-};
 
 /**
  * @brief A meter processor for a single GUI element.
@@ -54,10 +39,26 @@ class MeterProcessor : public QObject
   Q_PROPERTY (QVariant port READ port WRITE setPort REQUIRED)
   Q_PROPERTY (int channel READ channel WRITE setChannel)
   Q_PROPERTY (
+    zrythm::dsp::AudioEngine * audioEngine READ audioEngine WRITE setAudioEngine
+      REQUIRED)
+  Q_PROPERTY (
     float currentAmplitude READ currentAmplitude NOTIFY currentAmplitudeChanged)
   Q_PROPERTY (float peakAmplitude READ peakAmplitude NOTIFY peakAmplitudeChanged)
 
 public:
+  enum class MeterAlgorithm : std::uint8_t
+  {
+    /** Use default algorithm for the port. */
+    METER_ALGORITHM_AUTO,
+
+    METER_ALGORITHM_DIGITAL_PEAK,
+
+    /** @note True peak is intensive, only use it where needed (mixer). */
+    METER_ALGORITHM_TRUE_PEAK,
+    METER_ALGORITHM_RMS,
+    METER_ALGORITHM_K,
+  };
+
   using MeterPortVariant = std::variant<dsp::MidiPort, dsp::AudioPort>;
   using MeterPortPtrVariant = to_pointer_variant<MeterPortVariant>;
 
@@ -72,6 +73,9 @@ public:
 
   int  channel () const { return channel_; }
   void setChannel (int channel);
+
+  dsp::AudioEngine * audioEngine () const { return audio_engine_; }
+  void setAudioEngine (dsp::AudioEngine * engine) { audio_engine_ = engine; }
 
   float currentAmplitude () const
   {
@@ -147,5 +151,8 @@ private:
   // Audio port channel, if audio meter.
   int channel_{};
 
+  QPointer<dsp::AudioEngine> audio_engine_;
+
   boost::container::static_vector<dsp::MidiEvent, 256> tmp_events_;
 };
+}

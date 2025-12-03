@@ -3,11 +3,14 @@
 
 #pragma once
 
-#include "gui/backend/waveform_channel.h"
+#include "gui/qquick/waveform_channel.h"
 
 #include <QObject>
 #include <QVector>
 #include <QtQmlIntegration>
+
+namespace zrythm::gui::qquick
+{
 
 class QmlUtils : public QObject
 {
@@ -36,7 +39,7 @@ public:
    * @param pixelWidth The width in pixels to generate waveform data for
    * @return Vector of WaveformChannel pointers (one per audio channel)
    */
-  Q_INVOKABLE static QVector<gui::WaveformChannel *>
+  Q_INVOKABLE static QVector<gui::qquick::WaveformChannel *>
   getAudioRegionWaveform (QObject * audioRegion, int pixelWidth);
 
   Q_INVOKABLE static QVector<float>
@@ -45,3 +48,4 @@ public:
   Q_INVOKABLE static bool rectanglesIntersect (QRectF a, QRectF b);
   Q_INVOKABLE static bool rectanglesIntersect (QRect a, QRect b);
 };
+}

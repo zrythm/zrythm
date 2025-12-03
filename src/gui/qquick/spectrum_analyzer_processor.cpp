@@ -3,8 +3,10 @@
 
 #include <cmath>
 
-#include "gui/backend/spectrum_analyzer.h"
+#include "gui/qquick/spectrum_analyzer_processor.h"
 
+namespace zrythm::gui::qquick
+{
 SpectrumAnalyzerProcessor::SpectrumAnalyzerProcessor (QObject * parent)
     : QObject (parent)
 {
@@ -42,14 +44,22 @@ SpectrumAnalyzerProcessor::process_audio ()
       return;
     }
 
+  if (!audio_engine_->activated () || !audio_engine_->running ())
+    {
+      return;
+    }
+
   // Read audio data
   size_t frames_read = 0;
 
   auto * left_buffer = buffer_.getWritePointer (0);
   auto * right_buffer = buffer_.getWritePointer (1);
 
-  frames_read = port_obj_->audio_ring_buffers ().at (0).peek_multiple (
-    left_buffer, fft_size_);
+  frames_read =
+    port_obj_->audio_ring_buffers ().empty ()
+      ? 0
+      : port_obj_->audio_ring_buffers ().front ().peek_multiple (
+          left_buffer, fft_size_);
   if (frames_read < fft_size_)
     {
       // Not enough data, pad with zeros
@@ -57,8 +67,11 @@ SpectrumAnalyzerProcessor::process_audio ()
         &left_buffer[frames_read], 0.f, fft_size_ - frames_read);
     }
 
-  frames_read = port_obj_->audio_ring_buffers ().at (1).peek_multiple (
-    right_buffer, fft_size_);
+  frames_read =
+    port_obj_->audio_ring_buffers ().size () < 2
+      ? 0
+      : port_obj_->audio_ring_buffers ().at (1).peek_multiple (
+          right_buffer, fft_size_);
   if (frames_read < fft_size_)
     {
       utils::float_ranges::fill (
@@ -192,4 +205,5 @@ SpectrumAnalyzerProcessor::getScaledFrequency (
 
   // Normalize to 0-1 range
   return std::max (0.0f, std::min (1.0f, scaled_freq / max_frequency));
+}
 }

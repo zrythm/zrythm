@@ -20,8 +20,6 @@ target_sources(zrythm_gui_lib
     file_system_model.h
     file_system_model.cpp
     global_state.h
-    meter.h
-    meter.cpp
     plugin_collections.h
     plugin_collections.cpp
     plugin_host_window.h
@@ -37,15 +35,11 @@ target_sources(zrythm_gui_lib
     project_manager.cpp
     project_templates_model.h
     project_templates_model.cpp
-    qml_utils.h
-    qml_utils.cpp
     realtime_property.h
     recent_projects_model.h
     recent_projects_model.cpp
     resource_manager.h
     resource_manager.cpp
-    spectrum_analyzer.h
-    spectrum_analyzer.cpp
     tool.h
     tool.cpp
     track_filter_proxy_model.h
@@ -57,10 +51,6 @@ target_sources(zrythm_gui_lib
     ui.cpp
     unified_arranger_objects_model.h
     unified_arranger_objects_model.cpp
-    waveform_channel.h
-    waveform_channel.cpp
-    waveform_viewer.h
-    waveform_viewer.cpp
     zrythm_application.h
     zrythm_application.cpp
 )

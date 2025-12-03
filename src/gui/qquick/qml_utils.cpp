@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "dsp/file_audio_source.h"
-#include "gui/backend/qml_utils.h"
+#include "gui/qquick/qml_utils.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/automation_region.h"
@@ -14,6 +14,9 @@
 
 #include <QQmlEngine>
 #include <QRegularExpression>
+
+namespace zrythm::gui::qquick
+{
 
 QString
 QmlUtils::toPathString (const QUrl &url)
@@ -111,10 +114,10 @@ QmlUtils::adjustOpacity (const QColor &color, float newOpacity)
     color.redF (), color.greenF (), color.blueF (), newOpacity);
 }
 
-QVector<gui::WaveformChannel *>
+QVector<gui::qquick::WaveformChannel *>
 QmlUtils::getAudioRegionWaveform (QObject * audioRegion, int pixelWidth)
 {
-  QVector<gui::WaveformChannel *> result;
+  QVector<gui::qquick::WaveformChannel *> result;
 
   if (audioRegion == nullptr || pixelWidth <= 0)
     {
@@ -201,7 +204,7 @@ QmlUtils::getAudioRegionWaveform (QObject * audioRegion, int pixelWidth)
 
           // Create WaveformChannel and add to result
           auto * channel =
-            new gui::WaveformChannel (minValues, maxValues, pixelWidth);
+            new gui::qquick::WaveformChannel (minValues, maxValues, pixelWidth);
 
           // Transfer ownership to QML JavaScript engine for proper cleanup
           QQmlEngine::setObjectOwnership (
@@ -318,4 +321,5 @@ bool
 QmlUtils::rectanglesIntersect (QRect a, QRect b)
 {
   return a.intersects (b);
+}
 }

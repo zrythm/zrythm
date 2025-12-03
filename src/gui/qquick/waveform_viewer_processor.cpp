@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/waveform_viewer.h"
+#include "gui/qquick/waveform_viewer_processor.h"
 #include "utils/dsp.h"
 
+namespace zrythm::gui::qquick
+{
 WaveformViewerProcessor::WaveformViewerProcessor (QObject * parent)
     : QObject (parent)
 {
@@ -37,6 +39,11 @@ WaveformViewerProcessor::process_audio ()
   auto &ring_reader = ring_reader_;
 
   if (!ring_reader)
+    {
+      return;
+    }
+
+  if (!audio_engine_->activated () || !audio_engine_->running ())
     {
       return;
     }
@@ -128,4 +135,5 @@ WaveformViewerProcessor::setDisplayPoints (int points)
       waveform_data_.resize (points);
       Q_EMIT displayPointsChanged ();
     }
+}
 }

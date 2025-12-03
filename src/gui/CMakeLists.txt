@@ -293,13 +293,14 @@ set_source_files_properties(
 )
 
 add_subdirectory(qml)
+add_subdirectory(qquick)
 
 add_subdirectory(backend)
 # temporarily keep old dsp classes here and slowly drop non-dsp dependencies
 # and move to src/dsp
 add_subdirectory(dsp)
 
-target_include_directories(zrythm
+target_include_directories(zrythm_gui_lib
   PUBLIC
     # C++ headers in SOURCES below must be available as toplevel includes
     # https://bugreports.qt.io/browse/QTBUG-87221

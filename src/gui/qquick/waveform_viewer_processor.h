@@ -4,14 +4,21 @@
 #pragma once
 
 #include "dsp/audio_port.h"
+#include "dsp/engine.h"
 
 #include <QObject>
 #include <QTimer>
 #include <QVector>
 
+namespace zrythm::gui::qquick
+{
+
 class WaveformViewerProcessor : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::dsp::AudioEngine * audioEngine READ audioEngine WRITE setAudioEngine
+      REQUIRED)
   Q_PROPERTY (
     zrythm::dsp::AudioPort * stereoPort READ stereoPort WRITE setStereoPort
       NOTIFY stereoPortChanged REQUIRED)
@@ -31,14 +38,20 @@ public:
   // ================================================================
   // QML Interface
   // ================================================================
-  dsp::AudioPort * stereoPort () const { return port_obj_; }
-  QVector<float>   waveformData () const { return waveform_data_; }
-  int bufferSize () const { return static_cast<int> (buffer_size_); }
-  int displayPoints () const { return static_cast<int> (display_points_); }
 
-  void setStereoPort (dsp::AudioPort * port_var);
+  dsp::AudioPort * stereoPort () const { return port_obj_; }
+  void             setStereoPort (dsp::AudioPort * port_var);
+
+  QVector<float> waveformData () const { return waveform_data_; }
+
+  int  bufferSize () const { return static_cast<int> (buffer_size_); }
   void setBufferSize (int size);
+
+  int  displayPoints () const { return static_cast<int> (display_points_); }
   void setDisplayPoints (int points);
+
+  dsp::AudioEngine * audioEngine () const { return audio_engine_; }
+  void setAudioEngine (dsp::AudioEngine * engine) { audio_engine_ = engine; }
 
 Q_SIGNALS:
   void waveformDataChanged ();
@@ -66,4 +79,7 @@ private:
   std::vector<float> right_buffer_;
 
   QTimer * update_timer_ = nullptr;
+
+  QPointer<dsp::AudioEngine> audio_engine_;
 };
+}

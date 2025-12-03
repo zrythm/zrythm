@@ -29,6 +29,7 @@ Control {
   WaveformViewerProcessor {
     id: processor
 
+    audioEngine: root.audioEngine
     bufferSize: 2048
     displayPoints: Math.max(64, Math.floor(root.width / 2))
     stereoPort: root.stereoPort

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/audio_port.h"
+#include "dsp/engine.h"
 
 #include <QObject>
 #include <QTimer>
@@ -12,6 +13,9 @@
 
 #include <juce_wrapper.h>
 #include <kiss_fft.h>
+
+namespace zrythm::gui::qquick
+{
 
 /**
  * @brief Spectrum analyzer processor for QML.
@@ -22,6 +26,9 @@
 class SpectrumAnalyzerProcessor : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (
+    zrythm::dsp::AudioEngine * audioEngine READ audioEngine WRITE setAudioEngine
+      REQUIRED)
   Q_PROPERTY (
     zrythm::dsp::AudioPort * stereoPort READ stereoPort WRITE setStereoPort
       NOTIFY stereoPortChanged REQUIRED)
@@ -59,6 +66,9 @@ public:
   // ================================================================
   // QML Interface
   // ================================================================
+
+  dsp::AudioEngine * audioEngine () const { return audio_engine_; }
+  void setAudioEngine (dsp::AudioEngine * engine) { audio_engine_ = engine; }
 
   dsp::AudioPort * stereoPort () const { return port_obj_; }
   void             setStereoPort (dsp::AudioPort * port_var);
@@ -112,4 +122,7 @@ private:
 
   // Temporary buffer for audio processing
   juce::AudioSampleBuffer buffer_;
+
+  QPointer<dsp::AudioEngine> audio_engine_;
 };
+}

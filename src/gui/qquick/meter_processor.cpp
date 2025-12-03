@@ -8,13 +8,12 @@
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
-#include "gui/backend/meter.h"
-#include "structure/tracks/track.h"
+#include "gui/qquick/meter_processor.h"
 #include "utils/math.h"
 #include "utils/ring_buffer.h"
 
-#include "backend/project.h"
-
+namespace zrythm::gui::qquick
+{
 MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }
 
 void
@@ -56,14 +55,14 @@ MeterProcessor::setPort (QVariant port_var)
                   kmeter_processor_ =
                     std::make_unique<zrythm::dsp::KMeterDsp> ();
                   kmeter_processor_->init (
-                    AUDIO_ENGINE->get_sample_rate ().in (units::sample_rate));
+                    audio_engine_->get_sample_rate ().in (units::sample_rate));
                 }
               else
                 {
                   algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
                   peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
                   peak_processor_->init (
-                    AUDIO_ENGINE->get_sample_rate ().in (units::sample_rate));
+                    audio_engine_->get_sample_rate ().in (units::sample_rate));
                 }
 
               tmp_buf_.reserve (dsp::AudioPort::AUDIO_RING_SIZE);
@@ -128,9 +127,9 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       return;
     }
 
-  if (!AUDIO_ENGINE->activated () || !AUDIO_ENGINE->running ())
+  if (!audio_engine_->activated () || !audio_engine_->running ())
     {
-      z_warning ("engine not running");
+      // z_warning ("engine not running");
       return;
     }
 
@@ -166,7 +165,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
             }
 
           size_t       read_space_avail = ring->read_space ();
-          const size_t block_length = AUDIO_ENGINE->get_block_length ();
+          const size_t block_length = audio_engine_->get_block_length ();
           size_t       blocks_to_read =
             block_length == 0 ? 0 : read_space_avail / block_length;
           /* if no blocks available, skip */
@@ -300,4 +299,5 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
         }
     },
     convert_to_variant<MeterPortPtrVariant> (port_obj_.get ()));
+}
 }

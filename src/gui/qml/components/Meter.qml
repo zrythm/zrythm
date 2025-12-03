@@ -24,8 +24,9 @@ Rectangle {
   MeterProcessor {
     id: meterProcessor
 
-    port: root.port
+    audioEngine: root.audioEngine
     channel: root.channel
+    port: root.port
   }
 
   Rectangle {
