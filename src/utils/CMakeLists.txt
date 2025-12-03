@@ -7,6 +7,7 @@ target_sources(zrythm_utils_lib
   PRIVATE
     audio.cpp
     audio_file.cpp
+    audio_file_writer.cpp
     backtrace.cpp
     chromaprint.cpp
     color.cpp
@@ -45,6 +46,7 @@ target_sources(zrythm_utils_lib
       algorithms.h
       audio.h
       audio_file.h
+      audio_file_writer.h
       backtrace.h
       base64.h
       bidirectional_map.h
