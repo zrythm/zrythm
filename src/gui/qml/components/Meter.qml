@@ -8,11 +8,12 @@ import ZrythmGui
 Rectangle {
   id: root
 
+  property int channel
   readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
+  required property AudioEngine audioEngine
+  readonly property alias meterProcessor: meterProcessor
   readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
   required property var port
-  property int channel
-  readonly property alias meterProcessor: meterProcessor
 
   clip: true
   color: "transparent"

@@ -16,9 +16,9 @@ ZrythmToolBar {
     TransportControls {
       id: transportControls
 
+      metronome: root.project.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport
-      metronome: root.project.metronome
     }
   ]
   leftItems: [
@@ -72,11 +72,13 @@ ZrythmToolBar {
   ]
   rightItems: [
     SpectrumAnalyzer {
+      audioEngine: root.project.engine
       padding: 2
       stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
       width: 120
     },
     WaveformViewer {
+      audioEngine: root.project.engine
       padding: 2
       stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
       width: 120

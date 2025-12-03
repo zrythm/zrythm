@@ -10,9 +10,10 @@ import Zrythm
 ColumnLayout {
   id: root
 
+  required property AudioEngine audioEngine
+  required property PluginImporter pluginImporter
   required property Track track
   required property UndoStack undoStack
-  required property PluginImporter pluginImporter
 
   TrackOperator {
     id: trackOperator
@@ -120,6 +121,7 @@ ColumnLayout {
 
             Layout.fillHeight: true
             Layout.fillWidth: false
+            audioEngine: root.audioEngine
             channel: root.track.channel
           }
 
@@ -165,8 +167,8 @@ ColumnLayout {
     frameContentItem: PluginSlotList {
       implicitHeight: contentHeight
       pluginGroup: pluginExpander.model
-      track: root.track
       pluginImporter: root.pluginImporter
+      track: root.track
     }
   }
 }

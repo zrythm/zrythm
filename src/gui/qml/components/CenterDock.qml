@@ -75,6 +75,7 @@ ColumnLayout {
 
           Layout.fillWidth: true
           Layout.preferredHeight: contentHeight
+          audioEngine: root.project.engine
           pinned: true
           trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist
@@ -86,6 +87,7 @@ ColumnLayout {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
+          audioEngine: root.project.engine
           pinned: false
           trackSelectionManager: root.project.trackSelectionManager
           tracklist: root.project.tracklist

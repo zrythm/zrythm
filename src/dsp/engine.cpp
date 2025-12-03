@@ -95,6 +95,7 @@ AudioEngine::AudioEngine (
             nullptr,
             units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ())),
             dev->getCurrentBufferSizeSamples ());
+          Q_EMIT sampleRateChanged (sampleRate ());
           callback_running_ = true;
         },
         [this] () {
@@ -203,7 +204,7 @@ AudioEngine::
 
 void
 
-AudioEngine::resume (EngineState &state)
+AudioEngine::resume (const EngineState &state)
 {
   z_debug ("resuming engine...");
   if (!state.running_)

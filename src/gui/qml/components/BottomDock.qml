@@ -51,9 +51,10 @@ ColumnLayout {
     }
 
     MixerView {
+      audioEngine: root.project.engine
+      pluginImporter: root.project.pluginImporter
       tracklist: root.project.tracklist
       undoStack: root.project.undoStack
-      pluginImporter: root.project.pluginImporter
     }
 
     Repeater {

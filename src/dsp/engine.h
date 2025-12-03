@@ -21,6 +21,7 @@ namespace zrythm::dsp
 class AudioEngine : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (int sampleRate READ sampleRate NOTIFY sampleRateChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -60,6 +61,10 @@ public:
     return load_measurer_.getLoadAsPercentage ();
   }
 
+  int sampleRate () const { return get_sample_rate ().in (units::sample_rate); }
+
+  Q_SIGNAL void sampleRateChanged (int sampleRate);
+
   // =========================================================
 
   /**
@@ -69,7 +74,7 @@ public:
    */
   void wait_for_pause (EngineState &state, bool force_pause, bool with_fadeout);
 
-  void resume (EngineState &state);
+  void resume (const EngineState &state);
 
   /**
    * Activates the audio engine to start processing and receiving events.

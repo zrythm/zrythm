@@ -13,6 +13,7 @@ import ZrythmStyle
 Control {
   id: control
 
+  required property AudioEngine audioEngine
   readonly property real buttonHeight: 18
   readonly property real buttonPadding: 1
   readonly property real contentBottomMargins: 3
@@ -224,6 +225,7 @@ Control {
           Layout.fillHeight: true
           Layout.fillWidth: false
           channel: control.track.channel
+          audioEngine: control.audioEngine
         }
       }
     }

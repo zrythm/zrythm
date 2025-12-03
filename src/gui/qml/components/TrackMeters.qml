@@ -13,6 +13,7 @@ RowLayout {
   required property Channel channel
   readonly property real currentAmplitude: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : midiMetersLoader.item.currentAmplitude) : 0
   readonly property real currentPeak: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentPeak : midiMetersLoader.item.currentPeak) : 0
+  required property AudioEngine audioEngine
 
   Loader {
     id: audioMetersLoader
@@ -36,6 +37,7 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
+        audioEngine: root.audioEngine
         channel: 0
         port: root.channel.audioOutPort
       }
@@ -45,6 +47,7 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
+        audioEngine: root.audioEngine
         channel: 1
         port: root.channel.audioOutPort
       }
@@ -67,6 +70,7 @@ RowLayout {
       property real currentPeak: midiMeter.meterProcessor.peakAmplitude
 
       anchors.fill: parent
+      audioEngine: root.audioEngine
       port: root.channel.midiOut
     }
   }

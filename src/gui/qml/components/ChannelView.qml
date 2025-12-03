@@ -15,6 +15,7 @@ ColumnLayout {
   required property Track track
   required property Tracklist tracklist
   required property UndoStack undoStack
+  required property AudioEngine audioEngine
 
   implicitWidth: 48
 
@@ -82,6 +83,7 @@ ColumnLayout {
       Layout.fillHeight: true
       Layout.fillWidth: false
       channel: root.channel
+      audioEngine: root.audioEngine
     }
   }
 

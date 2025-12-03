@@ -9,12 +9,13 @@ import ZrythmStyle
 Control {
   id: root
 
+  required property AudioEngine audioEngine
   property int fft_size: 512
-  required property AudioPort stereoPort
   readonly property real max_frequency: sampleRate / 2
   property real min_frequency: 40.0
-  property int sampleRate: 44100 // TODO: get from engine
+  property int sampleRate: audioEngine.sampleRate
   readonly property color spectrumColor: root.palette.text
+  required property AudioPort stereoPort
 
   implicitHeight: 24
   implicitWidth: 60

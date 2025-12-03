@@ -10,9 +10,10 @@ import Zrythm
 RowLayout {
   id: root
 
+  required property AudioEngine audioEngine
+  required property PluginImporter pluginImporter
   required property Tracklist tracklist
   required property UndoStack undoStack
-  required property PluginImporter pluginImporter
 
   Repeater {
     id: allChannels
@@ -20,10 +21,11 @@ RowLayout {
     Layout.fillHeight: true
 
     delegate: ChannelView {
+      audioEngine: root.audioEngine
       channel: track.channel
+      pluginImporter: root.pluginImporter
       tracklist: root.tracklist
       undoStack: root.undoStack
-      pluginImporter: root.pluginImporter
     }
     model: TrackFilterProxyModel {
       sourceModel: root.tracklist.collection

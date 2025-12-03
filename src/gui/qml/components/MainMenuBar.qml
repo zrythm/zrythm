@@ -12,8 +12,8 @@ MenuBar {
 
   required property AboutDialog aboutDialog
   required property DeviceManager deviceManager
-  required property Project project
   required property ExportDialog exportDialog
+  required property Project project
 
   Menu {
     title: qsTr("&File")

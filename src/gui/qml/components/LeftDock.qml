@@ -55,9 +55,10 @@ ColumnLayout {
 
       sourceComponent: TrackInspectorPage {
         anchors.fill: parent
+        audioEngine: root.project.engine
+        pluginImporter: root.project.pluginImporter
         track: trackInspectorLoader.track
         undoStack: root.undoStack
-        pluginImporter: root.project.pluginImporter
       }
 
       Connections {

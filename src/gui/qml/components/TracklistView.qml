@@ -10,6 +10,7 @@ import Zrythm
 ListView {
   id: root
 
+  required property AudioEngine audioEngine
   required property bool pinned
   required property TrackSelectionManager trackSelectionManager
   required property Tracklist tracklist
@@ -22,6 +23,7 @@ ListView {
   implicitWidth: 200
 
   delegate: TrackView {
+    audioEngine: root.audioEngine
     trackSelectionManager: root.trackSelectionManager
     tracklist: root.tracklist
     undoStack: root.undoStack

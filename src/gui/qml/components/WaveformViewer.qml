@@ -9,6 +9,7 @@ import ZrythmStyle
 Control {
   id: root
 
+  required property AudioEngine audioEngine
   required property AudioPort stereoPort
   readonly property color waveformColor: root.palette.text
   property real zoomLevel: 1.0
