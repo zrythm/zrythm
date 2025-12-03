@@ -147,7 +147,8 @@ public:
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
           ret = std::make_unique<ObjT> (
-            dependencies_.tempo_map_, Marker::MarkerType::Custom);
+            dependencies_.tempo_map_,
+            marker_type_.value_or (Marker::MarkerType::Custom));
         }
       else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
         {

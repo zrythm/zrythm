@@ -28,7 +28,7 @@ MarkerTrack::get_start_marker () const -> Marker *
   auto markers = get_children_view ();
   auto it =
     std::ranges::find (markers, Marker::MarkerType::Start, &Marker::markerType);
-  z_return_val_if_fail (it != markers.end (), nullptr);
+  assert (it != markers.end ());
   return *it;
 }
 
@@ -38,7 +38,7 @@ MarkerTrack::get_end_marker () const -> Marker *
   auto markers = get_children_view ();
   auto it =
     std::ranges::find (markers, Marker::MarkerType::End, &Marker::markerType);
-  z_return_val_if_fail (it != markers.end (), nullptr);
+  assert (it != markers.end ());
   return *it;
 }
 
