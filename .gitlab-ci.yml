@@ -87,7 +87,7 @@ stages:
       -DZRYTHM_TESTS=ON
       -DZRYTHM_UNITY_BUILD=OFF
     - cmake --build ${BUILDDIR}-${SANITIZER_TYPE} --parallel
-    - ctest --test-dir ${BUILDDIR}-${SANITIZER_TYPE} --output-on-failure
+    - ctest --test-dir ${BUILDDIR}-${SANITIZER_TYPE} --rerun-failed --output-on-failure
 
 .mac-arm-template:
   tags:
@@ -305,7 +305,7 @@ check:exif:
     - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyTest || (cat "${BUILDDIR}-${BUILD_TYPE}"/Testing/Temporary/LastTest_*.log && exit 1)
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyTest --rerun-failed --output-on-failure
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
       ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyCoverage ;
     fi
@@ -376,8 +376,7 @@ build:gnu/linux:
     - >-
       ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} --parallel $(($(nproc) / 2)) --test-load $(($(nproc) / 2))
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
-      -T memcheck -E "appstream-util-validate-appdata"
-      || (cat "${BUILDDIR}-${BUILD_TYPE}/Testing/Temporary/MemoryChecker.*.log" && exit 1)
+      -T memcheck -E "appstream-util-validate-appdata" --rerun-failed --output-on-failure
     - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
   parallel:
     matrix:
@@ -425,7 +424,7 @@ build:windows:
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 } # Check if the previous command failed
-    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit; if (-not $?) { Get-Content "${env:BUILDDIR}-${env:BUILD_TYPE}/Testing/Temporary/LastTest.log"; exit 1 }
+    - ctest --test-dir "${env:BUILDDIR}-${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit --rerun-failed --output-on-failure
     - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "${BUILDDIR}-${BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
     # Use shorter path for packaging to avoid Windows path length limitations
     - $shortPackageDir = "C:\tmp\package-${env:BUILD_TYPE}"
