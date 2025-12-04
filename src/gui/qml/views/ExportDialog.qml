@@ -11,71 +11,18 @@ import Zrythm
 import Qt.labs.synchronizer
 
 Dialog {
-  id: exportDialog
+  id: root
 
+  property QFutureQmlWrapper exportFuture
   property string metadataArtist: "Artist"
   property string metadataGenre: "Genre"
   property string metadataTitle: "Title"
+  required property Project project
 
-  // Simulate export progress (replace with actual export implementation)
-  function simulateExportProgress() {
-    var progress = 0;
-    var progressTimer = Qt.createQmlObject("import QtQuick; Timer { interval: 100; repeat: true; onTriggered: {} }", exportDialog);
-
-    progressTimer.triggered.connect(function () {
-      if (!exportProgressDialog.visible) {
-        progressTimer.stop();
-        progressTimer.destroy();
-        return;
-      }
-
-      progress += 2;
-
-      // Update progress dialog with different messages
-      if (progress < 20) {
-        exportProgressDialog.labelText = qsTr("Preparing export...");
-      } else if (progress < 40) {
-        exportProgressDialog.labelText = qsTr("Processing audio tracks...");
-      } else if (progress < 60) {
-        exportProgressDialog.labelText = qsTr("Applying effects...");
-      } else if (progress < 80) {
-        exportProgressDialog.labelText = qsTr("Encoding audio...");
-      } else if (progress < 95) {
-        exportProgressDialog.labelText = qsTr("Writing file...");
-      } else {
-        exportProgressDialog.labelText = qsTr("Finalizing export...");
-      }
-
-      exportProgressDialog.value = progress;
-
-      if (progress >= 100) {
-        progressTimer.stop();
-        progressTimer.destroy();
-
-        // Export completed
-        exportProgressDialog.labelText = qsTr("Export completed successfully!");
-
-        // Close progress dialog after a short delay
-        Qt.callLater(function () {
-          exportProgressDialog.close();
-        });
-      }
-    });
-
-    progressTimer.start();
-  }
-
-  // Function to start the export process
   function startExport() {
-    // Reset progress dialog
-    exportProgressDialog.reset();
-
-    // Set up progress tracking
-    exportProgressDialog.labelText = qsTr("Preparing export...");
+    exportProgressDialog.resetValues();
     exportProgressDialog.open();
-
-    // Simulate export progress (replace with actual export logic)
-    simulateExportProgress();
+    root.exportFuture = ProjectExporter.exportAudio(root.project);
   }
 
   implicitHeight: 500
@@ -102,16 +49,11 @@ Dialog {
   }
 
   // Progress dialog for export operation
-  ProgressDialog {
+  ProgressDialogWithFuture {
     id: exportProgressDialog
 
-    labelText: qsTr("Exporting project...")
-    maximum: 100
-    minimum: 0
-
-    onCanceled: {
-      console.log("Export cancelled by user");
-    }
+    future: root.exportFuture
+    labelText: qsTr("Exporting audio...")
   }
 
   ColumnLayout {
@@ -167,10 +109,10 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Enter title...")
-                text: exportDialog.metadataTitle
+                text: root.metadataTitle
 
                 Synchronizer on text {
-                  sourceObject: exportDialog
+                  sourceObject: root
                   sourceProperty: "metadataTitle"
                 }
               }
@@ -185,10 +127,10 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Enter artist...")
-                text: exportDialog.metadataArtist
+                text: root.metadataArtist
 
                 Synchronizer on text {
-                  sourceObject: exportDialog
+                  sourceObject: root
                   sourceProperty: "metadataArtist"
                 }
               }
@@ -204,10 +146,10 @@ Dialog {
 
               Layout.fillWidth: true
               placeholderText: qsTr("Enter genre...")
-              text: exportDialog.metadataGenre
+              text: root.metadataGenre
 
               Synchronizer on text {
-                sourceObject: exportDialog
+                sourceObject: root
                 sourceProperty: "metadataGenre"
               }
             }
@@ -401,10 +343,10 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Enter title...")
-                text: exportDialog.metadataTitle
+                text: root.metadataTitle
 
                 Synchronizer on text {
-                  sourceObject: exportDialog
+                  sourceObject: root
                   sourceProperty: "metadataTitle"
                 }
               }
@@ -419,10 +361,10 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Enter artist...")
-                text: exportDialog.metadataArtist
+                text: root.metadataArtist
 
                 Synchronizer on text {
-                  sourceObject: exportDialog
+                  sourceObject: root
                   sourceProperty: "metadataArtist"
                 }
               }
@@ -437,10 +379,10 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Enter genre...")
-                text: exportDialog.metadataGenre
+                text: root.metadataGenre
 
                 Synchronizer on text {
-                  sourceObject: exportDialog
+                  sourceObject: root
                   sourceProperty: "metadataGenre"
                 }
               }

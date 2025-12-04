@@ -76,6 +76,7 @@ ApplicationWindow {
   ExportDialog {
     id: exportDialog
 
+    project: root.project
   }
 
   Shortcut {

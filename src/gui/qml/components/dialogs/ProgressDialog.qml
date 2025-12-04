@@ -11,7 +11,6 @@ Dialog {
   id: root
 
   property bool autoClose: true
-  property bool autoReset: true
   property bool indeterminate: false
   property string labelText: ""
   property int maximum: 100
@@ -26,7 +25,7 @@ Dialog {
     root.close();
   }
 
-  function reset() {
+  function resetValues() {
     root.value = minimum;
     if (autoClose) {
       root.close();
@@ -40,14 +39,6 @@ Dialog {
   standardButtons: Dialog.Cancel
 
   onRejected: root.cancel()
-
-  // Update progress when value changes
-  onValueChanged: {
-    // Check if operation is complete
-    if (value >= maximum && autoReset) {
-      reset();
-    }
-  }
 
   ColumnLayout {
     anchors.centerIn: parent

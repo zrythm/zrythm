@@ -21,8 +21,8 @@
 #include "utils/progress_info.h"
 #include "utils/views.h"
 
-#include "juce_wrapper.h"
 #include <fmt/printf.h>
+#include <juce_wrapper.h>
 #include <zstd.h>
 
 using namespace zrythm;

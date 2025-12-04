@@ -664,9 +664,14 @@ ClapPlugin::prepare_for_processing_impl (
   if (!pimpl_->plugin_)
     return;
 
+  // Clear resources if already active (this also deactivates the plugin)
+  if (pimpl_->isPluginActive ())
+    {
+      release_resources_impl ();
+    }
+
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
-  assert (!pimpl_->isPluginActive ());
   if (!pimpl_->plugin_->activate (
         sample_rate.in (units::sample_rate), 1, max_block_length))
     {
@@ -692,9 +697,8 @@ ClapPlugin::release_resources_impl ()
 
   if (pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing)
     {
-      pimpl_->force_audio_thread_check_.store (true);
+      AtomicBoolRAII audio_thread_check{ pimpl_->force_audio_thread_check_ };
       pimpl_->plugin_->stopProcessing ();
-      pimpl_->force_audio_thread_check_.store (false);
     }
   pimpl_->setPluginState (ClapPluginImpl::ActiveAndReadyToDeactivate);
   pimpl_->scheduleDeactivate_ = false;
@@ -708,6 +712,9 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 {
   pimpl_->process_.frames_count = time_info.nframes_;
   pimpl_->process_.steady_time = -1;
+
+  // This can get called during offline rendering
+  AtomicBoolRAII audio_thread_check{ pimpl_->force_audio_thread_check_ };
 
   assert (threadCheckIsAudioThread ());
 

@@ -29,13 +29,15 @@ target_sources(zrythm_gui_lib
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
     plugin_selection_manager.h
+    project_exporter.h
+    project_exporter.cpp
     project_info.h
     project_info.cpp
     project_manager.h
     project_manager.cpp
     project_templates_model.h
     project_templates_model.cpp
-    realtime_property.h
+    # realtime_property.h
     recent_projects_model.h
     recent_projects_model.cpp
     resource_manager.h

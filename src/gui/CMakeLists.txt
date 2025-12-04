@@ -220,6 +220,7 @@ set(rel_qml_file_paths
   components/arranger/TimeSignatureObjectView.qml
   components/arranger/VelocityArranger.qml
   components/dialogs/ProgressDialog.qml
+  components/dialogs/ProgressDialogWithFuture.qml
   components/editors/AudioEditorPane.qml
   components/editors/AutomationEditorPane.qml
   components/editors/ClipEditorGrid.qml

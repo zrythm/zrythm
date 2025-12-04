@@ -8,6 +8,8 @@
 
 #include <QPromise>
 
+#include <juce_wrapper.h>
+
 namespace zrythm::dsp
 {
 class GraphRenderer

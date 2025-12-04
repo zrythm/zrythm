@@ -85,7 +85,7 @@ public:
   }
 
   void cancel () override { future_.cancel (); }
-  bool isCanceled () const override { future_.isCanceled (); }
+  bool isCanceled () const override { return future_.isCanceled (); }
 
 private:
   QFuture<T>        future_;

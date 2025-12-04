@@ -247,6 +247,10 @@ public:
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
 
+  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
+              createArrangerObjectSelectionOperator (
+                QItemSelectionModel * selectionModel) const;
+
   // =========================================================
 
   /**
@@ -374,10 +378,6 @@ public:
    *
    */
   Q_INVOKABLE void activate ();
-
-  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
-              createArrangerObjectSelectionOperator (
-                QItemSelectionModel * selectionModel) const;
 
   /**
    * @brief Adds the default undeletable tracks to the project.
