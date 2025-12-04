@@ -61,38 +61,38 @@ ProjectExporter::exportAudio (Project * project)
            ->getCurrentSampleRate (),
        exports_path = project->get_path (ProjectPath::EXPORTS, false)] (
         QPromise<QStringList>           &promise,
-        QFuture<juce::AudioSampleBuffer> graph_render_future) {
+        QFuture<juce::AudioSampleBuffer> inner_graph_render_future) {
         // Wait for task to establish its progress min/max
-        while (graph_render_future.progressMaximum () <= 0)
+        while (inner_graph_render_future.progressMaximum () <= 0)
           {
             std::this_thread::sleep_for (1ms);
           }
 
         const auto render_task_progress_range = std::make_pair (
-          graph_render_future.progressMinimum (),
-          graph_render_future.progressMaximum ());
+          inner_graph_render_future.progressMinimum (),
+          inner_graph_render_future.progressMaximum ());
         const auto write_to_file_task_additional_progress = static_cast<int> (
           (render_task_progress_range.second - render_task_progress_range.first)
           * 0.1);
         promise.setProgressRange (
-          graph_render_future.progressMinimum (),
-          graph_render_future.progressMaximum ()
+          inner_graph_render_future.progressMinimum (),
+          inner_graph_render_future.progressMaximum ()
             + write_to_file_task_additional_progress);
-        while (!graph_render_future.isFinished ())
+        while (!inner_graph_render_future.isFinished ())
           {
             std::this_thread::sleep_for (5ms);
             promise.setProgressValueAndText (
-              graph_render_future.progressValue (),
-              graph_render_future.progressText ());
+              inner_graph_render_future.progressValue (),
+              inner_graph_render_future.progressText ());
             if (promise.isCanceled ())
               {
-                graph_render_future.cancel ();
+                inner_graph_render_future.cancel ();
               }
           }
 
         if (
-          graph_render_future.isValid ()
-          && graph_render_future.isResultReadyAt (0))
+          inner_graph_render_future.isValid ()
+          && inner_graph_render_future.isResultReadyAt (0))
           {
             std::unordered_map<juce::String, juce::String> metadata;
             metadata.emplace (
@@ -110,7 +110,7 @@ ProjectExporter::exportAudio (Project * project)
                     zrythm::utils::audio::BitDepth::BIT_DEPTH_16))
                 .withMetadataValues (metadata)
                 .withQualityOptionIndex (0);
-            utils::AudioFileWriter::WriteOptions options{
+            utils::AudioFileWriter::WriteOptions write_options{
               .writer_options_ = juce_writer_options,
               .block_length_ = units::samples (4096)
             };
@@ -119,7 +119,7 @@ ProjectExporter::exportAudio (Project * project)
               / (utils::Utf8String::from_qstring (title) + u8"- Mixdown.wav")
                   .to_path ();
             auto file_write_future = utils::AudioFileWriter::write_async (
-              options, path, graph_render_future.takeResult ());
+              write_options, path, inner_graph_render_future.takeResult ());
 
             // Wait for task to establish its progress min/max
             while (file_write_future.progressMaximum () <= 0)
