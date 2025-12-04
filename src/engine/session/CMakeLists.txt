@@ -5,8 +5,6 @@ target_sources(zrythm_gui_lib
   PRIVATE
     control_room.h
     control_room.cpp
-    # exporter.h
-    # exporter.cpp
     midi_mapping.h
     midi_mapping.cpp
     project_graph_builder.h
