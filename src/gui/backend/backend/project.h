@@ -17,9 +17,9 @@
 #include "dsp/transport.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
+#include "gui/backend/arranger_tool.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/plugin_selection_manager.h"
-#include "gui/backend/tool.h"
 #include "gui/backend/track_selection_manager.h"
 #include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
@@ -126,7 +126,7 @@ class Project final : public QObject
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
-  Q_PROPERTY (zrythm::gui::backend::Tool * tool READ getTool CONSTANT FINAL)
+  Q_PROPERTY (zrythm::gui::backend::ArrangerTool * tool READ tool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
@@ -231,7 +231,7 @@ public:
   dsp::Transport *                             getTransport () const;
   engine::session::ControlRoom *               controlRoom () const;
   dsp::AudioEngine *                           engine () const;
-  gui::backend::Tool *                         getTool () const;
+  gui::backend::ArrangerTool *                 tool () const;
   ClipEditor *                                 getClipEditor () const;
   undo::UndoStack *                            undoStack () const;
   zrythm::actions::ArrangerObjectCreator *     arrangerObjectCreator () const;
@@ -614,10 +614,9 @@ public:
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
   /**
-   * Currently selected tool (select - normal,
-   * select - stretch, edit, delete, ramp, audition)
+   * @brief Currently selected arranger tool.
    */
-  gui::backend::Tool * tool_{};
+  utils::QObjectUniquePtr<gui::backend::ArrangerTool> tool_;
 
   /**
    * @brief

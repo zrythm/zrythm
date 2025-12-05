@@ -7,6 +7,8 @@ target_sources(zrythm_gui_lib
     action_controller.cpp
     alert_manager.h
     alert_manager.cpp
+    arranger_tool.h
+    arranger_tool.cpp
     automation_tracklist_proxy_model.h
     automation_tracklist_proxy_model.cpp
     # carla_discovery.h
@@ -42,8 +44,6 @@ target_sources(zrythm_gui_lib
     recent_projects_model.cpp
     resource_manager.h
     resource_manager.cpp
-    tool.h
-    tool.cpp
     track_filter_proxy_model.h
     track_filter_proxy_model.cpp
     track_selection_manager.h

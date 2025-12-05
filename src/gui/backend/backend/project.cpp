@@ -65,7 +65,7 @@ Project::Project (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
       version_ (Zrythm::get_version (false)), device_manager_ (device_manager),
-      tool_ (new gui::backend::Tool (this)),
+      tool_ (new gui::backend::ArrangerTool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
@@ -1677,10 +1677,10 @@ Project::engine () const
   return audio_engine_.get ();
 }
 
-gui::backend::Tool *
-Project::getTool () const
+gui::backend::ArrangerTool *
+Project::tool () const
 {
-  return tool_;
+  return tool_.get ();
 }
 
 ClipEditor *

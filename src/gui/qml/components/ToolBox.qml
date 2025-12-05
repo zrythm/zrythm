@@ -1,16 +1,16 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 RowLayout {
   id: root
 
-  required property var tool
+  required property ArrangerTool tool
 
   ButtonGroup {
     id: toolGroup
@@ -26,11 +26,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Select
+      checked: root.tool.toolValue === ArrangerTool.Select
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "box-dotted-symbolic.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Select;
+        root.tool.toolValue = ArrangerTool.Select;
       }
 
       ToolTip {
@@ -41,11 +41,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Edit
+      checked: root.tool.toolValue === ArrangerTool.Edit
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "pencil-symbolic.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Edit;
+        root.tool.toolValue = ArrangerTool.Edit;
       }
 
       ToolTip {
@@ -56,11 +56,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Cut
+      checked: root.tool.toolValue === ArrangerTool.Cut
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "cut-symbolic.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Cut;
+        root.tool.toolValue = ArrangerTool.Cut;
       }
 
       ToolTip {
@@ -71,11 +71,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Eraser
+      checked: root.tool.toolValue === ArrangerTool.Eraser
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "eraser2-symbolic.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Eraser;
+        root.tool.toolValue = ArrangerTool.Eraser;
       }
 
       ToolTip {
@@ -86,11 +86,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Ramp
+      checked: root.tool.toolValue === ArrangerTool.Ramp
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "draw-line.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Ramp;
+        root.tool.toolValue = ArrangerTool.Ramp;
       }
 
       ToolTip {
@@ -101,11 +101,11 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === Tool.Audition
+      checked: root.tool.toolValue === ArrangerTool.Audition
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
 
       onClicked: {
-        root.tool.toolValue = Tool.Audition;
+        root.tool.toolValue = ArrangerTool.Audition;
       }
 
       ToolTip {

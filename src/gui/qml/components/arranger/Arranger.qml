@@ -195,7 +195,7 @@ Item {
     switch (root.currentAction) {
     case Arranger.None:
       switch (root.tool.toolValue) {
-      case Tool.Select:
+      case ArrangerTool.Select:
         if (root.hoveredObject !== null) {
           const shouldBeLoopResize = shouldResizeBeLoopResize(root.hoveredObject, root.hoveredObject.isResizeLHovered);
           if (root.hoveredObject.isResizeLHovered) {
@@ -217,19 +217,19 @@ Item {
           CursorManager.setPointerCursor();
         }
         return;
-      case Tool.Edit:
+      case ArrangerTool.Edit:
         CursorManager.setPencilCursor();
         return;
-      case Tool.Cut:
+      case ArrangerTool.Cut:
         CursorManager.setCutCursor();
         return;
-      case Tool.Eraser:
+      case ArrangerTool.Eraser:
         CursorManager.setEraserCursor();
         return;
-      case Tool.Ramp:
+      case ArrangerTool.Ramp:
         CursorManager.setRampCursor();
         return;
-      case Tool.Audition:
+      case ArrangerTool.Audition:
         CursorManager.setAuditionCursor();
         return;
       }

@@ -126,7 +126,7 @@ ApplicationWindow {
     sequence: "1"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Select;
+      root.project.tool.toolValue = ArrangerTool.Select;
     }
   }
 
@@ -134,7 +134,7 @@ ApplicationWindow {
     sequence: "2"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Edit;
+      root.project.tool.toolValue = ArrangerTool.Edit;
     }
   }
 
@@ -142,7 +142,7 @@ ApplicationWindow {
     sequence: "3"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Cut;
+      root.project.tool.toolValue = ArrangerTool.Cut;
     }
   }
 
@@ -150,7 +150,7 @@ ApplicationWindow {
     sequence: "4"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Eraser;
+      root.project.tool.toolValue = ArrangerTool.Eraser;
     }
   }
 
@@ -158,7 +158,7 @@ ApplicationWindow {
     sequence: "5"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Ramp;
+      root.project.tool.toolValue = ArrangerTool.Ramp;
     }
   }
 
@@ -166,7 +166,7 @@ ApplicationWindow {
     sequence: "6"
 
     onActivated: {
-      root.project.tool.toolValue = Tool.Audition;
+      root.project.tool.toolValue = ArrangerTool.Audition;
     }
   }
 
