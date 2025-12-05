@@ -91,7 +91,7 @@ protected:
 TEST_F (AudioEngineTest, ConstructorInitializesCorrectly)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   EXPECT_FALSE (engine->activated ());
   EXPECT_FALSE (engine->running ());
@@ -104,7 +104,7 @@ TEST_F (AudioEngineTest, ConstructorInitializesCorrectly)
 TEST_F (AudioEngineTest, GetBlockLengthReturnsCorrectValue)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Should return the buffer size from the audio device
   EXPECT_EQ (engine->get_block_length (), 256);
@@ -113,7 +113,7 @@ TEST_F (AudioEngineTest, GetBlockLengthReturnsCorrectValue)
 TEST_F (AudioEngineTest, GetSampleRateReturnsCorrectValue)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Should return the sample rate from the audio device
   EXPECT_EQ (engine->get_sample_rate ().in (units::sample_rate), 48000);
@@ -122,9 +122,9 @@ TEST_F (AudioEngineTest, GetSampleRateReturnsCorrectValue)
 TEST_F (AudioEngineTest, ActivateWithTrueSetsStateToActive)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
-  engine->activate (true);
+  engine->activate ();
 
   EXPECT_TRUE (engine->activated ());
 }
@@ -132,35 +132,35 @@ TEST_F (AudioEngineTest, ActivateWithTrueSetsStateToActive)
 TEST_F (AudioEngineTest, ActivateWithFalseSetsStateToInitialized)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // First activate
-  engine->activate (true);
+  engine->activate ();
   EXPECT_TRUE (engine->activated ());
 
   // Then deactivate
-  engine->activate (false);
+  engine->deactivate ();
   EXPECT_FALSE (engine->activated ());
 }
 
 TEST_F (AudioEngineTest, ActivateWithSameStateDoesNothing)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate once
-  engine->activate (true);
+  engine->activate ();
   EXPECT_TRUE (engine->activated ());
 
   // Activate again with same state - should do nothing
-  engine->activate (true);
+  engine->activate ();
   EXPECT_TRUE (engine->activated ());
 }
 
 TEST_F (AudioEngineTest, SetAndGetRunning)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   EXPECT_FALSE (engine->running ());
 
@@ -174,7 +174,7 @@ TEST_F (AudioEngineTest, SetAndGetRunning)
 TEST_F (AudioEngineTest, SetAndGetExporting)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   EXPECT_FALSE (engine->exporting ());
 
@@ -188,7 +188,7 @@ TEST_F (AudioEngineTest, SetAndGetExporting)
 TEST_F (AudioEngineTest, PanicAllCallsMidiPanicProcessor)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   engine->panic_all ();
 
@@ -199,10 +199,10 @@ TEST_F (AudioEngineTest, PanicAllCallsMidiPanicProcessor)
 TEST_F (AudioEngineTest, ProcessPrepareWithPauseRequestedUpdatesPlayState)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
 
   // Setup transport to return PauseRequested state
   transport_->requestPause ();
@@ -224,10 +224,10 @@ TEST_F (
   ProcessPrepareWithRollRequestedAndNoCountinUpdatesPlayState)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
 
   // Setup transport to return RollRequested state
   transport_->requestRoll ();
@@ -247,10 +247,10 @@ TEST_F (
 TEST_F (AudioEngineTest, ProcessPrepareWithoutExportingAndNoSemaphoreSkipsCycle)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_exporting (false);
 
   // Create a semaphore that is not acquired
@@ -268,10 +268,10 @@ TEST_F (AudioEngineTest, ProcessPrepareWithoutExportingAndNoSemaphoreSkipsCycle)
 TEST_F (AudioEngineTest, ProcessWhenNotRunningReturnsSkipped)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_running (false);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
@@ -283,10 +283,10 @@ TEST_F (AudioEngineTest, ProcessWhenNotRunningReturnsSkipped)
 TEST_F (AudioEngineTest, ProcessWithZeroFramesReturnsFailed)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_running (true);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
@@ -298,10 +298,10 @@ TEST_F (AudioEngineTest, ProcessWithZeroFramesReturnsFailed)
 TEST_F (AudioEngineTest, ProcessWhenRunningReturnsCompleted)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_running (true);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
@@ -313,10 +313,10 @@ TEST_F (AudioEngineTest, ProcessWhenRunningReturnsCompleted)
 TEST_F (AudioEngineTest, PostProcessWithRollingStateUpdatesPlayhead)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_running (true);
 
   // Start rolling to test post_process
@@ -344,10 +344,10 @@ TEST_F (AudioEngineTest, PostProcessWithRollingStateUpdatesPlayhead)
 TEST_F (AudioEngineTest, PostProcessWithNonRollingStateDoesNotUpdatePlayhead)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Activate and start device to initialize monitor out port buffer
-  engine->activate (true);
+  engine->activate ();
   engine->set_running (true);
 
   // Ensure transport is paused
@@ -374,7 +374,7 @@ TEST_F (AudioEngineTest, PostProcessWithNonRollingStateDoesNotUpdatePlayhead)
 TEST_F (AudioEngineTest, WaitforPauseWithNonRunningEngineReturnsEarly)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   engine->set_running (false);
 
@@ -391,7 +391,7 @@ TEST_F (AudioEngineTest, WaitforPauseWithNonRunningEngineReturnsEarly)
 TEST_F (AudioEngineTest, WaitforPauseWithPlayingEngineStopsPlayback)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   engine->set_running (true);
 
@@ -411,7 +411,7 @@ TEST_F (AudioEngineTest, WaitforPauseWithPlayingEngineStopsPlayback)
 TEST_F (AudioEngineTest, ResumeWithNonRunningEngineDoesNothing)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   engine->set_running (true);
 
@@ -427,7 +427,7 @@ TEST_F (AudioEngineTest, ResumeWithNonRunningEngineDoesNothing)
 TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   engine->set_running (true);
 
@@ -446,7 +446,7 @@ TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
 TEST_F (AudioEngineTest, GetProcessingLockReturnsValidLock)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   auto lock = engine->get_processing_lock ();
 
@@ -457,7 +457,7 @@ TEST_F (AudioEngineTest, GetProcessingLockReturnsValidLock)
 TEST_F (AudioEngineTest, LoadPercentageReturnsValidValue)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Should return a valid percentage (initially 0.0)
   double load = engine->loadPercentage ();
@@ -468,7 +468,7 @@ TEST_F (AudioEngineTest, LoadPercentageReturnsValidValue)
 TEST_F (AudioEngineTest, XRunCountReturnsValidValue)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   // Should return a valid count (initially 0)
   int xruns = engine->xRunCount ();
@@ -478,7 +478,7 @@ TEST_F (AudioEngineTest, XRunCountReturnsValidValue)
 TEST_F (AudioEngineTest, GetMonitorOutPortReturnsValidPort)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   auto &monitor_out = engine->get_monitor_out_port ();
 
@@ -489,7 +489,7 @@ TEST_F (AudioEngineTest, GetMonitorOutPortReturnsValidPort)
 TEST_F (AudioEngineTest, GetGraphDispatcherReturnsValidDispatcher)
 {
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+    *transport_, audio_device_manager_, *graph_dispatcher_);
 
   auto &dispatcher = engine->graph_dispatcher ();
 
@@ -501,10 +501,10 @@ TEST_F (AudioEngineTest, DestructorDeactivatesIfActive)
 {
   {
     auto engine = std::make_unique<AudioEngine> (
-      *transport_, *tempo_map_, audio_device_manager_, *graph_dispatcher_);
+      *transport_, audio_device_manager_, *graph_dispatcher_);
 
     // Activate the engine first
-    engine->activate (true);
+    engine->activate ();
     EXPECT_TRUE (engine->activated ());
 
     // Destroying the engine (going out of scope) should call deactivate

@@ -103,12 +103,8 @@ Project::Project (
           },
           this)),
       audio_engine_ (
-        utils::make_qobject_unique<dsp::AudioEngine> (
-          *transport_,
-          tempo_map_,
-          device_manager,
-          graph_dispatcher_,
-          this)),
+        utils::make_qobject_unique<
+          dsp::AudioEngine> (*transport_, device_manager, graph_dispatcher_, this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
@@ -767,7 +763,7 @@ Project::activate ()
   // TODO
   // last_saved_action_ = legacy_undo_manager_->get_last_action ();
 
-  audio_engine_->activate (true);
+  audio_engine_->activate ();
 
   // Pause and recalculate the graph
   audio_engine_->execute_function_with_paused_processing_synchronously (

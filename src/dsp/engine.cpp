@@ -36,11 +36,10 @@ namespace zrythm::dsp
 
 AudioEngine::AudioEngine (
   dsp::Transport                           &transport,
-  const dsp::TempoMap                      &tempo_map,
   std::shared_ptr<juce::AudioDeviceManager> device_mgr,
   dsp::DspGraphDispatcher                  &graph_dispatcher,
   QObject *                                 parent)
-    : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
+    : QObject (parent), transport_ (transport),
       graph_dispatcher_ (graph_dispatcher),
       device_manager_ (std::move (device_mgr)),
       monitor_out_ (
@@ -56,52 +55,54 @@ AudioEngine::AudioEngine (
             .port_registry_ = port_registry_,
             .param_registry_ = param_registry_ })),
       audio_callback_ (
-        [this] (
-          const float * const * inputChannelData,
-          int                   numInputChannels,
-          float * const *       outputChannelData,
-          int                   numOutputChannels,
-          int                   numSamples) {
-          juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
-            load_measurer_
-          };
-          dsp::PlayheadProcessingGuard guard{
-            this->transport_.playhead ()->playhead ()
-          };
+        std::make_unique<AudioCallback> (
+          [this] (
+            const float * const * inputChannelData,
+            int                   numInputChannels,
+            float * const *       outputChannelData,
+            int                   numOutputChannels,
+            int                   numSamples) {
+            juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
+              load_measurer_
+            };
+            dsp::PlayheadProcessingGuard guard{
+              this->transport_.playhead ()->playhead ()
+            };
 
-          const auto process_status = this->process (guard, numSamples);
-          if (process_status == ProcessReturnStatus::ProcessCompleted)
-            {
-              // Note: the monitor output ports below require the processing
-              // graph to be operational. We are guarding against other cases
-              // by checking the process() return status
-              if (numOutputChannels > 0)
-                {
-                  utils::float_ranges::copy (
-                    outputChannelData[0],
-                    monitor_out_.buffers ()->getReadPointer (0), numSamples);
-                }
-              if (numOutputChannels > 1)
-                {
-                  utils::float_ranges::copy (
-                    outputChannelData[1],
-                    monitor_out_.buffers ()->getReadPointer (1), numSamples);
-                }
-            }
-        },
-        [this] (juce::AudioIODevice * dev) {
-          graph_dispatcher_.recalc_graph (false);
-          monitor_out_.prepare_for_processing (
-            nullptr,
-            units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ())),
-            dev->getCurrentBufferSizeSamples ());
-          Q_EMIT sampleRateChanged (sampleRate ());
-          callback_running_ = true;
-        },
-        [this] () {
-          monitor_out_.release_resources ();
-          callback_running_ = false;
-        })
+            const auto process_status = this->process (guard, numSamples);
+            if (process_status == ProcessReturnStatus::ProcessCompleted)
+              {
+                // Note: the monitor output ports below require the processing
+                // graph to be operational. We are guarding against other cases
+                // by checking the process() return status
+                if (numOutputChannels > 0)
+                  {
+                    utils::float_ranges::copy (
+                      outputChannelData[0],
+                      monitor_out_.buffers ()->getReadPointer (0), numSamples);
+                  }
+                if (numOutputChannels > 1)
+                  {
+                    utils::float_ranges::copy (
+                      outputChannelData[1],
+                      monitor_out_.buffers ()->getReadPointer (1), numSamples);
+                  }
+              }
+          },
+          [this] (juce::AudioIODevice * dev) {
+            graph_dispatcher_.recalc_graph (false);
+            monitor_out_.prepare_for_processing (
+              nullptr,
+              units::sample_rate (
+                static_cast<int> (dev->getCurrentSampleRate ())),
+              dev->getCurrentBufferSizeSamples ());
+            Q_EMIT sampleRateChanged (sampleRate ());
+            callback_running_ = true;
+          },
+          [this] () {
+            monitor_out_.release_resources ();
+            callback_running_ = false;
+          }))
 {
   midi_in_->set_symbol (u8"midi_in");
   monitor_out_.set_symbol (u8"monitor_out");
@@ -231,7 +232,19 @@ AudioEngine::resume (const EngineState &state)
 }
 
 void
-AudioEngine::activate (const bool activate)
+AudioEngine::activate ()
+{
+  activate_impl (true);
+}
+
+void
+AudioEngine::deactivate ()
+{
+  activate_impl (false);
+}
+
+void
+AudioEngine::activate_impl (const bool activate)
 {
   const auto new_state = activate ? State::Active : State::Initialized;
   if (state_.load () == new_state)
@@ -246,14 +259,14 @@ AudioEngine::activate (const bool activate)
         get_sample_rate ().in (units::sample_rate),
         static_cast<int> (get_block_length ()));
 
-      device_manager_->addAudioCallback (&audio_callback_);
+      device_manager_->addAudioCallback (audio_callback_.get ());
     }
   else
     {
       EngineState state{};
       wait_for_pause (state, true, true);
 
-      device_manager_->removeAudioCallback (&audio_callback_);
+      device_manager_->removeAudioCallback (audio_callback_.get ());
     }
 
   state_ = new_state;
@@ -570,7 +583,7 @@ AudioEngine::~AudioEngine ()
 
   if (state_ == State::Active)
     {
-      activate (false);
+      deactivate ();
     }
 
   z_debug ("Audio engine destroyed");

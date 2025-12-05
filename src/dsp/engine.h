@@ -41,7 +41,6 @@ public:
    */
   AudioEngine (
     dsp::Transport                           &transport,
-    const dsp::TempoMap                      &tempo_map,
     std::shared_ptr<juce::AudioDeviceManager> device_mgr,
     dsp::DspGraphDispatcher                  &graph_dispatcher,
     QObject *                                 parent = nullptr);
@@ -76,12 +75,8 @@ public:
 
   void resume (const EngineState &state);
 
-  /**
-   * Activates the audio engine to start processing and receiving events.
-   *
-   * @param activate Activate or deactivate.
-   */
-  [[gnu::cold]] void activate (bool activate);
+  void activate ();
+  void deactivate ();
 
   /**
    * To be called by each implementation to prepare the structures before
@@ -182,11 +177,18 @@ public:
     bool                          recalculate_graph);
 
 private:
+  /**
+   * Activates the audio engine to start processing and receiving events.
+   *
+   * @param activate Activate or deactivate.
+   */
+  void activate_impl (bool activate);
+
+private:
   dsp::PortRegistry               port_registry_;
   dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
 
-  dsp::Transport      &transport_;
-  const dsp::TempoMap &tempo_map_;
+  dsp::Transport &transport_;
 
   /** The processing graph router. */
   dsp::DspGraphDispatcher &graph_dispatcher_;
@@ -203,13 +205,14 @@ private:
   /**
    * @brief The last audio output in the signal chain.
    *
-   * The contents of this port will be passed on to the audio output device at
-   * the end of every processing cycle.
+   * The contents of this port will be passed on to the audio output device
+   * at the end of every processing cycle.
    *
    * @note Since the audio engine runs (but finishes early) even while the
    * graph gets recalculated, this port's buffers can be re-allocated by the
-   * graph, so we need to make sure we don't use its buffers unless processing
-   * is successful (no early finish). See the AudioCallback lambda for details.
+   * graph, so we need to make sure we don't use its buffers unless
+   * processing is successful (no early finish). See the AudioCallback
+   * lambda for details.
    */
   dsp::AudioPort monitor_out_;
 
@@ -251,10 +254,11 @@ private:
 
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
-  AudioCallback audio_callback_;
+  std::unique_ptr<AudioCallback> audio_callback_;
 
   /**
-   * @brief Whether the audio callback is currently periodically getting called.
+   * @brief Whether the audio callback is currently periodically getting
+   * called.
    */
   bool callback_running_{};
 };

@@ -413,7 +413,7 @@ ZrythmApplication::onAboutToQuit ()
     {
       if (gZrythm->project_ && gZrythm->project_->audio_engine_)
         {
-          gZrythm->project_->audio_engine_->activate (false);
+          gZrythm->project_->audio_engine_->deactivate ();
         }
       gZrythm->project_.reset ();
       gZrythm->deleteInstance ();
