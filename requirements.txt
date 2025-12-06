@@ -48,5 +48,5 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.5
 sphinxcontrib-serializinghtml==1.1.9
 sphinxcontrib-svg2pdfconverter==1.2.2
-urllib3==2.5.0
+urllib3==2.6.0
 virtualenv==20.31.2
