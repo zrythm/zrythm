@@ -65,7 +65,6 @@ Project::Project (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
       version_ (Zrythm::get_version (false)), device_manager_ (device_manager),
-      tool_ (new gui::backend::ArrangerTool (this)),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
@@ -114,15 +113,6 @@ Project::Project (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1)),
-      timeline_ (
-        utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
-      clip_editor_ (
-        utils::make_qobject_unique<ClipEditor> (
-          *arranger_object_registry_,
-          [&] (const auto &id) {
-            return get_track_registry ().find_by_id_or_throw (id);
-          },
-          this)),
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (
@@ -793,10 +783,13 @@ Project::add_default_tracks ()
   /* chord */
   auto * chord_track = add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
   tracklist_->singletonTracks ()->setChordTrack (chord_track);
+// TODO
+#if 0
   chord_track->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
     return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
       note_pitch);
   });
+#endif
 
   /* add a scale */
   auto scale_ref =
@@ -858,8 +851,6 @@ Project::add_default_tracks ()
     add_track.operator()<MasterTrack> (QObject::tr ("Master"));
   tracklist_->singletonTracks ()->setMasterTrack (master_track);
   track_selection_manager_->select_unique (master_track->get_uuid ());
-
-  last_selection_ = SelectionType::Tracklist;
 }
 
 #if 0
@@ -895,44 +886,6 @@ project_get_arranger_for_last_selection (
     }
 
   return NULL;
-}
-#endif
-
-#if 0
-std::optional<ArrangerSelectionsPtrVariant>
-Project::get_arranger_selections_for_last_selection ()
-{
-  auto r = CLIP_EDITOR->get_region ();
-  switch (last_selection_)
-    {
-    case Project::SelectionType::Timeline:
-      return timeline_selections_;
-      break;
-    case Project::SelectionType::Editor:
-      if (r)
-        {
-          return std::visit (
-            [&] (auto &&region) -> std::optional<ArrangerSelectionsPtrVariant> {
-              if (region->get_arranger_selections ().has_value ())
-                {
-                  return std::visit (
-                    [&] (auto &&sel)
-                      -> std::optional<ArrangerSelectionsPtrVariant> {
-                      return sel;
-                    },
-                    region->get_arranger_selections ().value ());
-                }
-
-              return std::nullopt;
-            },
-            *r);
-        }
-      break;
-    default:
-      return std::nullopt;
-    }
-
-  return std::nullopt;
 }
 #endif
 
@@ -1551,13 +1504,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
-  obj.clip_editor_ = utils::clone_qobject (
-    *other.clip_editor_, &obj, clone_type, *obj.arranger_object_registry_,
-    [&] (const Project::TrackUuid &id) {
-      return obj.get_track_registry ().find_by_id_or_throw (id);
-    });
-  obj.timeline_ = utils::clone_qobject (
-    *other.timeline_, &obj, clone_type, *obj.arranger_object_registry_);
   // TODO
   // obj.snap_grid_timeline_ =
   //   std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
@@ -1574,7 +1520,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     *other.midi_mappings_, clone_type, *obj.param_registry_);
   // obj.legacy_undo_manager_ =
   //   utils::clone_qobject (*other.legacy_undo_manager_, &obj);
-  obj.tool_ = utils::clone_qobject (*other.tool_, &obj);
 
   z_debug ("finished cloning project");
 }
@@ -1631,12 +1576,6 @@ Project::clipPlaybackService () const
   return clip_playback_service_.get ();
 }
 
-structure::arrangement::Timeline *
-Project::getTimeline () const
-{
-  return timeline_.get ();
-}
-
 gui::backend::TrackSelectionManager *
 Project::trackSelectionManager () const
 {
@@ -1671,18 +1610,6 @@ dsp::AudioEngine *
 Project::engine () const
 {
   return audio_engine_.get ();
-}
-
-gui::backend::ArrangerTool *
-Project::tool () const
-{
-  return tool_.get ();
-}
-
-ClipEditor *
-Project::getClipEditor () const
-{
-  return clip_editor_.get ();
 }
 
 undo::UndoStack *
@@ -1742,7 +1669,9 @@ Project::snapGridEditor () const
 Project *
 Project::get_active_instance ()
 {
-  return zrythm::gui::ProjectManager::get_instance ()->getActiveProject ();
+  auto * ui_state =
+    zrythm::gui::ProjectManager::get_instance ()->activeProject ();
+  return ui_state != nullptr ? ui_state->project () : nullptr;
 }
 
 Project *
@@ -1820,8 +1749,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kTitleKey] = project.title_;
   j[Project::kDatetimeKey] = project.datetime_str_;
   j[Project::kVersionKey] = project.version_;
-  j[Project::kClipEditorKey] = project.clip_editor_;
-  j[Project::kTimelineKey] = project.timeline_;
   j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
   j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
   j[Project::kQuantizeOptsTimelineKey] = project.quantize_opts_timeline_;
@@ -1835,7 +1762,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kMidiMappingsKey] = project.midi_mappings_;
   // j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
   j[Project::kUndoStackKey] = project.undo_stack_;
-  j[Project::kLastSelectionKey] = project.last_selection_;
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
 }
 
@@ -1950,8 +1876,6 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kTitleKey).get_to (project.title_);
   j.at (Project::kDatetimeKey).get_to (project.datetime_str_);
   j.at (Project::kVersionKey).get_to (project.version_);
-  j.at (Project::kClipEditorKey).get_to (*project.clip_editor_);
-  j.at (Project::kTimelineKey).get_to (*project.timeline_);
   j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
   j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
   j.at (Project::kQuantizeOptsTimelineKey)
@@ -1973,9 +1897,10 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
   // j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
   j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
-  j.at (Project::kLastSelectionKey).get_to (project.last_selection_);
   j.at (Project::kTempoObjectManagerKey).get_to (*project.tempo_object_manager_);
 
+// TODO
+#if 0
   project.tracklist_->singletonTracks ()
     ->chordTrack ()
     ->set_note_pitch_to_descriptor_func ([&project] (midi_byte_t note_pitch) {
@@ -1983,4 +1908,5 @@ from_json (const nlohmann::json &j, Project &project)
         ->getChordEditor ()
         ->get_chord_from_note_number (note_pitch);
     });
+#endif
 }

@@ -9,6 +9,7 @@ import ZrythmStyle 1.0
 GridLayout {
   id: root
 
-  required property var project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   required property var region
 }

@@ -99,16 +99,8 @@ public:
 private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   static constexpr auto kChordsKey = "chords"sv;
-  friend void           to_json (nlohmann::json &j, const ChordEditor &editor)
-  {
-    j[kEditorSettingsKey] = editor.editor_settings_;
-    j[kChordsKey] = editor.chords_;
-  }
-  friend void from_json (const nlohmann::json &j, ChordEditor &editor)
-  {
-    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
-    j.at (kChordsKey).get_to (editor.chords_);
-  }
+  friend void           to_json (nlohmann::json &j, const ChordEditor &editor);
+  friend void from_json (const nlohmann::json &j, ChordEditor &editor);
 
 public:
   /**

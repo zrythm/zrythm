@@ -254,4 +254,19 @@ PianoRoll::init ()
 
   init_descriptors ();
 }
+
+void
+to_json (nlohmann::json &j, const PianoRoll &piano_roll)
+{
+  j[PianoRoll::kEditorSettingsKey] = piano_roll.editor_settings_;
+  j[PianoRoll::kNotesZoomKey] = piano_roll.notes_zoom_;
+  j[PianoRoll::kMidiModifierKey] = piano_roll.midi_modifier_;
+}
+void
+from_json (const nlohmann::json &j, PianoRoll &piano_roll)
+{
+  j.at (PianoRoll::kEditorSettingsKey).get_to (piano_roll.editor_settings_);
+  j.at (PianoRoll::kNotesZoomKey).get_to (piano_roll.notes_zoom_);
+  j.at (PianoRoll::kMidiModifierKey).get_to (piano_roll.midi_modifier_);
+}
 }

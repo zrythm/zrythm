@@ -14,7 +14,8 @@ import Qt.labs.synchronizer
 ColumnLayout {
   id: root
 
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   readonly property int rulerHeight: 24
   readonly property int tempoMapLaneHeight: 24
   readonly property int tempoMapLaneSpacing: 1
@@ -108,7 +109,7 @@ ColumnLayout {
           }
 
           Synchronizer {
-            sourceObject: root.project.timeline.editorSettings
+            sourceObject: root.projectUiState.timeline.editorSettings
             sourceProperty: "y"
             targetObject: unpinnedTracklist
             targetProperty: "contentY"
@@ -130,7 +131,7 @@ ColumnLayout {
           fileImporter: root.project.fileImporter
           objectCreator: root.project.arrangerObjectCreator
           rulerHeight: root.rulerHeight
-          timeline: root.project.timeline
+          timeline: root.projectUiState.timeline
           trackCollection: root.project.tracklist.collection
         }
       }
@@ -157,7 +158,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: root.rulerHeight
-            editorSettings: root.project.timeline.editorSettings
+            editorSettings: root.projectUiState.timeline.editorSettings
             tempoMap: root.project.tempoMap
             transport: root.project.transport
           }
@@ -178,8 +179,8 @@ ColumnLayout {
 
               anchors.fill: parent
               arrangerSelectionModel: arrangerSelectionModel
-              clipEditor: root.project.clipEditor
-              editorSettings: root.project.timeline.editorSettings
+              clipEditor: root.projectUiState.clipEditor
+              editorSettings: root.projectUiState.timeline.editorSettings
               laneHeight: root.tempoMapLaneHeight
               laneSpacing: root.tempoMapLaneSpacing
               objectCreator: root.project.arrangerObjectCreator
@@ -188,7 +189,7 @@ ColumnLayout {
               snapGrid: root.project.snapGridTimeline
               tempoMap: root.project.tempoMap
               tempoObjectManager: root.project.tempoObjectManager
-              tool: root.project.tool
+              tool: root.projectUiState.tool
               transport: root.project.transport
               undoStack: root.project.undoStack
               unifiedObjectsModel: unifiedObjectsModel
@@ -202,15 +203,15 @@ ColumnLayout {
             Layout.maximumHeight: pinnedTracklist.height
             Layout.minimumHeight: pinnedTracklist.height
             arrangerSelectionModel: arrangerSelectionModel
-            clipEditor: root.project.clipEditor
+            clipEditor: root.projectUiState.clipEditor
             objectCreator: root.project.arrangerObjectCreator
             pinned: true
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.project.snapGridTimeline
             tempoMap: root.project.tempoMap
-            timeline: root.project.timeline
-            tool: root.project.tool
+            timeline: root.projectUiState.timeline
+            tool: root.projectUiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
             undoStack: root.project.undoStack
@@ -237,7 +238,7 @@ ColumnLayout {
                 const arrangerObject = getObjectFromUnifiedIndex(current);
                 if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                   console.log("current region changed, setting clip editor region to ", arrangerObject.name.name);
-                  root.project.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
+                        root.projectUiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
                 }
               }
             }
@@ -266,15 +267,15 @@ ColumnLayout {
             Layout.fillHeight: true
             Layout.fillWidth: true
             arrangerSelectionModel: arrangerSelectionModel
-            clipEditor: root.project.clipEditor
+            clipEditor: root.projectUiState.clipEditor
             objectCreator: root.project.arrangerObjectCreator
             pinned: false
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.project.snapGridTimeline
             tempoMap: root.project.tempoMap
-            timeline: root.project.timeline
-            tool: root.project.tool
+            timeline: root.projectUiState.timeline
+            tool: root.projectUiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
             undoStack: root.project.undoStack

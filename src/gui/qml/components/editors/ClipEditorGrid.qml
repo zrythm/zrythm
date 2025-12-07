@@ -12,7 +12,8 @@ GridLayout {
   id: root
 
   required property ClipEditor clipEditor
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   readonly property var region: clipEditor.region
   readonly property var track: clipEditor.track
 
@@ -88,7 +89,7 @@ GridLayout {
       sourceComponent: MidiEditorPane {
         clipEditor: root.clipEditor
         pianoRoll: root.clipEditor.pianoRoll
-        project: root.project
+        projectUiState: root.projectUiState
         region: root.region
       }
     }
@@ -99,7 +100,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 1
 
       sourceComponent: AudioEditorPane {
-        project: root.project
+        projectUiState: root.projectUiState
         region: root.region
       }
     }
@@ -112,7 +113,7 @@ GridLayout {
       sourceComponent: AutomationEditorPane {
         clipEditor: root.clipEditor
         automationEditor: root.clipEditor.automationEditor
-        project: root.project
+        projectUiState: root.projectUiState
         region: root.region
       }
     }
@@ -123,7 +124,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 3
 
       sourceComponent: ChordEditorPane {
-        project: root.project
+        projectUiState: root.projectUiState
         region: root.region
       }
     }

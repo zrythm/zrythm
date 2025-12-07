@@ -90,18 +90,8 @@ private:
   static constexpr auto kScrollStartXKey = "scrollStartX"sv;
   static constexpr auto kScrollStartYKey = "scrollStartY"sv;
   static constexpr auto kHZoomLevelKey = "hZoomLevel"sv;
-  friend void to_json (nlohmann::json &j, const EditorSettings &settings)
-  {
-    j[kScrollStartXKey] = settings.scroll_start_x_;
-    j[kScrollStartYKey] = settings.scroll_start_y_;
-    j[kHZoomLevelKey] = settings.hzoom_level_;
-  }
-  friend void from_json (const nlohmann::json &j, EditorSettings &settings)
-  {
-    j.at (kScrollStartXKey).get_to (settings.scroll_start_x_);
-    j.at (kScrollStartYKey).get_to (settings.scroll_start_y_);
-    j.at (kHZoomLevelKey).get_to (settings.hzoom_level_);
-  }
+  friend void to_json (nlohmann::json &j, const EditorSettings &settings);
+  friend void from_json (const nlohmann::json &j, EditorSettings &settings);
 
 private:
   /** Horizontal scroll start position. */

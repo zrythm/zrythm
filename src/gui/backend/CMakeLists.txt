@@ -39,6 +39,8 @@ target_sources(zrythm_gui_lib
     project_manager.cpp
     project_templates_model.h
     project_templates_model.cpp
+    project_ui_state.h
+    project_ui_state.cpp
     # realtime_property.h
     recent_projects_model.h
     recent_projects_model.cpp

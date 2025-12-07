@@ -12,7 +12,8 @@ import ZrythmStyle 1.0
 ColumnLayout {
   id: root
 
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
 
   spacing: 0
 
@@ -28,7 +29,7 @@ ColumnLayout {
 
       Layout.fillHeight: true
       Layout.fillWidth: true
-      currentIndex: root.project.clipEditor.region ? 1 : 0
+      currentIndex: root.projectUiState.clipEditor.region ? 1 : 0
 
       PlaceholderPage {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -44,8 +45,8 @@ ColumnLayout {
         visible: active
 
         sourceComponent: ClipEditorGrid {
-          clipEditor: root.project.clipEditor
-          project: root.project
+          clipEditor: root.projectUiState.clipEditor
+          projectUiState: root.projectUiState
         }
       }
     }

@@ -45,14 +45,8 @@ public:
 
 private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
-  friend void to_json (nlohmann::json &j, const AutomationEditor &editor)
-  {
-    j[kEditorSettingsKey] = editor.editor_settings_;
-  }
-  friend void from_json (const nlohmann::json &j, AutomationEditor &editor)
-  {
-    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
-  }
+  friend void to_json (nlohmann::json &j, const AutomationEditor &editor);
+  friend void from_json (const nlohmann::json &j, AutomationEditor &editor);
 
 private:
   utils::QObjectUniquePtr<EditorSettings> editor_settings_;

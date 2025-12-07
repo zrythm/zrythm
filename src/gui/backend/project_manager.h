@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "gui/backend/backend/project.h"
+#include "gui/backend/project_ui_state.h"
 
 #include <QtQmlIntegration>
 
@@ -20,15 +20,16 @@ class ProjectManager : public QObject
     zrythm::gui::RecentProjectsModel * recentProjects READ getRecentProjects
       CONSTANT)
   Q_PROPERTY (
-    Project * activeProject READ getActiveProject WRITE setActiveProject NOTIFY
-      activeProjectChanged)
+    zrythm::gui::ProjectUiState * activeProject READ activeProject WRITE
+      setActiveProject NOTIFY activeProjectChanged)
 
 public:
   ProjectManager (QObject * parent = nullptr);
 
   using Template = fs::path;
   using TemplateList = std::vector<Template>;
-  using ProjectLoadResult = std::variant<Project *, QString>;
+  using ProjectLoadResult =
+    std::variant<utils::QObjectUniquePtr<ProjectUiState>, QString>;
 
   static ProjectManager * get_instance ();
 
@@ -55,13 +56,13 @@ public:
 
   RecentProjectsModel * getRecentProjects () const;
 
-  Project * getActiveProject () const;
-  void      setActiveProject (Project * project);
+  ProjectUiState * activeProject () const;
+  void             setActiveProject (ProjectUiState * project);
 
 Q_SIGNALS:
-  void projectLoaded (Project * project);
+  void projectLoaded (ProjectUiState * project);
   void projectLoadingFailed (const QString &errorMessage);
-  void activeProjectChanged (Project * project);
+  void activeProjectChanged (ProjectUiState * project);
 
 private:
   /**
@@ -88,7 +89,7 @@ private:
    * to @p prj_dir.
    * @throw ZrythmException if an error occurred.
    */
-  Project * create_default (
+  utils::QObjectUniquePtr<ProjectUiState> create_default (
     const fs::path          &prj_dir,
     const utils::Utf8String &name,
     bool                     with_engine);
@@ -108,10 +109,8 @@ private:
 
   /**
    * @brief Currently active project.
-   *
-   * @note We manage lifetime via Qt, so remember to use `setParent()`.
    */
-  Project * active_project_ = nullptr;
+  utils::QObjectUniquePtr<ProjectUiState> active_project_;
 
   /**
    * @brief Future watcher for when a project is loaded (or fails to load).

@@ -46,14 +46,8 @@ public:
 
 private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
-  friend void to_json (nlohmann::json &j, const AudioClipEditor &editor)
-  {
-    j[kEditorSettingsKey] = editor.editor_settings_;
-  }
-  friend void from_json (const nlohmann::json &j, AudioClipEditor &editor)
-  {
-    j.at (kEditorSettingsKey).get_to (editor.editor_settings_);
-  }
+  friend void to_json (nlohmann::json &j, const AudioClipEditor &editor);
+  friend void from_json (const nlohmann::json &j, AudioClipEditor &editor);
 
 private:
   utils::QObjectUniquePtr<EditorSettings> editor_settings_{ new EditorSettings{

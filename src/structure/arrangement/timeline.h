@@ -46,16 +46,8 @@ private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
 
   static constexpr auto kTracksWidthKey = "tracksWidth";
-  friend void           to_json (nlohmann::json &j, const Timeline &p)
-  {
-    j[kEditorSettingsKey] = p.editor_settings_;
-    j[kTracksWidthKey] = p.tracks_width_;
-  }
-  friend void from_json (const nlohmann::json &j, Timeline &p)
-  {
-    j.at (kEditorSettingsKey).get_to (p.editor_settings_);
-    j.at (kTracksWidthKey).get_to (p.tracks_width_);
-  }
+  friend void           to_json (nlohmann::json &j, const Timeline &p);
+  friend void           from_json (const nlohmann::json &j, Timeline &p);
 
 private:
   utils::QObjectUniquePtr<EditorSettings> editor_settings_;

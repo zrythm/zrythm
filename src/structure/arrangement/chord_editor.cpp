@@ -159,4 +159,17 @@ ChordEditor::get_chord_index (const ChordDescriptor &chord) const
 
   z_return_val_if_reached (-1);
 }
+
+void
+to_json (nlohmann::json &j, const ChordEditor &editor)
+{
+  j[ChordEditor::kEditorSettingsKey] = editor.editor_settings_;
+  j[ChordEditor::kChordsKey] = editor.chords_;
+}
+void
+from_json (const nlohmann::json &j, ChordEditor &editor)
+{
+  j.at (ChordEditor::kEditorSettingsKey).get_to (editor.editor_settings_);
+  j.at (ChordEditor::kChordsKey).get_to (editor.chords_);
+}
 }

@@ -12,7 +12,8 @@ GridLayout {
 
   required property AutomationEditor automationEditor
   required property ClipEditor clipEditor
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   required property AutomationRegion region
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
@@ -106,7 +107,7 @@ GridLayout {
     selectionOperator: root.selectionOperator
     snapGrid: root.project.snapGridEditor
     tempoMap: root.project.tempoMap
-    tool: root.project.tool
+    tool: root.projectUiState.tool
     transport: root.project.transport
     undoStack: root.project.undoStack
     unifiedObjectsModel: unifiedObjectsModel

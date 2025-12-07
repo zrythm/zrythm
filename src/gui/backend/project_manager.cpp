@@ -127,7 +127,7 @@ ProjectManager::getRecentProjects () const
   return recent_projects_model_;
 }
 
-Project *
+utils::QObjectUniquePtr<ProjectUiState>
 ProjectManager::create_default (
   const fs::path          &prj_dir,
   const utils::Utf8String &name,
@@ -135,31 +135,37 @@ ProjectManager::create_default (
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
-  Project * prj{};
+  utils::QObjectUniquePtr<ProjectUiState> prj_ui_state;
   QMetaObject::invokeMethod (
     qApp,
-    [&prj, &name] {
+    [&prj_ui_state, &name] {
       // registries and registry objects must be created on the main thread
-      prj = new Project (
-        dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
-      prj->setTitle (name.to_qstring ());
-      prj->add_default_tracks ();
+      {
+        auto prj = utils::make_qobject_unique<Project> (
+          dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
+        prj_ui_state =
+          utils::make_qobject_unique<ProjectUiState> (std::move (prj));
+      }
+      prj_ui_state->project ()->setTitle (name.to_qstring ());
+      prj_ui_state->project ()->add_default_tracks ();
     },
     Qt::BlockingQueuedConnection);
-  prj->moveToThread (this->thread ());
+  prj_ui_state->moveToThread (this->thread ());
+
+  auto * prj = prj_ui_state->project ();
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;
   prj->make_project_dirs (false);
 
-  prj->clip_editor_->init ();
+  prj_ui_state->clipEditor ()->init ();
 
   prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
   prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   z_debug ("done creating default project");
 
-  return prj;
+  return prj_ui_state;
 }
 
 void
@@ -176,24 +182,25 @@ ProjectManager::createNewProject (
   std::thread ([directory_file, name, template_file, this] {
     try
       {
-        auto * project =
+        auto project_ui_state =
           template_file.isEmpty ()
             ? create_default (
                 utils::Utf8String::from_qstring (directory_file).to_path (),
                 utils::Utf8String::from_qstring (name), true)
             : nullptr; // TODO: template handling
 
-        project->moveToThread (this->thread ());
-        project->save (project->dir_, false, false, false);
+        project_ui_state->project ()->save (
+          project_ui_state->project ()->dir_, false, false, false);
 
         QMetaObject::invokeMethod (
           this,
-          [this, project] {
-            project->setParent (this);
-            setActiveProject (project);
-            project->audio_engine_->graph_dispatcher ().recalc_graph (false);
-            project->audio_engine_->set_running (true);
-            Q_EMIT projectLoaded (project);
+          [this, ui_state = project_ui_state.release ()] {
+            ui_state->setParent (this);
+            setActiveProject (ui_state);
+            ui_state->project ()->engine ()->graph_dispatcher ().recalc_graph (
+              false);
+            ui_state->project ()->engine ()->set_running (true);
+            Q_EMIT projectLoaded (ui_state);
           },
           Qt::BlockingQueuedConnection);
       }
@@ -220,31 +227,30 @@ ProjectManager::loadProject (const QString &filepath)
   }).detach ();
 }
 
-Project *
-ProjectManager::getActiveProject () const
+ProjectUiState *
+ProjectManager::activeProject () const
 {
-  return active_project_;
+  return active_project_.get ();
 }
 
 void
-ProjectManager::setActiveProject (Project * project)
+ProjectManager::setActiveProject (ProjectUiState * project)
 {
-  if (active_project_ == project)
+  if (active_project_.get () == project)
     return;
 
-  if (active_project_ != nullptr)
+  if (active_project_)
     {
-      active_project_->setParent (nullptr);
-      active_project_->aboutToBeDeleted ();
-      active_project_->deleteLater ();
+      active_project_->project ()->aboutToBeDeleted ();
+      active_project_.reset ();
     }
 
   active_project_ = project;
-  if (active_project_ != nullptr)
+  if (active_project_)
     {
       active_project_->setParent (this);
     }
 
-  Q_EMIT activeProjectChanged (active_project_);
+  Q_EMIT activeProjectChanged (active_project_.get ());
 }
 }

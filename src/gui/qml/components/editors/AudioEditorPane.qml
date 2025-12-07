@@ -3,12 +3,13 @@
 
 import QtQuick
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 GridLayout {
   id: root
 
-  required property var project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   required property var region
 }

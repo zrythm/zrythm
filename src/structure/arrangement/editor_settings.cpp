@@ -3,6 +3,8 @@
 
 #include "structure/arrangement/editor_settings.h"
 
+#include <json/json.h>
+
 namespace zrythm::structure::arrangement
 {
 double
@@ -69,5 +71,20 @@ EditorSettings::append_scroll (double dx, double dy, bool validate)
   // scroll_start_y_ = set_scroll_start_y (scroll_start_y_ + dy);
   /*z_debug ("scrolled to ({}, {})", scroll_start_x_,
    * scroll_start_y_);*/
+}
+
+void
+to_json (nlohmann::json &j, const EditorSettings &settings)
+{
+  j[EditorSettings::kScrollStartXKey] = settings.scroll_start_x_;
+  j[EditorSettings::kScrollStartYKey] = settings.scroll_start_y_;
+  j[EditorSettings::kHZoomLevelKey] = settings.hzoom_level_;
+}
+void
+from_json (const nlohmann::json &j, EditorSettings &settings)
+{
+  j.at (EditorSettings::kScrollStartXKey).get_to (settings.scroll_start_x_);
+  j.at (EditorSettings::kScrollStartYKey).get_to (settings.scroll_start_y_);
+  j.at (EditorSettings::kHZoomLevelKey).get_to (settings.hzoom_level_);
 }
 }

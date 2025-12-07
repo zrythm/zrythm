@@ -17,8 +17,6 @@
 #include "dsp/transport.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/arranger_tool.h"
-#include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/track_selection_manager.h"
 #include "gui/dsp/quantize_options.h"
@@ -26,7 +24,6 @@
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/tempo_object_manager.h"
-#include "structure/arrangement/timeline.h"
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
@@ -87,14 +84,8 @@ enum class ProjectPath
 };
 
 /**
- * @brief Contains all of the info that will be serialized into a project file.
- *
- * @todo Create a UserInterface struct and move things that are only relevant to
- * the UI there.
- *
- * A project (or song), contains all the project data as opposed to zrythm_app.h
- * which manages global things like plugin descriptors and global settings.
- **/
+ * @brief Core functionality of a Zrythm project.
+ */
 class Project final : public QObject
 {
   Q_OBJECT
@@ -117,17 +108,12 @@ class Project final : public QObject
     zrythm::gui::backend::TrackSelectionManager * trackSelectionManager READ
       trackSelectionManager CONSTANT)
   Q_PROPERTY (
-    zrythm::structure::arrangement::Timeline * timeline READ getTimeline
-      CONSTANT FINAL)
-  Q_PROPERTY (
     zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
       FINAL)
   Q_PROPERTY (zrythm::dsp::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
-  Q_PROPERTY (zrythm::gui::backend::ArrangerTool * tool READ tool CONSTANT FINAL)
-  Q_PROPERTY (ClipEditor * clipEditor READ getClipEditor CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
@@ -175,34 +161,6 @@ public:
   Z_DISABLE_COPY_MOVE (Project)
 
   /**
-   * Selection type, used for controlling which part of the interface is
-   * selected, for copy-paste, displaying info in the inspector, etc.
-   */
-  enum class SelectionType
-  {
-    /** Track selection in tracklist or mixer. */
-    Tracklist,
-
-    /** Timeline or pinned timeline. */
-    Timeline,
-
-    /** Insert selections in the mixer. */
-    Insert,
-
-    /** MIDI FX selections in the mixer. */
-    MidiFX,
-
-    /** Instrument slot. */
-    Instrument,
-
-    /** Modulator slot. */
-    Modulator,
-
-    /** Editor arranger. */
-    Editor,
-  };
-
-  /**
    * Flag to pass to project_compress() and project_decompress().
    */
   enum class CompressionFlag
@@ -226,13 +184,10 @@ public:
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
   gui::backend::TrackSelectionManager *        trackSelectionManager () const;
   gui::backend::PluginSelectionManager *       pluginSelectionManager () const;
-  structure::arrangement::Timeline *           getTimeline () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
   engine::session::ControlRoom *               controlRoom () const;
   dsp::AudioEngine *                           engine () const;
-  gui::backend::ArrangerTool *                 tool () const;
-  ClipEditor *                                 getClipEditor () const;
   undo::UndoStack *                            undoStack () const;
   zrythm::actions::ArrangerObjectCreator *     arrangerObjectCreator () const;
   zrythm::actions::TrackCreator *              trackCreator () const;
@@ -529,8 +484,6 @@ private:
   static constexpr auto kTitleKey = "title"sv;
   static constexpr auto kDatetimeKey = "datetime"sv;
   static constexpr auto kVersionKey = "version"sv;
-  static constexpr auto kClipEditorKey = "clipEditor"sv;
-  static constexpr auto kTimelineKey = "timeline"sv;
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
   static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
   static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
@@ -543,7 +496,6 @@ private:
   static constexpr auto kMidiMappingsKey = "midiMappings"sv;
   static constexpr auto kUndoManagerKey = "undoManager"sv;
   static constexpr auto kUndoStackKey = "undoStack"sv;
-  static constexpr auto kLastSelectionKey = "lastSelection"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
   static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
   static constexpr auto FORMAT_MAJOR_VER = 2;
@@ -597,13 +549,6 @@ public:
   utils::Utf8String version_;
 
   /**
-   * The last thing selected in the GUI.
-   *
-   * Used in inspector_widget_refresh.
-   */
-  Project::SelectionType last_selection_{};
-
-  /**
    * Whether the current is currently being loaded from a backup file.
    *
    * This is useful when instantiating plugins from state and should be set
@@ -612,11 +557,6 @@ public:
   bool loading_from_backup_ = false;
 
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
-
-  /**
-   * @brief Currently selected arranger tool.
-   */
-  utils::QObjectUniquePtr<gui::backend::ArrangerTool> tool_;
 
   /**
    * @brief
@@ -656,12 +596,6 @@ public:
 
   /** Quantize info for the timeline. */
   std::unique_ptr<QuantizeOptions> quantize_opts_timeline_;
-
-  /** Timeline widget backend. */
-  utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
-
-  /** Backend for the widget. */
-  utils::QObjectUniquePtr<ClipEditor> clip_editor_;
 
   /** MIDI bindings. */
   std::unique_ptr<engine::session::MidiMappings> midi_mappings_;

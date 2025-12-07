@@ -219,18 +219,8 @@ private:
   static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   static constexpr auto kNotesZoomKey = "notesZoom"sv;
   static constexpr auto kMidiModifierKey = "midiModifier"sv;
-  friend void           to_json (nlohmann::json &j, const PianoRoll &piano_roll)
-  {
-    j[kEditorSettingsKey] = piano_roll.editor_settings_;
-    j[kNotesZoomKey] = piano_roll.notes_zoom_;
-    j[kMidiModifierKey] = piano_roll.midi_modifier_;
-  }
-  friend void from_json (const nlohmann::json &j, PianoRoll &piano_roll)
-  {
-    j.at (kEditorSettingsKey).get_to (piano_roll.editor_settings_);
-    j.at (kNotesZoomKey).get_to (piano_roll.notes_zoom_);
-    j.at (kMidiModifierKey).get_to (piano_roll.midi_modifier_);
-  }
+  friend void to_json (nlohmann::json &j, const PianoRoll &piano_roll);
+  friend void from_json (const nlohmann::json &j, PianoRoll &piano_roll);
 
   /**
    * Inits the descriptors to the default values.

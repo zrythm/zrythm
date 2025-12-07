@@ -9,7 +9,8 @@ import ZrythmStyle
 ZrythmToolBar {
   id: root
 
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
   required property SettingsManager settingsManager
 
   centerItems: [
@@ -64,7 +65,7 @@ ZrythmToolBar {
     ToolBox {
       id: toolBox
 
-      tool: root.project.tool
+      tool: root.projectUiState.tool
     },
     SnapGridButton {
       snapGrid: root.project.snapGridTimeline
