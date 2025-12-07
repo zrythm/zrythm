@@ -3,7 +3,7 @@
 
 #include "structure/arrangement/timeline.h"
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

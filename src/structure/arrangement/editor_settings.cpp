@@ -3,7 +3,7 @@
 
 #include "structure/arrangement/editor_settings.h"
 
-#include <json/json.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {
