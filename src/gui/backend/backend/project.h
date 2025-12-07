@@ -19,7 +19,6 @@
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/plugin_selection_manager.h"
 #include "gui/backend/track_selection_manager.h"
-#include "gui/dsp/quantize_options.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -108,7 +107,6 @@ class Project final : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  using QuantizeOptions = zrythm::gui::old_dsp::QuantizeOptions;
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginRegistry = plugins::PluginRegistry;
@@ -440,8 +438,6 @@ private:
   static constexpr auto kVersionKey = "version"sv;
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
   static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
-  static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
-  static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
@@ -544,12 +540,6 @@ public:
 
   /** Manager for region link groups. */
   // structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
-
-  /** Quantize info for the piano roll. */
-  std::unique_ptr<QuantizeOptions> quantize_opts_editor_;
-
-  /** Quantize info for the timeline. */
-  std::unique_ptr<QuantizeOptions> quantize_opts_timeline_;
 
   /** MIDI bindings. */
   std::unique_ptr<engine::session::MidiMappings> midi_mappings_;

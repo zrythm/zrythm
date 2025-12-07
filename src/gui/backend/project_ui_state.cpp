@@ -16,7 +16,11 @@ ProjectUiState::ProjectUiState (utils::QObjectUniquePtr<Project> &&project)
           },
           this)),
       timeline_ (
-        utils::make_qobject_unique<structure::arrangement::Timeline> (this))
+        utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
+      quantize_opts_editor_ (
+        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
+      quantize_opts_timeline_ (
+        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1))
 {
   project_->setParent (this);
 }

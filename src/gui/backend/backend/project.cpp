@@ -115,10 +115,6 @@ Project::Project (
                        AudioFilePoolDir);
           },
           [this] () { return audio_engine_->get_sample_rate (); })),
-      quantize_opts_editor_ (
-        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
-      quantize_opts_timeline_ (
-        std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_1)),
       midi_mappings_ (
         std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (
@@ -1515,22 +1511,10 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
-  // TODO
-  // obj.snap_grid_timeline_ =
-  //   std::make_unique<Project::SnapGrid> (*other.snap_grid_timeline_);
-  // obj.snap_grid_editor_ =
-  //   std::make_unique<zrythm::gui::SnapGrid> (*other.snap_grid_editor_);
-  obj.quantize_opts_timeline_ =
-    std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_timeline_);
-  obj.quantize_opts_editor_ =
-    std::make_unique<Project::QuantizeOptions> (*other.quantize_opts_editor_);
-  // obj.region_link_group_manager_ = other.region_link_group_manager_;
   obj.port_connections_manager_ =
     utils::clone_qobject (*other.port_connections_manager_, &obj);
   obj.midi_mappings_ = utils::clone_unique (
     *other.midi_mappings_, clone_type, *obj.param_registry_);
-  // obj.legacy_undo_manager_ =
-  //   utils::clone_qobject (*other.legacy_undo_manager_, &obj);
 
   z_debug ("finished cloning project");
 }
@@ -1762,8 +1746,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kVersionKey] = project.version_;
   j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
   j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
-  j[Project::kQuantizeOptsTimelineKey] = project.quantize_opts_timeline_;
-  j[Project::kQuantizeOptsEditorKey] = project.quantize_opts_editor_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
@@ -1895,9 +1877,6 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kVersionKey).get_to (project.version_);
   j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
   j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
-  j.at (Project::kQuantizeOptsTimelineKey)
-    .get_to (project.quantize_opts_timeline_);
-  j.at (Project::kQuantizeOptsEditorKey).get_to (project.quantize_opts_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);
   project.pool_ = std::make_unique<dsp::AudioPool> (
     *project.file_audio_source_registry_,

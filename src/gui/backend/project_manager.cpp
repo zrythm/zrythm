@@ -160,8 +160,9 @@ ProjectManager::create_default (
 
   prj_ui_state->clipEditor ()->init ();
 
-  prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
-  prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
+  // TODO/refactor
+  // prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
+  // prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   z_debug ("done creating default project");
 

@@ -6,6 +6,7 @@
 #include "gui/backend/arranger_tool.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/backend/backend/project.h"
+#include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/timeline.h"
 
 #include <QtQmlIntegration>
@@ -30,6 +31,8 @@ class ProjectUiState : public QObject
   QML_UNCREATABLE ("")
 
 public:
+  using QuantizeOptions = old_dsp::QuantizeOptions;
+
   ProjectUiState (utils::QObjectUniquePtr<Project> &&project);
 
   // =========================================================
@@ -46,6 +49,8 @@ public:
 private:
   static constexpr auto kClipEditorKey = "clipEditor"sv;
   static constexpr auto kTimelineKey = "timeline"sv;
+  static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
+  static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
 
 private:
   utils::QObjectUniquePtr<Project> project_;
@@ -60,5 +65,11 @@ private:
 
   /** Timeline editor backend. */
   utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
+
+  /** Quantize info for the piano roll. */
+  std::unique_ptr<QuantizeOptions> quantize_opts_editor_;
+
+  /** Quantize info for the timeline. */
+  std::unique_ptr<QuantizeOptions> quantize_opts_timeline_;
 };
 }
