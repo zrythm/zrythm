@@ -43,6 +43,7 @@ public:
     // A foldable track's depth
     TrackDepthRole,
   };
+  Q_ENUM (TrackRoles)
 
   TrackCollection (
     TrackRegistry &track_registry,

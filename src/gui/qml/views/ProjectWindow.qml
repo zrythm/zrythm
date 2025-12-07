@@ -69,6 +69,41 @@ ApplicationWindow {
     Qt.quit();
   }
 
+  Connections {
+      function onRowsAboutToBeRemoved(modelIndex: var, first: int, last: int) {
+      // Auto-deselect tracks when removed from the project
+      for (let i = first; i <= last; ++i) {
+        const trackModelIndex = trackSelectionModel.getModelIndex(i);
+        trackSelectionModel.select(trackModelIndex, ItemSelectionModel.Deselect);
+      }
+    }
+
+    function onRowsInserted(modelIndex: var, first: int, last: int) {
+      // Auto-select tracks when added to the project
+      const trackModelIndex = trackSelectionModel.getModelIndex(last);
+      trackSelectionModel.selectSingleTrack(trackModelIndex);
+    }
+
+    function onRowsRemoved(modelIndex: var, first: int, last: int) {
+      // Ensure at least 1 track is always selected
+      if (!trackSelectionModel.hasSelection) {
+        const numTracks = root.project.tracklist.collection.rowCount();
+
+        // Select next track, or prev track if next doesn't exist
+        let indexToSelect = first;
+        console.log(first, indexToSelect);
+        if (numTracks === first) {
+          --indexToSelect;
+        }
+
+        const trackModelIndex = trackSelectionModel.getModelIndex(indexToSelect);
+        trackSelectionModel.selectSingleTrack(trackModelIndex);
+      }
+    }
+
+    target: root.project.tracklist.collection
+  }
+
   AboutDialog {
     id: aboutDialog
 
@@ -78,6 +113,117 @@ ApplicationWindow {
     id: exportDialog
 
     project: root.project
+  }
+
+  // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)
+  UnifiedProxyModel {
+    id: unifiedPluginsModel
+
+  }
+
+  ItemSelectionModel {
+    id: pluginSelectionModel
+
+    // Returns a PluginGroup or a Plugin
+    function getObjectFromUnifiedIndex(unifiedIndex: var): var {
+      const sourceIndex = unifiedPluginsModel.mapToSource(unifiedIndex);
+      return sourceIndex.data(PluginGroup.DeviceGroupPtrRole);
+    }
+
+    model: unifiedPluginsModel
+
+    onCurrentChanged: (current, previous) => {
+      if (current) {
+        const pluginOrGroup = getObjectFromUnifiedIndex(current);
+        if (pluginOrGroup instanceof Plugin) {
+          const plugin = pluginOrGroup as Plugin;
+          console.log("current plugin changed to", plugin.configuration.descriptor.name);
+        }
+      }
+    }
+    onSelectionChanged: (selected, deselected) => {
+      console.log("Selection changed:", selectedIndexes.length, "items selected");
+      if (selectedIndexes.length > 0) {
+        const firstPluginOrGroup = selectedIndexes[0].data(PluginGroup.DeviceGroupPtrRole);
+        console.log("first selected plugin/group:", firstPluginOrGroup);
+      }
+
+      if (deselected.length > 0) {
+        deselected.forEach(deselectedRange => {
+          const pluginOrGroup = getObjectFromUnifiedIndex(deselectedRange.topLeft);
+          if (pluginOrGroup instanceof Plugin) {
+            const plugin = pluginOrGroup as Plugin;
+            console.log("previous plugin changed");
+          }
+        });
+      }
+    }
+  }
+
+  TrackSelectionModel {
+    id: trackSelectionModel
+
+    // Map to track which tracks were automatically armed for recording
+    // Key: track object, Value: boolean indicating if recording was set automatically
+    property var automaticallyArmedTracks: ({})
+
+    model: root.project.tracklist.collection
+
+    Component.onCompleted: {
+      // Select last track
+      const numTracks = root.project.tracklist.collection.rowCount();
+      if (numTracks > 0) {
+        const trackModelIndex = getModelIndex(numTracks - 1);
+        selectSingleTrack(trackModelIndex);
+      }
+    }
+    onCurrentChanged: (current, previous) => {
+      if (current) {
+        const track = getTrackFromModelIndex(current);
+        if (track) {
+          console.log("current track changed", track.name);
+        }
+      }
+    }
+    onSelectionChanged: (selected, deselected) => {
+      console.log("Selection changed:", selectedIndexes.length, "items selected");
+      if (selectedIndexes.length > 0) {
+        const firstTrack = selectedIndexes[0].data(TrackCollection.TrackPtrRole) as Track;
+        console.log("first selected object:", firstTrack.name);
+
+        selected.forEach(selectedRange => {
+          for (let i = selectedRange.topLeft; i <= selectedRange.bottomRight; i++) {
+            const track = getTrackFromModelIndex(i);
+            if (track.recordableTrackMixin) {
+              // Auto-arm management
+              if (root.settingsManager.trackAutoArm) {
+                const rec = track.recordableTrackMixin;
+                if (!rec?.recording) {
+                  rec.recording = true;
+                  automaticallyArmedTracks[track] = true;
+                }
+              }
+            }
+          }
+        });
+      }
+
+      if (deselected.length > 0) {
+        deselected.forEach(deselectedRange => {
+          for (let i = deselectedRange.topLeft; i <= deselectedRange.bottomRight; i++) {
+            const track = getTrackFromModelIndex(i);
+            if (track.recordableTrackMixin) {
+              // Auto-arm management for deselected tracks
+              if (root.settingsManager.trackAutoArm && automaticallyArmedTracks[track]) {
+                const rec = track.recordableTrackMixin;
+                rec.recording = false;
+                delete automaticallyArmedTracks[track];
+              }
+            }
+          }
+        });
+      }
+    }
   }
 
   Shortcut {
@@ -187,6 +333,7 @@ ApplicationWindow {
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
         project: root.project
+        trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist
         undoStack: root.project.undoStack
         visible: root.settingsManager.leftPanelVisible
@@ -207,6 +354,7 @@ ApplicationWindow {
           SplitView.minimumHeight: implicitHeight
           SplitView.preferredHeight: 200
           projectUiState: root.projectUiState
+          trackSelectionModel: trackSelectionModel
         }
 
         BottomDock {

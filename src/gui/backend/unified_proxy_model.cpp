@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/unified_arranger_objects_model.h"
+#include "gui/backend/unified_proxy_model.h"
 
 namespace zrythm::gui
 {
-UnifiedArrangerObjectsModel::UnifiedArrangerObjectsModel (QObject * parent)
+UnifiedProxyModel::UnifiedProxyModel (QObject * parent)
     : QConcatenateTablesProxyModel (parent)
 {
 }
 
 void
-UnifiedArrangerObjectsModel::addSourceModel (QAbstractItemModel * model)
+UnifiedProxyModel::addSourceModel (QAbstractItemModel * model)
 {
   if (model == nullptr)
     return;
@@ -23,18 +23,18 @@ UnifiedArrangerObjectsModel::addSourceModel (QAbstractItemModel * model)
 }
 
 void
-UnifiedArrangerObjectsModel::removeSourceModel (QAbstractItemModel * model)
+UnifiedProxyModel::removeSourceModel (QAbstractItemModel * model)
 {
   QConcatenateTablesProxyModel::removeSourceModel (model);
 }
 
 QModelIndex
-UnifiedArrangerObjectsModel::mapFromSource (const QModelIndex &sourceIndex) const
+UnifiedProxyModel::mapFromSource (const QModelIndex &sourceIndex) const
 {
   return QConcatenateTablesProxyModel::mapFromSource (sourceIndex);
 }
 QModelIndex
-UnifiedArrangerObjectsModel::mapToSource (const QModelIndex &proxyIndex) const
+UnifiedProxyModel::mapToSource (const QModelIndex &proxyIndex) const
 {
   return QConcatenateTablesProxyModel::mapToSource (proxyIndex);
 }

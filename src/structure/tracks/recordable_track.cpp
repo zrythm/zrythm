@@ -38,8 +38,6 @@ RecordableTrackMixin::setRecording (bool rec)
       // this class
     }
 
-  record_set_automatically_ = false;
-
   Q_EMIT recordingChanged (rec);
 }
 }

@@ -22,7 +22,7 @@ Loader {
   required property real scrollViewWidth
   required property real scrollX
   readonly property alias selectionTracker: selectionTracker
-  required property UnifiedArrangerObjectsModel unifiedObjectsModel
+  required property UnifiedProxyModel unifiedObjectsModel
   readonly property bool useParentPosition: arrangerObject.parentObject !== null
 
   // Viewport culling
@@ -39,11 +39,11 @@ Loader {
   SelectionTracker {
     id: selectionTracker
 
-    // Dummy property to force the unifiedModelIndex to be recalculated
+    // Dummy property to force the modelIndex to be recalculated
     property bool dummy: false
 
     selectionModel: root.arrangerSelectionModel
-    unifiedModelIndex: {
+    modelIndex: {
       root.unifiedObjectsModel.addSourceModel(root.model);
       const ret = root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0));
       dummy;
@@ -51,7 +51,7 @@ Loader {
     }
   }
 
-  // When objects are added to previous source models in the unified model, the unifiedModelIndex above is not updated, so we force an update here when objects are added/removed
+  // When objects are added to previous source models in the unified model, the modelIndex above is not updated, so we force an update here when objects are added/removed
   Connections {
     function onRowsInserted() {
       selectionTracker.dummy = !selectionTracker.dummy;

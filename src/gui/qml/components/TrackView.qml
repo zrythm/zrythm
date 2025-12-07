@@ -11,7 +11,7 @@ import Zrythm
 import ZrythmStyle
 
 Control {
-  id: control
+  id: root
 
   required property AudioEngine audioEngine
   readonly property real buttonHeight: 18
@@ -21,10 +21,11 @@ Control {
   required property int depth
   required property bool expanded
   required property bool foldable
+  required property int trackIndex
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
-  property bool trackSelected: control.trackSelectionManager?.isSelected(control.track) ?? false
-  required property TrackSelectionManager trackSelectionManager
+  readonly property var trackModelIndex: trackSelectionModel?.getModelIndex(trackIndex)
+  required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -32,15 +33,15 @@ Control {
   hoverEnabled: true
   implicitHeight: 48
   implicitWidth: 200
-  opacity: Style.getOpacity(track.enabled, control.Window.active)
+  opacity: Style.getOpacity(track.enabled, root.Window.active)
 
   background: Rectangle {
     color: {
-      let c = control.palette.window;
-      if (control.hovered)
+      let c = root.palette.window;
+      if (root.hovered)
         c = Style.getColorBlendedTowardsContrast(c);
 
-      if (control.trackSelected || bgTapHandler.pressed)
+      if (selectionTracker.isSelected || bgTapHandler.pressed)
         c = Style.getColorBlendedTowardsContrast(c);
 
       return c;
@@ -54,9 +55,33 @@ Control {
       id: bgTapHandler
 
       acceptedButtons: Qt.LeftButton | Qt.RightButton
+      acceptedModifiers: Qt.NoModifier
 
-      onTapped: function (point) {
-        control.trackSelectionManager.selectUnique(control.track);
+      onTapped: (eventPoint, button) => {
+        root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+      }
+    }
+
+    TapHandler {
+      acceptedModifiers: Qt.ControlModifier
+
+      onTapped: (eventPoint, button) => {
+        root.trackSelectionModel.select(root.trackModelIndex, ItemSelectionModel.Toggle);
+      }
+    }
+
+    TapHandler {
+      acceptedModifiers: Qt.ShiftModifier
+
+      onTapped: (eventPoint, button) => {
+        if (root.trackSelectionModel.currentIndex.valid) {
+          // Range selection (TODO)
+          // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
+          // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
+          console.log("Range selection unimplemented");
+        } else {
+          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+        }
       }
     }
   }
@@ -74,7 +99,7 @@ Control {
 
       Item {
         Layout.fillHeight: true
-        Layout.preferredWidth: control.depth * 8
+        Layout.preferredWidth: root.depth * 8
       }
 
       Rectangle {
@@ -82,15 +107,15 @@ Control {
 
         Layout.fillHeight: true
         Layout.preferredWidth: 6
-        color: control.track.color
+        color: root.track.color
 
         Button {
           checkable: true
-          checked: control.expanded
-          text: control.expanded ? "−" : "+"
-          visible: control.foldable
+          checked: root.expanded
+          text: root.expanded ? "−" : "+"
+          visible: root.foldable
 
-          onToggled: control.tracklist.collection.setTrackExpanded(control.track, !control.expanded)
+          onToggled: root.tracklist.collection.setTrackExpanded(root.track, !root.expanded)
 
           anchors {
             bottom: parent.bottom
@@ -108,8 +133,8 @@ Control {
         Loader {
           Layout.bottomMargin: 3
           Layout.fillWidth: true
-          Layout.maximumHeight: control.track.height - Layout.bottomMargin - Layout.topMargin
-          Layout.minimumHeight: control.track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.maximumHeight: root.track.height - Layout.bottomMargin - Layout.topMargin
+          Layout.minimumHeight: root.track.height - Layout.bottomMargin - Layout.topMargin
           Layout.topMargin: 3
           sourceComponent: mainTrackView
         }
@@ -119,7 +144,7 @@ Control {
 
           Layout.fillHeight: true
           Layout.fillWidth: true
-          active: control.track.lanes && control.track.lanes.lanesVisible
+          active: root.track.lanes && root.track.lanes.lanesVisible
           visible: active
 
           sourceComponent: ColumnLayout {
@@ -135,7 +160,7 @@ Control {
               Layout.fillHeight: true
               Layout.fillWidth: true
               implicitHeight: contentHeight
-              model: control.track.lanes
+              model: root.track.lanes
 
               delegate: ItemDelegate {
                 id: laneDelegate
@@ -149,9 +174,9 @@ Control {
                   spacing: 2
 
                   anchors {
-                    bottomMargin: control.contentBottomMargins
+                    bottomMargin: root.contentBottomMargins
                     fill: parent
-                    topMargin: control.contentTopMargins
+                    topMargin: root.contentTopMargins
                   }
 
                   Label {
@@ -169,13 +194,13 @@ Control {
                     SoloButton {
                       id: laneSoloButton
 
-                      padding: control.buttonPadding
-                      styleHeight: control.buttonHeight
+                      padding: root.buttonPadding
+                      styleHeight: root.buttonHeight
                     }
 
                     MuteButton {
-                      padding: control.buttonPadding
-                      styleHeight: control.buttonHeight
+                      padding: root.buttonPadding
+                      styleHeight: root.buttonHeight
                     }
                   }
                 }
@@ -191,7 +216,7 @@ Control {
 
                 Connections {
                   function onHeightChanged() {
-                    control.track.fullVisibleHeightChanged();
+                    root.track.fullVisibleHeightChanged();
                   }
 
                   target: laneDelegate.trackLane
@@ -205,27 +230,27 @@ Control {
           id: automationLoader
 
           Layout.fillWidth: true
-          active: control.track.automationTracklist && control.track.automationTracklist.automationVisible
+          active: root.track.automationTracklist && root.track.automationTracklist.automationVisible
 
           sourceComponent: AutomationTracksListView {
             id: automationTracksListView
 
             height: contentHeight
-            track: control.track
+            track: root.track
             width: automationLoader.width
           }
         }
       }
 
       Loader {
-        active: control.track.channel !== null
+        active: root.track.channel !== null
         visible: active
 
         sourceComponent: TrackMeters {
           Layout.fillHeight: true
           Layout.fillWidth: false
-          channel: control.track.channel
-          audioEngine: control.audioEngine
+          audioEngine: root.audioEngine
+          channel: root.track.channel
         }
       }
     }
@@ -233,15 +258,14 @@ Control {
   Behavior on height {
     animation: Style.propertyAnimation
     // FIXME: stops working after some operations, not sure why
-    enabled: !control.isResizing
+    enabled: !root.isResizing
   }
 
-  Connections {
-    function onSelectionChanged() {
-      control.trackSelected = control.trackSelectionManager.isSelected(control.track);
-    }
+  SelectionTracker {
+    id: selectionTracker
 
-    target: control.trackSelectionManager
+    modelIndex: root.trackModelIndex
+    selectionModel: root.trackSelectionModel
   }
 
   Component {
@@ -256,9 +280,9 @@ Control {
         spacing: 0
 
         anchors {
-          bottomMargin: control.contentBottomMargins
+          bottomMargin: root.contentBottomMargins
           fill: parent
-          topMargin: control.contentTopMargins
+          topMargin: root.contentTopMargins
         }
 
         RowLayout {
@@ -283,19 +307,19 @@ Control {
             color: trackNameLabel.color
             fillMode: Image.PreserveAspectFit
             source: {
-              if (control.track.icon.startsWith("gnome-icon-library-"))
-                return ResourceManager.getIconUrl("gnome-icon-library", control.track.icon.substring(19) + ".svg");
+              if (root.track.icon.startsWith("gnome-icon-library-"))
+                return ResourceManager.getIconUrl("gnome-icon-library", root.track.icon.substring(19) + ".svg");
 
-              if (control.track.icon.startsWith("fluentui-"))
-                return ResourceManager.getIconUrl("fluentui", control.track.icon.substring(9) + ".svg");
+              if (root.track.icon.startsWith("fluentui-"))
+                return ResourceManager.getIconUrl("fluentui", root.track.icon.substring(9) + ".svg");
 
-              if (control.track.icon.startsWith("lorc-"))
-                return ResourceManager.getIconUrl("lorc", control.track.icon.substring(5) + ".svg");
+              if (root.track.icon.startsWith("lorc-"))
+                return ResourceManager.getIconUrl("lorc", root.track.icon.substring(5) + ".svg");
 
-              if (control.track.icon.startsWith("jam-icons-"))
-                return ResourceManager.getIconUrl("jam-icons", control.track.icon.substring(10) + ".svg");
+              if (root.track.icon.startsWith("jam-icons-"))
+                return ResourceManager.getIconUrl("jam-icons", root.track.icon.substring(10) + ".svg");
 
-              return ResourceManager.getIconUrl("zrythm-dark", control.track.icon + ".svg");
+              return ResourceManager.getIconUrl("zrythm-dark", root.track.icon + ".svg");
             }
             sourceSize.height: iconSize
             sourceSize.width: iconSize
@@ -307,8 +331,8 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
             Layout.fillWidth: true
             elide: Text.ElideRight
-            font: control.trackSelected ? Style.buttonTextFont : Style.normalTextFont
-            text: control.track.name
+            font: selectionTracker.isSelected ? Style.buttonTextFont : Style.normalTextFont
+            text: root.track.name
           }
 
           LinkedButtons {
@@ -324,14 +348,14 @@ Control {
             MuteButton {
               id: muteButton
 
-              checked: control.track.channel && control.track.channel.fader.mute.baseValue > 0.5
-              padding: control.buttonPadding
-              styleHeight: control.buttonHeight
-              visible: control.track.channel !== null
+              checked: root.track.channel && root.track.channel.fader.mute.baseValue > 0.5
+              padding: root.buttonPadding
+              styleHeight: root.buttonHeight
+              visible: root.track.channel !== null
 
               Binding {
                 property: "baseValue"
-                target: control.track.channel ? control.track.channel.fader.mute : null
+                target: root.track.channel ? root.track.channel.fader.mute : null
                 value: muteButton.checked ? 1.0 : 0.0
               }
             }
@@ -339,27 +363,27 @@ Control {
             SoloButton {
               id: trackSoloButton
 
-              checked: control.track.channel && control.track.channel.fader.solo.baseValue > 0.5
-              padding: control.buttonPadding
-              styleHeight: control.buttonHeight
-              visible: control.track.channel !== null
+              checked: root.track.channel && root.track.channel.fader.solo.baseValue > 0.5
+              padding: root.buttonPadding
+              styleHeight: root.buttonHeight
+              visible: root.track.channel !== null
 
               Binding {
                 property: "baseValue"
-                target: control.track.channel ? control.track.channel.fader.solo : null
+                target: root.track.channel ? root.track.channel.fader.solo : null
                 value: trackSoloButton.checked ? 1.0 : 0.0
               }
             }
 
             RecordButton {
               Layout.preferredHeight: trackSoloButton.height
-              checked: control.track.recordableTrackMixin && control.track.recordableTrackMixin.recording
-              padding: control.buttonPadding
-              styleHeight: control.buttonHeight
-              visible: control.track.recordableTrackMixin !== null
+              checked: root.track.recordableTrackMixin && root.track.recordableTrackMixin.recording
+              padding: root.buttonPadding
+              styleHeight: root.buttonHeight
+              visible: root.track.recordableTrackMixin !== null
 
               onClicked: {
-                control.track.recordableTrackMixin.recording = !control.track.recordableTrackMixin.recording;
+                root.track.recordableTrackMixin.recording = !root.track.recordableTrackMixin.recording;
               }
             }
           }
@@ -371,7 +395,7 @@ Control {
           Layout.alignment: Qt.AlignBottom
           Layout.fillHeight: false
           Layout.fillWidth: true
-          visible: control.track.height > control.buttonHeight + height + 12
+          visible: root.track.height > root.buttonHeight + height + 12
 
           Label {
             id: chordScalesLabel
@@ -379,7 +403,7 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
             font: Style.smallTextFont
             text: qsTr("Scales")
-            visible: control.track.type === Track.Chord
+            visible: root.track.type === Track.Chord
           }
 
           Item {
@@ -401,14 +425,14 @@ Control {
 
             Button {
               checkable: true
-              checked: control.track.lanes && control.track.lanes.lanesVisible
+              checked: root.track.lanes && root.track.lanes.lanesVisible
               icon.source: ResourceManager.getIconUrl("gnome-icon-library", "list-compact-symbolic.svg")
-              padding: control.buttonPadding
-              styleHeight: control.buttonHeight
-              visible: control.track.lanes !== null
+              padding: root.buttonPadding
+              styleHeight: root.buttonHeight
+              visible: root.track.lanes !== null
 
               onClicked: {
-                control.track.lanes.lanesVisible = !control.track.lanes.lanesVisible;
+                root.track.lanes.lanesVisible = !root.track.lanes.lanesVisible;
               }
 
               ToolTip {
@@ -418,14 +442,14 @@ Control {
 
             Button {
               checkable: true
-              checked: control.track.automationTracklist && control.track.automationTracklist.automationVisible
+              checked: root.track.automationTracklist && root.track.automationTracklist.automationVisible
               icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
-              padding: control.buttonPadding
-              styleHeight: control.buttonHeight
-              visible: control.track.automationTracklist !== null
+              padding: root.buttonPadding
+              styleHeight: root.buttonHeight
+              visible: root.track.automationTracklist !== null
 
               onClicked: {
-                control.track.automationTracklist.automationVisible = !control.track.automationTracklist.automationVisible;
+                root.track.automationTracklist.automationVisible = !root.track.automationTracklist.automationVisible;
               }
 
               ToolTip {
@@ -437,7 +461,7 @@ Control {
       }
 
       Loader {
-        property var resizeTarget: control.track
+        property var resizeTarget: root.track
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -482,7 +506,7 @@ Control {
         yAxis.enabled: true
 
         onActiveChanged: {
-          control.isResizing = active;
+          root.isResizing = active;
           if (active)
             resizer.startHeight = resizeHandleRect.resizeTarget.height;
         }

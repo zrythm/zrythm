@@ -50,13 +50,12 @@ target_sources(zrythm_gui_lib
     resource_manager.cpp
     track_filter_proxy_model.h
     track_filter_proxy_model.cpp
-    track_selection_manager.h
     translation_manager.h
     translation_manager.cpp
     ui.h
     ui.cpp
-    unified_arranger_objects_model.h
-    unified_arranger_objects_model.cpp
+    unified_proxy_model.h
+    unified_proxy_model.cpp
     zrythm_application.h
     zrythm_application.cpp
 )

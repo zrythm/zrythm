@@ -82,7 +82,7 @@ Item {
   required property var tool
   required property Transport transport
   required property UndoStack undoStack
-  required property UnifiedArrangerObjectsModel unifiedObjectsModel
+  required property UnifiedProxyModel unifiedObjectsModel
 
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;

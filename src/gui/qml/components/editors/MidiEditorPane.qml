@@ -105,7 +105,7 @@ GridLayout {
     }
   }
 
-  UnifiedArrangerObjectsModel {
+  UnifiedProxyModel {
     id: unifiedObjectsModel
 
   }

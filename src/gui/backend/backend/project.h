@@ -18,7 +18,6 @@
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/plugin_selection_manager.h"
-#include "gui/backend/track_selection_manager.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -74,9 +73,6 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::scenes::ClipPlaybackService * clipPlaybackService READ
       clipPlaybackService CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::gui::backend::TrackSelectionManager * trackSelectionManager READ
-      trackSelectionManager CONSTANT)
   Q_PROPERTY (
     zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
       FINAL)
@@ -140,7 +136,6 @@ public:
   structure::tracks::Tracklist *    tracklist () const;
   structure::scenes::ClipLauncher * clipLauncher () const;
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
-  gui::backend::TrackSelectionManager *        trackSelectionManager () const;
   gui::backend::PluginSelectionManager *       pluginSelectionManager () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
@@ -576,8 +571,6 @@ public:
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
 
-  utils::QObjectUniquePtr<gui::backend::TrackSelectionManager>
-    track_selection_manager_;
   utils::QObjectUniquePtr<gui::backend::PluginSelectionManager>
     plugin_selection_manager_;
 

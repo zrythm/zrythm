@@ -77,7 +77,7 @@ Zrythm has comprehensive architecture documentation in the [`doc/dev/`](doc/dev/
 ### Object Selection System
 - **Location**: [`doc/dev/object_selection_system.md`](doc/dev/object_selection_system.md)
 - **Purpose**: Unified selection system for arranger objects (regions, markers, notes, automation points)
-- **Key Components**: UnifiedArrangerObjectsModel, SelectionTracker, ArrangerObjectSelectionOperator
+- **Key Components**: UnifiedProxyModel, SelectionTracker, ArrangerObjectSelectionOperator
 - **Integration**: Bridges C++ models with QML views through Qt's ItemSelectionModel
 
 ### Playback Cache Architecture

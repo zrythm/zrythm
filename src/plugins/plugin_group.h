@@ -103,6 +103,7 @@ public:
   {
     DeviceGroupPtrRole = Qt::UserRole + 1,
   };
+  Q_ENUM (DeviceGroupListModelRoles)
 
   QHash<int, QByteArray> roleNames () const override;
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override;

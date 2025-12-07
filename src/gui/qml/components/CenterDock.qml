@@ -19,6 +19,7 @@ ColumnLayout {
   readonly property int rulerHeight: 24
   readonly property int tempoMapLaneHeight: 24
   readonly property int tempoMapLaneSpacing: 1
+  required property ItemSelectionModel trackSelectionModel
 
   spacing: 0
 
@@ -78,7 +79,7 @@ ColumnLayout {
           Layout.preferredHeight: contentHeight
           audioEngine: root.project.engine
           pinned: true
-          trackSelectionManager: root.project.trackSelectionManager
+          trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.project.undoStack
         }
@@ -90,7 +91,7 @@ ColumnLayout {
           Layout.fillWidth: true
           audioEngine: root.project.engine
           pinned: false
-          trackSelectionManager: root.project.trackSelectionManager
+          trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.project.undoStack
 
@@ -218,7 +219,7 @@ ColumnLayout {
             unifiedObjectsModel: unifiedObjectsModel
           }
 
-          UnifiedArrangerObjectsModel {
+          UnifiedProxyModel {
             id: unifiedObjectsModel
 
           }
@@ -238,7 +239,7 @@ ColumnLayout {
                 const arrangerObject = getObjectFromUnifiedIndex(current);
                 if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                   console.log("current region changed, setting clip editor region to ", arrangerObject.name.name);
-                        root.projectUiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
+                  root.projectUiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
                 }
               }
             }
@@ -254,7 +255,7 @@ ColumnLayout {
                   const arrangerObject = getObjectFromUnifiedIndex(deselectedRange.topLeft);
                   if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                     console.log("previous region changed, unsetting clip editor region");
-                    root.project.clipEditor.unsetRegion();
+                    root.projectUiState.clipEditor.unsetRegion();
                   }
                 });
               }

@@ -237,9 +237,6 @@ Project::Project (
           *arranger_object_creator_,
           *track_creator_,
           this)),
-      track_selection_manager_ (
-        utils::make_qobject_unique<
-          gui::backend::TrackSelectionManager> (*track_registry_, this)),
       plugin_selection_manager_ (
         utils::make_qobject_unique<
           gui::backend::PluginSelectionManager> (*plugin_registry_, this)),
@@ -324,81 +321,9 @@ Project::Project (
   };
   setup_metronome ();
 
-  // auto-arm management
-  QObject::connect (
-    track_selection_manager_.get (),
-    &gui::backend::TrackSelectionManager::objectSelectionStatusChanged, this,
-    [] (structure::tracks::Track * track, bool selected) {
-      if (gui::SettingsManager::get_instance ()->get_trackAutoArm ())
-        {
-          if (track->recordableTrackMixin () != nullptr)
-            {
-              auto * rec = track->recordableTrackMixin ();
-              if (selected && !rec->recording ())
-                {
-                  rec->get_recording_param ().setBaseValue (1.f);
-                  rec->record_set_automatically_ = true;
-                  Q_EMIT rec->recordingChanged (true);
-                }
-              else if (!selected && rec->record_set_automatically_)
-                {
-                  rec->get_recording_param ().setBaseValue (0.f);
-                  Q_EMIT rec->recordingChanged (false);
-                }
-            }
-        }
-    });
-
-  // Auto-select tracks when added to the project
-  QObject::connect (
-    tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
-    this, [this] (const QModelIndex &, int first, int last) {
-      for (int i = first; i <= last; ++i)
-        {
-          const auto track_id =
-            tracklist_->collection ()->tracks ().at (i).id ();
-          track_selection_manager_->select_unique (track_id);
-        }
-    });
-
-  // auto-deselect tracks when removed from the project
-  QObject::connect (
-    tracklist_->collection (),
-    &structure::tracks::TrackCollection::rowsAboutToBeRemoved, this,
-    [this] (const QModelIndex &, int first, int last) {
-      auto &selection_mgr = *track_selection_manager_;
-      for (int i = first; i <= last; ++i)
-        {
-          const auto track_id =
-            tracklist_->collection ()->tracks ().at (i).id ();
-          selection_mgr.remove_from_selection (track_id);
-        }
-    });
-
-  // ensure at least 1 track is always selected
-  QObject::connect (
-    tracklist_->collection (), &structure::tracks::TrackCollection::rowsRemoved,
-    this, [this] (const QModelIndex &, int first, int last) {
-      auto &selection_mgr = *track_selection_manager_;
-      if (selection_mgr.empty ())
-        {
-          const auto num_tracks =
-            static_cast<int> (tracklist_->collection ()->track_count ());
-
-          // select next track, or prev track if next doesn't exist
-          auto index_to_select = first;
-          if (num_tracks == first)
-            {
-              --index_to_select;
-            }
-          selection_mgr.append_to_selection (
-            tracklist_->collection ()
-              ->get_track_ref_at_index (index_to_select)
-              .id ());
-        }
-    });
-
   // Keep up-to-date realtime cache of tracks
+  // Note: this is thread-safe since tracks are only added/removed while the
+  // graph is paused
   QObject::connect (
     tracklist_->collection (), &structure::tracks::TrackCollection::rowsInserted,
     this, [this] (const QModelIndex &, int first, int last) {
@@ -869,44 +794,7 @@ Project::add_default_tracks ()
   auto * master_track =
     add_track.operator()<MasterTrack> (QObject::tr ("Master"));
   tracklist_->singletonTracks ()->setMasterTrack (master_track);
-  track_selection_manager_->select_unique (master_track->get_uuid ());
 }
-
-#if 0
-ArrangerWidget *
-project_get_arranger_for_last_selection (
-  Project * self)
-{
-  Region * r =
-    CLIP_EDITOR->get_region ();
-  switch (self->last_selection)
-    {
-    case Project::SelectionType::Timeline:
-      return TL_SELECTIONS;
-      break;
-    case Project::SelectionType::Editor:
-      if (r)
-        {
-          switch (r->id.type)
-            {
-            case RegionType::REGION_TYPE_AUDIO:
-              return AUDIO_SELECTIONS;
-            case RegionType::REGION_TYPE_AUTOMATION:
-              return AUTOMATION_SELECTIONS;
-            case RegionType::REGION_TYPE_MIDI:
-              return MIDI_SELECTIONS;
-            case RegionType::REGION_TYPE_CHORD:
-              return CHORD_SELECTIONS;
-            }
-        }
-      break;
-    default:
-      return NULL;
-    }
-
-  return NULL;
-}
-#endif
 
 fs::path
 Project::get_directory (bool for_backup) const
@@ -1569,12 +1457,6 @@ structure::scenes::ClipPlaybackService *
 Project::clipPlaybackService () const
 {
   return clip_playback_service_.get ();
-}
-
-gui::backend::TrackSelectionManager *
-Project::trackSelectionManager () const
-{
-  return track_selection_manager_.get ();
 }
 
 gui::backend::PluginSelectionManager *

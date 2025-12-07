@@ -13,6 +13,7 @@ ColumnLayout {
   id: root
 
   required property Project project
+  required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -46,7 +47,7 @@ ColumnLayout {
     Loader {
       id: trackInspectorLoader
 
-      property Track track: root.project.trackSelectionManager.lastSelectedObject
+      property Track track: null
 
       Layout.fillHeight: false
       Layout.fillWidth: true
@@ -62,11 +63,16 @@ ColumnLayout {
       }
 
       Connections {
-        function onLastSelectedObjectChanged() {
-          trackInspectorLoader.track = root.project.trackSelectionManager.lastSelectedObject;
+        function onCurrentChanged(current, previous) {
+          if (current) {
+            const track = root.trackSelectionModel.getTrackFromModelIndex(current);
+            if (track) {
+              trackInspectorLoader.track = track;
+            }
+          }
         }
 
-        target: root.project.trackSelectionManager
+        target: root.trackSelectionModel
       }
     }
 

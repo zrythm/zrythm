@@ -52,17 +52,14 @@ public:
 
 private:
   static constexpr auto kRecordingIdKey = "recordingId"sv;
-  static constexpr auto kRecordSetAutomaticallyKey = "recordSetAutomatically"sv;
   friend void to_json (nlohmann::json &j, const RecordableTrackMixin &track)
   {
     j[kRecordingIdKey] = track.recording_id_;
-    j[kRecordSetAutomaticallyKey] = track.record_set_automatically_;
   }
   friend void from_json (const nlohmann::json &j, RecordableTrackMixin &track)
   {
     track.recording_id_ = { track.dependencies_.param_registry_ };
     j.at (kRecordingIdKey).get_to (track.recording_id_);
-    j.at (kRecordSetAutomaticallyKey).get_to (track.record_set_automatically_);
   }
 
   friend void init_from (
@@ -71,7 +68,6 @@ private:
     utils::ObjectCloneType      clone_type)
   {
     obj.recording_id_ = other.recording_id_;
-    obj.record_set_automatically_ = other.record_set_automatically_;
   }
 
 private:
@@ -82,16 +78,5 @@ private:
 
   /** Recording or not. */
   dsp::ProcessorParameterUuidReference recording_id_;
-
-public:
-  /**
-   * Whether record was set automatically when the channel was selected.
-   *
-   * This is so that it can be unset when selecting another track. If we don't
-   * do this all the tracks end up staying on record mode.
-   *
-   * FIXME: store on the UI side, not here (or maybe make it a QProperty).
-   */
-  bool record_set_automatically_ = false;
 };
 }

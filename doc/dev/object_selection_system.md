@@ -12,8 +12,8 @@ Zrythm uses a unified selection system that handles multiple arranger object typ
 ## Key Components
 
 ### Unified Model
-[`UnifiedArrangerObjectsModel`](src/gui/backend/unified_arranger_objects_model.h:12) aggregates multiple source models into a single selection context:
-- Maps source indices to unified indices with [`mapFromSource()`](src/gui/backend/unified_arranger_objects_model.h:22)
+[`UnifiedProxyModel`](src/gui/backend/unified_proxy_model.h:12) aggregates multiple source models into a single selection context:
+- Maps source indices to unified indices with [`mapFromSource()`](src/gui/backend/unified_proxy_model.h:22)
 - Supports mixed object types (regions, markers, notes, automation points)
 
 ### Selection Tracking

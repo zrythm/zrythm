@@ -69,7 +69,7 @@ GridLayout {
     Layout.preferredHeight: 480
   }
 
-  UnifiedArrangerObjectsModel {
+  UnifiedProxyModel {
     id: unifiedObjectsModel
 
   }
