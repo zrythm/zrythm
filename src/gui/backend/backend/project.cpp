@@ -12,6 +12,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
+#include "gui/backend/project_path_provider.h"
 #include "gui/dsp/plugin_span.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
@@ -107,7 +108,12 @@ Project::Project (
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
-          [this] (bool backup) { return get_path (ProjectPath::POOL, backup); },
+          [this] (bool backup) {
+            return get_directory (backup)
+                   / gui::ProjectPathProvider::get_path (
+                     zrythm::gui::ProjectPathProvider::ProjectPath::
+                       AudioFilePoolDir);
+          },
           [this] () { return audio_engine_->get_sample_rate (); })),
       quantize_opts_editor_ (
         std::make_unique<QuantizeOptions> (zrythm::utils::NoteLength::Note_1_8)),
@@ -170,7 +176,12 @@ Project::Project (
                 .port_registry_ = *port_registry_,
                 .param_registry_ = *param_registry_ },
             .state_dir_path_provider_ =
-              [this] () { return get_path (ProjectPath::PluginStates, false); },
+              [this] () {
+                return dir_
+                       / gui::ProjectPathProvider::get_path (
+                         zrythm::gui::ProjectPathProvider::ProjectPath::
+                           PluginStates);
+              },
             .create_plugin_instance_async_func_ =
               [] (
                 const juce::PluginDescription &description,
@@ -552,6 +563,9 @@ Project::get_final_track_dependencies () const
 std::optional<fs::path>
 Project::get_newer_backup ()
 {
+  // TODO
+  return std::nullopt;
+#if 0
   const auto filepath = get_path (ProjectPath::ProjectFile, false);
   z_return_val_if_fail (!filepath.empty (), std::nullopt);
 
@@ -598,6 +612,7 @@ Project::get_newer_backup ()
     }
 
   return result;
+#endif
 }
 
 void
@@ -605,11 +620,16 @@ Project::make_project_dirs (bool is_backup)
 {
   for (
     auto type :
-    { ProjectPath::BACKUPS, ProjectPath::EXPORTS, ProjectPath::EXPORTS_STEMS,
-      ProjectPath::POOL, ProjectPath::PluginStates,
-      ProjectPath::PLUGIN_EXT_COPIES, ProjectPath::PLUGIN_EXT_LINKS })
+    { gui::ProjectPathProvider::ProjectPath::BackupsDir,
+      gui::ProjectPathProvider::ProjectPath::ExportsDir,
+      gui::ProjectPathProvider::ProjectPath::ExportStemsDir,
+      gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir,
+      gui::ProjectPathProvider::ProjectPath::PluginStates,
+      gui::ProjectPathProvider::ProjectPath::PLUGIN_EXT_COPIES,
+      gui::ProjectPathProvider::ProjectPath::PLUGIN_EXT_LINKS })
     {
-      const auto dir = get_path (type, is_backup);
+      const auto dir =
+        get_directory (is_backup) / gui::ProjectPathProvider::get_path (type);
       assert (!dir.empty ());
       try
         {
@@ -714,6 +734,8 @@ Project::compress_or_decompress (
 void
 Project::set_and_create_next_available_backup_dir ()
 {
+// TODO
+#if 0
   auto backups_dir = get_path (ProjectPath::BACKUPS, false);
 
   int i = 0;
@@ -743,6 +765,7 @@ Project::set_and_create_next_available_backup_dir ()
       throw ZrythmException (format_qstr (
         QObject::tr ("Failed to create backup directory {}"), backup_dir_));
     }
+#endif
 }
 
 void
@@ -889,11 +912,20 @@ project_get_arranger_for_last_selection (
 }
 #endif
 
+fs::path
+Project::get_directory (bool for_backup) const
+{
+  return for_backup ? *backup_dir_ : dir_;
+}
+
 std::string
 Project::get_existing_uncompressed_text (bool backup)
 {
   /* get file contents */
-  const auto project_file_path = get_path (ProjectPath::ProjectFile, backup);
+  const auto project_file_path =
+    get_directory (backup)
+    / gui::ProjectPathProvider::get_path (
+      gui::ProjectPathProvider::ProjectPath::ProjectFile);
   z_debug ("getting text for project file {}", project_file_path);
 
   QByteArray compressed_pj{};
@@ -1035,50 +1067,6 @@ Project::autosave_cb (void * data)
   return G_SOURCE_CONTINUE;
 #endif
   return 0;
-}
-
-fs::path
-Project::get_path (ProjectPath path, bool backup) const
-{
-  const auto dir = backup ? *backup_dir_ : dir_;
-  switch (path)
-    {
-    case ProjectPath::BACKUPS:
-      return dir / PROJECT_BACKUPS_DIR;
-    case ProjectPath::EXPORTS:
-      return dir / PROJECT_EXPORTS_DIR;
-    case ProjectPath::EXPORTS_STEMS:
-      return dir / PROJECT_EXPORTS_DIR / PROJECT_STEMS_DIR;
-    case ProjectPath::PLUGINS:
-      return dir / PROJECT_PLUGINS_DIR;
-    case ProjectPath::PluginStates:
-      {
-        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return plugins_dir / PROJECT_PLUGIN_STATES_DIR;
-      }
-      break;
-    case ProjectPath::PLUGIN_EXT_COPIES:
-      {
-        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return plugins_dir / PROJECT_PLUGIN_EXT_COPIES_DIR;
-      }
-      break;
-    case ProjectPath::PLUGIN_EXT_LINKS:
-      {
-        auto plugins_dir = get_path (ProjectPath::PLUGINS, backup);
-        return plugins_dir / PROJECT_PLUGIN_EXT_LINKS_DIR;
-      }
-      break;
-    case ProjectPath::POOL:
-      return dir / PROJECT_POOL_DIR;
-    case ProjectPath::ProjectFile:
-      return dir / PROJECT_FILE;
-    case ProjectPath::FINISHED_FILE:
-      return dir / PROJECT_FINISHED_FILE;
-    default:
-      z_return_val_if_reached ({});
-    }
-  z_return_val_if_reached ({});
 }
 
 Project::SerializeProjectThread::SerializeProjectThread (SaveContext &ctx)
@@ -1223,7 +1211,9 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
     }
 
   auto plugin_states_path =
-    main_project.get_path (ProjectPath::PluginStates, false);
+    main_project.get_directory (false)
+    / gui::ProjectPathProvider::get_path (
+      zrythm::gui::ProjectPathProvider::ProjectPath::PluginStates);
 
   try
     {
@@ -1346,9 +1336,21 @@ Project::save (
       throw ZrythmException ("Failed to write audio pool to disk");
     }
 
+  const auto project_file_path =
+    get_directory (is_backup)
+    / gui::ProjectPathProvider::get_path (
+      gui::ProjectPathProvider::ProjectPath::ProjectFile);
+  const auto temp_project_file_path =
+    get_directory (is_backup)
+    / (utils::Utf8String::from_path (
+         gui::ProjectPathProvider::get_path (
+           gui::ProjectPathProvider::ProjectPath::ProjectFile))
+       + u8".tmp")
+        .to_path ();
+
   auto ctx = std::make_unique<SaveContext> ();
   ctx->main_project_ = this;
-  ctx->project_file_path_ = get_path (ProjectPath::ProjectFile, is_backup);
+  ctx->project_file_path_ = temp_project_file_path;
   ctx->show_notification_ = show_notification;
   ctx->is_backup_ = is_backup;
 #if 0
@@ -1382,8 +1384,14 @@ Project::save (
   if (is_backup)
     {
       /* copy plugin states */
-      auto prj_pl_states_dir = get_path (ProjectPath::PLUGINS, false);
-      auto prj_backup_pl_states_dir = get_path (ProjectPath::PLUGINS, true);
+      auto prj_pl_states_dir =
+        get_directory (false)
+        / gui::ProjectPathProvider::get_path (
+          zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
+      auto prj_backup_pl_states_dir =
+        get_directory (true)
+        / gui::ProjectPathProvider::get_path (
+          zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
       try
         {
           utils::io::copy_dir (
@@ -1443,11 +1451,10 @@ Project::save (
       idle_saved_callback (ctx.get ());
     }
 
-  /* write FINISHED file */
+  /* copy the actual project file to signal that we're finished */
   {
-    const auto finished_file_path =
-      get_path (ProjectPath::FINISHED_FILE, is_backup);
-    utils::io::touch_file (finished_file_path);
+    utils::io::copy_file (project_file_path, temp_project_file_path);
+    utils::io::remove (temp_project_file_path);
   }
 
 // TODO
@@ -1500,7 +1507,11 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
     *other.pool_, clone_type, *obj.file_audio_source_registry_,
-    [&obj] (bool backup) { return obj.get_path (ProjectPath::POOL, backup); },
+    [&obj] (bool backup) {
+      return obj.get_directory (backup)
+             / gui::ProjectPathProvider::get_path (
+               gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+    },
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
@@ -1542,7 +1553,7 @@ Project::setTitle (const QString &title)
 }
 
 QString
-Project::getDirectory () const
+Project::directory () const
 {
   return utils::Utf8String::from_path (dir_);
 }
@@ -1809,7 +1820,9 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.get_path (ProjectPath::PluginStates, false);
+            return project_.dir_
+                   / gui::ProjectPathProvider::get_path (
+                     gui::ProjectPathProvider::ProjectPath::PluginStates);
           });
       }
     else if constexpr (std::is_same_v<T, plugins::ClapPlugin>)
@@ -1819,7 +1832,9 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.get_path (ProjectPath::PluginStates, false);
+            return project_.dir_
+                   / gui::ProjectPathProvider::get_path (
+                     gui::ProjectPathProvider::ProjectPath::PluginStates);
           },
           [this] () {
             return project_.audio_engine_->graph_dispatcher ()
@@ -1834,7 +1849,9 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.get_path (ProjectPath::PluginStates, false);
+            return project_.dir_
+                   / gui::ProjectPathProvider::get_path (
+                     gui::ProjectPathProvider::ProjectPath::PluginStates);
           },
           [] (
             const juce::PluginDescription &description,
@@ -1885,7 +1902,9 @@ from_json (const nlohmann::json &j, Project &project)
   project.pool_ = std::make_unique<dsp::AudioPool> (
     *project.file_audio_source_registry_,
     [&project] (bool backup) {
-      return project.get_path (ProjectPath::POOL, backup);
+      return project.get_directory (backup)
+             / gui::ProjectPathProvider::get_path (
+               gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
     },
     [&project] () { return project.audio_engine_->get_sample_rate (); });
   j.at (Project::kAudioPoolKey).get_to (*project.pool_);

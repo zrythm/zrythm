@@ -6,6 +6,7 @@
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
 #include "gui/backend/project_exporter.h"
+#include "gui/backend/project_path_provider.h"
 #include "utils/audio_file_writer.h"
 
 #include <QQmlEngine>
@@ -59,7 +60,10 @@ ProjectExporter::exportAudio (Project * project)
        sample_rate =
          project->device_manager_->getCurrentAudioDevice ()
            ->getCurrentSampleRate (),
-       exports_path = project->get_path (ProjectPath::EXPORTS, false)] (
+       exports_path =
+         project->get_directory (false)
+         / gui::ProjectPathProvider::get_path (
+           gui::ProjectPathProvider::ProjectPath::ExportsDir)] (
         QPromise<QStringList>           &promise,
         QFuture<juce::AudioSampleBuffer> inner_graph_render_future) {
         // Wait for task to establish its progress min/max

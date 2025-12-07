@@ -54,35 +54,6 @@ using namespace zrythm;
 #define ROUTER (&PROJECT->engine ()->graph_dispatcher ())
 #define AUDIO_ENGINE (PROJECT->engine ())
 
-enum class ProjectPath
-{
-  ProjectFile,
-  BACKUPS,
-
-  /** Plugins path. */
-  PLUGINS,
-
-  /** Path for state .ttl files. */
-  PluginStates,
-
-  /** External files for plugin states, under the
-   * STATES dir. */
-  PLUGIN_EXT_COPIES,
-
-  /** External files for plugin states, under the
-   * STATES dir. */
-  PLUGIN_EXT_LINKS,
-
-  EXPORTS,
-
-  /* EXPORTS / "stems". */
-  EXPORTS_STEMS,
-
-  POOL,
-
-  FINISHED_FILE,
-};
-
 /**
  * @brief Core functionality of a Zrythm project.
  */
@@ -93,8 +64,8 @@ class Project final : public QObject
   Q_PROPERTY (
     QString title READ getTitle WRITE setTitle NOTIFY titleChanged FINAL)
   Q_PROPERTY (
-    QString directory READ getDirectory WRITE setDirectory NOTIFY
-      directoryChanged FINAL)
+    QString directory READ directory WRITE setDirectory NOTIFY directoryChanged
+      FINAL)
   Q_PROPERTY (
     zrythm::structure::tracks::Tracklist * tracklist READ tracklist CONSTANT
       FINAL)
@@ -142,17 +113,6 @@ public:
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginRegistry = plugins::PluginRegistry;
 
-  static constexpr auto PROJECT_FILE = "project.zpj"sv;
-  static constexpr auto PROJECT_BACKUPS_DIR = "backups"sv;
-  static constexpr auto PROJECT_PLUGINS_DIR = "plugins"sv;
-  static constexpr auto PROJECT_PLUGIN_STATES_DIR = "states"sv;
-  static constexpr auto PROJECT_PLUGIN_EXT_COPIES_DIR = "ext_file_copies"sv;
-  static constexpr auto PROJECT_PLUGIN_EXT_LINKS_DIR = "ext_file_links"sv;
-  static constexpr auto PROJECT_EXPORTS_DIR = "exports"sv;
-  static constexpr auto PROJECT_STEMS_DIR = "stems"sv;
-  static constexpr auto PROJECT_POOL_DIR = "pool"sv;
-  static constexpr auto PROJECT_FINISHED_FILE = "FINISHED"sv;
-
 public:
   Project (
     std::shared_ptr<juce::AudioDeviceManager> device_manager,
@@ -177,7 +137,7 @@ public:
 
   QString                           getTitle () const;
   void                              setTitle (const QString &title);
-  QString                           getDirectory () const;
+  QString                           directory () const;
   void                              setDirectory (const QString &directory);
   structure::tracks::Tracklist *    tracklist () const;
   structure::scenes::ClipLauncher * clipLauncher () const;
@@ -208,15 +168,9 @@ public:
 
   // =========================================================
 
-  /**
-   * Returns the requested project path as a newly allocated string.
-   *
-   * @param backup Whether to get the path for the current backup instead of the
-   * main project.
-   */
-  fs::path get_path (ProjectPath path, bool backup) const;
-
   static Project * get_active_instance ();
+
+  fs::path get_directory (bool for_backup) const;
 
   // TODO: delete this getter, no one else should use factory directly
   auto * getArrangerObjectFactory () const

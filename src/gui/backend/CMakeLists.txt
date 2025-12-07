@@ -37,6 +37,8 @@ target_sources(zrythm_gui_lib
     project_info.cpp
     project_manager.h
     project_manager.cpp
+    project_path_provider.h
+    project_path_provider.cpp
     project_templates_model.h
     project_templates_model.cpp
     project_ui_state.h
