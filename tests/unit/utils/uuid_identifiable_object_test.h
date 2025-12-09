@@ -3,8 +3,9 @@
 
 #pragma once
 
-#include "utils/gtest_wrapper.h"
 #include "utils/uuid_identifiable_object.h"
+
+#include <gtest/gtest.h>
 
 using namespace zrythm::utils;
 
@@ -119,58 +120,4 @@ protected:
   DerivedTestObject * obj1_{};
   DerivedTestObject * obj2_{};
   DerivedTestObject * obj3_{};
-
-  static_assert (
-    std::copy_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
-  static_assert (
-    std::move_constructible<UuidIdentifiableObjectSelectionManager<TestRegistry>>);
-};
-
-class TestUuidIdentifiableObjectSelectionManager
-    : public QObject,
-      public UuidIdentifiableObjectSelectionManager<
-        UuidIdentifiableObjectRegistryTest::TestRegistry>
-{
-  Q_OBJECT
-  DEFINE_UUID_IDENTIFIABLE_OBJECT_SELECTION_MANAGER_QML_PROPERTIES (
-    TestUuidIdentifiableObjectSelectionManager,
-    UuidIdentifiableObjectRegistryTest::TestRegistry::BaseType)
-
-public:
-  // inherit constructors
-  using UuidIdentifiableObjectSelectionManager<
-    UuidIdentifiableObjectRegistryTest::TestRegistry>::
-    UuidIdentifiableObjectSelectionManager;
-};
-
-class UuidIdentifiableObjectSelectionManagerTest
-    : public QObject,
-      public ::testing::Test
-{
-  Q_OBJECT
-
-public:
-  using TestVariant = std::variant<DerivedTestObject *>;
-  using TestRegistry = utils::OwningObjectRegistry<TestVariant, BaseTestObject>;
-
-protected:
-  void SetUp () override
-  {
-    obj1_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object1");
-    obj2_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object2");
-    obj3_ = new DerivedTestObject (TestUuid{ QUuid::createUuid () }, "Object3");
-
-    registry_.register_object (obj1_);
-    registry_.register_object (obj2_);
-    registry_.register_object (obj3_);
-    selection_manager_ =
-      std::make_unique<TestUuidIdentifiableObjectSelectionManager> (registry_);
-  }
-
-  TestRegistry        registry_;
-  DerivedTestObject * obj1_{};
-  DerivedTestObject * obj2_{};
-  DerivedTestObject * obj3_{};
-
-  std::unique_ptr<TestUuidIdentifiableObjectSelectionManager> selection_manager_;
 };

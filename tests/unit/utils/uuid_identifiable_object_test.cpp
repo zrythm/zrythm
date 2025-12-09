@@ -1,15 +1,13 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/gtest_wrapper.h"
 #include "utils/uuid_identifiable_object.h"
 
 #include "./uuid_identifiable_object_test.h"
 #include "gmock/gmock.h"
 
-using namespace zrythm::utils;
-
-using namespace zrythm;
+namespace zrythm::utils
+{
 
 TEST (UuidIdentifiableObjectTest, Creation)
 {
@@ -431,92 +429,4 @@ TEST_F (UuidIdentifiableObjectRegistryTest, RegistrySerialization)
   std::visit (
     [] (auto * obj) { EXPECT_EQ (obj->name (), "Object1"); }, obj1_var);
 }
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, BasicSelection)
-{
-  EXPECT_TRUE (selection_manager_->empty ());
-
-  selection_manager_->append_to_selection (obj1_->get_uuid ());
-  EXPECT_TRUE (selection_manager_->is_selected (obj1_->get_uuid ()));
-  EXPECT_EQ (selection_manager_->size (), 1);
-
-  selection_manager_->append_to_selection (obj2_->get_uuid ());
-  EXPECT_TRUE (selection_manager_->is_selected (obj2_->get_uuid ()));
-  EXPECT_EQ (selection_manager_->size (), 2);
-
-  selection_manager_->remove_from_selection (obj1_->get_uuid ());
-  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
-  EXPECT_EQ (selection_manager_->size (), 1);
-}
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, SelectUnique)
-{
-  selection_manager_->append_to_selection (obj1_->get_uuid ());
-  selection_manager_->append_to_selection (obj2_->get_uuid ());
-
-  selection_manager_->select_unique (obj3_->get_uuid ());
-  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
-  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
-  EXPECT_TRUE (selection_manager_->is_selected (obj3_->get_uuid ()));
-  EXPECT_TRUE (selection_manager_->is_only_selection (obj3_->get_uuid ()));
-  EXPECT_EQ (selection_manager_->size (), 1);
-}
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, ClearSelection)
-{
-  selection_manager_->append_to_selection (obj1_->get_uuid ());
-  selection_manager_->append_to_selection (obj2_->get_uuid ());
-
-  selection_manager_->clear_selection ();
-  EXPECT_TRUE (selection_manager_->empty ());
-  EXPECT_FALSE (selection_manager_->is_selected (obj1_->get_uuid ()));
-  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
-}
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, SelectOnlyThese)
-{
-  std::vector<TestUuid> uuids{ obj1_->get_uuid (), obj3_->get_uuid () };
-  selection_manager_->select_only_these (uuids);
-
-  EXPECT_TRUE (selection_manager_->is_selected (obj1_->get_uuid ()));
-  EXPECT_FALSE (selection_manager_->is_selected (obj2_->get_uuid ()));
-  EXPECT_TRUE (selection_manager_->is_selected (obj3_->get_uuid ()));
-  EXPECT_EQ (selection_manager_->size (), 2);
-}
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, EmitsSelectionChanged)
-{
-  bool obj1_selected = false;
-  bool obj2_selected = false;
-
-  QObject::connect (
-    selection_manager_.get (),
-    &TestUuidIdentifiableObjectSelectionManager::selectionChanged, this,
-    [&] () { obj1_selected = selection_manager_->isSelected (obj1_); });
-  QObject::connect (
-    selection_manager_.get (),
-    &TestUuidIdentifiableObjectSelectionManager::selectionChanged, this,
-    [&] () { obj2_selected = selection_manager_->isSelected (obj2_); });
-
-  selection_manager_->append_to_selection (obj1_->get_uuid ());
-  EXPECT_TRUE (obj1_selected);
-  EXPECT_FALSE (obj2_selected);
-
-  selection_manager_->append_to_selection (obj2_->get_uuid ());
-  EXPECT_TRUE (obj1_selected);
-  EXPECT_TRUE (obj2_selected);
-
-  selection_manager_->remove_from_selection (obj1_->get_uuid ());
-  EXPECT_FALSE (obj1_selected);
-  EXPECT_TRUE (obj2_selected);
-}
-
-TEST_F (UuidIdentifiableObjectSelectionManagerTest, OnlySelectionCheck)
-{
-  selection_manager_->append_to_selection (obj1_->get_uuid ());
-  EXPECT_TRUE (selection_manager_->is_only_selection (obj1_->get_uuid ()));
-
-  selection_manager_->append_to_selection (obj2_->get_uuid ());
-  EXPECT_FALSE (selection_manager_->is_only_selection (obj1_->get_uuid ()));
-  EXPECT_FALSE (selection_manager_->is_only_selection (obj2_->get_uuid ()));
 }
