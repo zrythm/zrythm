@@ -44,5 +44,6 @@ ProjectPathProvider::get_path (ProjectPath path)
     case ProjectPath::ProjectFile:
       return PROJECT_FILE;
     }
+  throw std::runtime_error ("Invalid path type.");
 }
 }
