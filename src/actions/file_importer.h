@@ -20,10 +20,10 @@ class FileImporter : public QObject
 
 public:
   explicit FileImporter (
-    undo::UndoStack                          &undo_stack,
-    ::zrythm::actions::ArrangerObjectCreator &arranger_object_creator,
-    ::zrythm::actions::TrackCreator          &track_creator,
-    QObject *                                 parent = nullptr);
+    undo::UndoStack       &undo_stack,
+    ArrangerObjectCreator &arranger_object_creator,
+    TrackCreator          &track_creator,
+    QObject *              parent = nullptr);
 
   /**
    * @brief Enumeration for supported file types.

@@ -1,15 +1,16 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ColumnLayout {
   id: root
 
+  required property PluginImporter pluginImporter
   required property Project project
 
   TabBar {
@@ -61,7 +62,7 @@ ColumnLayout {
       pluginManager: GlobalState.zrythm.pluginManager
 
       // TODO: import to current track
-      onPluginDescriptorActivated: descriptor => root.project.pluginImporter.importPluginToNewTrack(descriptor)
+      onPluginDescriptorActivated: descriptor => root.pluginImporter.importPluginToNewTrack(descriptor)
     }
 
     FileBrowserPage {
@@ -80,6 +81,10 @@ ColumnLayout {
       model: 1
 
       Rectangle {
+        id: rect
+
+        required property int index
+
         border.color: "black"
         border.width: 2
         color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
@@ -89,7 +94,7 @@ ColumnLayout {
         Text {
           anchors.centerIn: parent
           font.pixelSize: 16
-          text: "Item " + (index + 1)
+          text: "Item " + (rect.index + 1)
         }
       }
     }

@@ -17,7 +17,7 @@ GridLayout {
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
   required property MidiRegion region
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.projectUiState.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
   columnSpacing: 0
   columns: 3
@@ -137,7 +137,7 @@ GridLayout {
     arrangerContentHeight: pianoRollKeys.height
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
-    objectCreator: root.project.arrangerObjectCreator
+    objectCreator: root.projectUiState.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
     selectionOperator: root.selectionOperator
@@ -145,7 +145,7 @@ GridLayout {
     tempoMap: root.project.tempoMap
     tool: root.projectUiState.tool
     transport: root.project.transport
-    undoStack: root.project.undoStack
+    undoStack: root.projectUiState.undoStack
     unifiedObjectsModel: unifiedObjectsModel
   }
 
@@ -162,7 +162,7 @@ GridLayout {
     Layout.fillWidth: true
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
-    objectCreator: root.project.arrangerObjectCreator
+    objectCreator: root.projectUiState.arrangerObjectCreator
     pianoRoll: root.pianoRoll
     ruler: ruler
     selectionOperator: root.selectionOperator
@@ -170,7 +170,7 @@ GridLayout {
     tempoMap: root.project.tempoMap
     tool: root.projectUiState.tool
     transport: root.project.transport
-    undoStack: root.project.undoStack
+    undoStack: root.projectUiState.undoStack
     unifiedObjectsModel: unifiedObjectsModel
   }
 }

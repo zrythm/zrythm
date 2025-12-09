@@ -22,7 +22,6 @@
 #include "utils/progress_info.h"
 #include "utils/views.h"
 
-#include <fmt/printf.h>
 #include <juce_wrapper.h>
 #include <zstd.h>
 
@@ -115,8 +114,6 @@ Project::Project (
                        AudioFilePoolDir);
           },
           [this] () { return audio_engine_->get_sample_rate (); })),
-      midi_mappings_ (
-        std::make_unique<engine::session::MidiMappings> (*param_registry_)),
       tracklist_ (
         utils::make_qobject_unique<
           structure::tracks::Tracklist> (*track_registry_, this)),
@@ -129,13 +126,6 @@ Project::Project (
         utils::make_qobject_unique<structure::scenes::ClipPlaybackService> (
           *arranger_object_registry_,
           *tracklist_->collection (),
-          this)),
-      undo_stack_ (
-        utils::make_qobject_unique<undo::UndoStack> (
-          [&] (const std::function<void ()> &action, bool recalculate_graph) {
-            audio_engine_->execute_function_with_paused_processing_synchronously (
-              action, recalculate_graph);
-          },
           this)),
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
@@ -203,40 +193,6 @@ Project::Project (
       track_factory_ (
         std::make_unique<structure::tracks::TrackFactory> (
           get_final_track_dependencies ())),
-      arranger_object_creator_ (
-        utils::make_qobject_unique<zrythm::actions::ArrangerObjectCreator> (
-          *undo_stack_,
-          *arranger_object_factory_,
-          *snap_grid_timeline_,
-          *snap_grid_editor_,
-          this)),
-      track_creator_ (
-        utils::make_qobject_unique<zrythm::actions::TrackCreator> (
-          *undo_stack_,
-          *track_factory_,
-          *tracklist_->collection (),
-          *tracklist_->trackRouting (),
-          *tracklist_->singletonTracks (),
-          this)),
-      plugin_importer_ (
-        utils::make_qobject_unique<actions::PluginImporter> (
-          *undo_stack_,
-          *plugin_factory_,
-          *track_creator_,
-          [] (plugins::PluginUuidReference plugin_ref) {
-            // Show UI by default when importing plugins
-            z_debug ("Plugin instantiation completed");
-            zrythm::plugins::plugin_ptr_variant_to_base (
-              plugin_ref.get_object ())
-              ->setUiVisible (true);
-          },
-          this)),
-      file_importer_ (
-        utils::make_qobject_unique<actions::FileImporter> (
-          *undo_stack_,
-          *arranger_object_creator_,
-          *track_creator_,
-          this)),
       tempo_object_manager_ (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
@@ -1398,8 +1354,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
   obj.port_connections_manager_ =
     utils::clone_qobject (*other.port_connections_manager_, &obj);
-  obj.midi_mappings_ = utils::clone_unique (
-    *other.midi_mappings_, clone_type, *obj.param_registry_);
 
   z_debug ("finished cloning project");
 }
@@ -1480,36 +1434,6 @@ Project::engine () const
   return audio_engine_.get ();
 }
 
-undo::UndoStack *
-Project::undoStack () const
-{
-  return undo_stack_.get ();
-}
-
-actions::ArrangerObjectCreator *
-Project::arrangerObjectCreator () const
-{
-  return arranger_object_creator_.get ();
-}
-
-actions::TrackCreator *
-Project::trackCreator () const
-{
-  return track_creator_.get ();
-}
-
-actions::PluginImporter *
-Project::pluginImporter () const
-{
-  return plugin_importer_.get ();
-}
-
-actions::FileImporter *
-Project::fileImporter () const
-{
-  return file_importer_.get ();
-}
-
 dsp::TempoMapWrapper *
 Project::getTempoMap () const
 {
@@ -1562,45 +1486,6 @@ Project::clone (bool for_backup) const
   return ret;
 }
 
-actions::ArrangerObjectSelectionOperator *
-Project::createArrangerObjectSelectionOperator (
-  QItemSelectionModel * selectionModel) const
-{
-  // FIXME: this method should be someplace else - Project has too many concerns
-  // currently
-  auto * sel_operator = new actions::ArrangerObjectSelectionOperator (
-    *undo_stack_, *selectionModel,
-    [this] (structure::arrangement::ArrangerObjectPtrVariant obj_var) {
-      return std::visit (
-        [&] (const auto &obj)
-          -> actions::ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
-          using ObjT = base_type<decltype (obj)>;
-          if constexpr (structure::arrangement::LaneOwnedObject<ObjT>)
-            {
-              return static_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (tracklist ()->getTrackLaneForObject (obj));
-            }
-          else if constexpr (structure::arrangement::TimelineObject<ObjT>)
-            {
-              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (tracklist ()->getTrackForTimelineObject (obj));
-            }
-          else
-            {
-              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (obj->parentObject ());
-            }
-        },
-        obj_var);
-    },
-    *arranger_object_factory_);
-
-  // Transfer ownership to QML JavaScript engine for proper cleanup
-  QQmlEngine::setObjectOwnership (sel_operator, QQmlEngine::JavaScriptOwnership);
-
-  return sel_operator;
-}
-
 void
 to_json (nlohmann::json &j, const Project &project)
 {
@@ -1625,9 +1510,6 @@ to_json (nlohmann::json &j, const Project &project)
   // j[Project::kRegionLinkGroupManagerKey] =
   // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
-  j[Project::kMidiMappingsKey] = project.midi_mappings_;
-  // j[Project::kUndoManagerKey] = project.legacy_undo_manager_;
-  j[Project::kUndoStackKey] = project.undo_stack_;
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
 }
 
@@ -1640,7 +1522,7 @@ struct ArrangerObjectBuilderForDeserialization
 
   template <typename T> std::unique_ptr<T> build () const
   {
-    return project_.getArrangerObjectFactory ()->get_builder<T> ().build_empty ();
+    return project_.arrangerObjectFactory ()->get_builder<T> ().build_empty ();
   }
 
   const Project &project_;
@@ -1765,9 +1647,6 @@ from_json (const nlohmann::json &j, Project &project)
   //   .get_to (project.region_link_group_manager_);
   j.at (Project::kPortConnectionsManagerKey)
     .get_to (*project.port_connections_manager_);
-  j.at (Project::kMidiMappingsKey).get_to (*project.midi_mappings_);
-  // j.at (Project::kUndoManagerKey).get_to (*project.legacy_undo_manager_);
-  j.at (Project::kUndoStackKey).get_to (*project.undo_stack_);
   j.at (Project::kTempoObjectManagerKey).get_to (*project.tempo_object_manager_);
 
 // TODO

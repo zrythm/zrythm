@@ -57,8 +57,7 @@ RecordingManager::start_unended_note (
   /* set end pos */
   const auto real_end_pos = end_pos ? *end_pos : start_pos + 1;
 
-  auto mn_builder =
-    PROJECT->getArrangerObjectFactory ()->get_builder<MidiNote> ();
+  auto mn_builder = PROJECT->arrangerObjectFactory ()->get_builder<MidiNote> ();
   auto mn =
     mn_builder.with_start_ticks (start_pos)
       .with_end_ticks (real_end_pos)
@@ -537,6 +536,8 @@ RecordingManager::create_automation_point (
     }
   else
     {
+// TODO
+#if 0
       auto * ap = PROJECT->arrangerObjectCreator ()->addAutomationPoint (
         &region,
         region.get_tempo_map ()
@@ -547,6 +548,7 @@ RecordingManager::create_automation_point (
       ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Pulse);
       last_recorded_aps_per_region_.insert_or_assign (region.get_uuid (), ap);
       return ap;
+#endif
     }
 
   return nullptr;

@@ -37,7 +37,7 @@ ArrangerObjectSpan::merge () const -> ArrangerObjectUuidReference
               if constexpr (std::is_same_v<RegionT, MidiRegion>)
                 {
                   new_r =
-                    PROJECT->getArrangerObjectFactory ()
+                    PROJECT->arrangerObjectFactory ()
                       ->get_builder<MidiRegion> ()
                       .with_start_ticks (pos)
                       .with_end_ticks (end_pos.in (units::ticks))
@@ -52,7 +52,7 @@ ArrangerObjectSpan::merge () const -> ArrangerObjectUuidReference
                       for (auto * mn : r->get_children_view ())
                         {
                           auto new_mn =
-                            PROJECT->getArrangerObjectFactory ()
+                            PROJECT->arrangerObjectFactory ()
                               ->clone_new_object_identity (*mn);
                           std::visit (
                             [&] (auto &&m) {

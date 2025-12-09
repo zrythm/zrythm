@@ -3,11 +3,6 @@
 
 #pragma once
 
-#include "actions/arranger_object_creator.h"
-#include "actions/arranger_object_selection_operator.h"
-#include "actions/file_importer.h"
-#include "actions/plugin_importer.h"
-#include "actions/track_creator.h"
 #include "dsp/audio_pool.h"
 #include "dsp/engine.h"
 #include "dsp/metronome.h"
@@ -16,7 +11,6 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 #include "engine/session/control_room.h"
-#include "engine/session/midi_mapping.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -24,7 +18,7 @@
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
-#include "undo/undo_stack.h"
+#include "structure/tracks/tracklist.h"
 #include "utils/progress_info.h"
 
 /**
@@ -79,17 +73,6 @@ class Project final : public QObject
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
-  Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
-      arrangerObjectCreator CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
-      CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::actions::FileImporter * fileImporter READ fileImporter CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
   Q_PROPERTY (
@@ -139,11 +122,6 @@ public:
   dsp::Transport *                             getTransport () const;
   engine::session::ControlRoom *               controlRoom () const;
   dsp::AudioEngine *                           engine () const;
-  undo::UndoStack *                            undoStack () const;
-  zrythm::actions::ArrangerObjectCreator *     arrangerObjectCreator () const;
-  zrythm::actions::TrackCreator *              trackCreator () const;
-  actions::FileImporter *                      fileImporter () const;
-  actions::PluginImporter *                    pluginImporter () const;
   dsp::TempoMapWrapper *                       getTempoMap () const;
   dsp::SnapGrid *                              snapGridTimeline () const;
   dsp::SnapGrid *                              snapGridEditor () const;
@@ -153,10 +131,6 @@ public:
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
 
-  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
-              createArrangerObjectSelectionOperator (
-                QItemSelectionModel * selectionModel) const;
-
   // =========================================================
 
   static Project * get_active_instance ();
@@ -164,7 +138,7 @@ public:
   fs::path get_directory (bool for_backup) const;
 
   // TODO: delete this getter, no one else should use factory directly
-  auto * getArrangerObjectFactory () const
+  auto * arrangerObjectFactory () const
   {
     return arranger_object_factory_.get ();
   }
@@ -436,9 +410,6 @@ private:
   static constexpr auto kTracklistKey = "tracklist"sv;
   static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
-  static constexpr auto kMidiMappingsKey = "midiMappings"sv;
-  static constexpr auto kUndoManagerKey = "undoManager"sv;
-  static constexpr auto kUndoStackKey = "undoStack"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
   static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
   static constexpr auto FORMAT_MAJOR_VER = 2;
@@ -534,9 +505,6 @@ public:
   /** Manager for region link groups. */
   // structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
 
-  /** MIDI bindings. */
-  std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
-
   /**
    * @brief Tracklist.
    *
@@ -556,18 +524,10 @@ public:
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;
 
-  utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
-
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
                                                    arranger_object_factory_;
   utils::QObjectUniquePtr<plugins::PluginFactory>  plugin_factory_;
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
-
-  utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
-                                                   arranger_object_creator_;
-  utils::QObjectUniquePtr<actions::TrackCreator>   track_creator_;
-  utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
-  utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
 
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;

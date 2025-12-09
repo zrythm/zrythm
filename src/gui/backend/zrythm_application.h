@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
+#include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
@@ -148,6 +147,9 @@ private:
   QTranslator * translator_ = nullptr;
 
   std::shared_ptr<gui::backend::DeviceManager> device_manager_;
+
+  /** MIDI bindings (TODO). */
+  std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
 };
 
 } // namespace zrythm::gui

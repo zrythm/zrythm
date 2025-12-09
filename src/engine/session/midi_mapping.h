@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "dsp/port.h"
+#include "dsp/parameter.h"
 #include "utils/icloneable.h"
 
 #define MIDI_MAPPINGS (PROJECT->midi_mappings_)

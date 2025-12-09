@@ -70,7 +70,7 @@ ApplicationWindow {
   }
 
   Connections {
-      function onRowsAboutToBeRemoved(modelIndex: var, first: int, last: int) {
+    function onRowsAboutToBeRemoved(modelIndex: var, first: int, last: int) {
       // Auto-deselect tracks when removed from the project
       for (let i = first; i <= last; ++i) {
         const trackModelIndex = trackSelectionModel.getModelIndex(i);
@@ -228,18 +228,18 @@ ApplicationWindow {
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.project.undoStack && root.project.undoStack.canUndo
+    enabled: root.projectUiState.undoStack && root.projectUiState.undoStack.canUndo
     sequences: [StandardKey.Undo]
 
-    onActivated: root.project.undoStack.undo()
+    onActivated: root.projectUiState.undoStack.undo()
   }
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.project.undoStack && root.project.undoStack.canRedo
+    enabled: root.projectUiState.undoStack && root.projectUiState.undoStack.canRedo
     sequences: [StandardKey.Redo]
 
-    onActivated: root.project.undoStack.redo()
+    onActivated: root.projectUiState.undoStack.redo()
   }
 
   // Global spacebar for play/pause
@@ -332,10 +332,11 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
+        pluginImporter: root.projectUiState.pluginImporter
         project: root.project
         trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist
-        undoStack: root.project.undoStack
+        undoStack: root.projectUiState.undoStack
         visible: root.settingsManager.leftPanelVisible
       }
 
@@ -374,6 +375,7 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 30
         SplitView.preferredWidth: 200
+        pluginImporter: root.projectUiState.pluginImporter
         project: root.project
         visible: root.settingsManager.rightPanelVisible
       }

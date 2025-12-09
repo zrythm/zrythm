@@ -19,7 +19,7 @@ ColumnLayout {
   readonly property int rulerHeight: 24
   readonly property int tempoMapLaneHeight: 24
   readonly property int tempoMapLaneSpacing: 1
-  required property ItemSelectionModel trackSelectionModel
+  required property TrackSelectionModel trackSelectionModel
 
   spacing: 0
 
@@ -48,7 +48,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: root.rulerHeight
           Layout.minimumHeight: root.rulerHeight
-          trackCreator: root.project.trackCreator
+          trackCreator: root.projectUiState.trackCreator
           tracklist: root.project.tracklist
         }
 
@@ -81,7 +81,7 @@ ColumnLayout {
           pinned: true
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
-          undoStack: root.project.undoStack
+          undoStack: root.projectUiState.undoStack
         }
 
         TracklistView {
@@ -93,7 +93,7 @@ ColumnLayout {
           pinned: false
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
-          undoStack: root.project.undoStack
+          undoStack: root.projectUiState.undoStack
 
           footer: TracklistDropArea {
             id: tracklistDropArea
@@ -102,10 +102,10 @@ ColumnLayout {
             width: unpinnedTracklist.width
 
             onFilesDropped: filePaths => {
-              root.project.fileImporter.importFiles(filePaths, 0, null);
+              root.projectUiState.fileImporter.importFiles(filePaths, 0, null);
             }
             onPluginDescriptorDropped: descriptor => {
-              root.project.pluginImporter.importPluginToNewTrack(descriptor);
+              root.projectUiState.pluginImporter.importPluginToNewTrack(descriptor);
             }
           }
 
@@ -129,8 +129,8 @@ ColumnLayout {
         sourceComponent: ClipLauncherView {
           clipLauncher: root.project.clipLauncher
           clipPlaybackService: root.project.clipPlaybackService
-          fileImporter: root.project.fileImporter
-          objectCreator: root.project.arrangerObjectCreator
+          fileImporter: root.projectUiState.fileImporter
+          objectCreator: root.projectUiState.arrangerObjectCreator
           rulerHeight: root.rulerHeight
           timeline: root.projectUiState.timeline
           trackCollection: root.project.tracklist.collection
@@ -150,7 +150,7 @@ ColumnLayout {
         sourceComponent: ColumnLayout {
           id: timelinePane
 
-          readonly property ArrangerObjectSelectionOperator selectionOperator: root.project.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+          readonly property ArrangerObjectSelectionOperator selectionOperator: root.projectUiState.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
           spacing: 1
 
@@ -184,7 +184,7 @@ ColumnLayout {
               editorSettings: root.projectUiState.timeline.editorSettings
               laneHeight: root.tempoMapLaneHeight
               laneSpacing: root.tempoMapLaneSpacing
-              objectCreator: root.project.arrangerObjectCreator
+              objectCreator: root.projectUiState.arrangerObjectCreator
               ruler: ruler
               selectionOperator: timelinePane.selectionOperator
               snapGrid: root.project.snapGridTimeline
@@ -192,7 +192,7 @@ ColumnLayout {
               tempoObjectManager: root.project.tempoObjectManager
               tool: root.projectUiState.tool
               transport: root.project.transport
-              undoStack: root.project.undoStack
+              undoStack: root.projectUiState.undoStack
               unifiedObjectsModel: unifiedObjectsModel
             }
           }
@@ -205,7 +205,7 @@ ColumnLayout {
             Layout.minimumHeight: pinnedTracklist.height
             arrangerSelectionModel: arrangerSelectionModel
             clipEditor: root.projectUiState.clipEditor
-            objectCreator: root.project.arrangerObjectCreator
+            objectCreator: root.projectUiState.arrangerObjectCreator
             pinned: true
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
@@ -215,7 +215,7 @@ ColumnLayout {
             tool: root.projectUiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
-            undoStack: root.project.undoStack
+            undoStack: root.projectUiState.undoStack
             unifiedObjectsModel: unifiedObjectsModel
           }
 
@@ -269,7 +269,7 @@ ColumnLayout {
             Layout.fillWidth: true
             arrangerSelectionModel: arrangerSelectionModel
             clipEditor: root.projectUiState.clipEditor
-            objectCreator: root.project.arrangerObjectCreator
+            objectCreator: root.projectUiState.arrangerObjectCreator
             pinned: false
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
@@ -279,7 +279,7 @@ ColumnLayout {
             tool: root.projectUiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
-            undoStack: root.project.undoStack
+            undoStack: root.projectUiState.undoStack
             unifiedObjectsModel: unifiedObjectsModel
 
             Synchronizer on arrangerContentHeight {
