@@ -237,9 +237,6 @@ Project::Project (
           *arranger_object_creator_,
           *track_creator_,
           this)),
-      plugin_selection_manager_ (
-        utils::make_qobject_unique<
-          gui::backend::PluginSelectionManager> (*plugin_registry_, this)),
       tempo_object_manager_ (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
@@ -1457,12 +1454,6 @@ structure::scenes::ClipPlaybackService *
 Project::clipPlaybackService () const
 {
   return clip_playback_service_.get ();
-}
-
-gui::backend::PluginSelectionManager *
-Project::pluginSelectionManager () const
-{
-  return plugin_selection_manager_.get ();
 }
 
 dsp::Metronome *

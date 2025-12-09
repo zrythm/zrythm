@@ -17,7 +17,6 @@
 #include "dsp/transport.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/plugin_selection_manager.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -136,7 +135,6 @@ public:
   structure::tracks::Tracklist *    tracklist () const;
   structure::scenes::ClipLauncher * clipLauncher () const;
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
-  gui::backend::PluginSelectionManager *       pluginSelectionManager () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
   engine::session::ControlRoom *               controlRoom () const;
@@ -570,9 +568,6 @@ public:
   utils::QObjectUniquePtr<actions::TrackCreator>   track_creator_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
-
-  utils::QObjectUniquePtr<gui::backend::PluginSelectionManager>
-    plugin_selection_manager_;
 
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;

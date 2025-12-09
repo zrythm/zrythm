@@ -30,7 +30,6 @@ target_sources(zrythm_gui_lib
     plugin_manager.cpp
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
-    plugin_selection_manager.h
     project_exporter.h
     project_exporter.cpp
     project_info.h
