@@ -162,6 +162,10 @@ MenuBar {
         }
       }
     }
+
+    MenuItem {
+      action: ApplicationWindow.window?.fullScreenAction ?? null
+    }
   }
 
   Menu {

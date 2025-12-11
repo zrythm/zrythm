@@ -170,17 +170,6 @@ ZrythmToolBar {
         }
 
         MenuItem {
-          text: qsTr("Fullscreen")
-
-          onTriggered: {
-            root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
-          }
-        }
-
-        MenuSeparator {
-        }
-
-        MenuItem {
           // Open preferences dialog
 
           text: qsTr("Preferences")

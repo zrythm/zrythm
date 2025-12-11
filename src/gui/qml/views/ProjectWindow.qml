@@ -28,6 +28,16 @@ ApplicationWindow {
     }
   }
   required property DeviceManager deviceManager
+  readonly property Action fullScreenAction: Action {
+    id: fullScreenAction
+
+    shortcut: StandardKey.FullScreen
+    text: qsTr("Fullscreen")
+
+    onTriggered: {
+      root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
+    }
+  }
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
   required property SettingsManager settingsManager
