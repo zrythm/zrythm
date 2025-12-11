@@ -4,15 +4,11 @@
 #pragma once
 
 #include "dsp/graph_builder.h"
+#include "dsp/port.h"
 
 using namespace zrythm;
 
 class Project;
-
-namespace zrythm::dsp
-{
-class Port;
-}
 
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {

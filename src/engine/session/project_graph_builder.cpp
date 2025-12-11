@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
-#include "dsp/graph_export.h"
 #include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/project.h"
 #include "structure/tracks/channel_subgraph_builder.h"
@@ -119,7 +118,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto &engine = project_->audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
   auto * tracklist = project_->tracklist ();
-  auto * monitor_fader = project->controlRoom ()->monitorFader ();
+  auto * monitor_fader = &project->monitor_fader ();
   // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project->getTransport ();
   auto  &metronome = *project->metronome ();

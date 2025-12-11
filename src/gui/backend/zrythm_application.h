@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/settings_manager.h"
@@ -52,6 +53,9 @@ class ZrythmApplication final : public QApplication
   Q_PROPERTY (
     zrythm::gui::FileSystemModel * fileSystemModel READ fileSystemModel CONSTANT
       FINAL)
+  Q_PROPERTY (
+    zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
+      FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -93,6 +97,11 @@ public:
     return file_system_model_.get ();
   }
 
+  engine::session::ControlRoom * controlRoom () const
+  {
+    return control_room_.get ();
+  }
+
   DirectoryManager &get_directory_manager () const { return *dir_manager_; }
 
   QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
@@ -110,6 +119,8 @@ private:
   void post_exec_initialization ();
 
   void setup_device_manager ();
+
+  void setup_control_room ();
 
 private Q_SLOTS:
   void onEngineOutput ();
@@ -129,13 +140,14 @@ private:
    */
   QLocalSocket * socket_ = nullptr;
 
-  std::unique_ptr<DirectoryManager>           dir_manager_;
-  utils::QObjectUniquePtr<AlertManager>       alert_manager_;
-  utils::QObjectUniquePtr<SettingsManager>    settings_manager_;
-  utils::QObjectUniquePtr<ThemeManager>       theme_manager_;
-  utils::QObjectUniquePtr<TranslationManager> translation_manager_;
-  utils::QObjectUniquePtr<ProjectManager>     project_manager_;
-  utils::QObjectUniquePtr<FileSystemModel>    file_system_model_;
+  std::unique_ptr<DirectoryManager>                     dir_manager_;
+  utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
+  utils::QObjectUniquePtr<SettingsManager>              settings_manager_;
+  utils::QObjectUniquePtr<ThemeManager>                 theme_manager_;
+  utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
+  utils::QObjectUniquePtr<ProjectManager>               project_manager_;
+  utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
+  utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
 
   /**
    * @brief Engine process handle.

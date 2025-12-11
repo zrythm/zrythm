@@ -141,8 +141,9 @@ ProjectManager::create_default (
     [&prj_ui_state, &name] {
       // registries and registry objects must be created on the main thread
       {
-        auto prj = utils::make_qobject_unique<Project> (
-          dynamic_cast<ZrythmApplication *> (qApp)->get_device_manager ());
+        auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
+        auto   prj = utils::make_qobject_unique<Project> (
+          zapp->get_device_manager (), *zapp->controlRoom ()->monitorFader ());
         prj_ui_state =
           utils::make_qobject_unique<ProjectUiState> (std::move (prj));
       }

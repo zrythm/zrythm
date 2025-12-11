@@ -10,7 +10,6 @@
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
-#include "engine/session/control_room.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
@@ -66,9 +65,6 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::scenes::ClipPlaybackService * clipPlaybackService READ
       clipPlaybackService CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
-      FINAL)
   Q_PROPERTY (zrythm::dsp::AudioEngine * engine READ engine CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
@@ -92,6 +88,7 @@ public:
 public:
   Project (
     std::shared_ptr<juce::AudioDeviceManager> device_manager,
+    dsp::Fader                               &monitor_fader,
     QObject *                                 parent = nullptr);
   ~Project () override;
   Z_DISABLE_COPY_MOVE (Project)
@@ -120,7 +117,6 @@ public:
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
-  engine::session::ControlRoom *               controlRoom () const;
   dsp::AudioEngine *                           engine () const;
   dsp::TempoMapWrapper *                       getTempoMap () const;
   dsp::SnapGrid *                              snapGridTimeline () const;
@@ -134,6 +130,8 @@ public:
   // =========================================================
 
   static Project * get_active_instance ();
+
+  dsp::Fader &monitor_fader ();
 
   fs::path get_directory (bool for_backup) const;
 
@@ -492,8 +490,6 @@ public:
    */
   utils::QObjectUniquePtr<dsp::Transport> transport_;
 
-  utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
-
   /**
    * The audio backend.
    */
@@ -531,6 +527,8 @@ public:
 
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;
+
+  dsp::Fader &monitor_fader_;
 
   /**
    * @brief Graph dispatcher.
