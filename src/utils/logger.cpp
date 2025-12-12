@@ -6,7 +6,7 @@
 #include "utils/debug.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 
 #include <QStandardPaths>

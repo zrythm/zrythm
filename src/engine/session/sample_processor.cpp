@@ -21,7 +21,7 @@
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 using namespace zrythm::structure::tracks;
 

@@ -5,7 +5,7 @@
 
 #include "dsp/audio_pool.h"
 #include "dsp/file_audio_source.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>

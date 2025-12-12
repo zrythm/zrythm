@@ -26,7 +26,7 @@
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/types.h"
 
 using namespace zrythm;

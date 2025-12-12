@@ -4,7 +4,7 @@
 #include <fstream>
 
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 using namespace zrythm;
 

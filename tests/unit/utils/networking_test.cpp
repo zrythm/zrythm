@@ -6,7 +6,7 @@
 #include <thread>
 
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/networking.h"
 #include "utils/utf8_string.h"
 

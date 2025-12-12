@@ -7,7 +7,7 @@
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 using namespace std::chrono_literals;
 namespace zrythm::gui

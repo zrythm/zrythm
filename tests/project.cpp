@@ -16,7 +16,7 @@
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/dsp.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include "helpers/jack.h"
 #include "helpers/plugin_manager.h"

@@ -8,7 +8,7 @@
 #include "plugins/plugin_descriptor.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 #include <QDateTime>

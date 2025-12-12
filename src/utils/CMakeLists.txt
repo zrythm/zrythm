@@ -24,7 +24,7 @@ target_sources(zrythm_utils_lib
     file_path_list.cpp
     gtest_wrapper.cpp
     hash.cpp
-    io.cpp
+    io_utils.cpp
     logger.cpp
     math_utils.cpp
     mem.cpp
@@ -68,7 +68,7 @@ target_sources(zrythm_utils_lib
       file_path_list.h
       gtest_wrapper.h
       hash.h
-      io.h
+      io_utils.h
       icloneable.h
       isettings_backend.h
       jack.h

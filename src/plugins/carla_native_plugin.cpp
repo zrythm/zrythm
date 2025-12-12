@@ -20,7 +20,7 @@
 #include "utils/directory_manager.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/math_utils.h"
 #include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"

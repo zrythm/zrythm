@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/directory_manager.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 
 using namespace zrythm;

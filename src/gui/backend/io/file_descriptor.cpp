@@ -5,7 +5,7 @@
 #include "utils/audio_file.h"
 #include "utils/exceptions.h"
 #include "utils/format.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 

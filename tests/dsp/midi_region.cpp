@@ -14,7 +14,7 @@
 #include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/hash.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

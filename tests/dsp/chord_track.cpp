@@ -9,7 +9,7 @@
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region.h"
 #include "structure/project/project.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

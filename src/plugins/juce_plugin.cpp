@@ -5,7 +5,7 @@
 
 #include "plugins/juce_plugin.h"
 #include "utils/dsp.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include <juce_wrapper.h>
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)

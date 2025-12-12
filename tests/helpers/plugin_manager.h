@@ -17,7 +17,7 @@
 #include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

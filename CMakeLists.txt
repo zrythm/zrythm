@@ -506,9 +506,7 @@ endif()
 if(ZRYTHM_EXTRA_OPTIMIZATIONS)
   if(compiler_gnulike)
     target_compile_options(_zrythm_compile_options INTERFACE
-      -ffast-math -freciprocal-math
-      # the following 2 taken from DISTRHO-Ports, need testing
-      -ftree-vectorize -funroll-loops)
+      -ffast-math -freciprocal-math -funroll-loops)
 
     # -O1 turns this on, but it may break backtraces so explicitly turn it
     # off on builds supposed to be debuggable
@@ -527,11 +525,10 @@ endif()
 if(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS)
   if(compiler_gnulike)
     # TODO check
-    # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -pipe -falign-functions=32 -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
+    # -Ofast -fgraphite-identity -floop-nest-optimize -fdevirtualize-at-ltrans -fipa-pta -fno-semantic-interposition -flto=4 -fuse-linker-plugin -floop-nest-optimize -floop-parallelize-all -ftree-parallelize-loops=4
 
     target_compile_options(_zrythm_compile_options INTERFACE
       # not allowed on clang + C
-      #'-fallow-store-data-races',
       -fno-signed-zeros
       -fno-trapping-math
       -ffp-contract=fast

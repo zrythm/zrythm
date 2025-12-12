@@ -4,7 +4,7 @@
 #include "gui/backend/plugin_protocol_paths.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 using namespace zrythm::plugins;
 using namespace zrythm;

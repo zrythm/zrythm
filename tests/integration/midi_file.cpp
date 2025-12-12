@@ -11,7 +11,7 @@
 #include "structure/project/project.h"
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/track.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

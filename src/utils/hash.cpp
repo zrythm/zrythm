@@ -5,7 +5,7 @@
 #include <span>
 
 #include "utils/hash.h"
-#include "utils/io.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 
 namespace zrythm::utils::hash
