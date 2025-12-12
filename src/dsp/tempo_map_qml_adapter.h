@@ -8,7 +8,7 @@
 
 #include <QObject>
 #include <QtQml/QQmlListProperty>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {

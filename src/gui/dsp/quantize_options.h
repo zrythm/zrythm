@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/transport.h"
 #include "utils/note_type.h"
 #include "utils/pcg_rand.h"
 #include "utils/units.h"
@@ -13,11 +14,6 @@
   (PROJECT->quantize_opts_timeline_.get () == qo)
 #define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline_)
 #define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor_)
-
-namespace zrythm::engine::session
-{
-class Transport;
-}
 
 namespace zrythm::gui::old_dsp
 {

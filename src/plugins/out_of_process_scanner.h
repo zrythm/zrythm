@@ -39,7 +39,8 @@
 
 #pragma once
 
-#include <QtQmlIntegration>
+#include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "juce_wrapper.h"
 

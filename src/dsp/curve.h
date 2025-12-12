@@ -6,7 +6,7 @@
 #include "utils/format.h"
 #include "utils/logger.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <nlohmann/json.hpp>
 

@@ -4,3 +4,4 @@
 add_subdirectory(arrangement)
 add_subdirectory(tracks)
 add_subdirectory(scenes)
+add_subdirectory(project)

@@ -6,7 +6,7 @@
 #include "utils/icloneable.h"
 #include "utils/types.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/describe.hpp>
 #include <nlohmann/json_fwd.hpp>

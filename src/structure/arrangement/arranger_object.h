@@ -15,7 +15,7 @@
 #include "utils/types.h"
 #include "utils/units.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::arrangement
 {

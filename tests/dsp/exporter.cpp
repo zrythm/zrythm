@@ -6,9 +6,9 @@
 #include "engine/session/exporter.h"
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
+#include "structure/project/project.h"
 #include "utils/chromaprint.h"
 #include "utils/progress_info.h"
 

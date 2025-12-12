@@ -6,7 +6,7 @@
 #include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::arrangement
 {

@@ -6,12 +6,13 @@
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/device_manager.h"
 #include "gui/backend/file_system_model.h"
+#include "gui/backend/plugin_manager.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
+#include "utils/app_settings.h"
 #include "utils/directory_manager.h"
 #include "utils/qt.h"
 #include "utils/rt_thread_id.h"
@@ -37,11 +38,13 @@ class ZrythmApplication final : public QApplication
   Q_PROPERTY (
     zrythm::gui::ThemeManager * themeManager READ themeManager CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::gui::SettingsManager * settingsManager READ settingsManager CONSTANT
-      FINAL)
+    zrythm::utils::AppSettings * appSettings READ appSettings CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::ProjectManager * projectManager READ projectManager CONSTANT
       FINAL)
+  Q_PROPERTY (
+    zrythm::gui::old_dsp::plugins::PluginManager * pluginManager READ
+      pluginManager CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::AlertManager * alertManager READ alertManager CONSTANT FINAL)
   Q_PROPERTY (
@@ -72,13 +75,17 @@ public:
   {
     return theme_manager_.get ();
   }
-  zrythm::gui::SettingsManager * settingsManager () const
+  zrythm::utils::AppSettings * appSettings () const
   {
-    return settings_manager_.get ();
+    return app_settings_.get ();
   }
   zrythm::gui::ProjectManager * projectManager () const
   {
     return project_manager_.get ();
+  }
+  old_dsp::plugins::PluginManager * pluginManager () const
+  {
+    return plugin_manager_.get ();
   }
   zrythm::gui::AlertManager * alertManager () const
   {
@@ -135,6 +142,8 @@ private:
   std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
     juce_message_handler_initializer_;
 
+  utils::QObjectUniquePtr<utils::AppSettings> app_settings_;
+
   /**
    * @brief Socket for communicating with the engine process.
    */
@@ -142,12 +151,17 @@ private:
 
   std::unique_ptr<DirectoryManager>                     dir_manager_;
   utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
-  utils::QObjectUniquePtr<SettingsManager>              settings_manager_;
   utils::QObjectUniquePtr<ThemeManager>                 theme_manager_;
   utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
   utils::QObjectUniquePtr<ProjectManager>               project_manager_;
   utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
   utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
+
+  /**
+   * Manages plugins (loading, instantiating, etc.)
+   */
+  utils::QObjectUniquePtr<zrythm::gui::old_dsp::plugins::PluginManager>
+    plugin_manager_;
 
   /**
    * @brief Engine process handle.

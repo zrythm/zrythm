@@ -35,6 +35,7 @@
 
 #include "plugins/CLAPPluginFormat.h"
 
+#include <QLibrary>
 #include <QtSystemDetection>
 
 #include <clap/clap.h>

@@ -5,8 +5,8 @@
 
 #include "dsp/midi_event.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "utils/midi.h"
 #include "utils/rt_thread_id.h"
 

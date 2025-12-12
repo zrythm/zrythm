@@ -9,7 +9,8 @@
 #include "plugins/plugin_all.h"
 #include "utils/qt.h"
 
-#include <QtQmlIntegration>
+#include <QAbstractListModel>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <nlohmann/json_fwd.hpp>
 

@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings_manager.h"
 #include "structure/arrangement/automation_function.h"
 
 namespace zrythm::structure::arrangement
@@ -51,8 +50,9 @@ AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
     }
 
   /* set last action */
-  gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
-    ENUM_VALUE_TO_INT (type));
+  // TODO
+  // gui::SettingsManager::get_instance ()->set_lastAutomationFunction (
+  // ENUM_VALUE_TO_INT (type));
 
   // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

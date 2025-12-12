@@ -72,6 +72,7 @@ qt_add_qml_module(zrythm_plugins_lib
   DEPENDENCIES
     QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
+    TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmPlugins
 )

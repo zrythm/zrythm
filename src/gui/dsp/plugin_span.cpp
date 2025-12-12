@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/project.h"
+#include "structure/project/project.h"
 
 #include "./plugin_span.h"
 

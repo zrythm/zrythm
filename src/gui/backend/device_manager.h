@@ -5,7 +5,7 @@
 
 #include "utils/types.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <juce_wrapper.h>
 

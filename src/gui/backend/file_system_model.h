@@ -4,7 +4,9 @@
 #pragma once
 
 #include <QFileSystemModel>
-#include <QtQmlIntegration>
+#include <QMimeDatabase>
+#include <QMimeType>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {

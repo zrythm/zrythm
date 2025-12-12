@@ -5,6 +5,7 @@ qt_add_library(zrythm_utils_lib STATIC)
 
 target_sources(zrythm_utils_lib
   PRIVATE
+    app_settings.cpp
     audio.cpp
     audio_file.cpp
     audio_file_writer.cpp
@@ -44,6 +45,7 @@ target_sources(zrythm_utils_lib
     BASE_DIRS ".."
     FILES
       algorithms.h
+      app_settings.h
       audio.h
       audio_file.h
       audio_file_writer.h
@@ -68,6 +70,7 @@ target_sources(zrythm_utils_lib
       hash.h
       io.h
       icloneable.h
+      isettings_backend.h
       jack.h
       logger.h
       math.h
@@ -81,6 +84,7 @@ target_sources(zrythm_utils_lib
       pcg_rand.h
       playback_cache_scheduler.h
       progress_info.h
+      qsettings_backend.h
       qt.h
       ranges.h
       resampler.h
@@ -113,6 +117,13 @@ target_link_libraries(zrythm_utils_lib
   zrythm::include_dirs
   ${zrythm_link_libs}
   zrythm::all_compile_options
+)
+
+# create a plugin so that types get exposed to QML
+qt_add_qml_module(zrythm_utils_lib
+  URI ZrythmUtils
+  VERSION 1.0
+  OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmUtils
 )
 
 add_library(zrythm::utils_lib ALIAS zrythm_utils_lib)

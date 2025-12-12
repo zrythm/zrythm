@@ -3,10 +3,10 @@
 
 #include "dsp/port_all.h"
 #include "engine/session/graph_dispatcher.h"
-#include "engine/session/project_graph_builder.h"
 #include "gui/backend/backend/actions/port_connection_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
 
 namespace zrythm::gui::actions
 {

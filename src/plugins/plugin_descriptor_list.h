@@ -3,12 +3,11 @@
 
 #pragma once
 
-#include <utility>
-
 #include "plugins/plugin_descriptor.h"
 #include "utils/debouncer.h"
 
-#include <QtQmlIntegration>
+#include <QAbstractListModel>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::plugins::discovery
 {

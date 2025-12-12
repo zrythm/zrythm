@@ -7,7 +7,7 @@
 
 #include <QUndoCommand>
 #include <QUndoStack>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "nlohmann/json_fwd.hpp"
 

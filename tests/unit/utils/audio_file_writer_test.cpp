@@ -6,6 +6,8 @@
 #include "utils/audio_file_writer.h"
 #include "utils/io.h"
 
+#include <QFuture>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

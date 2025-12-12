@@ -7,7 +7,8 @@
 
 namespace zrythm::gui
 {
-ProjectUiState::ProjectUiState (utils::QObjectUniquePtr<Project> &&project)
+ProjectUiState::ProjectUiState (
+  utils::QObjectUniquePtr<structure::project::Project> &&project)
     : project_ (std::move (project)),
       tool_ (new gui::backend::ArrangerTool (this)),
       clip_editor_ (
@@ -109,7 +110,7 @@ ProjectUiState::createArrangerObjectSelectionOperator (
   return sel_operator;
 }
 
-Project *
+structure::project::Project *
 ProjectUiState::project () const
 {
   return project_.get ();

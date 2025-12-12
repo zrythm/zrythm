@@ -38,8 +38,7 @@ target_precompile_headers(zrythm_commands_lib PUBLIC
 target_link_libraries(zrythm_commands_lib
   PUBLIC
     ${zrythm_link_libs}
-    zrythm_structure_tracks_lib
-    zrythm_structure_scenes_lib
+    zrythm_structure_project_lib
     zrythm::include_dirs
     zrythm::all_compile_options
 )
@@ -49,8 +48,11 @@ qt_add_qml_module(zrythm_commands_lib
   URI ZrythmCommands
   VERSION 1.0
   IMPORTS
+    TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
+    TARGET zrythm_structure_scenes_lib
     TARGET zrythm_structure_tracks_lib
+    TARGET zrythm_structure_project_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmCommands
 )

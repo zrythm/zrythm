@@ -5,7 +5,7 @@
 
 #include "structure/scenes/scene.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::scenes
 {

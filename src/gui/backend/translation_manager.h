@@ -1,11 +1,12 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "zrythm-config.h"
+#include "utils/app_settings.h"
 
-#include <QtQmlIntegration>
+#include <QTranslator>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {
@@ -14,9 +15,12 @@ class TranslationManager : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
+  QML_UNCREATABLE ("")
 
 public:
-  explicit TranslationManager (QObject * parent = nullptr);
+  explicit TranslationManager (
+    utils::AppSettings &app_settings,
+    QObject *           parent = nullptr);
 
   TranslationManager * get_instance ();
 
@@ -25,8 +29,9 @@ public:
   Q_INVOKABLE void loadTranslation (const QString &locale);
 
 private:
-  QTranslator translator_;
-  bool        translator_loaded_ = false;
+  utils::AppSettings &app_settings_;
+  QTranslator         translator_;
+  bool                translator_loaded_ = false;
 };
 
 } // namespace zrythm::gui

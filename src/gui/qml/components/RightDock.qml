@@ -59,7 +59,7 @@ ColumnLayout {
     PluginBrowserPage {
       id: pluginBrowserPage
 
-      pluginManager: GlobalState.zrythm.pluginManager
+      pluginManager: GlobalState.application.pluginManager
 
       // TODO: import to current track
       onPluginDescriptorActivated: descriptor => root.pluginImporter.importPluginToNewTrack(descriptor)

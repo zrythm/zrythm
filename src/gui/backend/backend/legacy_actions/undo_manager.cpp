@@ -5,8 +5,8 @@
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undo_stack.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "utils/gtest_wrapper.h"
 
 namespace zrythm::gui::actions

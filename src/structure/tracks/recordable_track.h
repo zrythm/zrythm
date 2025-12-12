@@ -6,7 +6,7 @@
 #include "dsp/parameter.h"
 #include "dsp/processor_base.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::tracks
 {

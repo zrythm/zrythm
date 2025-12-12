@@ -23,7 +23,6 @@
 #include <memory>
 
 #include "gui/backend/backend/file_manager.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/file_descriptor.h"
 #include "utils/gtest_wrapper.h"
@@ -66,7 +65,8 @@ FileManager::add_volume (GVolume * vol)
 }
 #endif
 
-FileManager::FileManager ()
+FileManager::FileManager (utils::AppSettings &app_settings)
+    : app_settings_ (app_settings)
 {
   /* add standard locations */
   FileBrowserLocation fl = FileBrowserLocation (
@@ -144,9 +144,7 @@ FileManager::FileManager ()
       /* add bookmarks */
       {
         z_debug ("adding bookmarks...");
-        auto bookmarks =
-          zrythm::gui::SettingsManager::get_instance ()
-            ->get_fileBrowserBookmarks ();
+        auto bookmarks = app_settings_.fileBrowserBookmarks ();
         for (const auto &bookmark : bookmarks)
           {
             auto basename = QFileInfo (bookmark).baseName ();
@@ -158,9 +156,7 @@ FileManager::FileManager ()
 
       /* set remembered location */
       FileBrowserLocation loc;
-      auto                last_location =
-        zrythm::gui::SettingsManager::get_instance ()
-          ->get_fileBrowserLastLocation ();
+      auto last_location = app_settings_.fileBrowserLastLocation ();
       if (!last_location.isEmpty ())
         {
           loc.path_ = QFileInfo (last_location).filesystemAbsoluteFilePath ();
@@ -249,7 +245,7 @@ FileManager::set_selection (
     }
   if (save_to_settings)
     {
-      gui::SettingsManager::get_instance ()->set_fileBrowserLastLocation (
+      app_settings_.set_fileBrowserLastLocation (
         utils::Utf8String::from_path (selection->path_));
     }
 }
@@ -266,7 +262,7 @@ FileManager::save_locations ()
       strv_builder.append (utils::Utf8String::from_path (loc.path_));
     }
 
-  gui::SettingsManager::get_instance ()->set_fileBrowserBookmarks (strv_builder);
+  app_settings_.set_fileBrowserBookmarks (strv_builder);
 }
 
 void

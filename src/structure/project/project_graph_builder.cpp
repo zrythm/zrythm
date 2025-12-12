@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
-#include "engine/session/project_graph_builder.h"
-#include "gui/backend/backend/project.h"
+#include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
 #include "structure/tracks/channel_subgraph_builder.h"
 
-using namespace zrythm;
+namespace zrythm::structure::project
+{
 
 // Extracted to a separate function because MSVC ICEs if used in lambda
 template <typename TrackT>
@@ -455,4 +456,5 @@ ProjectGraphBuilder::can_ports_be_connected (
   z_debug ("valid {}", valid);
 
   return valid;
+}
 }

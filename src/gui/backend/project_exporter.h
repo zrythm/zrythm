@@ -5,7 +5,10 @@
 
 #include "gui/qquick/qfuture_qml_wrapper.h"
 
+namespace zrythm::structure::project
+{
 class Project;
+}
 
 class ProjectExporter : public QObject
 {
@@ -15,5 +18,5 @@ class ProjectExporter : public QObject
 
 public:
   Q_INVOKABLE static gui::qquick::QFutureQmlWrapper *
-  exportAudio (Project * project);
+  exportAudio (structure::project::Project * project);
 };

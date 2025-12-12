@@ -6,7 +6,7 @@
 #include "dsp/chord_descriptor.h"
 #include "utils/icloneable.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/describe.hpp>
 

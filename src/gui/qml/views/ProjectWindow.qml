@@ -40,7 +40,7 @@ ApplicationWindow {
   }
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
-  required property SettingsManager settingsManager
+  required property AppSettings appSettings
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -57,7 +57,7 @@ ApplicationWindow {
     id: headerBar
 
     projectUiState: root.projectUiState
-    settingsManager: root.settingsManager
+    appSettings: root.appSettings
   }
   menuBar: MainMenuBar {
     id: mainMenuBar
@@ -206,7 +206,7 @@ ApplicationWindow {
             const track = getTrackFromModelIndex(i);
             if (track.recordableTrackMixin) {
               // Auto-arm management
-              if (root.settingsManager.trackAutoArm) {
+              if (root.appSettings.trackAutoArm) {
                 const rec = track.recordableTrackMixin;
                 if (!rec?.recording) {
                   rec.recording = true;
@@ -224,7 +224,7 @@ ApplicationWindow {
             const track = getTrackFromModelIndex(i);
             if (track.recordableTrackMixin) {
               // Auto-arm management for deselected tracks
-              if (root.settingsManager.trackAutoArm && automaticallyArmedTracks[track]) {
+              if (root.appSettings.trackAutoArm && automaticallyArmedTracks[track]) {
                 const rec = track.recordableTrackMixin;
                 rec.recording = false;
                 delete automaticallyArmedTracks[track];
@@ -347,7 +347,7 @@ ApplicationWindow {
         trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist
         undoStack: root.projectUiState.undoStack
-        visible: root.settingsManager.leftPanelVisible
+        visible: root.appSettings.leftPanelVisible
       }
 
       SplitView {
@@ -375,7 +375,7 @@ ApplicationWindow {
           SplitView.minimumHeight: 40
           SplitView.preferredHeight: 240
           projectUiState: root.projectUiState
-          visible: root.settingsManager.bottomPanelVisible
+          visible: root.appSettings.bottomPanelVisible
         }
       }
 
@@ -387,7 +387,7 @@ ApplicationWindow {
         SplitView.preferredWidth: 200
         pluginImporter: root.projectUiState.pluginImporter
         project: root.project
-        visible: root.settingsManager.rightPanelVisible
+        visible: root.appSettings.rightPanelVisible
       }
     }
 

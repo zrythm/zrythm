@@ -7,7 +7,7 @@
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_collection.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::scenes
 {

@@ -6,7 +6,7 @@
 #include "utils/icloneable.h"
 #include "utils/math.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::arrangement
 {

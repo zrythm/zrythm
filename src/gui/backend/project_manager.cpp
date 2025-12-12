@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
@@ -12,8 +13,11 @@ using namespace std::chrono_literals;
 namespace zrythm::gui
 {
 
-ProjectManager::ProjectManager (QObject * parent)
-    : QObject (parent), recent_projects_model_ (new RecentProjectsModel (this))
+ProjectManager::ProjectManager (
+  utils::AppSettings &app_settings,
+  QObject *           parent)
+    : QObject (parent), app_settings_ (app_settings),
+      recent_projects_model_ (new RecentProjectsModel (app_settings, this))
 {
   z_debug ("Initializing project manager...");
   init_templates ();
@@ -127,6 +131,29 @@ ProjectManager::getRecentProjects () const
   return recent_projects_model_;
 }
 
+std::unique_ptr<plugins::IPluginHostWindow>
+ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
+{
+  auto track_ref =
+    this->active_project_->project ()->tracklist ()->get_track_for_plugin (
+      plugin.get_uuid ());
+  auto ret = std::make_unique<plugins::JuceDocumentPluginHostWindow> (
+    utils::Utf8String::from_utf8_encoded_string (
+      fmt::format (
+        "{} - {} [{}]",
+        track_ref.has_value ()
+          ? structure::tracks::from_variant (track_ref->get_object ())->name ()
+          : QObject::tr ("<no track>"),
+        plugin.get_node_name (),
+        plugin.configuration ()->descriptor ()->format ())),
+    [&plugin] () {
+      z_debug (
+        "close button pressed on '{}' plugin window", plugin.get_node_name ());
+      plugin.setUiVisible (false);
+    });
+  return ret;
+}
+
 utils::QObjectUniquePtr<ProjectUiState>
 ProjectManager::create_default (
   const fs::path          &prj_dir,
@@ -138,12 +165,17 @@ ProjectManager::create_default (
   utils::QObjectUniquePtr<ProjectUiState> prj_ui_state;
   QMetaObject::invokeMethod (
     qApp,
-    [&prj_ui_state, &name] {
+    [this, &prj_ui_state, &name] {
       // registries and registry objects must be created on the main thread
       {
         auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
-        auto   prj = utils::make_qobject_unique<Project> (
-          zapp->get_device_manager (), *zapp->controlRoom ()->monitorFader ());
+        auto   prj = utils::make_qobject_unique<structure::project::Project> (
+          app_settings_, zapp->get_device_manager (),
+          zapp->pluginManager ()->get_format_manager (),
+          [this] (plugins::Plugin &plugin) {
+            return create_window_for_plugin (plugin);
+          },
+          *zapp->controlRoom ()->monitorFader (), Zrythm::get_version (false));
         prj_ui_state =
           utils::make_qobject_unique<ProjectUiState> (std::move (prj));
       }

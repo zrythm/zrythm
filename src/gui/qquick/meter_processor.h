@@ -11,7 +11,7 @@
 #include "utils/types.h"
 #include "utils/variant_helpers.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/container/static_vector.hpp>
 

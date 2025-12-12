@@ -44,9 +44,11 @@
 #include "utils/qt.h"
 
 #include <QList>
+#include <QMutex>
 #include <QObject>
 #include <QString>
-#include <QtQmlIntegration>
+#include <QThread>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::plugins
 {

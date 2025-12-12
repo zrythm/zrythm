@@ -1,12 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 
 using namespace zrythm::plugins;
@@ -27,6 +24,11 @@ add_expanded_paths (auto &arr, const QStringList &paths_from_settings)
           arr->add_path (utils::Utf8String::from_qstring (expanded_path));
         }
     }
+}
+
+PluginProtocolPaths::PluginProtocolPaths (utils::AppSettings &app_settings)
+    : app_settings_ (app_settings)
+{
 }
 
 std::unique_ptr<utils::FilePathList>
@@ -87,33 +89,7 @@ PluginProtocolPaths::get_lv2_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      /* add test plugins if testing */
-      auto tests_builddir = qEnvironmentVariable ("G_TEST_BUILDDIR");
-      auto root_builddir = qEnvironmentVariable ("G_TEST_BUILD_ROOT_DIR");
-      z_return_val_if_fail (!tests_builddir.isEmpty (), nullptr);
-      z_return_val_if_fail (!root_builddir.isEmpty (), nullptr);
-
-      auto test_lv2_plugins =
-        utils::Utf8String::from_qstring (tests_builddir).to_path ()
-        / "lv2plugins";
-      auto test_root_plugins =
-        utils::Utf8String::from_qstring (root_builddir).to_path () / "data"
-        / "plugins";
-      ret->add_path (test_lv2_plugins);
-      ret->add_path (test_root_plugins);
-
-      QStringList paths_from_settings = { u"${LV2_PATH}"_s, u"/usr/lib/lv2"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"LV2 paths");
-
-      return ret;
-    }
-
-  auto paths_from_settings =
-    zrythm::gui::SettingsManager::get_instance ()->get_lv2_search_paths ();
+  auto paths_from_settings = app_settings_.lv2_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -171,17 +147,7 @@ PluginProtocolPaths::get_vst2_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${VST_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"VST2 paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_vst2_search_paths ();
+  auto paths_from_settings = app_settings_.vst2_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -230,17 +196,7 @@ PluginProtocolPaths::get_vst3_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${VST3_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"VST3 paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_vst3_search_paths ();
+  auto paths_from_settings = app_settings_.vst3_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -285,15 +241,8 @@ PluginProtocolPaths::get_sf_paths (bool sf2)
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      ret->add_path (utils::io::get_path_separator_string ());
-      return ret;
-    }
-
   auto paths_from_settings =
-    sf2 ? gui::SettingsManager::get_instance ()->get_sf2_search_paths ()
-        : gui::SettingsManager::get_instance ()->get_sfz_search_paths ();
+    sf2 ? app_settings_.sf2_search_paths () : app_settings_.sfz_search_paths ();
   add_expanded_paths (ret, paths_from_settings);
 
   return ret;
@@ -304,17 +253,7 @@ PluginProtocolPaths::get_dssi_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${DSSI_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"DSSI paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_dssi_search_paths ();
+  auto paths_from_settings = app_settings_.dssi_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -355,17 +294,7 @@ PluginProtocolPaths::get_ladspa_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${LADSPA_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"LADSPA paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_ladspa_search_paths ();
+  auto paths_from_settings = app_settings_.ladspa_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -402,21 +331,7 @@ PluginProtocolPaths::get_clap_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-#ifndef CARLA_HAVE_CLAP_SUPPORT
-  return ret;
-#endif
-
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${CLAP_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"CLAP paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_clap_search_paths ();
+  auto paths_from_settings = app_settings_.clap_search_paths ();
   if (paths_from_settings.empty ())
     {
       /* no paths given - use default */
@@ -462,17 +377,7 @@ PluginProtocolPaths::get_jsfx_paths ()
 {
   auto ret = std::make_unique<utils::FilePathList> ();
 
-  if (ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-    {
-      QStringList paths_from_settings = { u"${JSFX_PATH}"_s };
-      add_expanded_paths (ret, paths_from_settings);
-
-      ret->print (u8"JSFX paths");
-      return ret;
-    }
-
-  auto paths_from_settings =
-    gui::SettingsManager::get_instance ()->get_jsfx_search_paths ();
+  auto paths_from_settings = app_settings_.jsfx_search_paths ();
   if (!paths_from_settings.empty ())
     {
       /* use paths given */

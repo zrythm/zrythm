@@ -3,7 +3,7 @@
 
 #include "dsp/port.h"
 #include "gui/backend/backend/actions/port_action.h"
-#include "gui/backend/backend/project.h"
+#include "structure/project/project.h"
 #include "utils/format.h"
 
 namespace zrythm::gui::actions

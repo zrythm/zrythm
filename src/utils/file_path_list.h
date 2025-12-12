@@ -5,19 +5,19 @@
 
 #include "utils/utf8_string.h"
 
-#include <QtQmlIntegration>
+#include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "juce_wrapper.h"
 
 namespace zrythm::utils
 {
 
-class FilePathList final : public QObject
+class FilePathList : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
     QStringList paths READ getPaths WRITE setPaths NOTIFY pathsChanged FINAL)
-  QML_ELEMENT
 
 public:
   FilePathList (QObject * parent = nullptr);

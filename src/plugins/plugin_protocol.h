@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QObject>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "juce_wrapper.h"
 

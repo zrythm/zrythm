@@ -5,9 +5,9 @@
 
 #include "dsp/transport.h"
 #include "gui/backend/backend/actions/transport_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

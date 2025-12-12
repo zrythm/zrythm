@@ -3,9 +3,10 @@
 
 #include "zrythm-config.h"
 
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "gui/backend/plugin_protocol_paths.h"
 #include "utils/directory_manager.h"
+#include "utils/qsettings_backend.h"
 #include "utils/thread_safe_fftw.h"
 
 #include <QFontDatabase>
@@ -63,17 +64,17 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   // Register meta-types
   qRegisterMetaType<utils::ExpandableTickRange> ();
-
-  settings_manager_ = new SettingsManager (this);
+  app_settings_ = utils::make_qobject_unique<utils::AppSettings> (
+    std::unique_ptr<utils::ISettingsBackend> (new utils::QSettingsBackend),
+    this);
   dir_manager_ = std::make_unique<DirectoryManager> (
     [&] () {
-      return utils::Utf8String::
-        from_qstring (settings_manager_->get_zrythm_user_path ())
-          .to_path ();
+      return utils::Utf8String::from_qstring (app_settings_->zrythm_user_path ())
+        .to_path ();
     },
     [&] () {
       return utils::Utf8String::
-        from_qstring (SettingsManager::get_default_zrythm_user_path ())
+        from_qstring (utils::AppSettings::get_default_zrythm_user_path ())
           .to_path ();
     },
     [&] () {
@@ -92,9 +93,18 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
   theme_manager_ = utils::make_qobject_unique<ThemeManager> (this);
-  project_manager_ = utils::make_qobject_unique<ProjectManager> (this);
-  translation_manager_ = utils::make_qobject_unique<TranslationManager> (this);
+  project_manager_ =
+    utils::make_qobject_unique<ProjectManager> (*app_settings_, this);
+  translation_manager_ =
+    utils::make_qobject_unique<TranslationManager> (*app_settings_, this);
   file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
+  plugin_manager_ = utils::make_qobject_unique<
+    zrythm::gui::old_dsp::plugins::PluginManager> (
+    [this] (const auto protocol) {
+      return plugins::PluginProtocolPaths (*app_settings_)
+        .get_for_protocol (protocol);
+    },
+    this);
 
   launch_engine_process ();
 
@@ -158,42 +168,40 @@ ZrythmApplication::post_exec_initialization ()
 void
 ZrythmApplication::setup_control_room ()
 {
-
   {
     auto * control_room = control_room_.get ();
-    control_room->setDimOutput (gui::SettingsManager::monitorDimEnabled ());
+    control_room->setDimOutput (app_settings_->monitorDimEnabled ());
     QObject::connect (
       control_room, &engine::session::ControlRoom::dimOutputChanged,
-      gui::SettingsManager::get_instance (),
-      &gui::SettingsManager::set_monitorDimEnabled);
+      app_settings_.get (), &utils::AppSettings::set_monitorDimEnabled);
 
     control_room->muteVolume ()->setBaseValue (
       control_room->muteVolume ()->range ().convertTo0To1 (
-        gui::SettingsManager::monitorMuteVolume ()));
+        app_settings_->monitorMuteVolume ()));
     QObject::connect (
       control_room->muteVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      gui::SettingsManager::get_instance (), [&] (float value) {
-        gui::SettingsManager::get_instance ()->set_monitorMuteVolume (
+      app_settings_.get (), [&] (float value) {
+        app_settings_->set_monitorMuteVolume (
           control_room->muteVolume ()->range ().convertFrom0To1 (value));
       });
 
     control_room->listenVolume ()->setBaseValue (
       control_room->listenVolume ()->range ().convertTo0To1 (
-        gui::SettingsManager::monitorListenVolume ()));
+        app_settings_->monitorListenVolume ()));
     QObject::connect (
       control_room->listenVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      gui::SettingsManager::get_instance (), [&] (float value) {
-        gui::SettingsManager::get_instance ()->set_monitorListenVolume (
+      app_settings_.get (), [&] (float value) {
+        app_settings_->set_monitorListenVolume (
           control_room->listenVolume ()->range ().convertFrom0To1 (value));
       });
 
     control_room->dimVolume ()->setBaseValue (
       control_room->dimVolume ()->range ().convertTo0To1 (
-        gui::SettingsManager::monitorDimVolume ()));
+        app_settings_->monitorDimVolume ()));
     QObject::connect (
       control_room->dimVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      gui::SettingsManager::get_instance (), [&] (float value) {
-        gui::SettingsManager::get_instance ()->set_monitorDimVolume (
+      app_settings_.get (), [&] (float value) {
+        app_settings_->set_monitorDimVolume (
           control_room->dimVolume ()->range ().convertFrom0To1 (value));
       });
 
@@ -201,29 +209,29 @@ ZrythmApplication::setup_control_room ()
       auto * monitor_fader = control_room->monitorFader ();
       monitor_fader->gain ()->setBaseValue (
         monitor_fader->gain ()->range ().convertTo0To1 (
-          gui::SettingsManager::monitorVolume ()));
+          app_settings_->monitorVolume ()));
       QObject::connect (
         monitor_fader->gain (), &dsp::ProcessorParameter::baseValueChanged,
-        gui::SettingsManager::get_instance (), [&] (float value) {
-          gui::SettingsManager::get_instance ()->set_monitorVolume (
+        app_settings_.get (), [&] (float value) {
+          app_settings_->set_monitorVolume (
             monitor_fader->gain ()->range ().convertFrom0To1 (value));
         });
 
       monitor_fader->monoToggle ()->setBaseValue (
-        gui::SettingsManager::monitorMonoEnabled () ? 1.f : 0.f);
+        app_settings_->monitorMonoEnabled () ? 1.f : 0.f);
       QObject::connect (
         monitor_fader->monoToggle (), &dsp::ProcessorParameter::baseValueChanged,
-        gui::SettingsManager::get_instance (), [&] (float value) {
-          gui::SettingsManager::get_instance ()->set_monitorMonoEnabled (
+        app_settings_.get (), [&] (float value) {
+          app_settings_->set_monitorMonoEnabled (
             monitor_fader->monoToggle ()->range ().is_toggled (value));
         });
 
       monitor_fader->mute ()->setBaseValue (
-        gui::SettingsManager::monitorMuteEnabled () ? 1.f : 0.f);
+        app_settings_->monitorMuteEnabled () ? 1.f : 0.f);
       QObject::connect (
         monitor_fader->mute (), &dsp::ProcessorParameter::baseValueChanged,
-        gui::SettingsManager::get_instance (), [&] (float value) {
-          gui::SettingsManager::get_instance ()->set_monitorMuteEnabled (
+        app_settings_.get (), [&] (float value) {
+          app_settings_->set_monitorMuteEnabled (
             monitor_fader->mute ()->range ().is_toggled (value));
         });
     }
@@ -334,7 +342,7 @@ ZrythmApplication::setup_ui ()
   }
 
   // icon theme
-  const auto icon_theme_name = settings_manager_->get_icon_theme ();
+  const auto icon_theme_name = app_settings_->icon_theme ();
   z_info ("Setting icon theme to '{}'", icon_theme_name);
   QIcon::setThemeName (icon_theme_name);
 
@@ -503,16 +511,6 @@ void
 ZrythmApplication::onAboutToQuit ()
 {
   z_info ("Shutting down...");
-
-  if (gZrythm)
-    {
-      if (gZrythm->project_ && gZrythm->project_->audio_engine_)
-        {
-          gZrythm->project_->audio_engine_->deactivate ();
-        }
-      gZrythm->project_.reset ();
-      gZrythm->deleteInstance ();
-    }
 }
 
 ZrythmApplication::~ZrythmApplication ()

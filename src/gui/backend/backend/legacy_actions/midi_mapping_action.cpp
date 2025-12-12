@@ -4,8 +4,8 @@
 #include "engine/session/graph_dispatcher.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/actions/midi_mapping_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "structure/tracks/channel.h"
 
 namespace zrythm::gui::actions

@@ -6,18 +6,17 @@
 #include "dsp/engine.h"
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
-#include "engine/session/project_graph_builder.h"
 #include "engine/session/sample_processor.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/plugin_manager.h"
 #include "plugins/plugin.h"
 #include "structure/arrangement/audio_region.h"
+#include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
@@ -47,6 +46,8 @@ SampleProcessor::SampleProcessor (device_io::AudioEngine * engine)
 void
 SampleProcessor::load_instrument_if_empty ()
 {
+// TODO
+#if 0
   if (!ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
     {
       auto _setting_json = gui::SettingsManager::fileBrowserInstrument ();
@@ -91,6 +92,7 @@ SampleProcessor::load_instrument_if_empty ()
       instrument_setting_ = std::move (setting);
       instrument_setting_->validate ();
     }
+#endif
 }
 
 void

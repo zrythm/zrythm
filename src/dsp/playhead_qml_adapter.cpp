@@ -3,6 +3,8 @@
 
 #include "dsp/playhead_qml_adapter.h"
 
+#include <QCoreApplication>
+
 namespace zrythm::dsp
 {
 

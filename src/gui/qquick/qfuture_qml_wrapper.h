@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <QtQmlIntegration>
+#include <QFutureWatcher>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui::qquick
 {

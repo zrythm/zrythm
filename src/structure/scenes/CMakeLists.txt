@@ -35,6 +35,7 @@ qt_add_qml_module(zrythm_structure_scenes_lib
   DEPENDENCIES
     QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
+    TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
     TARGET zrythm_structure_tracks_lib

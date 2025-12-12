@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {

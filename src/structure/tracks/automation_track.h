@@ -14,7 +14,7 @@
 #include "utils/playback_cache_scheduler.h"
 #include "utils/units.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::tracks
 {

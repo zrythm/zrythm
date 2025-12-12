@@ -5,8 +5,8 @@
 
 #include <filesystem>
 
-#include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/plugin_collections.h"
+#include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_descriptor_list.h"
 #include "plugins/plugin_scan_manager.h"
@@ -21,7 +21,6 @@ namespace zrythm::gui::old_dsp::plugins
 class PluginManager : public QObject
 {
   Q_OBJECT
-  QML_ELEMENT
   Q_PROPERTY (
     zrythm::plugins::discovery::PluginDescriptorList * pluginDescriptors READ
       getPluginDescriptors CONSTANT FINAL)
@@ -30,11 +29,16 @@ class PluginManager : public QObject
   Q_PROPERTY (
     QString currentlyScanningPlugin READ getCurrentlyScanningPlugin NOTIFY
       currentlyScanningPluginChanged FINAL)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
 public:
   using Protocol = zrythm::plugins::Protocol;
   using PluginConfiguration = zrythm::plugins::PluginConfiguration;
 
-  PluginManager (QObject * parent = nullptr);
+  PluginManager (
+    zrythm::plugins::ProtocolPluginPathsProvider plugin_paths_provider,
+    QObject *                                    parent = nullptr);
 
   QString getCurrentlyScanningPlugin () const
   {
@@ -60,9 +64,6 @@ public:
    * Adds a new descriptor.
    */
   void add_descriptor (const zrythm::plugins::PluginDescriptor &descr);
-
-  static PluginManager * get_active_instance ();
-
   /**
    * Returns a PluginDescriptor for the given URI.
    */

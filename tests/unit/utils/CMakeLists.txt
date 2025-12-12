@@ -3,6 +3,7 @@
 
 add_executable(zrythm_utils_unit_tests
   algorithms_test.cpp
+  app_settings_test.cpp
   audio_file_test.cpp
   audio_file_writer_test.cpp
   audio_test.cpp

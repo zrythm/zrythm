@@ -5,13 +5,14 @@ import QtQuick
 import QtQuick.Controls
 import Zrythm
 import ZrythmStyle
+import Qt.labs.synchronizer
 
 ZrythmToolBar {
   id: root
 
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
-  required property SettingsManager settingsManager
+  required property AppSettings appSettings
 
   centerItems: [
     TransportControls {
@@ -24,28 +25,18 @@ ZrythmToolBar {
   ]
   leftItems: [
     ToolButton {
-      // see https://forum.qt.io/post/529470 for bi-directional binding
-
       id: toggleLeftDock
 
       checkable: true
-      checked: root.settingsManager.leftPanelVisible
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-left-symbolic.svg")
 
-      onCheckedChanged: {
-        root.settingsManager.leftPanelVisible = checked;
+      Synchronizer on checked {
+        sourceObject: root.appSettings
+        sourceProperty: "leftPanelVisible"
       }
 
       ToolTip {
         text: qsTr("Toggle Left Panel")
-      }
-
-      Connections {
-        function onRightPanelVisibleChanged() {
-          toggleLeftDock.checked = root.settingsManager.leftPanelVisible;
-        }
-
-        target: root.settingsManager
       }
     },
     ToolSeparator {
@@ -92,19 +83,11 @@ ZrythmToolBar {
       id: toggleRightDock
 
       checkable: true
-      checked: root.settingsManager.rightPanelVisible
       icon.source: Qt.resolvedUrl("../icons/gnome-icon-library/dock-right-symbolic.svg")
 
-      onCheckedChanged: {
-        root.settingsManager.rightPanelVisible = checked;
-      }
-
-      Connections {
-        function onRightPanelVisibleChanged() {
-          toggleRightDock.checked = root.settingsManager.rightPanelVisible;
-        }
-
-        target: root.settingsManager
+      Synchronizer on checked {
+        sourceObject: root.appSettings
+        sourceProperty: "rightPanelVisible"
       }
 
       ToolTip {

@@ -7,8 +7,8 @@
 
 #include "dsp/midi_event.h"
 #include "engine/device_io/engine_dummy.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/track.h"
 #include "utils/io.h"

@@ -8,9 +8,9 @@
 #include "gui/backend/backend/actions/arranger_selections_action.h"
 #include "gui/backend/backend/actions/range_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/region.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/project_helper.h"
 

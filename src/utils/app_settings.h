@@ -1,54 +1,48 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include "utils/isettings_backend.h"
 #include "utils/logger.h"
 #include "utils/qt.h"
+#include "utils/utf8_string.h"
 
 #include <QCoreApplication>
-#include <QSettings>
 #include <QStandardPaths>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 using namespace Qt::StringLiterals;
 
-namespace zrythm::gui
-{
-
 #define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
 \
-  Q_PROPERTY ( \
-    ptype name READ get_##name WRITE set_##name NOTIFY name##_changed) \
+  Q_PROPERTY (ptype name READ name WRITE set_##name NOTIFY name##Changed) \
 \
 public: \
   [[nodiscard]] static ptype get_default_##name () \
   { \
     return default_value; \
   } \
-  [[nodiscard]] ptype get_##name () const \
+  [[nodiscard]] ptype name () const \
   { \
-    return settings_.value (QStringLiteral (#name), default_value) \
+    return backend_->value (QStringLiteral (#name), default_value) \
       .value<ptype> (); \
-  } \
-  [[nodiscard]] static ptype name () \
-  { \
-    return get_instance ()->get_##name (); \
   } \
   void set_##name (ptype value) \
   { \
     const auto current_value = \
-      settings_.value (QStringLiteral (#name), default_value).value<ptype> (); \
+      backend_->value (QStringLiteral (#name), default_value).value<ptype> (); \
     if (utils::values_equal_for_qproperty_type (current_value, value)) \
       return; \
     z_debug ("setting '{}' to '{}'", #name, value); \
-    settings_.setValue (QStringLiteral (#name), value); \
-    Q_EMIT name##_changed (value); \
-    settings_.sync (); \
+    backend_->setValue (QStringLiteral (#name), value); \
+    Q_EMIT name##Changed (value); \
   } \
-  Q_SIGNAL void name##_changed (ptype value);
+  Q_SIGNAL void name##Changed (ptype value);
 
-class SettingsManager : public QObject
+namespace zrythm::utils
+{
+class AppSettings : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -146,19 +140,13 @@ class SettingsManager : public QObject
   DEFINE_SETTING_PROPERTY (QString, uiLocale, {})
 
 public:
-  SettingsManager (QObject * parent = nullptr);
-
-  static SettingsManager * get_instance ();
-
-  /**
-   * @brief Resets all settings to their default values.
-   */
-  Q_INVOKABLE void reset_and_sync ();
+  explicit AppSettings (
+    std::unique_ptr<ISettingsBackend> backend,
+    QObject *                         parent = nullptr);
 
 private:
-  QSettings settings_;
+  std::unique_ptr<ISettingsBackend> backend_;
 };
-
-} // namespace zrythm::gui::glue
+}
 
 #undef DEFINE_SETTING_PROPERTY

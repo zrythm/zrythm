@@ -10,7 +10,7 @@
 #include "structure/arrangement/chord_editor.h"
 #include "utils/types.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 class ChordPresetPack;
 

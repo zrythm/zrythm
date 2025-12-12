@@ -7,8 +7,6 @@ target_sources(zrythm_gui_lib
     control_room.cpp
     midi_mapping.h
     midi_mapping.cpp
-    project_graph_builder.h
-    project_graph_builder.cpp
     recording_event.h
     recording_event.cpp
     recording_manager.h

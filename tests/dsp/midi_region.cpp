@@ -8,10 +8,10 @@
 
 #include "dsp/transport.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region.h"
+#include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/hash.h"
 #include "utils/io.h"

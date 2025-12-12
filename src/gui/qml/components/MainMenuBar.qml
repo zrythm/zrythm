@@ -49,7 +49,7 @@ MenuBar {
         id: systemLocaleMenuItem
 
         checkable: true
-        checked: GlobalState.application.settingsManager.uiLocale === ""
+        checked: GlobalState.application.appSettings.uiLocale === ""
         text: qsTr("System")
 
         onTriggered: {
@@ -75,7 +75,7 @@ MenuBar {
           required property string name
 
           checkable: true
-          checked: GlobalState.application.settingsManager.uiLocale === code
+          checked: GlobalState.application.appSettings.uiLocale === code
           text: name
 
           onTriggered: {

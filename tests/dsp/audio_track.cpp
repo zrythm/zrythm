@@ -5,8 +5,8 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "structure/tracks/audio_track.h"
 
 #include "tests/helpers/project_helper.h"

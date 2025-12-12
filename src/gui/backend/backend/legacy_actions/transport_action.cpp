@@ -5,9 +5,9 @@
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/transport_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
 

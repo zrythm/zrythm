@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <QAbstractListModel>
 #include <QQmlEngine>
 #include <QStringList>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {
@@ -27,7 +27,9 @@ public:
     DateRole,
   };
 
-  explicit RecentProjectsModel (QObject * parent = nullptr);
+  explicit RecentProjectsModel (
+    utils::AppSettings &app_settings,
+    QObject *           parent = nullptr);
 
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
   QVariant
@@ -39,10 +41,13 @@ public:
   Q_INVOKABLE void clearRecentProjects ();
 
 private:
-  static std::vector<std::unique_ptr<ProjectInfo>> get_recent_projects ();
-  static void store_recent_projects (const QStringList &list);
+  std::vector<std::unique_ptr<ProjectInfo>> get_recent_projects () const;
+  void store_recent_projects (const QStringList &list);
 
   static constexpr int MAX_RECENT_DOCUMENTS = 12;
+
+private:
+  utils::AppSettings &app_settings_;
 };
 
 } // namespace zrythm::gui

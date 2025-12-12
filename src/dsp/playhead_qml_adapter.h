@@ -6,7 +6,8 @@
 #include "dsp/playhead.h"
 #include "utils/qt.h"
 
-#include <QtQmlIntegration>
+#include <QTimer>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {

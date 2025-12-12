@@ -9,6 +9,8 @@
 #include "utils/expandable_tick_range.h"
 #include "utils/units.h"
 
+#include <QAbstractListModel>
+
 #include <boost/multi_index/global_fun.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>

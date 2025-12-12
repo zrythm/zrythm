@@ -15,7 +15,7 @@
 #include "utils/playback_cache_scheduler.h"
 
 #include <QColor>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {

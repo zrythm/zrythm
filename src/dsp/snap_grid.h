@@ -10,7 +10,7 @@
 #include "utils/note_type.h"
 
 #include <QObject>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {

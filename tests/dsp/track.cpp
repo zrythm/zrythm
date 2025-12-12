@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 #include "structure/tracks/track.h"
 
 #include "tests/helpers/project_helper.h"

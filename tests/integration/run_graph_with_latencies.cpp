@@ -12,9 +12,9 @@
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
+#include "structure/project/project.h"
 #include "structure/tracks/tempo_track.h"
 
 #include "tests/helpers/plugin_manager.h"

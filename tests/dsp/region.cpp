@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

@@ -6,7 +6,8 @@
 #include "dsp/graph_builder.h"
 #include "dsp/port.h"
 
-using namespace zrythm;
+namespace zrythm::structure::project
+{
 
 class Project;
 
@@ -33,3 +34,4 @@ private:
 private:
   Project * project_{};
 };
+}

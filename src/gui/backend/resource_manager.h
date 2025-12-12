@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 class ResourceManager : public QObject
 {

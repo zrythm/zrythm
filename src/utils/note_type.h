@@ -5,7 +5,8 @@
 
 #include <string_view>
 
-#include <QtQmlIntegration>
+#include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::utils
 {

@@ -7,9 +7,9 @@
 
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/region.h"
+#include "structure/project/project.h"
 #include "structure/tracks/master_track.h"
 
 #include "tests/helpers/zrythm_helper.h"

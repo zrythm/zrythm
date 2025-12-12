@@ -18,17 +18,12 @@
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"
+#include "utils/app_settings.h"
 #include "utils/progress_info.h"
 
-/**
- * @addtogroup project Project
- *
- * @{
- */
+namespace zrythm::structure::project
+{
 
-using namespace zrythm;
-
-#define PROJECT (Project::get_active_instance ())
 #define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager_.get ())
 #define AUDIO_POOL (PROJECT->audio_pool_.get ())
 #define TRANSPORT (PROJECT->transport_)
@@ -80,6 +75,8 @@ class Project final : public QObject
     zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
+  friend struct PluginBuilderForDeserialization;
+
 public:
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
@@ -87,9 +84,13 @@ public:
 
 public:
   Project (
-    std::shared_ptr<juce::AudioDeviceManager> device_manager,
-    dsp::Fader                               &monitor_fader,
-    QObject *                                 parent = nullptr);
+    utils::AppSettings                             &app_settings,
+    std::shared_ptr<juce::AudioDeviceManager>       device_manager,
+    std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
+    plugins::PluginHostWindowFactory                plugin_host_window_provider,
+    dsp::Fader                                     &monitor_fader,
+    utils::Utf8String                               zrythm_version,
+    QObject *                                       parent = nullptr);
   ~Project () override;
   Z_DISABLE_COPY_MOVE (Project)
 
@@ -129,7 +130,7 @@ public:
 
   // =========================================================
 
-  static Project * get_active_instance ();
+  // static Project * get_active_instance ();
 
   dsp::Fader &monitor_fader ();
 
@@ -416,8 +417,11 @@ private:
   friend void           from_json (const nlohmann::json &j, Project &project);
 
 private:
+  utils::AppSettings                           &app_settings_;
   dsp::TempoMap                                 tempo_map_;
   utils::QObjectUniquePtr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+
+  plugins::PluginHostWindowFactory plugin_host_window_provider_;
 
   dsp::FileAudioSourceRegistry *    file_audio_source_registry_{};
   dsp::PortRegistry *               port_registry_{};
@@ -469,6 +473,8 @@ public:
   bool loading_from_backup_ = false;
 
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
+
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
 
   /**
    * @brief
@@ -543,6 +549,4 @@ public:
   int format_minor_ = 0;
 };
 
-/**
- * @}
- */
+}

@@ -10,12 +10,12 @@
 #include "actions/track_creator.h"
 #include "gui/backend/arranger_tool.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/project.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/timeline.h"
+#include "structure/project/project.h"
 #include "undo/undo_stack.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {
@@ -32,7 +32,8 @@ class ProjectUiState : public QObject
       FINAL)
   Q_PROPERTY (zrythm::gui::backend::ArrangerTool * tool READ tool CONSTANT FINAL)
   Q_PROPERTY (ClipEditor * clipEditor READ clipEditor CONSTANT FINAL)
-  Q_PROPERTY (Project * project READ project CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::project::Project * project READ project CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
@@ -50,13 +51,14 @@ class ProjectUiState : public QObject
 public:
   using QuantizeOptions = old_dsp::QuantizeOptions;
 
-  ProjectUiState (utils::QObjectUniquePtr<Project> &&project);
+  ProjectUiState (
+    utils::QObjectUniquePtr<structure::project::Project> &&project);
 
   // =========================================================
   // QML interface
   // =========================================================
 
-  Project *                                project () const;
+  structure::project::Project *            project () const;
   gui::backend::ArrangerTool *             tool () const;
   ClipEditor *                             clipEditor () const;
   structure::arrangement::Timeline *       timeline () const;
@@ -80,7 +82,7 @@ private:
   static constexpr auto kUndoStackKey = "undoStack"sv;
 
 private:
-  utils::QObjectUniquePtr<Project> project_;
+  utils::QObjectUniquePtr<structure::project::Project> project_;
 
   /**
    * @brief Currently selected arranger tool.

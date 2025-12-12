@@ -13,6 +13,7 @@
 #include "utils/utf8_string.h"
 
 #include <QQmlEngine>
+#include <QRectF>
 #include <QRegularExpression>
 
 namespace zrythm::gui::qquick

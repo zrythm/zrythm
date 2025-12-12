@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QVector>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <juce_wrapper.h>
 #include <kiss_fft.h>

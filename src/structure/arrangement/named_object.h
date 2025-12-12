@@ -6,7 +6,7 @@
 #include "utils/icloneable.h"
 #include "utils/utf8_string.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/describe.hpp>
 

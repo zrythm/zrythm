@@ -316,11 +316,13 @@ qt_add_qml_module(zrythm
   DEPENDENCIES
     QtCore # Needed for QAbstractItemModel-derived types
   IMPORTS
+    TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
     TARGET zrythm_plugins_lib
     TARGET zrythm_structure_tracks_lib
     TARGET zrythm_structure_scenes_lib
+    TARGET zrythm_structure_project_lib
     TARGET zrythm_commands_lib
     TARGET zrythm_undo_lib
     TARGET zrythm_actions_lib

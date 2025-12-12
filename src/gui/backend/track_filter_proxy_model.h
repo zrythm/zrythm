@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QSortFilterProxyModel>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {

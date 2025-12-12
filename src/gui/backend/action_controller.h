@@ -4,7 +4,6 @@
 #pragma once
 
 #include "gui/backend/alert_manager.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"

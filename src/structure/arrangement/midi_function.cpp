@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_function.h"
+#include "structure/project/project.h"
 #include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"
 
@@ -257,11 +256,9 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
     }
 
   /* set last action */
-  if (ZRYTHM_HAVE_UI)
-    {
-      gui::SettingsManager::get_instance ()->set_lastMidiFunction (
-        ENUM_VALUE_TO_INT (type));
-    }
+  // TODO
+  // gui::SettingsManager::get_instance ()->set_lastMidiFunction (
+  // ENUM_VALUE_TO_INT (type));
 
   // EVENTS_PUSH (EventType::ET_EDITOR_FUNCTION_APPLIED, nullptr);
 }

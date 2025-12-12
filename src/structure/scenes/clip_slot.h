@@ -6,7 +6,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_collection.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::scenes
 {

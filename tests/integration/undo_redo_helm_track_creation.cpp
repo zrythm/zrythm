@@ -5,9 +5,9 @@
 
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

@@ -3,12 +3,12 @@
 
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/mixer_selections_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/settings_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/ui.h"
 #include "gui/dsp/plugin_span.h"
+#include "structure/project/project.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"

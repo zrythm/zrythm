@@ -5,7 +5,7 @@
 
 #include "dsp/port_fwd.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {

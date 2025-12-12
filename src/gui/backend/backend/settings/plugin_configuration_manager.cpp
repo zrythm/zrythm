@@ -11,6 +11,8 @@
 #include "utils/io.h"
 #include "utils/utf8_string.h"
 
+#include <QDateTime>
+
 using namespace zrythm;
 
 constexpr auto PLUGIN_SETTINGS_JSON_FILENAME = "plugin-settings.json"sv;
@@ -142,6 +144,17 @@ PluginConfigurationManager::delete_file ()
       throw ZrythmException (format_str (
         "Failed to remove invalid plugin settings file: {}", e.what ()));
     }
+}
+
+void
+PluginConfigurationManager::increment_num_instantiations_for_plugin (
+  const plugins::PluginDescriptor &descr)
+{
+  instantiations_.at (descr).first++;
+  instantiations_.at (descr).second = QDateTime::currentMSecsSinceEpoch ();
+  auto * config = find (descr);
+  assert (config);
+  set (*config, true);
 }
 
 void

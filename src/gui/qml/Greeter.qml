@@ -16,16 +16,16 @@ ApplicationWindow {
   readonly property AlertManager alertManager: app.alertManager
   readonly property ZrythmApplication app: GlobalState.application
   readonly property DeviceManager deviceManager: app.deviceManager
-  readonly property PluginManager pluginManager: GlobalState.zrythm.pluginManager
+  readonly property PluginManager pluginManager: app.pluginManager
   readonly property PluginScanManager pluginScanner: pluginManager.scanner
   readonly property ProjectManager projectManager: app.projectManager
-  readonly property SettingsManager settingsManager: app.settingsManager
+  readonly property AppSettings appSettings: app.appSettings
 
   function openProjectWindow(projectUiState) {
     let newWindow = projectWindowComponent.createObject(projectUiState, {
       "projectUiState": projectUiState,
       "deviceManager": deviceManager,
-      "settingsManager": settingsManager
+      "appSettings": appSettings
     }) as ProjectWindow;
     newWindow.show();
     root.close();
@@ -89,7 +89,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: root.settingsManager.first_run ? firstRunPage : progressPage
+    initialItem: root.appSettings.first_run ? firstRunPage : progressPage
 
     popExit: Transition {
       PropertyAnimation {
@@ -216,7 +216,7 @@ ApplicationWindow {
 
             onClicked: {
               console.log("Proceeding to next page...");
-              root.settingsManager.first_run = false;
+              root.appSettings.first_run = false;
               stack.push(progressPage);
             }
           }
@@ -453,7 +453,7 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             // placeholderText: qsTr("Parent Directory")
-            initialPath: root.settingsManager.new_project_directory
+            initialPath: root.appSettings.new_project_directory
           }
 
           ComboBox {

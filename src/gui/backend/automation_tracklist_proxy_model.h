@@ -5,7 +5,7 @@
 #define __GUI_BACKEND_AUTOMATION_TRACKLIST_PROXY_MODEL_H__
 
 #include <QSortFilterProxyModel>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 /**
  * Proxy model for filtering/sorting automation tracks.

@@ -8,6 +8,7 @@
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
+#include "gui/backend/project_manager.h"
 #include "gui/qquick/meter_processor.h"
 #include "utils/math.h"
 #include "utils/ring_buffer.h"

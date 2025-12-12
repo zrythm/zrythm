@@ -12,21 +12,26 @@ namespace zrythm::plugins
 class PluginProtocolPaths
 {
 public:
-  static std::unique_ptr<utils::FilePathList>
+  explicit PluginProtocolPaths (utils::AppSettings &app_settings);
+
+  std::unique_ptr<utils::FilePathList>
   get_for_protocol (Protocol::ProtocolType protocol);
 
-  static utils::Utf8String
+  utils::Utf8String
   get_for_protocol_separated (Protocol::ProtocolType protocol);
 
-  static std::unique_ptr<utils::FilePathList> get_lv2_paths ();
-  static std::unique_ptr<utils::FilePathList> get_vst2_paths ();
-  static std::unique_ptr<utils::FilePathList> get_vst3_paths ();
-  static std::unique_ptr<utils::FilePathList> get_sf_paths (bool sf2);
-  static std::unique_ptr<utils::FilePathList> get_dssi_paths ();
-  static std::unique_ptr<utils::FilePathList> get_ladspa_paths ();
-  static std::unique_ptr<utils::FilePathList> get_clap_paths ();
-  static std::unique_ptr<utils::FilePathList> get_jsfx_paths ();
-  static std::unique_ptr<utils::FilePathList> get_au_paths ();
+  std::unique_ptr<utils::FilePathList> get_lv2_paths ();
+  std::unique_ptr<utils::FilePathList> get_vst2_paths ();
+  std::unique_ptr<utils::FilePathList> get_vst3_paths ();
+  std::unique_ptr<utils::FilePathList> get_sf_paths (bool sf2);
+  std::unique_ptr<utils::FilePathList> get_dssi_paths ();
+  std::unique_ptr<utils::FilePathList> get_ladspa_paths ();
+  std::unique_ptr<utils::FilePathList> get_clap_paths ();
+  std::unique_ptr<utils::FilePathList> get_jsfx_paths ();
+  std::unique_ptr<utils::FilePathList> get_au_paths ();
+
+private:
+  utils::AppSettings &app_settings_;
 };
 
 } // namespace zrythm::plugins

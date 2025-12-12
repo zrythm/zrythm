@@ -9,10 +9,10 @@
 #include "gui/backend/backend/actions/port_connection_action.h"
 #include "gui/backend/backend/actions/undo_manager.h"
 #include "gui/backend/backend/actions/undoable_action.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/dsp/control_port.h"
 #include "structure/arrangement/region.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/plugin_manager.h"
 

@@ -6,9 +6,6 @@ target_sources(zrythm_gui_lib
     clip_editor.cpp
     clipboard.cpp
     file_manager.cpp
-    project.cpp
-    settings_manager.h
-    settings_manager.cpp
     theme_manager.h
     theme_manager.cpp
     zrythm.h

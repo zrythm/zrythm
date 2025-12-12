@@ -12,11 +12,9 @@
 #endif
 
 #include "engine/session/recording_manager.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
-#include "gui/backend/plugin_manager.h"
 #include "utils/dsp.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
@@ -33,8 +31,6 @@ JUCE_IMPLEMENT_SINGLETON (Zrythm)
 using namespace Qt::StringLiterals;
 
 Zrythm::Zrythm ()
-    : plugin_manager_ (
-        std::make_unique<zrythm::gui::old_dsp::plugins::PluginManager> ())
 {
   z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process ());
 }

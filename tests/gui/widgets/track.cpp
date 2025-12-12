@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/gtk_widgets/track.h"
+#include "structure/project/project.h"
 #include "structure/tracks/track.h"
 
 #include "tests/helpers/fishbowl.h"

@@ -9,10 +9,13 @@
 namespace zrythm::gui
 {
 
-TranslationManager::TranslationManager (QObject * parent) : QObject (parent)
+TranslationManager::TranslationManager (
+  utils::AppSettings &app_settings,
+  QObject *           parent)
+    : QObject (parent), app_settings_ (app_settings)
 {
   QTimer::singleShot (0, this, [this] {
-    auto locale = SettingsManager::uiLocale ();
+    auto locale = app_settings_.uiLocale ();
     loadTranslation (locale);
   });
 }
@@ -61,7 +64,7 @@ TranslationManager::loadTranslation (const QString &locale)
         {
           z_warning ("Failed to retranslate - engine not found");
         }
-      SettingsManager::get_instance ()->set_uiLocale (locale);
+      app_settings_.set_uiLocale (locale);
       z_info ("Loaded translation for locale: {}", locale_to_use);
     }
   else

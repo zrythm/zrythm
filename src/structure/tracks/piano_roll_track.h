@@ -6,7 +6,7 @@
 #include "dsp/midi_event.h"
 #include "utils/types.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::tracks
 {

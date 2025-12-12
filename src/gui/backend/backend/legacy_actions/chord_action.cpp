@@ -3,8 +3,8 @@
 
 #include "gui/backend/backend/actions/chord_action.h"
 #include "gui/backend/backend/clip_editor.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 
 namespace zrythm::gui::actions
 {

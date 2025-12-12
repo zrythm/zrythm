@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/project_path_provider.h"
+#include "structure/project/project_path_provider.h"
 
 namespace zrythm::gui
 {

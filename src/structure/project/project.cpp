@@ -2,21 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <filesystem>
+#include <utility>
 
 #include "dsp/engine.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
-#include "engine/session/project_graph_builder.h"
-#include "gui/backend/backend/project.h"
-#include "gui/backend/backend/settings_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/plugin_host_window.h"
-#include "gui/backend/project_manager.h"
-#include "gui/backend/project_path_provider.h"
-#include "gui/dsp/plugin_span.h"
+#include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
+#include "structure/project/project_path_provider.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/datetime.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/io.h"
 #include "utils/logger.h"
 #include "utils/progress_info.h"
@@ -25,38 +20,30 @@
 #include <juce_wrapper.h>
 #include <zstd.h>
 
-using namespace zrythm;
-
-static auto
-plugin_toplevel_window_provider (plugins::Plugin &plugin)
+namespace zrythm::structure::project
 {
-  auto track_ref = TRACKLIST->get_track_for_plugin (plugin.get_uuid ());
-  auto ret = std::make_unique<plugins::JuceDocumentPluginHostWindow> (
-    utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "{} - {} [{}]",
-        track_ref.has_value ()
-          ? structure::tracks::from_variant (track_ref->get_object ())->name ()
-          : QObject::tr ("<no track>"),
-        plugin.get_node_name (),
-        plugin.configuration ()->descriptor ()->format ())),
-    [&plugin] () {
-      z_debug (
-        "close button pressed on '{}' plugin window", plugin.get_node_name ());
-      plugin.setUiVisible (false);
-    });
-  return ret;
+
+inline auto
+plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
+{
+  return std::visit (
+    [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
 }
 
 Project::Project (
-  std::shared_ptr<juce::AudioDeviceManager> device_manager,
-  dsp::Fader                               &monitor_fader,
-  QObject *                                 parent)
-    : QObject (parent),
+  utils::AppSettings                             &app_settings,
+  std::shared_ptr<juce::AudioDeviceManager>       device_manager,
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
+  plugins::PluginHostWindowFactory                plugin_host_window_provider,
+  dsp::Fader                                     &monitor_fader,
+  utils::Utf8String                               zrythm_version,
+  QObject *                                       parent)
+    : QObject (parent), app_settings_ (app_settings),
       tempo_map_ (
         units::sample_rate (
           device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ())),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
+      plugin_host_window_provider_ (std::move (plugin_host_window_provider)),
       file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
       port_registry_ (new dsp::PortRegistry (this)),
       param_registry_ (
@@ -65,22 +52,23 @@ Project::Project (
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
-      version_ (Zrythm::get_version (false)), device_manager_ (device_manager),
+      version_ (std::move (zrythm_version)), device_manager_ (device_manager),
+      plugin_format_manager_ (plugin_format_manager),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           tempo_map_,
           utils::NoteLength::Note_1_8,
-          [] {
-            return gui::SettingsManager::editorLastCreatedObjectLengthInTicks ();
+          [this] {
+            return app_settings_.editorLastCreatedObjectLengthInTicks ();
 },
           this)),
       snap_grid_timeline_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           tempo_map_,
           utils::NoteLength::Bar,
-          [] {
-            return gui::SettingsManager::timelineLastCreatedObjectLengthInTicks ();
+          [this] {
+            return app_settings_.timelineLastCreatedObjectLengthInTicks ();
           },
           this)),
       transport_ (
@@ -89,11 +77,11 @@ Project::Project (
           *snap_grid_timeline_,
           dsp::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
-              [] () { return gui::SettingsManager::transportReturnToCue (); },
+              [this] () { return app_settings_.transportReturnToCue (); },
             .metronome_countin_bars_ =
-              [] () { return gui::SettingsManager::metronomeCountIn (); },
+              [this] () { return app_settings_.metronomeCountIn (); },
             .recording_preroll_bars_ =
-              [] () { return gui::SettingsManager::recordingPreroll (); },
+              [this] () { return app_settings_.recordingPreroll (); },
           },
           this)),
       audio_engine_ (
@@ -129,22 +117,20 @@ Project::Project (
             .object_registry_ = *arranger_object_registry_,
             .file_audio_source_registry_ = *file_audio_source_registry_,
             .musical_mode_getter_ =
-              [] () { return gui::SettingsManager::musicalMode (); },
+              [this] () { return app_settings_.musicalMode (); },
             .last_timeline_obj_len_provider_ =
-              [] () {
-                return gui::SettingsManager::
-                  timelineLastCreatedObjectLengthInTicks ();
+              [this] () {
+                return app_settings_.timelineLastCreatedObjectLengthInTicks ();
               },
             .last_editor_obj_len_provider_ =
-              [] () {
-                return gui::SettingsManager::
-                  editorLastCreatedObjectLengthInTicks ();
+              [this] () {
+                return app_settings_.editorLastCreatedObjectLengthInTicks ();
               },
             .automation_curve_algorithm_provider_ =
-              [] () {
+              [this] () {
                 return ENUM_INT_TO_VALUE (
                   dsp::CurveOptions::Algorithm,
-                  gui::SettingsManager::automationCurveAlgorithm ());
+                  app_settings_.automationCurveAlgorithm ());
               } },
           [&] () { return audio_engine_->get_sample_rate (); },
           [&] () { return get_tempo_map ().tempo_at_tick (units::ticks (0)); })),
@@ -164,22 +150,20 @@ Project::Project (
                            PluginStates);
               },
             .create_plugin_instance_async_func_ =
-              [] (
+              [plugin_format_manager] (
                 const juce::PluginDescription &description,
                 double                         initialSampleRate,
                 int                            initialBufferSize,
                 juce::AudioPluginFormat::PluginCreationCallback callback) {
-                Zrythm::getInstance ()
-                  ->getPluginManager ()
-                  ->get_format_manager ()
-                  ->createPluginInstanceAsync (
-                    description, initialSampleRate, initialBufferSize, callback);
+                plugin_format_manager->createPluginInstanceAsync (
+                  description, initialSampleRate, initialBufferSize,
+                  std::move (callback));
               },
             .sample_rate_provider_ =
               [this] () { return audio_engine_->get_sample_rate (); },
             .buffer_size_provider_ =
               [this] () { return audio_engine_->get_block_length (); },
-            .top_level_window_provider_ = plugin_toplevel_window_provider,
+            .top_level_window_provider_ = plugin_host_window_provider_,
             .audio_thread_checker_ =
               [this] () {
                 return audio_engine_->graph_dispatcher ().is_processing_thread ();
@@ -245,27 +229,18 @@ Project::Project (
       load_metronome_sample (
         QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
       load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
-      zrythm::gui::SettingsManager::get_instance ()->get_metronomeEnabled (),
-      zrythm::gui::SettingsManager::get_instance ()->get_metronomeVolume (),
-      this);
+      app_settings_.metronomeEnabled (), app_settings_.metronomeVolume (), this);
     QObject::connect (
-      metronome_.get (), &dsp::Metronome::volumeChanged,
-      zrythm::gui::SettingsManager::get_instance (), [] (float val) {
-        zrythm::gui::SettingsManager::get_instance ()->set_metronomeVolume (val);
-      });
+      metronome_.get (), &dsp::Metronome::volumeChanged, &app_settings_,
+      [this] (float val) { app_settings_.set_metronomeVolume (val); });
     QObject::connect (
-      zrythm::gui::SettingsManager::get_instance (),
-      &zrythm::gui::SettingsManager::metronomeVolume_changed, metronome_.get (),
-      [this] (float val) { metronome_->setVolume (val); });
+      &app_settings_, &utils::AppSettings::metronomeVolumeChanged,
+      metronome_.get (), [this] (float val) { metronome_->setVolume (val); });
     QObject::connect (
-      metronome_.get (), &dsp::Metronome::enabledChanged,
-      zrythm::gui::SettingsManager::get_instance (), [] (bool val) {
-        zrythm::gui::SettingsManager::get_instance ()->set_metronomeEnabled (
-          val);
-      });
+      metronome_.get (), &dsp::Metronome::enabledChanged, &app_settings_,
+      [this] (bool val) { app_settings_.set_metronomeEnabled (val); });
     QObject::connect (
-      zrythm::gui::SettingsManager::get_instance (),
-      &zrythm::gui::SettingsManager::metronomeEnabled_changed,
+      &app_settings_, &utils::AppSettings::metronomeEnabledChanged,
       metronome_.get (), [this] (bool val) { metronome_->setEnabled (val); });
   };
   setup_metronome ();
@@ -856,8 +831,8 @@ Project::SerializeProjectThread::run ()
 
   /* generate json */
   z_debug ("serializing project to json...");
-  auto   time_before = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  qint64 time_after{};
+  QElapsedTimer timer;
+  timer.start ();
   std::optional<nlohmann::json> json;
   try
     {
@@ -869,16 +844,15 @@ Project::SerializeProjectThread::run ()
       ctx_.has_error_ = true;
       goto serialize_end;
     }
-  time_after = Zrythm::getInstance ()->get_monotonic_time_usecs ();
-  z_debug ("time to serialize: {}ms", (time_after - time_before) / 1000);
+  z_debug ("time to serialize: {}ms", timer.elapsed ());
 
   /* compress */
   try
     {
       const auto json_str = json->dump ();
       // warning: this byte array depends on json_str being alive while it's used
-      QByteArray src_data =
-        QByteArray::fromRawData (json_str.c_str (), json_str.length ());
+      QByteArray src_data = QByteArray::fromRawData (
+        json_str.c_str (), static_cast<qsizetype> (json_str.length ()));
       compress (
         &compressed_json, &compressed_size,
         CompressionFlag::PROJECT_COMPRESS_DATA, src_data);
@@ -921,16 +895,20 @@ Project::idle_saved_callback (SaveContext * ctx)
 
   if (ctx->is_backup_)
     {
-
       z_debug ("Backup saved.");
+// TODO
+#if 0
       if (ZRYTHM_HAVE_UI)
         {
 
           // ui_show_notification (QObject::tr ("Backup saved."));
         }
+#endif
     }
   else
     {
+// TODO
+#if 0
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
         {
           zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
@@ -940,6 +918,7 @@ Project::idle_saved_callback (SaveContext * ctx)
         {
           // ui_show_notification (QObject::tr ("Project saved."));
         }
+#endif
     }
 
 #if 0
@@ -975,7 +954,7 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
 
   for (const auto &[i, pl_var] : utils::views::enumerate (plugins))
     {
-      z_debug ("plugin {}: {}", i, PluginSpan::state_dir_projection (pl_var));
+      z_debug ("plugin {}: {}", i, plugin_state_dir_projection (pl_var));
     }
 
   auto plugin_states_path =
@@ -997,7 +976,7 @@ Project::cleanup_plugin_state_dirs (Project &main_project, bool is_backup)
           const auto full_path = plugin_states_path / filename_str;
 
           bool found = std::ranges::contains (
-            plugins, filename_str, PluginSpan::state_dir_projection);
+            plugins, filename_str, plugin_state_dir_projection);
           if (!found)
             {
               z_debug ("removing unused plugin state in {}", full_path);
@@ -1061,8 +1040,8 @@ Project::save (
   /* save current datetime */
   datetime_str_ = utils::datetime::get_current_as_string ();
 
-  /* set the project version */
-  version_ = Zrythm::get_version (false);
+  /* set the project version (TODO) */
+  // version_ = Zrythm::get_version (false);
 
   /* if backup, get next available backup dir */
   if (is_backup)
@@ -1089,11 +1068,14 @@ Project::save (
       throw ZrythmException ("Failed to create project directories");
     }
 
+// TODO
+#if 0
   if (this == get_active_instance ())
     {
       /* write the pool */
       pool_->remove_unused (is_backup);
     }
+#endif
 
   try
     {
@@ -1184,7 +1166,7 @@ Project::save (
       SerializeProjectThread save_thread (*ctx);
 
       /* TODO: show progress dialog */
-      if (ZRYTHM_HAVE_UI && false)
+      if (/* ZRYTHM_HAVE_UI */ false)
         {
           auto timer = new QTimer (this);
           QObject::connect (timer, &QTimer::timeout, this, [timer, &ctx] () {
@@ -1383,6 +1365,7 @@ Project::snapGridEditor () const
   return snap_grid_editor_.get ();
 }
 
+#if 0
 Project *
 Project::get_active_instance ()
 {
@@ -1390,12 +1373,15 @@ Project::get_active_instance ()
     zrythm::gui::ProjectManager::get_instance ()->activeProject ();
   return ui_state != nullptr ? ui_state->project () : nullptr;
 }
+#endif
 
 Project *
 Project::clone (bool for_backup) const
 {
-  auto ret = utils::clone_raw_ptr (
-    *this, utils::ObjectCloneType::Snapshot, device_manager_, monitor_fader_);
+  auto * ret = utils::clone_raw_ptr (
+    *this, utils::ObjectCloneType::Snapshot, app_settings_, device_manager_,
+    plugin_format_manager_, plugin_host_window_provider_, monitor_fader_,
+    version_);
   if (for_backup)
     {
       /* no undo history in backups */
@@ -1502,7 +1488,7 @@ struct PluginBuilderForDeserialization
             return project_.audio_engine_->graph_dispatcher ()
               .is_processing_thread ();
           },
-          plugin_toplevel_window_provider);
+          project_.plugin_host_window_provider_);
       }
     else
       {
@@ -1515,19 +1501,16 @@ struct PluginBuilderForDeserialization
                    / gui::ProjectPathProvider::get_path (
                      gui::ProjectPathProvider::ProjectPath::PluginStates);
           },
-          [] (
+          [this] (
             const juce::PluginDescription &description,
             double initialSampleRate, int initialBufferSize,
             juce::AudioPluginFormat::PluginCreationCallback callback) {
-            Zrythm::getInstance ()
-              ->getPluginManager ()
-              ->get_format_manager ()
-              ->createPluginInstanceAsync (
-                description, initialSampleRate, initialBufferSize, callback);
+            project_.plugin_format_manager_->createPluginInstanceAsync (
+              description, initialSampleRate, initialBufferSize, callback);
           },
           [this] () { return project_.audio_engine_->get_sample_rate (); },
           [this] () { return project_.audio_engine_->get_block_length (); },
-          plugin_toplevel_window_provider);
+          project_.plugin_host_window_provider_);
       }
   }
 
@@ -1584,4 +1567,5 @@ from_json (const nlohmann::json &j, Project &project)
         ->get_chord_from_note_number (note_pitch);
     });
 #endif
+}
 }

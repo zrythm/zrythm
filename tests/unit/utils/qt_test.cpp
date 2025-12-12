@@ -4,6 +4,8 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/qt.h"
 
+#include <QCoreApplication>
+
 using namespace zrythm::utils;
 
 class QtTestQObject : public QObject

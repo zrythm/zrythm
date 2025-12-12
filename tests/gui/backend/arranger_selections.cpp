@@ -4,9 +4,9 @@
 #include "zrythm-test-config.h"
 
 #include "gui/backend/backend/arranger_selections.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_region.h"
+#include "structure/project/project.h"
 #include "structure/tracks/tracklist.h"
 
 #include "tests/helpers/zrythm_helper.h"

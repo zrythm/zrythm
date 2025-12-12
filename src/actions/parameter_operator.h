@@ -8,7 +8,7 @@
 #include "dsp/parameter.h"
 #include "undo/undo_stack.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::actions
 {

@@ -15,7 +15,9 @@ using namespace Qt::StringLiterals;
 
 using namespace zrythm::gui::old_dsp::plugins;
 
-PluginManager::PluginManager (QObject * parent)
+PluginManager::PluginManager (
+  zrythm::plugins::ProtocolPluginPathsProvider plugin_paths_provider,
+  QObject *                                    parent)
     : QObject (parent),
       format_manager_ (std::make_shared<juce::AudioPluginFormatManager> ()),
       known_plugin_list_ (std::make_shared<juce::KnownPluginList> ()),
@@ -33,15 +35,7 @@ PluginManager::PluginManager (QObject * parent)
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (
-    known_plugin_list_, format_manager_, [] (Protocol::ProtocolType protocol) {
-      return zrythm::plugins::PluginProtocolPaths::get_for_protocol (protocol);
-    });
-}
-
-PluginManager *
-PluginManager::get_active_instance ()
-{
-  return Zrythm::getInstance ()->getPluginManager ();
+    known_plugin_list_, format_manager_, plugin_paths_provider);
 }
 
 void

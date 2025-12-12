@@ -4,9 +4,9 @@
 #include "zrythm-test-config.h"
 
 #include "dsp/transport.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_region.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/project_helper.h"
 #include "tests/helpers/zrythm_helper.h"

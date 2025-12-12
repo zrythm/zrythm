@@ -5,11 +5,11 @@
 #define __GUI_BACKEND_FILE_MANAGER_H__
 
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "gui/backend/io/file_descriptor.h"
+#include "utils/app_settings.h"
 
 #include <QString>
 
@@ -100,7 +100,7 @@ enum class FileBrowserSelectionType
 class FileManager
 {
 public:
-  FileManager ();
+  FileManager (utils::AppSettings &app_settings);
 
   /**
    * Loads the files under the current selection.
@@ -168,6 +168,9 @@ public:
    * The current selection in the top window.
    */
   std::unique_ptr<FileBrowserLocation> selection;
+
+private:
+  utils::AppSettings &app_settings_;
 };
 
 /**

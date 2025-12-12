@@ -42,6 +42,9 @@ using namespace std::chrono_literals;
 
 #include "plugins/out_of_process_scanner.h"
 
+#include <QCoreApplication>
+#include <QProcessEnvironment>
+
 constexpr auto PLUGIN_SCAN_TIMEOUT = 6s;
 
 using namespace zrythm::plugins::discovery;

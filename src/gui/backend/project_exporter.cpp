@@ -3,17 +3,17 @@
 
 #include "dsp/graph_pruner.h"
 #include "dsp/graph_renderer.h"
-#include "engine/session/project_graph_builder.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/project_exporter.h"
-#include "gui/backend/project_path_provider.h"
+#include "structure/project/project.h"
+#include "structure/project/project_graph_builder.h"
+#include "structure/project/project_path_provider.h"
 #include "utils/audio_file_writer.h"
 
 #include <QQmlEngine>
 #include <QtConcurrentRun>
 
 gui::qquick::QFutureQmlWrapper *
-ProjectExporter::exportAudio (Project * project)
+ProjectExporter::exportAudio (structure::project::Project * project)
 {
   dsp::GraphRenderer::RenderOptions options{
     .sample_rate_ = units::sample_rate (
@@ -26,8 +26,8 @@ ProjectExporter::exportAudio (Project * project)
   };
   EngineState state{};
   project->engine ()->wait_for_pause (state, false, true);
-  ProjectGraphBuilder builder (*project);
-  dsp::graph::Graph   graph;
+  structure::project::ProjectGraphBuilder builder (*project);
+  dsp::graph::Graph                       graph;
   builder.build_graph (graph);
 
   // Prune graph to master output

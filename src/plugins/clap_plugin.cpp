@@ -45,6 +45,8 @@
 #include "utils/views.h"
 
 #include <QLibrary>
+#include <QSemaphore>
+#include <QSocketNotifier>
 
 #include <clap/helpers/event-list.hh>
 #include <clap/helpers/host.hxx>

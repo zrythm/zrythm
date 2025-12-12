@@ -10,7 +10,7 @@
 #include "engine/device_io/engine.h"
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/tracklist_selections_action.h"
-#include "gui/backend/backend/project.h"
+#include "structure/project/project.h"
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/tracklist.h"
 

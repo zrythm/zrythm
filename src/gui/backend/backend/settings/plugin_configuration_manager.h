@@ -96,14 +96,7 @@ public:
    * @note This also serializes all plugin settings.
    */
   void increment_num_instantiations_for_plugin (
-    const plugins::PluginDescriptor &descr)
-  {
-    instantiations_.at (descr).first++;
-    instantiations_.at (descr).second = QDateTime::currentMSecsSinceEpoch ();
-    auto * config = find (descr);
-    assert (config);
-    set (*config, true);
-  }
+    const plugins::PluginDescriptor &descr);
 
   /**
    * @brief Creates necessary tracks at the end of the tracklist.

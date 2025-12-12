@@ -5,9 +5,14 @@
 
 #include "gui/backend/project_ui_state.h"
 
-#include <QtQmlIntegration>
+#include <QFutureWatcher>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "recent_projects_model.h"
+
+// DEPRECATED - do not use in new code
+#define PROJECT \
+  (zrythm::gui::ProjectManager::get_instance ()->activeProject ()->project ())
 
 namespace zrythm::gui
 {
@@ -22,9 +27,10 @@ class ProjectManager : public QObject
   Q_PROPERTY (
     zrythm::gui::ProjectUiState * activeProject READ activeProject WRITE
       setActiveProject NOTIFY activeProjectChanged)
+  QML_UNCREATABLE ("")
 
 public:
-  ProjectManager (QObject * parent = nullptr);
+  ProjectManager (utils::AppSettings &app_settings, QObject * parent = nullptr);
 
   using Template = fs::path;
   using TemplateList = std::vector<Template>;
@@ -94,7 +100,17 @@ private:
     const utils::Utf8String &name,
     bool                     with_engine);
 
+  /**
+   * @brief Creates a toplevel window for the given plugin
+   *
+   * This method can be used as a PluginHostWindowFactory.
+   */
+  std::unique_ptr<plugins::IPluginHostWindow>
+  create_window_for_plugin (plugins::Plugin &plugin) const;
+
 private:
+  utils::AppSettings &app_settings_;
+
   /** Array of project template paths. */
   TemplateList templates_;
 

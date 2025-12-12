@@ -1,25 +1,21 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings_manager.h"
-
-#include <QSettings>
-
-#include "recent_projects_model.h"
+#include "gui/backend/recent_projects_model.h"
 
 using namespace zrythm::gui;
 
-RecentProjectsModel::RecentProjectsModel (QObject * parent)
-    : QAbstractListModel (parent)
+RecentProjectsModel::RecentProjectsModel (
+  utils::AppSettings &app_settings,
+  QObject *           parent)
+    : QAbstractListModel (parent), app_settings_ (app_settings)
 {
 }
 
 std::vector<std::unique_ptr<ProjectInfo>>
-RecentProjectsModel::get_recent_projects ()
+RecentProjectsModel::get_recent_projects () const
 {
-  auto list =
-    zrythm::gui::SettingsManager::get_instance ()->get_recent_projects ();
-  // list.append ("test 2");
+  auto list = app_settings_.recent_projects ();
 
   std::vector<std::unique_ptr<ProjectInfo>> ret;
   std::ranges::transform (
@@ -78,8 +74,7 @@ void
 RecentProjectsModel::addRecentProject (const QString &path)
 {
   beginResetModel ();
-  auto recent_projects =
-    SettingsManager::get_instance ()->get_recent_projects ();
+  auto recent_projects = app_settings_.recent_projects ();
   recent_projects.removeAll (path);
   recent_projects.prepend (path);
   while (recent_projects.size () > MAX_RECENT_DOCUMENTS)
@@ -94,8 +89,7 @@ void
 RecentProjectsModel::removeRecentProject (const QString &path)
 {
   beginResetModel ();
-  auto recent_projects =
-    SettingsManager::get_instance ()->get_recent_projects ();
+  auto recent_projects = app_settings_.recent_projects ();
   recent_projects.removeAll (path);
   store_recent_projects (recent_projects);
   endResetModel ();
@@ -104,7 +98,7 @@ RecentProjectsModel::removeRecentProject (const QString &path)
 void
 RecentProjectsModel::store_recent_projects (const QStringList &list)
 {
-  zrythm::gui::SettingsManager::get_instance ()->set_recent_projects (list);
+  app_settings_.set_recent_projects (list);
 }
 
 void

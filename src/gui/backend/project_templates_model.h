@@ -8,7 +8,7 @@
 #include <QAbstractListModel>
 #include <QQmlEngine>
 #include <QStringList>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui
 {

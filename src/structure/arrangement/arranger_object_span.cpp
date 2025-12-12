@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "gui/backend/project_manager.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_span.h"
 

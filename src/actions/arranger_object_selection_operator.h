@@ -9,7 +9,7 @@
 #include "utils/variant_helpers.h"
 
 #include <QItemSelectionModel>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::actions
 {

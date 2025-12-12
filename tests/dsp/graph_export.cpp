@@ -5,8 +5,8 @@
 
 #include "dsp/graph.h"
 #include "engine/session/graph_export.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/zrythm.h"
+#include "structure/project/project.h"
 
 #include "tests/helpers/zrythm_helper.h"
 

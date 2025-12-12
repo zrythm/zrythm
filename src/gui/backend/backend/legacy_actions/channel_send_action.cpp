@@ -3,7 +3,7 @@
 
 #include "engine/session/graph_dispatcher.h"
 #include "gui/backend/backend/actions/channel_send_action.h"
-#include "gui/backend/backend/project.h"
+#include "structure/project/project.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/rt_thread_id.h"

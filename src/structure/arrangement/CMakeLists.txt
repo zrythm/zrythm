@@ -92,7 +92,9 @@ target_precompile_headers(zrythm_arrangement_lib PUBLIC
 qt_add_qml_module(zrythm_arrangement_lib
   URI ZrythmArrangement
   VERSION 1.0
-  IMPORTS TARGET zrythm_dsp_lib
+  IMPORTS
+    TARGET zrythm_utils_lib
+    TARGET zrythm_dsp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmArrangement
 )
 

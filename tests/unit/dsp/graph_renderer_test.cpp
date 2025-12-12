@@ -3,6 +3,8 @@
 
 #include "dsp/graph_renderer.h"
 
+#include <QFuture>
+
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "./graph_helpers.h"

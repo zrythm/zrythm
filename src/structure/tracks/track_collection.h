@@ -5,7 +5,7 @@
 
 #include "structure/tracks/track_span.h"
 
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::tracks
 {

@@ -3,13 +3,9 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include <memory>
 
 #include "engine/session/recording_manager.h"
-#include "gui/backend/backend/file_manager.h"
-#include "gui/backend/backend/project.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/plugin_manager.h"
@@ -44,9 +40,6 @@ class Zrythm final : public QObject, public utils::QElapsedTimeProvider
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (
-    zrythm::gui::old_dsp::plugins::PluginManager * pluginManager READ
-      getPluginManager CONSTANT FINAL)
   Q_PROPERTY (QString version READ getVersion CONSTANT FINAL)
   QML_UNCREATABLE ("")
 public:
@@ -64,11 +57,6 @@ public:
   pre_init (std::optional<fs::path> exe_path, bool have_ui, bool optimized_dsp);
 
   void init ();
-
-  zrythm::gui::old_dsp::plugins::PluginManager * getPluginManager () const
-  {
-    return plugin_manager_.get ();
-  }
 
   QString getVersion () const { return get_version (false).to_qstring (); }
 
@@ -123,8 +111,6 @@ public:
    */
   void init_user_dirs_and_files ();
 
-  FileManager &get_file_manager () { return file_manager_; }
-
 private:
   Zrythm ();
 
@@ -153,9 +139,6 @@ public:
    * Used only when a filename is passed, eg, zrytm myproject.zpj
    */
   fs::path open_filename_;
-
-  /** File manager. */
-  FileManager file_manager_;
 
   /**
    * String interner for internal things.
@@ -207,26 +190,8 @@ public:
   /** Chord preset pack manager. */
   std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
 
-  // std::unique_ptr<EventManager> event_manager_;
-
-  /**
-   * Manages plugins (loading, instantiating, etc.)
-   */
-  std::unique_ptr<zrythm::gui::old_dsp::plugins::PluginManager> plugin_manager_;
-
   /** Recording manager. */
   engine::session::RecordingManager * recording_manager_ = nullptr;
-
-  /**
-   * Project data.
-   *
-   * This is what should be exported/imported when saving/loading projects.
-   *
-   * The only reason this is a pointer is to easily deserialize.
-   *
-   * Should be free'd first, therefore it is the last member.
-   */
-  std::unique_ptr<Project> project_;
 
   /**
    * @brief LSP DSP context for the main thread.

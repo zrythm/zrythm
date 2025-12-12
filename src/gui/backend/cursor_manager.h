@@ -4,7 +4,7 @@
 #pragma once
 
 #include <QCursor>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 /**
  * @brief Cursor manager for arrangers.

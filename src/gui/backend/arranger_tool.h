@@ -6,7 +6,7 @@
 #include "utils/icloneable.h"
 
 #include <QObject>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::gui::backend
 {

@@ -52,6 +52,7 @@ qt_add_qml_module(zrythm_actions_lib
   URI ZrythmActions
   VERSION 1.0
   IMPORTS
+    TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
     TARGET zrythm_arrangement_lib
     TARGET zrythm_structure_scenes_lib
