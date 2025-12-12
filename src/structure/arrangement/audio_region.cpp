@@ -5,7 +5,7 @@
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include <fmt/format.h>
 

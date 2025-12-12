@@ -6,7 +6,7 @@
 #include "dsp/fader.h"
 #include "dsp/midi_event.h"
 #include "engine/session/graph_dispatcher.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/zrythm_helper.h"

@@ -15,7 +15,7 @@
 
 #include "zrythm-config.h"
 
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include "juce_wrapper.h"
 

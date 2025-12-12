@@ -4,7 +4,7 @@
 #pragma once
 
 #include "utils/icloneable.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 

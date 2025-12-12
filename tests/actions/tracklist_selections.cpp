@@ -22,7 +22,7 @@
 #include "structure/tracks/foldable_track.h"
 #include "structure/tracks/master_track.h"
 #include "utils/color.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project_helper.h"

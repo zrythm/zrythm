@@ -4,7 +4,7 @@
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/exceptions.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/resampler.h"
 
 #include <soxr.h>

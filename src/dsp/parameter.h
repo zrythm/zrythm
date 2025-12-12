@@ -8,7 +8,7 @@
 #include "dsp/graph_node.h"
 #include "dsp/midi_port.h"
 #include "utils/format.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/serialization.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"

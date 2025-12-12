@@ -3,7 +3,7 @@
 
 #include "utils/audio_file.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 using namespace zrythm;
 using namespace zrythm::utils::audio;

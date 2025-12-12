@@ -3,7 +3,7 @@
 
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 namespace zrythm::structure::arrangement
 {

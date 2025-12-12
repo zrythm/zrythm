@@ -4,11 +4,10 @@
 #pragma once
 
 #include "gui/backend/project_ui_state.h"
+#include "gui/backend/recent_projects_model.h"
 
 #include <QFutureWatcher>
 #include <QtQmlIntegration/qqmlintegration.h>
-
-#include "recent_projects_model.h"
 
 // DEPRECATED - do not use in new code
 #define PROJECT \

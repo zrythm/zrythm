@@ -8,7 +8,7 @@
 #include "commands/resize_arranger_objects_command.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/ranges.h"
 
 namespace zrythm::actions

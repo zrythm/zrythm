@@ -21,7 +21,7 @@
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"
 

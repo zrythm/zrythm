@@ -26,7 +26,7 @@ target_sources(zrythm_utils_lib
     hash.cpp
     io.cpp
     logger.cpp
-    math.cpp
+    math_utils.cpp
     mem.cpp
     midi.cpp
     networking.cpp
@@ -73,7 +73,7 @@ target_sources(zrythm_utils_lib
       isettings_backend.h
       jack.h
       logger.h
-      math.h
+      math_utils.h
       mem.h
       midi.h
       monotonic_time_provider.h

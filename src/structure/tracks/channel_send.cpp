@@ -3,7 +3,7 @@
 
 #include "structure/tracks/channel_send.h"
 #include "utils/dsp.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #include <fmt/format.h>
 

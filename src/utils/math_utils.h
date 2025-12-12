@@ -27,7 +27,6 @@
 
 #pragma once
 
-#include <cfloat>
 #include <cmath>
 #include <limits>
 #include <numbers>
@@ -112,13 +111,6 @@ round_to_signed_64 (T x)
     }
 }
 
-template <std::floating_point T>
-constexpr signed_frame_t
-round_to_signed_frame_t (T x)
-{
-  return round_to_signed_64 (x);
-}
-
 /**
  * Fast log calculation to be used where precision
  * is not required (like log curves).
@@ -133,7 +125,7 @@ fast_log2 (float val)
   {
     float f;
     int   i;
-  } t;
+  } t{};
   t.f = val;
   int * const exp_ptr = &t.i;
   int         x = *exp_ptr;
@@ -167,14 +159,15 @@ fast_log10 (const float val)
  * Returns fader value 0.0 to 1.0 from amp value
  * 0.0 to 2.0 (+6 dbFS).
  */
+template <std::floating_point T>
 [[gnu::const]]
-static inline audio_sample_type_t
-get_fader_val_from_amp (audio_sample_type_t amp)
+static inline T
+get_fader_val_from_amp (T amp)
 {
-  constexpr float fader_coefficient1 =
+  constexpr T fader_coefficient1 =
     /*192.f * logf (2.f);*/
     133.084258667509499408f;
-  constexpr float fader_coefficient2 =
+  constexpr T fader_coefficient2 =
     /*powf (logf (2.f), 8.f) * powf (198.f, 8.f);*/
     1.25870863180257576e17f;
 
@@ -189,7 +182,7 @@ get_fader_val_from_amp (audio_sample_type_t amp)
     {
       amp = 1.f + 1e-20f;
     }
-  audio_sample_type_t fader =
+  T fader =
     std::powf (
       // note: don't use fast_log here - it causes weirdness in faders
       (6.f * std::logf (amp)) + fader_coefficient1, 8.f)
@@ -200,9 +193,10 @@ get_fader_val_from_amp (audio_sample_type_t amp)
 /**
  * Returns amp value 0.0 to 2.0 (+6 dbFS) from fader value 0.0 to 1.0.
  */
+template <std::floating_point T>
 [[gnu::const]]
-static inline audio_sample_type_t
-get_amp_val_from_fader (audio_sample_type_t fader)
+static inline T
+get_amp_val_from_fader (T fader)
 {
   constexpr float val1 = 1.f / 6.f;
   return std::powf (
@@ -212,9 +206,10 @@ get_amp_val_from_fader (audio_sample_type_t fader)
 /**
  * Convert from amplitude 0.0 to 2.0 to dbFS.
  */
+template <std::floating_point T>
 [[gnu::const]]
-static inline audio_sample_type_t
-amp_to_dbfs (audio_sample_type_t amp)
+static inline T
+amp_to_dbfs (T amp)
 {
   return 20.f * std::log10f (amp);
 }
@@ -223,8 +218,8 @@ amp_to_dbfs (audio_sample_type_t amp)
  * Gets the RMS of the given signal as amplitude
  * (0-2).
  */
-audio_sample_type_t
-calculate_rms_amp (const audio_sample_type_t * buf, nframes_t nframes);
+float
+calculate_rms_amp (const float * buf, nframes_t nframes);
 
 /**
  * Calculate db using RMS method.
@@ -232,8 +227,9 @@ calculate_rms_amp (const audio_sample_type_t * buf, nframes_t nframes);
  * @param buf Buffer containing the samples.
  * @param nframes Number of samples.
  */
-static inline audio_sample_type_t
-calculate_rms_db (const audio_sample_type_t * buf, nframes_t nframes)
+template <std::floating_point T>
+static inline T
+calculate_rms_db (const T * buf, nframes_t nframes)
 {
   return amp_to_dbfs (calculate_rms_amp (buf, nframes));
 }
@@ -241,9 +237,10 @@ calculate_rms_db (const audio_sample_type_t * buf, nframes_t nframes)
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
  */
+template <std::floating_point T>
 [[gnu::const]]
-static inline audio_sample_type_t
-dbfs_to_amp (audio_sample_type_t dbfs)
+static inline T
+dbfs_to_amp (T dbfs)
 {
   return std::powf (10.f, (dbfs / 20.f));
 }
@@ -251,9 +248,10 @@ dbfs_to_amp (audio_sample_type_t dbfs)
 /**
  * Convert form dbFS to fader val 0.0 to 1.0.
  */
+template <std::floating_point T>
 [[gnu::const]]
-static inline audio_sample_type_t
-dbfs_to_fader_val (audio_sample_type_t dbfs)
+static inline T
+dbfs_to_fader_val (T dbfs)
 {
   return get_fader_val_from_amp (dbfs_to_amp (dbfs));
 }

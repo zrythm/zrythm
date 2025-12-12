@@ -31,7 +31,7 @@
 
 #include "dsp/curve.h"
 #include "utils/debug.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
 namespace zrythm::dsp

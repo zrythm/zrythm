@@ -9,7 +9,7 @@
 #include "dsp/panning.h"
 #include "dsp/port.h"
 #include "utils/dsp.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/midi.h"
 
 namespace zrythm::dsp

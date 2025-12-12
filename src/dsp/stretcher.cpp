@@ -31,7 +31,7 @@
 #include "dsp/stretcher.h"
 #include "utils/audio_file.h"
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/mem.h"
 
 #include <rubberband/rubberband-c.h>

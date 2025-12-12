@@ -3,7 +3,7 @@
 
 #include "utils/color.h"
 #include "utils/debug.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 namespace zrythm::utils
 {

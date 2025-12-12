@@ -10,7 +10,7 @@
 #include "dsp/midi_port.h"
 #include "gui/backend/project_manager.h"
 #include "gui/qquick/meter_processor.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/ring_buffer.h"
 
 namespace zrythm::gui::qquick

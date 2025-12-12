@@ -19,7 +19,7 @@
 #include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"

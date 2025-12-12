@@ -9,7 +9,7 @@
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/gtest_wrapper.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/views.h"
 
 namespace zrythm::gui::actions

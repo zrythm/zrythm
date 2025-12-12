@@ -5,7 +5,7 @@
 #include <cmath>
 
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
 namespace zrythm::utils::math

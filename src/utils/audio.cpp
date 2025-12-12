@@ -7,7 +7,7 @@
 #include "utils/exceptions.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
-#include "utils/math.h"
+#include "utils/math_utils.h"
 
 #if defined(__FreeBSD__)
 #  include <sys/sysctl.h>

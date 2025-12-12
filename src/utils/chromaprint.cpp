@@ -11,7 +11,7 @@
 
 #  include "utils/audio.h"
 #  include "utils/chromaprint.h"
-#  include "utils/math.h"
+#  include "utils/math_utils.h"
 
 #  include <sndfile.h>
 
