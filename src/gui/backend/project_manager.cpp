@@ -5,6 +5,7 @@
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"
+#include "structure/project/project_saver.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
@@ -189,7 +190,7 @@ ProjectManager::create_default (
 
   /* set directory/title and create standard dirs */
   prj->dir_ = prj_dir / name;
-  prj->make_project_dirs (false);
+  structure::project::ProjectSaver::make_project_dirs (*prj, false);
 
   prj_ui_state->clipEditor ()->init ();
 
@@ -223,8 +224,8 @@ ProjectManager::createNewProject (
                 utils::Utf8String::from_qstring (name), true)
             : nullptr; // TODO: template handling
 
-        project_ui_state->project ()->save (
-          project_ui_state->project ()->dir_, false, false, false);
+        structure::project::ProjectSaver saver (*project_ui_state->project ());
+        saver.save (false, false, false);
 
         QMetaObject::invokeMethod (
           this,
