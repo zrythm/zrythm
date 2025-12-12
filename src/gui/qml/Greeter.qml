@@ -13,13 +13,13 @@ import "config.js" as Config
 ApplicationWindow {
   id: root
 
-  readonly property AlertManager alertManager: app.alertManager
+  readonly property AlertManager alertManager: app?.alertManager ?? null
   readonly property ZrythmApplication app: GlobalState.application
-  readonly property DeviceManager deviceManager: app.deviceManager
-  readonly property PluginManager pluginManager: app.pluginManager
-  readonly property PluginScanManager pluginScanner: pluginManager.scanner
-  readonly property ProjectManager projectManager: app.projectManager
-  readonly property AppSettings appSettings: app.appSettings
+  readonly property DeviceManager deviceManager: app?.deviceManager ?? null
+  readonly property PluginManager pluginManager: app?.pluginManager ?? null
+  readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
+  readonly property ProjectManager projectManager: app?.projectManager ?? null
+  readonly property AppSettings appSettings: app?.appSettings ?? null
 
   function openProjectWindow(projectUiState) {
     let newWindow = projectWindowComponent.createObject(projectUiState, {
@@ -89,7 +89,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: root.appSettings.first_run ? firstRunPage : progressPage
+    initialItem: root.appSettings?.first_run ? firstRunPage : progressPage
 
     popExit: Transition {
       PropertyAnimation {
@@ -300,7 +300,7 @@ ApplicationWindow {
             font.pointSize: 8
             horizontalAlignment: Qt.AlignHCenter
             opacity: 0.6
-            text: qsTr("Scanning:") + " " + root.pluginManager.currentlyScanningPlugin
+            text: qsTr("Scanning:") + " " + root.pluginManager?.currentlyScanningPlugin
             verticalAlignment: Qt.AlignVCenter
           }
 
@@ -418,7 +418,7 @@ ApplicationWindow {
 
           anchors.fill: parent
           delegate: projectDelegate
-          model: root.projectManager.recentProjects
+          model: root.projectManager?.recentProjects
         }
       }
     }
@@ -444,7 +444,7 @@ ApplicationWindow {
           Binding {
             property: "text"
             target: projectNameField
-            value: root.projectManager.getNextAvailableProjectName(projectDirectoryField.selectedUrl, projectNameField.text)
+            value: root.projectManager?.getNextAvailableProjectName(projectDirectoryField.selectedUrl, projectNameField.text)
             when: projectDirectoryField.selectedUrl.toString().length > 0
           }
 
@@ -453,7 +453,7 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             // placeholderText: qsTr("Parent Directory")
-            initialPath: root.appSettings.new_project_directory
+            initialPath: root.appSettings?.new_project_directory ?? ""
           }
 
           ComboBox {
