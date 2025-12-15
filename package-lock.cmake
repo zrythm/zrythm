@@ -30,7 +30,7 @@ CPMDeclarePackage(clap
 CPMDeclarePackage(clap-helpers
   NAME clap-helpers
   VERSION 0.2
-  GIT_TAG a61bcdf0ecc2c8db1e80bfe8bf9cb7e8d9fd2bbc
+  GIT_TAG 3625679b5b32c2032df4134cae68cae0faa2ec36
   GITHUB_REPOSITORY free-audio/clap-helpers
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
