@@ -13,7 +13,7 @@ cmakelang==0.6.13
 compdb==0.2.0
 distlib==0.3.9
 docutils==0.20.1
-filelock==3.18.0
+filelock==3.20.1
 furo==2024.8.6
 gprof2dot==2022.7.29
 identify==2.6.12
