@@ -365,6 +365,9 @@ build:gnu/linux:
   needs:
     - job: configure:gnu/linux
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
     - job: check:exif
     - job: check:reuse
     - job: check:clang-format
@@ -394,6 +397,9 @@ build:mac-arm:
   needs:
     - job: configure:mac-arm
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
   script:
     # Limit parallel jobs because xcode clang forces a whole system restart when building debug builds
     - cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --parallel 4
@@ -421,6 +427,9 @@ build:windows:
   needs:
     - job: configure:windows
       artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
   script:
     - cmake --build "${env:BUILDDIR}-${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
     - if (! $?) { exit 1 } # Check if the previous command failed
