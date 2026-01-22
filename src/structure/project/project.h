@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -88,7 +88,6 @@ public:
     std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Fader                                     &monitor_fader,
-    utils::Utf8String                               zrythm_version,
     QObject *                                       parent = nullptr);
   ~Project () override;
   Z_DISABLE_COPY_MOVE (Project)
@@ -239,8 +238,6 @@ private:
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
   static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
   static constexpr auto kTitleKey = "title"sv;
-  static constexpr auto kDatetimeKey = "datetime"sv;
-  static constexpr auto kVersionKey = "version"sv;
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
   static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
@@ -249,9 +246,6 @@ private:
   static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
-  static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
-  static constexpr auto FORMAT_MAJOR_VER = 2;
-  static constexpr auto FORMAT_MINOR_VER = 1;
   friend void           to_json (nlohmann::json &j, const Project &project);
   friend void           from_json (const nlohmann::json &j, Project &project);
 
@@ -273,9 +267,6 @@ public:
   /** Project title. */
   utils::Utf8String title_;
 
-  /** Datetime string to add to the project file. */
-  utils::Utf8String datetime_str_;
-
   /** Path to save the project in. */
   fs::path dir_;
 
@@ -287,9 +278,6 @@ public:
   std::optional<fs::path> backup_dir_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
-
-  /** Zrythm version, for serialization */
-  utils::Utf8String version_;
 
   /**
    * Whether the current is currently being loaded from a backup file.

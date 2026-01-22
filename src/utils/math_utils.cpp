@@ -14,7 +14,8 @@ namespace zrythm::utils::math
 audio_sample_type_t
 calculate_rms_amp (const audio_sample_type_t * buf, const nframes_t nframes)
 {
-  audio_sample_type_t sum = 0, sample = 0;
+  audio_sample_type_t sum = 0;
+  audio_sample_type_t sample = 0;
   for (unsigned int i = 0; i < nframes; i += RMS_FRAMES)
     {
       sample = buf[i];

@@ -21,6 +21,7 @@ class ZrythmException : public std::nested_exception
 public:
   explicit ZrythmException (const char * message);
   explicit ZrythmException (const std::string &message);
+  ZrythmException (std::string_view message);
   explicit ZrythmException (const QString &message);
 
   const char *      what () const noexcept;

@@ -250,6 +250,16 @@ void
 copy_file (const fs::path &destfile, const fs::path &srcfile);
 
 /**
+ * @brief Moves (renames) a file from a source path to a destination path.
+ *
+ * @param destfile
+ * @param srcfile
+ * @throw ZrythmException If the file rename operation fails.
+ */
+void
+move_file (const fs::path &destfile, const fs::path &srcfile);
+
+/**
  * Returns a newly allocated path that is either
  * a copy of the original path if the path does
  * not exist, or the original path appended with

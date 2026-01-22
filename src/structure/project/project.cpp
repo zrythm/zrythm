@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <filesystem>
@@ -24,7 +24,6 @@ Project::Project (
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Fader                                     &monitor_fader,
-  utils::Utf8String                               zrythm_version,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
       tempo_map_ (
@@ -40,7 +39,7 @@ Project::Project (
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
-      version_ (std::move (zrythm_version)), device_manager_ (device_manager),
+      device_manager_ (device_manager),
       plugin_format_manager_ (plugin_format_manager),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
@@ -503,8 +502,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   z_debug ("cloning project...");
 
   obj.title_ = other.title_;
-  obj.datetime_str_ = other.datetime_str_;
-  obj.version_ = other.version_;
   // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
   // obj.audio_engine_ = utils::clone_qobject (
   //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
@@ -631,6 +628,8 @@ Project::get_active_instance ()
 Project *
 Project::clone (bool for_backup) const
 {
+// TODO
+#if 0
   auto * ret = utils::clone_raw_ptr (
     *this, utils::ObjectCloneType::Snapshot, app_settings_, device_manager_,
     plugin_format_manager_, plugin_host_window_provider_, monitor_fader_,
@@ -638,24 +637,20 @@ Project::clone (bool for_backup) const
   if (for_backup)
     {
       /* no undo history in backups */
-// TODO
-#if 0
       if (ret->legacy_undo_manager_ != nullptr)
         {
           delete ret->legacy_undo_manager_;
           ret->legacy_undo_manager_ = nullptr;
         }
-#endif
     }
   return ret;
+#endif
+  return nullptr;
 }
 
 void
 to_json (nlohmann::json &j, const Project &project)
 {
-  j[utils::serialization::kDocumentTypeKey] = Project::DOCUMENT_TYPE;
-  j[utils::serialization::kFormatMajorKey] = Project::FORMAT_MAJOR_VER;
-  j[utils::serialization::kFormatMinorKey] = Project::FORMAT_MINOR_VER;
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kFileAudioSourceRegistryKey] = project.file_audio_source_registry_;
   j[Project::kPortRegistryKey] = project.port_registry_;
@@ -664,8 +659,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
   j[Project::kTrackRegistryKey] = project.track_registry_;
   j[Project::kTitleKey] = project.title_;
-  j[Project::kDatetimeKey] = project.datetime_str_;
-  j[Project::kVersionKey] = project.version_;
   j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
   j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
   j[Project::kTransportKey] = project.transport_;
@@ -789,8 +782,6 @@ from_json (const nlohmann::json &j, Project &project)
     j.at (Project::kTrackRegistryKey), *project.track_registry_,
     TrackBuilderForDeserialization{ project });
   j.at (Project::kTitleKey).get_to (project.title_);
-  j.at (Project::kDatetimeKey).get_to (project.datetime_str_);
-  j.at (Project::kVersionKey).get_to (project.version_);
   j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
   j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);

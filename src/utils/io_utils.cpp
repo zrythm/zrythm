@@ -351,6 +351,19 @@ copy_file (const fs::path &destfile, const fs::path &srcfile)
     }
 }
 
+void
+move_file (const fs::path &destfile, const fs::path &srcfile)
+{
+  auto src_file = QFile (srcfile);
+  if (!src_file.rename (destfile))
+    {
+      throw ZrythmException (
+        fmt::format (
+          "Failed to rename '{}' to '{}': {}", Utf8String::from_path (srcfile),
+          Utf8String::from_path (destfile), src_file.errorString ()));
+    }
+}
+
 std::vector<fs::path>
 get_files_in_dir_as_basenames (const fs::path &_dir)
 {

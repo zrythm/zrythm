@@ -112,7 +112,7 @@ RUN wget https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-every
     -confirm-license -skip qtgrpc -skip qtdoc -skip qtwebengine \
     -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport \
     -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects \
-    -skip qtopcua \
+    -skip qtopcua -skip qt5compat -skip qtactiveqt -skip qtcoap \
     -xcb -pch -force-bundled-libs && \
     cmake --build . --parallel && \
     cmake --install . && \

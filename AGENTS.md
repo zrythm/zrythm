@@ -191,7 +191,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ## Common Tasks for AI Agents
 
-### Searching Issues
+### Searching for Issues
 
 1. **Use the Gitlab MCP server tools** with project ID 26
 

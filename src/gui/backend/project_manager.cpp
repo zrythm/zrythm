@@ -10,6 +10,8 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 
+#include <QtConcurrentRun>
+
 using namespace std::chrono_literals;
 namespace zrythm::gui
 {
@@ -176,7 +178,7 @@ ProjectManager::create_default (
           [this] (plugins::Plugin &plugin) {
             return create_window_for_plugin (plugin);
           },
-          *zapp->controlRoom ()->monitorFader (), Zrythm::get_version (false));
+          *zapp->controlRoom ()->monitorFader ());
         prj_ui_state =
           utils::make_qobject_unique<ProjectUiState> (std::move (prj));
       }
@@ -214,39 +216,52 @@ ProjectManager::createNewProject (
   z_debug (
     "Creating new project in {} (template {})", directory_file, template_file);
 
-  std::thread ([directory_file, name, template_file, this] {
-    try
-      {
-        auto project_ui_state =
-          template_file.isEmpty ()
-            ? create_default (
-                utils::Utf8String::from_qstring (directory_file).to_path (),
-                utils::Utf8String::from_qstring (name), true)
-            : nullptr; // TODO: template handling
-
-        structure::project::ProjectSaver saver (*project_ui_state->project ());
-        saver.save (false, false, false);
-
-        QMetaObject::invokeMethod (
-          this,
-          [this, ui_state = project_ui_state.release ()] {
-            ui_state->setParent (this);
-            setActiveProject (ui_state);
-            ui_state->project ()->engine ()->graph_dispatcher ().recalc_graph (
-              false);
-            ui_state->project ()->engine ()->set_running (true);
-            Q_EMIT projectLoaded (ui_state);
-          },
-          Qt::BlockingQueuedConnection);
-      }
-    catch (const ZrythmException &e)
-      {
-        z_warning ("Failed to create project: {}", e.what ());
-        QMetaObject::invokeMethod (this, [this, msg = e.what_string ()] {
-          Q_EMIT projectLoadingFailed (msg);
-        });
-      }
-  }).detach ();
+  QtConcurrent::run ([directory_file, name, template_file, this] {
+    auto project_ui_state =
+      template_file.isEmpty ()
+        ? create_default (
+            utils::Utf8String::from_qstring (directory_file).to_path (),
+            utils::Utf8String::from_qstring (name), true)
+        : nullptr; // TODO: template handling
+    return project_ui_state;
+  })
+    .then ([this] (utils::QObjectUniquePtr<ProjectUiState> ui_state) {
+      structure::project::ProjectSaver saver (
+        *ui_state->project (), Zrythm::get_version (false).view ());
+      auto future = saver.save (false);
+      try
+        {
+          // This will throw on failure
+          future.waitForFinished ();
+        }
+      catch (...)
+        {
+          // ... so catch the exception here, delete the ProjectUiState object
+          // in the main thread (which owns it), and re-throw to trigger the
+          // onFailed() block.
+          QMetaObject::invokeMethod (
+            this,
+            [ui_state_ptr = ui_state.release ()] () { delete ui_state_ptr; });
+          throw;
+        }
+      ui_state->project ()->setTitle (future.result ());
+      return ui_state;
+    })
+    .then (
+      this,
+      [this] (utils::QObjectUniquePtr<ProjectUiState> ui_state_unique_ptr) {
+        auto * ui_state = ui_state_unique_ptr.release ();
+        ui_state->setParent (this);
+        setActiveProject (ui_state);
+        ui_state->project ()->engine ()->graph_dispatcher ().recalc_graph (
+          false);
+        ui_state->project ()->engine ()->set_running (true);
+        Q_EMIT projectLoaded (ui_state);
+      })
+    .onFailed (this, [this] (const ZrythmException &e) {
+      z_warning ("Failed to create project: {}", e.what ());
+      Q_EMIT projectLoadingFailed (e.what_string ());
+    });
 }
 
 void

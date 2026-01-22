@@ -24,6 +24,11 @@ ZrythmException::ZrythmException (const QString &message)
 {
 }
 
+ZrythmException::ZrythmException (std::string_view message)
+    : ZrythmException (std::string (message))
+{
+}
+
 template <typename... Args>
 void
 ZrythmException::handle (const std::string &format, Args &&... args) const

@@ -3,8 +3,9 @@
 
 #include <fstream>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
+
+#include <gtest/gtest.h>
 
 using namespace zrythm;
 
@@ -160,5 +161,87 @@ TEST (IoTest, QStringConversions)
     fs::path path = fs::path (u"C:/テスト");
     QString  qstr = utils::Utf8String::from_path (path).to_qstring ();
     EXPECT_EQ (qstr, "C:/テスト");
+  }
+}
+
+TEST (IoTest, MoveFile)
+{
+  // Test successful file move
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "source.txt";
+    auto dest_file = dir_path / "destination.txt";
+
+    // Create source file with content
+    utils::Utf8String test_data = u8"Test content for move";
+    EXPECT_NO_THROW (utils::io::set_file_contents (src_file, test_data));
+    EXPECT_TRUE (fs::exists (src_file));
+
+    // Move file
+    EXPECT_NO_THROW (utils::io::move_file (dest_file, src_file));
+
+    // Verify source is removed and destination exists
+    EXPECT_FALSE (fs::exists (src_file));
+    EXPECT_TRUE (fs::exists (dest_file));
+
+    // Verify content is preserved
+    auto read_data = utils::io::read_file_contents (dest_file);
+    EXPECT_EQ (read_data, QByteArray::fromStdString (test_data.str ()));
+  }
+
+  // Test moving to non-existent directory (should fail)
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "source.txt";
+    auto dest_file = dir_path / "nonexistent" / "destination.txt";
+
+    // Create source file
+    utils::io::set_file_contents (src_file, u8"test");
+    EXPECT_TRUE (fs::exists (src_file));
+
+    // Attempt to move to non-existent directory
+    EXPECT_THROW (utils::io::move_file (dest_file, src_file), ZrythmException);
+
+    // Source file should still exist
+    EXPECT_TRUE (fs::exists (src_file));
+  }
+
+  // Test moving non-existent source file (should fail)
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "nonexistent.txt";
+    auto dest_file = dir_path / "destination.txt";
+
+    EXPECT_THROW (utils::io::move_file (dest_file, src_file), ZrythmException);
+  }
+
+  // Test moving file with UTF-8 content
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "source_utf8.txt";
+    auto dest_file = dir_path / "dest_utf8.txt";
+
+    // Create source file with UTF-8 content
+    utils::Utf8String test_data = u8"Hello, 世界! Γεια σας! Привет!";
+    EXPECT_NO_THROW (utils::io::set_file_contents (src_file, test_data));
+
+    // Move file
+    EXPECT_NO_THROW (utils::io::move_file (dest_file, src_file));
+
+    // Verify content is preserved
+    auto read_data = utils::io::read_file_contents (dest_file);
+    EXPECT_EQ (read_data, QByteArray::fromStdString (test_data.str ()));
   }
 }

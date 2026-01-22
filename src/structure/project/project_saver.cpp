@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/project.h"
+#include "structure/project/project_json_builder.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_saver.h"
-#include "utils/datetime.h"
 #include "utils/io_utils.h"
 #include "utils/views.h"
+
+#include <QtConcurrentRun>
 
 #include <zstd.h>
 
@@ -20,7 +22,10 @@ plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
     [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
 }
 
-ProjectSaver::ProjectSaver (const Project &project) : project_ (project) { }
+ProjectSaver::ProjectSaver (const Project &project, std::string_view app_version)
+    : project_ (project), app_version_ (app_version)
+{
+}
 
 void
 ProjectSaver::make_project_dirs (const Project &project, bool is_backup)
@@ -56,7 +61,6 @@ ProjectSaver::compress_or_decompress (
   bool              compress,
   char **           _dest,
   size_t *          _dest_size,
-  CompressionFlag   dest_type,
   const QByteArray &src)
 {
   z_info (
@@ -116,27 +120,8 @@ ProjectSaver::compress_or_decompress (
     "{} : {} bytes -> {} bytes", compress ? "Compression" : "Decompression",
     src.size (), dest_size);
 
-  switch (dest_type)
-    {
-    case CompressionFlag::PROJECT_COMPRESS_DATA:
-      *_dest = dest;
-      *_dest_size = dest_size;
-      break;
-    case CompressionFlag::PROJECT_COMPRESS_FILE:
-      {
-        // setting the resulting data to the file at path `_dest`
-        try
-          {
-            utils::io::set_file_contents (fs::path (*_dest), dest, dest_size);
-          }
-        catch (const ZrythmException &e)
-          {
-            throw ZrythmException (
-              fmt::format ("Failed to write project file: {}", e.what ()));
-          }
-      }
-      break;
-    }
+  *_dest = dest;
+  *_dest_size = dest_size;
 }
 
 void
@@ -204,9 +189,7 @@ ProjectSaver::get_existing_uncompressed_text (bool backup)
   size_t text_size = 0;
   try
     {
-      decompress (
-        &text, &text_size, CompressionFlag::PROJECT_DECOMPRESS_DATA,
-        compressed_pj);
+      decompress (&text, &text_size, compressed_pj);
     }
   catch (ZrythmException &e)
     {
@@ -327,127 +310,6 @@ ProjectSaver::autosave_cb (void * data)
   return 0;
 }
 
-ProjectSaver::SerializeProjectThread::SerializeProjectThread (SaveContext &ctx)
-    : juce::Thread ("SerializeProject"), ctx_ (ctx)
-{
-  startThread ();
-}
-
-ProjectSaver::SerializeProjectThread::~SerializeProjectThread ()
-{
-  stopThread (-1);
-}
-
-void
-ProjectSaver::SerializeProjectThread::run ()
-{
-  char * compressed_json{};
-  size_t compressed_size{};
-
-  /* generate json */
-  z_debug ("serializing project to json...");
-  QElapsedTimer timer;
-  timer.start ();
-  std::optional<nlohmann::json> json;
-  try
-    {
-      json = *ctx_.main_project_;
-    }
-  catch (const ZrythmException &e)
-    {
-      e.handle ("Failed to serialize project");
-      ctx_.has_error_ = true;
-      goto serialize_end;
-    }
-  z_debug ("time to serialize: {}ms", timer.elapsed ());
-
-  /* compress */
-  try
-    {
-      const auto json_str = json->dump ();
-      // warning: this byte array depends on json_str being alive while it's used
-      QByteArray src_data = QByteArray::fromRawData (
-        json_str.c_str (), static_cast<qsizetype> (json_str.length ()));
-      compress (
-        &compressed_json, &compressed_size,
-        CompressionFlag::PROJECT_COMPRESS_DATA, src_data);
-    }
-  catch (const ZrythmException &ex)
-    {
-      ex.handle (QObject::tr ("Failed to compress project file"));
-      ctx_.has_error_ = true;
-      goto serialize_end;
-    }
-
-  /* set file contents */
-  z_debug ("saving project file at {}...", ctx_.project_file_path_);
-  try
-    {
-      utils::io::set_file_contents (
-        ctx_.project_file_path_, compressed_json, compressed_size);
-    }
-  catch (const ZrythmException &e)
-    {
-      ctx_.has_error_ = true;
-      z_error ("Unable to write project file: {}", e.what ());
-    }
-  free (compressed_json);
-
-  z_debug ("successfully saved project");
-
-serialize_end:
-  // ctx_.main_project_->legacy_undo_manager_->action_sem_.release ();
-  ctx_.finished_.store (true);
-}
-
-bool
-ProjectSaver::idle_saved_callback (SaveContext * ctx)
-{
-  if (!ctx->finished_)
-    {
-      return true;
-    }
-
-  if (ctx->is_backup_)
-    {
-      z_debug ("Backup saved.");
-// TODO
-#if 0
-      if (ZRYTHM_HAVE_UI)
-        {
-
-          // ui_show_notification (QObject::tr ("Backup saved."));
-        }
-#endif
-    }
-  else
-    {
-// TODO
-#if 0
-      if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING)
-        {
-          zrythm::gui::ProjectManager::get_instance ()->add_to_recent_projects (
-            utils::Utf8String::from_path (ctx->project_file_path_).to_qstring ());
-        }
-      if (ctx->show_notification_)
-        {
-          // ui_show_notification (QObject::tr ("Project saved."));
-        }
-#endif
-    }
-
-#if 0
-  if (ZRYTHM_HAVE_UI && PROJECT->loaded_ && MAIN_WINDOW)
-    {
-      /* EVENTS_PUSH (EventType::ET_PROJECT_SAVED, PROJECT.get ()); */
-    }
-#endif
-
-  ctx->progress_info_.mark_completed (ProgressInfo::CompletionType::SUCCESS, {});
-
-  return false;
-}
-
 void
 ProjectSaver::cleanup_plugin_state_dirs (
   const Project &main_project,
@@ -510,98 +372,11 @@ ProjectSaver::cleanup_plugin_state_dirs (
   z_debug ("cleaned plugin state directories");
 }
 
-void
-ProjectSaver::
-  save (const bool is_backup, const bool show_notification, const bool async)
+QFuture<utils::Utf8String>
+ProjectSaver::save (const bool is_backup)
 {
   const auto dir = project_.get_directory (is_backup);
-  z_info (
-    "Saving project at {}, is backup: {}, show notification: {}, async: {}",
-    dir, is_backup, show_notification, async);
-
-  /* pause engine */
-  EngineState state{};
-  bool        engine_paused = false;
-  auto *      engine = project_.engine ();
-  if (engine->activated ())
-    {
-      engine->wait_for_pause (state, false, true);
-      engine_paused = true;
-    }
-
-  /* if async, lock the undo manager */
-  if (async)
-    {
-      // legacy_undo_manager_->action_sem_.acquire ();
-    }
-
-  /* set the dir and create it if it doesn't exist */
-  try
-    {
-      utils::io::mkdir (dir);
-    }
-
-  catch (const ZrythmException &e)
-    {
-      throw ZrythmException (
-
-        fmt::format ("Failed to create project directory {}", dir));
-    }
-
-// TODO
-#if 0
-  /* set the title */
-  title_ = utils::Utf8String::from_path (dir.filename ());
-
-  /* save current datetime */
-  datetime_str_ = utils::datetime::get_current_as_string ();
-
-  /* set the project version  */
-  version_ = Zrythm::get_version (false);
-#endif
-
-  /* if backup, get next available backup dir */
-  if (is_backup)
-    {
-      try
-        {
-          set_and_create_next_available_backup_dir ();
-        }
-
-      catch (const ZrythmException &e)
-        {
-          throw ZrythmException (
-            QObject::tr ("Failed to create backup directory"));
-        }
-    }
-
-  try
-    {
-      make_project_dirs (project_, is_backup);
-    }
-
-  catch (const ZrythmException &e)
-    {
-      throw ZrythmException ("Failed to create project directories");
-    }
-
-// TODO
-#if 0
-  if (this == get_active_instance ())
-    {
-      /* write the pool */
-      pool_->remove_unused (is_backup);
-    }
-#endif
-
-  try
-    {
-      project_.pool_->write_to_disk (is_backup);
-    }
-  catch (const ZrythmException &e)
-    {
-      throw ZrythmException ("Failed to write audio pool to disk");
-    }
+  z_info ("Saving project at {}, is backup: {}", dir, is_backup);
 
   const auto project_file_path =
     dir
@@ -615,144 +390,151 @@ ProjectSaver::
        + u8".tmp")
         .to_path ();
 
-  auto ctx = std::make_unique<SaveContext> ();
-  ctx->main_project_ = &project_;
-  ctx->project_file_path_ = temp_project_file_path;
-  ctx->show_notification_ = show_notification;
-  ctx->is_backup_ = is_backup;
-#if 0
-  ctx->project_ = [&] () {
-    if (ZRYTHM_IS_QT_THREAD)
+  /* pause engine */
+  EngineState state{};
+  bool        engine_paused = false;
+  auto *      engine = project_.engine ();
+  if (engine->activated ())
+    {
+      engine->wait_for_pause (state, false, true);
+      engine_paused = true;
+    }
+
+  const auto resume_engine = [engine, engine_paused, state] () {
+    if (engine_paused)
       {
-        return std::unique_ptr<Project> (clone (is_backup));
+        engine->resume (state);
       }
-    else
+  };
+
+  /* Subtask lambdas */
+  const auto create_dirs_task = [this, is_backup, dir] () {
+    if (is_backup)
       {
-        Project *  cloned_prj = nullptr;
-        QThread *  currentThread = QThread::currentThread ();
-        QEventLoop loop;
-        QMetaObject::invokeMethod (
-          QCoreApplication::instance (),
-          [this, currentThread, is_backup, &cloned_prj, &loop] () {
-            cloned_prj = clone (is_backup);
-
-            // need to move the temporary cloned project to the outer scope's
-            // thread, because it will be free'd on that thread too
-            cloned_prj->moveToThread (currentThread);
-            loop.quit ();
-          },
-          Qt::QueuedConnection);
-        loop.exec ();
-        return std::unique_ptr<Project> (cloned_prj);
+        set_and_create_next_available_backup_dir ();
       }
-  }();
-#endif
+    utils::io::mkdir (dir);
+    make_project_dirs (project_, is_backup);
+  };
 
-  if (is_backup)
-    {
-      /* copy plugin states */
-      auto prj_pl_states_dir =
-        project_.get_directory (false)
-        / gui::ProjectPathProvider::get_path (
-          zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
-      auto prj_backup_pl_states_dir =
-        project_.get_directory (true)
-        / gui::ProjectPathProvider::get_path (
-          zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
-      try
-        {
-          utils::io::copy_dir (
-            prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
-        }
-      catch (const ZrythmException &e)
-        {
-          throw ZrythmException (QObject::tr ("Failed to copy plugin states"));
-        }
-    }
-
-  if (!is_backup)
-    {
-      /* cleanup unused plugin states */
-      cleanup_plugin_state_dirs (project_, is_backup);
-    }
-
-  /* TODO verify all plugin states exist */
-
-  if (async)
-    {
-      SerializeProjectThread save_thread (*ctx);
-
-      /* TODO: show progress dialog */
-      if (/* ZRYTHM_HAVE_UI */ false)
-        {
-          auto timer = new QTimer ();
-          QObject::connect (timer, &QTimer::timeout, &project_, [timer, &ctx] () {
-            bool keep_calling = idle_saved_callback (ctx.get ());
-            if (!keep_calling)
-              {
-                timer->stop ();
-                timer->deleteLater ();
-              }
-          });
-          timer->start (100);
-
-          /* show progress while saving (TODO) */
-        }
-      else
-        {
-          while (!ctx->finished_.load ())
-            {
-              std::this_thread::sleep_for (std::chrono::milliseconds (1));
-            }
-          idle_saved_callback (ctx.get ());
-        }
-    }
-  else /* else if no async */
-    {
-      /* call synchronously */
-      SerializeProjectThread save_thread (*ctx);
-      while (save_thread.isThreadRunning ())
-        {
-          std::this_thread::sleep_for (std::chrono::milliseconds (1));
-        }
-      idle_saved_callback (ctx.get ());
-    }
-
-  /* copy the actual project file to signal that we're finished */
-  {
-    utils::io::copy_file (project_file_path, temp_project_file_path);
-    utils::io::remove (temp_project_file_path);
-  }
-
+  const auto write_pool_task = [this, is_backup] () {
 // TODO
 #if 0
-  auto last_action = legacy_undo_manager_->get_last_action ();
-  if (is_backup)
-    {
-      last_action_in_last_successful_autosave_ = last_action;
-    }
-  else
-    {
-      last_saved_action_ = last_action;
-    }
+    if (this == get_active_instance ())
+      {
+        /* write the pool */
+        pool_->remove_unused (is_backup);
+      }
 #endif
+    project_.pool_->write_to_disk (is_backup);
+  };
 
-  if (engine_paused)
-    {
-      engine->resume (state);
-    }
+  const auto write_plugin_states_task = [this, is_backup] () {
+    if (is_backup)
+      {
+        /* copy plugin states */
+        auto prj_pl_states_dir =
+          project_.get_directory (false)
+          / gui::ProjectPathProvider::get_path (
+            zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
+        auto prj_backup_pl_states_dir =
+          project_.get_directory (true)
+          / gui::ProjectPathProvider::get_path (
+            zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
+        utils::io::copy_dir (
+          prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
+      }
 
-  z_info (
-    "Saved project at {}, is backup: {}, show notification: {}, async: {}", dir,
-    is_backup, show_notification, async);
+    if (!is_backup)
+      {
+        /* cleanup unused plugin states */
+        cleanup_plugin_state_dirs (project_, is_backup);
+      }
+
+    /* TODO verify all plugin states exist */
+  };
+
+  const auto build_json_task = [this] () {
+    z_debug ("serializing project to json...");
+    QElapsedTimer timer;
+    timer.start ();
+    auto json = ProjectJsonBuilder::build_json (project_, app_version_);
+    z_debug ("time to serialize: {}ms", timer.elapsed ());
+    return json;
+  };
+
+  const auto write_json_task =
+    [temp_project_file_path] (const nlohmann::json &json) {
+      char * compressed_json{};
+      size_t compressed_size{};
+
+      /* compress */
+      const auto json_str = json.dump ();
+      // warning: this byte array depends on json_str being alive while it's used
+      QByteArray src_data = QByteArray::fromRawData (
+        json_str.c_str (), static_cast<qsizetype> (json_str.length ()));
+      compress (&compressed_json, &compressed_size, src_data);
+
+      /* set file contents */
+      z_debug ("saving project file at {}...", temp_project_file_path);
+      utils::io::set_file_contents (
+        temp_project_file_path, compressed_json, compressed_size);
+      free (compressed_json);
+    };
+
+  const auto rename_file_task = [project_file_path, temp_project_file_path] () {
+    utils::io::move_file (project_file_path, temp_project_file_path);
+  };
+
+  return QtConcurrent::run (create_dirs_task)
+    .then (engine, write_pool_task)
+    .then (engine, write_plugin_states_task)
+    .then (engine, build_json_task)
+    .then (QtFuture::Launch::Async, write_json_task)
+    .then (QtFuture::Launch::Sync, rename_file_task)
+    .then (
+      engine,
+      [dir, is_backup, resume_engine] () {
+  /* TODO: track last saved action */
+// TODO
+#if 0
+          auto last_action = legacy_undo_manager_->get_last_action ();
+          if (is_backup)
+            {
+              last_action_in_last_successful_autosave_ = last_action;
+            }
+          else
+            {
+              last_saved_action_ = last_action;
+            }
+#endif
+        z_info (
+          "Successfully saved project at {}, is backup: {}", dir, is_backup);
+        resume_engine ();
+        return utils::Utf8String::from_path (dir.filename ());
+      })
+    .onCanceled (
+      engine,
+      [resume_engine] () {
+        z_debug ("Project save canceled");
+        resume_engine ();
+        return u8"";
+      })
+    .onFailed (engine, [resume_engine] () {
+      const auto msg = "Project save failed"sv;
+      z_warning (msg);
+      resume_engine ();
+      throw ZrythmException (msg);
+      return u8"";
+    });
 }
 
 bool
 ProjectSaver::has_unsaved_changes () const
 {
-  /* simply check if the last performed action matches the last action when the
-   * project was last saved/loaded */
-// TODO
+  /* simply check if the last performed action matches the last action when
+   * the project was last saved/loaded */
+  // TODO
 #if 0
   auto last_performed_action = legacy_undo_manager_->get_last_action ();
   return last_performed_action != last_saved_action_;

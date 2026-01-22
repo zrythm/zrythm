@@ -16,6 +16,7 @@ target_link_libraries(zrythm_structure_project_lib
 target_sources(zrythm_structure_project_lib
   PRIVATE
     project.cpp
+    project_json_builder.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
     project_saver.cpp
@@ -24,6 +25,7 @@ target_sources(zrythm_structure_project_lib
     BASE_DIRS "../.."
     FILES
       project.h
+      project_json_builder.h
       project_graph_builder.h
       project_path_provider.h
       project_saver.h

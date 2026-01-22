@@ -14,22 +14,17 @@ class Project;
 class ProjectSaver
 {
 public:
-  ProjectSaver (const Project &project);
-
-  QFuture<void> save_async (bool for_backup);
+  ProjectSaver (const Project &project, std::string_view app_version);
 
   /**
-   * Saves the project to the directory set previously in Project.
+   * Saves the project asynchronously to the directory set previously in Project.
    *
    * @param is_backup 1 if this is a backup. Backups will be saved as <original
    * filename>.bak<num>.
-   * @param show_notification Show a notification in the UI that the project
-   * was saved.
-   * @param async Save asynchronously in another thread.
    *
-   * @throw ZrythmException If the project cannot be saved.
+   * @throw ZrythmException If any step failed.
    */
-  void save (bool is_backup, bool show_notification, bool async);
+  [[nodiscard]] QFuture<utils::Utf8String> save (bool is_backup);
 
   /**
    * Autosave callback.
@@ -49,17 +44,6 @@ public:
   static void make_project_dirs (const Project &project, bool is_backup);
 
   /**
-   * Flag to pass to project_compress() and project_decompress().
-   */
-  enum class CompressionFlag
-  {
-    PROJECT_COMPRESS_FILE = 0,
-    PROJECT_DECOMPRESS_FILE = 0,
-    PROJECT_COMPRESS_DATA = 1,
-    PROJECT_DECOMPRESS_DATA = 1,
-  };
-
-  /**
    * Compresses/decompress a project from a file/data to a file/data.
    *
    * @param compress True to compress, false to decompress.
@@ -74,25 +58,18 @@ public:
     bool              compress,
     char **           _dest,
     size_t *          _dest_size,
-    CompressionFlag   dest_type,
     const QByteArray &src);
 
-  static void compress (
-    char **           _dest,
-    size_t *          _dest_size,
-    CompressionFlag   dest_type,
-    const QByteArray &src)
+  static void
+  compress (char ** _dest, size_t * _dest_size, const QByteArray &src)
   {
-    compress_or_decompress (true, _dest, _dest_size, dest_type, src);
+    compress_or_decompress (true, _dest, _dest_size, src);
   }
 
-  static void decompress (
-    char **           _dest,
-    size_t *          _dest_size,
-    CompressionFlag   dest_type,
-    const QByteArray &src)
+  static void
+  decompress (char ** _dest, size_t * _dest_size, const QByteArray &src)
   {
-    compress_or_decompress (false, _dest, _dest_size, dest_type, src);
+    compress_or_decompress (false, _dest, _dest_size, src);
   }
 
   /**
@@ -108,49 +85,6 @@ public:
   bool has_unsaved_changes () const;
 
 private:
-  /**
-   * Project save data.
-   */
-  struct SaveContext
-  {
-    /** Project clone (with memcpy). */
-    // std::unique_ptr<Project> project_;
-
-    /**
-     * @brief Original project.
-     */
-    const Project * main_project_;
-
-    /** Full path to save to. */
-    fs::path project_file_path_;
-
-    bool is_backup_ = false;
-
-    /** To be set to true when the thread finishes. */
-    std::atomic_bool finished_ = false;
-
-    bool show_notification_ = false;
-
-    /** Whether an error occurred during saving. */
-    bool has_error_ = false;
-
-    ProgressInfo progress_info_;
-  };
-
-  /**
-   * Thread that does the serialization and saving.
-   */
-  class SerializeProjectThread final : public juce::Thread
-  {
-  public:
-    SerializeProjectThread (SaveContext &ctx);
-    ~SerializeProjectThread () override;
-    void run () override;
-
-  private:
-    SaveContext &ctx_;
-  };
-
   /**
    * Sets (and creates on the disk) the next available backup dir to use for
    * saving a backup during this call.
@@ -169,14 +103,6 @@ private:
    */
   void cleanup_plugin_state_dirs (const Project &main_project, bool is_backup);
 
-  /**
-   * Idle func to check if the project has finished saving and show a
-   * notification.
-   *
-   * @return Whether to continue calling this.
-   */
-  static bool idle_saved_callback (SaveContext * ctx);
-
 private:
   const Project &project_;
   // std::optional<gui::actions::UndoableActionPtrVariant>
@@ -190,5 +116,7 @@ private:
 
   /** Semaphore used to block saving. */
   std::binary_semaphore save_sem_{ 1 };
+
+  std::string app_version_;
 };
 }

@@ -28,9 +28,8 @@
  *
  * @note Not realtime-safe.
  */
-class ProgressInfo
+class [[deprecated ("Use QFuture")]] ProgressInfo
 {
-
 public:
   enum Status
   {
