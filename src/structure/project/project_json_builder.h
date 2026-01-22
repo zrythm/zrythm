@@ -3,10 +3,14 @@
 
 #pragma once
 
+#include <string_view>
+
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::project
 {
+using namespace std::string_view_literals;
+
 class Project;
 
 /**
