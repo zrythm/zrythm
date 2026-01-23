@@ -57,8 +57,15 @@ clang-tidy src/file.cpp -p builddir_cmake
 Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and use the full repository URL:
 
 ```bash
+# CI/CD
 glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm
 glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm
+
+# Issues
+glab issue view <id> -R https://gitlab.zrythm.org/zrythm/zrythm
+glab issue close <id> -R https://gitlab.zrythm.org/zrythm/zrythm
+glab issue note <id> -R https://gitlab.zrythm.org/zrythm/zrythm -m "comment"
+glab issue update <id> -R https://gitlab.zrythm.org/zrythm/zrythm --label "label-name"
 ```
 
 ---
@@ -264,10 +271,6 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 
 ## Common Tasks for AI Agents
-
-### Searching for Issues
-
-1. **Use the Gitlab MCP server tools** with project ID 26
 
 ### Adding New Features
 
