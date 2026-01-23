@@ -157,6 +157,24 @@ else()
   set(compiler_gnulike FALSE)
 endif()
 
+# Minimum compiler version requirements
+# GCC 14+ or Clang 19+ are required for adequate C++23 support
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.0")
+    message(FATAL_ERROR
+      "GCC 14 or later is required to build Zrythm.\n"
+      "Your GCC version: ${CMAKE_CXX_COMPILER_VERSION}\n"
+      "Please update GCC to version 14 or later.")
+  endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
+    message(FATAL_ERROR
+      "Clang 19 or later is required to build Zrythm.\n"
+      "Your Clang version: ${CMAKE_CXX_COMPILER_VERSION}\n"
+      "Please update Clang to version 19 or later.")
+  endif()
+endif()
+
 #==============================================================================
 # Options
 #==============================================================================
