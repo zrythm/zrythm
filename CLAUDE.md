@@ -48,6 +48,7 @@ clang-tidy src/file.cpp -p builddir_cmake
 
 - **Repository**: This project uses a self-hosted GitLab instance at https://gitlab.zrythm.org/zrythm/zrythm
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
+- **Commit message style**: Use `<scope>: <imperative-summary>` format (e.g., `refactor:`, `cmake:`, `nlohmann-json:`) followed by bullet points for significant details
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
