@@ -1,6 +1,16 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+# Generate header file with embedded project schema
+file(READ "${CMAKE_SOURCE_DIR}/data/schemas/project.schema.json" SCHEMA_JSON)
+# Escape backslashes and quotes for C++ raw string literal
+# The schema will be embedded as a raw string literal at compile time
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/project_json_schema.in.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/project_json_schema.h"
+  @ONLY
+)
+
 qt_add_library(zrythm_structure_project_lib STATIC)
 
 target_link_libraries(zrythm_structure_project_lib
@@ -16,7 +26,7 @@ target_link_libraries(zrythm_structure_project_lib
 target_sources(zrythm_structure_project_lib
   PRIVATE
     project.cpp
-    project_json_builder.cpp
+    project_json_serializer.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
     project_saver.cpp
@@ -25,7 +35,7 @@ target_sources(zrythm_structure_project_lib
     BASE_DIRS "../.."
     FILES
       project.h
-      project_json_builder.h
+      project_json_serializer.h
       project_graph_builder.h
       project_path_provider.h
       project_saver.h

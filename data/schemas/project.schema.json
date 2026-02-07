@@ -1,0 +1,1443 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schema:project",
+  "title": "Zrythm Project File",
+  "description": "Schema for Zrythm project files (UNSTABLE - v2.alpha under active development)",
+  "type": "object",
+  "required": [
+    "documentType",
+    "formatMajor",
+    "formatMinor",
+    "appVersion",
+    "datetime",
+    "title",
+    "project"
+  ],
+  "properties": {
+    "documentType": {
+      "type": "string",
+      "const": "ZrythmProject",
+      "description": "Document type identifier"
+    },
+    "formatMajor": {
+      "type": "integer",
+      "description": "Major format version (breaking changes)",
+      "minimum": 0
+    },
+    "formatMinor": {
+      "type": "integer",
+      "description": "Minor format version (backward-compatible additions)",
+      "minimum": 0
+    },
+    "appVersion": {
+      "type": "string",
+      "description": "Zrythm version that created this file"
+    },
+    "datetime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime when project was saved"
+    },
+    "title": {
+      "type": "string",
+      "description": "Project title"
+    },
+    "projectData": {
+      "type": "object",
+      "description": "Project data",
+      "required": [
+        "tempoMap",
+        "transport",
+        "tracklist",
+        "registries"
+      ],
+      "properties": {
+        "tempoMap": {
+          "type": "object",
+          "description": "Tempo and time signature map",
+          "properties": {
+            "timeSignatures": {
+              "type": "array",
+              "description": "Time signature events",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "position": {
+                    "type": "number",
+                    "description": "Position in ticks"
+                  },
+                  "numerator": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "denominator": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "enum": [
+                      1,
+                      2,
+                      4,
+                      8,
+                      16,
+                      32,
+                      64,
+                      128
+                    ]
+                  }
+                }
+              }
+            },
+            "tempoChanges": {
+              "type": "array",
+              "description": "Tempo change events",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "position": {
+                    "type": "number",
+                    "description": "Position in ticks"
+                  },
+                  "bpm": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "transport": {
+          "type": "object",
+          "description": "Transport state (playhead, loop, etc.)",
+          "properties": {
+            "playheadPosition": {
+              "$ref": "#/definitions/position"
+            },
+            "cuePosition": {
+              "$ref": "#/definitions/position"
+            },
+            "loopRange": {
+              "$ref": "#/definitions/positionRange"
+            },
+            "punchRange": {
+              "$ref": "#/definitions/positionRange"
+            }
+          }
+        },
+        "snapGridTimeline": {
+          "$ref": "#/definitions/snapGrid",
+          "description": "Timeline snap/grid settings"
+        },
+        "snapGridEditor": {
+          "$ref": "#/definitions/snapGrid",
+          "description": "Editor (piano roll, chord editor, etc.) snap/grid settings"
+        },
+        "tracklist": {
+          "type": "object",
+          "description": "Track list and track data",
+          "required": [
+            "tracks",
+            "pinnedTracksCutoff"
+          ],
+          "properties": {
+            "tracks": {
+              "type": "array",
+              "description": "All tracks in the project",
+              "items": {
+                "type": "object",
+                "description": "A single track (see trackRegistry for full data)",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "UUID reference to track in trackRegistry"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "Audio",
+                      "AudioBus",
+                      "AudioGroup",
+                      "Chord",
+                      "Folder",
+                      "Instrument",
+                      "Marker",
+                      "Master",
+                      "MIDI",
+                      "MIDIBus",
+                      "MIDIGroup",
+                      "Modulator",
+                      "Tempo"
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string",
+                    "pattern": "^#[0-9A-Fa-f]{6}$",
+                    "description": "Hex color code"
+                  },
+                  "visible": {
+                    "type": "boolean"
+                  },
+                  "solo": {
+                    "type": "boolean"
+                  },
+                  "muted": {
+                    "type": "boolean"
+                  },
+                  "height": {
+                    "type": "integer",
+                    "description": "Track height in pixels"
+                  }
+                }
+              }
+            },
+            "pinnedTracksCutoff": {
+              "type": "integer",
+              "description": "Index separating pinned tracks from normal tracks"
+            }
+          }
+        },
+        "audioPool": {
+          "type": "object",
+          "description": "References to audio files used in the project",
+          "properties": {
+            "audioFiles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "UUID reference to file in fileAudioSourceRegistry"
+                  },
+                  "filename": {
+                    "type": "string"
+                  },
+                  "sampleRate": {
+                    "type": "integer"
+                  },
+                  "channels": {
+                    "type": "integer",
+                    "enum": [
+                      1,
+                      2
+                    ]
+                  },
+                  "frames": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "filePath": {
+                    "type": "string",
+                    "description": "Relative path to audio file in pool"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "portConnectionsManager": {
+          "type": "object",
+          "description": "Manual port connections (user routing)",
+          "properties": {
+            "connections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "sourcePortId": {
+                    "type": "string",
+                    "description": "UUID of source port"
+                  },
+                  "destPortId": {
+                    "type": "string",
+                    "description": "UUID of destination port"
+                  },
+                  "multiplier": {
+                    "type": "number",
+                    "description": "Connection strength/gain multiplier"
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tempoObjectManager": {
+          "type": "object",
+          "description": "Tempo and time signature objects in arranger",
+          "properties": {
+            "tempoObjects": {
+              "type": "array",
+              "description": "UUIDs of tempo objects in arrangerObjectRegistry",
+              "items": {
+                "type": "string"
+              }
+            },
+            "timeSignatureObjects": {
+              "type": "array",
+              "description": "UUIDs of time signature objects in arrangerObjectRegistry",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "registries": {
+          "type": "object",
+          "description": "All UUID-indexed objects (deserialized first, then referenced)",
+          "required": [
+            "portRegistry",
+            "paramRegistry",
+            "pluginRegistry",
+            "trackRegistry",
+            "arrangerObjectRegistry",
+            "fileAudioSourceRegistry"
+          ],
+          "properties": {
+            "portRegistry": {
+              "type": "array",
+              "description": "All audio/MIDI ports",
+              "items": {
+                "$ref": "#/definitions/knownPort"
+              }
+            },
+            "paramRegistry": {
+              "type": "array",
+              "description": "All processor parameters",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
+            },
+            "pluginRegistry": {
+              "type": "array",
+              "description": "All plugin instances",
+              "items": {
+                "$ref": "#/definitions/plugin"
+              }
+            },
+            "trackRegistry": {
+              "type": "array",
+              "description": "All tracks with full data",
+              "items": {
+                "$ref": "#/definitions/knownTracks"
+              }
+            },
+            "arrangerObjectRegistry": {
+              "type": "array",
+              "description": "All arranger objects (regions, notes, automation, markers, etc.)",
+              "items": {
+                "$ref": "#/definitions/knownArrangerObjects"
+              }
+            },
+            "fileAudioSourceRegistry": {
+              "type": "array",
+              "description": "All audio file references",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "filename",
+                  "filePath"
+                ],
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "filename": {
+                    "type": "string"
+                  },
+                  "filePath": {
+                    "type": "string",
+                    "description": "Relative path in the project audio pool"
+                  },
+                  "sampleRate": {
+                    "type": "integer"
+                  },
+                  "channels": {
+                    "type": "integer",
+                    "enum": [
+                      1,
+                      2
+                    ]
+                  },
+                  "frames": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bitsPerSample": {
+                    "type": "integer",
+                    "enum": [
+                      16,
+                      24,
+                      32
+                    ]
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "WAV",
+                      "FLAC",
+                      "OGG",
+                      "MP3"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "UUID string format"
+    },
+    "position": {
+      "type": "object",
+      "description": "Position in time (ticks or seconds)",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "musical",
+            "absolute"
+          ],
+          "description": "Mode"
+        },
+        "value": {
+          "type": "number",
+          "description": "Ticks or seconds"
+        }
+      }
+    },
+    "positionRange": {
+      "type": "object",
+      "description": "Position range",
+      "properties": {
+        "start": {
+          "$ref": "#/definitions/position"
+        },
+        "end": {
+          "$ref": "#/definitions/position"
+        }
+      }
+    },
+    "noteLength": {
+      "type": "string",
+      "enum": [
+        "1/1",
+        "1/2",
+        "1/4",
+        "1/8",
+        "1/16",
+        "1/32",
+        "1/64",
+        "1/128"
+      ],
+      "description": "Musical note length"
+    },
+    "noteType": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "dotted",
+        "triplet"
+      ],
+      "description": "Musical note type"
+    },
+    "snapGrid": {
+      "type": "object",
+      "properties": {
+        "snapEnabled": {
+          "type": "boolean"
+        },
+        "snapNoteLength": {
+          "$ref": "#/definitions/noteLength"
+        },
+        "snapNoteType": {
+          "$ref": "#/definitions/noteType"
+        },
+        "adaptive": {
+          "type": "boolean"
+        },
+        "lengthType": {
+          "type": "string",
+          "enum": [
+            "link",
+            "lastObject",
+            "custom"
+          ]
+        },
+        "keepOffset": {
+          "type": "boolean"
+        },
+        "snapToEvents": {
+          "type": "boolean"
+        }
+      }
+    },
+    "registryObjectBase": {
+      "$comment": "Base class for all objects in registries",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        }
+      }
+    },
+    "portBase": {
+      "$comment": "Base class for all port types",
+      "$ref": "#/definitions/registryObjectBase",
+      "required": [
+        "type",
+        "flow"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "audio",
+            "midi",
+            "cv"
+          ]
+        },
+        "flow": {
+          "enum": [
+            "input",
+            "output"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "portGroup": {
+          "type": "string"
+        }
+      }
+    },
+    "audioPort": {
+      "$comment": "Audio port (derives from portBase)",
+      "$ref": "#/definitions/portBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "audio"
+        },
+        "busLayout": {
+          "enum": [
+            "mono",
+            "stereo"
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "main",
+            "sidechain"
+          ]
+        },
+        "requiresLimiting": {
+          "type": "boolean"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "midiPort": {
+      "$comment": "MIDI port (derives from portBase)",
+      "$ref": "#/definitions/portBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "midi"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "cvPort": {
+      "$comment": "CV port (derives from portBase)",
+      "$ref": "#/definitions/portBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "cv"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "knownPort": {
+      "$comment": "Polymorphic reference for any known port type",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/audioPort"
+        },
+        {
+          "$ref": "#/definitions/midiPort"
+        },
+        {
+          "$ref": "#/definitions/cvPort"
+        }
+      ]
+    },
+    "parameter": {
+      "$comment": "Processor parameter",
+      "$ref": "#/definitions/registryObjectBase",
+      "required": [
+        "uniqueId",
+        "baseValue"
+      ],
+      "properties": {
+        "uniqueId": {
+          "type": "string"
+        },
+        "baseValue": {
+          "type": "number",
+          "description": "Normalized parameter value set by the user in the UI (0.0-1.0)"
+        },
+        "modulationSource": {
+          "$ref": "#/definitions/uuid",
+          "description": "Input CV port ID for modulation, if parameter is modulatable"
+        }
+      }
+    },
+    "processorBase": {
+      "$comment": "Base class for all processor types",
+      "required": [
+        "name",
+        "inputPorts",
+        "outputPorts",
+        "parameters"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "inputPorts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        },
+        "outputPorts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        }
+      }
+    },
+    "pluginConfiguration": {
+      "$comment": "Plugin configuration",
+      "type": "object",
+      "properties": {
+        "forceGenericUi": {
+          "type": "boolean"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "plugin": {
+      "$ref": "#/definitions/processorBase",
+      "required": [
+        "id",
+        "protocol",
+        "setting"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "protocol": {
+          "description": "Plugin protocol",
+          "enum": [
+            "clap",
+            "vst2",
+            "vst3",
+            "lv2",
+            "au",
+            "ladspa"
+          ]
+        },
+        "setting": {
+          "$ref": "#/definitions/pluginConfiguration"
+        },
+        "programIndex": {
+          "type": "integer"
+        },
+        "inlineState": {
+          "$comment": "JUCE-compatible inline plugin state as a base64-encoded string",
+          "type": "string"
+        },
+        "statePath": {
+          "$comment": "Path to the plugin state, if not using inline state",
+          "type": "string"
+        },
+        "statePathIsDirectory": {
+          "$comment": "Whether the statePath is a directory (assumed to be a file if false)",
+          "type": "boolean"
+        },
+        "visible": {
+          "$comment": "Whether the plugin UI is currently opened",
+          "type": "boolean"
+        }
+      }
+    },
+    "trackBase": {
+      "$comment": "Base class for all track types",
+      "$ref": "#/definitions/registryObjectBase",
+      "required": [
+        "type",
+        "name"
+      ],
+      "properties": {
+        "type": {
+          "description": "Track type discriminator (must be overridden in derived schemas)"
+        },
+        "name": {
+          "type": "string"
+        },
+        "iconName": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "mainHeight": {
+          "type": "number"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "inSignalType": {
+          "enum": [
+            "Audio",
+            "MIDI",
+            "CV",
+            "None"
+          ]
+        },
+        "outSignalType": {
+          "enum": [
+            "Audio",
+            "MIDI",
+            "CV",
+            "None"
+          ]
+        },
+        "comment": {
+          "type": "string"
+        },
+        "frozenClipId": {
+          "$ref": "#/definitions/uuid"
+        },
+        "processor": {
+          "type": "object",
+          "description": "Track processor (for instrument/audio tracks)",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "stereoInPortId": {
+              "$ref": "#/definitions/uuid"
+            },
+            "stereoOutPortId": {
+              "$ref": "#/definitions/uuid"
+            },
+            "midiInPortId": {
+              "$ref": "#/definitions/uuid"
+            },
+            "midiOutPortId": {
+              "$ref": "#/definitions/uuid"
+            },
+            "pluginIds": {
+              "type": "array",
+              "description": "Plugins in the processing chain",
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
+            }
+          }
+        },
+        "automationTracklist": {
+          "type": "object",
+          "description": "Automation tracks for this track",
+          "properties": {
+            "automationTracks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
+            }
+          }
+        },
+        "channel": {
+          "type": "object",
+          "description": "Track channel (fader, sends, etc.)",
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/uuid"
+            },
+            "faderId": {
+              "$ref": "#/definitions/uuid",
+              "description": "UUID of fader processor"
+            },
+            "stereoInPortId": {
+              "$ref": "#/definitions/uuid",
+              "description": "UUID of stereo input port"
+            },
+            "stereoOutPortId": {
+              "$ref": "#/definitions/uuid",
+              "description": "UUID of stereo output port"
+            },
+            "midiInPortId": {
+              "$ref": "#/definitions/uuid"
+            },
+            "midiOutPortIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
+            },
+            "sends": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "destTrackId": {
+                    "type": "string"
+                  },
+                  "portId": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "modulators": {
+          "type": "object",
+          "description": "Plugin group for modulators",
+          "properties": {
+            "pluginIds": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
+            }
+          }
+        },
+        "modulatorMacros": {
+          "type": "array",
+          "description": "Modulator macro processors",
+          "items": {
+            "$ref": "#/definitions/uuid"
+          }
+        },
+        "lanes": {
+          "type": "object",
+          "description": "Track lanes (for MIDI/instrument tracks)",
+          "properties": {
+            "trackLanes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "index": {
+                    "type": "integer"
+                  },
+                  "height": {
+                    "type": "number"
+                  },
+                  "objects": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/uuid"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "recordableTrackMixin": {
+          "type": "object",
+          "description": "Recordable track functionality",
+          "properties": {
+            "recordingMode": {
+              "enum": [
+                "none",
+                "audio",
+                "midi",
+                "automation"
+              ]
+            }
+          }
+        },
+        "pianoRollTrackMixin": {
+          "type": "object",
+          "description": "Piano roll track functionality",
+          "properties": {
+            "lastClearedObjectHeight": {
+              "type": "number"
+            },
+            "lastClearedObjectPosX": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "audioTrack": {
+      "$comment": "Audio track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Audio"
+        }
+      }
+    },
+    "instrumentTrack": {
+      "$comment": "Instrument track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Instrument"
+        }
+      }
+    },
+    "midiTrack": {
+      "$comment": "MIDI track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Midi"
+        }
+      }
+    },
+    "masterTrack": {
+      "$comment": "Master track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Master"
+        }
+      }
+    },
+    "chordTrack": {
+      "$comment": "Chord track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Chord"
+        }
+      }
+    },
+    "markerTrack": {
+      "$comment": "Marker track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Marker"
+        }
+      }
+    },
+    "modulatorTrack": {
+      "$comment": "Modulator track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Modulator"
+        }
+      }
+    },
+    "audioBusTrack": {
+      "$comment": "Audio bus track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "AudioBus"
+        }
+      }
+    },
+    "audioGroupTrack": {
+      "$comment": "Audio group track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "AudioGroup"
+        }
+      }
+    },
+    "midiBusTrack": {
+      "$comment": "MIDI bus track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "MidiBus"
+        }
+      }
+    },
+    "midiGroupTrack": {
+      "$comment": "MIDI group track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "MidiGroup"
+        }
+      }
+    },
+    "arrangerObjectBase": {
+      "$comment": "Base class for all arranger objects",
+      "$ref": "#/definitions/registryObjectBase",
+      "required": [
+        "type",
+        "position"
+      ],
+      "properties": {
+        "type": {
+          "description": "Arranger object type discriminator (must be overridden in derived schemas)"
+        },
+        "position": {
+          "$ref": "#/definitions/position"
+        },
+        "name": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "mute": {
+          "type": "boolean"
+        },
+        "trackId": {
+          "$ref": "#/definitions/uuid",
+          "description": "UUID of owning track"
+        }
+      }
+    },
+    "regionBase": {
+      "$comment": "Base class for regions (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "description": "Region type discriminator"
+        },
+        "endPosition": {
+          "$ref": "#/definitions/position"
+        },
+        "clipStartPosition": {
+          "$ref": "#/definitions/position"
+        },
+        "loopStartPosition": {
+          "$ref": "#/definitions/position"
+        },
+        "loopEndPosition": {
+          "$ref": "#/definitions/position"
+        }
+      }
+    },
+    "midiRegion": {
+      "$comment": "MIDI region (derives from regionBase)",
+      "$ref": "#/definitions/regionBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "MidiRegion"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "position": {
+                "$ref": "#/definitions/position"
+              },
+              "length": {
+                "$ref": "#/definitions/position"
+              },
+              "pitch": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 127
+              },
+              "velocity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 127
+              },
+              "muted": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "audioRegion": {
+      "$comment": "Audio region (derives from regionBase)",
+      "$ref": "#/definitions/regionBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "AudioRegion"
+        },
+        "audioClipId": {
+          "$ref": "#/definitions/uuid",
+          "description": "UUID in fileAudioSourceRegistry"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "automationRegion": {
+      "$comment": "Automation region (derives from regionBase)",
+      "$ref": "#/definitions/regionBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "AutomationRegion"
+        },
+        "automationCurves": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/uuid"
+              },
+              "portId": {
+                "$ref": "#/definitions/uuid"
+              },
+              "points": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "position": {
+                      "type": "number"
+                    },
+                    "value": {
+                      "type": "number"
+                    },
+                    "curveAlgorithm": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "chordRegion": {
+      "$comment": "Chord region (derives from regionBase)",
+      "$ref": "#/definitions/regionBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "ChordRegion"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "marker": {
+      "$comment": "Marker (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Marker"
+        },
+        "markerType": {
+          "enum": [
+            "Start",
+            "End",
+            "Custom"
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "scaleObject": {
+      "$comment": "Scale object (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "ScaleObject"
+        },
+        "endPosition": {
+          "$ref": "#/definitions/position"
+        },
+        "scale": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Musical scale type (e.g., 'Aeolian', 'Ionian')"
+            },
+            "rootKey": {
+              "type": "string",
+              "description": "Root note (e.g., 'C', 'A#')"
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "tempoObject": {
+      "$comment": "Tempo object (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "TempoObject"
+        },
+        "bpm": {
+          "type": "number"
+        },
+        "curveAlgorithm": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "timeSignatureObject": {
+      "$comment": "Time signature object (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "TimeSignatureObject"
+        },
+        "numerator": {
+          "type": "integer"
+        },
+        "denominator": {
+          "type": "integer"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "chordObject": {
+      "$comment": "Chord object (derives from arrangerObjectBase)",
+      "$ref": "#/definitions/arrangerObjectBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "ChordObject"
+        },
+        "endPosition": {
+          "$ref": "#/definitions/position"
+        },
+        "chord": {
+          "type": "object",
+          "properties": {
+            "root": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 11
+            },
+            "type": {
+              "type": "string",
+              "description": "Chord type (e.g., 'major', 'minor', '7')"
+            },
+            "accent": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "knownArrangerObjects": {
+      "$comment": "Polymorphic reference for any known arranger object type",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/midiRegion"
+        },
+        {
+          "$ref": "#/definitions/audioRegion"
+        },
+        {
+          "$ref": "#/definitions/automationRegion"
+        },
+        {
+          "$ref": "#/definitions/chordRegion"
+        },
+        {
+          "$ref": "#/definitions/marker"
+        },
+        {
+          "$ref": "#/definitions/scaleObject"
+        },
+        {
+          "$ref": "#/definitions/tempoObject"
+        },
+        {
+          "$ref": "#/definitions/timeSignatureObject"
+        },
+        {
+          "$ref": "#/definitions/chordObject"
+        }
+      ]
+    },
+    "folderTrack": {
+      "$comment": "Folder track (derives from trackBase)",
+      "$ref": "#/definitions/trackBase",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "Folder"
+        }
+      }
+    },
+    "knownTracks": {
+      "$comment": "Polymorphic reference for any known track type",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/audioTrack"
+        },
+        {
+          "$ref": "#/definitions/instrumentTrack"
+        },
+        {
+          "$ref": "#/definitions/midiTrack"
+        },
+        {
+          "$ref": "#/definitions/masterTrack"
+        },
+        {
+          "$ref": "#/definitions/chordTrack"
+        },
+        {
+          "$ref": "#/definitions/markerTrack"
+        },
+        {
+          "$ref": "#/definitions/modulatorTrack"
+        },
+        {
+          "$ref": "#/definitions/audioBusTrack"
+        },
+        {
+          "$ref": "#/definitions/audioGroupTrack"
+        },
+        {
+          "$ref": "#/definitions/midiBusTrack"
+        },
+        {
+          "$ref": "#/definitions/midiGroupTrack"
+        },
+        {
+          "$ref": "#/definitions/folderTrack"
+        }
+      ]
+    }
+  }
+}

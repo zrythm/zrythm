@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#error \
+  "WARNING: THIS IS LEGACY CODE. IT IS NOT USED ANYMORE AND SHOULD NOT BE USED.
+
 /**
  * @file
  *
@@ -8,30 +11,30 @@
  */
 
 #ifndef __TEST_HELPERS_PROJECT_H__
-#define __TEST_HELPERS_PROJECT_H__
+#  define __TEST_HELPERS_PROJECT_H__
 
-#include "zrythm-test-config.h"
+#  include "zrythm-test-config.h"
 
-#include "engine/device_io/engine_dummy.h"
-#include "engine/session/graph_dispatcher.h"
-#include "engine/session/recording_manager.h"
-#include "gui/backend/backend/project/project_init_flow_manager.h"
-#include "gui/backend/backend/zrythm.h"
-#include "gui/backend/ui.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/automation_region.h"
-#include "structure/arrangement/chord_region.h"
-#include "structure/arrangement/midi_note.h"
-#include "structure/arrangement/region.h"
-#include "structure/project/project.h"
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/marker_track.h"
-#include "structure/tracks/master_track.h"
-#include "structure/tracks/tempo_track.h"
-#include "structure/tracks/tracklist.h"
-#include "utils/gtest_wrapper.h"
+#  include "engine/device_io/engine_dummy.h"
+#  include "engine/session/graph_dispatcher.h"
+#  include "engine/session/recording_manager.h"
+#  include "gui/backend/backend/project/project_init_flow_manager.h"
+#  include "gui/backend/backend/zrythm.h"
+#  include "gui/backend/ui.h"
+#  include "structure/arrangement/audio_region.h"
+#  include "structure/arrangement/automation_region.h"
+#  include "structure/arrangement/chord_region.h"
+#  include "structure/arrangement/midi_note.h"
+#  include "structure/arrangement/region.h"
+#  include "structure/project/project.h"
+#  include "structure/tracks/chord_track.h"
+#  include "structure/tracks/marker_track.h"
+#  include "structure/tracks/master_track.h"
+#  include "structure/tracks/tempo_track.h"
+#  include "structure/tracks/tracklist.h"
+#  include "utils/gtest_wrapper.h"
 
-#include "tests/helpers/zrythm_helper.h"
+#  include "tests/helpers/zrythm_helper.h"
 
 /**
  * @addtogroup tests

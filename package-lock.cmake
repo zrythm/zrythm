@@ -373,3 +373,10 @@ CPMDeclarePackage(Boost
       stl_interfaces
       unordered"
 )
+CPMDeclarePackage(nlohmann_json_schema_validator
+  NAME nlohmann_json_schema_validator
+  VERSION 2.4.0
+  GIT_TAG c780404a84dd9ba978ba26bc58d17cb43fa7bc80
+  GITHUB_REPOSITORY pboettch/json-schema-validator
+  GIT_SHALLOW TRUE
+)

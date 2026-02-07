@@ -811,6 +811,16 @@ add_library(zrythm::sanitizers ALIAS _sanitizers_lib)
 CPMUsePackageLock(package-lock.cmake)
 
 CPMGetPackage(nlohmann_json)
+CPMGetPackage(nlohmann_json_schema_validator)
+
+# The validator requires explicit conversions to be enabled
+# See https://github.com/pboettch/json-schema-validator/issues/372
+if(nlohmann_json_schema_validator_ADDED)
+  target_compile_definitions(nlohmann_json_schema_validator
+    PRIVATE
+      JSON_USE_IMPLICIT_CONVERSIONS=1
+  )
+endif()
 
 CPMGetPackage(clap)
 CPMGetPackage(clap-helpers)
@@ -1027,6 +1037,7 @@ list(APPEND zrythm_link_libs
   ${CMAKE_DL_LIBS}
   xxHash::xxhash
   nlohmann_json::nlohmann_json
+  nlohmann_json_schema_validator
   magic_enum::magic_enum
   zrythm::juce_libs
   backward_cpp::backward_cpp

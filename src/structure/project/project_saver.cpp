@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/project.h"
-#include "structure/project/project_json_builder.h"
+#include "structure/project/project_json_serializer.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_saver.h"
 #include "utils/io_utils.h"
@@ -458,8 +458,18 @@ ProjectSaver::save (const bool is_backup)
     z_debug ("serializing project to json...");
     QElapsedTimer timer;
     timer.start ();
-    auto json = ProjectJsonBuilder::build_json (project_, app_version_);
+    auto json = ProjectJsonSerializer::serialize (project_, app_version_);
     z_debug ("time to serialize: {}ms", timer.elapsed ());
+    return json;
+  };
+
+  const auto validate_json_task = [] (const nlohmann::json &json) {
+    z_debug ("Validating project JSON...");
+    QElapsedTimer timer;
+    timer.start ();
+    // TODO
+    // ProjectJsonSerializer::validate_json (json);
+    z_debug ("time to validate: {}ms", timer.elapsed ());
     return json;
   };
 
@@ -490,7 +500,8 @@ ProjectSaver::save (const bool is_backup)
     .then (engine, write_pool_task)
     .then (engine, write_plugin_states_task)
     .then (engine, build_json_task)
-    .then (QtFuture::Launch::Async, write_json_task)
+    .then (QtFuture::Launch::Async, validate_json_task)
+    .then (QtFuture::Launch::Sync, write_json_task)
     .then (QtFuture::Launch::Sync, rename_file_task)
     .then (
       engine,

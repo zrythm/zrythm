@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_structure_project_unit_tests
-  project_json_builder_test.cpp
+  project_json_serializer_test.cpp
 )
 
 set_target_properties(zrythm_structure_project_unit_tests PROPERTIES

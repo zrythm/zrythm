@@ -542,3 +542,9 @@ SPDX-FileComment = "DMG background image"
 path = ["DCO.txt" ]
 SPDX-FileCopyrightText = "Copyright (C) 2004, 2006 The Linux Foundation and its contributors."
 SPDX-License-Identifier = "LicenseRef-VerbatimCopyLicense"
+
+[[annotations]]
+path = "data/schemas/project.schema.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Alexandros Theodotou <alex@zrythm.org>"
+SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
