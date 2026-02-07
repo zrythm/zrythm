@@ -14,7 +14,9 @@ CPMDeclarePackage(nlohmann_json
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
   OPTIONS
-    "JSON_ImplicitConversions OFF"
+    # The validator requires explicit conversions to be enabled
+    # See https://github.com/pboettch/json-schema-validator/issues/372
+    "JSON_ImplicitConversions ON"
     "JSON_SystemInclude ON"
 )
 # clap
