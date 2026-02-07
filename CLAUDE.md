@@ -300,6 +300,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 - **Main License**: AGPL-3.0 with trademark use limitation
 - **File Headers**: All files must include SPDX headers
+- **Non-Code Files:** For files that cannot contain SPDX headers (JSON, schemas, images, etc.), add attribution in [`REUSE.toml`](REUSE.toml)
 
 **Copyright Notice Format:**
 ```cpp
