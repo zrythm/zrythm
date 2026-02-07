@@ -9,12 +9,24 @@ namespace zrythm::structure::project
 {
 
 /**
- * @brief Compile-time embedded project JSON schema string.
+ * @brief Compile-time embedded project JSON schema as hex byte array.
  *
  * This is the JSON schema for project files, embedded at compile time
  * from data/schemas/project.schema.json.
  */
-inline constexpr std::string_view kProjectSchemaJsonStr =
-  R"schema(@SCHEMA_JSON@)schema";
+inline constexpr char kProjectSchemaJsonBytes[]
+{
+  // clang-format off
+  @SCHEMA_JSON_HEX_BYTES@
+};
 
+/**
+ * @brief String view of the embedded JSON schema.
+ *
+ * Provides a convenient string_view over the hex byte array.
+ */
+inline constexpr std::string_view kProjectSchemaJsonStr{
+  static_cast<const char *> (kProjectSchemaJsonBytes),
+  sizeof (kProjectSchemaJsonBytes)
+};
 }

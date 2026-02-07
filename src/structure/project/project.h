@@ -46,8 +46,6 @@ class Project final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    QString title READ getTitle WRITE setTitle NOTIFY titleChanged FINAL)
-  Q_PROPERTY (
     QString directory READ directory WRITE setDirectory NOTIFY directoryChanged
       FINAL)
   Q_PROPERTY (
@@ -96,8 +94,6 @@ public:
   // QML interface
   // =========================================================
 
-  QString                           getTitle () const;
-  void                              setTitle (const QString &title);
   QString                           directory () const;
   void                              setDirectory (const QString &directory);
   structure::tracks::Tracklist *    tracklist () const;
@@ -111,7 +107,6 @@ public:
   dsp::SnapGrid *                              snapGridEditor () const;
   structure::arrangement::TempoObjectManager * tempoObjectManager () const;
 
-  Q_SIGNAL void titleChanged (const QString &title);
   Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
 
@@ -152,13 +147,6 @@ public:
    * Returns nullopt if there were errors or no backup was found.
    */
   std::optional<fs::path> get_newer_backup ();
-
-  /**
-   * @brief Connects things up, exposes ports to the backend, calculates the
-   * graph and begins processing.
-   *
-   */
-  Q_INVOKABLE void activate ();
 
   /**
    * @brief Adds the default undeletable tracks to the project.
@@ -237,7 +225,6 @@ private:
   static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
   static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
-  static constexpr auto kTitleKey = "title"sv;
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
   static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
@@ -264,11 +251,8 @@ private:
   structure::tracks::TrackRegistry *               track_registry_{};
 
 public:
-  /** Project title. */
-  utils::Utf8String title_;
-
   /** Path to save the project in. */
-  fs::path dir_;
+  fs::path project_directory_;
 
   /**
    * Backup dir to save the project during the current save call.
@@ -278,14 +262,6 @@ public:
   std::optional<fs::path> backup_dir_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
-
-  /**
-   * Whether the current is currently being loaded from a backup file.
-   *
-   * This is useful when instantiating plugins from state and should be set
-   * to false after the project is loaded.
-   */
-  bool loading_from_backup_ = false;
 
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
@@ -358,10 +334,6 @@ public:
    * the end.
    */
   dsp::DspGraphDispatcher graph_dispatcher_;
-
-  /** Used when deserializing projects. */
-  int format_major_ = 0;
-  int format_minor_ = 0;
 };
 
 }

@@ -71,7 +71,7 @@ ApplicationWindow {
   Component.onCompleted: {
     console.log("ApplicationWindow created on platform", Qt.platform.os);
     project.aboutToBeDeleted.connect(closeAndDestroy);
-    project.activate();
+    project.engine.activate();
   }
   onClosing: {
     console.log("Application shutting down");
@@ -122,7 +122,7 @@ ApplicationWindow {
   ExportDialog {
     id: exportDialog
 
-    project: root.project
+    projectUiState: root.projectUiState
   }
 
   // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)

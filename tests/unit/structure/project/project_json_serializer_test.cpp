@@ -15,7 +15,7 @@ TEST (ProjectJsonSerializerTest, Constants)
   EXPECT_EQ (ProjectJsonSerializer::FORMAT_MAJOR_VERSION, 2);
   EXPECT_EQ (ProjectJsonSerializer::FORMAT_MINOR_VERSION, 1);
   EXPECT_EQ (ProjectJsonSerializer::DOCUMENT_TYPE, "ZrythmProject"sv);
-  EXPECT_EQ (ProjectJsonSerializer::kProjectData, "project"sv);
+  EXPECT_EQ (ProjectJsonSerializer::kProjectData, "projectData"sv);
   EXPECT_EQ (ProjectJsonSerializer::kDatetimeKey, "datetime"sv);
   EXPECT_EQ (ProjectJsonSerializer::kAppVersionKey, "appVersion"sv);
 }
@@ -49,23 +49,33 @@ TEST (ProjectJsonSerializerTest, ValidateValidJson)
   j["appVersion"] = "2.0.0";
   j["datetime"] = "2026-01-28T12:00:00Z";
   j["title"] = "Test Project";
-  j["project"] = nlohmann::json::object ();
-  j["project"]["tempoMap"] = nlohmann::json::object ();
-  j["project"]["tempoMap"]["timeSignatures"] = nlohmann::json::array ();
-  j["project"]["tempoMap"]["tempoChanges"] = nlohmann::json::array ();
-  j["project"]["transport"] = nlohmann::json::object ();
-  j["project"]["tracklist"] = nlohmann::json::object ();
-  j["project"]["tracklist"]["tracks"] = nlohmann::json::array ();
-  j["project"]["tracklist"]["pinnedTracksCutoff"] = 0;
-  j["project"]["registries"] = nlohmann::json::object ();
-  j["project"]["registries"]["portRegistry"] = nlohmann::json::array ();
-  j["project"]["registries"]["paramRegistry"] = nlohmann::json::array ();
-  j["project"]["registries"]["pluginRegistry"] = nlohmann::json::array ();
-  j["project"]["registries"]["trackRegistry"] = nlohmann::json::array ();
-  j["project"]["registries"]["arrangerObjectRegistry"] =
+  j[ProjectJsonSerializer::kProjectData] = nlohmann::json::object ();
+  j[ProjectJsonSerializer::kProjectData]["tempoMap"] = nlohmann::json::object ();
+  j[ProjectJsonSerializer::kProjectData]["tempoMap"]["timeSignatures"] =
     nlohmann::json::array ();
-  j["project"]["registries"]["fileAudioSourceRegistry"] =
+  j[ProjectJsonSerializer::kProjectData]["tempoMap"]["tempoChanges"] =
     nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["transport"] =
+    nlohmann::json::object ();
+  j[ProjectJsonSerializer::kProjectData]["tracklist"] =
+    nlohmann::json::object ();
+  j[ProjectJsonSerializer::kProjectData]["tracklist"]["tracks"] =
+    nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["tracklist"]["pinnedTracksCutoff"] = 0;
+  j[ProjectJsonSerializer::kProjectData]["registries"] =
+    nlohmann::json::object ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]["portRegistry"] =
+    nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]["paramRegistry"] =
+    nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]["pluginRegistry"] =
+    nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]["trackRegistry"] =
+    nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]
+   ["arrangerObjectRegistry"] = nlohmann::json::array ();
+  j[ProjectJsonSerializer::kProjectData]["registries"]
+   ["fileAudioSourceRegistry"] = nlohmann::json::array ();
 
   // Should not throw
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j); });

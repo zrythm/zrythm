@@ -13,7 +13,9 @@
 #include <QtConcurrentRun>
 
 gui::qquick::QFutureQmlWrapper *
-ProjectExporter::exportAudio (structure::project::Project * project)
+ProjectExporter::exportAudio (
+  structure::project::Project * project,
+  const QString                &projectTitle)
 {
   dsp::GraphRenderer::RenderOptions options{
     .sample_rate_ = units::sample_rate (
@@ -56,7 +58,7 @@ ProjectExporter::exportAudio (structure::project::Project * project)
 
   auto combined_future =
     QtConcurrent::run (
-      [title = project->getTitle (),
+      [title = projectTitle,
        sample_rate =
          project->device_manager_->getCurrentAudioDevice ()
            ->getCurrentSampleRate (),

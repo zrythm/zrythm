@@ -235,6 +235,9 @@ void
 AudioEngine::activate ()
 {
   activate_impl (true);
+
+  // Pause, recalculate the graph and resume
+  execute_function_with_paused_processing_synchronously ([] () { }, true);
 }
 
 void

@@ -1,10 +1,18 @@
 # SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-# Generate header file with embedded project schema
-file(READ "${CMAKE_SOURCE_DIR}/data/schemas/project.schema.json" SCHEMA_JSON)
-# Escape backslashes and quotes for C++ raw string literal
-# The schema will be embedded as a raw string literal at compile time
+# Note: this depends on the project schema but the dependency is not kept track
+# off anywhere here - until this is addressed, the project must be reconfigured
+# manually every time the schema changes.
+
+# Generate header file with embedded project schema as hex byte array
+execute_process(
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/file_contents_to_hex_array.py"
+    "${CMAKE_SOURCE_DIR}/data/schemas/project.schema.json"
+  OUTPUT_VARIABLE SCHEMA_JSON_HEX_BYTES
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# The schema will be embedded as a hex byte array at compile time
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/project_json_schema.in.h"
   "${CMAKE_CURRENT_BINARY_DIR}/project_json_schema.h"

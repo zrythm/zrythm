@@ -131,7 +131,7 @@ Project::Project (
                 .param_registry_ = *param_registry_ },
             .state_dir_path_provider_ =
               [this] () {
-                return dir_
+                return project_directory_
                        / gui::ProjectPathProvider::get_path (
                          zrythm::gui::ProjectPathProvider::ProjectPath::
                            PluginStates);
@@ -383,23 +383,6 @@ Project::get_newer_backup ()
 }
 
 void
-Project::activate ()
-{
-  z_debug ("Activating project {} ({:p})...", title_, fmt::ptr (this));
-
-  // TODO
-  // last_saved_action_ = legacy_undo_manager_->get_last_action ();
-
-  audio_engine_->activate ();
-
-  // Pause and recalculate the graph
-  audio_engine_->execute_function_with_paused_processing_synchronously (
-    [] () { }, true);
-
-  z_debug ("Project {} ({:p}) activated", title_, fmt::ptr (this));
-}
-
-void
 Project::add_default_tracks ()
 {
   using namespace zrythm::structure::tracks;
@@ -492,7 +475,7 @@ Project::add_default_tracks ()
 fs::path
 Project::get_directory (bool for_backup) const
 {
-  return for_backup ? *backup_dir_ : dir_;
+  return for_backup ? *backup_dir_ : project_directory_;
 }
 
 void
@@ -501,7 +484,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   z_return_if_fail (ZRYTHM_IS_QT_THREAD);
   z_debug ("cloning project...");
 
-  obj.title_ = other.title_;
   // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);
   // obj.audio_engine_ = utils::clone_qobject (
   //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
@@ -522,36 +504,19 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
 }
 
 QString
-Project::getTitle () const
-{
-  return title_;
-}
-
-void
-Project::setTitle (const QString &title)
-{
-  const auto std_str = utils::Utf8String::from_qstring (title);
-  if (title_ == std_str)
-    return;
-
-  title_ = std_str;
-  Q_EMIT titleChanged (title);
-}
-
-QString
 Project::directory () const
 {
-  return utils::Utf8String::from_path (dir_);
+  return utils::Utf8String::from_path (project_directory_);
 }
 
 void
 Project::setDirectory (const QString &directory)
 {
   const auto dir_path = utils::Utf8String::from_qstring (directory).to_path ();
-  if (dir_ == dir_path)
+  if (project_directory_ == dir_path)
     return;
 
-  dir_ = dir_path;
+  project_directory_ = dir_path;
   Q_EMIT directoryChanged (directory);
 }
 
@@ -658,7 +623,6 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kPluginRegistryKey] = project.plugin_registry_;
   j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
   j[Project::kTrackRegistryKey] = project.track_registry_;
-  j[Project::kTitleKey] = project.title_;
   j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
   j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
   j[Project::kTransportKey] = project.transport_;
@@ -714,7 +678,7 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.dir_
+            return project_.project_directory_
                    / gui::ProjectPathProvider::get_path (
                      gui::ProjectPathProvider::ProjectPath::PluginStates);
           });
@@ -726,7 +690,7 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.dir_
+            return project_.project_directory_
                    / gui::ProjectPathProvider::get_path (
                      gui::ProjectPathProvider::ProjectPath::PluginStates);
           },
@@ -743,7 +707,7 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.dir_
+            return project_.project_directory_
                    / gui::ProjectPathProvider::get_path (
                      gui::ProjectPathProvider::ProjectPath::PluginStates);
           },
@@ -766,8 +730,6 @@ struct PluginBuilderForDeserialization
 void
 from_json (const nlohmann::json &j, Project &project)
 {
-  j.at (utils::serialization::kFormatMajorKey).get_to (project.format_major_);
-  j.at (utils::serialization::kFormatMinorKey).get_to (project.format_minor_);
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
   j.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
   j.at (Project::kParameterRegistryKey).get_to (*project.param_registry_);
@@ -781,7 +743,6 @@ from_json (const nlohmann::json &j, Project &project)
   from_json_with_builder (
     j.at (Project::kTrackRegistryKey), *project.track_registry_,
     TrackBuilderForDeserialization{ project });
-  j.at (Project::kTitleKey).get_to (project.title_);
   j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
   j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);

@@ -28,6 +28,8 @@ class ProjectUiState : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
+    QString title READ getTitle WRITE setTitle NOTIFY titleChanged FINAL)
+  Q_PROPERTY (
     zrythm::structure::arrangement::Timeline * timeline READ timeline CONSTANT
       FINAL)
   Q_PROPERTY (zrythm::gui::backend::ArrangerTool * tool READ tool CONSTANT FINAL)
@@ -58,6 +60,8 @@ public:
   // QML interface
   // =========================================================
 
+  QString                                  getTitle () const;
+  void                                     setTitle (const QString &title);
   structure::project::Project *            project () const;
   gui::backend::ArrangerTool *             tool () const;
   ClipEditor *                             clipEditor () const;
@@ -72,6 +76,8 @@ public:
               createArrangerObjectSelectionOperator (
                 QItemSelectionModel * selectionModel) const;
 
+  Q_SIGNAL void titleChanged (const QString &title);
+
   // =========================================================
 
 private:
@@ -82,6 +88,9 @@ private:
   static constexpr auto kUndoStackKey = "undoStack"sv;
 
 private:
+  /** Project title. */
+  utils::Utf8String title_;
+
   utils::QObjectUniquePtr<structure::project::Project> project_;
 
   /**

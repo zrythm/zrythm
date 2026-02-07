@@ -11,7 +11,7 @@
     "appVersion",
     "datetime",
     "title",
-    "project"
+    "projectData"
   ],
   "properties": {
     "documentType": {

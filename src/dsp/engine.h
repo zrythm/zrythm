@@ -75,8 +75,8 @@ public:
 
   void resume (const EngineState &state);
 
-  void activate ();
-  void deactivate ();
+  Q_INVOKABLE void activate ();
+  void             deactivate ();
 
   /**
    * To be called by each implementation to prepare the structures before

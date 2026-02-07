@@ -17,12 +17,13 @@ Dialog {
   property string metadataArtist: "Artist"
   property string metadataGenre: "Genre"
   property string metadataTitle: "Title"
-  required property Project project
+  readonly property Project project: projectUiState.project
+  required property ProjectUiState projectUiState
 
   function startExport() {
     exportProgressDialog.resetValues();
     exportProgressDialog.open();
-    root.exportFuture = ProjectExporter.exportAudio(root.project);
+    root.exportFuture = ProjectExporter.exportAudio(root.project, projectUiState.title);
   }
 
   implicitHeight: 500

@@ -182,7 +182,7 @@ ProjectManager::create_default (
         prj_ui_state =
           utils::make_qobject_unique<ProjectUiState> (std::move (prj));
       }
-      prj_ui_state->project ()->setTitle (name.to_qstring ());
+      prj_ui_state->setTitle (name.to_qstring ());
       prj_ui_state->project ()->add_default_tracks ();
     },
     Qt::BlockingQueuedConnection);
@@ -191,7 +191,7 @@ ProjectManager::create_default (
   auto * prj = prj_ui_state->project ();
 
   /* set directory/title and create standard dirs */
-  prj->dir_ = prj_dir / name;
+  prj->project_directory_ = prj_dir / name;
   structure::project::ProjectSaver::make_project_dirs (*prj, false);
 
   prj_ui_state->clipEditor ()->init ();
@@ -244,7 +244,7 @@ ProjectManager::createNewProject (
             [ui_state_ptr = ui_state.release ()] () { delete ui_state_ptr; });
           throw;
         }
-      ui_state->project ()->setTitle (future.result ());
+      ui_state->setTitle (future.result ());
       return ui_state;
     })
     .then (

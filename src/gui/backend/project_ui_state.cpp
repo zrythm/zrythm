@@ -70,6 +70,23 @@ ProjectUiState::ProjectUiState (
   project_->setParent (this);
 }
 
+QString
+ProjectUiState::getTitle () const
+{
+  return title_;
+}
+
+void
+ProjectUiState::setTitle (const QString &title)
+{
+  const auto std_str = utils::Utf8String::from_qstring (title);
+  if (title_ == std_str)
+    return;
+
+  title_ = std_str;
+  Q_EMIT titleChanged (title);
+}
+
 actions::ArrangerObjectSelectionOperator *
 ProjectUiState::createArrangerObjectSelectionOperator (
   QItemSelectionModel * selectionModel) const
