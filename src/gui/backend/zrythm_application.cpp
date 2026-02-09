@@ -275,6 +275,10 @@ ZrythmApplication::setup_device_manager ()
         }
     });
   device_manager_->initialize (2, 2, true);
+
+  // Create hardware audio interface wrapper
+  hw_audio_interface_ =
+    dsp::JuceHardwareAudioInterface::create (device_manager_);
 }
 
 void

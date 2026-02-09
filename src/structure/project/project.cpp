@@ -19,17 +19,15 @@ namespace zrythm::structure::project
 {
 
 Project::Project (
-  utils::AppSettings                       &app_settings,
-  ProjectDirectoryPathProvider              project_directory_path_provider,
-  std::shared_ptr<juce::AudioDeviceManager> device_manager,
+  utils::AppSettings           &app_settings,
+  ProjectDirectoryPathProvider  project_directory_path_provider,
+  dsp::IHardwareAudioInterface &hw_interface,
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Fader                                     &monitor_fader,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
-      tempo_map_ (
-        units::sample_rate (
-          device_manager->getCurrentAudioDevice ()->getCurrentSampleRate ())),
+      tempo_map_ (hw_interface.get_sample_rate ()),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
       plugin_host_window_provider_ (std::move (plugin_host_window_provider)),
       file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
@@ -42,7 +40,7 @@ Project::Project (
       track_registry_ (new structure::tracks::TrackRegistry (this)),
       project_directory_path_provider_ (
         std::move (project_directory_path_provider)),
-      device_manager_ (device_manager),
+      hw_interface_ (hw_interface),
       plugin_format_manager_ (plugin_format_manager),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       snap_grid_editor_ (
@@ -76,7 +74,7 @@ Project::Project (
           this)),
       audio_engine_ (
         utils::make_qobject_unique<
-          dsp::AudioEngine> (*transport_, device_manager, graph_dispatcher_, this)),
+          dsp::AudioEngine> (*transport_, hw_interface, graph_dispatcher_, this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
@@ -173,7 +171,7 @@ Project::Project (
           new ProjectGraphBuilder (*this)),
         std::views::single (&audio_engine_->get_monitor_out_port ())
           | std::ranges::to<std::vector<dsp::graph::IProcessable *>> (),
-        *device_manager_,
+        hw_interface_,
         [this] (const std::function<void ()> &callable) {
           bool engine_running = audio_engine_->running ();
           audio_engine_->set_running (false);

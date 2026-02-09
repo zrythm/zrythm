@@ -12,11 +12,10 @@ namespace zrythm::dsp
 DspGraphDispatcher::DspGraphDispatcher (
   std::unique_ptr<graph::IGraphBuilder>      graph_builder,
   std::vector<graph::IProcessable *>         terminal_processables,
-  const juce::AudioDeviceManager            &device_manager,
+  const IHardwareAudioInterface             &hw_interface,
   RunFunctionWithEngineLock                  run_function_with_engine_lock,
   graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread)
-    : graph_builder_ (std::move (graph_builder)),
-      device_manager_ (device_manager),
+    : graph_builder_ (std::move (graph_builder)), hw_interface_ (hw_interface),
       run_function_with_engine_lock_ (std::move (run_function_with_engine_lock)),
       terminal_processables_ (std::move (terminal_processables)),
       run_on_main_thread_ (std::move (run_on_main_thread))
@@ -113,11 +112,8 @@ DspGraphDispatcher::recalc_graph (bool soft)
 {
   z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
 
-  auto * current_device = device_manager_.getCurrentAudioDevice ();
-
-  const auto sample_rate = units::sample_rate (
-    static_cast<int> (current_device->getCurrentSampleRate ()));
-  const auto buffer_size = current_device->getCurrentBufferSizeSamples ();
+  const auto sample_rate = hw_interface_.get_sample_rate ();
+  const auto buffer_size = hw_interface_.get_block_length ();
 
   const auto rebuild_graph = [&] () {
     graph::Graph graph;
@@ -151,7 +147,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
     {
       scheduler_ = std::make_unique<graph::GraphScheduler> (
         run_on_main_thread_, sample_rate, buffer_size, true,
-        device_manager_.getDeviceAudioWorkgroup ());
+        hw_interface_.get_device_audio_workgroup ());
       rebuild_graph ();
       scheduler_->start_threads ();
       return;

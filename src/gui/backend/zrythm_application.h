@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
@@ -120,6 +121,11 @@ public:
     return device_manager_;
   }
 
+  dsp::IHardwareAudioInterface &hw_audio_interface () const
+  {
+    return *hw_audio_interface_;
+  }
+
 private:
   void setup_command_line_options ();
 
@@ -173,6 +179,13 @@ private:
   QTranslator * translator_ = nullptr;
 
   std::shared_ptr<gui::backend::DeviceManager> device_manager_;
+
+  /**
+   * @brief Hardware audio interface wrapper.
+   *
+   * Must be destroyed after device_manager_.
+   */
+  std::unique_ptr<dsp::IHardwareAudioInterface> hw_audio_interface_;
 
   /** MIDI bindings (TODO). */
   std::unique_ptr<engine::session::MidiMappings> midi_mappings_;

@@ -6,6 +6,7 @@
 #include "dsp/audio_callback.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
+#include "dsp/hardware_audio_interface.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
@@ -40,10 +41,10 @@ public:
    * This only initializes the engine and does not connect to any backend.
    */
   AudioEngine (
-    dsp::Transport                           &transport,
-    std::shared_ptr<juce::AudioDeviceManager> device_mgr,
-    dsp::DspGraphDispatcher                  &graph_dispatcher,
-    QObject *                                 parent = nullptr);
+    dsp::Transport          &transport,
+    IHardwareAudioInterface &hw_interface,
+    dsp::DspGraphDispatcher &graph_dispatcher,
+    QObject *                parent = nullptr);
 
   /**
    * Closes any connections and free's data.
@@ -136,8 +137,6 @@ public:
    */
   void panic_all ();
 
-  auto get_device_manager () const { return device_manager_; }
-
   bool  activated () const { return state_ == State::Active; }
   bool  running () const { return run_.load (); }
   void  set_running (bool run) { run_.store (run); }
@@ -153,16 +152,12 @@ public:
 
   nframes_t get_block_length () const
   {
-    auto * dev = device_manager_->getCurrentAudioDevice ();
-    assert (dev != nullptr);
-    return dev->getCurrentBufferSizeSamples ();
+    return hw_interface_.get_block_length ();
   }
 
   units::sample_rate_t get_sample_rate () const
   {
-    auto * dev = device_manager_->getCurrentAudioDevice ();
-    assert (dev != nullptr);
-    return units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ()));
+    return hw_interface_.get_sample_rate ();
   }
 
   /**
@@ -193,7 +188,7 @@ private:
   /** The processing graph router. */
   dsp::DspGraphDispatcher &graph_dispatcher_;
 
-  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
+  IHardwareAudioInterface &hw_interface_;
 
   /**
    * Cycle count to know which cycle we are in.

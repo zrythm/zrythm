@@ -35,13 +35,12 @@ namespace zrythm::dsp
 {
 
 AudioEngine::AudioEngine (
-  dsp::Transport                           &transport,
-  std::shared_ptr<juce::AudioDeviceManager> device_mgr,
-  dsp::DspGraphDispatcher                  &graph_dispatcher,
-  QObject *                                 parent)
+  dsp::Transport          &transport,
+  IHardwareAudioInterface &hw_interface,
+  dsp::DspGraphDispatcher &graph_dispatcher,
+  QObject *                parent)
     : QObject (parent), transport_ (transport),
-      graph_dispatcher_ (graph_dispatcher),
-      device_manager_ (std::move (device_mgr)),
+      graph_dispatcher_ (graph_dispatcher), hw_interface_ (hw_interface),
       monitor_out_ (
         u8"Monitor Out",
         dsp::PortFlow::Output,
@@ -92,10 +91,8 @@ AudioEngine::AudioEngine (
           [this] (juce::AudioIODevice * dev) {
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
-              nullptr,
-              units::sample_rate (
-                static_cast<int> (dev->getCurrentSampleRate ())),
-              dev->getCurrentBufferSizeSamples ());
+              nullptr, hw_interface_.get_sample_rate (),
+              hw_interface_.get_block_length ());
             Q_EMIT sampleRateChanged (sampleRate ());
             callback_running_ = true;
           },
@@ -262,14 +259,14 @@ AudioEngine::activate_impl (const bool activate)
         get_sample_rate ().in (units::sample_rate),
         static_cast<int> (get_block_length ()));
 
-      device_manager_->addAudioCallback (audio_callback_.get ());
+      hw_interface_.add_audio_callback (audio_callback_.get ());
     }
   else
     {
       EngineState state{};
       wait_for_pause (state, true, true);
 
-      device_manager_->removeAudioCallback (audio_callback_.get ());
+      hw_interface_.remove_audio_callback (audio_callback_.get ());
     }
 
   state_ = new_state;

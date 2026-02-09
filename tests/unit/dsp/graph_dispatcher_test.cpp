@@ -3,6 +3,7 @@
 
 #include "dsp/graph_builder.h"
 #include "dsp/graph_dispatcher.h"
+#include "dsp/juce_hardware_audio_interface.h"
 
 #include "helpers/mock_audio_io_device.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -85,13 +86,17 @@ protected:
     // Create audio device manager with dummy device
     audio_device_manager_ =
       test_helpers::create_audio_device_manager_with_dummy_device ();
+
+    // Create hardware audio interface wrapper
+    hw_interface_ =
+      dsp::JuceHardwareAudioInterface::create (audio_device_manager_);
   }
 
   void create_dispatcher ()
   {
     dispatcher_ = std::make_unique<DspGraphDispatcher> (
-      std::move (mock_graph_builder_), terminal_processables_,
-      *audio_device_manager_, run_function_with_engine_lock_,
+      std::move (mock_graph_builder_), terminal_processables_, *hw_interface_,
+      run_function_with_engine_lock_,
       [] (std::function<void ()> func) { func (); });
   }
 
@@ -100,7 +105,8 @@ protected:
   std::unique_ptr<MockGraphBuilder>             mock_graph_builder_;
   std::vector<graph::IProcessable *>            terminal_processables_;
   DspGraphDispatcher::RunFunctionWithEngineLock run_function_with_engine_lock_;
-  std::unique_ptr<juce::AudioDeviceManager>     audio_device_manager_;
+  std::shared_ptr<juce::AudioDeviceManager>     audio_device_manager_;
+  std::unique_ptr<dsp::IHardwareAudioInterface> hw_interface_;
   std::unique_ptr<DspGraphDispatcher>           dispatcher_;
 };
 

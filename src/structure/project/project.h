@@ -5,6 +5,7 @@
 
 #include "dsp/audio_pool.h"
 #include "dsp/engine.h"
+#include "dsp/hardware_audio_interface.h"
 #include "dsp/metronome.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/snap_grid.h"
@@ -79,9 +80,9 @@ public:
 
 public:
   Project (
-    utils::AppSettings                       &app_settings,
-    ProjectDirectoryPathProvider              project_directory_path_provider,
-    std::shared_ptr<juce::AudioDeviceManager> device_manager,
+    utils::AppSettings           &app_settings,
+    ProjectDirectoryPathProvider  project_directory_path_provider,
+    dsp::IHardwareAudioInterface &hw_interface,
     std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Fader                                     &monitor_fader,
@@ -226,8 +227,8 @@ private:
   ProjectDirectoryPathProvider project_directory_path_provider_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
-  std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
+  dsp::IHardwareAudioInterface                   &hw_interface_;
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
 
 public:

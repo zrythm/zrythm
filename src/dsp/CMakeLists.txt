@@ -26,6 +26,7 @@ target_sources(zrythm_dsp_lib
     graph_renderer.cpp
     graph_scheduler.cpp
     graph_thread.cpp
+    juce_hardware_audio_interface.cpp
     kmeter_dsp.cpp
     metronome.cpp
     midi_event.cpp
@@ -74,7 +75,9 @@ target_sources(zrythm_dsp_lib
       graph_renderer.h
       graph_scheduler.h
       graph_thread.h
+      hardware_audio_interface.h
       itransport.h
+      juce_hardware_audio_interface.h
       kmeter_dsp.h
       metronome.h
       midi_event.h

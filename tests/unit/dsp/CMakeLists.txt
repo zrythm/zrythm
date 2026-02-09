@@ -15,7 +15,6 @@ add_executable(zrythm_dsp_unit_tests
   engine_test.cpp
   fader_test.cpp
   file_audio_source_test.cpp
-  kmeter_dsp_test.cpp
   graph_builder_test.cpp
   graph_dispatcher_test.cpp
   graph_export_test.cpp
@@ -25,6 +24,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_renderer_test.cpp
   graph_scheduler_test.cpp
   graph_test.cpp
+  kmeter_dsp_test.cpp
   metronome_test.cpp
   midi_event_test.cpp
   midi_panic_processor_test.cpp

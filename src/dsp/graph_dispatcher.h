@@ -5,6 +5,7 @@
 
 #include "dsp/graph_builder.h"
 #include "dsp/graph_scheduler.h"
+#include "dsp/hardware_audio_interface.h"
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
@@ -29,7 +30,7 @@ public:
   DspGraphDispatcher (
     std::unique_ptr<graph::IGraphBuilder>      graph_builder,
     std::vector<graph::IProcessable *>         terminal_processables,
-    const juce::AudioDeviceManager            &device_manager,
+    const IHardwareAudioInterface             &hw_interface,
     RunFunctionWithEngineLock                  run_function_with_engine_lock,
     graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread);
 
@@ -136,7 +137,7 @@ private:
 
 private:
   std::unique_ptr<graph::IGraphBuilder> graph_builder_;
-  const juce::AudioDeviceManager       &device_manager_;
+  const IHardwareAudioInterface        &hw_interface_;
 
   /**
    * @brief Callable to call in a context where the audio processing engine is
