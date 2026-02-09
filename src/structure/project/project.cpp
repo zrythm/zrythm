@@ -19,8 +19,9 @@ namespace zrythm::structure::project
 {
 
 Project::Project (
-  utils::AppSettings                             &app_settings,
-  std::shared_ptr<juce::AudioDeviceManager>       device_manager,
+  utils::AppSettings                       &app_settings,
+  ProjectDirectoryPathProvider              project_directory_path_provider,
+  std::shared_ptr<juce::AudioDeviceManager> device_manager,
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Fader                                     &monitor_fader,
@@ -39,6 +40,8 @@ Project::Project (
       arranger_object_registry_ (
         new structure::arrangement::ArrangerObjectRegistry (this)),
       track_registry_ (new structure::tracks::TrackRegistry (this)),
+      project_directory_path_provider_ (
+        std::move (project_directory_path_provider)),
       device_manager_ (device_manager),
       plugin_format_manager_ (plugin_format_manager),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
@@ -78,10 +81,10 @@ Project::Project (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
           [this] (bool backup) {
-            return get_directory (backup)
-                   / gui::ProjectPathProvider::get_path (
-                     zrythm::gui::ProjectPathProvider::ProjectPath::
-                       AudioFilePoolDir);
+            return project_directory_path_provider_ (backup)
+                   / structure::project::ProjectPathProvider::get_path (
+                     zrythm::structure::project::ProjectPathProvider::
+                       ProjectPath::AudioFilePoolDir);
           },
           [this] () { return audio_engine_->get_sample_rate (); })),
       tracklist_ (
@@ -131,10 +134,10 @@ Project::Project (
                 .param_registry_ = *param_registry_ },
             .state_dir_path_provider_ =
               [this] () {
-                return project_directory_
-                       / gui::ProjectPathProvider::get_path (
-                         zrythm::gui::ProjectPathProvider::ProjectPath::
-                           PluginStates);
+                return project_directory_path_provider_ (false)
+                       / structure::project::ProjectPathProvider::get_path (
+                         zrythm::structure::project::ProjectPathProvider::
+                           ProjectPath::PluginStates);
               },
             .create_plugin_instance_async_func_ =
               [plugin_format_manager] (
@@ -327,61 +330,6 @@ Project::get_final_track_dependencies () const
   };
 }
 
-std::optional<fs::path>
-Project::get_newer_backup ()
-{
-  // TODO
-  return std::nullopt;
-#if 0
-  const auto filepath = get_path (ProjectPath::ProjectFile, false);
-  z_return_val_if_fail (!filepath.empty (), std::nullopt);
-
-  std::filesystem::file_time_type original_time;
-  if (std::filesystem::exists (filepath))
-    {
-      original_time = std::filesystem::last_write_time (filepath);
-    }
-  else
-    {
-      z_warning ("Failed to get last modified for {}", filepath);
-      return std::nullopt;
-    }
-
-  fs::path   result;
-  const auto backups_dir = get_path (ProjectPath::BACKUPS, false);
-  try
-    {
-      for (const auto &entry : std::filesystem::directory_iterator (backups_dir))
-        {
-          auto full_path = entry.path () / PROJECT_FILE;
-          z_debug ("{}", full_path);
-
-          if (std::filesystem::exists (full_path))
-            {
-              auto backup_time = std::filesystem::last_write_time (full_path);
-              if (backup_time > original_time)
-                {
-                  result = entry.path ();
-                  original_time = backup_time;
-                }
-            }
-          else
-            {
-              z_warning ("Failed to get last modified for {}", full_path);
-              return std::nullopt;
-            }
-        }
-    }
-  catch (const std::filesystem::filesystem_error &e)
-    {
-      z_warning ("Error accessing backup directory: {}", e.what ());
-      return std::nullopt;
-    }
-
-  return result;
-#endif
-}
-
 void
 Project::add_default_tracks ()
 {
@@ -472,12 +420,6 @@ Project::add_default_tracks ()
   tracklist_->singletonTracks ()->setMasterTrack (master_track);
 }
 
-fs::path
-Project::get_directory (bool for_backup) const
-{
-  return for_backup ? *backup_dir_ : project_directory_;
-}
-
 void
 init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type)
 {
@@ -490,9 +432,10 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   obj.pool_ = utils::clone_unique (
     *other.pool_, clone_type, *obj.file_audio_source_registry_,
     [&obj] (bool backup) {
-      return obj.get_directory (backup)
-             / gui::ProjectPathProvider::get_path (
-               gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+      return obj.project_directory_path_provider_ (backup)
+             / structure::project::ProjectPathProvider::get_path (
+               structure::project::ProjectPathProvider::ProjectPath::
+                 AudioFilePoolDir);
     },
     [&obj] () { return obj.audio_engine_->get_sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
@@ -501,23 +444,6 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     utils::clone_qobject (*other.port_connections_manager_, &obj);
 
   z_debug ("finished cloning project");
-}
-
-QString
-Project::directory () const
-{
-  return utils::Utf8String::from_path (project_directory_);
-}
-
-void
-Project::setDirectory (const QString &directory)
-{
-  const auto dir_path = utils::Utf8String::from_qstring (directory).to_path ();
-  if (project_directory_ == dir_path)
-    return;
-
-  project_directory_ = dir_path;
-  Q_EMIT directoryChanged (directory);
 }
 
 structure::tracks::Tracklist *
@@ -578,39 +504,6 @@ dsp::SnapGrid *
 Project::snapGridEditor () const
 {
   return snap_grid_editor_.get ();
-}
-
-#if 0
-Project *
-Project::get_active_instance ()
-{
-  auto * ui_state =
-    zrythm::gui::ProjectManager::get_instance ()->activeProject ();
-  return ui_state != nullptr ? ui_state->project () : nullptr;
-}
-#endif
-
-Project *
-Project::clone (bool for_backup) const
-{
-// TODO
-#if 0
-  auto * ret = utils::clone_raw_ptr (
-    *this, utils::ObjectCloneType::Snapshot, app_settings_, device_manager_,
-    plugin_format_manager_, plugin_host_window_provider_, monitor_fader_,
-    version_);
-  if (for_backup)
-    {
-      /* no undo history in backups */
-      if (ret->legacy_undo_manager_ != nullptr)
-        {
-          delete ret->legacy_undo_manager_;
-          ret->legacy_undo_manager_ = nullptr;
-        }
-    }
-  return ret;
-#endif
-  return nullptr;
 }
 
 void
@@ -678,9 +571,10 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.project_directory_
-                   / gui::ProjectPathProvider::get_path (
-                     gui::ProjectPathProvider::ProjectPath::PluginStates);
+            return project_.project_directory_path_provider_ (false)
+                   / structure::project::ProjectPathProvider::get_path (
+                     structure::project::ProjectPathProvider::ProjectPath::
+                       PluginStates);
           });
       }
     else if constexpr (std::is_same_v<T, plugins::ClapPlugin>)
@@ -690,9 +584,10 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.project_directory_
-                   / gui::ProjectPathProvider::get_path (
-                     gui::ProjectPathProvider::ProjectPath::PluginStates);
+            return project_.project_directory_path_provider_ (false)
+                   / structure::project::ProjectPathProvider::get_path (
+                     structure::project::ProjectPathProvider::ProjectPath::
+                       PluginStates);
           },
           [this] () {
             return project_.audio_engine_->graph_dispatcher ()
@@ -707,9 +602,10 @@ struct PluginBuilderForDeserialization
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
           [this] () {
-            return project_.project_directory_
-                   / gui::ProjectPathProvider::get_path (
-                     gui::ProjectPathProvider::ProjectPath::PluginStates);
+            return project_.project_directory_path_provider_ (false)
+                   / structure::project::ProjectPathProvider::get_path (
+                     structure::project::ProjectPathProvider::ProjectPath::
+                       PluginStates);
           },
           [this] (
             const juce::PluginDescription &description,
@@ -749,9 +645,10 @@ from_json (const nlohmann::json &j, Project &project)
   project.pool_ = std::make_unique<dsp::AudioPool> (
     *project.file_audio_source_registry_,
     [&project] (bool backup) {
-      return project.get_directory (backup)
-             / gui::ProjectPathProvider::get_path (
-               gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+      return project.project_directory_path_provider_ (backup)
+             / structure::project::ProjectPathProvider::get_path (
+               structure::project::ProjectPathProvider::ProjectPath::
+                 AudioFilePoolDir);
     },
     [&project] () { return project.audio_engine_->get_sample_rate (); });
   j.at (Project::kAudioPoolKey).get_to (*project.pool_);

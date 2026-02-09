@@ -19,5 +19,6 @@ class ProjectExporter : public QObject
 public:
   Q_INVOKABLE static gui::qquick::QFutureQmlWrapper * exportAudio (
     structure::project::Project * project,
+    const QString                &exportDirectory,
     const QString                &projectTitle);
 };

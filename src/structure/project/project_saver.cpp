@@ -28,21 +28,21 @@ ProjectSaver::ProjectSaver (const Project &project, std::string_view app_version
 }
 
 void
-ProjectSaver::make_project_dirs (const Project &project, bool is_backup)
+ProjectSaver::make_project_dirs (const fs::path &project_directory)
 {
   for (
     auto type :
-    { gui::ProjectPathProvider::ProjectPath::BackupsDir,
-      gui::ProjectPathProvider::ProjectPath::ExportsDir,
-      gui::ProjectPathProvider::ProjectPath::ExportStemsDir,
-      gui::ProjectPathProvider::ProjectPath::AudioFilePoolDir,
-      gui::ProjectPathProvider::ProjectPath::PluginStates,
-      gui::ProjectPathProvider::ProjectPath::PLUGIN_EXT_COPIES,
-      gui::ProjectPathProvider::ProjectPath::PLUGIN_EXT_LINKS })
+    { structure::project::ProjectPathProvider::ProjectPath::BackupsDir,
+      structure::project::ProjectPathProvider::ProjectPath::ExportsDir,
+      structure::project::ProjectPathProvider::ProjectPath::ExportStemsDir,
+      structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir,
+      structure::project::ProjectPathProvider::ProjectPath::PluginStates,
+      structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_COPIES,
+      structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_LINKS })
     {
       const auto dir =
-        project.get_directory (is_backup)
-        / gui::ProjectPathProvider::get_path (type);
+        project_directory
+        / structure::project::ProjectPathProvider::get_path (type);
       assert (!dir.empty ());
       try
         {
@@ -162,13 +162,13 @@ ProjectSaver::set_and_create_next_available_backup_dir ()
 }
 
 std::string
-ProjectSaver::get_existing_uncompressed_text (bool backup)
+ProjectSaver::get_existing_uncompressed_text (const fs::path &project_dir)
 {
   /* get file contents */
   const auto project_file_path =
-    project_.get_directory (backup)
-    / gui::ProjectPathProvider::get_path (
-      gui::ProjectPathProvider::ProjectPath::ProjectFile);
+    project_dir
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
   z_debug ("getting text for project file {}", project_file_path);
 
   QByteArray compressed_pj{};
@@ -312,8 +312,9 @@ ProjectSaver::autosave_cb (void * data)
 
 void
 ProjectSaver::cleanup_plugin_state_dirs (
-  const Project &main_project,
-  bool           is_backup)
+  const Project  &main_project,
+  const fs::path &project_dir,
+  bool            is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
@@ -337,9 +338,9 @@ ProjectSaver::cleanup_plugin_state_dirs (
     }
 
   auto plugin_states_path =
-    main_project.get_directory (false)
-    / gui::ProjectPathProvider::get_path (
-      zrythm::gui::ProjectPathProvider::ProjectPath::PluginStates);
+    project_dir
+    / structure::project::ProjectPathProvider::get_path (
+      zrythm::structure::project::ProjectPathProvider::ProjectPath::PluginStates);
 
   try
     {
@@ -373,20 +374,20 @@ ProjectSaver::cleanup_plugin_state_dirs (
 }
 
 QFuture<utils::Utf8String>
-ProjectSaver::save (const bool is_backup)
+ProjectSaver::save (const fs::path &path, const bool is_backup)
 {
-  const auto dir = project_.get_directory (is_backup);
-  z_info ("Saving project at {}, is backup: {}", dir, is_backup);
+  z_info ("Saving project at {}, is backup: {}", path, is_backup);
 
+  const auto title = utils::Utf8String::from_path (path.filename ());
   const auto project_file_path =
-    dir
-    / gui::ProjectPathProvider::get_path (
-      gui::ProjectPathProvider::ProjectPath::ProjectFile);
+    path
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
   const auto temp_project_file_path =
-    dir
+    path
     / (utils::Utf8String::from_path (
-         gui::ProjectPathProvider::get_path (
-           gui::ProjectPathProvider::ProjectPath::ProjectFile))
+         structure::project::ProjectPathProvider::get_path (
+           structure::project::ProjectPathProvider::ProjectPath::ProjectFile))
        + u8".tmp")
         .to_path ();
 
@@ -408,13 +409,13 @@ ProjectSaver::save (const bool is_backup)
   };
 
   /* Subtask lambdas */
-  const auto create_dirs_task = [this, is_backup, dir] () {
+  const auto create_dirs_task = [this, is_backup, path] () {
     if (is_backup)
       {
         set_and_create_next_available_backup_dir ();
       }
-    utils::io::mkdir (dir);
-    make_project_dirs (project_, is_backup);
+    utils::io::mkdir (path);
+    make_project_dirs (path);
   };
 
   const auto write_pool_task = [this, is_backup] () {
@@ -429,18 +430,22 @@ ProjectSaver::save (const bool is_backup)
     project_.pool_->write_to_disk (is_backup);
   };
 
-  const auto write_plugin_states_task = [this, is_backup] () {
+  const auto write_plugin_states_task = [this, is_backup, path] () {
     if (is_backup)
       {
+        throw std::runtime_error ("unimplemented");
+
         /* copy plugin states */
         auto prj_pl_states_dir =
-          project_.get_directory (false)
-          / gui::ProjectPathProvider::get_path (
-            zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
+          path
+          / structure::project::ProjectPathProvider::get_path (
+            zrythm::structure::project::ProjectPathProvider::ProjectPath::
+              PluginsDir);
         auto prj_backup_pl_states_dir =
-          project_.get_directory (true)
-          / gui::ProjectPathProvider::get_path (
-            zrythm::gui::ProjectPathProvider::ProjectPath::PluginsDir);
+          path /* FIXME: this should be the backup path, not the main path */
+          / structure::project::ProjectPathProvider::get_path (
+            zrythm::structure::project::ProjectPathProvider::ProjectPath::
+              PluginsDir);
         utils::io::copy_dir (
           prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
       }
@@ -448,17 +453,18 @@ ProjectSaver::save (const bool is_backup)
     if (!is_backup)
       {
         /* cleanup unused plugin states */
-        cleanup_plugin_state_dirs (project_, is_backup);
+        cleanup_plugin_state_dirs (project_, path, is_backup);
       }
 
     /* TODO verify all plugin states exist */
   };
 
-  const auto build_json_task = [this] () {
+  const auto build_json_task = [this, title] () {
     z_debug ("serializing project to json...");
     QElapsedTimer timer;
     timer.start ();
-    auto json = ProjectJsonSerializer::serialize (project_, app_version_);
+    auto json =
+      ProjectJsonSerializer::serialize (project_, app_version_, title.view ());
     z_debug ("time to serialize: {}ms", timer.elapsed ());
     return json;
   };
@@ -505,7 +511,7 @@ ProjectSaver::save (const bool is_backup)
     .then (QtFuture::Launch::Sync, rename_file_task)
     .then (
       engine,
-      [dir, is_backup, resume_engine] () {
+      [path, is_backup, resume_engine, title] () {
   /* TODO: track last saved action */
 // TODO
 #if 0
@@ -520,9 +526,9 @@ ProjectSaver::save (const bool is_backup)
             }
 #endif
         z_info (
-          "Successfully saved project at {}, is backup: {}", dir, is_backup);
+          "Successfully saved project at {}, is backup: {}", path, is_backup);
         resume_engine ();
-        return utils::Utf8String::from_path (dir.filename ());
+        return title;
       })
     .onCanceled (
       engine,

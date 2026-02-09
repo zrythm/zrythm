@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "utils/types.h"
-
-namespace zrythm::gui
+namespace zrythm::structure::project
 {
 class ProjectPathProvider
 {

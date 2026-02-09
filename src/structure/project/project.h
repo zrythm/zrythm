@@ -46,9 +46,6 @@ class Project final : public QObject
   Q_OBJECT
   QML_ELEMENT
   Q_PROPERTY (
-    QString directory READ directory WRITE setDirectory NOTIFY directoryChanged
-      FINAL)
-  Q_PROPERTY (
     zrythm::structure::tracks::Tracklist * tracklist READ tracklist CONSTANT
       FINAL)
   Q_PROPERTY (
@@ -78,11 +75,13 @@ public:
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginRegistry = plugins::PluginRegistry;
+  using ProjectDirectoryPathProvider = std::function<fs::path (bool for_backup)>;
 
 public:
   Project (
-    utils::AppSettings                             &app_settings,
-    std::shared_ptr<juce::AudioDeviceManager>       device_manager,
+    utils::AppSettings                       &app_settings,
+    ProjectDirectoryPathProvider              project_directory_path_provider,
+    std::shared_ptr<juce::AudioDeviceManager> device_manager,
     std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Fader                                     &monitor_fader,
@@ -94,10 +93,8 @@ public:
   // QML interface
   // =========================================================
 
-  QString                           directory () const;
-  void                              setDirectory (const QString &directory);
-  structure::tracks::Tracklist *    tracklist () const;
-  structure::scenes::ClipLauncher * clipLauncher () const;
+  structure::tracks::Tracklist *               tracklist () const;
+  structure::scenes::ClipLauncher *            clipLauncher () const;
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
   dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
@@ -107,16 +104,11 @@ public:
   dsp::SnapGrid *                              snapGridEditor () const;
   structure::arrangement::TempoObjectManager * tempoObjectManager () const;
 
-  Q_SIGNAL void directoryChanged (const QString &directory);
   Q_SIGNAL void aboutToBeDeleted ();
 
   // =========================================================
 
-  // static Project * get_active_instance ();
-
   dsp::Fader &monitor_fader ();
-
-  fs::path get_directory (bool for_backup) const;
 
   // TODO: delete this getter, no one else should use factory directly
   auto * arrangerObjectFactory () const
@@ -128,25 +120,6 @@ public:
     Project               &obj,
     const Project         &other,
     utils::ObjectCloneType clone_type);
-
-  /**
-   * Deep-clones the given project.
-   *
-   * To be used during save on the main thread.
-   *
-   * @param for_backup Whether the resulting project is for a backup.
-   *
-   * @throw ZrythmException If an error occurs.
-   */
-  Q_INVOKABLE Project * clone (bool for_backup) const;
-
-  /**
-   * Returns the filepath of a backup (directory), if any, if it has a newer
-   * timestamp than main project file.
-   *
-   * Returns nullopt if there were errors or no backup was found.
-   */
-  std::optional<fs::path> get_newer_backup ();
 
   /**
    * @brief Adds the default undeletable tracks to the project.
@@ -250,23 +223,14 @@ private:
   structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};
   structure::tracks::TrackRegistry *               track_registry_{};
 
-public:
-  /** Path to save the project in. */
-  fs::path project_directory_;
-
-  /**
-   * Backup dir to save the project during the current save call.
-   *
-   * For example, @ref Project.dir /backups/myproject.bak3.
-   */
-  std::optional<fs::path> backup_dir_;
+  ProjectDirectoryPathProvider project_directory_path_provider_;
 
   /* !!! IMPORTANT: order matters (for destruction) !!! */
-
   std::shared_ptr<juce::AudioDeviceManager> device_manager_;
 
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
 
+public:
   /**
    * @brief
    *
@@ -274,6 +238,7 @@ public:
    */
   utils::QObjectUniquePtr<dsp::PortConnectionsManager> port_connections_manager_;
 
+private:
   /** Snap/Grid info for the editor. */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
 
@@ -282,6 +247,7 @@ public:
 
   utils::QObjectUniquePtr<dsp::Metronome> metronome_;
 
+public:
   /**
    * Timeline metadata like BPM, time signature, etc.
    */
@@ -313,15 +279,19 @@ public:
     structure::tracks::TrackPtrVariant>
     tracks_rt_;
 
+private:
   utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;
   utils::QObjectUniquePtr<structure::scenes::ClipPlaybackService>
     clip_playback_service_;
 
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
-                                                   arranger_object_factory_;
+    arranger_object_factory_;
+
+public:
   utils::QObjectUniquePtr<plugins::PluginFactory>  plugin_factory_;
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
 
+private:
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;
 

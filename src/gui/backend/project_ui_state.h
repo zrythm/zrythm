@@ -47,6 +47,9 @@ class ProjectUiState : public QObject
       CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::FileImporter * fileImporter READ fileImporter CONSTANT FINAL)
+  Q_PROPERTY (
+    QString projectDirectory READ projectDirectory WRITE setProjectDirectory
+      NOTIFY projectDirectoryChanged FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -72,13 +75,25 @@ public:
   actions::PluginImporter *                pluginImporter () const;
   undo::UndoStack *                        undoStack () const;
 
+  QString projectDirectory () const;
+  void    setProjectDirectory (const QString &directory);
+
   Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
               createArrangerObjectSelectionOperator (
                 QItemSelectionModel * selectionModel) const;
 
   Q_SIGNAL void titleChanged (const QString &title);
+  Q_SIGNAL void projectDirectoryChanged (const QString &directory);
 
   // =========================================================
+
+  /**
+   * Returns the filepath of a backup (directory), if any, if it has a newer
+   * timestamp than main project file.
+   *
+   * Returns nullopt if there were errors or no backup was found.
+   */
+  std::optional<fs::path> get_newer_backup ();
 
 private:
   static constexpr auto kClipEditorKey = "clipEditor"sv;
@@ -90,6 +105,9 @@ private:
 private:
   /** Project title. */
   utils::Utf8String title_;
+
+  /** Project directory. */
+  fs::path project_directory_;
 
   utils::QObjectUniquePtr<structure::project::Project> project_;
 

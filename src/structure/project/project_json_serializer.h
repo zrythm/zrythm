@@ -29,6 +29,7 @@ public:
   static constexpr auto kProjectData = "projectData"sv;
   static constexpr auto kDatetimeKey = "datetime"sv;
   static constexpr auto kAppVersionKey = "appVersion"sv;
+  static constexpr auto kTitle = "title"sv;
 
   /**
    * @brief Returns a json representation of the project.
@@ -37,8 +38,10 @@ public:
    * @param app_version Version string of the application.
    * @throw std::runtime_error on error.
    */
-  static nlohmann::json
-  serialize (const Project &project, std::string_view app_version);
+  static nlohmann::json serialize (
+    const Project   &project,
+    std::string_view app_version,
+    std::string_view title);
 
   /**
    * @brief Validates JSON against the project schema.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/project_ui_state.h"
+#include "structure/project/project_path_provider.h"
 
 #include <QQmlEngine>
 
@@ -85,6 +86,23 @@ ProjectUiState::setTitle (const QString &title)
 
   title_ = std_str;
   Q_EMIT titleChanged (title);
+}
+
+QString
+ProjectUiState::projectDirectory () const
+{
+  return utils::Utf8String::from_path (project_directory_).to_qstring ();
+}
+
+void
+ProjectUiState::setProjectDirectory (const QString &directory)
+{
+  auto path = utils::Utf8String::from_qstring (directory).to_path ();
+  if (project_directory_ == path)
+    return;
+
+  project_directory_ = path;
+  Q_EMIT projectDirectoryChanged (directory);
 }
 
 actions::ArrangerObjectSelectionOperator *
@@ -180,4 +198,66 @@ ProjectUiState::undoStack () const
 {
   return undo_stack_.get ();
 }
+
+std::optional<fs::path>
+ProjectUiState::get_newer_backup ()
+{
+  // TODO
+  return std::nullopt;
+  const auto filepath =
+    project_directory_
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
+
+  std::filesystem::file_time_type original_time;
+  if (std::filesystem::exists (filepath))
+    {
+      original_time = std::filesystem::last_write_time (filepath);
+    }
+  else
+    {
+      z_warning ("Failed to get last modified for {}", filepath);
+      return std::nullopt;
+    }
+
+  fs::path   result;
+  const auto backups_dir =
+    project_directory_
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::BackupsDir);
+  try
+    {
+      for (const auto &entry : std::filesystem::directory_iterator (backups_dir))
+        {
+          auto full_path =
+            entry.path ()
+            / structure::project::ProjectPathProvider::get_path (
+              structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
+          z_debug ("{}", full_path);
+
+          if (std::filesystem::exists (full_path))
+            {
+              auto backup_time = std::filesystem::last_write_time (full_path);
+              if (backup_time > original_time)
+                {
+                  result = entry.path ();
+                  original_time = backup_time;
+                }
+            }
+          else
+            {
+              z_warning ("Failed to get last modified for {}", full_path);
+              return std::nullopt;
+            }
+        }
+    }
+  catch (const std::filesystem::filesystem_error &e)
+    {
+      z_warning ("Error accessing backup directory: {}", e.what ());
+      return std::nullopt;
+    }
+
+  return result;
+}
+
 } // namespace zrythm::gui

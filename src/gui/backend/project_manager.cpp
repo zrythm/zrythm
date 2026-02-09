@@ -165,15 +165,19 @@ ProjectManager::create_default (
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 
+  const auto project_dir_path = prj_dir / name;
+
   utils::QObjectUniquePtr<ProjectUiState> prj_ui_state;
   QMetaObject::invokeMethod (
     qApp,
-    [this, &prj_ui_state, &name] {
+    [this, &prj_ui_state, &name, project_dir_path] {
       // registries and registry objects must be created on the main thread
       {
         auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
         auto   prj = utils::make_qobject_unique<structure::project::Project> (
-          app_settings_, zapp->get_device_manager (),
+          app_settings_,
+          [project_dir_path] (bool for_backup) { return project_dir_path; },
+          zapp->get_device_manager (),
           zapp->pluginManager ()->get_format_manager (),
           [this] (plugins::Plugin &plugin) {
             return create_window_for_plugin (plugin);
@@ -188,17 +192,12 @@ ProjectManager::create_default (
     Qt::BlockingQueuedConnection);
   prj_ui_state->moveToThread (this->thread ());
 
-  auto * prj = prj_ui_state->project ();
-
-  /* set directory/title and create standard dirs */
-  prj->project_directory_ = prj_dir / name;
-  structure::project::ProjectSaver::make_project_dirs (*prj, false);
+  {
+    /* create standard dirs */
+    structure::project::ProjectSaver::make_project_dirs (project_dir_path);
+  }
 
   prj_ui_state->clipEditor ()->init ();
-
-  // TODO/refactor
-  // prj->quantize_opts_timeline_->update_quantize_points (*prj->transport_);
-  // prj->quantize_opts_editor_->update_quantize_points (*prj->transport_);
 
   z_debug ("done creating default project");
 
@@ -211,10 +210,14 @@ ProjectManager::createNewProject (
   const QString &name,
   const QUrl    &templateUrl)
 {
-  auto directory_file = directory.toLocalFile ();
-  auto template_file = templateUrl.toLocalFile ();
+  const auto directory_file = directory.toLocalFile ();
+  const auto template_file = templateUrl.toLocalFile ();
   z_debug (
     "Creating new project in {} (template {})", directory_file, template_file);
+
+  const auto project_dir_path =
+    utils::Utf8String::from_qstring (directory_file).to_path ()
+    / utils::Utf8String::from_qstring (name).to_path ();
 
   QtConcurrent::run ([directory_file, name, template_file, this] {
     auto project_ui_state =
@@ -225,33 +228,37 @@ ProjectManager::createNewProject (
         : nullptr; // TODO: template handling
     return project_ui_state;
   })
-    .then ([this] (utils::QObjectUniquePtr<ProjectUiState> ui_state) {
-      structure::project::ProjectSaver saver (
-        *ui_state->project (), Zrythm::get_version (false).view ());
-      auto future = saver.save (false);
-      try
-        {
-          // This will throw on failure
-          future.waitForFinished ();
-        }
-      catch (...)
-        {
-          // ... so catch the exception here, delete the ProjectUiState object
-          // in the main thread (which owns it), and re-throw to trigger the
-          // onFailed() block.
-          QMetaObject::invokeMethod (
-            this,
-            [ui_state_ptr = ui_state.release ()] () { delete ui_state_ptr; });
-          throw;
-        }
-      ui_state->setTitle (future.result ());
-      return ui_state;
-    })
+    .then (
+      [this, project_dir_path] (utils::QObjectUniquePtr<ProjectUiState> ui_state) {
+        structure::project::ProjectSaver saver (
+          *ui_state->project (), Zrythm::get_version (false).view ());
+        auto future = saver.save (project_dir_path, false);
+        try
+          {
+            // This will throw on failure
+            future.waitForFinished ();
+          }
+        catch (...)
+          {
+            // ... so catch the exception here, delete the ProjectUiState object
+            // in the main thread (which owns it), and re-throw to trigger the
+            // onFailed() block.
+            QMetaObject::invokeMethod (
+              this,
+              [ui_state_ptr = ui_state.release ()] () { delete ui_state_ptr; });
+            throw;
+          }
+        ui_state->setTitle (future.result ());
+        return ui_state;
+      })
     .then (
       this,
-      [this] (utils::QObjectUniquePtr<ProjectUiState> ui_state_unique_ptr) {
+      [this, project_dir_path] (
+        utils::QObjectUniquePtr<ProjectUiState> ui_state_unique_ptr) {
         auto * ui_state = ui_state_unique_ptr.release ();
         ui_state->setParent (this);
+        ui_state->setProjectDirectory (
+          utils::Utf8String::from_path (project_dir_path).to_qstring ());
         setActiveProject (ui_state);
         ui_state->project ()->engine ()->graph_dispatcher ().recalc_graph (
           false);

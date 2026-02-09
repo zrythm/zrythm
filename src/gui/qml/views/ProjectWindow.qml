@@ -123,6 +123,7 @@ ApplicationWindow {
     id: exportDialog
 
     projectUiState: root.projectUiState
+    exportDirectory: root.projectUiState.projectDirectory + "/exports"
   }
 
   // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)

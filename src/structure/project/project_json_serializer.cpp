@@ -45,7 +45,8 @@ private:
 nlohmann::json
 ProjectJsonSerializer::serialize (
   const Project   &project,
-  std::string_view app_version)
+  std::string_view app_version,
+  std::string_view title)
 {
   nlohmann::json j;
 
@@ -54,6 +55,7 @@ ProjectJsonSerializer::serialize (
   j[utils::serialization::kFormatMinorKey] = FORMAT_MINOR_VERSION;
   j[kAppVersionKey] = app_version;
   j[kDatetimeKey] = utils::datetime::get_current_as_string ();
+  j[kTitle] = title;
   j[kProjectData] = project;
 
   return j;

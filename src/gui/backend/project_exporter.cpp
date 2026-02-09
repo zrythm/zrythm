@@ -6,7 +6,6 @@
 #include "gui/backend/project_exporter.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
-#include "structure/project/project_path_provider.h"
 #include "utils/audio_file_writer.h"
 
 #include <QQmlEngine>
@@ -15,16 +14,12 @@
 gui::qquick::QFutureQmlWrapper *
 ProjectExporter::exportAudio (
   structure::project::Project * project,
+  const QString                &exportDirectory,
   const QString                &projectTitle)
 {
   dsp::GraphRenderer::RenderOptions options{
-    .sample_rate_ = units::sample_rate (
-      static_cast<int> (
-        project->device_manager_->getCurrentAudioDevice ()
-          ->getCurrentSampleRate ())),
-    .block_length_ = units::samples (
-      project->device_manager_->getCurrentAudioDevice ()
-        ->getCurrentBufferSizeSamples ())
+    .sample_rate_ = project->engine ()->get_sample_rate (),
+    .block_length_ = units::samples (project->engine ()->get_block_length ())
   };
   EngineState state{};
   project->engine ()->wait_for_pause (state, false, true);
@@ -58,14 +53,9 @@ ProjectExporter::exportAudio (
 
   auto combined_future =
     QtConcurrent::run (
-      [title = projectTitle,
-       sample_rate =
-         project->device_manager_->getCurrentAudioDevice ()
-           ->getCurrentSampleRate (),
+      [title = projectTitle, sample_rate = project->engine ()->sampleRate (),
        exports_path =
-         project->get_directory (false)
-         / gui::ProjectPathProvider::get_path (
-           gui::ProjectPathProvider::ProjectPath::ExportsDir)] (
+         utils::Utf8String::from_qstring (exportDirectory).to_path ()] (
         QPromise<QStringList>           &promise,
         QFuture<juce::AudioSampleBuffer> inner_graph_render_future) {
         // Wait for task to establish its progress min/max

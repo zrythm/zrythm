@@ -19,12 +19,14 @@ public:
   /**
    * Saves the project asynchronously to the directory set previously in Project.
    *
+   * @param path The directory to save the project in (including the title).
    * @param is_backup 1 if this is a backup. Backups will be saved as <original
    * filename>.bak<num>.
    *
    * @throw ZrythmException If any step failed.
    */
-  [[nodiscard]] QFuture<utils::Utf8String> save (bool is_backup);
+  [[nodiscard]] QFuture<utils::Utf8String>
+  save (const fs::path &path, bool is_backup);
 
   /**
    * Autosave callback.
@@ -38,10 +40,9 @@ public:
   /**
    * @brief Creates the project directories.
    *
-   * @param is_backup
    * @throw ZrythmException If the directories cannot be created.
    */
-  static void make_project_dirs (const Project &project, bool is_backup);
+  static void make_project_dirs (const fs::path &project_directory);
 
   /**
    * Compresses/decompress a project from a file/data to a file/data.
@@ -80,7 +81,8 @@ public:
    *
    * @throw ZrythmException If an error occurs.
    */
-  std::string get_existing_uncompressed_text (bool backup);
+  static std::string
+  get_existing_uncompressed_text (const fs::path &project_dir);
 
   bool has_unsaved_changes () const;
 
@@ -101,7 +103,10 @@ private:
    * @param main_project The main project.
    * @param is_backup Whether this is for a backup.
    */
-  void cleanup_plugin_state_dirs (const Project &main_project, bool is_backup);
+  void cleanup_plugin_state_dirs (
+    const Project  &main_project,
+    const fs::path &project_dir,
+    bool            is_backup);
 
 private:
   const Project &project_;

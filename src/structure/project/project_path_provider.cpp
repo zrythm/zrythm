@@ -3,7 +3,7 @@
 
 #include "structure/project/project_path_provider.h"
 
-namespace zrythm::gui
+namespace zrythm::structure::project
 {
 
 fs::path
