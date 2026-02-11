@@ -3,8 +3,14 @@
 
 #pragma once
 
+#include <string_view>
+
+#include "utils/types.h"
+
 namespace zrythm::structure::project
 {
+using namespace std::string_view_literals;
+
 class ProjectPathProvider
 {
   static constexpr auto PROJECT_FILE = "project.zpj"sv;
