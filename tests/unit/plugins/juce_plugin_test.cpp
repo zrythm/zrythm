@@ -96,6 +96,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void TearDown () override
@@ -188,6 +189,7 @@ protected:
   units::sample_rate_t                             sample_rate_{};
   nframes_t                                        buffer_size_{};
   std::unique_ptr<dsp::graph_test::MockTransport>  mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                   tempo_map_;
 
 private:
   void setupJucePlugin (JucePlugin::CreatePluginInstanceAsyncFunc func)
@@ -290,7 +292,7 @@ TEST_F (JucePluginTest, AsyncInstantiationFailure)
   };
 
   // This should not crash even if plugin is not instantiated
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 }
 
 TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
@@ -335,7 +337,7 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
     .nframes_ = 512
   };
 
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 }
 
 TEST_F (JucePluginTest, ParameterMapping)
@@ -488,7 +490,7 @@ TEST_F (JucePluginTest, MidiProcessing)
     .nframes_ = 512
   };
 
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &midi_out =
     plugin_->get_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
@@ -556,7 +558,7 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
     .nframes_ = 512
   };
 
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify the change is reflected in the plugin
   auto * juce_param = mock_plugin->getHostedParameter (1);
@@ -566,7 +568,7 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
 
   // Other way around...
   juce_param->setValueNotifyingHost (0.25f);
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   EXPECT_FLOAT_EQ (zrythm_param->baseValue (), 0.25f);
 }
 
@@ -598,7 +600,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
     .local_offset_ = 0,
     .nframes_ = 0
   };
-  plugin_->process_block (zero_time_nfo, *mock_transport_);
+  plugin_->process_block (zero_time_nfo, *mock_transport_, *tempo_map_);
 
   // Test with very large buffer
   EngineProcessTimeInfo large_time_nfo{
@@ -607,7 +609,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
     .local_offset_ = 0,
     .nframes_ = 8192
   };
-  plugin_->process_block (large_time_nfo, *mock_transport_);
+  plugin_->process_block (large_time_nfo, *mock_transport_, *tempo_map_);
 
   // Test with non-zero local offset
   EngineProcessTimeInfo offset_time_nfo{
@@ -616,7 +618,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
     .local_offset_ = 256,
     .nframes_ = 512
   };
-  plugin_->process_block (offset_time_nfo, *mock_transport_);
+  plugin_->process_block (offset_time_nfo, *mock_transport_, *tempo_map_);
 }
 
 TEST_F (JucePluginTest, AdvancedParameterTypes)
@@ -1069,7 +1071,7 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
     .nframes_ = static_cast<nframes_t> (test_buffer_size)
   };
 
-  plugin_->process_block (time_nfo, *mock_transport_);
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output signals match input (unity gain pass-through)
   for (size_t i = 0; i < test_buffer_size; ++i)
@@ -1176,7 +1178,7 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
     .nframes_ = static_cast<nframes_t> (split_frames)
   };
 
-  plugin_->process_block (split_time_nfo, *mock_transport_);
+  plugin_->process_block (split_time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output signals match input for the processed range
   for (size_t i = 0; i < split_frames; ++i)

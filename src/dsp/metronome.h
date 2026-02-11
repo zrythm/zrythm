@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -27,7 +27,6 @@ class Metronome : public QObject, public AudioSampleProcessor
 public:
   Metronome (
     ProcessorBaseDependencies dependencies,
-    const dsp::TempoMap      &tempo_map,
     juce::AudioSampleBuffer   emphasis_sample,
     juce::AudioSampleBuffer   normal_sample,
     bool                      initially_enabled = true,
@@ -64,7 +63,8 @@ public:
 
   void custom_process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept override;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
@@ -77,20 +77,24 @@ private:
    * within the given range and adds them to the
    * queue.
    *
+   * @param tempo_map Tempo map for timing calculations.
+   * @param start_pos Start position, inclusive.
    * @param end_pos End position, exclusive.
    * @param loffset Local offset (this is where @p start_pos starts at).
    */
   void find_and_queue_metronome_samples (
-    units::sample_t start_pos,
-    units::sample_t end_pos,
-    units::sample_t loffset);
+    const dsp::TempoMap &tempo_map,
+    units::sample_t      start_pos,
+    units::sample_t      end_pos,
+    units::sample_t      loffset);
 
   /**
    * Queues metronome events for preroll count-in.
    */
   void queue_metronome_countin (
     const EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport       &transport);
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map);
 
   /**
    * Queues a metronomem tick at the given local offset.
@@ -103,8 +107,6 @@ private:
     std::source_location loc = std::source_location::current ());
 
 private:
-  const dsp::TempoMap &tempo_map_;
-
   /** The emphasis sample. */
   juce::AudioSampleBuffer emphasis_sample_buffer_;
 

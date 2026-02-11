@@ -43,12 +43,15 @@ protected:
     ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
+
+    tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000));
   }
 
   GraphNode create_test_node () { return { 1, *processable_ }; }
 
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
+  std::unique_ptr<dsp::TempoMap>   tempo_map_;
 };
 
 TEST_F (GraphNodeTest, Construction)
@@ -64,12 +67,12 @@ TEST_F (GraphNodeTest, Construction)
 
 TEST_F (GraphNodeTest, ProcessingBasics)
 {
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (Exactly (1));
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (Exactly (1));
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0, *transport_);
+  node.process (time_info, 0, *transport_, *tempo_map_);
 }
 
 TEST_F (GraphNodeTest, LatencyHandling)
@@ -100,26 +103,26 @@ TEST_F (GraphNodeTest, NodeConnections)
 
 TEST_F (GraphNodeTest, SkipProcessing)
 {
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (0);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (0);
 
   auto node = create_test_node ();
   node.set_skip_processing (true);
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0, *transport_);
+  node.process (time_info, 0, *transport_, *tempo_map_);
 }
 
 TEST_F (GraphNodeTest, ProcessingWithTransport)
 {
   EXPECT_CALL (*transport_, get_play_state ())
     .WillOnce (Return (ITransport::PlayState::Rolling));
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (1);
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0, *transport_);
+  node.process (time_info, 0, *transport_, *tempo_map_);
 }
 
 TEST_F (GraphNodeTest, LoopPointProcessing)
@@ -130,12 +133,12 @@ TEST_F (GraphNodeTest, LoopPointProcessing)
       Return (std::make_pair (units::samples (0), units::samples (128))));
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (Return (ITransport::PlayState::Rolling));
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto                  node = create_test_node ();
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 0, *transport_);
+  node.process (time_info, 0, *transport_, *tempo_map_);
 }
 
 // New test for multiple node connections
@@ -184,14 +187,14 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
     .WillRepeatedly (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
     .WillRepeatedly (Return (units::samples (0)));
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto node = create_test_node ();
   node.set_route_playback_latency (256);
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  node.process (time_info, 64, *transport_);
+  node.process (time_info, 64, *transport_, *tempo_map_);
 }
 
 TEST_F (GraphNodeTest, ComplexGraphTopology)

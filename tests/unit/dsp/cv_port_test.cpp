@@ -24,6 +24,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
 
     input_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
     output_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
@@ -42,6 +43,7 @@ protected:
   std::unique_ptr<CVPort>                    input_port;
   std::unique_ptr<CVPort>                    output_port;
   std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (CVPortTest, BasicProperties)
@@ -75,7 +77,7 @@ TEST_F (CVPortTest, SignalProcessing)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info, *mock_transport_);
+  output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify signal was processed
   EXPECT_NE (output_port->buf_[0], 0.0f);
@@ -93,7 +95,7 @@ TEST_F (CVPortTest, RingBufferWriting)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info, *mock_transport_);
+  output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Check ring buffer contents
   float sample = 0.0f;

@@ -178,7 +178,8 @@ public:
    */
   void custom_process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept override;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const dsp::graph::GraphNode * node,

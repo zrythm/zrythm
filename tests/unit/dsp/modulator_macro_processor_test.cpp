@@ -48,6 +48,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
   }
 
   dsp::PortRegistry                        port_registry;
@@ -63,6 +64,7 @@ protected:
   std::optional<PortUuidReference>           mod_source_ref;
   CVPort *                                   mod_source{};
   std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (ModulatorMacroProcessorTest, BasicConstruction)
@@ -85,7 +87,7 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  macro_processor->process_block (time_nfo, *mock_transport_);
+  macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is macro value (0.8f) since no input
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -110,8 +112,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  cv_in->process_block (time_nfo, *mock_transport_);
-  macro_processor->process_block (time_nfo, *mock_transport_);
+  cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
+  macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is input * macro (0.5 * 0.5 = 0.25)
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
@@ -150,8 +152,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  cv_in->process_block (time_nfo, *mock_transport_);
-  macro_processor->process_block (time_nfo, *mock_transport_);
+  cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
+  macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is (input1 + input2) * macro
   // (0.5 + 0.25) * 0.5 = 0.375
@@ -177,7 +179,7 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  macro_processor->process_block (time_nfo, *mock_transport_);
+  macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is zero
   for (nframes_t i = 0; i < BLOCK_LENGTH; i++)

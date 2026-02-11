@@ -133,7 +133,8 @@ SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
 void
 SampleProcessor::process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
 #if 0
   const auto    cycle_offset = time_nfo.local_offset_;
@@ -572,7 +573,8 @@ SampleProcessor::queue_file_or_chord_preset (
    */
   SemaphoreRAII       port_op_raii (AUDIO_ENGINE->port_operation_lock_);
   dsp::graph::Graph   graph;
-  ProjectGraphBuilder builder (*PROJECT, true);
+  ProjectGraphBuilder builder (
+    *PROJECT, PROJECT->metronome (), PROJECT->monitor_fader ());
   builder.build_graph (graph);
   tracklist_->get_track_span ().set_caches (ALL_CACHE_TYPES);
 #endif

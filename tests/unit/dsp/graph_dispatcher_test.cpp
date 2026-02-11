@@ -90,6 +90,8 @@ protected:
     // Create hardware audio interface wrapper
     hw_interface_ =
       dsp::JuceHardwareAudioInterface::create (audio_device_manager_);
+
+    tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000));
   }
 
   void create_dispatcher ()
@@ -108,6 +110,7 @@ protected:
   std::shared_ptr<juce::AudioDeviceManager>     audio_device_manager_;
   std::unique_ptr<dsp::IHardwareAudioInterface> hw_interface_;
   std::unique_ptr<DspGraphDispatcher>           dispatcher_;
+  std::unique_ptr<dsp::TempoMap>                tempo_map_;
 };
 
 TEST_F (DspGraphDispatcherTest, ConstructorInitializesCorrectly)
@@ -204,9 +207,9 @@ TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)
   dispatcher_->recalc_graph (false);
 
   // Expect process_block to be called for each node
-  EXPECT_CALL (*processables_[0], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[1], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[2], process_block (_, _)).Times (1);
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
   EngineProcessTimeInfo time_info{};
   time_info.g_start_frame_ = 0;
@@ -214,7 +217,7 @@ TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)
   time_info.local_offset_ = 0;
   time_info.nframes_ = 256;
 
-  dispatcher_->start_cycle (*transport_, time_info, 0, true);
+  dispatcher_->start_cycle (*transport_, time_info, 0, true, *tempo_map_);
 
   // Should be marked as processing kickoff thread
   EXPECT_TRUE (dispatcher_->is_processing_kickoff_thread ());
@@ -237,9 +240,9 @@ TEST_F (DspGraphDispatcherTest, StartCycleInNonRealtimeContext)
   dispatcher_->recalc_graph (false);
 
   // Expect process_block to be called for each node
-  EXPECT_CALL (*processables_[0], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[1], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[2], process_block (_, _)).Times (1);
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
   EngineProcessTimeInfo time_info{};
   time_info.g_start_frame_ = 0;
@@ -247,7 +250,7 @@ TEST_F (DspGraphDispatcherTest, StartCycleInNonRealtimeContext)
   time_info.local_offset_ = 0;
   time_info.nframes_ = 256;
 
-  dispatcher_->start_cycle (*transport_, time_info, 0, false);
+  dispatcher_->start_cycle (*transport_, time_info, 0, false, *tempo_map_);
 
   // Should NOT be marked as processing kickoff thread
   EXPECT_FALSE (dispatcher_->is_processing_kickoff_thread ());
@@ -277,11 +280,11 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
   create_dispatcher ();
   dispatcher_->recalc_graph (false);
 
-  EXPECT_CALL (*processables_[0], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[1], process_block (_, _)).Times (1);
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   // Latency preroll means this will not be processed in this cycle
   // TODO: I haven't done the calculations yet to see if this is correct
-  EXPECT_CALL (*processables_[2], process_block (_, _)).Times (0);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (0);
 
   EngineProcessTimeInfo time_info{};
   time_info.g_start_frame_ = 0;
@@ -291,7 +294,7 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
 
   const nframes_t remaining_latency_preroll = 64;
   dispatcher_->start_cycle (
-    *transport_, time_info, remaining_latency_preroll, true);
+    *transport_, time_info, remaining_latency_preroll, true, *tempo_map_);
 }
 
 TEST_F (DspGraphDispatcherTest, CurrentTriggerNodesAccess)
@@ -334,9 +337,9 @@ TEST_F (DspGraphDispatcherTest, ProcessingThreadDetection)
   // Initially should not be a processing thread
   EXPECT_FALSE (dispatcher_->is_processing_thread ());
 
-  EXPECT_CALL (*processables_[0], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[1], process_block (_, _)).Times (1);
-  EXPECT_CALL (*processables_[2], process_block (_, _)).Times (1);
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
   EngineProcessTimeInfo time_info{};
   time_info.g_start_frame_ = 0;
@@ -346,7 +349,7 @@ TEST_F (DspGraphDispatcherTest, ProcessingThreadDetection)
 
   // After starting a cycle, main thread might be detected as processing thread
   // depending on implementation, but this test ensures the method doesn't crash
-  dispatcher_->start_cycle (*transport_, time_info, 0, true);
+  dispatcher_->start_cycle (*transport_, time_info, 0, true, *tempo_map_);
 
   // Just ensure the method can be called without issues
   [[maybe_unused]] bool is_processing = dispatcher_->is_processing_thread ();
@@ -424,7 +427,7 @@ TEST_F (DspGraphDispatcherTest, PreprocessAtStartOfCycleNoThrow)
     // Access private method through a test-specific approach
     // Since preprocess_at_start_of_cycle is private, we test it indirectly
     // through start_cycle which calls it
-    dispatcher_->start_cycle (*transport_, time_info, 0, false);
+    dispatcher_->start_cycle (*transport_, time_info, 0, false, *tempo_map_);
   });
 }
 

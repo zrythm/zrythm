@@ -18,7 +18,8 @@ GraphRenderer::render (
   RenderOptions                      options,
   graph::GraphNodeCollection       &&nodes,
   RunOnMainThread                    run_on_main_thread,
-  SampleRange                        range)
+  SampleRange                        range,
+  const dsp::TempoMap               &tempo_map)
 {
   z_debug ("Rendering range {}...", range);
 
@@ -118,7 +119,7 @@ GraphRenderer::render (
 
       // Process block with latency compensation
       graph_scheduler.run_cycle (
-        time_nfo, latency_preroll_frames, transport_snapshot);
+        time_nfo, latency_preroll_frames, transport_snapshot, tempo_map);
 
       // Collect audio from terminal nodes
       temp_buffer.clear ();
@@ -181,7 +182,8 @@ GraphRenderer::render_async (
   RenderOptions                options,
   graph::GraphNodeCollection &&nodes,
   RunOnMainThread              run_on_main_thread,
-  SampleRange                  range)
+  SampleRange                  range,
+  const dsp::TempoMap         &tempo_map)
 {
   // This is a hack to work around the fact that QtConcurrent::run only supports
   // copyable arguments, and GraphNodeCollection is not copyable
@@ -190,12 +192,13 @@ GraphRenderer::render_async (
       QPromise<juce::AudioSampleBuffer> &promise,
       GraphRenderer::RenderOptions       inner_options,
       RunOnMainThread                    inner_run_on_main_thread,
-      GraphRenderer::SampleRange         inner_range) {
+      GraphRenderer::SampleRange         inner_range,
+      const dsp::TempoMap               &inner_tempo_map) {
       GraphRenderer::render (
         promise, inner_options,
         std::move (const_cast<graph::GraphNodeCollection &> (inner_nodes)),
-        std::move (inner_run_on_main_thread), inner_range);
+        std::move (inner_run_on_main_thread), inner_range, inner_tempo_map);
     },
-    options, std::move (run_on_main_thread), range);
+    options, std::move (run_on_main_thread), range, tempo_map);
 }
 }

@@ -110,7 +110,8 @@ public:
 
   void custom_process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept override
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept override
   {
     const auto cycle_offset = time_nfo.local_offset_;
     const auto nframes = time_nfo.nframes_;

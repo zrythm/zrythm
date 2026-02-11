@@ -7,13 +7,15 @@ import "../config.js" as Config
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 ApplicationWindow {
   id: root
 
   property Arranger activeArranger: null
+  required property AppSettings appSettings
+  required property ControlRoom controlRoom
   readonly property Action deleteAction: Action {
     id: deleteAction
 
@@ -40,7 +42,6 @@ ApplicationWindow {
   }
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
-  required property AppSettings appSettings
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -49,15 +50,16 @@ ApplicationWindow {
   }
 
   height: 720
-  title: project.title
+  title: projectUiState.title
   visible: true
   width: 1280
 
   header: MainToolbar {
     id: headerBar
 
-    projectUiState: root.projectUiState
     appSettings: root.appSettings
+    projectUiState: root.projectUiState
+    controlRoom: root.controlRoom
   }
   menuBar: MainMenuBar {
     id: mainMenuBar
@@ -122,8 +124,8 @@ ApplicationWindow {
   ExportDialog {
     id: exportDialog
 
-    projectUiState: root.projectUiState
     exportDirectory: root.projectUiState.projectDirectory + "/exports"
+    projectUiState: root.projectUiState
   }
 
   // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)

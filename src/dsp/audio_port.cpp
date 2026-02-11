@@ -183,7 +183,8 @@ AudioPort::release_resources ()
 void
 AudioPort::process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
   for (const auto &[_src_port, conn] : port_sources ())
     {

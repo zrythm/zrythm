@@ -10,15 +10,16 @@ import Qt.labs.synchronizer
 ZrythmToolBar {
   id: root
 
+  required property AppSettings appSettings
+  required property ControlRoom controlRoom
   readonly property Project project: projectUiState.project
   required property ProjectUiState projectUiState
-  required property AppSettings appSettings
 
   centerItems: [
     TransportControls {
       id: transportControls
 
-      metronome: root.project.metronome
+      metronome: root.controlRoom.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport
     }

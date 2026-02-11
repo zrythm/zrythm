@@ -36,6 +36,8 @@ protected:
     ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
+
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   GraphNodeCollection create_test_collection ()
@@ -61,6 +63,7 @@ protected:
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
   std::unique_ptr<GraphScheduler>  scheduler_;
+  std::unique_ptr<dsp::TempoMap>   tempo_map_;
 };
 
 TEST_F (GraphSchedulerTest, ThreadStartAndTermination)
@@ -74,8 +77,8 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 {
   auto collection = create_test_collection ();
 
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (3); // Once for each
-                                                               // node
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (3); // Once for
+                                                                  // each node
 
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
@@ -83,7 +86,7 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_);
+  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
 
   scheduler_->terminate_threads ();
 }
@@ -93,10 +96,11 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
   auto collection = create_test_collection ();
 
   std::atomic<int> process_count{ 0 };
-  ON_CALL (*processable_, process_block (_, _)).WillByDefault ([&] (auto, auto &) {
-    process_count++;
-    std::this_thread::sleep_for (10ms);
-  });
+  ON_CALL (*processable_, process_block (_, _, _))
+    .WillByDefault ([&] (auto, auto &, auto &) {
+      process_count++;
+      std::this_thread::sleep_for (10ms);
+    });
 
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
@@ -104,7 +108,7 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_);
+  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
 
   EXPECT_EQ (process_count, 3);
   scheduler_->terminate_threads ();
@@ -116,10 +120,11 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
 
   std::vector<int> process_order;
   std::mutex       mutex;
-  ON_CALL (*processable_, process_block (_, _)).WillByDefault ([&] (auto, auto &) {
-    std::lock_guard<std::mutex> lock (mutex);
-    process_order.push_back (process_order.size ());
-  });
+  ON_CALL (*processable_, process_block (_, _, _))
+    .WillByDefault ([&] (auto, auto &, auto &) {
+      std::lock_guard<std::mutex> lock (mutex);
+      process_order.push_back (process_order.size ());
+    });
 
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
@@ -127,7 +132,7 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_);
+  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
 
   EXPECT_THAT (process_order, ElementsAre (0, 1, 2));
   scheduler_->terminate_threads ();
@@ -184,7 +189,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   EngineProcessTimeInfo time_info{};
   time_info.nframes_ = new_block_length;
-  scheduler_->run_cycle (time_info, 0, *transport_);
+  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
 
   scheduler_->terminate_threads ();
 }

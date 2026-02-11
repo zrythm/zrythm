@@ -6,6 +6,12 @@
 #include "dsp/graph_builder.h"
 #include "dsp/port.h"
 
+namespace zrythm::dsp
+{
+class Metronome;
+class Fader;
+}
+
 namespace zrythm::structure::project
 {
 
@@ -14,7 +20,14 @@ class Project;
 class ProjectGraphBuilder final : public dsp::graph::IGraphBuilder
 {
 public:
-  ProjectGraphBuilder (Project &project) : project_ (&project) { }
+  ProjectGraphBuilder (
+    Project        &project,
+    dsp::Metronome &metronome,
+    dsp::Fader     &monitor_fader)
+      : project_ (&project), metronome_ (&metronome),
+        monitor_fader_ (&monitor_fader)
+  {
+  }
 
   /**
    * Adds a new connection for the given src and dest ports and validates the
@@ -32,6 +45,8 @@ private:
   void build_graph_impl (dsp::graph::Graph &graph) override;
 
 private:
-  Project * project_{};
+  Project *        project_{};
+  dsp::Metronome * metronome_{};
+  dsp::Fader *     monitor_fader_{};
 };
 }

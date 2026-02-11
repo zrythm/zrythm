@@ -43,7 +43,7 @@ public:
   MOCK_METHOD (
     void,
     custom_process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &),
+    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
     (noexcept, override));
 
 private:
@@ -65,12 +65,15 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void expect_passthrough_at_half_volume ()
   {
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillRepeatedly ([&] (EngineProcessTimeInfo time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillRepeatedly ([&] (EngineProcessTimeInfo time_nfo, auto &, auto &) {
         // Simple passthrough
         auto &in =
           processor_->get_input_ports ()
@@ -107,6 +110,7 @@ protected:
   nframes_t                      max_block_length_{ 1024 };
   std::unique_ptr<TestProcessor> processor_;
   std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (ProcessorBaseTest, ConstructionAndBasicProperties)
@@ -154,7 +158,7 @@ TEST_F (ProcessorBaseTest, Processing)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  processor_->process_block (time_nfo, *mock_transport_);
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify processing (half volume)
   for (int i = 0; i < 512; i++)
@@ -191,7 +195,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   };
 
   // First process call
-  processor_->process_block (time_nfo, *mock_transport_);
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify first processing (should be 0.5 due to half volume)
   for (int i = 0; i < 512; i++)
@@ -215,7 +219,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
     }
 
   // Second process call - should produce zeros since input was cleared
-  processor_->process_block (time_nfo, *mock_transport_);
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify second processing produces zeros (no accumulation)
   for (int i = 0; i < 512; i++)
@@ -232,7 +236,7 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
     }
 
   // Third process call
-  processor_->process_block (time_nfo, *mock_transport_);
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify third processing (should be 0.4 due to half volume)
   for (int i = 0; i < 512; i++)
@@ -309,15 +313,17 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       .nframes_ = max_block_length_ + 100 // Exceeds max_block_length_
     };
 
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
         // Verify correction was applied
         EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_);
         EXPECT_EQ (corrected_time_nfo.local_offset_, 0);
         EXPECT_EQ (corrected_time_nfo.g_start_frame_w_offset_, 0);
       });
 
-    processor_->process_block (time_nfo, *mock_transport_);
+    processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
   // Test Case 2: local_offset + nframes exceeds max_block_length_
@@ -329,15 +335,17 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       .nframes_ = 600 // 500 + 600 = 1100 > max_block_length_ (1024)
     };
 
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
         // Verify correction was applied
         EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_ - 500);
         EXPECT_EQ (corrected_time_nfo.local_offset_, 500);
         EXPECT_EQ (corrected_time_nfo.g_start_frame_w_offset_, 500);
       });
 
-    processor_->process_block (time_nfo, *mock_transport_);
+    processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
   // Test Case 3: local_offset >= max_block_length_ (should result in 0 frames)
@@ -349,8 +357,10 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       .nframes_ = 100
     };
 
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
         // Verify correction was applied - should process 0 frames
         EXPECT_EQ (corrected_time_nfo.nframes_, 0);
         EXPECT_LT (corrected_time_nfo.local_offset_, max_block_length_);
@@ -358,7 +368,7 @@ TEST_F (ProcessorBaseTest, EdgeCases)
           corrected_time_nfo.g_start_frame_w_offset_, max_block_length_);
       });
 
-    processor_->process_block (time_nfo, *mock_transport_);
+    processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
   // Test Case 4: Edge case where local_offset + nframes equals
@@ -371,15 +381,17 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       .nframes_ = max_block_length_ // Exactly matches max_block_length_
     };
 
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
         // Verify no correction was applied
         EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_);
         EXPECT_EQ (corrected_time_nfo.local_offset_, 0);
         EXPECT_EQ (corrected_time_nfo.g_start_frame_w_offset_, 0);
       });
 
-    processor_->process_block (time_nfo, *mock_transport_);
+    processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
   // Test Case 5: Small offset with nframes exceeding max_block_length_
@@ -391,15 +403,17 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       .nframes_ = max_block_length_ // 100 + 1024 > max_block_length_ (1024)
     };
 
-    EXPECT_CALL (*processor_, custom_process_block (::testing::_, ::testing::_))
-      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &) {
+    EXPECT_CALL (
+      *processor_,
+      custom_process_block (::testing::_, ::testing::_, ::testing::_))
+      .WillOnce ([&] (EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
         // Verify correction was applied
         EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_ - 100);
         EXPECT_EQ (corrected_time_nfo.local_offset_, 100);
         EXPECT_EQ (corrected_time_nfo.g_start_frame_w_offset_, 1100);
       });
 
-    processor_->process_block (time_nfo, *mock_transport_);
+    processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 }
 

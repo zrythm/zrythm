@@ -24,6 +24,7 @@ Project::Project (
   dsp::IHardwareAudioInterface &hw_interface,
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
+  dsp::Metronome                                 &metronome,
   dsp::Fader                                     &monitor_fader,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
@@ -73,8 +74,12 @@ Project::Project (
           },
           this)),
       audio_engine_ (
-        utils::make_qobject_unique<
-          dsp::AudioEngine> (*transport_, hw_interface, graph_dispatcher_, this)),
+        utils::make_qobject_unique<dsp::AudioEngine> (
+          *transport_,
+          hw_interface,
+          graph_dispatcher_,
+          tempo_map_,
+          this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
           *file_audio_source_registry_,
@@ -101,7 +106,7 @@ Project::Project (
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
           structure::arrangement::ArrangerObjectFactory::Dependencies{
-            .tempo_map_ = get_tempo_map (),
+            .tempo_map_ = tempo_map (),
             .object_registry_ = *arranger_object_registry_,
             .file_audio_source_registry_ = *file_audio_source_registry_,
             .musical_mode_getter_ =
@@ -121,7 +126,7 @@ Project::Project (
                   app_settings_.automationCurveAlgorithm ());
               } },
           [&] () { return audio_engine_->get_sample_rate (); },
-          [&] () { return get_tempo_map ().tempo_at_tick (units::ticks (0)); })),
+          [&] () { return tempo_map ().tempo_at_tick (units::ticks (0)); })),
       plugin_factory_ (
         utils::make_qobject_unique<plugins::PluginFactory> (
           plugins::PluginFactory::CommonFactoryDependencies{
@@ -165,10 +170,10 @@ Project::Project (
           *arranger_object_registry_,
           *file_audio_source_registry_,
           this)),
-      monitor_fader_ (monitor_fader),
+      monitor_fader_ (monitor_fader), metronome_ (metronome),
       graph_dispatcher_ (
         std::unique_ptr<dsp::graph::IGraphBuilder> (
-          new ProjectGraphBuilder (*this)),
+          new ProjectGraphBuilder (*this, metronome, monitor_fader)),
         std::views::single (&audio_engine_->get_monitor_out_port ())
           | std::ranges::to<std::vector<dsp::graph::IProcessable *>> (),
         hw_interface_,
@@ -183,56 +188,6 @@ Project::Project (
           QMetaObject::invokeMethod (context, func);
         })
 {
-  const auto setup_metronome = [&] () {
-    const auto load_metronome_sample = [] (QFile f) {
-      if (!f.open (QFile::ReadOnly | QFile::Text))
-        {
-          throw std::runtime_error (
-            fmt::format ("Failed to open file at {}", f.fileName ()));
-        }
-      const QByteArray                         wavBytes = f.readAll ();
-      std::unique_ptr<juce::AudioFormatReader> reader;
-      {
-        auto stream = std::make_unique<juce::MemoryInputStream> (
-          wavBytes.constData (), static_cast<size_t> (wavBytes.size ()), false);
-        juce::WavAudioFormat wavFormat;
-        reader.reset (wavFormat.createReaderFor (stream.release (), false));
-      }
-      if (!reader)
-        throw std::runtime_error ("Not a valid WAV");
-
-      const int numChannels = static_cast<int> (reader->numChannels);
-      const int numSamples = static_cast<int> (reader->lengthInSamples);
-
-      juce::AudioBuffer<float> buffer;
-      buffer.setSize (numChannels, numSamples);
-
-      reader->read (&buffer, 0, numSamples, 0, true, numChannels > 1);
-      return buffer;
-    };
-    metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      get_tempo_map (),
-      load_metronome_sample (
-        QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
-      load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
-      app_settings_.metronomeEnabled (), app_settings_.metronomeVolume (), this);
-    QObject::connect (
-      metronome_.get (), &dsp::Metronome::volumeChanged, &app_settings_,
-      [this] (float val) { app_settings_.set_metronomeVolume (val); });
-    QObject::connect (
-      &app_settings_, &utils::AppSettings::metronomeVolumeChanged,
-      metronome_.get (), [this] (float val) { metronome_->setVolume (val); });
-    QObject::connect (
-      metronome_.get (), &dsp::Metronome::enabledChanged, &app_settings_,
-      [this] (bool val) { app_settings_.set_metronomeEnabled (val); });
-    QObject::connect (
-      &app_settings_, &utils::AppSettings::metronomeEnabledChanged,
-      metronome_.get (), [this] (bool val) { metronome_->setEnabled (val); });
-  };
-  setup_metronome ();
-
   // Keep up-to-date realtime cache of tracks
   // Note: this is thread-safe since tracks are only added/removed while the
   // graph is paused
@@ -297,9 +252,15 @@ Project::Project (
 Project::~Project () = default;
 
 dsp::Fader &
-Project::monitor_fader ()
+Project::monitor_fader () const
 {
   return monitor_fader_;
+}
+
+dsp::Metronome &
+Project::metronome () const
+{
+  return metronome_;
 }
 
 structure::tracks::FinalTrackDependencies
@@ -460,12 +421,6 @@ structure::scenes::ClipPlaybackService *
 Project::clipPlaybackService () const
 {
   return clip_playback_service_.get ();
-}
-
-dsp::Metronome *
-Project::metronome () const
-{
-  return metronome_.get ();
 }
 
 dsp::Transport *

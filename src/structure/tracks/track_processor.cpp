@@ -748,7 +748,8 @@ TrackProcessor::fill_audio_events (
 void
 TrackProcessor::custom_process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
   // First, clear all output
   if (is_audio ())

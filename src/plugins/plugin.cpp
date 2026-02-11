@@ -88,14 +88,15 @@ Plugin::custom_prepare_for_processing (
 void
 Plugin::custom_process_block (
   const EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport      &transport) noexcept
+  const dsp::ITransport      &transport,
+  const dsp::TempoMap        &tempo_map) noexcept
 {
   if (instantiation_failed_)
     return;
 
   if (!currently_enabled_rt ())
     {
-      process_passthrough_impl (time_nfo, transport);
+      process_passthrough_impl (time_nfo, transport, tempo_map);
       return;
     }
 
@@ -111,10 +112,11 @@ Plugin::custom_release_resources ()
 void
 Plugin::process_passthrough_impl (
   const EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport      &transport) noexcept
+  const dsp::ITransport      &transport,
+  const dsp::TempoMap        &tempo_map) noexcept
 {
   // ProcessorBase's processing logic does passthrough
-  dsp::ProcessorBase::custom_process_block (time_nfo, transport);
+  dsp::ProcessorBase::custom_process_block (time_nfo, transport, tempo_map);
 }
 
 // ============================================================================

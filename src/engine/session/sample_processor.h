@@ -61,7 +61,8 @@ public:
    */
   void process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept override;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept override;
 
   utils::Utf8String get_node_name () const override
   {

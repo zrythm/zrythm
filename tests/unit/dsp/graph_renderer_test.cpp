@@ -123,10 +123,12 @@ protected:
     ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
-    ON_CALL (*processable_, process_block (_, _))
-      .WillByDefault ([this] (auto time_nfo, const auto &transport) {
+    ON_CALL (*processable_, process_block (_, _, _))
+      .WillByDefault ([this] (auto time_nfo, const auto &transport, const auto &) {
         return sine_generator_->process_block (time_nfo, transport);
       });
+
+    tempo_map_ = std::make_unique<TempoMap> (options_.sample_rate_);
   }
 
   graph::GraphNodeCollection create_simple_test_collection ()
@@ -167,9 +169,10 @@ protected:
     auto no_latency_generator = std::make_unique<SineWaveGenerator> (
       *audio_port_, 0.05f, 440.0f, 48000.0f, 0);
     auto * no_latency_generator_ptr = no_latency_generator.get ();
-    ON_CALL (*processable_no_latency, process_block (_, _))
+    ON_CALL (*processable_no_latency, process_block (_, _, _))
       .WillByDefault (
-        [no_latency_generator_ptr] (auto time_nfo, const auto &transport) {
+        [no_latency_generator_ptr] (
+          auto time_nfo, const auto &transport, const auto &) {
           no_latency_generator_ptr->process_block (time_nfo, transport);
         });
 
@@ -185,9 +188,10 @@ protected:
     auto latency_generator = std::make_unique<SineWaveGenerator> (
       *extra_audio_port_, 0.05f, 660.0f, 48000.0f, latency);
     auto * latency_generator_ptr = latency_generator.get ();
-    ON_CALL (*processable_with_latency, process_block (_, _))
+    ON_CALL (*processable_with_latency, process_block (_, _, _))
       .WillByDefault (
-        [latency_generator_ptr] (auto time_nfo, const auto &transport) {
+        [latency_generator_ptr] (
+          auto time_nfo, const auto &transport, const auto &) {
           latency_generator_ptr->process_block (time_nfo, transport);
         });
 
@@ -292,6 +296,7 @@ protected:
   std::unique_ptr<AudioPort>                    extra_audio_port_for_summing_;
   std::vector<std::unique_ptr<MockProcessable>> mixed_latency_processables_;
   std::unique_ptr<SineWaveGenerator>            sine_generator_;
+  std::unique_ptr<TempoMap>                     tempo_map_;
 };
 
 TEST_F (GraphRendererTest, RenderEmptyRange)
@@ -302,7 +307,8 @@ TEST_F (GraphRendererTest, RenderEmptyRange)
   bool fail_handler_called{};
   auto future =
     GraphRenderer::render_async (
-      options_, std::move (collection), [] (auto func) { func (); }, range)
+      options_, std::move (collection), [] (auto func) { func (); }, range,
+      *tempo_map_)
       .onFailed ([&fail_handler_called] () {
         fail_handler_called = true;
         return juce::AudioSampleBuffer{};
@@ -319,11 +325,11 @@ TEST_F (GraphRendererTest, RenderSingleBlock)
   auto range = create_test_range (0, 256);
 
   // Expect processing to be called once
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (1);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -341,11 +347,11 @@ TEST_F (GraphRendererTest, RenderMultipleBlocks)
   auto range = create_test_range (0, 512); // 2 blocks
 
   // Expect processing to be called twice
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -368,15 +374,16 @@ TEST_F (GraphRendererTest, RenderWithLatency)
 
   // Expect processing with latency compensation
   SineWaveGenerator generator{ *audio_port_, 0.1f, 440.0f, 48000.0f, 128 };
-  ON_CALL (*processable_, process_block (_, _))
-    .WillByDefault ([&generator] (auto time_nfo, const auto &transport) {
-      generator.process_block (time_nfo, transport);
-    });
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  ON_CALL (*processable_, process_block (_, _, _))
+    .WillByDefault (
+      [&generator] (auto time_nfo, const auto &transport, const auto &) {
+        generator.process_block (time_nfo, transport);
+      });
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -404,12 +411,14 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
   auto range = create_test_range (0, 256);
 
   // Expect processing for both nodes
-  EXPECT_CALL (*mixed_latency_processables_[0], process_block (_, _)).Times (1);
-  EXPECT_CALL (*mixed_latency_processables_[1], process_block (_, _)).Times (2);
+  EXPECT_CALL (*mixed_latency_processables_[0], process_block (_, _, _))
+    .Times (1);
+  EXPECT_CALL (*mixed_latency_processables_[1], process_block (_, _, _))
+    .Times (2);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -464,11 +473,11 @@ TEST_F (GraphRendererTest, RenderDifferentBlockLengths)
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 256); // 2 blocks of 128
 
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto future = GraphRenderer::render_async (
     block_options, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -493,7 +502,7 @@ TEST_F (GraphRendererTest, ResourceManagement)
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -510,11 +519,11 @@ TEST_F (GraphRendererTest, AudioPortCollection)
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 256);
 
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (1);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (1);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -532,12 +541,12 @@ TEST_F (GraphRendererTest, LargeRangeRendering)
   auto range = create_test_range (0, 48000); // 1 second at 48kHz
 
   // Should process in multiple blocks
-  EXPECT_CALL (*processable_, process_block (_, _))
+  EXPECT_CALL (*processable_, process_block (_, _, _))
     .Times (static_cast<int> (std::ceil (48000.0 / 256.0))); // 188 blocks
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   auto result = future.result ();
   future.waitForFinished ();
@@ -556,7 +565,7 @@ TEST_F (GraphRendererTest, RenderWithCancellation)
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   // Cancel immediately
   future.cancel ();
@@ -572,11 +581,11 @@ TEST_F (GraphRendererTest, RenderWithProgressReporting)
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 512); // Multiple blocks
 
-  EXPECT_CALL (*processable_, process_block (_, _)).Times (2);
+  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto future = GraphRenderer::render_async (
     options_, std::move (collection),
-    [] (std::function<void ()> func) { func (); }, range);
+    [] (std::function<void ()> func) { func (); }, range, *tempo_map_);
 
   // No progress yet
   EXPECT_EQ (future.progressValue (), 0);

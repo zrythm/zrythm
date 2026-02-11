@@ -5,6 +5,7 @@
 
 #include "dsp/graph_node.h"
 #include "dsp/itransport.h"
+#include "dsp/tempo_map.h"
 
 #include <gmock/gmock.h>
 
@@ -23,7 +24,7 @@ public:
   MOCK_METHOD (
     void,
     process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &),
+    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
     (noexcept, override));
   MOCK_METHOD (void, release_resources, (), (override));
 };

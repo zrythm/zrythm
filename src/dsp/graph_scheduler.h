@@ -127,11 +127,14 @@ public:
    *
    * @param time_nfo
    * @param remaining_preroll_frames
+   * @param transport Transport state for this cycle
+   * @param tempo_map Tempo map for this cycle
    */
   void run_cycle (
     EngineProcessTimeInfo  time_nfo,
     nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport);
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map);
 
   /**
    * @brief Returns whether the given thread is one of the graph threads.
@@ -154,6 +157,18 @@ public:
   {
     assert (current_transport_.has_value ());
     return current_transport_->get ();
+  }
+
+  /**
+   * @brief Returns the TempoMap instance to be used in this cycle.
+   *
+   * To be called during processing for example by GraphNode's.
+   * @return auto&
+   */
+  auto &get_tempo_map_for_this_cycle () const
+  {
+    assert (current_tempo_map_.has_value ());
+    return current_tempo_map_->get ();
   }
 
 private:
@@ -187,6 +202,11 @@ private:
    * @brief Transport for the current process cycle.
    */
   std::optional<std::reference_wrapper<const dsp::ITransport>> current_transport_;
+
+  /**
+   * @brief TempoMap for the current process cycle.
+   */
+  std::optional<std::reference_wrapper<const dsp::TempoMap>> current_tempo_map_;
 
   /**
    * @brief Number of preroll frames remaining in the current process cycle.

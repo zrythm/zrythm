@@ -239,7 +239,8 @@ GraphThread::run_worker () noexcept
 
       to_run->process (
         scheduler_.get_time_nfo (), scheduler_.get_remaining_preroll_frames (),
-        scheduler_.get_transport_for_this_cycle ());
+        scheduler_.get_transport_for_this_cycle (),
+        scheduler_.get_tempo_map_for_this_cycle ());
 
       /* if there are no outgoing edges, this is a terminal node */
       if (to_run->feeds ().empty ())

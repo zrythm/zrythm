@@ -85,7 +85,8 @@ DspGraphDispatcher::start_cycle (
   const ITransport     &current_transport_state,
   EngineProcessTimeInfo time_nfo,
   nframes_t             remaining_latency_preroll,
-  bool                  realtime_context) noexcept
+  bool                  realtime_context,
+  const dsp::TempoMap  &tempo_map) noexcept
 {
   if (scheduler_ == nullptr)
     {
@@ -104,7 +105,7 @@ DspGraphDispatcher::start_cycle (
   preprocess_at_start_of_cycle (time_nfo);
 
   scheduler_->run_cycle (
-    time_nfo, remaining_latency_preroll, current_transport_state);
+    time_nfo, remaining_latency_preroll, current_transport_state, tempo_map);
 }
 
 void

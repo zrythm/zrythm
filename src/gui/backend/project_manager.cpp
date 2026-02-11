@@ -182,6 +182,7 @@ ProjectManager::create_default (
           [this] (plugins::Plugin &plugin) {
             return create_window_for_plugin (plugin);
           },
+          *zapp->controlRoom ()->metronome (),
           *zapp->controlRoom ()->monitorFader ());
         prj_ui_state =
           utils::make_qobject_unique<ProjectUiState> (std::move (prj));

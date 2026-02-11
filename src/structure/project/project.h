@@ -21,6 +21,11 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/app_settings.h"
 
+namespace zrythm::dsp
+{
+class Fader;
+}
+
 namespace zrythm::structure::project
 {
 
@@ -56,7 +61,6 @@ class Project final : public QObject
     zrythm::structure::scenes::ClipPlaybackService * clipPlaybackService READ
       clipPlaybackService CONSTANT FINAL)
   Q_PROPERTY (zrythm::dsp::AudioEngine * engine READ engine CONSTANT FINAL)
-  Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
   Q_PROPERTY (
@@ -85,6 +89,7 @@ public:
     dsp::IHardwareAudioInterface &hw_interface,
     std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
+    dsp::Metronome                                 &metronome,
     dsp::Fader                                     &monitor_fader,
     QObject *                                       parent = nullptr);
   ~Project () override;
@@ -97,7 +102,6 @@ public:
   structure::tracks::Tracklist *               tracklist () const;
   structure::scenes::ClipLauncher *            clipLauncher () const;
   structure::scenes::ClipPlaybackService *     clipPlaybackService () const;
-  dsp::Metronome *                             metronome () const;
   dsp::Transport *                             getTransport () const;
   dsp::AudioEngine *                           engine () const;
   dsp::TempoMapWrapper *                       getTempoMap () const;
@@ -108,8 +112,10 @@ public:
   Q_SIGNAL void aboutToBeDeleted ();
 
   // =========================================================
+  // TODO: Remove these accessors - QML should access via ControlRoom instead
 
-  dsp::Fader &monitor_fader ();
+  dsp::Fader     &monitor_fader () const;
+  dsp::Metronome &metronome () const;
 
   // TODO: delete this getter, no one else should use factory directly
   auto * arrangerObjectFactory () const
@@ -188,7 +194,7 @@ public:
     return get_arranger_object_registry ().find_by_id (id);
   }
 
-  const auto &get_tempo_map () const { return tempo_map_; }
+  const auto &tempo_map () const { return tempo_map_; }
 
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
@@ -246,8 +252,6 @@ private:
   /** Snap/Grid info for the timeline. */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
 
-  utils::QObjectUniquePtr<dsp::Metronome> metronome_;
-
 public:
   /**
    * Timeline metadata like BPM, time signature, etc.
@@ -296,7 +300,8 @@ private:
   utils::QObjectUniquePtr<structure::arrangement::TempoObjectManager>
     tempo_object_manager_;
 
-  dsp::Fader &monitor_fader_;
+  dsp::Fader     &monitor_fader_;
+  dsp::Metronome &metronome_;
 
   /**
    * @brief Graph dispatcher.

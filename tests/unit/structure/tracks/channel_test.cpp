@@ -34,6 +34,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void TearDown () override
@@ -95,6 +96,7 @@ protected:
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   nframes_t            max_block_length_{ 1024 };
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;
@@ -255,7 +257,7 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
       .g_start_frame_w_offset_ = 0,
       .local_offset_ = 0,
       .nframes_ = max_block_length_ },
-    *mock_transport_);
+    *mock_transport_, *tempo_map_);
   EXPECT_TRUE (callback_called);
 }
 

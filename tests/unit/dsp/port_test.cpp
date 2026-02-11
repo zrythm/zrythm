@@ -22,7 +22,7 @@ public:
   MOCK_METHOD (
     void,
     process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &),
+    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
     (noexcept, override));
 };
 

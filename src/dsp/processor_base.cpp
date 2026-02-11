@@ -114,7 +114,8 @@ ProcessorBase::release_resources ()
 void
 ProcessorBase::process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
   // correct invalid time info
   if (
@@ -139,11 +140,11 @@ ProcessorBase::process_block (
   // process all parameters first
   for (const auto &param : processing_caches_->live_params_)
     {
-      param->process_block (time_nfo, transport);
+      param->process_block (time_nfo, transport, tempo_map);
     }
 
   // do processor logic
-  custom_process_block (time_nfo, transport);
+  custom_process_block (time_nfo, transport, tempo_map);
 
   // clear input ports for next cycle
   for (const auto &in_port_var : processing_caches_->live_input_ports_)
@@ -159,7 +160,8 @@ ProcessorBase::process_block (
 void
 ProcessorBase::custom_process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
 

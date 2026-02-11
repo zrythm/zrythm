@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/fader.h"
 #include "dsp/graph.h"
+#include "dsp/metronome.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/channel_subgraph_builder.h"
@@ -119,10 +121,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto &engine = project_->audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
   auto * tracklist = project_->tracklist ();
-  auto * monitor_fader = &project->monitor_fader ();
-  // auto *      hw_in_processor = engine->hw_in_processor_.get ();
   auto * transport = project->getTransport ();
-  auto  &metronome = *project->metronome ();
   auto * midi_panic_processor = engine->midi_panic_processor ();
 
   const auto add_node_for_processable = [&] (auto &processable) {
@@ -150,10 +149,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 #endif
 
   // add metronome processor
-  dsp::ProcessorGraphBuilder::add_nodes (graph, metronome);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *metronome_);
 
   /* add the monitor fader */
-  dsp::ProcessorGraphBuilder::add_nodes (graph, *monitor_fader);
+  dsp::ProcessorGraphBuilder::add_nodes (graph, *monitor_fader_);
 
   /* add the initial processor */
   auto * initial_processor_node = graph.add_initial_processor ();
@@ -232,11 +231,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // connect metronome processor
   {
-    dsp::ProcessorGraphBuilder::add_connections (graph, metronome);
-    auto  &monitor_in = monitor_fader->get_stereo_in_port ();
+    dsp::ProcessorGraphBuilder::add_connections (graph, *metronome_);
+    auto  &monitor_in = monitor_fader_->get_stereo_in_port ();
     auto * monitor_in_node =
       graph.get_nodes ().find_node_for_processable (monitor_in);
-    auto * metronome_out = metronome.get_output_audio_port_non_rt ();
+    auto * metronome_out = metronome_->get_output_audio_port_non_rt ();
     auto * metronome_out_node =
       graph.get_nodes ().find_node_for_processable (*metronome_out);
     metronome_out_node->connect_to (*monitor_in_node);
@@ -251,14 +250,14 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   }
 
   /* connect the monitor fader */
-  dsp::ProcessorGraphBuilder::add_connections (graph, *monitor_fader);
+  dsp::ProcessorGraphBuilder::add_connections (graph, *monitor_fader_);
 
 // TODO: connect the sample processor output to the monitor fader output so we
 // hear the samples
 #if 0
   {
     const auto &sp_fader_outs = sample_processor->fader_->get_output_ports ();
-    const auto &monitor_fader_outs = monitor_fader->get_output_ports ();
+    const auto &monitor_fader_outs = monitor_fader_->get_output_ports ();
     for (
       const auto &[sp_out, mf_out] :
       std::views::zip (sp_fader_outs, monitor_fader_outs))
@@ -274,7 +273,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   // connect monitor fader output to engine monitor output
   {
-    const auto &mf_out = monitor_fader->get_output_ports ().front ();
+    const auto &mf_out = monitor_fader_->get_output_ports ().front ();
     const auto &monitor_out = engine->get_monitor_out_port ();
     auto *      mf_out_node = graph.get_nodes ().find_node_for_processable (
       *mf_out.get_object_as<dsp::AudioPort> ());
@@ -315,7 +314,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               {
                 process_track_connections (
                   tr, graph, *this, *transport, *project,
-                  initial_processor_node, *midi_panic_processor, monitor_fader);
+                  initial_processor_node, *midi_panic_processor, monitor_fader_);
               }
 
               // connect the channel
@@ -360,7 +359,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                     std::is_same_v<TrackT, structure::tracks::MasterTrack>)
                     {
                       auto &monitor_fader_in =
-                        monitor_fader->get_stereo_in_port ();
+                        monitor_fader_->get_stereo_in_port ();
                       connect_ports (
                         &ch->get_audio_post_fader ().get_audio_out_port (),
                         &monitor_fader_in);
@@ -425,8 +424,9 @@ ProjectGraphBuilder::can_ports_be_connected (
 {
   z_debug ("validating for {} to {}", src.get_label (), dest.get_label ());
 
-  ProjectGraphBuilder builder (project);
-  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (
+    project, project.metronome (), project.monitor_fader ());
+  dsp::graph::Graph graph;
   builder.build_graph (graph);
 
   /* connect the src/dest if not NULL */

@@ -23,8 +23,9 @@ ProjectExporter::exportAudio (
   };
   EngineState state{};
   project->engine ()->wait_for_pause (state, false, true);
-  structure::project::ProjectGraphBuilder builder (*project);
-  dsp::graph::Graph                       graph;
+  structure::project::ProjectGraphBuilder builder (
+    *project, project->metronome (), project->monitor_fader ());
+  dsp::graph::Graph graph;
   builder.build_graph (graph);
 
   // Prune graph to master output
@@ -49,7 +50,8 @@ ProjectExporter::exportAudio (
     },
     std::make_pair (
       units::samples (marker_track->get_start_marker ()->position ()->samples ()),
-      units::samples (marker_track->get_end_marker ()->position ()->samples ())));
+      units::samples (marker_track->get_end_marker ()->position ()->samples ())),
+    project->tempo_map ());
 
   auto combined_future =
     QtConcurrent::run (

@@ -32,11 +32,13 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
   }
 
   std::unique_ptr<MidiPort>                  input_port;
   std::unique_ptr<MidiPort>                  output_port;
   std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (MidiPortTest, BasicProperties)
@@ -62,7 +64,7 @@ TEST_F (MidiPortTest, MidiEventHandling)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  input_port->process_block (time_info, *mock_transport_);
+  input_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify event was processed
   EXPECT_TRUE (input_port->midi_events_.queued_events_.empty ());
@@ -84,7 +86,7 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
     .local_offset_ = 0,
     .nframes_ = BLOCK_LENGTH
   };
-  output_port->process_block (time_info, *mock_transport_);
+  output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify event was added to ring buffer
   EXPECT_NE (output_port->midi_ring_, nullptr);

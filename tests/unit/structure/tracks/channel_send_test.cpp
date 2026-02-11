@@ -37,6 +37,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void TearDown () override
@@ -58,6 +59,7 @@ protected:
   std::unique_ptr<ChannelSend> audio_send_;
   std::unique_ptr<ChannelSend> midi_send_;
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
 };
 
 TEST_F (ChannelSendTest, ConstructionAndBasicProperties)
@@ -159,7 +161,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
     .nframes_ = 512
   };
   fill_input_bufs ();
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   for (int i = 0; i < 512; i++)
     {
@@ -171,7 +173,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (0.5f));
   fill_input_bufs ();
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   for (int i = 0; i < 512; i++)
     {
@@ -183,7 +185,7 @@ TEST_F (ChannelSendTest, AudioProcessing)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (2.0f));
   fill_input_bufs ();
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   for (int i = 0; i < 512; i++)
     {
@@ -213,7 +215,7 @@ TEST_F (ChannelSendTest, MidiProcessing)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  midi_send_->process_block (time_nfo, *mock_transport_);
+  midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
@@ -326,11 +328,13 @@ TEST_F (ChannelSendTest, EdgeCases)
     .local_offset_ = 0,
     .nframes_ = 0
   };
-  EXPECT_NO_THROW (audio_send_->process_block (time_nfo, *mock_transport_));
+  EXPECT_NO_THROW (
+    audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_));
 
   // Test with maximum amount
   audio_send_->amountParam ()->setBaseValue (1.0f);
-  EXPECT_NO_THROW (audio_send_->process_block (time_nfo, *mock_transport_));
+  EXPECT_NO_THROW (
+    audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_));
 
   // Test with zero amount (silence)
   audio_send_->amountParam ()->setBaseValue (0.0f);
@@ -345,7 +349,7 @@ TEST_F (ChannelSendTest, EdgeCases)
     }
 
   time_nfo.nframes_ = 10;
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   for (int i = 0; i < 10; i++)
     {
@@ -383,7 +387,7 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 
   // First process call
   fill_input_bufs (1.f, 2.f);
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output contains expected values
   for (int i = 0; i < 512; i++)
@@ -394,7 +398,7 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 
   // Second process call with same input data
   fill_input_bufs (1.f, 2.f);
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output still contains expected values (no accumulation)
   for (int i = 0; i < 512; i++)
@@ -405,7 +409,7 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 
   // Third process call with different input data
   fill_input_bufs (0.5f, 1.5f);
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output contains new expected values
   for (int i = 0; i < 512; i++)
@@ -416,7 +420,7 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
 
   // Fourth process call with zero input
   fill_input_bufs (0.f, 0.f);
-  audio_send_->process_block (time_nfo, *mock_transport_);
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is zero (no residual from previous calls)
   for (int i = 0; i < 512; i++)
@@ -452,7 +456,7 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
 
   // First process call
   add_events ();
-  midi_send_->process_block (time_nfo, *mock_transport_);
+  midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
@@ -462,7 +466,7 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
 
   // Second process call with same input
   add_events ();
-  midi_send_->process_block (time_nfo, *mock_transport_);
+  midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied again (no accumulation)
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
@@ -471,7 +475,7 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
   midi_in.midi_events_.active_events_.clear ();
   midi_out.midi_events_.queued_events_.clear ();
 
-  midi_send_->process_block (time_nfo, *mock_transport_);
+  midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify no events are output when input is empty
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);

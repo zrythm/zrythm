@@ -184,7 +184,8 @@ public:
 
   [[gnu::hot]] void custom_process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept final;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept final;
 
   void custom_release_resources () final;
 
@@ -256,7 +257,8 @@ private:
    */
   [[gnu::hot]] virtual void process_passthrough_impl (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept;
 
   // ============================================================================
 

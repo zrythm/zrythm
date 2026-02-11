@@ -25,7 +25,8 @@ ApplicationWindow {
     let newWindow = projectWindowComponent.createObject(projectUiState, {
       "projectUiState": projectUiState,
       "deviceManager": deviceManager,
-      "appSettings": appSettings
+      "appSettings": appSettings,
+      "controlRoom": app.controlRoom
     }) as ProjectWindow;
     newWindow.show();
     root.close();

@@ -29,6 +29,7 @@
 #pragma once
 
 #include "dsp/itransport.h"
+#include "dsp/tempo_map.h"
 #include "utils/utf8_string.h"
 
 #include <QObject>
@@ -85,7 +86,8 @@ public:
 
   [[gnu::hot]] virtual void process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept [[clang::nonblocking]] { };
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]] { };
 
   /**
    * @brief Called to release resources allocated by @ref
@@ -155,7 +157,8 @@ public:
   [[gnu::hot]] void process (
     EngineProcessTimeInfo  time_nfo,
     nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport) const;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) const;
 
   nframes_t get_single_playback_latency () const
   {
@@ -215,7 +218,8 @@ private:
   [[gnu::hot]] void compensate_latency (
     EngineProcessTimeInfo &time_nfo,
     nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport) const;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) const;
 
   /**
    * Processes audio in chunks when loop points are encountered.
@@ -228,7 +232,8 @@ private:
    */
   [[gnu::hot]] void process_chunks_after_splitting_at_loop_points (
     EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport &transport) const;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) const;
 
 public:
   /** Incoming node count. */

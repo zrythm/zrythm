@@ -47,12 +47,14 @@ public:
    * @param realtime_context Whether this is called in a realtime context.
    * @param remaining_latency_preroll Remaining number of playback latency
    * preroll samples for this cycle.
+   * @param tempo_map Tempo map for this cycle.
    */
   void start_cycle (
     const dsp::ITransport &current_transport_state,
     EngineProcessTimeInfo  time_nfo,
     nframes_t              remaining_latency_preroll,
-    bool                   realtime_context) noexcept [[clang::nonblocking]];
+    bool                   realtime_context,
+    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]];
 
   /**
    * Returns the max playback latency of the trigger

@@ -1,6 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <utility>
 
 #include "dsp/metronome.h"
@@ -9,14 +10,12 @@ namespace zrythm::dsp
 {
 Metronome::Metronome (
   ProcessorBaseDependencies dependencies,
-  const dsp::TempoMap      &tempo_map,
   juce::AudioSampleBuffer   emphasis_sample,
   juce::AudioSampleBuffer   normal_sample,
   bool                      initially_enabled,
   float                     initial_volume,
   QObject *                 parent)
     : QObject (parent), dsp::AudioSampleProcessor (dependencies),
-      tempo_map_ (tempo_map),
       emphasis_sample_buffer_ (std::move (emphasis_sample)),
       normal_sample_buffer_ (std::move (normal_sample)),
       volume_ (initial_volume), enabled_ (initially_enabled)
@@ -26,6 +25,7 @@ Metronome::Metronome (
 
 void
 Metronome::find_and_queue_metronome_samples (
+  const dsp::TempoMap  &tempo_map,
   const units::sample_t start_pos,
   const units::sample_t end_pos,
   const units::sample_t loffset)
@@ -34,9 +34,10 @@ Metronome::find_and_queue_metronome_samples (
   if (start_pos == end_pos) [[unlikely]]
     return;
 
-  const auto frame_to_musical_position = [this] (const units::sample_t frame) {
-    return tempo_map_.samples_to_musical_position (frame);
-  };
+  const auto frame_to_musical_position =
+    [&tempo_map] (const units::sample_t frame) {
+      return tempo_map.samples_to_musical_position (frame);
+    };
 
   if (
     frame_to_musical_position (start_pos)
@@ -78,12 +79,14 @@ Metronome::find_and_queue_metronome_samples (
 void
 Metronome::custom_process_block (
   EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport) noexcept
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) noexcept
 {
   if (!enabled_.load ())
     {
       // Still need to call parent to clear the output buffer
-      AudioSampleProcessor::custom_process_block (time_nfo, transport);
+      AudioSampleProcessor::custom_process_block (
+        time_nfo, transport, tempo_map);
       return;
     }
 
@@ -109,27 +112,29 @@ Metronome::custom_process_block (
           const auto loop_start = loop_points.first;
           const auto loop_end = loop_points.second;
           /* find each bar / beat change until loop end */
-          find_and_queue_metronome_samples (playhead_before, loop_end, loffset);
+          find_and_queue_metronome_samples (
+            tempo_map, playhead_before, loop_end, loffset);
 
           /* find each bar / beat change after loop start */
           find_and_queue_metronome_samples (
-            loop_start, playhead_after_taking_loops_into_account,
+            tempo_map, loop_start, playhead_after_taking_loops_into_account,
             loffset + loop_points.second - playhead_before);
         }
       else /* loop not crossed */
         {
           /* find each bar / beat change from start to finish */
           find_and_queue_metronome_samples (
-            playhead_before, playhead_after_taking_loops_into_account, loffset);
+            tempo_map, playhead_before,
+            playhead_after_taking_loops_into_account, loffset);
         }
     }
   // find and queue events for countin
   else if (transport.metronome_countin_frames_remaining () > units::samples (0))
     {
-      queue_metronome_countin (time_nfo, transport);
+      queue_metronome_countin (time_nfo, transport, tempo_map);
     }
 
-  AudioSampleProcessor::custom_process_block (time_nfo, transport);
+  AudioSampleProcessor::custom_process_block (time_nfo, transport, tempo_map);
 }
 
 void
@@ -183,18 +188,19 @@ Metronome::queue_metronome (
 void
 Metronome::queue_metronome_countin (
   const EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport       &transport)
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map)
 {
   const auto countin_frames_remaining =
     transport.metronome_countin_frames_remaining ();
 
-  const auto frame_to_tick = [this] (const auto frame) {
+  const auto frame_to_tick = [&tempo_map] (const auto frame) {
     return static_cast<signed_frame_t> (std::round (
-      tempo_map_.samples_to_tick (units::samples (static_cast<double> (frame)))
+      tempo_map.samples_to_tick (units::samples (static_cast<double> (frame)))
         .in (units::tick)));
   };
-  const auto tick_to_frame = [this] (const units::tick_t tick) {
-    const units::sample_t s = tempo_map_.tick_to_samples_rounded (
+  const auto tick_to_frame = [&tempo_map] (const units::tick_t tick) {
+    const units::sample_t s = tempo_map.tick_to_samples_rounded (
       static_cast<units::precise_tick_t> (tick));
     return static_cast<signed_frame_t> (s.in (units::samples));
   };
@@ -202,22 +208,22 @@ Metronome::queue_metronome_countin (
   signed_frame_t frames_per_beat{};
   signed_frame_t frames_per_bar{};
   {
-    const auto current_musical_pos = tempo_map_.tick_to_musical_position (
+    const auto current_musical_pos = tempo_map.tick_to_musical_position (
       units::ticks (frame_to_tick (time_nfo.g_start_frame_)));
-    const auto tick_at_bar_start = tempo_map_.musical_position_to_tick (
+    const auto tick_at_bar_start = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 1, .sixteenth = 1, .tick = 0 });
     const auto frame_at_bar_start = tick_to_frame (tick_at_bar_start);
-    const auto tick_at_bar_end = tempo_map_.musical_position_to_tick (
+    const auto tick_at_bar_end = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar + 1, .beat = 1, .sixteenth = 1, .tick = 0 });
     const auto frame_at_bar_end = tick_to_frame (tick_at_bar_end);
     frames_per_bar = frame_at_bar_end - frame_at_bar_start;
-    const auto tick_at_beat_start = tempo_map_.musical_position_to_tick (
+    const auto tick_at_beat_start = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 1, .sixteenth = 1, .tick = 0 });
     const auto frame_at_beat_start = tick_to_frame (tick_at_beat_start);
-    const auto tick_at_beat_end = tempo_map_.musical_position_to_tick (
+    const auto tick_at_beat_end = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 2, .sixteenth = 1, .tick = 0 });
     const auto frame_at_beat_end = tick_to_frame (tick_at_beat_end);

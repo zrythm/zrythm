@@ -75,7 +75,8 @@ public:
    */
   void process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept final;
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept final;
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
@@ -92,7 +93,8 @@ protected:
    */
   virtual void custom_process_block (
     EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport) noexcept [[clang::nonblocking]];
+    const dsp::ITransport &transport,
+    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]];
 
   virtual void custom_prepare_for_processing (
     const graph::GraphNode * node,

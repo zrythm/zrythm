@@ -235,6 +235,30 @@ ZrythmApplication::setup_control_room ()
             monitor_fader->mute ()->range ().is_toggled (value));
         });
     }
+
+    {
+      auto * metronome = control_room->metronome ();
+      metronome->setVolume (
+        static_cast<float> (app_settings_->metronomeVolume ()));
+      QObject::connect (
+        metronome, &dsp::Metronome::volumeChanged, app_settings_.get (),
+        [&] (float value) {
+          app_settings_->set_metronomeVolume (static_cast<double> (value));
+        });
+      QObject::connect (
+        app_settings_.get (), &utils::AppSettings::metronomeVolumeChanged,
+        metronome, [&] (double value) {
+          metronome->setVolume (static_cast<float> (value));
+        });
+
+      metronome->setEnabled (app_settings_->metronomeEnabled ());
+      QObject::connect (
+        metronome, &dsp::Metronome::enabledChanged, app_settings_.get (),
+        &utils::AppSettings::set_metronomeEnabled);
+      QObject::connect (
+        app_settings_.get (), &utils::AppSettings::metronomeEnabledChanged,
+        metronome, &dsp::Metronome::setEnabled);
+    }
   }
 }
 

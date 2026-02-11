@@ -27,6 +27,7 @@ protected:
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
   }
 
   void TearDown () override
@@ -46,6 +47,7 @@ protected:
   std::unique_ptr<MidiPassthroughProcessor>                 midi_proc_;
   std::unique_ptr<StereoPassthroughProcessor>               audio_proc_;
   std::unique_ptr<graph_test::MockTransport>                mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                            tempo_map_;
 };
 
 TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
@@ -63,7 +65,7 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
 
   // Process
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, 512 };
-  midi_proc_->process_block (time_nfo, *mock_transport_);
+  midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
   ASSERT_EQ (midi_out.midi_events_.queued_events_.size (), 1);
@@ -96,7 +98,7 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
     .local_offset_ = 0,
     .nframes_ = 512
   };
-  audio_proc_->process_block (time_nfo, *mock_transport_);
+  audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
   for (int i = 0; i < 512; i++)
@@ -215,8 +217,8 @@ TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
   EngineProcessTimeInfo time_nfo{ 0, 0, 0, 0 };
 
   // Should handle without crashing
-  midi_proc_->process_block (time_nfo, *mock_transport_);
-  audio_proc_->process_block (time_nfo, *mock_transport_);
+  midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+  audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 }
 
 TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
@@ -242,7 +244,7 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
     .local_offset_ = 0,
     .nframes_ = large_size
   };
-  audio_proc_->process_block (time_nfo, *mock_transport_);
+  audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
   for (int i = 0; i < large_size; i++)
@@ -275,7 +277,7 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     .local_offset_ = 0,
     .nframes_ = 256
   };
-  audio_proc_->process_block (time_nfo1, *mock_transport_);
+  audio_proc_->process_block (time_nfo1, *mock_transport_, *tempo_map_);
 
   // Verify first processing
   for (int i = 0; i < 256; i++)
@@ -299,7 +301,7 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     .local_offset_ = 0,
     .nframes_ = 256
   };
-  audio_proc_->process_block (time_nfo2, *mock_transport_);
+  audio_proc_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
 
   // Verify second processing (should not accumulate with first)
   for (int i = 0; i < 256; i++)
@@ -322,7 +324,7 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     .local_offset_ = 0,
     .nframes_ = 128
   };
-  audio_proc_->process_block (time_nfo3, *mock_transport_);
+  audio_proc_->process_block (time_nfo3, *mock_transport_, *tempo_map_);
 
   // Verify third processing
   for (int i = 0; i < 128; i++)

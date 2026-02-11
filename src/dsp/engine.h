@@ -44,6 +44,7 @@ public:
     dsp::Transport          &transport,
     IHardwareAudioInterface &hw_interface,
     dsp::DspGraphDispatcher &graph_dispatcher,
+    const dsp::TempoMap     &tempo_map,
     QObject *                parent = nullptr);
 
   /**
@@ -184,6 +185,9 @@ private:
   dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
 
   dsp::Transport &transport_;
+
+  /** The tempo map for timing calculations. */
+  const dsp::TempoMap &tempo_map_;
 
   /** The processing graph router. */
   dsp::DspGraphDispatcher &graph_dispatcher_;

@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "dsp/fader.h"
+#include "dsp/metronome.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <boost/unordered/unordered_flat_map_fwd.hpp>
@@ -31,6 +32,7 @@ class ControlRoom : public QObject
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * dimVolume READ muteVolume CONSTANT)
   Q_PROPERTY (zrythm::dsp::Fader * monitorFader READ monitorFader CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -66,6 +68,7 @@ public:
   }
   dsp::ProcessorParameter * dimVolume () const { return dim_volume_.get (); }
   auto * monitorFader () const { return monitor_fader_.get (); }
+  auto * metronome () const { return metronome_.get (); }
 
   // ========================================================================
 
@@ -104,6 +107,14 @@ private:
    * The Master stereo out should connect to this.
    */
   utils::QObjectUniquePtr<dsp::Fader> monitor_fader_;
+
+  /**
+   * Metronome.
+   *
+   * The metronome is a global processor that connects to the monitor fader.
+   * Its tempo map is set by the active project.
+   */
+  utils::QObjectUniquePtr<dsp::Metronome> metronome_;
 
   RealtimeTracksProvider rt_tracks_provider_;
 };

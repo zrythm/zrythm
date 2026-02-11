@@ -69,7 +69,8 @@ void
 GraphNode::compensate_latency (
   EngineProcessTimeInfo &time_nfo,
   const nframes_t        remaining_preroll_frames,
-  const dsp::ITransport &transport) const
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) const
 {
   /* if the playhead is before the loop-end point and the
    * latency-compensated position is after the loop-end point it means
@@ -94,7 +95,8 @@ GraphNode::compensate_latency (
 void
 GraphNode::process_chunks_after_splitting_at_loop_points (
   EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport &transport) const
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) const
 {
   /* split at loop points */
   for (
@@ -119,7 +121,7 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
       time_nfo.nframes_ = num_processable_frames;
 
       // process current chunk
-      processable_.process_block (time_nfo, transport);
+      processable_.process_block (time_nfo, transport, tempo_map);
 
       /* calculate the remaining frames */
       time_nfo.nframes_ = orig_nframes - num_processable_frames;
@@ -140,7 +142,8 @@ void
 GraphNode::process (
   EngineProcessTimeInfo  time_nfo,
   const nframes_t        remaining_preroll_frames,
-  const dsp::ITransport &transport) const
+  const dsp::ITransport &transport,
+  const dsp::TempoMap   &tempo_map) const
 {
   // if node is bypassed, skip processing
   if (bypass_) [[unlikely]]
@@ -159,16 +162,17 @@ GraphNode::process (
   /* compensate latency when rolling */
   if (transport.get_play_state () == dsp::ITransport::PlayState::Rolling)
     {
-      compensate_latency (time_nfo, remaining_preroll_frames, transport);
+      compensate_latency (
+        time_nfo, remaining_preroll_frames, transport, tempo_map);
     }
 
-  process_chunks_after_splitting_at_loop_points (time_nfo, transport);
+  process_chunks_after_splitting_at_loop_points (time_nfo, transport, tempo_map);
 
   assert (time_nfo.g_start_frame_w_offset_ >= time_nfo.g_start_frame_);
 
   if (time_nfo.nframes_ > 0)
     {
-      processable_.process_block (time_nfo, transport);
+      processable_.process_block (time_nfo, transport, tempo_map);
     }
 }
 

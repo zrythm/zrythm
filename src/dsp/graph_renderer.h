@@ -35,12 +35,14 @@ public:
    * @param range
    * @param run_on_main_thread Used to invoke logic that needs to run on the
    * main thread (like graph node prepare_for_processing, etc.).
+   * @param tempo_map Tempo map for timing calculations during rendering.
    */
   static QFuture<juce::AudioSampleBuffer> render_async (
     RenderOptions                options,
     graph::GraphNodeCollection &&nodes,
     RunOnMainThread              run_on_main_thread,
-    SampleRange                  range);
+    SampleRange                  range,
+    const dsp::TempoMap         &tempo_map);
 
 private:
   /**
@@ -48,12 +50,14 @@ private:
    *
    * @param nodes
    * @param range
+   * @param tempo_map Tempo map for timing calculations during rendering.
    */
   static void render (
     QPromise<juce::AudioSampleBuffer> &promise,
     RenderOptions                      options,
     graph::GraphNodeCollection       &&nodes,
     RunOnMainThread                    run_on_main_thread,
-    SampleRange                        range);
+    SampleRange                        range,
+    const dsp::TempoMap               &tempo_map);
 };
 }

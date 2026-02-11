@@ -4,6 +4,7 @@
 #include "dsp/graph_node.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
+#include "dsp/tempo_map.h"
 #include "utils/dsp.h"
 
 #include "../tests/unit/dsp/graph_helpers.h"
@@ -28,6 +29,7 @@ protected:
     // here before assigning processable_ to a new processable
     scheduler_.reset ();
     transport_ = std::make_unique<MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
     scheduler_ = std::make_unique<GraphScheduler> (
       [] (std::function<void ()> func) { func (); }, sample_rate_,
       max_block_length_);
@@ -58,6 +60,7 @@ protected:
     // https://stackoverflow.com/questions/10286514/why-is-googlemock-leaking-my-shared-ptr
     scheduler_.reset ();
     transport_.reset ();
+    tempo_map_.reset ();
     processables_.clear ();
   }
 
@@ -73,27 +76,28 @@ protected:
     ON_CALL (*proc, release_resources ()).WillByDefault (Return ());
 
     // Simulate actual processing work
-    ON_CALL (*proc, process_block (_, _)).WillByDefault ([] (auto, auto &) {
-      // Simulate typical DSP operations on a small buffer
-      constexpr size_t buffer_size = 64;
-      float            buffer[buffer_size];
+    ON_CALL (*proc, process_block (_, _, _))
+      .WillByDefault ([] (auto, auto &, auto &) {
+        // Simulate typical DSP operations on a small buffer
+        constexpr size_t buffer_size = 64;
+        float            buffer[buffer_size];
 
-      // Fill with test signal
-      zrythm::utils::float_ranges::fill (buffer, 0.5f, buffer_size);
+        // Fill with test signal
+        zrythm::utils::float_ranges::fill (buffer, 0.5f, buffer_size);
 
-      // Apply common DSP operations
-      zrythm::utils::float_ranges::mul_k2 (buffer, 0.8f, buffer_size);
-      zrythm::utils::float_ranges::clip (buffer, -1.0f, 1.0f, buffer_size);
+        // Apply common DSP operations
+        zrythm::utils::float_ranges::mul_k2 (buffer, 0.8f, buffer_size);
+        zrythm::utils::float_ranges::clip (buffer, -1.0f, 1.0f, buffer_size);
 
-      // Get peak for metering
-      float peak = zrythm::utils::float_ranges::abs_max (buffer, buffer_size);
-      benchmark::DoNotOptimize (peak);
-    });
+        // Get peak for metering
+        float peak = zrythm::utils::float_ranges::abs_max (buffer, buffer_size);
+        benchmark::DoNotOptimize (peak);
+      });
 
     // silence GMock warnings
     EXPECT_CALL (*proc, get_node_name ()).Times (AnyNumber ());
     EXPECT_CALL (*proc, get_single_playback_latency ()).Times (AnyNumber ());
-    EXPECT_CALL (*proc, process_block (_, _)).Times (AnyNumber ());
+    EXPECT_CALL (*proc, process_block (_, _, _)).Times (AnyNumber ());
     EXPECT_CALL (*proc, prepare_for_processing (_, _, _)).Times (AnyNumber ());
     EXPECT_CALL (*proc, release_resources ()).Times (AnyNumber ());
 
@@ -201,6 +205,7 @@ protected:
   units::sample_rate_t            sample_rate_{ units::sample_rate (48000) };
   size_t                          max_block_length_{ 1024 };
   std::unique_ptr<MockTransport>  transport_;
+  std::unique_ptr<dsp::TempoMap>  tempo_map_;
   std::unique_ptr<GraphScheduler> scheduler_;
   std::vector<std::unique_ptr<MockProcessable>>     processables_;
   static std::shared_ptr<zrythm::utils::TestLogger> logger_;
@@ -225,7 +230,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_);
+      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();
@@ -250,7 +255,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_);
+      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();
@@ -275,7 +280,7 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_);
+      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();

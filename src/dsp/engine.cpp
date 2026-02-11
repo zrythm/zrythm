@@ -38,8 +38,9 @@ AudioEngine::AudioEngine (
   dsp::Transport          &transport,
   IHardwareAudioInterface &hw_interface,
   dsp::DspGraphDispatcher &graph_dispatcher,
+  const dsp::TempoMap     &tempo_map,
   QObject *                parent)
-    : QObject (parent), transport_ (transport),
+    : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
       graph_dispatcher_ (graph_dispatcher), hw_interface_ (hw_interface),
       monitor_out_ (
         u8"Monitor Out",
@@ -194,7 +195,8 @@ AudioEngine::
       };
 
       graph_dispatcher_.start_cycle (
-        current_transport_state, time_nfo, remaining_latency_preroll_, false);
+        current_transport_state, time_nfo, remaining_latency_preroll_, false,
+        tempo_map_);
       advance_playhead_after_processing (
         current_transport_state, playhead_processing_guard, 0, 1);
     }
@@ -429,7 +431,7 @@ AudioEngine::process (
       split_time_nfo.nframes_ = num_preroll_frames;
       graph_dispatcher_.start_cycle (
         current_transport_state, split_time_nfo, remaining_latency_preroll_,
-        true);
+        true, tempo_map_);
 
       remaining_latency_preroll_ -= num_preroll_frames;
       total_frames_remaining -= num_preroll_frames;
@@ -464,7 +466,7 @@ AudioEngine::process (
             split_time_nfo.nframes_ = countin_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
-              remaining_latency_preroll_, true);
+              remaining_latency_preroll_, true, tempo_map_);
             consume_metronome_countin_samples (units::samples (countin_frames));
 
             /* adjust total frames remaining to process and current offset */
@@ -493,7 +495,7 @@ AudioEngine::process (
             split_time_nfo.nframes_ = preroll_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
-              remaining_latency_preroll_, true);
+              remaining_latency_preroll_, true, tempo_map_);
             consume_recording_preroll_samples (units::samples (preroll_frames));
 
             /* process for remaining frames */
@@ -508,7 +510,7 @@ AudioEngine::process (
                 split_time_nfo.nframes_ = remaining_frames;
                 graph_dispatcher_.start_cycle (
                   current_transport_state, split_time_nfo,
-                  remaining_latency_preroll_, true);
+                  remaining_latency_preroll_, true, tempo_map_);
               }
           }
         else
@@ -521,7 +523,7 @@ AudioEngine::process (
             split_time_nfo.nframes_ = total_frames_remaining;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
-              remaining_latency_preroll_, true);
+              remaining_latency_preroll_, true, tempo_map_);
           }
       }();
     }
