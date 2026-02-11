@@ -69,6 +69,8 @@ TEST (ProjectJsonSerializerTest, ValidateValidJson)
   j[ProjectJsonSerializer::kProjectData]["tracklist"]["tracks"] =
     nlohmann::json::array ();
   j[ProjectJsonSerializer::kProjectData]["tracklist"]["pinnedTracksCutoff"] = 0;
+  j[ProjectJsonSerializer::kProjectData]["tracklist"]["trackRoutes"] =
+    nlohmann::json::array ();
   j[ProjectJsonSerializer::kProjectData]["registries"] =
     nlohmann::json::object ();
   j[ProjectJsonSerializer::kProjectData]["registries"]["portRegistry"] =
@@ -245,6 +247,7 @@ TEST_F (ProjectSerializationTest, SerializeProject)
   auto &tracklist = projectData["tracklist"];
   EXPECT_TRUE (tracklist.contains ("tracks"));
   EXPECT_TRUE (tracklist.contains ("pinnedTracksCutoff"));
+  EXPECT_TRUE (tracklist.contains ("trackRoutes"));
 
   // Verify registries structure
   auto &registries = projectData["registries"];

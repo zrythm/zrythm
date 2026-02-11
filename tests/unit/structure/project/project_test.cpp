@@ -148,7 +148,7 @@ TEST_F (ProjectTest, FindPortByIdNotFound)
   ASSERT_NE (project, nullptr);
 
   // Try to find a port with a random UUID - should return nullopt
-  dsp::Port::Uuid random_uuid;
+  dsp::Port::Uuid random_uuid (QUuid::createUuid ());
   auto            result = project->find_port_by_id (random_uuid);
   EXPECT_FALSE (result.has_value ());
 }
@@ -159,7 +159,7 @@ TEST_F (ProjectTest, FindParamByIdNotFound)
   ASSERT_NE (project, nullptr);
 
   // Try to find a param with a random UUID - should return nullptr
-  dsp::ProcessorParameter::Uuid random_uuid;
+  dsp::ProcessorParameter::Uuid random_uuid (QUuid::createUuid ());
   auto result = project->find_param_by_id (random_uuid);
   EXPECT_EQ (result, nullptr);
 }
@@ -170,7 +170,7 @@ TEST_F (ProjectTest, FindPluginByIdNotFound)
   ASSERT_NE (project, nullptr);
 
   // Try to find a plugin with a random UUID - should return nullopt
-  plugins::Plugin::Uuid random_uuid;
+  plugins::Plugin::Uuid random_uuid (QUuid::createUuid ());
   auto                  result = project->find_plugin_by_id (random_uuid);
   EXPECT_FALSE (result.has_value ());
 }
@@ -181,7 +181,7 @@ TEST_F (ProjectTest, FindTrackByIdNotFound)
   ASSERT_NE (project, nullptr);
 
   // Try to find a track with a random UUID - should return nullopt
-  structure::tracks::Track::Uuid random_uuid;
+  structure::tracks::Track::Uuid random_uuid (QUuid::createUuid ());
   auto result = project->find_track_by_id (random_uuid);
   EXPECT_FALSE (result.has_value ());
 }
@@ -192,7 +192,8 @@ TEST_F (ProjectTest, FindArrangerObjectByIdNotFound)
   ASSERT_NE (project, nullptr);
 
   // Try to find an arranger object with a random UUID - should return nullopt
-  structure::arrangement::ArrangerObject::Uuid random_uuid;
+  structure::arrangement::ArrangerObject::Uuid random_uuid (
+    QUuid::createUuid ());
   auto result = project->find_arranger_object_by_id (random_uuid);
   EXPECT_FALSE (result.has_value ());
 }

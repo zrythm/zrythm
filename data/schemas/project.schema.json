@@ -138,7 +138,8 @@
           "description": "Track list and track data",
           "required": [
             "tracks",
-            "pinnedTracksCutoff"
+            "pinnedTracksCutoff",
+            "trackRoutes"
           ],
           "properties": {
             "tracks": {
@@ -151,6 +152,24 @@
             "pinnedTracksCutoff": {
               "type": "integer",
               "description": "Index separating pinned tracks from normal tracks"
+            },
+            "trackRoutes": {
+              "type": "array",
+              "description": "Routes between tracks (source-destination mappings)",
+              "items": {
+                "type": "array",
+                "items": [
+                  {
+                    "$ref": "#/definitions/uuid",
+                    "description": "Source track UUID"
+                  },
+                  {
+                    "$ref": "#/definitions/uuid",
+                    "description": "Destination track UUID"
+                  }
+                ],
+                "additionalItems": false
+              }
             }
           }
         },

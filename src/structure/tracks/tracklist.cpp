@@ -636,15 +636,15 @@ to_json (nlohmann::json &j, const Tracklist &t)
 {
   j[Tracklist::kPinnedTracksCutoffKey] = t.pinned_tracks_cutoff_;
   to_json (j, *t.track_collection_);
+  to_json (j, *t.track_routing_);
 }
 
 void
 from_json (const nlohmann::json &j, Tracklist &t)
 {
   j.at (Tracklist::kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
-  // TODO
-  // j.at (Tracklist::kTracksKey).get_to (t.tracks_);
-  j.at (Tracklist::kTracksKey).get_to (*t.track_collection_);
+  from_json (j, *t.track_collection_);
+  from_json (j, *t.track_routing_);
 }
 
 Tracklist::~Tracklist () = default;
