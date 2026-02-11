@@ -632,6 +632,13 @@ Tracklist::handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged
 }
 
 void
+to_json (nlohmann::json &j, const Tracklist &t)
+{
+  j[Tracklist::kPinnedTracksCutoffKey] = t.pinned_tracks_cutoff_;
+  to_json (j, *t.track_collection_);
+}
+
+void
 from_json (const nlohmann::json &j, Tracklist &t)
 {
   j.at (Tracklist::kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);

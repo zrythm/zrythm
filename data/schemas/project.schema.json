@@ -143,55 +143,9 @@
           "properties": {
             "tracks": {
               "type": "array",
-              "description": "All tracks in the project",
+              "description": "UUID references to tracks in trackRegistry (ordered)",
               "items": {
-                "type": "object",
-                "description": "A single track (see trackRegistry for full data)",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "UUID reference to track in trackRegistry"
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "Audio",
-                      "AudioBus",
-                      "AudioGroup",
-                      "Chord",
-                      "Folder",
-                      "Instrument",
-                      "Marker",
-                      "Master",
-                      "MIDI",
-                      "MIDIBus",
-                      "MIDIGroup",
-                      "Modulator",
-                      "Tempo"
-                    ]
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "color": {
-                    "type": "string",
-                    "pattern": "^#[0-9A-Fa-f]{6}$",
-                    "description": "Hex color code"
-                  },
-                  "visible": {
-                    "type": "boolean"
-                  },
-                  "solo": {
-                    "type": "boolean"
-                  },
-                  "muted": {
-                    "type": "boolean"
-                  },
-                  "height": {
-                    "type": "integer",
-                    "description": "Track height in pixels"
-                  }
-                }
+                "$ref": "#/definitions/uuid"
               }
             },
             "pinnedTracksCutoff": {
@@ -433,27 +387,16 @@
       }
     },
     "noteLength": {
-      "type": "string",
-      "enum": [
-        "1/1",
-        "1/2",
-        "1/4",
-        "1/8",
-        "1/16",
-        "1/32",
-        "1/64",
-        "1/128"
-      ],
-      "description": "Musical note length"
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Bar=0, Beat=1, 2/1=2, 1/1=3, 1/2=4, 1/4=5, 1/8=6, 1/16=7, 1/32=8, 1/64=9, 1/128=10"
     },
     "noteType": {
-      "type": "string",
-      "enum": [
-        "normal",
-        "dotted",
-        "triplet"
-      ],
-      "description": "Musical note type"
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "description": "0=normal, 1=dotted, 2=triplet"
     },
     "snapGrid": {
       "type": "object",
@@ -471,12 +414,10 @@
           "type": "boolean"
         },
         "lengthType": {
-          "type": "string",
-          "enum": [
-            "link",
-            "lastObject",
-            "custom"
-          ]
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2,
+          "description": "0=link, 1=lastObject, 2=custom"
         },
         "keepOffset": {
           "type": "boolean"

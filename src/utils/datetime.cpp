@@ -33,6 +33,17 @@ get_current_as_string ()
 }
 
 Utf8String
+get_current_as_iso8601_string ()
+{
+  auto now = std::chrono::system_clock::now ();
+  auto in_time_t = std::chrono::system_clock::to_time_t (now);
+
+  std::stringstream ss;
+  ss << std::put_time (std::gmtime (&in_time_t), "%Y-%m-%dT%H:%M:%SZ");
+  return Utf8String::from_utf8_encoded_string (ss.str ());
+}
+
+Utf8String
 epoch_to_str (qint64 epoch, const Utf8String &format)
 {
   QDateTime dt = QDateTime::fromSecsSinceEpoch (epoch);

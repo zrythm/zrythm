@@ -506,12 +506,11 @@ public:
 
   friend void to_json (nlohmann::json &j, const OwningObjectRegistry &obj)
   {
-    auto objects = nlohmann::json::array ();
+    j = nlohmann::json::array ();
     for (const auto &var : obj.objects_by_id_ | std::views::values)
       {
-        objects.push_back (var);
+        j.push_back (var);
       }
-    j[kObjectsKey] = objects;
   }
   template <ObjectBuilder BuilderT>
   friend void from_json_with_builder (
@@ -519,8 +518,7 @@ public:
     OwningObjectRegistry &obj,
     const BuilderT       &builder)
   {
-    auto objects = j.at (kObjectsKey);
-    for (const auto &object_var_json : objects)
+    for (const auto &object_var_json : j)
       {
         VariantT object_var;
         utils::serialization::variant_from_json_with_builder (
@@ -530,8 +528,6 @@ public:
   }
 
 private:
-  static constexpr const char * kObjectsKey = "objectsById";
-
   /**
    * @brief Unregisters an object.
    *

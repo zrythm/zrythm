@@ -54,7 +54,7 @@ ProjectJsonSerializer::serialize (
   j[utils::serialization::kFormatMajorKey] = FORMAT_MAJOR_VERSION;
   j[utils::serialization::kFormatMinorKey] = FORMAT_MINOR_VERSION;
   j[kAppVersionKey] = app_version;
-  j[kDatetimeKey] = utils::datetime::get_current_as_string ();
+  j[kDatetimeKey] = utils::datetime::get_current_as_iso8601_string ();
   j[kTitle] = title;
   j[kProjectData] = project;
 

@@ -178,14 +178,8 @@ public:
 private:
   static constexpr auto kPinnedTracksCutoffKey = "pinnedTracksCutoff"sv;
   static constexpr auto kTracksKey = "tracks"sv;
-  friend void           to_json (nlohmann::json &j, const Tracklist &t)
-  {
-    j = nlohmann::json{
-      { kPinnedTracksCutoffKey, t.pinned_tracks_cutoff_ },
-      { kTracksKey,             t.track_collection_     },
-    };
-  }
-  friend void from_json (const nlohmann::json &j, Tracklist &t);
+  friend void           to_json (nlohmann::json &j, const Tracklist &t);
+  friend void           from_json (const nlohmann::json &j, Tracklist &t);
 
 private:
   auto &get_track_registry () const { return track_registry_; }

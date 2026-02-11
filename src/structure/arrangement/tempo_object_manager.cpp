@@ -37,21 +37,17 @@ init_from (
 void
 to_json (nlohmann::json &j, const TempoObjectManager &manager)
 {
-  j[TempoObjectManager::kTempoObjectsKey] =
-    static_cast<const ArrangerObjectOwner<TempoObject> &> (manager);
-  j[TempoObjectManager::kTimeSignatureObjectsKey] =
-    static_cast<const ArrangerObjectOwner<TimeSignatureObject> &> (manager);
+  to_json (j, static_cast<const ArrangerObjectOwner<TempoObject> &> (manager));
+  to_json (
+    j, static_cast<const ArrangerObjectOwner<TimeSignatureObject> &> (manager));
 }
 
 void
 from_json (const nlohmann::json &j, TempoObjectManager &manager)
 {
+  from_json (j, static_cast<ArrangerObjectOwner<TempoObject> &> (manager));
   from_json (
-    j.at (TempoObjectManager::kTempoObjectsKey),
-    static_cast<ArrangerObjectOwner<TempoObject> &> (manager));
-  from_json (
-    j.at (TempoObjectManager::kTimeSignatureObjectsKey),
-    static_cast<ArrangerObjectOwner<TimeSignatureObject> &> (manager));
+    j, static_cast<ArrangerObjectOwner<TimeSignatureObject> &> (manager));
 }
 
 } // namespace zrythm::structure::arrangement

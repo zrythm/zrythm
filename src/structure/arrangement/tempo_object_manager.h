@@ -44,13 +44,13 @@ public:
   std::string
   get_field_name_for_serialization (const TempoObject *) const override
   {
-    return "tempoObjects";
+    return std::string{ kTempoObjectsKey };
   }
 
   std::string
   get_field_name_for_serialization (const TimeSignatureObject *) const override
   {
-    return "timeSignatureObjects";
+    return std::string{ kTimeSignatureObjectsKey };
   }
 
 private:

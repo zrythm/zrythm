@@ -463,12 +463,6 @@ void
 to_json (nlohmann::json &j, const Project &project)
 {
   j[Project::kTempoMapKey] = project.tempo_map_;
-  j[Project::kFileAudioSourceRegistryKey] = project.file_audio_source_registry_;
-  j[Project::kPortRegistryKey] = project.port_registry_;
-  j[Project::kParameterRegistryKey] = project.param_registry_;
-  j[Project::kPluginRegistryKey] = project.plugin_registry_;
-  j[Project::kArrangerObjectRegistryKey] = project.arranger_object_registry_;
-  j[Project::kTrackRegistryKey] = project.track_registry_;
   j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
   j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
   j[Project::kTransportKey] = project.transport_;
@@ -478,6 +472,18 @@ to_json (nlohmann::json &j, const Project &project)
   // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
+
+  // Nest registries under a "registries" key as per schema
+  nlohmann::json registries = nlohmann::json::object ();
+  registries[Project::kPortRegistryKey] = project.port_registry_;
+  registries[Project::kParameterRegistryKey] = project.param_registry_;
+  registries[Project::kPluginRegistryKey] = project.plugin_registry_;
+  registries[Project::kArrangerObjectRegistryKey] =
+    project.arranger_object_registry_;
+  registries[Project::kTrackRegistryKey] = project.track_registry_;
+  registries[Project::kFileAudioSourceRegistryKey] =
+    project.file_audio_source_registry_;
+  j["registries"] = registries;
 }
 
 struct ArrangerObjectBuilderForDeserialization
@@ -580,18 +586,25 @@ void
 from_json (const nlohmann::json &j, Project &project)
 {
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
-  j.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
-  j.at (Project::kParameterRegistryKey).get_to (*project.param_registry_);
+
+  // Deserialize registries from nested structure
+  const auto &registries = j.at ("registries");
+  registries.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
+  registries.at (Project::kParameterRegistryKey)
+    .get_to (*project.param_registry_);
   from_json_with_builder (
-    j.at (Project::kPluginRegistryKey), *project.plugin_registry_,
+    registries.at (Project::kPluginRegistryKey), *project.plugin_registry_,
     PluginBuilderForDeserialization{ project });
   from_json_with_builder (
-    j.at (Project::kArrangerObjectRegistryKey),
+    registries.at (Project::kArrangerObjectRegistryKey),
     *project.arranger_object_registry_,
     ArrangerObjectBuilderForDeserialization{ project });
   from_json_with_builder (
-    j.at (Project::kTrackRegistryKey), *project.track_registry_,
+    registries.at (Project::kTrackRegistryKey), *project.track_registry_,
     TrackBuilderForDeserialization{ project });
+  // Note: FileAudioSourceRegistry is not directly deserialized here;
+  // it's populated indirectly through AudioPool deserialization
+
   j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
   j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
   j.at (Project::kTransportKey).get_to (*project.transport_);

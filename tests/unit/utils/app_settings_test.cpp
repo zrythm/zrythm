@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/app_settings.h"
-#include "utils/isettings_backend.h"
 
 #include <QSignalSpy>
 #include <QStringList>
 #include <QVariant>
+
+#include "helpers/mock_settings_backend.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -16,35 +17,20 @@ using namespace ::testing;
 namespace zrythm::utils
 {
 
-class MockSettingsBackend : public ISettingsBackend
-{
-public:
-  MOCK_METHOD (
-    QVariant,
-    value,
-    (QAnyStringView key, const QVariant &defaultValue),
-    (const, override));
-  MOCK_METHOD (
-    void,
-    setValue,
-    (QAnyStringView key, const QVariant &value),
-    (override));
-};
-
 class AppSettingsTest : public ::testing::Test
 {
 protected:
   void SetUp () override
   {
-    auto mock_backend = std::make_unique<MockSettingsBackend> ();
+    auto mock_backend = std::make_unique<test_helpers::MockSettingsBackend> ();
     mock_backend_ = mock_backend.get ();
     app_settings_ = std::make_unique<AppSettings> (std::move (mock_backend));
   }
 
   void TearDown () override { app_settings_.reset (); }
 
-  MockSettingsBackend *        mock_backend_{};
-  std::unique_ptr<AppSettings> app_settings_;
+  test_helpers::MockSettingsBackend * mock_backend_{};
+  std::unique_ptr<AppSettings>        app_settings_;
 };
 
 TEST_F (AppSettingsTest, Constructor)
@@ -251,4 +237,4 @@ TEST_F (AppSettingsTest, FloatProperty)
   app_settings_->set_monitorVolume (0.5f);
 }
 
-}
+} // namespace zrythm::utils
