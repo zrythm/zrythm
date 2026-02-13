@@ -183,7 +183,7 @@ JucePlugin::create_ports_from_juce_plugin ()
               return dsp::AudioPort::BusLayout::Mono;
             if (chSet == juce::AudioChannelSet::stereo ())
               return dsp::AudioPort::BusLayout::Stereo;
-            return dsp::AudioPort::BusLayout::Unknown;
+            return dsp::AudioPort::BusLayout{};
           }();
 
           auto name = bus->getName ();

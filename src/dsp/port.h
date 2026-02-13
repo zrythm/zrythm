@@ -109,31 +109,17 @@ private:
   static constexpr auto kLabelId = "label"sv;
   static constexpr auto kSymbolId = "symbol"sv;
   static constexpr auto kPortGroupId = "portGroup"sv;
-  friend void           to_json (nlohmann::json &j, const Port &p)
-  {
-    j[kTypeId] = p.type_;
-    j[kFlowId] = p.flow_;
-    j[kLabelId] = p.label_;
-    j[kSymbolId] = p.sym_;
-    j[kPortGroupId] = p.port_group_;
-  }
-  friend void from_json (const nlohmann::json &j, Port &p)
-  {
-    j.at (kTypeId).get_to (p.type_);
-    j.at (kFlowId).get_to (p.flow_);
-    j.at (kLabelId).get_to (p.label_);
-    j.at (kSymbolId).get_to (p.sym_);
-    j.at (kPortGroupId).get_to (p.port_group_);
-  }
+  friend void           to_json (nlohmann::json &j, const Port &p);
+  friend void           from_json (const nlohmann::json &j, Port &p);
 
 private:
   FullDesignationProvider full_designation_provider_ =
     [this] (const Port &port) { return get_label (); };
 
   /** Data type (e.g. AUDIO). */
-  PortType type_{ PortType::Unknown };
+  PortType type_{};
   /** Flow (IN/OUT). */
-  PortFlow flow_{ PortFlow::Unknown };
+  PortFlow flow_{};
 
   /** Human readable label (may be translated). */
   utils::Utf8String label_;

@@ -8,8 +8,8 @@ namespace zrythm::structure::tracks
 MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Marker,
-        PortType::Unknown,
-        PortType::Unknown,
+        std::nullopt,
+        std::nullopt,
         {},
         dependencies.to_base_dependencies ()),
       arrangement::ArrangerObjectOwner<Marker> (

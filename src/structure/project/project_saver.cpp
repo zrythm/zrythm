@@ -474,7 +474,14 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     QElapsedTimer timer;
     timer.start ();
     // TODO
-    // ProjectJsonSerializer::validate_json (json);
+    try
+      {
+        ProjectJsonSerializer::validate_json (json);
+      }
+    catch (const ZrythmException &e)
+      {
+        z_warning ("Validation failed: {}", e.what ());
+      }
     z_debug ("time to validate: {}ms", timer.elapsed ());
     return json;
   };

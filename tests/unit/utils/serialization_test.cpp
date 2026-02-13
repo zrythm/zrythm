@@ -121,7 +121,7 @@ struct SerializationTestVariantBuilder
   template <typename T> auto build () const { return std::make_unique<T> (); }
 };
 
-TEST (SerializationTest, VariantSerialization)
+TEST (SerializationTest, VariantSerializationPrimitives)
 {
   using VariantT = std::variant<int, std::string, float>;
   VariantT       var = "variant test";
@@ -135,6 +135,73 @@ TEST (SerializationTest, VariantSerialization)
 
   EXPECT_EQ (deserialized.index (), 1); // string index
   EXPECT_EQ (std::get<std::string> (deserialized), std::get<std::string> (var));
+}
+
+TEST (SerializationTest, VariantWithObjects)
+{
+  // Test variant containing objects
+  using VariantT = std::variant<SimpleObject, ContainerObject>;
+  VariantT var = SimpleObject{};
+  std::get<SimpleObject> (var).int_value = 42;
+  std::get<SimpleObject> (var).str_value = "test object";
+
+  nlohmann::json json = var;
+
+  VariantT deserialized;
+  variant_from_json_with_builder (
+    json, deserialized, SerializationTestVariantBuilder{});
+
+  EXPECT_EQ (deserialized.index (), 0); // SimpleObject index
+  EXPECT_EQ (
+    std::get<SimpleObject> (deserialized).int_value,
+    std::get<SimpleObject> (var).int_value);
+  EXPECT_EQ (
+    std::get<SimpleObject> (deserialized).str_value,
+    std::get<SimpleObject> (var).str_value);
+}
+
+TEST (SerializationTest, VariantMixedTypes)
+{
+  // Test variant with both primitives and objects
+  using VariantT = std::variant<int, std::string, SimpleObject>;
+
+  // Test with primitive (string)
+  VariantT       var_str = std::string{ "test string" };
+  nlohmann::json json_str = var_str;
+
+  VariantT deserialized_str;
+  variant_from_json_with_builder (
+    json_str, deserialized_str, SerializationTestVariantBuilder{});
+
+  EXPECT_EQ (deserialized_str.index (), 1); // string index
+  EXPECT_EQ (std::get<std::string> (deserialized_str), "test string");
+
+  // Test with primitive (int)
+  VariantT       var_int = 12345;
+  nlohmann::json json_int = var_int;
+
+  VariantT deserialized_int;
+  variant_from_json_with_builder (
+    json_int, deserialized_int, SerializationTestVariantBuilder{});
+
+  EXPECT_EQ (deserialized_int.index (), 0); // int index
+  EXPECT_EQ (std::get<int> (deserialized_int), 12345);
+
+  // Test with object
+  VariantT      var_obj = SimpleObject{};
+  SimpleObject &obj = std::get<SimpleObject> (var_obj);
+  obj.int_value = 999;
+  obj.str_value = "mixed variant";
+  nlohmann::json json_obj = var_obj;
+
+  VariantT deserialized_obj;
+  variant_from_json_with_builder (
+    json_obj, deserialized_obj, SerializationTestVariantBuilder{});
+
+  EXPECT_EQ (deserialized_obj.index (), 2); // SimpleObject index
+  EXPECT_EQ (std::get<SimpleObject> (deserialized_obj).int_value, 999);
+  EXPECT_EQ (
+    std::get<SimpleObject> (deserialized_obj).str_value, "mixed variant");
 }
 
 TEST (SerializationTest, PointerSerialization)

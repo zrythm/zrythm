@@ -168,6 +168,9 @@ _installed*
 # Python related files
 venv
 
+# Node.js
+node_modules
+
 # GNOME Builder
 .buildconfig
 *.syscap

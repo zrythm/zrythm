@@ -8,8 +8,8 @@ namespace zrythm::structure::tracks
 ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Modulator,
-        PortType::Unknown,
-        PortType::Unknown,
+        std::nullopt,
+        std::nullopt,
         TrackFeatures::Automation | TrackFeatures::Modulators,
         dependencies.to_base_dependencies ())
 {

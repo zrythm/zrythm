@@ -23,6 +23,34 @@ init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
 Port::~Port () = default;
 RingBufferOwningPortMixin::~RingBufferOwningPortMixin () = default;
 
+void
+to_json (nlohmann::json &j, const Port &p)
+{
+  to_json (j, static_cast<const Port::UuidIdentifiableObject &> (p));
+  j[Port::kTypeId] = p.type_;
+  j[Port::kFlowId] = p.flow_;
+  j[Port::kLabelId] = p.label_;
+  j[Port::kSymbolId] = p.sym_;
+  if (p.port_group_)
+    {
+      j[Port::kPortGroupId] = *p.port_group_;
+    }
+}
+
+void
+from_json (const nlohmann::json &j, Port &p)
+{
+  from_json (j, static_cast<Port::UuidIdentifiableObject &> (p));
+  j.at (Port::kTypeId).get_to (p.type_);
+  j.at (Port::kFlowId).get_to (p.flow_);
+  j.at (Port::kLabelId).get_to (p.label_);
+  j.at (Port::kSymbolId).get_to (p.sym_);
+  if (j.contains (Port::kPortGroupId))
+    {
+      j.at (Port::kPortGroupId).get_to (p.port_group_);
+    }
+}
+
 } // namespace zrythm::dsp
 
 struct PortRegistryBuilder
@@ -32,13 +60,12 @@ struct PortRegistryBuilder
     if constexpr (std::is_same_v<T, zrythm::dsp::AudioPort>)
       {
         return std::make_unique<T> (
-          u8"", zrythm::dsp::PortFlow::Unknown,
-          zrythm::dsp::AudioPort::BusLayout::Unknown, 0,
+          u8"", zrythm::dsp::PortFlow{}, zrythm::dsp::AudioPort::BusLayout{}, 0,
           zrythm::dsp::AudioPort::Purpose::Main);
       }
     else
       {
-        return std::make_unique<T> (u8"", zrythm::dsp::PortFlow::Unknown);
+        return std::make_unique<T> (u8"", zrythm::dsp::PortFlow{});
       }
   }
 };

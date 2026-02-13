@@ -33,8 +33,6 @@ public:
    */
   enum class BusLayout : uint8_t
   {
-    Unknown,
-
     // Implies a single channel
     Mono,
 

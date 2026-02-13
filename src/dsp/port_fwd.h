@@ -15,7 +15,6 @@ class Port;
  */
 enum class PortFlow : std::uint8_t
 {
-  Unknown,
   Input,
   Output
 };
@@ -25,7 +24,6 @@ enum class PortFlow : std::uint8_t
  */
 enum class PortType : std::uint8_t
 {
-  Unknown,
   Audio,
   Midi,
   CV

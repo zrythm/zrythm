@@ -47,8 +47,8 @@ namespace zrythm::utils::serialization
 static constexpr auto kFormatMajorKey = "formatMajor"sv;
 static constexpr auto kFormatMinorKey = "formatMinor"sv;
 static constexpr auto kDocumentTypeKey = "documentType"sv;
-static constexpr auto kVariantIndexKey = "index"sv;
-static constexpr auto kVariantValueKey = "value"sv;
+static constexpr auto kVariantTypeKey = "type"sv;
+static constexpr auto kVariantNonObjectValueKey = "nonObjectValue"sv;
 
 /**
  * @brief Deserializer for a variant of pointers buildable with a builder.
@@ -68,7 +68,12 @@ variant_from_json_with_builder (
   const BuilderT       &builder)
 {
   const auto index =
-    j.at (zrythm::utils::serialization::kVariantIndexKey).get<int> ();
+    j.at (zrythm::utils::serialization::kVariantTypeKey).get<int> ();
+
+  // Create a copy of j without the "type" field for value deserialization
+  nlohmann::json value_json = j;
+  value_json.erase (zrythm::utils::serialization::kVariantTypeKey);
+
   auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
     Variant result{};
 
@@ -78,22 +83,33 @@ variant_from_json_with_builder (
       if (N == index)
         {
           auto object_ptr = builder.template build<StrippedType> ();
+
+          if constexpr (std::is_copy_constructible_v<StrippedType>)
+            {
+              if (value_json.contains (
+                    utils::serialization::kVariantNonObjectValueKey))
+                {
+                  value_json[utils::serialization::kVariantNonObjectValueKey]
+                    .get_to (*object_ptr);
+                  result = *object_ptr;
+                  return;
+                }
+            }
+
           if constexpr (std::is_pointer_v<Type>)
             {
-              j.at (zrythm::utils::serialization::kVariantValueKey)
-                .get_to (*object_ptr);
+              value_json.get_to (*object_ptr);
               result = object_ptr.release ();
             }
           else if constexpr (std::is_copy_constructible_v<Type>)
             {
-              j.at (zrythm::utils::serialization::kVariantValueKey)
-                .get_to (*object_ptr);
+              value_json.get_to (*object_ptr);
               result = *object_ptr;
             }
           else if constexpr (is_derived_from_template_v<QObjectUniquePtr, Type>)
             {
               Type t = std::move (*object_ptr);
-              j.at (zrythm::utils::serialization::kVariantValueKey).get_to (*t);
+              value_json.get_to (*t);
               result = std::move (t);
             }
           else
@@ -139,9 +155,17 @@ template <typename... Args> struct adl_serializer<std::variant<Args...>>
   {
     std::visit (
       [&] (auto &&value) {
-        j[zrythm::utils::serialization::kVariantIndexKey] = v.index ();
-        j[zrythm::utils::serialization::kVariantValueKey] =
-          std::forward<decltype (value)> (value);
+        j[zrythm::utils::serialization::kVariantTypeKey] = v.index ();
+        // Merge the value's JSON fields directly into j
+        json value_json = std::forward<decltype (value)> (value);
+        if (value_json.is_object ())
+          {
+            j.update (value_json);
+          }
+        else
+          {
+            j[utils::serialization::kVariantNonObjectValueKey] = value_json;
+          }
       },
       v);
   }

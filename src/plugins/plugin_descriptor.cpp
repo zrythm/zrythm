@@ -3,6 +3,7 @@
 
 #include "plugins/plugin_descriptor.h"
 #include "utils/bidirectional_map.h"
+#include "utils/serialization.h"
 
 namespace zrythm::plugins
 {
@@ -496,5 +497,71 @@ PluginDescriptor::is_same_plugin (
   const zrythm::plugins::PluginDescriptor &other) const
 {
   return *this == other;
+}
+
+void
+to_json (nlohmann::json &j, const PluginDescriptor &p)
+{
+  j = nlohmann::json{
+    { PluginDescriptor::kAuthorKey,             p.author_          },
+    { PluginDescriptor::kNameKey,               p.name_            },
+    { PluginDescriptor::kWebsiteKey,            p.website_         },
+    { PluginDescriptor::kCategoryKey,           p.category_        },
+    { PluginDescriptor::kCategoryStringKey,     p.category_str_    },
+    { PluginDescriptor::kNumAudioInsKey,        p.num_audio_ins_   },
+    { PluginDescriptor::kNumAudioOutsKey,       p.num_audio_outs_  },
+    { PluginDescriptor::kNumMidiInsKey,         p.num_midi_ins_    },
+    { PluginDescriptor::kNumMidiOutsKey,        p.num_midi_outs_   },
+    { PluginDescriptor::kNumCtrlInsKey,         p.num_ctrl_ins_    },
+    { PluginDescriptor::kNumCtrlOutsKey,        p.num_ctrl_outs_   },
+    { PluginDescriptor::kNumCvInsKey,           p.num_cv_ins_      },
+    { PluginDescriptor::kNumCvOutsKey,          p.num_cv_outs_     },
+    { PluginDescriptor::kUniqueIdKey,           p.unique_id_       },
+    { PluginDescriptor::kDeprecatedUniqueIdKey,
+     p.juce_compat_deprecated_unique_id_                           },
+    { PluginDescriptor::kArchitectureKey,       p.arch_            },
+    { PluginDescriptor::kProtocolKey,           p.protocol_        },
+    { PluginDescriptor::kPathOrIdKey,           p.path_or_id_      },
+    { PluginDescriptor::kMinBridgeModeKey,      p.min_bridge_mode_ },
+    { PluginDescriptor::kHasCustomUIKey,        p.has_custom_ui_   },
+  };
+}
+
+void
+from_json (const nlohmann::json &j, PluginDescriptor &p)
+{
+  j.at (PluginDescriptor::kAuthorKey).get_to (p.author_);
+  j.at (PluginDescriptor::kNameKey).get_to (p.name_);
+  j.at (PluginDescriptor::kWebsiteKey).get_to (p.website_);
+  j.at (PluginDescriptor::kCategoryKey).get_to (p.category_);
+  j.at (PluginDescriptor::kCategoryStringKey).get_to (p.category_str_);
+  j.at (PluginDescriptor::kNumAudioInsKey).get_to (p.num_audio_ins_);
+  j.at (PluginDescriptor::kNumAudioOutsKey).get_to (p.num_audio_outs_);
+  j.at (PluginDescriptor::kNumMidiInsKey).get_to (p.num_midi_ins_);
+  j.at (PluginDescriptor::kNumMidiOutsKey).get_to (p.num_midi_outs_);
+  j.at (PluginDescriptor::kNumCtrlInsKey).get_to (p.num_ctrl_ins_);
+  j.at (PluginDescriptor::kNumCtrlOutsKey).get_to (p.num_ctrl_outs_);
+  j.at (PluginDescriptor::kNumCvInsKey).get_to (p.num_cv_ins_);
+  j.at (PluginDescriptor::kNumCvOutsKey).get_to (p.num_cv_outs_);
+  j.at (PluginDescriptor::kUniqueIdKey).get_to (p.unique_id_);
+  j.at (PluginDescriptor::kArchitectureKey).get_to (p.arch_);
+  j.at (PluginDescriptor::kProtocolKey).get_to (p.protocol_);
+  {
+    const auto &val = j.at (PluginDescriptor::kPathOrIdKey);
+    if (val[zrythm::utils::serialization::kVariantTypeKey] == 0)
+      {
+        p.path_or_id_ =
+          val.at (utils::serialization::kVariantNonObjectValueKey)
+            .get<fs::path> ();
+      }
+    else
+      {
+        p.path_or_id_ =
+          val.at (utils::serialization::kVariantNonObjectValueKey)
+            .get<utils::Utf8String> ();
+      }
+  }
+  j.at (PluginDescriptor::kMinBridgeModeKey).get_to (p.min_bridge_mode_);
+  j.at (PluginDescriptor::kHasCustomUIKey).get_to (p.has_custom_ui_);
 }
 } // namespace zrythm::plugins

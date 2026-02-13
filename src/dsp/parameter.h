@@ -393,22 +393,8 @@ private:
   // static constexpr auto kHiddenKey = "hidden"sv;
   static constexpr auto kBaseValueKey = "baseValue"sv;
   static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
-  friend void           to_json (nlohmann::json &j, const ProcessorParameter &p)
-  {
-    j[kUniqueIdKey] = p.unique_id_;
-    j[kLabelKey] = p.label_;
-    j[kBaseValueKey] = p.base_value_.load ();
-    j[kModulationSourcePortIdKey] = p.modulation_input_uuid_;
-  }
-  friend void from_json (const nlohmann::json &j, ProcessorParameter &p)
-  {
-    j.at (kUniqueIdKey).get_to (p.unique_id_);
-    j.at (kLabelKey).get_to (p.label_);
-    float base_val{};
-    j.at (kBaseValueKey).get_to (base_val);
-    p.base_value_.store (base_val);
-    j.at (kModulationSourcePortIdKey).get_to (p.modulation_input_uuid_);
-  }
+  friend void to_json (nlohmann::json &j, const ProcessorParameter &p);
+  friend void from_json (const nlohmann::json &j, ProcessorParameter &p);
 
 private:
   /**

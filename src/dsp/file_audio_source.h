@@ -197,22 +197,8 @@ private:
   static constexpr auto kBpmKey = "bpm"sv;
   static constexpr auto kBitDepthKey = "bitDepth"sv;
   static constexpr auto kSamplerateKey = "samplerate"sv;
-  friend void           to_json (nlohmann::json &j, const FileAudioSource &clip)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (clip));
-    j[kNameKey] = clip.name_;
-    j[kBpmKey] = clip.bpm_;
-    j[kBitDepthKey] = clip.bit_depth_;
-    j[kSamplerateKey] = clip.samplerate_;
-  }
-  friend void from_json (const nlohmann::json &j, FileAudioSource &clip)
-  {
-    from_json (j, static_cast<UuidIdentifiableObject &> (clip));
-    j.at (kNameKey).get_to (clip.name_);
-    j.at (kBpmKey).get_to (clip.bpm_);
-    j.at (kBitDepthKey).get_to (clip.bit_depth_);
-    j.at (kSamplerateKey).get_to (clip.samplerate_);
-  }
+  friend void to_json (nlohmann::json &j, const FileAudioSource &clip);
+  friend void from_json (const nlohmann::json &j, FileAudioSource &clip);
 
 private:
   /** Name of the clip. */

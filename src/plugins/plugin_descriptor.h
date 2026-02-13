@@ -3,11 +3,8 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include "plugins/plugin_protocol.h"
 #include "utils/icloneable.h"
-#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <QObject>
@@ -201,66 +198,8 @@ private:
   static constexpr auto kPathOrIdKey = "pathOrId"sv;
   static constexpr auto kMinBridgeModeKey = "minBridgeMode"sv;
   static constexpr auto kHasCustomUIKey = "hasCustomUI"sv;
-  friend void           to_json (nlohmann::json &j, const PluginDescriptor &p)
-  {
-    j = nlohmann::json{
-      { kAuthorKey,             p.author_                           },
-      { kNameKey,               p.name_                             },
-      { kWebsiteKey,            p.website_                          },
-      { kCategoryKey,           p.category_                         },
-      { kCategoryStringKey,     p.category_str_                     },
-      { kNumAudioInsKey,        p.num_audio_ins_                    },
-      { kNumAudioOutsKey,       p.num_audio_outs_                   },
-      { kNumMidiInsKey,         p.num_midi_ins_                     },
-      { kNumMidiOutsKey,        p.num_midi_outs_                    },
-      { kNumCtrlInsKey,         p.num_ctrl_ins_                     },
-      { kNumCtrlOutsKey,        p.num_ctrl_outs_                    },
-      { kNumCvInsKey,           p.num_cv_ins_                       },
-      { kNumCvOutsKey,          p.num_cv_outs_                      },
-      { kUniqueIdKey,           p.unique_id_                        },
-      { kDeprecatedUniqueIdKey, p.juce_compat_deprecated_unique_id_ },
-      { kArchitectureKey,       p.arch_                             },
-      { kProtocolKey,           p.protocol_                         },
-      { kPathOrIdKey,           p.path_or_id_                       },
-      { kMinBridgeModeKey,      p.min_bridge_mode_                  },
-      { kHasCustomUIKey,        p.has_custom_ui_                    },
-    };
-  }
-  friend void from_json (const nlohmann::json &j, PluginDescriptor &p)
-  {
-    j.at (kAuthorKey).get_to (p.author_);
-    j.at (kNameKey).get_to (p.name_);
-    j.at (kWebsiteKey).get_to (p.website_);
-    j.at (kCategoryKey).get_to (p.category_);
-    j.at (kCategoryStringKey).get_to (p.category_str_);
-    j.at (kNumAudioInsKey).get_to (p.num_audio_ins_);
-    j.at (kNumAudioOutsKey).get_to (p.num_audio_outs_);
-    j.at (kNumMidiInsKey).get_to (p.num_midi_ins_);
-    j.at (kNumMidiOutsKey).get_to (p.num_midi_outs_);
-    j.at (kNumCtrlInsKey).get_to (p.num_ctrl_ins_);
-    j.at (kNumCtrlOutsKey).get_to (p.num_ctrl_outs_);
-    j.at (kNumCvInsKey).get_to (p.num_cv_ins_);
-    j.at (kNumCvOutsKey).get_to (p.num_cv_outs_);
-    j.at (kUniqueIdKey).get_to (p.unique_id_);
-    j.at (kArchitectureKey).get_to (p.arch_);
-    j.at (kProtocolKey).get_to (p.protocol_);
-    {
-      const auto val = j.at (kPathOrIdKey);
-      if (val[zrythm::utils::serialization::kVariantIndexKey] == 0)
-        {
-          p.path_or_id_ =
-            val[zrythm::utils::serialization::kVariantValueKey].get<fs::path> ();
-        }
-      else
-        {
-          p.path_or_id_ =
-            val[zrythm::utils::serialization::kVariantValueKey]
-              .get<utils::Utf8String> ();
-        }
-    }
-    j.at (kMinBridgeModeKey).get_to (p.min_bridge_mode_);
-    j.at (kHasCustomUIKey).get_to (p.has_custom_ui_);
-  }
+  friend void           to_json (nlohmann::json &j, const PluginDescriptor &p);
+  friend void from_json (const nlohmann::json &j, PluginDescriptor &p);
 
   friend bool operator== (const PluginDescriptor &a, const PluginDescriptor &b)
   {

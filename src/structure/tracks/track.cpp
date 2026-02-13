@@ -10,11 +10,11 @@ namespace zrythm::structure::tracks
 Track::~Track () = default;
 
 Track::Track (
-  Type                  type,
-  PortType              in_signal_type,
-  PortType              out_signal_type,
-  TrackFeatures         enabled_features,
-  BaseTrackDependencies dependencies)
+  Type                    type,
+  std::optional<PortType> in_signal_type,
+  std::optional<PortType> out_signal_type,
+  TrackFeatures           enabled_features,
+  BaseTrackDependencies   dependencies)
     : base_dependencies_ (std::move (dependencies)), type_ (type),
       features_ (enabled_features), in_signal_type_ (in_signal_type),
       out_signal_type_ (out_signal_type)
@@ -128,7 +128,7 @@ Track::make_track_processor (
     append_midi_inputs_to_outputs_func)
 {
   return utils::make_qobject_unique<TrackProcessor> (
-    base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_,
+    base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_.value (),
     [this] () { return get_name (); }, [this] () { return enabled (); },
     has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),
     TrackProcessor::ProcessorBaseDependencies{
@@ -167,7 +167,7 @@ Track::make_channel ()
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = get_port_registry (),
       .param_registry_ = get_param_registry () },
-    out_signal_type_, [&] () { return get_name (); }, is_master (),
+    out_signal_type_.value (), [&] () { return get_name (); }, is_master (),
     [this] (bool fader_solo_status) {
       // Effectively muted if other track(s) is soloed and this isn't
       return base_dependencies_.soloed_tracks_exist_getter_ ()

@@ -285,4 +285,31 @@ FileAudioSourceWriter::write_to_file ()
     }
 }
 
+void
+to_json (nlohmann::json &j, const FileAudioSource &clip)
+{
+  to_json (
+    j, static_cast<const FileAudioSource::UuidIdentifiableObject &> (clip));
+  j[FileAudioSource::kNameKey] = clip.name_;
+  j[FileAudioSource::kBpmKey] = clip.bpm_;
+  j[FileAudioSource::kBitDepthKey] =
+    utils::audio::bit_depth_enum_to_int (clip.bit_depth_);
+  j[FileAudioSource::kSamplerateKey] = clip.samplerate_;
+}
+
+void
+from_json (const nlohmann::json &j, FileAudioSource &clip)
+{
+  from_json (j, static_cast<FileAudioSource::UuidIdentifiableObject &> (clip));
+  j.at (FileAudioSource::kNameKey).get_to (clip.name_);
+  j.at (FileAudioSource::kBpmKey).get_to (clip.bpm_);
+
+  // Convert integer bit depth to enum
+  int bit_depth_int;
+  j.at (FileAudioSource::kBitDepthKey).get_to (bit_depth_int);
+  clip.bit_depth_ = utils::audio::bit_depth_int_to_enum (bit_depth_int);
+
+  j.at (FileAudioSource::kSamplerateKey).get_to (clip.samplerate_);
+}
+
 } // namespace zrythm::dsp

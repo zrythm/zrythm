@@ -54,24 +54,13 @@ private:
   friend void init_from (
     ArrangerObjectName       &obj,
     const ArrangerObjectName &other,
-    utils::ObjectCloneType    clone_type)
-  {
-    obj.name_ = other.name_;
-    obj.escaped_name_ = other.escaped_name_;
-  }
+    utils::ObjectCloneType    clone_type);
 
   static constexpr std::string_view kNameKey = "name";
   friend void
-  to_json (nlohmann::json &j, const ArrangerObjectName &named_object)
-  {
-    j[kNameKey] = named_object.name_;
-  }
+  to_json (nlohmann::json &j, const ArrangerObjectName &named_object);
   friend void
-  from_json (const nlohmann::json &j, ArrangerObjectName &named_object)
-  {
-    j.at (kNameKey).get_to (named_object.name_);
-    named_object.gen_escaped_name ();
-  }
+  from_json (const nlohmann::json &j, ArrangerObjectName &named_object);
 
   /**
    * Generates the escaped name for the object.

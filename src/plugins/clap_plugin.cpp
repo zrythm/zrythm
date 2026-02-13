@@ -1306,7 +1306,7 @@ ClapPlugin::create_ports_from_clap_plugin ()
                   return dsp::AudioPort::BusLayout::Mono;
                 }
             }
-          return dsp::AudioPort::BusLayout::Unknown;
+          return dsp::AudioPort::BusLayout{};
         }();
         auto port_ref =
           dependencies ().port_registry_.create_object<dsp::AudioPort> (

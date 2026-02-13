@@ -97,4 +97,28 @@ ProcessorParameter::get_node_name () const
 {
   return label_;
 }
+
+void
+to_json (nlohmann::json &j, const ProcessorParameter &p)
+{
+  to_json (
+    j, static_cast<const ProcessorParameter::UuidIdentifiableObject &> (p));
+  j[ProcessorParameter::kUniqueIdKey] = p.unique_id_;
+  j[ProcessorParameter::kLabelKey] = p.label_;
+  j[ProcessorParameter::kBaseValueKey] = p.base_value_.load ();
+  j[ProcessorParameter::kModulationSourcePortIdKey] = p.modulation_input_uuid_;
+}
+
+void
+from_json (const nlohmann::json &j, ProcessorParameter &p)
+{
+  from_json (j, static_cast<ProcessorParameter::UuidIdentifiableObject &> (p));
+  j.at (ProcessorParameter::kUniqueIdKey).get_to (p.unique_id_);
+  j.at (ProcessorParameter::kLabelKey).get_to (p.label_);
+  float base_val{};
+  j.at (ProcessorParameter::kBaseValueKey).get_to (base_val);
+  p.base_value_.store (base_val);
+  j.at (ProcessorParameter::kModulationSourcePortIdKey)
+    .get_to (p.modulation_input_uuid_);
+}
 } // namespace zrythm::dsp

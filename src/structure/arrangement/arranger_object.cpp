@@ -175,12 +175,18 @@ to_json (nlohmann::json &j, const ArrangerObject &arranger_object)
     static_cast<const ArrangerObject::UuidIdentifiableObject &> (
       arranger_object));
   j[ArrangerObject::kPositionKey] = arranger_object.position_;
-  j[ArrangerObject::kBoundsKey] = arranger_object.bounds_;
-  j[ArrangerObject::kLoopRangeKey] = arranger_object.loop_range_;
-  j[ArrangerObject::kFadeRangeKey] = arranger_object.fade_range_;
-  j[ArrangerObject::kNameKey] = arranger_object.name_;
-  j[ArrangerObject::kColorKey] = arranger_object.color_;
-  j[ArrangerObject::kMuteKey] = arranger_object.mute_;
+  if (arranger_object.bounds_)
+    j[ArrangerObject::kBoundsKey] = *arranger_object.bounds_;
+  if (arranger_object.loop_range_)
+    j[ArrangerObject::kLoopRangeKey] = *arranger_object.loop_range_;
+  if (arranger_object.fade_range_)
+    j[ArrangerObject::kFadeRangeKey] = *arranger_object.fade_range_;
+  if (arranger_object.name_)
+    j[ArrangerObject::kNameKey] = *arranger_object.name_;
+  if (arranger_object.color_)
+    j[ArrangerObject::kColorKey] = *arranger_object.color_;
+  if (arranger_object.mute_)
+    to_json (j, *arranger_object.mute_);
 }
 
 void
@@ -200,7 +206,7 @@ from_json (const nlohmann::json &j, ArrangerObject &arranger_object)
   if (arranger_object.color_)
     j.at (ArrangerObject::kColorKey).get_to (*arranger_object.color_);
   if (arranger_object.mute_)
-    j.at (ArrangerObject::kMuteKey).get_to (*arranger_object.mute_);
+    from_json (j, *arranger_object.mute_);
   if (arranger_object.fade_range_)
     j.at (ArrangerObject::kFadeRangeKey).get_to (*arranger_object.fade_range_);
 }

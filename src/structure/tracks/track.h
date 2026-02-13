@@ -315,11 +315,11 @@ protected:
    * Constructor to be used by subclasses.
    */
   Track (
-    Type                  type,
-    PortType              in_signal_type,
-    PortType              out_signal_type,
-    TrackFeatures         enabled_features,
-    BaseTrackDependencies dependencies);
+    Type                    type,
+    std::optional<PortType> in_signal_type,
+    std::optional<PortType> out_signal_type,
+    TrackFeatures           enabled_features,
+    BaseTrackDependencies   dependencies);
 
 public:
   bool has_piano_roll () const { return type_has_piano_roll (type_); }
@@ -705,12 +705,12 @@ protected:
   /**
    * The input signal type (eg audio bus tracks have audio input signals).
    */
-  PortType in_signal_type_ = {};
+  std::optional<PortType> in_signal_type_;
 
   /**
    * The output signal type (eg midi tracks have MIDI output signals).
    */
-  PortType out_signal_type_ = {};
+  std::optional<PortType> out_signal_type_;
 
   /** User comments. */
   utils::Utf8String comment_;

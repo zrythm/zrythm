@@ -9,8 +9,8 @@ namespace zrythm::structure::tracks
 FolderTrack::FolderTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Folder,
-        PortType::Unknown,
-        PortType::Unknown,
+        std::nullopt,
+        std::nullopt,
         {},
         dependencies.to_base_dependencies ())
 {
