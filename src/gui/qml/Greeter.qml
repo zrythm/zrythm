@@ -512,9 +512,9 @@ ApplicationWindow {
 
     Connections {
       function onProjectLoaded(projectUiState : ProjectUiState) {
-        console.log("Project loaded: ", projectUiState.project.title);
+        console.log("Project loaded: ", projectUiState.title);
         root.projectManager.activeProject = projectUiState;
-        console.log("Opening project: ", root.projectManager.activeProject.project.title);
+        console.log("Opening project: ", root.projectManager.activeProject.title);
         root.openProjectWindow(projectUiState);
       }
 
