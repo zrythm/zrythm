@@ -499,13 +499,12 @@ public:
     utils::ObjectCloneType clone_type);
 
 private:
-  static constexpr auto kPlayheadKey = "playhead"sv;
-  static constexpr auto kCuePosKey = "cuePos"sv;
-  static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
-  static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
-  static constexpr auto kPunchInPosKey = "punchInPos"sv;
-  static constexpr auto kPunchOutPosKey = "punchOutPos"sv;
-  static constexpr auto kPositionKey = "position"sv;
+  static constexpr auto kPlayheadKey = "playheadPosition"sv;
+  static constexpr auto kCuePosKey = "cuePosition"sv;
+  static constexpr auto kLoopStartPosKey = "loopStartPosition"sv;
+  static constexpr auto kLoopEndPosKey = "loopEndPosition"sv;
+  static constexpr auto kPunchInPosKey = "punchInPosition"sv;
+  static constexpr auto kPunchOutPosKey = "punchOutPosition"sv;
   friend void           to_json (nlohmann::json &j, const Transport &transport);
   friend void from_json (const nlohmann::json &j, Transport &transport);
 

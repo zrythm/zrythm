@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -113,13 +113,7 @@ private:
   static constexpr auto kCreatedByUserKey = "createdByUser"sv;
   static constexpr auto kVisible = "visible"sv;
   static constexpr auto kHeightKey = "height"sv;
-  friend void to_json (nlohmann::json &j, const AutomationTrackHolder &nfo)
-  {
-    j[kAutomationTrackKey] = nfo.automation_track_;
-    j[kCreatedByUserKey] = nfo.created_by_user_;
-    j[kVisible] = nfo.visible_;
-    j[kHeightKey] = nfo.height_;
-  }
+  friend void to_json (nlohmann::json &j, const AutomationTrackHolder &nfo);
   friend void from_json (const nlohmann::json &j, AutomationTrackHolder &nfo);
 };
 
@@ -271,11 +265,7 @@ public:
 private:
   static constexpr auto kAutomationTracksKey = "automationTracks"sv;
   static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
-  friend void to_json (nlohmann::json &j, const AutomationTracklist &ats)
-  {
-    j[kAutomationTracksKey] = ats.automation_tracks_;
-    j[kAutomationVisibleKey] = ats.automation_visible_;
-  }
+  friend void to_json (nlohmann::json &j, const AutomationTracklist &ats);
   friend void from_json (const nlohmann::json &j, AutomationTracklist &ats);
 
   auto &get_port_registry () { return dependencies_.port_registry_; }

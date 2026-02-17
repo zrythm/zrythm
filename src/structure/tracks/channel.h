@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -155,17 +155,7 @@ private:
   static constexpr auto kAudioPrefaderKey = "audioPrefader"sv;
   static constexpr auto kFaderKey = "fader"sv;
 
-  friend void to_json (nlohmann::json &j, const Channel &c)
-  {
-    j[kMidiFxKey] = *c.midi_fx_;
-    j[kInsertsKey] = *c.inserts_;
-    j[kPreFaderSendsKey] = c.prefader_sends_;
-    j[kPostFaderSendsKey] = c.postfader_sends_;
-    j[kInstrumentsKey] = *c.instruments_;
-    j[kMidiPrefaderKey] = c.midi_prefader_;
-    j[kAudioPrefaderKey] = c.audio_prefader_;
-    j[kFaderKey] = c.fader_;
-  }
+  friend void to_json (nlohmann::json &j, const Channel &c);
   friend void from_json (const nlohmann::json &j, Channel &c);
 
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies () const

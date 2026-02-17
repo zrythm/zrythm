@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -102,16 +102,8 @@ public:
 
 private:
   static constexpr auto kNameKey = "name"sv;
-  friend void to_json (nlohmann::json &j, const ModulatorMacroProcessor &p)
-  {
-    to_json (j, static_cast<const dsp::ProcessorBase &> (p));
-    j[kNameKey] = p.name_;
-  }
-  friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p)
-  {
-    from_json (j, static_cast<dsp::ProcessorBase &> (p));
-    j.at (kNameKey).get_to (p.name_);
-  }
+  friend void to_json (nlohmann::json &j, const ModulatorMacroProcessor &p);
+  friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p);
 
 private:
   ProcessorBaseDependencies dependencies_;
@@ -121,6 +113,8 @@ private:
    *
    * @note This is only cosmetic and should not be used anywhere during
    * processing.
+   *
+   * FIXME: is this needed? ProcessorBase already includes a name.
    */
   utils::Utf8String name_;
 

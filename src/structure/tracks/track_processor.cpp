@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cstddef>
@@ -973,6 +973,12 @@ TrackProcessor::custom_release_resources ()
 }
 
 // ============================================================================
+
+void
+to_json (nlohmann::json &j, const TrackProcessor &tp)
+{
+  to_json (j, static_cast<const dsp::ProcessorBase &> (tp));
+}
 
 void
 from_json (const nlohmann::json &j, TrackProcessor &tp)

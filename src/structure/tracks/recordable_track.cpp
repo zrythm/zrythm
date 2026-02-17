@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
@@ -39,5 +39,26 @@ RecordableTrackMixin::setRecording (bool rec)
     }
 
   Q_EMIT recordingChanged (rec);
+}
+
+void
+to_json (nlohmann::json &j, const RecordableTrackMixin &track)
+{
+  j = track.recording_id_;
+}
+void
+from_json (const nlohmann::json &j, RecordableTrackMixin &track)
+{
+  track.recording_id_ = { track.dependencies_.param_registry_ };
+  j.get_to (track.recording_id_);
+}
+
+void
+init_from (
+  RecordableTrackMixin       &obj,
+  const RecordableTrackMixin &other,
+  utils::ObjectCloneType      clone_type)
+{
+  obj.recording_id_ = other.recording_id_;
 }
 }

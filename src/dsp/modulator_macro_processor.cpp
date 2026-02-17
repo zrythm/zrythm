@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/modulator_macro_processor.h"
@@ -120,4 +120,19 @@ init_from (
   // TODO ProcessorBase
   obj.name_ = other.name_;
 }
+
+void
+to_json (nlohmann::json &j, const ModulatorMacroProcessor &p)
+{
+  to_json (j, static_cast<const dsp::ProcessorBase &> (p));
+  j[ModulatorMacroProcessor::kNameKey] = p.name_;
+}
+
+void
+from_json (const nlohmann::json &j, ModulatorMacroProcessor &p)
+{
+  from_json (j, static_cast<dsp::ProcessorBase &> (p));
+  j.at (ModulatorMacroProcessor::kNameKey).get_to (p.name_);
+}
+
 } // namespace zrythm::dsp

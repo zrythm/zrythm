@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -51,24 +51,13 @@ public:
   }
 
 private:
-  static constexpr auto kRecordingIdKey = "recordingId"sv;
-  friend void to_json (nlohmann::json &j, const RecordableTrackMixin &track)
-  {
-    j[kRecordingIdKey] = track.recording_id_;
-  }
-  friend void from_json (const nlohmann::json &j, RecordableTrackMixin &track)
-  {
-    track.recording_id_ = { track.dependencies_.param_registry_ };
-    j.at (kRecordingIdKey).get_to (track.recording_id_);
-  }
+  friend void to_json (nlohmann::json &j, const RecordableTrackMixin &track);
+  friend void from_json (const nlohmann::json &j, RecordableTrackMixin &track);
 
   friend void init_from (
     RecordableTrackMixin       &obj,
     const RecordableTrackMixin &other,
-    utils::ObjectCloneType      clone_type)
-  {
-    obj.recording_id_ = other.recording_id_;
-  }
+    utils::ObjectCloneType      clone_type);
 
 private:
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -189,52 +189,13 @@ private:
   static constexpr std::string_view kMuteKey = "mute";
   static constexpr std::string_view kSoloKey = "solo";
   static constexpr std::string_view kMidiChannelKey = "midiChannel";
-  friend void to_json (nlohmann::json &j, const TrackLane &lane)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (lane));
-    to_json (
-      j,
-      static_cast<const arrangement::ArrangerObjectOwner<
-        arrangement::MidiRegion> &> (lane));
-    to_json (
-      j,
-      static_cast<const arrangement::ArrangerObjectOwner<
-        arrangement::AudioRegion> &> (lane));
-    j[kNameKey] = lane.name_;
-    j[kHeightKey] = lane.height_;
-    j[kMuteKey] = lane.mute_;
-    j[kSoloKey] = lane.solo_;
-    j[kMidiChannelKey] = lane.midi_ch_;
-  }
-  friend void from_json (const nlohmann::json &j, TrackLane &lane)
-  {
-    from_json (j, static_cast<UuidIdentifiableObject &> (lane));
-    from_json (
-      j,
-      static_cast<arrangement::ArrangerObjectOwner<arrangement::MidiRegion> &> (
-        lane));
-    from_json (
-      j,
-      static_cast<arrangement::ArrangerObjectOwner<arrangement::AudioRegion> &> (
-        lane));
-    j.at (kNameKey).get_to (lane.name_);
-    j.at (kHeightKey).get_to (lane.height_);
-    j.at (kMuteKey).get_to (lane.mute_);
-    j.at (kSoloKey).get_to (lane.solo_);
-    j.at (kMidiChannelKey).get_to (lane.midi_ch_);
-  }
+  friend void to_json (nlohmann::json &j, const TrackLane &lane);
+  friend void from_json (const nlohmann::json &j, TrackLane &lane);
 
   friend void init_from (
     TrackLane             &obj,
     const TrackLane       &other,
-    utils::ObjectCloneType clone_type)
-  {
-    obj.name_ = other.name_;
-    obj.height_ = other.height_;
-    obj.mute_ = other.mute_;
-    obj.solo_ = other.solo_;
-    obj.midi_ch_ = other.midi_ch_;
-  }
+    utils::ObjectCloneType clone_type);
 
 private:
   SoloedLanesExistFunc soloed_lanes_exist_func_;

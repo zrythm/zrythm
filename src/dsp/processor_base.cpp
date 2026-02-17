@@ -269,7 +269,7 @@ ProcessorGraphBuilder::add_connections (
 void
 to_json (nlohmann::json &j, const ProcessorBase &p)
 {
-  j[ProcessorBase::kProcessorNameKey] = p.name_;
+  // j[ProcessorBase::kProcessorNameKey] = p.name_;
   j[ProcessorBase::kInputPortsKey] = p.input_ports_;
   j[ProcessorBase::kOutputPortsKey] = p.output_ports_;
   j[ProcessorBase::kParametersKey] = p.params_;
@@ -277,7 +277,7 @@ to_json (nlohmann::json &j, const ProcessorBase &p)
 void
 from_json (const nlohmann::json &j, ProcessorBase &p)
 {
-  j.at (ProcessorBase::kProcessorNameKey).get_to (p.name_);
+  // j.at (ProcessorBase::kProcessorNameKey).get_to (p.name_);
   p.input_ports_.clear ();
   for (const auto &input_port : j.at (ProcessorBase::kInputPortsKey))
     {

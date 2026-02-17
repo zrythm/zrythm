@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -108,20 +108,6 @@ public:
    */
   void write_to_disk (bool is_backup);
 
-#if 0
-  /**
-   * @brief Returns a new audio source that can be used by other classes so that
-   * they don't need to depend on FileAudioSource.
-
-   * Calling this multiple times is allowed - each source has a separate
-   * buffer/file reader.
-   *
-   * @return A unique audio source.
-   */
-  std::unique_ptr<juce::PositionableAudioSource>
-  generate_audio_source (const FileAudioSource::Uuid &id) const;
-#endif
-
   auto get_clip_ptrs () const
   {
     return std::views::transform (
@@ -135,17 +121,9 @@ private:
     const AudioPool       &other,
     utils::ObjectCloneType clone_type);
 
-  static constexpr auto kClipsKey = "clips"sv;
-  static constexpr auto kLastKnownFileHashesKey = "lastKnownFileHashes"sv;
-  friend void           to_json (nlohmann::json &j, const AudioPool &pool)
-  {
-    j[AudioPool::kLastKnownFileHashesKey] = pool.last_known_file_hashes_;
-  }
-  friend void from_json (const nlohmann::json &j, AudioPool &pool)
-  {
-    j.at (AudioPool::kLastKnownFileHashesKey)
-      .get_to (pool.last_known_file_hashes_);
-  }
+  static constexpr auto kLastKnownFileHashesKey = "fileHashes"sv;
+  friend void           to_json (nlohmann::json &j, const AudioPool &pool);
+  friend void           from_json (const nlohmann::json &j, AudioPool &pool);
 
 private:
   SampleRateGetter      sample_rate_getter_;

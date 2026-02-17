@@ -164,7 +164,8 @@ template <typename... Args> struct adl_serializer<std::variant<Args...>>
           }
         else
           {
-            j[utils::serialization::kVariantNonObjectValueKey] = value_json;
+            j[zrythm::utils::serialization::kVariantNonObjectValueKey] =
+              value_json;
           }
       },
       v);

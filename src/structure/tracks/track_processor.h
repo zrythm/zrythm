@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -336,10 +336,7 @@ public:
     StereoPortPair               stereo_ports);
 
 private:
-  friend void to_json (nlohmann::json &j, const TrackProcessor &tp)
-  {
-    to_json (j, static_cast<const dsp::ProcessorBase &> (tp));
-  }
+  friend void to_json (nlohmann::json &j, const TrackProcessor &tp);
   friend void from_json (const nlohmann::json &j, TrackProcessor &tp);
 
   friend void init_from (

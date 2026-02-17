@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -629,32 +629,11 @@ private:
   static constexpr auto kModulatorsKey = "modulators"sv;
   static constexpr auto kModulatorMacroProcessorsKey = "modulatorMacros"sv;
   static constexpr auto kTrackLanesKey = "lanes"sv;
-  static constexpr auto kRecordableTrackMixinKey = "recordableTrackMixin"sv;
-  static constexpr auto kPianoRollTrackMixinKey = "pianoRollTrackMixin"sv;
-  friend void           to_json (nlohmann::json &j, const Track &track)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (track));
-    j[kTypeKey] = track.type_;
-    j[kNameKey] = track.name_;
-    j[kIconNameKey] = track.icon_name_;
-    j[kVisibleKey] = track.visible_;
-    j[kMainHeightKey] = track.main_height_;
-    j[kEnabledKey] = track.enabled_;
-    j[kColorKey] = track.color_;
-    j[kInputSignalTypeKey] = track.in_signal_type_;
-    j[kOutputSignalTypeKey] = track.out_signal_type_;
-    j[kCommentKey] = track.comment_;
-    j[kFrozenClipIdKey] = track.frozen_clip_id_;
-    j[kProcessorKey] = track.processor_;
-    j[kAutomationTracklistKey] = track.automation_tracklist_;
-    j[kChannelKey] = track.channel_;
-    j[kModulatorsKey] = track.modulators_;
-    j[kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
-    j[kTrackLanesKey] = track.lanes_;
-    j[kRecordableTrackMixinKey] = track.recordable_track_mixin_;
-    j[kPianoRollTrackMixinKey] = track.piano_roll_track_mixin_;
-  }
-  friend void from_json (const nlohmann::json &j, Track &track);
+  static constexpr auto kRecordingParamKey = "recordingParam"sv;
+  static constexpr auto kPianoRollKey = "pianoRoll"sv;
+  static constexpr auto kClipLauncherModeKey = "clipLauncherMode"sv;
+  friend void           to_json (nlohmann::json &j, const Track &track);
+  friend void           from_json (const nlohmann::json &j, Track &track);
 
   [[nodiscard]] utils::QObjectUniquePtr<AutomationTracklist>
                                                  make_automation_tracklist ();

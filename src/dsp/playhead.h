@@ -203,17 +203,12 @@ public:
   }
 
 private:
-  static constexpr auto kTicks = "ticks"sv;
-  friend void           to_json (nlohmann::json &j, const Playhead &pos)
-  {
-    j[kTicks] = pos.position_ticks ().in (units::ticks);
-  }
-  friend void from_json (const nlohmann::json &j, Playhead &pos)
-  {
-    double ticks{};
-    j.at (kTicks).get_to (ticks);
-    pos.set_position_ticks (units::ticks (ticks));
-  }
+  // These just mimic what AtomicPosition does so we don't invent another
+  // position type in the project schema
+  static constexpr auto kMode = "mode"sv;
+  static constexpr auto kValue = "value"sv;
+  friend void           to_json (nlohmann::json &j, const Playhead &pos);
+  friend void           from_json (const nlohmann::json &j, Playhead &pos);
 
 private:
   const TempoMap &tempo_map_;

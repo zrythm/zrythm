@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -330,12 +330,8 @@ public:
 
 private:
   static constexpr auto kMidiModeKey = "midiMode"sv;
-  friend void           to_json (nlohmann::json &j, const Fader &fader)
-  {
-    to_json (j, static_cast<const dsp::ProcessorBase &> (fader));
-    j[kMidiModeKey] = fader.midi_mode_;
-  }
-  friend void from_json (const nlohmann::json &j, Fader &fader);
+  friend void           to_json (nlohmann::json &j, const Fader &fader);
+  friend void           from_json (const nlohmann::json &j, Fader &fader);
 
   /**
    * @brief Initializes various parameter caches used during processing.

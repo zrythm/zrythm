@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
@@ -176,6 +176,19 @@ Channel::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
   midi_fx_->get_plugins (plugins);
   instruments_->get_plugins (plugins);
   inserts_->get_plugins (plugins);
+}
+
+void
+to_json (nlohmann::json &j, const Channel &c)
+{
+  j[Channel::kMidiFxKey] = *c.midi_fx_;
+  j[Channel::kInsertsKey] = *c.inserts_;
+  j[Channel::kPreFaderSendsKey] = c.prefader_sends_;
+  j[Channel::kPostFaderSendsKey] = c.postfader_sends_;
+  j[Channel::kInstrumentsKey] = *c.instruments_;
+  j[Channel::kMidiPrefaderKey] = c.midi_prefader_;
+  j[Channel::kAudioPrefaderKey] = c.audio_prefader_;
+  j[Channel::kFaderKey] = c.fader_;
 }
 
 void

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <condition_variable>
@@ -305,6 +305,18 @@ AudioPool::write_to_disk (bool is_backup)
     }
 
   z_debug ("done writing clips, {}", *this);
+}
+
+void
+to_json (nlohmann::json &j, const AudioPool &pool)
+{
+  j[AudioPool::kLastKnownFileHashesKey] = pool.last_known_file_hashes_;
+}
+
+void
+from_json (const nlohmann::json &j, AudioPool &pool)
+{
+  j.at (AudioPool::kLastKnownFileHashesKey).get_to (pool.last_known_file_hashes_);
 }
 
 } // namespace zrythm::dsp

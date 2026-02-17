@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/channel_send.h"
@@ -142,6 +142,14 @@ init_from (
   //   static_cast<const dsp::ProcessorBase &> (other), clone_type);
   obj.signal_type_ = other.signal_type_;
   obj.is_prefader_ = other.is_prefader_;
+}
+
+void
+to_json (nlohmann::json &j, const ChannelSend &p)
+{
+  to_json (j, static_cast<const dsp::ProcessorBase &> (p));
+  j[ChannelSend::kSignalTypeKey] = p.signal_type_;
+  j[ChannelSend::kIsPrefaderKey] = p.is_prefader_;
 }
 
 void

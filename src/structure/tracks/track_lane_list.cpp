@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_lane_list.h"
@@ -264,6 +264,26 @@ init_from (
         lane_var);
     }
 #endif
+}
+
+void
+to_json (nlohmann::json &j, const TrackLaneList &p)
+{
+  j[TrackLaneList::kLanesKey] = p.lanes_;
+  j[TrackLaneList::kLanesVisibleKey] = p.lanes_visible_;
+}
+
+void
+from_json (const nlohmann::json &j, TrackLaneList &p)
+{
+  p.lanes_.clear ();
+  for (const auto &lane_json : j.at (TrackLaneList::kLanesKey))
+    {
+      p.lanes_.emplace_back (
+        utils::make_qobject_unique<TrackLane> (p.dependencies_, &p));
+      lane_json.get_to (*p.lanes_.back ());
+    }
+  j.at (TrackLaneList::kLanesVisibleKey).get_to (p.lanes_visible_);
 }
 
 TrackLaneList::~TrackLaneList () = default;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
@@ -485,6 +485,13 @@ init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type)
   // obj.type_ = other.type_;
   // obj.phase_ = other.phase_;
   // obj.midi_mode_ = other.midi_mode_;
+}
+
+void
+to_json (nlohmann::json &j, const Fader &fader)
+{
+  to_json (j, static_cast<const dsp::ProcessorBase &> (fader));
+  j[Fader::kMidiModeKey] = fader.midi_mode_;
 }
 
 void

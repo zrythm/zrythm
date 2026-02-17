@@ -1,21 +1,16 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/color.h"
 #include "utils/debug.h"
 #include "utils/math_utils.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::utils
 {
 
-Color::Color (const std::string &str)
-{
-  QColor qc (str.c_str ());
-  red_ = qc.redF ();
-  green_ = qc.greenF ();
-  blue_ = qc.blueF ();
-  alpha_ = qc.alphaF ();
-}
+Color::Color (std::string_view hex) : Color (from_hex (hex)) { }
 
 Color::Color (float r, float g, float b, float a) noexcept
     : red_ (r), green_ (g), blue_ (b), alpha_ (a)
@@ -212,13 +207,32 @@ Color::rgb_to_hex (float red, float green, float blue)
 {
   return fmt::format (
     "#{:02x}{:02x}{:02x}", static_cast<int> (red * 255.0),
-    static_cast<int> (green * 255.0), static_cast<char> (blue * 255.0));
+    static_cast<int> (green * 255.0), static_cast<int> (blue * 255.0));
 }
 
 std::string
 Color::to_hex () const
 {
   return rgb_to_hex (red_, green_, blue_);
+}
+
+Color
+Color::from_hex (std::string_view hex)
+{
+  QColor qc (hex.data ());
+  return Color (qc.redF (), qc.greenF (), qc.blueF (), 1.0f);
+}
+
+void
+to_json (nlohmann::json &j, const Color &color)
+{
+  j = color.to_hex ();
+}
+
+void
+from_json (const nlohmann::json &j, Color &color)
+{
+  color = Color::from_hex (j.get<std::string> ());
 }
 
 bool

@@ -9,9 +9,10 @@
 #include "dsp/midi_port.h"
 #include "utils/format.h"
 #include "utils/math_utils.h"
-#include "utils/serialization.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {
@@ -170,14 +171,8 @@ public:
     return utils::math::floats_equal (convertFrom0To1 (normalized_val), 1.f);
   }
 
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE (
-    ParameterRange,
-    type_,
-    minf_,
-    maxf_,
-    zerof_,
-    deff_,
-    unit_)
+  friend void to_json (nlohmann::json &j, const ParameterRange &p);
+  friend void from_json (const nlohmann::json &j, ParameterRange &p);
 
 public:
   Type type_{ Type::Linear };

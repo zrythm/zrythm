@@ -1,13 +1,12 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "utils/serialization.h"
-
 #include <QColor>
 
 #include <boost/describe.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::utils
 {
@@ -22,11 +21,11 @@ public:
   Color (float r, float g, float b, float a = 1.0f) noexcept;
 
   /**
-   * @brief Construct a new Color object by parsing the color string.
+   * @brief Construct a new Color object by parsing a hex color string.
    *
-   * @param str
+   * @param hex Hex color string (e.g., "#ff5588" or "#ff5588cc")
    */
-  Color (const std::string &str);
+  Color (std::string_view hex);
 
   Color &operator= (const QColor &color);
 
@@ -134,17 +133,37 @@ public:
     bool         is_muted);
 
   /**
-   * @brief Converts the color to a hex string.
+   * @brief Converts the color to a hex string (RGB only).
    *
-   * @return std::string
+   * @return std::string Hex color string (e.g., "#ff5588")
    */
   std::string to_hex () const;
 
+  /**
+   * @brief Converts RGB float values to a hex string.
+   *
+   * @param r Red (0.0-1.0)
+   * @param g Green (0.0-1.0)
+   * @param b Blue (0.0-1.0)
+   * @return std::string Hex color string (e.g., "#ff5588")
+   */
   static std::string rgb_to_hex (float r, float g, float b);
+
+  /**
+   * @brief Parses a hex color string using QColor.
+   *
+   * Supports QColor-compatible formats: #RGB, #RRGGBB
+   * Alpha defaults to 1.0.
+   *
+   * @param hex Hex color string (e.g., "#ff5588")
+   * @return Color Parsed color
+   */
+  static Color from_hex (std::string_view hex);
 
   friend bool operator== (const Color &lhs, const Color &rhs);
 
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE (Color, red_, green_, blue_, alpha_)
+  friend void to_json (nlohmann::json &j, const Color &color);
+  friend void from_json (const nlohmann::json &j, Color &color);
 
 public:
   float red_ = 0.f;    ///< Red.

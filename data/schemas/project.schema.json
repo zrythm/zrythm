@@ -117,11 +117,17 @@
             "cuePosition": {
               "$ref": "#/definitions/position"
             },
-            "loopRange": {
-              "$ref": "#/definitions/positionRange"
+            "loopStartPosition": {
+              "$ref": "#/definitions/position"
             },
-            "punchRange": {
-              "$ref": "#/definitions/positionRange"
+            "loopEndPosition": {
+              "$ref": "#/definitions/position"
+            },
+            "punchInPosition": {
+              "$ref": "#/definitions/position"
+            },
+            "punchOutPosition": {
+              "$ref": "#/definitions/position"
             }
           }
         },
@@ -177,37 +183,22 @@
           "type": "object",
           "description": "References to audio files used in the project",
           "properties": {
-            "audioFiles": {
+            "fileHashes": {
               "type": "array",
+              "description": "File hashes used for checking if an audio file is already written to the pool",
               "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "UUID reference to file in fileAudioSourceRegistry"
+                "type": "array",
+                "items": [
+                  {
+                    "$ref": "#/definitions/uuid",
+                    "description": "File audio source ID from fileAudioSourceRegistry"
                   },
-                  "filename": {
-                    "type": "string"
-                  },
-                  "sampleRate": {
-                    "type": "integer"
-                  },
-                  "channels": {
+                  {
                     "type": "integer",
-                    "enum": [
-                      1,
-                      2
-                    ]
-                  },
-                  "frames": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "filePath": {
-                    "type": "string",
-                    "description": "Relative path to audio file in pool"
+                    "description": "File hash"
                   }
-                }
+                ],
+                "additionalItems": false
               }
             }
           }
@@ -292,14 +283,14 @@
               "type": "array",
               "description": "All tracks with full data",
               "items": {
-                "$ref": "#/definitions/knownTracks"
+                "$ref": "#/definitions/knownTrack"
               }
             },
             "arrangerObjectRegistry": {
               "type": "array",
               "description": "All arranger objects (regions, notes, automation, markers, etc.)",
               "items": {
-                "$ref": "#/definitions/knownArrangerObjects"
+                "$ref": "#/definitions/knownArrangerObject"
               }
             },
             "fileAudioSourceRegistry": {
@@ -371,6 +362,29 @@
       },
       "description": "Array of UUID strings"
     },
+    "color": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$",
+      "description": "Hex color string in HTML #RRGGBB format (e.g., #ff5588)"
+    },
+    "curveOptions": {
+      "type": "object",
+      "description": "Curve options for interpolation between values",
+      "properties": {
+        "curviness": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "Curve curviness: <0 tilts down, >0 tilts up, 0 is straight line"
+        },
+        "algo": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4,
+          "description": "Curve algorithm: 0=Exponent, 1=SuperEllipse, 2=Vital, 3=Pulse, 4=Logarithmic"
+        }
+      }
+    },
     "position": {
       "type": "object",
       "description": "Position in time (ticks or seconds)",
@@ -384,18 +398,6 @@
         "value": {
           "type": "number",
           "description": "Ticks or seconds"
-        }
-      }
-    },
-    "positionRange": {
-      "type": "object",
-      "description": "Position range",
-      "properties": {
-        "start": {
-          "$ref": "#/definitions/position"
-        },
-        "end": {
-          "$ref": "#/definitions/position"
         }
       }
     },
@@ -592,35 +594,55 @@
     },
     "processorBase": {
       "$comment": "Base class for all processor types",
+      "type": "object",
       "required": [
-        "name",
         "inputPorts",
         "outputPorts",
         "parameters"
       ],
       "properties": {
-        "name": {
-          "type": "string"
+        "processorName": {
+          "type": "string",
+          "description": "Processor display name"
         },
         "inputPorts": {
           "type": "array",
+          "description": "UUID references to input ports in portRegistry",
           "items": {
             "$ref": "#/definitions/uuid"
           }
         },
         "outputPorts": {
           "type": "array",
+          "description": "UUID references to output ports in portRegistry",
           "items": {
             "$ref": "#/definitions/uuid"
           }
         },
         "parameters": {
           "type": "array",
+          "description": "UUID references to processor parameters in paramRegistry",
           "items": {
             "$ref": "#/definitions/uuid"
           }
         }
       }
+    },
+    "fader": {
+      "$comment": "Channel fader processor",
+      "allOf": [
+        {
+          "$ref": "#/definitions/processorBase"
+        }
+      ]
+    },
+    "channelSend": {
+      "$comment": "Channel send processor (derives from processorBase)",
+      "allOf": [
+        {
+          "$ref": "#/definitions/processorBase"
+        }
+      ]
     },
     "pluginConfiguration": {
       "$comment": "Plugin configuration",
@@ -679,6 +701,79 @@
         }
       ]
     },
+    "pluginGroup": {
+      "description": "Container for plugins and nested plugin groups (racks/chains/layers)",
+      "type": "object",
+      "properties": {
+        "fader": {
+          "$ref": "#/definitions/fader"
+        },
+        "deviceGroups": {
+          "type": "array",
+          "description": "Nested device groups (plugins or sub-groups)",
+          "items": {
+            "$comment": "Note: recursive refs must come first in oneOf to avoid 'already inserted' error in nlohmann::json-schema validator",
+            "oneOf": [
+              {
+                "$ref": "#/definitions/pluginGroup",
+                "$comment": "Nested container"
+              },
+              {
+                "$ref": "#/definitions/uuid",
+                "$comment": "Reference to a plugin"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "fader"
+      ]
+    },
+    "channel": {
+      "type": "object",
+      "description": "Track channel (fader, sends, plugins, etc.)",
+      "properties": {
+        "midiFx": {
+          "$ref": "#/definitions/pluginGroup",
+          "description": "MIDI FX plugin group (for MIDI/instrument tracks)"
+        },
+        "instruments": {
+          "$ref": "#/definitions/pluginGroup",
+          "description": "Instrument plugin group"
+        },
+        "inserts": {
+          "$ref": "#/definitions/pluginGroup",
+          "description": "Insert effects plugin group"
+        },
+        "preFaderSends": {
+          "type": "array",
+          "description": "Pre-fader channel sends",
+          "items": {
+            "$ref": "#/definitions/channelSend"
+          }
+        },
+        "postFaderSends": {
+          "type": "array",
+          "description": "Post-fader channel sends",
+          "items": {
+            "$ref": "#/definitions/channelSend"
+          }
+        },
+        "prefaderProcessor": {
+          "$ref": "#/definitions/processorBase",
+          "description": "Pre-fader passthrough processor"
+        },
+        "fader": {
+          "$ref": "#/definitions/fader",
+          "description": "Channel fader"
+        },
+        "postfaderProcessor": {
+          "$ref": "#/definitions/processorBase",
+          "description": "Post-fader passthrough processor"
+        }
+      }
+    },
     "trackBase": {
       "$comment": "Base class for all track types",
       "allOf": [
@@ -696,9 +791,6 @@
             "name": {
               "type": "string"
             },
-            "iconName": {
-              "type": "string"
-            },
             "visible": {
               "type": "boolean"
             },
@@ -709,54 +801,13 @@
               "type": "boolean"
             },
             "color": {
-              "type": "string",
-              "pattern": "^#[0-9A-Fa-f]{6}$"
-            },
-            "inSignalType": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 3,
-              "description": "0=Audio, 1=MIDI, 2=CV, 3=None"
-            },
-            "outSignalType": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 3,
-              "description": "0=Audio, 1=MIDI, 2=CV, 3=None"
+              "$ref": "#/definitions/color"
             },
             "comment": {
               "type": "string"
             },
-            "frozenClipId": {
-              "$ref": "#/definitions/uuid"
-            },
             "processor": {
-              "type": "object",
-              "description": "Track processor (for instrument/audio tracks)",
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "stereoInPortId": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "stereoOutPortId": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "midiInPortId": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "midiOutPortId": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "pluginIds": {
-                  "type": "array",
-                  "description": "Plugins in the processing chain",
-                  "items": {
-                    "$ref": "#/definitions/uuid"
-                  }
-                }
-              }
+              "$ref": "#/definitions/processorBase"
             },
             "automationTracklist": {
               "type": "object",
@@ -767,129 +818,93 @@
                   "items": {
                     "$ref": "#/definitions/uuid"
                   }
+                },
+                "automationVisible": {
+                  "type": "boolean",
+                  "$comment": "Whether automation tracks should be visible"
                 }
               }
             },
             "channel": {
-              "type": "object",
-              "description": "Track channel (fader, sends, etc.)",
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "faderId": {
-                  "$ref": "#/definitions/uuid",
-                  "description": "UUID of fader processor"
-                },
-                "stereoInPortId": {
-                  "$ref": "#/definitions/uuid",
-                  "description": "UUID of stereo input port"
-                },
-                "stereoOutPortId": {
-                  "$ref": "#/definitions/uuid",
-                  "description": "UUID of stereo output port"
-                },
-                "midiInPortId": {
-                  "$ref": "#/definitions/uuid"
-                },
-                "midiOutPortIds": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/uuid"
-                  }
-                },
-                "sends": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "$ref": "#/definitions/uuid"
-                      },
-                      "destTrackId": {
-                        "type": "string"
-                      },
-                      "portId": {
-                        "$ref": "#/definitions/uuid"
-                      },
-                      "amount": {
-                        "type": "number"
-                      },
-                      "enabled": {
-                        "type": "boolean"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "modulators": {
-              "type": "object",
-              "description": "Plugin group for modulators",
-              "properties": {
-                "pluginIds": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/uuid"
-                  }
-                }
-              }
-            },
-            "modulatorMacros": {
-              "type": "array",
-              "description": "Modulator macro processors",
-              "items": {
-                "$ref": "#/definitions/uuid"
-              }
+              "$ref": "#/definitions/channel"
             },
             "lanes": {
-              "type": "object",
-              "description": "Track lanes (for MIDI/instrument tracks)",
-              "properties": {
-                "trackLanes": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "$ref": "#/definitions/uuid"
-                      },
-                      "index": {
-                        "type": "integer"
-                      },
-                      "height": {
-                        "type": "number"
-                      },
-                      "objects": {
-                        "$ref": "#/definitions/uuidArray",
-                        "description": "UUID references to arranger objects in this lane"
-                      }
+              "type": "array",
+              "description": "Track lanes",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/definitions/uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "height": {
+                    "type": "number"
+                  },
+                  "mute": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "solo": {
+                    "type": "boolean",
+                    "default": false
+                  },
+                  "midiChannel": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 16,
+                    "default": 0
+                  },
+                  "objects": {
+                    "type": "array",
+                    "description": "Arranger objects contained in this lane",
+                    "items": {
+                      "$ref": "#/definitions/uuid"
                     }
                   }
                 }
               }
             },
-            "recordableTrackMixin": {
-              "type": "object",
-              "description": "Recordable track functionality",
-              "properties": {
-                "recordingMode": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 3,
-                  "description": "0=overwrite_events, 1=merge_events, 2=takes, 3=takes_muted"
-                }
-              }
+            "lanesVisible": {
+              "type": "boolean",
+              "description": "Whether track lanes should be visible"
             },
-            "pianoRollTrackMixin": {
+            "recordingParam": {
+              "$ref": "#/definitions/uuid",
+              "description": "Parameter for arming the track for recording"
+            },
+            "clipLauncherMode": {
+              "type": "boolean",
+              "description": "Whether the track is in clip launcher mode"
+            },
+            "pianoRoll": {
               "type": "object",
-              "description": "Piano roll track functionality",
+              "description": "Piano roll options if this track supports a piano roll",
               "properties": {
-                "lastClearedObjectHeight": {
-                  "type": "number"
+                "drumMode": {
+                  "type": "boolean",
+                  "description": "Whether drum mode in the piano roll is enabled for this track"
                 },
-                "lastClearedObjectPosX": {
-                  "type": "number"
+                "midiCh": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16,
+                  "description": "MIDI channel (1-16) to output track events in"
+                },
+                "passthroughMidiInput": {
+                  "type": "boolean",
+                  "description": "If true, input received will not be changed to the selected MIDI channel"
+                },
+                "midiChannels": {
+                  "type": "array",
+                  "description": "Flags for each MIDI channel (1-16) to enable or disable it. If not present, accepts all channels",
+                  "items": {
+                    "type": "boolean"
+                  },
+                  "minItems": 16,
+                  "maxItems": 16
                 }
               }
             }
@@ -1001,6 +1016,16 @@
           "properties": {
             "type": {
               "const": 11
+            },
+            "modulators": {
+              "$ref": "#/definitions/pluginGroup"
+            },
+            "modulatorMacroProcessors": {
+              "type": "array",
+              "description": "Modulator macro processors",
+              "items": {
+                "$ref": "#/definitions/processorBase"
+              }
             }
           }
         }
@@ -1083,12 +1108,14 @@
             "position": {
               "$ref": "#/definitions/position"
             },
+            "length": {
+              "$ref": "#/definitions/position"
+            },
             "name": {
               "type": "string"
             },
             "color": {
-              "type": "string",
-              "pattern": "^#[0-9A-Fa-f]{6}$"
+              "$ref": "#/definitions/color"
             },
             "muted": {
               "type": "boolean"
@@ -1109,9 +1136,6 @@
         },
         {
           "properties": {
-            "endPosition": {
-              "$ref": "#/definitions/position"
-            },
             "clipStartPosition": {
               "$ref": "#/definitions/position"
             },
@@ -1123,7 +1147,6 @@
             }
           },
           "required": [
-            "endPosition",
             "clipStartPosition",
             "loopStartPosition",
             "loopEndPosition"
@@ -1252,33 +1275,19 @@
             "type": {
               "const": 7
             },
-            "normalized_value": {
+            "normalizedValue": {
               "type": "number",
               "minimum": 0,
               "maximum": 1,
               "description": "Normalized value (0.0 to 1.0)"
             },
-            "curve_options": {
-              "type": "object",
-              "properties": {
-                "curviness": {
-                  "type": "number",
-                  "minimum": -1,
-                  "maximum": 1,
-                  "description": "Curve curviness: <0 tilts down, >0 tilts up, 0 is straight line"
-                },
-                "algo": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 4,
-                  "description": "Curve algorithm: 0=Exponent, 1=SuperEllipse, 2=Vital, 3=Pulse, 4=Logarithmic"
-                }
-              }
+            "curveOptions": {
+              "$ref": "#/definitions/curveOptions"
             }
           },
           "required": [
-            "normalized_value",
-            "curve_options"
+            "normalizedValue",
+            "curveOptions"
           ]
         }
       ]
@@ -1437,7 +1446,7 @@
         }
       ]
     },
-    "knownArrangerObjects": {
+    "knownArrangerObject": {
       "$comment": "Polymorphic reference for any known arranger object type",
       "oneOf": [
         {
@@ -1493,7 +1502,7 @@
         }
       ]
     },
-    "knownTracks": {
+    "knownTrack": {
       "$comment": "Polymorphic reference for any known track type",
       "oneOf": [
         {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -108,13 +108,8 @@ public:
 private:
   static constexpr auto kSignalTypeKey = "signalType"sv;
   static constexpr auto kIsPrefaderKey = "isPrefader"sv;
-  friend void           to_json (nlohmann::json &j, const ChannelSend &p)
-  {
-    to_json (j, static_cast<const dsp::ProcessorBase &> (p));
-    j[kSignalTypeKey] = p.signal_type_;
-    j[kIsPrefaderKey] = p.is_prefader_;
-  }
-  friend void from_json (const nlohmann::json &j, ChannelSend &p);
+  friend void           to_json (nlohmann::json &j, const ChannelSend &p);
+  friend void           from_json (const nlohmann::json &j, ChannelSend &p);
 
   friend void init_from (
     ChannelSend           &obj,

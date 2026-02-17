@@ -735,17 +735,17 @@ private:
   /// Clear all time signature events
   void clear_time_signature_events () { time_sig_events_.clear (); }
 
-  static constexpr auto kEventsKey = "events"sv;
-  static constexpr auto kTimeSigEventsKey = "timeSigEvents"sv;
+  static constexpr auto kTempoChangesKey = "tempoChanges"sv;
+  static constexpr auto kTimeSignaturesKey = "timeSignatures"sv;
   friend void to_json (nlohmann::json &j, const FixedPpqTempoMap &tempo_map)
   {
-    j[kTimeSigEventsKey] = tempo_map.time_sig_events_;
-    j[kEventsKey] = tempo_map.events_;
+    j[kTimeSignaturesKey] = tempo_map.time_sig_events_;
+    j[kTempoChangesKey] = tempo_map.events_;
   }
   friend void from_json (const nlohmann::json &j, FixedPpqTempoMap &tempo_map)
   {
-    j.at (kTimeSigEventsKey).get_to (tempo_map.time_sig_events_);
-    j.at (kEventsKey).get_to (tempo_map.events_);
+    j.at (kTimeSignaturesKey).get_to (tempo_map.time_sig_events_);
+    j.at (kTempoChangesKey).get_to (tempo_map.events_);
     tempo_map.rebuild_cumulative_times ();
   }
 

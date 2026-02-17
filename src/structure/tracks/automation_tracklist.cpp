@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -359,6 +359,15 @@ AutomationTracklist::setAutomationVisible (const bool visible)
 }
 
 void
+to_json (nlohmann::json &j, const AutomationTrackHolder &nfo)
+{
+  j[AutomationTrackHolder::kAutomationTrackKey] = nfo.automation_track_;
+  j[AutomationTrackHolder::kCreatedByUserKey] = nfo.created_by_user_;
+  j[AutomationTrackHolder::kVisible] = nfo.visible_;
+  j[AutomationTrackHolder::kHeightKey] = nfo.height_;
+}
+
+void
 from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
 {
   const auto &at_j = j.at (AutomationTrackHolder::kAutomationTrackKey);
@@ -373,6 +382,13 @@ from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
   j.at (AutomationTrackHolder::kCreatedByUserKey).get_to (nfo.created_by_user_);
   j.at (AutomationTrackHolder::kVisible).get_to (nfo.visible_);
   j.at (AutomationTrackHolder::kHeightKey).get_to (nfo.height_);
+}
+
+void
+to_json (nlohmann::json &j, const AutomationTracklist &ats)
+{
+  j[AutomationTracklist::kAutomationTracksKey] = ats.automation_tracks_;
+  j[AutomationTracklist::kAutomationVisibleKey] = ats.automation_visible_;
 }
 
 void

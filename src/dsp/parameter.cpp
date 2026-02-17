@@ -6,8 +6,19 @@
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE (
+  ParameterRange,
+  type_,
+  minf_,
+  maxf_,
+  zerof_,
+  deff_,
+  unit_)
 
 ProcessorParameter::ProcessorParameter (
   PortRegistry     &port_registry,

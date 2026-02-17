@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -155,22 +155,8 @@ public:
 private:
   static constexpr auto             kLanesKey = "lanes"sv;
   static constexpr std::string_view kLanesVisibleKey = "lanesVisible";
-  friend void to_json (nlohmann::json &j, const TrackLaneList &p)
-  {
-    j[kLanesKey] = p.lanes_;
-    j[kLanesVisibleKey] = p.lanes_visible_;
-  }
-  friend void from_json (const nlohmann::json &j, TrackLaneList &p)
-  {
-    p.lanes_.clear ();
-    for (const auto &lane_json : j.at (kLanesKey))
-      {
-        p.lanes_.emplace_back (
-          utils::make_qobject_unique<TrackLane> (p.dependencies_, &p));
-        lane_json.get_to (*p.lanes_.back ());
-      }
-    j.at (kLanesVisibleKey).get_to (p.lanes_visible_);
-  }
+  friend void to_json (nlohmann::json &j, const TrackLaneList &p);
+  friend void from_json (const nlohmann::json &j, TrackLaneList &p);
 
   void erase (size_t pos);
 

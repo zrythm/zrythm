@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map_qml_adapter.h"
@@ -535,18 +535,45 @@ Track::collect_timeline_objects (
 }
 
 void
+to_json (nlohmann::json &j, const Track &track)
+{
+  to_json (j, static_cast<const Track::UuidIdentifiableObject &> (track));
+  j[Track::kTypeKey] = track.type_;
+  j[Track::kNameKey] = track.name_;
+  // j[Track::kIconNameKey] = track.icon_name_;
+  j[Track::kVisibleKey] = track.visible_;
+  j[Track::kMainHeightKey] = track.main_height_;
+  j[Track::kEnabledKey] = track.enabled_;
+  j[Track::kColorKey] = track.color_;
+  // j[Track::kInputSignalTypeKey] = track.in_signal_type_;
+  // j[Track::kOutputSignalTypeKey] = track.out_signal_type_;
+  j[Track::kCommentKey] = track.comment_;
+  // j[Track::kFrozenClipIdKey] = track.frozen_clip_id_;
+  j[Track::kProcessorKey] = track.processor_;
+  j[Track::kAutomationTracklistKey] = track.automation_tracklist_;
+  j[Track::kChannelKey] = track.channel_;
+  j[Track::kModulatorsKey] = track.modulators_;
+  j[Track::kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
+  j[Track::kTrackLanesKey] = track.lanes_;
+  j[Track::kRecordingParamKey] =
+    track.recordable_track_mixin_->get_recording_param ().get_uuid ();
+  j[Track::kPianoRollKey] = track.piano_roll_track_mixin_;
+  j[Track::kClipLauncherModeKey] = track.clip_launcher_mode_;
+}
+
+void
 from_json (const nlohmann::json &j, Track &track)
 {
   from_json (j, static_cast<Track::UuidIdentifiableObject &> (track));
   j.at (Track::kTypeKey).get_to (track.type_);
   j.at (Track::kNameKey).get_to (track.name_);
-  j.at (Track::kIconNameKey).get_to (track.icon_name_);
+  // j.at (Track::kIconNameKey).get_to (track.icon_name_);
   j.at (Track::kVisibleKey).get_to (track.visible_);
   j.at (Track::kMainHeightKey).get_to (track.main_height_);
   j.at (Track::kEnabledKey).get_to (track.enabled_);
   j.at (Track::kColorKey).get_to (track.color_);
-  j.at (Track::kInputSignalTypeKey).get_to (track.in_signal_type_);
-  j.at (Track::kOutputSignalTypeKey).get_to (track.out_signal_type_);
+  // j.at (Track::kInputSignalTypeKey).get_to (track.in_signal_type_);
+  // j.at (Track::kOutputSignalTypeKey).get_to (track.out_signal_type_);
   j.at (Track::kCommentKey).get_to (track.comment_);
   // TODO
   // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
@@ -566,7 +593,13 @@ from_json (const nlohmann::json &j, Track &track)
       track.modulator_macro_processors_.push_back (std::move (macro_proc));
     }
   j[Track::kTrackLanesKey].get_to (*track.lanes_);
-  j[Track::kRecordableTrackMixinKey].get_to (*track.recordable_track_mixin_);
-  j[Track::kPianoRollTrackMixinKey].get_to (*track.piano_roll_track_mixin_);
+  if (track.recordable_track_mixin_)
+    {
+      j[Track::kRecordingParamKey].get_to (*track.recordable_track_mixin_);
+    }
+  if (track.piano_roll_track_mixin_)
+    {
+      j[Track::kPianoRollKey].get_to (*track.piano_roll_track_mixin_);
+    }
 }
 }
