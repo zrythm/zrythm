@@ -5,6 +5,8 @@
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/zrythm_application.h"
+#include "structure/project/project_json_serializer.h"
+#include "structure/project/project_loader.h"
 #include "structure/project/project_saver.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
@@ -275,14 +277,71 @@ ProjectManager::createNewProject (
 void
 ProjectManager::loadProject (const QString &filepath)
 {
-  z_debug ("Loading project from {}", filepath);
+  const auto project_dir = utils::Utf8String::from_qstring (filepath).to_path ();
 
-  std::thread ([filepath, this] {
-    std::this_thread::sleep_for (3s); // Simulate loading
-    QMetaObject::invokeMethod (this, [this] {
-      Q_EMIT projectLoadingFailed (tr ("Failed to load project"));
+  z_debug ("Loading project from {}", project_dir);
+
+  // Step 1: Load and validate JSON (background thread - file I/O only)
+  QtConcurrent::run ([project_dir] () {
+    return structure::project::ProjectLoader::load_from_directory (project_dir);
+  })
+    .then (
+      this,
+      [this,
+       project_dir] (structure::project::ProjectLoader::LoadResult load_result) {
+        // Steps 2-6: All on main thread
+
+        // Create project with all required dependencies
+        auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
+        auto   prj = utils::make_qobject_unique<structure::project::Project> (
+          app_settings_,
+          [project_dir] (bool /*for_backup*/) { return project_dir; },
+          zapp->hw_audio_interface (),
+          zapp->pluginManager ()->get_format_manager (),
+          [this] (plugins::Plugin &plugin) {
+            return create_window_for_plugin (plugin);
+          },
+          *zapp->controlRoom ()->metronome (),
+          *zapp->controlRoom ()->monitorFader ());
+
+        auto prj_ui_state =
+          utils::make_qobject_unique<ProjectUiState> (std::move (prj));
+
+        // Deserialize JSON into Project
+        structure::project::ProjectJsonSerializer::deserialize (
+          load_result.json, *prj_ui_state->project ());
+
+        // Set title from loaded project
+        prj_ui_state->setTitle (load_result.title.to_qstring ());
+
+        // Initialize clip editor
+        prj_ui_state->clipEditor ()->init ();
+
+        // Set up project
+        auto * ui_state = prj_ui_state.release ();
+        ui_state->setParent (this);
+        ui_state->setProjectDirectory (
+          utils::Utf8String::from_path (project_dir).to_qstring ());
+
+        // Set as active project
+        setActiveProject (ui_state);
+
+        // Rebuild graph and start engine
+        ui_state->project ()->engine ()->graph_dispatcher ().recalc_graph (
+          false);
+        ui_state->project ()->engine ()->set_running (true);
+
+        // Add to recent projects
+        add_to_recent_projects (
+          utils::Utf8String::from_path (project_dir).to_qstring ());
+
+        // Emit success signal
+        Q_EMIT projectLoaded (ui_state);
+      })
+    .onFailed (this, [this] (const ZrythmException &e) {
+      z_warning ("Failed to load project: {}", e.what ());
+      Q_EMIT projectLoadingFailed (e.what_string ());
     });
-  }).detach ();
 }
 
 ProjectUiState *

@@ -34,8 +34,9 @@ target_link_libraries(zrythm_structure_project_lib
 target_sources(zrythm_structure_project_lib
   PRIVATE
     project.cpp
-    project_json_serializer.cpp
     project_graph_builder.cpp
+    project_json_serializer.cpp
+    project_loader.cpp
     project_path_provider.cpp
     project_saver.cpp
   PUBLIC
@@ -43,8 +44,9 @@ target_sources(zrythm_structure_project_lib
     BASE_DIRS "../.."
     FILES
       project.h
-      project_json_serializer.h
       project_graph_builder.h
+      project_json_serializer.h
+      project_loader.h
       project_path_provider.h
       project_saver.h
 )
