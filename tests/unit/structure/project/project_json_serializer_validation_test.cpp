@@ -40,8 +40,8 @@ INSTANTIATE_TEST_SUITE_P (
     "datetime",
     "title",
     "projectData"),
-  [] (const testing::TestParamInfo<std::string> &info) {
-    return "Missing_" + info.param;
+  [] (const testing::TestParamInfo<std::string> &param_info) {
+    return "Missing_" + param_info.param;
   });
 
 class MissingProjectDataFieldTest : public testing::TestWithParam<std::string>
@@ -63,8 +63,8 @@ INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingProjectDataFieldTest,
   testing::Values ("tempoMap", "transport", "tracklist", "registries"),
-  [] (const testing::TestParamInfo<std::string> &info) {
-    return "Missing_" + info.param;
+  [] (const testing::TestParamInfo<std::string> &param_info) {
+    return "Missing_" + param_info.param;
   });
 
 class MissingRegistryTest : public testing::TestWithParam<std::string>
@@ -92,8 +92,8 @@ INSTANTIATE_TEST_SUITE_P (
     "trackRegistry",
     "arrangerObjectRegistry",
     "fileAudioSourceRegistry"),
-  [] (const testing::TestParamInfo<std::string> &info) {
-    return "Missing_" + info.param;
+  [] (const testing::TestParamInfo<std::string> &param_info) {
+    return "Missing_" + param_info.param;
   });
 
 class MissingTracklistFieldTest : public testing::TestWithParam<std::string>
@@ -115,8 +115,8 @@ INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingTracklistFieldTest,
   testing::Values ("tracks", "pinnedTracksCutoff", "trackRoutes"),
-  [] (const testing::TestParamInfo<std::string> &info) {
-    return "Missing_" + info.param;
+  [] (const testing::TestParamInfo<std::string> &param_info) {
+    return "Missing_" + param_info.param;
   });
 
 } // namespace
