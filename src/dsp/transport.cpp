@@ -320,13 +320,32 @@ to_json (nlohmann::json &j, const Transport &transport)
 void
 from_json (const nlohmann::json &j, Transport &transport)
 {
-  j.at (Transport::kPlayheadKey).get_to (transport.playhead_);
-  transport.playhead ()->setTicks (
-    transport.playhead_.position_ticks ().in (units::ticks));
-  j.at (Transport::kCuePosKey).get_to (transport.cue_position_);
-  j.at (Transport::kLoopStartPosKey).get_to (transport.loop_start_position_);
-  j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);
-  j.at (Transport::kPunchInPosKey).get_to (transport.punch_in_position_);
-  j.at (Transport::kPunchOutPosKey).get_to (transport.punch_out_position_);
+  // All position fields are optional - use defaults if not present
+  if (j.contains (Transport::kPlayheadKey))
+    {
+      j.at (Transport::kPlayheadKey).get_to (transport.playhead_);
+      transport.playhead ()->setTicks (
+        transport.playhead_.position_ticks ().in (units::ticks));
+    }
+  if (j.contains (Transport::kCuePosKey))
+    {
+      j.at (Transport::kCuePosKey).get_to (transport.cue_position_);
+    }
+  if (j.contains (Transport::kLoopStartPosKey))
+    {
+      j.at (Transport::kLoopStartPosKey).get_to (transport.loop_start_position_);
+    }
+  if (j.contains (Transport::kLoopEndPosKey))
+    {
+      j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);
+    }
+  if (j.contains (Transport::kPunchInPosKey))
+    {
+      j.at (Transport::kPunchInPosKey).get_to (transport.punch_in_position_);
+    }
+  if (j.contains (Transport::kPunchOutPosKey))
+    {
+      j.at (Transport::kPunchOutPosKey).get_to (transport.punch_out_position_);
+    }
 }
 }

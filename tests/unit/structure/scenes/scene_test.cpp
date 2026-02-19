@@ -146,7 +146,8 @@ protected:
       std::make_unique<tracks::TrackCollection> (*track_registry_);
 
     // Create a scene list
-    scene_list_ = std::make_unique<SceneList> ();
+    scene_list_ =
+      std::make_unique<SceneList> (*obj_registry_, *track_collection_);
   }
 
   void TearDown () override

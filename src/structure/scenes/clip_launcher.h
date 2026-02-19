@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,6 +6,8 @@
 #include "structure/scenes/scene.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::scenes
 {
@@ -26,6 +28,11 @@ public:
 
   // Scene management
   Q_INVOKABLE Scene * addScene ();
+
+private:
+  static constexpr auto kScenesKey = "scenes"sv;
+  friend void to_json (nlohmann::json &j, const ClipLauncher &launcher);
+  friend void from_json (const nlohmann::json &j, ClipLauncher &launcher);
 
 private:
   utils::QObjectUniquePtr<SceneList> scene_list_;

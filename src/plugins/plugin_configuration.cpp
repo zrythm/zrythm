@@ -3,6 +3,8 @@
 
 #include "plugins/plugin_configuration.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::plugins
 {
 
@@ -48,6 +50,16 @@ PluginConfiguration::validate ()
     {
       force_generic_ui_ = true;
     }
+}
+
+void
+to_json (nlohmann::json &j, const PluginConfiguration &p)
+{
+  j = nlohmann::json{
+    { PluginConfiguration::kDescriptorKey,     p.descr_            },
+    { PluginConfiguration::kForceGenericUIKey, p.force_generic_ui_ },
+    { PluginConfiguration::kBridgeModeKey,     p.bridge_mode_      },
+  };
 }
 
 void

@@ -80,8 +80,34 @@ ProjectJsonSerializer::deserialize (const nlohmann::json &j, Project &project)
 {
   validate_json (j);
 
+  // Check format version compatibility
+  const auto format_major =
+    j.at (utils::serialization::kFormatMajorKey).get<int> ();
+
+  // Reject files from future major versions
+  if (format_major > FORMAT_MAJOR_VERSION)
+    {
+      throw ZrythmException (
+        fmt::format (
+          "Project file is from a newer version (format {}.x) - please upgrade Zrythm",
+          format_major));
+    }
+
+  // Warn about older major versions (may need migration in the future)
+  if (format_major < FORMAT_MAJOR_VERSION)
+    {
+      z_warning (
+        "Project file is from an older format version ({}.{}) - migration may be needed",
+        format_major, j.at (utils::serialization::kFormatMinorKey).get<int> ());
+      // In the future, add migration logic here:
+      // auto migrated_json = migrate_to_current_version(j);
+      // from_json (migrated_json.at (kProjectData), project);
+      // return;
+    }
+
   // The actual deserialization is done by Project's friend from_json function
-  from_json (j, project);
+  // Data is nested under projectData key
+  from_json (j.at (kProjectData), project);
 }
 
 }

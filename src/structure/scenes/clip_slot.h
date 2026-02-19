@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,6 +7,8 @@
 #include "structure/tracks/track_collection.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::scenes
 {
@@ -62,6 +64,11 @@ public:
   ClipState     state () const { return state_.load (); }
   void          setState (ClipState state);
   Q_SIGNAL void stateChanged (ClipState state);
+
+private:
+  static constexpr auto kRegionIdKey = "regionId"sv;
+  friend void           to_json (nlohmann::json &j, const ClipSlot &slot);
+  friend void           from_json (const nlohmann::json &j, ClipSlot &slot);
 
 private:
   std::optional<arrangement::ArrangerObjectUuidReference> region_ref_;
@@ -129,6 +136,10 @@ public:
   // ========================================================================
 
   auto &clip_slots () const { return clip_slots_; }
+
+private:
+  friend void to_json (nlohmann::json &j, const ClipSlotList &list);
+  friend void from_json (const nlohmann::json &j, ClipSlotList &list);
 
 private:
   // These must be in the order of tracks in the tracklist.

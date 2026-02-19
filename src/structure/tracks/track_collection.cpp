@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_all.h"
@@ -442,8 +442,8 @@ void
 to_json (nlohmann::json &j, const TrackCollection &collection)
 {
   j[TrackCollection::kTracksKey] = collection.tracks_;
-  j[TrackCollection::kFolderParentMapKey] = collection.folder_parent_;
-  j[TrackCollection::kExpandedMapKey] = collection.track_expanded_;
+  j[TrackCollection::kFolderParentsKey] = collection.folder_parent_;
+  j[TrackCollection::kExpandedTracksKey] = collection.track_expanded_;
 }
 
 void
@@ -455,8 +455,18 @@ from_json (const nlohmann::json &j, TrackCollection &collection)
       from_json (child_j, ref);
       collection.add_track (ref);
     }
-  j.at (TrackCollection::kFolderParentMapKey).get_to (collection.folder_parent_);
-  j.at (TrackCollection::kExpandedMapKey).get_to (collection.track_expanded_);
+
+  if (j.contains (TrackCollection::kFolderParentsKey))
+    {
+      j.at (TrackCollection::kFolderParentsKey)
+        .get_to (collection.folder_parent_);
+    }
+
+  if (j.contains (TrackCollection::kExpandedTracksKey))
+    {
+      j.at (TrackCollection::kExpandedTracksKey)
+        .get_to (collection.track_expanded_);
+    }
 }
 
 TrackCollection::~TrackCollection () noexcept = default;

@@ -472,6 +472,7 @@ to_json (nlohmann::json &j, const Project &project)
   // project.region_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
+  j[Project::kClipLauncherKey] = project.clip_launcher_;
 
   // Nest registries under a "registries" key as per schema
   nlohmann::json registries = nlohmann::json::object ();
@@ -582,12 +583,21 @@ struct PluginBuilderForDeserialization
   const Project &project_;
 };
 
+struct FileAudioSourceBuilderForDeserialization
+{
+  template <typename T> std::unique_ptr<T> build () const
+  {
+    return std::make_unique<T> ();
+  }
+};
+
 void
 from_json (const nlohmann::json &j, Project &project)
 {
+  // Required fields
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
 
-  // Deserialize registries from nested structure
+  // Deserialize registries from nested structure (required)
   const auto &registries = j.at ("registries");
   registries.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
   registries.at (Project::kParameterRegistryKey)
@@ -602,28 +612,50 @@ from_json (const nlohmann::json &j, Project &project)
   from_json_with_builder (
     registries.at (Project::kTrackRegistryKey), *project.track_registry_,
     TrackBuilderForDeserialization{ project });
-  // Note: FileAudioSourceRegistry is not directly deserialized here;
-  // it's populated indirectly through AudioPool deserialization
-
-  j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
-  j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
-  j.at (Project::kTransportKey).get_to (*project.transport_);
-  project.pool_ = std::make_unique<dsp::AudioPool> (
+  from_json_with_builder (
+    registries.at (Project::kFileAudioSourceRegistryKey),
     *project.file_audio_source_registry_,
-    [&project] (bool backup) {
-      return project.project_directory_path_provider_ (backup)
-             / structure::project::ProjectPathProvider::get_path (
-               structure::project::ProjectPathProvider::ProjectPath::
-                 AudioFilePoolDir);
-    },
-    [&project] () { return project.audio_engine_->get_sample_rate (); });
-  j.at (Project::kAudioPoolKey).get_to (*project.pool_);
+    FileAudioSourceBuilderForDeserialization{});
+
+  // Optional fields - use default-constructed values if not present
+  if (j.contains (Project::kSnapGridTimelineKey))
+    {
+      j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
+    }
+  if (j.contains (Project::kSnapGridEditorKey))
+    {
+      j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
+    }
+
+  // Transport is required
+  j.at (Project::kTransportKey).get_to (*project.transport_);
+
+  // AudioPool - optional
+  if (j.contains (Project::kAudioPoolKey))
+    {
+      j.at (Project::kAudioPoolKey).get_to (*project.pool_);
+    }
+
+  // Tracklist is required
   j.at (Project::kTracklistKey).get_to (*project.tracklist_);
+
+  // Optional fields
   // j.at (Project::kRegionLinkGroupManagerKey)
   //   .get_to (project.region_link_group_manager_);
-  j.at (Project::kPortConnectionsManagerKey)
-    .get_to (*project.port_connections_manager_);
-  j.at (Project::kTempoObjectManagerKey).get_to (*project.tempo_object_manager_);
+  if (j.contains (Project::kPortConnectionsManagerKey))
+    {
+      j.at (Project::kPortConnectionsManagerKey)
+        .get_to (*project.port_connections_manager_);
+    }
+  if (j.contains (Project::kTempoObjectManagerKey))
+    {
+      j.at (Project::kTempoObjectManagerKey)
+        .get_to (*project.tempo_object_manager_);
+    }
+  if (j.contains (Project::kClipLauncherKey))
+    {
+      j.at (Project::kClipLauncherKey).get_to (*project.clip_launcher_);
+    }
 
 // TODO
 #if 0

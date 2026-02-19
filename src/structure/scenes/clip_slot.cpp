@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/scenes/clip_slot.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::scenes
 {
@@ -113,4 +115,57 @@ ClipSlotList::ClipSlotList (
       endRemoveRows ();
     });
 }
+
+// ============================================================================
+// Serialization
+// ============================================================================
+
+void
+to_json (nlohmann::json &j, const ClipSlot &slot)
+{
+  if (slot.region_ref_.has_value ())
+    {
+      j[ClipSlot::kRegionIdKey] = slot.region_ref_->id ();
+    }
+}
+
+void
+from_json (const nlohmann::json &j, ClipSlot &slot)
+{
+  if (j.contains (ClipSlot::kRegionIdKey))
+    {
+      arrangement::ArrangerObject::Uuid region_id;
+      j.at (ClipSlot::kRegionIdKey).get_to (region_id);
+      slot.region_ref_.emplace (region_id, slot.object_registry_);
+    }
+}
+
+void
+to_json (nlohmann::json &j, const ClipSlotList &list)
+{
+  j = nlohmann::json::array ();
+  for (const auto &slot : list.clip_slots_)
+    {
+      nlohmann::json slot_json;
+      to_json (slot_json, *slot);
+      j.push_back (std::move (slot_json));
+    }
+}
+
+void
+from_json (const nlohmann::json &j, ClipSlotList &list)
+{
+  // ClipSlotList is already sized to match track count
+  if (j.is_array ())
+    {
+      for (auto &&[json_slot, slot_ptr] : std::views::zip (j, list.clip_slots_))
+        {
+          if (!json_slot.is_null () && !json_slot.empty ())
+            {
+              from_json (json_slot, *slot_ptr);
+            }
+        }
+    }
+}
+
 }

@@ -176,6 +176,31 @@
                 ],
                 "additionalItems": false
               }
+            },
+            "folderParents": {
+              "type": "array",
+              "description": "Parent folder for each track: [childUuid, parentUuid] pairs",
+              "items": {
+                "type": "array",
+                "items": [
+                  {
+                    "$ref": "#/definitions/uuid",
+                    "description": "Child track UUID"
+                  },
+                  {
+                    "$ref": "#/definitions/uuid",
+                    "description": "Parent folder track UUID"
+                  }
+                ],
+                "additionalItems": false
+              }
+            },
+            "expandedTracks": {
+              "type": "array",
+              "description": "UUIDs of expanded folder tracks (absent from list = collapsed)",
+              "items": {
+                "$ref": "#/definitions/uuid"
+              }
             }
           }
         },
@@ -243,6 +268,19 @@
             "timeSignatureObjects": {
               "$ref": "#/definitions/uuidArray",
               "description": "UUID references to timeSignatureObject objects in arrangerObjectRegistry"
+            }
+          }
+        },
+        "clipLauncher": {
+          "type": "object",
+          "description": "Clip launcher with scenes and clip slots",
+          "properties": {
+            "scenes": {
+              "type": "array",
+              "description": "Scenes in the clip launcher (each scene has clip slots per track)",
+              "items": {
+                "$ref": "#/definitions/scene"
+              }
             }
           }
         },
@@ -388,16 +426,18 @@
     "position": {
       "type": "object",
       "description": "Position in time (ticks or seconds)",
+      "required": ["value"],
       "properties": {
         "mode": {
           "type": "integer",
           "minimum": 0,
           "maximum": 1,
-          "description": "0=musical, 1=absolute"
+          "default": 0,
+          "description": "0=musical (ticks), 1=absolute (seconds). Defaults to 0 if omitted."
         },
         "value": {
           "type": "number",
-          "description": "Ticks or seconds"
+          "description": "Ticks (if mode=0 or omitted) or seconds (if mode=1)"
         }
       }
     },
@@ -1218,6 +1258,36 @@
             "audioSources": {
               "$ref": "#/definitions/uuidArray",
               "description": "UUID references to audioSourceObject objects in arrangerObjectRegistry"
+            },
+            "gain": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2,
+              "default": 1.0,
+              "description": "Gain multiplier (0.0-2.0)"
+            },
+            "musicalMode": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2,
+              "default": 0,
+              "description": "Musical mode: 0=Inherit, 1=Off, 2=On"
+            },
+            "fadeInOffset": {
+              "$ref": "#/definitions/position",
+              "description": "Fade in duration (offset from region start)"
+            },
+            "fadeOutOffset": {
+              "$ref": "#/definitions/position",
+              "description": "Fade out duration (offset from region end)"
+            },
+            "fadeInOpts": {
+              "$ref": "#/definitions/curveOptions",
+              "description": "Fade in curve options"
+            },
+            "fadeOutOpts": {
+              "$ref": "#/definitions/curveOptions",
+              "description": "Fade out curve options"
             }
           }
         }
@@ -1542,6 +1612,37 @@
           "$ref": "#/definitions/folderTrack"
         }
       ]
+    },
+    "clipSlot": {
+      "type": "object",
+      "description": "A clip slot in the clip launcher that can contain a region/clip",
+      "properties": {
+        "regionId": {
+          "$ref": "#/definitions/uuid",
+          "description": "UUID reference to a region in arrangerObjectRegistry (MidiRegion, AudioRegion, etc.)"
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "description": "A scene in the clip launcher containing clip slots for each track",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Scene name"
+        },
+        "color": {
+          "$ref": "#/definitions/color",
+          "description": "Scene color"
+        },
+        "clipSlots": {
+          "type": "array",
+          "description": "Clip slots for this scene, one per track (order matches tracklist order)",
+          "items": {
+            "$ref": "#/definitions/clipSlot"
+          }
+        }
+      }
     }
   }
 }

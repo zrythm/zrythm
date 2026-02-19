@@ -113,22 +113,8 @@ private:
 
   static constexpr auto kGainKey = "gain"sv;
   static constexpr auto kMusicalModeKey = "musicalMode"sv;
-  friend void           to_json (nlohmann::json &j, const AudioRegion &region)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (region));
-    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
-    j[kGainKey] = region.gain_.load ();
-    j[kMusicalModeKey] = region.musical_mode_;
-  }
-  friend void from_json (const nlohmann::json &j, AudioRegion &region)
-  {
-    from_json (j, static_cast<ArrangerObject &> (region));
-    from_json (j, static_cast<ArrangerObjectOwner &> (region));
-    float gain{};
-    j.at (kGainKey).get_to (gain);
-    region.gain_.store (gain);
-    j.at (kMusicalModeKey).get_to (region.musical_mode_);
-  }
+  friend void           to_json (nlohmann::json &j, const AudioRegion &region);
+  friend void from_json (const nlohmann::json &j, AudioRegion &region);
 
 private:
   dsp::FileAudioSourceRegistry &file_audio_source_registry_;

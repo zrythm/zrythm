@@ -213,6 +213,7 @@ private:
   static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
+  static constexpr auto kClipLauncherKey = "clipLauncher"sv;
   friend void           to_json (nlohmann::json &j, const Project &project);
   friend void           from_json (const nlohmann::json &j, Project &project);
 

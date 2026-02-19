@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,6 +8,8 @@
 #include "structure/tracks/track_collection.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::scenes
 {
@@ -50,6 +52,13 @@ public:
   auto &clip_slots () const { return clip_slot_list_->clip_slots (); }
 
 private:
+  static constexpr auto kNameKey = "name"sv;
+  static constexpr auto kColorKey = "color"sv;
+  static constexpr auto kClipSlotsKey = "clipSlots"sv;
+  friend void           to_json (nlohmann::json &j, const Scene &scene);
+  friend void           from_json (const nlohmann::json &j, Scene &scene);
+
+private:
   QString                               name_;
   QColor                                color_;
   utils::QObjectUniquePtr<ClipSlotList> clip_slot_list_;
@@ -62,6 +71,11 @@ class SceneList : public QAbstractListModel
   QML_UNCREATABLE ("")
 
 public:
+  SceneList (
+    arrangement::ArrangerObjectRegistry &object_registry,
+    const tracks::TrackCollection       &track_collection,
+    QObject *                            parent = nullptr);
+
   enum SceneListRoles
   {
     ScenePtrRole = Qt::UserRole + 1,
@@ -107,6 +121,12 @@ public:
   // ========================================================================
 
 private:
+  friend void to_json (nlohmann::json &j, const SceneList &list);
+  friend void from_json (const nlohmann::json &j, SceneList &list);
+
+private:
   std::vector<utils::QObjectUniquePtr<Scene>> scenes_;
+  arrangement::ArrangerObjectRegistry        &object_registry_;
+  const tracks::TrackCollection              &track_collection_;
 };
 }

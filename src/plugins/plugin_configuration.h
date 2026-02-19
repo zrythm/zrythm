@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "plugins/plugin_descriptor.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::plugins
 {
@@ -81,14 +83,7 @@ private:
   static constexpr auto kDescriptorKey = "descriptor"sv;
   static constexpr auto kForceGenericUIKey = "forceGenericUI"sv;
   static constexpr auto kBridgeModeKey = "bridgeMode"sv;
-  friend void to_json (nlohmann::json &j, const PluginConfiguration &p)
-  {
-    j = nlohmann::json{
-      { kDescriptorKey,     p.descr_            },
-      { kForceGenericUIKey, p.force_generic_ui_ },
-      { kBridgeModeKey,     p.bridge_mode_      },
-    };
-  }
+  friend void to_json (nlohmann::json &j, const PluginConfiguration &p);
   friend void from_json (const nlohmann::json &j, PluginConfiguration &p);
 
 public:

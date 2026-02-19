@@ -74,4 +74,26 @@ AudioRegion::get_audio_source () const
   auto * audio_source_obj = get_children_view ().front ();
   return audio_source_obj->get_audio_source ();
 }
+
+void
+to_json (nlohmann::json &j, const AudioRegion &region)
+{
+  to_json (j, static_cast<const ArrangerObject &> (region));
+  to_json (
+    j, static_cast<const ArrangerObjectOwner<AudioSourceObject> &> (region));
+  j[AudioRegion::kGainKey] = region.gain_.load ();
+  j[AudioRegion::kMusicalModeKey] = region.musical_mode_;
+}
+
+void
+from_json (const nlohmann::json &j, AudioRegion &region)
+{
+  from_json (j, static_cast<ArrangerObject &> (region));
+  from_json (j, static_cast<ArrangerObjectOwner<AudioSourceObject> &> (region));
+  float gain{};
+  j.at (AudioRegion::kGainKey).get_to (gain);
+  region.gain_.store (gain);
+  j.at (AudioRegion::kMusicalModeKey).get_to (region.musical_mode_);
+}
+
 }

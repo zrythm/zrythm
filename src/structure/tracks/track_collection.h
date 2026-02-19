@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -196,8 +196,8 @@ private:
   // ========================================================================
 
   static constexpr auto kTracksKey = "tracks"sv;
-  static constexpr auto kExpandedMapKey = "expandedMap"sv;
-  static constexpr auto kFolderParentMapKey = "folderParentMap"sv;
+  static constexpr auto kExpandedTracksKey = "expandedTracks"sv;
+  static constexpr auto kFolderParentsKey = "folderParents"sv;
   friend void to_json (nlohmann::json &j, const TrackCollection &collection);
   friend void from_json (const nlohmann::json &j, TrackCollection &collection);
 
