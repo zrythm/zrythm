@@ -16,6 +16,7 @@ namespace zrythm::utils
  */
 namespace version_keys
 {
+using namespace std::literals;
 inline constexpr auto kMajor = "major"sv;
 inline constexpr auto kMinor = "minor"sv;
 inline constexpr auto kPatch = "patch"sv;
