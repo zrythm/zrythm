@@ -137,6 +137,7 @@ public:
 
 private:
   static constexpr auto kDeviceGroupsKey = "deviceGroups"sv;
+  static constexpr auto kFaderKey = "fader"sv;
   friend void           to_json (nlohmann::json &j, const PluginGroup &l);
   friend void           from_json (const nlohmann::json &j, PluginGroup &l);
 

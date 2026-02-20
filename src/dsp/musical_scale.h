@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -9,6 +9,7 @@
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <boost/describe.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {
@@ -224,16 +225,16 @@ public:
   }
 
 private:
+  static constexpr auto kRootKeyKey = "rootKey"sv;
+  static constexpr auto kTypeKey = "type"sv;
+
   friend void init_from (
     MusicalScale          &obj,
     const MusicalScale    &other,
-    utils::ObjectCloneType clone_type)
-  {
-    obj.type_ = other.type_;
-    obj.root_key_ = other.root_key_;
-  }
+    utils::ObjectCloneType clone_type);
 
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE (MusicalScale, type_, root_key_)
+  friend void to_json (nlohmann::json &j, const MusicalScale &s);
+  friend void from_json (const nlohmann::json &j, MusicalScale &s);
 
 private:
   /** Identification of the scale (e.g. AEOLIAN). */

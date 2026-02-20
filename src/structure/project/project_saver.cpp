@@ -22,7 +22,7 @@ plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
     [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
 }
 
-ProjectSaver::ProjectSaver (const Project &project, std::string_view app_version)
+ProjectSaver::ProjectSaver (const Project &project, utils::Version app_version)
     : project_ (project), app_version_ (app_version)
 {
 }

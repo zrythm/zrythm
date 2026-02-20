@@ -186,8 +186,14 @@ to_json (nlohmann::json &j, const Channel &c)
   j[Channel::kPreFaderSendsKey] = c.prefader_sends_;
   j[Channel::kPostFaderSendsKey] = c.postfader_sends_;
   j[Channel::kInstrumentsKey] = *c.instruments_;
-  j[Channel::kMidiPrefaderKey] = c.midi_prefader_;
-  j[Channel::kAudioPrefaderKey] = c.audio_prefader_;
+  if (c.midi_prefader_)
+    {
+      j[Channel::kPrefaderProcessorKey] = *c.midi_prefader_;
+    }
+  else if (c.audio_prefader_)
+    {
+      j[Channel::kPrefaderProcessorKey] = *c.audio_prefader_;
+    }
   j[Channel::kFaderKey] = c.fader_;
 }
 
@@ -215,7 +221,18 @@ from_json (const nlohmann::json &j, Channel &c)
       from_json (send_json, *send);
       c.postfader_sends_.at (index) = std::move (send);
     }
-  // TODO: prefaders & fader
+  if (j.contains (Channel::kPrefaderProcessorKey))
+    {
+      if (c.midi_prefader_)
+        {
+          j.at (Channel::kPrefaderProcessorKey).get_to (*c.midi_prefader_);
+        }
+      else if (c.audio_prefader_)
+        {
+          j.at (Channel::kPrefaderProcessorKey).get_to (*c.audio_prefader_);
+        }
+    }
+  // TODO:  fader
   // c.prefader_ = utils::make_qobject_unique<Fader> (&c);
   // j.at (Channel::kPrefaderKey).get_to (*c.prefader_);
   // c.fader_ = utils::make_qobject_unique<Fader> (&c);

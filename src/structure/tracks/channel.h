@@ -151,8 +151,7 @@ private:
   static constexpr auto kInsertsKey = "inserts"sv;
   static constexpr auto kPreFaderSendsKey = "preFaderSends"sv;
   static constexpr auto kPostFaderSendsKey = "postFaderSends"sv;
-  static constexpr auto kMidiPrefaderKey = "midiPrefader"sv;
-  static constexpr auto kAudioPrefaderKey = "audioPrefader"sv;
+  static constexpr auto kPrefaderProcessorKey = "prefaderProcessor"sv;
   static constexpr auto kFaderKey = "fader"sv;
 
   friend void to_json (nlohmann::json &j, const Channel &c);

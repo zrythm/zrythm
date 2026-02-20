@@ -201,9 +201,7 @@ private:
       obj.get_field_name_for_serialization (static_cast<ChildT *> (nullptr));
     for (const auto &child_json : j.at (children_field_name))
       {
-        const auto uuid =
-          child_json.at (ArrangerObjectUuidReference::kIdKey)
-            .template get<ArrangerObjectUuid> ();
+        const auto uuid = child_json.template get<ArrangerObjectUuid> ();
         ArrangerObjectUuidReference obj_ref{ uuid, obj.registry_ };
         obj.children_.get<sequenced_index> ().emplace_back (std::move (obj_ref));
       }

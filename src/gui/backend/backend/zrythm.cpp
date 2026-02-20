@@ -7,6 +7,8 @@
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 
+#include <scn/scan.h>
+
 #ifndef _WIN32
 #  include <sys/mman.h>
 #endif
@@ -91,6 +93,29 @@ Zrythm::get_version (bool with_v)
           return ver;
         }
     }());
+}
+
+utils::Version
+Zrythm::get_app_version ()
+{
+  // Parse PACKAGE_VERSION (e.g., "2.0.0" or "v2.0.0")
+  constexpr std::string_view ver = PACKAGE_VERSION;
+  constexpr std::string_view clean_ver = (ver[0] == 'v') ? ver.substr (1) : ver;
+
+  int  major = 0;
+  int  minor = 0;
+  int  patch = 0;
+  auto result = scn::scan<int, int, int> (clean_ver, "{}.{}.{}");
+  if (result)
+    {
+      std::tie (major, minor, patch) = result->values ();
+    }
+
+  return utils::Version{
+    .major = major,
+    .minor = minor,
+    .patch = patch > 0 ? std::optional<int>{ patch } : std::nullopt
+  };
 }
 
 /**

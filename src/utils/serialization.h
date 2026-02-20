@@ -44,8 +44,8 @@ from_json (const nlohmann::json &j, QUuid &uuid)
 namespace zrythm::utils::serialization
 {
 
-static constexpr auto kFormatMajorKey = "formatMajor"sv;
-static constexpr auto kFormatMinorKey = "formatMinor"sv;
+static constexpr auto kSchemaVersionKey = "schemaVersion"sv;
+static constexpr auto kAppVersionKey = "appVersion"sv;
 static constexpr auto kDocumentTypeKey = "documentType"sv;
 static constexpr auto kVariantTypeKey = "type"sv;
 static constexpr auto kVariantNonObjectValueKey = "nonObjectValue"sv;

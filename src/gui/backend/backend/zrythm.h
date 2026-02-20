@@ -13,6 +13,7 @@
 #include "utils/monotonic_time_provider.h"
 #include "utils/networking.h"
 #include "utils/symap.h"
+#include "utils/version.h"
 
 #include "juce_wrapper.h"
 
@@ -66,6 +67,11 @@ public:
    * @param with_v Include a starting "v".
    */
   static utils::Utf8String get_version (bool with_v);
+
+  /**
+   * @brief Returns the application version as a Version struct.
+   */
+  static utils::Version get_app_version ();
 
   /**
    * Returns whether the current Zrythm version is a

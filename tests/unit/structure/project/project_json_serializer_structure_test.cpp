@@ -3,7 +3,8 @@
 
 #include "project_json_serializer_test.h"
 
-using namespace zrythm::structure::project;
+namespace zrythm::structure::project
+{
 
 // ============================================================================
 // Top-Level Document Structure Tests
@@ -14,16 +15,16 @@ TEST_F (ProjectSerializationTest, SerializeProject_TopLevelFields)
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
 
-  const std::string test_version = "2.0.0-test";
   const std::string test_title = "Test Serialization Project";
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, test_version, test_title);
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, test_title);
 
   EXPECT_EQ (j["documentType"].get<std::string> (), "ZrythmProject");
-  EXPECT_EQ (j["formatMajor"].get<int> (), 2);
-  EXPECT_EQ (j["formatMinor"].get<int> (), 1);
-  EXPECT_EQ (j["appVersion"].get<std::string> (), test_version);
+  EXPECT_EQ (j["schemaVersion"]["major"].get<int> (), 2);
+  EXPECT_EQ (j["schemaVersion"]["minor"].get<int> (), 1);
+  EXPECT_EQ (j["appVersion"]["major"].get<int> (), 2);
+  EXPECT_EQ (j["appVersion"]["minor"].get<int> (), 0);
   EXPECT_EQ (j["title"].get<std::string> (), test_title);
 
   EXPECT_TRUE (j.contains ("datetime"));
@@ -38,7 +39,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_ProjectDataExists)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   EXPECT_TRUE (j.contains ("projectData"));
   EXPECT_TRUE (j["projectData"].is_object ());
@@ -54,7 +55,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_RequiredFields)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &pd = j["projectData"];
 
   EXPECT_TRUE (pd.contains ("tempoMap"));
@@ -73,7 +74,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TempoMapStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &tempo_map = j["projectData"]["tempoMap"];
 
   EXPECT_TRUE (tempo_map.contains ("timeSignatures"));
@@ -92,7 +93,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TransportStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &transport = j["projectData"]["transport"];
 
   EXPECT_TRUE (transport.contains ("playheadPosition"));
@@ -113,7 +114,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TracklistStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &tracklist = j["projectData"]["tracklist"];
 
   EXPECT_TRUE (tracklist.contains ("tracks"));
@@ -130,7 +131,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TracklistTracksAreUuids)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &tracks = j["projectData"]["tracklist"]["tracks"];
 
   for (const auto &track_id : tracks)
@@ -146,7 +147,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TrackRoutesAreUuidPairs)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &routes = j["projectData"]["tracklist"]["trackRoutes"];
 
   for (const auto &route : routes)
@@ -166,7 +167,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_FolderParentsFormat)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   auto &tracklist = j["projectData"]["tracklist"];
   if (tracklist.contains ("folderParents"))
@@ -192,7 +193,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_ExpandedTracksFormat)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   auto &tracklist = j["projectData"]["tracklist"];
   if (tracklist.contains ("expandedTracks"))
@@ -218,7 +219,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_RegistriesExist)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &registries = j["projectData"]["registries"];
 
   EXPECT_TRUE (registries.contains ("portRegistry"));
@@ -242,7 +243,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortRegistryStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &ports = j["projectData"]["registries"]["portRegistry"];
 
   for (const auto &port : ports)
@@ -262,7 +263,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_ParamRegistryStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &params = j["projectData"]["registries"]["paramRegistry"];
 
   for (const auto &param : params)
@@ -284,7 +285,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TrackRegistryStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &tracks = j["projectData"]["registries"]["trackRegistry"];
 
   for (const auto &track : tracks)
@@ -311,7 +312,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PluginRegistryStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &plugins = j["projectData"]["registries"]["pluginRegistry"];
 
   for (const auto &plugin : plugins)
@@ -341,7 +342,7 @@ TEST_F (
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &sources = j["projectData"]["registries"]["fileAudioSourceRegistry"];
 
   for (const auto &source : sources)
@@ -397,7 +398,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_OptionalFields)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &pd = j["projectData"];
 
   EXPECT_TRUE (pd.contains ("snapGridTimeline"));
@@ -414,7 +415,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_AudioPoolStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &audio_pool = j["projectData"]["audioPool"];
 
   EXPECT_TRUE (audio_pool.contains ("fileHashes"));
@@ -436,7 +437,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_SnapGridStructure)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   auto &snap_timeline = j["projectData"]["snapGridTimeline"];
   EXPECT_TRUE (snap_timeline.is_object ());
@@ -454,8 +455,8 @@ TEST_F (ProjectSerializationTest, SerializeProject_ValidatesAgainstSchema)
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
 
-  nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0-test", "Schema Test");
+  nlohmann::json j = ProjectJsonSerializer::serialize (
+    *project, TEST_APP_VERSION_WITH_PATCH, "Schema Test");
 
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j); });
 }
@@ -470,7 +471,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TrackRegistryMatchesTracklist
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   std::set<std::string> registry_ids;
   for (const auto &track : j["projectData"]["registries"]["trackRegistry"])
@@ -497,7 +498,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortReferencesAreValid)
   ASSERT_NE (project, nullptr);
 
   nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, "2.0.0", "Test");
+    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
 
   std::set<std::string> port_ids;
   for (const auto &port : j["projectData"]["registries"]["portRegistry"])
@@ -562,7 +563,7 @@ TEST_F (ProjectSerializationTest, DeserializeProject_ValidatesFirst)
 TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected)
 {
   auto j = create_minimal_valid_project_json ();
-  j["formatMajor"] = ProjectJsonSerializer::FORMAT_MAJOR_VERSION + 1;
+  j["schemaVersion"]["major"] = ProjectJsonSerializer::SCHEMA_VERSION.major + 1;
 
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
@@ -575,7 +576,7 @@ TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected
 TEST_F (ProjectSerializationTest, Deserialize_OlderMajorVersionSucceeds)
 {
   auto j = create_minimal_valid_project_json ();
-  j["formatMajor"] = 1;
+  j["schemaVersion"]["major"] = 1;
 
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
@@ -594,4 +595,5 @@ TEST_F (ProjectSerializationTest, Deserialize_InvalidRegistryDataRejected)
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j); },
     utils::exceptions::ZrythmException);
+}
 }

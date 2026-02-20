@@ -44,16 +44,15 @@ private:
 
 nlohmann::json
 ProjectJsonSerializer::serialize (
-  const Project   &project,
-  std::string_view app_version,
-  std::string_view title)
+  const Project        &project,
+  const utils::Version &app_version,
+  std::string_view      title)
 {
   nlohmann::json j;
 
   j[utils::serialization::kDocumentTypeKey] = DOCUMENT_TYPE;
-  j[utils::serialization::kFormatMajorKey] = FORMAT_MAJOR_VERSION;
-  j[utils::serialization::kFormatMinorKey] = FORMAT_MINOR_VERSION;
-  j[kAppVersionKey] = app_version;
+  j[utils::serialization::kSchemaVersionKey] = SCHEMA_VERSION;
+  j[utils::serialization::kAppVersionKey] = app_version;
   j[kDatetimeKey] = utils::datetime::get_current_as_iso8601_string ();
   j[kTitle] = title;
   j[kProjectData] = project;
@@ -80,25 +79,25 @@ ProjectJsonSerializer::deserialize (const nlohmann::json &j, Project &project)
 {
   validate_json (j);
 
-  // Check format version compatibility
-  const auto format_major =
-    j.at (utils::serialization::kFormatMajorKey).get<int> ();
+  // Check schema version compatibility
+  utils::Version schema_version;
+  from_json (j.at (utils::serialization::kSchemaVersionKey), schema_version);
 
   // Reject files from future major versions
-  if (format_major > FORMAT_MAJOR_VERSION)
+  if (schema_version.major > SCHEMA_VERSION.major)
     {
       throw ZrythmException (
         fmt::format (
           "Project file is from a newer version (format {}.x) - please upgrade Zrythm",
-          format_major));
+          schema_version.major));
     }
 
   // Warn about older major versions (may need migration in the future)
-  if (format_major < FORMAT_MAJOR_VERSION)
+  if (schema_version.major < SCHEMA_VERSION.major)
     {
       z_warning (
         "Project file is from an older format version ({}.{}) - migration may be needed",
-        format_major, j.at (utils::serialization::kFormatMinorKey).get<int> ());
+        schema_version.major, schema_version.minor);
       // In the future, add migration logic here:
       // auto migrated_json = migrate_to_current_version(j);
       // from_json (migrated_json.at (kProjectData), project);

@@ -6,8 +6,7 @@
   "type": "object",
   "required": [
     "documentType",
-    "formatMajor",
-    "formatMinor",
+    "schemaVersion",
     "appVersion",
     "datetime",
     "title",
@@ -19,18 +18,12 @@
       "const": "ZrythmProject",
       "description": "Document type identifier"
     },
-    "formatMajor": {
-      "type": "integer",
-      "description": "Major format version (breaking changes)",
-      "minimum": 0
-    },
-    "formatMinor": {
-      "type": "integer",
-      "description": "Minor format version (backward-compatible additions)",
-      "minimum": 0
+    "schemaVersion": {
+      "$ref": "#/definitions/version",
+      "description": "Schema format version"
     },
     "appVersion": {
-      "type": "string",
+      "$ref": "#/definitions/version",
       "description": "Zrythm version that created this file"
     },
     "datetime": {
@@ -400,6 +393,31 @@
       },
       "description": "Array of UUID strings"
     },
+    "version": {
+      "type": "object",
+      "description": "Semantic version with major, minor, and optional patch components",
+      "required": [
+        "major",
+        "minor"
+      ],
+      "properties": {
+        "major": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Major version number (breaking changes)"
+        },
+        "minor": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minor version number (backward-compatible additions)"
+        },
+        "patch": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Patch version number (bug fixes)"
+        }
+      }
+    },
     "color": {
       "type": "string",
       "pattern": "^#[0-9A-Fa-f]{6}$",
@@ -426,7 +444,9 @@
     "position": {
       "type": "object",
       "description": "Position in time (ticks or seconds)",
-      "required": ["value"],
+      "required": [
+        "value"
+      ],
       "properties": {
         "mode": {
           "type": "integer",
@@ -856,7 +876,44 @@
                 "automationTracks": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/uuid"
+                    "type": "object",
+                    "properties": {
+                      "automationMode": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 2,
+                        "description": "0=Read, 1=Record, 2=Off"
+                      },
+                      "recordMode": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1,
+                        "description": "0=Touch, 1=Latch"
+                      },
+                      "parameter": {
+                        "$ref": "#/definitions/uuid",
+                        "description": "UUID reference to parameter in paramRegistry"
+                      },
+                      "regions": {
+                        "$ref": "#/definitions/uuidArray",
+                        "description": "UUID references to AutomationRegion objects in arrangerObjectRegistry"
+                      },
+                      "createdByUser": {
+                        "type": "boolean",
+                        "description": "Whether this automation track was created by the user"
+                      },
+                      "visible": {
+                        "type": "boolean",
+                        "description": "Whether this automation track is visible"
+                      },
+                      "height": {
+                        "type": "number",
+                        "description": "Height of the automation track"
+                      }
+                    },
+                    "required": [
+                      "parameter"
+                    ]
                   }
                 },
                 "automationVisible": {
@@ -965,7 +1022,7 @@
         {
           "properties": {
             "type": {
-              "const": 9
+              "const": 1
             }
           }
         }
@@ -980,7 +1037,7 @@
         {
           "properties": {
             "type": {
-              "const": 1
+              "const": 0
             }
           }
         }
@@ -995,7 +1052,7 @@
         {
           "properties": {
             "type": {
-              "const": 2
+              "const": 8
             }
           }
         }
@@ -1010,7 +1067,7 @@
         {
           "properties": {
             "type": {
-              "const": 3
+              "const": 2
             }
           }
         }
@@ -1025,7 +1082,15 @@
         {
           "properties": {
             "type": {
-              "const": 10
+              "const": 3
+            },
+            "regions": {
+              "$ref": "#/definitions/uuidArray",
+              "description": "UUID references to ChordRegion objects in arrangerObjectRegistry"
+            },
+            "scales": {
+              "$ref": "#/definitions/uuidArray",
+              "description": "UUID references to ScaleObject objects in arrangerObjectRegistry"
             }
           }
         }
@@ -1040,7 +1105,11 @@
         {
           "properties": {
             "type": {
-              "const": 0
+              "const": 4
+            },
+            "markers": {
+              "$ref": "#/definitions/uuidArray",
+              "description": "UUID references to Marker objects in arrangerObjectRegistry"
             }
           }
         }
@@ -1055,7 +1124,7 @@
         {
           "properties": {
             "type": {
-              "const": 11
+              "const": 5
             },
             "modulators": {
               "$ref": "#/definitions/pluginGroup"
@@ -1080,7 +1149,7 @@
         {
           "properties": {
             "type": {
-              "const": 8
+              "const": 6
             }
           }
         }
@@ -1095,7 +1164,7 @@
         {
           "properties": {
             "type": {
-              "const": 5
+              "const": 7
             }
           }
         }
@@ -1110,7 +1179,7 @@
         {
           "properties": {
             "type": {
-              "const": 7
+              "const": 9
             }
           }
         }
@@ -1125,7 +1194,7 @@
         {
           "properties": {
             "type": {
-              "const": 4
+              "const": 10
             }
           }
         }
@@ -1416,18 +1485,15 @@
             "type": {
               "const": 2
             },
-            "endPosition": {
-              "$ref": "#/definitions/position"
-            },
             "scale": {
               "type": "object",
               "properties": {
                 "type": {
-                  "type": "string",
+                  "type": "integer",
                   "description": "Musical scale type (e.g., 'Aeolian', 'Ionian')"
                 },
                 "rootKey": {
-                  "type": "string",
+                  "type": "integer",
                   "description": "Root note (e.g., 'C', 'A#')"
                 }
               }
@@ -1566,7 +1632,7 @@
         {
           "properties": {
             "type": {
-              "const": 6
+              "const": 11
             }
           }
         }

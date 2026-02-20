@@ -36,9 +36,13 @@ create_minimal_valid_project_json ()
 
   // Top-level required fields
   j["documentType"] = "ZrythmProject";
-  j["formatMajor"] = 2;
-  j["formatMinor"] = 1;
-  j["appVersion"] = "2.0.0-test";
+  j["schemaVersion"] = nlohmann::json::object ();
+  j["schemaVersion"]["major"] = 2;
+  j["schemaVersion"]["minor"] = 1;
+  j["appVersion"] = nlohmann::json::object ();
+  j["appVersion"]["major"] = 2;
+  j["appVersion"]["minor"] = 0;
+  j["appVersion"]["patch"] = 0;
   j["datetime"] = "2026-02-16T12:00:00Z";
   j["title"] = "Test Project";
 
@@ -247,6 +251,9 @@ protected:
     EXPECT_TRUE (std::regex_match (color_str, color_regex))
       << "Invalid color format: " << color_str;
   }
+
+  static constexpr utils::Version TEST_APP_VERSION{ 2, 0, {} };
+  static constexpr utils::Version TEST_APP_VERSION_WITH_PATCH{ 2, 0, 1 };
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
   fs::path                                         project_dir;

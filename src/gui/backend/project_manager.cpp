@@ -234,7 +234,7 @@ ProjectManager::createNewProject (
     .then (
       [this, project_dir_path] (utils::QObjectUniquePtr<ProjectUiState> ui_state) {
         structure::project::ProjectSaver saver (
-          *ui_state->project (), Zrythm::get_version (false).view ());
+          *ui_state->project (), Zrythm::get_app_version ());
         auto future = saver.save (project_dir_path, false);
         try
           {

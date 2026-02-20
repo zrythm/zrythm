@@ -627,7 +627,8 @@ private:
   static constexpr auto kAutomationTracklistKey = "automationTracklist"sv;
   static constexpr auto kChannelKey = "channel"sv;
   static constexpr auto kModulatorsKey = "modulators"sv;
-  static constexpr auto kModulatorMacroProcessorsKey = "modulatorMacros"sv;
+  static constexpr auto kModulatorMacroProcessorsKey =
+    "modulatorMacroProcessors"sv;
   static constexpr auto kTrackLanesKey = "lanes"sv;
   static constexpr auto kRecordingParamKey = "recordingParam"sv;
   static constexpr auto kPianoRollKey = "pianoRoll"sv;

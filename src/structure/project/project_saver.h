@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/progress_info.h"
+#include "utils/version.h"
 
 #include <QFuture>
 
@@ -14,7 +15,7 @@ class Project;
 class ProjectSaver
 {
 public:
-  ProjectSaver (const Project &project, std::string_view app_version);
+  ProjectSaver (const Project &project, utils::Version app_version);
 
   /**
    * Saves the project asynchronously to the directory set previously in Project.
@@ -122,6 +123,6 @@ private:
   /** Semaphore used to block saving. */
   std::binary_semaphore save_sem_{ 1 };
 
-  std::string app_version_;
+  utils::Version app_version_;
 };
 }

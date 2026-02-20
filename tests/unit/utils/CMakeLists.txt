@@ -33,6 +33,7 @@ add_executable(zrythm_utils_unit_tests
   uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
   variant_helpers_test.cpp
+  version_test.cpp
   views_test.cpp
 )
 

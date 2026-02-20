@@ -363,7 +363,7 @@ void
 to_json (nlohmann::json &j, const AutomationTrack &track)
 {
   to_json (j, static_cast<const AutomationTrack::ArrangerObjectOwner &> (track));
-  j[AutomationTrack::kParamIdKey] = track.param_id_;
+  j[AutomationTrack::kParameterKey] = track.param_id_;
   j[AutomationTrack::kAutomationModeKey] = track.automation_mode_.load ();
   j[AutomationTrack::kRecordModeKey] = track.record_mode_;
 }
@@ -372,7 +372,7 @@ void
 from_json (const nlohmann::json &j, AutomationTrack &track)
 {
   from_json (j, static_cast<AutomationTrack::ArrangerObjectOwner &> (track));
-  j.at (AutomationTrack::kParamIdKey).get_to (track.param_id_);
+  j.at (AutomationTrack::kParameterKey).get_to (track.param_id_);
   AutomationTrack::AutomationMode automation_mode{};
   j.at (AutomationTrack::kAutomationModeKey).get_to (automation_mode);
   track.automation_mode_.store (automation_mode);

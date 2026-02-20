@@ -56,4 +56,17 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
 }
+
+void
+to_json (nlohmann::json &j, const MarkerTrack &track)
+{
+  to_json (j, static_cast<const Track &> (track));
+  to_json (j, static_cast<const MarkerTrack::ArrangerObjectOwner &> (track));
+}
+void
+from_json (const nlohmann::json &j, MarkerTrack &track)
+{
+  from_json (j, static_cast<Track &> (track));
+  from_json (j, static_cast<MarkerTrack::ArrangerObjectOwner &> (track));
+}
 }

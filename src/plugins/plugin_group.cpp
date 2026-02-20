@@ -186,6 +186,7 @@ void
 to_json (nlohmann::json &j, const PluginGroup &l)
 {
   j[PluginGroup::kDeviceGroupsKey] = l.pimpl_->devices_;
+  j[PluginGroup::kFaderKey] = *l.fader_;
 }
 void
 from_json (const nlohmann::json &j, PluginGroup &l)
@@ -200,6 +201,7 @@ from_json (const nlohmann::json &j, PluginGroup &l)
         BuilderForDeserialization{ l.dependencies_, l.plugin_registry_ });
       l.pimpl_->devices_.emplace_back (std::move (var));
     }
+  j.at (PluginGroup::kFaderKey).get_to (*l.fader_);
 }
 
 PluginGroup::~PluginGroup () = default;

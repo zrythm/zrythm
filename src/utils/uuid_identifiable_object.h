@@ -140,8 +140,6 @@ public:
   using UuidType = typename RegistryT::UuidType;
   using VariantType = typename RegistryT::VariantType;
 
-  static constexpr auto kIdKey = "id"sv;
-
   // unengaged - need to call set_id to acquire a reference
   UuidReference (RegistryT &registry) : registry_ (registry) { }
 
@@ -278,12 +276,12 @@ private:
   friend void to_json (nlohmann::json &j, const UuidReference &ref)
   {
     assert (ref.id_.has_value ());
-    j[kIdKey] = *ref.id_;
+    j = ref.id_;
   }
   friend void from_json (const nlohmann::json &j, UuidReference &ref)
   {
     auto tmp = ref;
-    j.at (kIdKey).get_to (ref.id_);
+    j.get_to (ref.id_);
     ref.acquire_ref ();
     tmp.release_ref ();
   }

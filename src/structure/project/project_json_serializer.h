@@ -5,6 +5,8 @@
 
 #include <string_view>
 
+#include "utils/version.h"
+
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::project
@@ -23,25 +25,24 @@ using namespace std::string_view_literals;
 class ProjectJsonSerializer
 {
 public:
-  static constexpr auto FORMAT_MAJOR_VERSION = 2;
-  static constexpr auto FORMAT_MINOR_VERSION = 1;
-  static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
-  static constexpr auto kProjectData = "projectData"sv;
-  static constexpr auto kDatetimeKey = "datetime"sv;
-  static constexpr auto kAppVersionKey = "appVersion"sv;
-  static constexpr auto kTitle = "title"sv;
+  static constexpr utils::Version SCHEMA_VERSION{ 2, 1, {} };
+  static constexpr auto           DOCUMENT_TYPE = "ZrythmProject"sv;
+  static constexpr auto           kProjectData = "projectData"sv;
+  static constexpr auto           kDatetimeKey = "datetime"sv;
+  static constexpr auto           kTitle = "title"sv;
 
   /**
    * @brief Returns a json representation of the project.
    *
    * @param project The project to serialize.
-   * @param app_version Version string of the application.
+   * @param app_version Version of the application.
+   * @param title Project title.
    * @throw std::runtime_error on error.
    */
   static nlohmann::json serialize (
-    const Project   &project,
-    std::string_view app_version,
-    std::string_view title);
+    const Project        &project,
+    const utils::Version &app_version,
+    std::string_view      title);
 
   /**
    * @brief Validates JSON against the project schema.

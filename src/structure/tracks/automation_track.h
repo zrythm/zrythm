@@ -193,7 +193,7 @@ public:
   }
 
 public:
-  static constexpr auto kParamIdKey = "paramId"sv;
+  static constexpr auto kParameterKey = "parameter"sv;
 
 private:
   static constexpr auto kAutomationModeKey = "automationMode"sv;

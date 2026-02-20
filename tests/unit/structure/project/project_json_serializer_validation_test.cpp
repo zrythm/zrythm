@@ -5,7 +5,8 @@
 
 #include <fmt/format.h>
 
-using namespace zrythm::structure::project;
+namespace zrythm::structure::project
+{
 
 // ============================================================================
 // Parameterized Tests for Missing Required Fields
@@ -34,8 +35,7 @@ INSTANTIATE_TEST_SUITE_P (
   MissingRequiredFieldTest,
   testing::Values (
     "documentType",
-    "formatMajor",
-    "formatMinor",
+    "schemaVersion",
     "appVersion",
     "datetime",
     "title",
@@ -624,4 +624,5 @@ TEST (
   j["projectData"]["registries"]["arrangerObjectRegistry"].push_back (ap_max);
 
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j); });
+}
 }

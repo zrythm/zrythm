@@ -65,8 +65,9 @@ TEST_F (ProjectLoaderTest, DecompressAndParseRoundTrip)
   auto project = create_minimal_project ();
 
   // Serialize to JSON
-  nlohmann::json j = ProjectJsonSerializer::serialize (
-    *project, "2.0.0-test", "Loader Test Project");
+  constexpr utils::Version test_version{ 2, 0, {} };
+  nlohmann::json           j = ProjectJsonSerializer::serialize (
+    *project, test_version, "Loader Test Project");
 
   // Create project directories
   ProjectSaver::make_project_dirs (project_dir);

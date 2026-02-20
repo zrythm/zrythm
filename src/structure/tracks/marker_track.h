@@ -60,16 +60,8 @@ public:
   }
 
 private:
-  friend void to_json (nlohmann::json &j, const MarkerTrack &track)
-  {
-    to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const ArrangerObjectOwner &> (track));
-  }
-  friend void from_json (const nlohmann::json &j, MarkerTrack &track)
-  {
-    from_json (j, static_cast<Track &> (track));
-    from_json (j, static_cast<ArrangerObjectOwner &> (track));
-  }
+  friend void to_json (nlohmann::json &j, const MarkerTrack &track);
+  friend void from_json (const nlohmann::json &j, MarkerTrack &track);
 };
 
 }

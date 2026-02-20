@@ -549,15 +549,36 @@ to_json (nlohmann::json &j, const Track &track)
   // j[Track::kOutputSignalTypeKey] = track.out_signal_type_;
   j[Track::kCommentKey] = track.comment_;
   // j[Track::kFrozenClipIdKey] = track.frozen_clip_id_;
-  j[Track::kProcessorKey] = track.processor_;
-  j[Track::kAutomationTracklistKey] = track.automation_tracklist_;
-  j[Track::kChannelKey] = track.channel_;
-  j[Track::kModulatorsKey] = track.modulators_;
-  j[Track::kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
-  j[Track::kTrackLanesKey] = track.lanes_;
-  j[Track::kRecordingParamKey] =
-    track.recordable_track_mixin_->get_recording_param ().get_uuid ();
-  j[Track::kPianoRollKey] = track.piano_roll_track_mixin_;
+  if (track.processor_)
+    {
+      j[Track::kProcessorKey] = track.processor_;
+    }
+  if (track.automation_tracklist_)
+    {
+      j[Track::kAutomationTracklistKey] = track.automation_tracklist_;
+    }
+  if (track.channel_)
+    {
+      j[Track::kChannelKey] = track.channel_;
+    }
+  if (track.modulators_)
+    {
+      j[Track::kModulatorsKey] = track.modulators_;
+      j[Track::kModulatorMacroProcessorsKey] = track.modulator_macro_processors_;
+    }
+  if (track.lanes_)
+    {
+      j[Track::kTrackLanesKey] = track.lanes_;
+    }
+  if (track.recordable_track_mixin_)
+    {
+      j[Track::kRecordingParamKey] =
+        track.recordable_track_mixin_->get_recording_param ().get_uuid ();
+    }
+  if (track.piano_roll_track_mixin_)
+    {
+      j[Track::kPianoRollKey] = track.piano_roll_track_mixin_;
+    }
   j[Track::kClipLauncherModeKey] = track.clip_launcher_mode_;
 }
 
@@ -577,22 +598,39 @@ from_json (const nlohmann::json &j, Track &track)
   j.at (Track::kCommentKey).get_to (track.comment_);
   // TODO
   // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
-  j[Track::kProcessorKey].get_to (*track.processor_);
-  j[Track::kAutomationTracklistKey].get_to (*track.automation_tracklist_);
-  j.at (Track::kModulatorsKey).get_to (*track.modulators_);
-  for (
-    const auto &[index, macro_proc_json] :
-    utils::views::enumerate (j.at (Track::kModulatorMacroProcessorsKey)))
+  if (track.channel_)
     {
-      auto macro_proc = utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-        dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-          .port_registry_ = track.base_dependencies_.port_registry_,
-          .param_registry_ = track.base_dependencies_.param_registry_ },
-        index, &track);
-      from_json (macro_proc_json, *macro_proc);
-      track.modulator_macro_processors_.push_back (std::move (macro_proc));
+      j[Track::kChannelKey].get_to (*track.channel_);
     }
-  j[Track::kTrackLanesKey].get_to (*track.lanes_);
+  if (track.processor_)
+    {
+      j[Track::kProcessorKey].get_to (*track.processor_);
+    }
+  if (track.automation_tracklist_)
+    {
+      j[Track::kAutomationTracklistKey].get_to (*track.automation_tracklist_);
+    }
+  if (track.modulators_)
+    {
+      j.at (Track::kModulatorsKey).get_to (*track.modulators_);
+      for (
+        const auto &[index, macro_proc_json] :
+        utils::views::enumerate (j.at (Track::kModulatorMacroProcessorsKey)))
+        {
+          auto macro_proc = utils::make_qobject_unique<
+            dsp::ModulatorMacroProcessor> (
+            dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
+              .port_registry_ = track.base_dependencies_.port_registry_,
+              .param_registry_ = track.base_dependencies_.param_registry_ },
+            index, &track);
+          from_json (macro_proc_json, *macro_proc);
+          track.modulator_macro_processors_.push_back (std::move (macro_proc));
+        }
+    }
+  if (track.lanes_)
+    {
+      j[Track::kTrackLanesKey].get_to (*track.lanes_);
+    }
   if (track.recordable_track_mixin_)
     {
       j[Track::kRecordingParamKey].get_to (*track.recordable_track_mixin_);

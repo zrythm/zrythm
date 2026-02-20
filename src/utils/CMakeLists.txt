@@ -101,6 +101,7 @@ target_sources(zrythm_utils_lib
       uuid_identifiable_object.h
       # vamp.h
       variant_helpers.h
+      version.h
       views.h
 )
 
