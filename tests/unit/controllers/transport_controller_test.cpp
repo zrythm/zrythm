@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/transport_actions.h"
+#include "controllers/transport_controller.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map.h"
 #include "dsp/transport.h"
 
 #include <gtest/gtest.h>
 
-namespace zrythm::actions
+namespace zrythm::controllers
 {
 
-class TransportActionsTest : public ::testing::Test
+class TransportControllerTest : public ::testing::Test
 {
 protected:
   static constexpr auto SAMPLE_RATE = units::sample_rate (44100.0);
@@ -31,19 +31,19 @@ protected:
 
     transport_ =
       std::make_unique<dsp::Transport> (*tempo_map_, config_provider_);
-    transport_actions_ =
-      std::make_unique<TransportActions> (*transport_, *snap_grid_);
+    transport_controller_ =
+      std::make_unique<TransportController> (*transport_, *snap_grid_);
   }
 
-  std::unique_ptr<dsp::TempoMap>    tempo_map_;
-  std::unique_ptr<dsp::SnapGrid>    snap_grid_;
-  std::unique_ptr<dsp::Transport>   transport_;
-  std::unique_ptr<TransportActions> transport_actions_;
-  dsp::Transport::ConfigProvider    config_provider_;
+  std::unique_ptr<dsp::TempoMap>       tempo_map_;
+  std::unique_ptr<dsp::SnapGrid>       snap_grid_;
+  std::unique_ptr<dsp::Transport>      transport_;
+  std::unique_ptr<TransportController> transport_controller_;
+  dsp::Transport::ConfigProvider       config_provider_;
 };
 
 // Test backward/forward movement
-TEST_F (TransportActionsTest, BackwardForwardMovement)
+TEST_F (TransportControllerTest, BackwardForwardMovement)
 {
   // Move to a position first
   const double start_ticks = 3840.0; // 4 beats
@@ -51,65 +51,65 @@ TEST_F (TransportActionsTest, BackwardForwardMovement)
 
   // Test backward movement
   const double current_pos = transport_->playhead ()->ticks ();
-  transport_actions_->moveBackward ();
+  transport_controller_->moveBackward ();
   EXPECT_LT (transport_->playhead ()->ticks (), current_pos);
 
   // Test forward movement
-  transport_actions_->moveForward ();
+  transport_controller_->moveForward ();
   EXPECT_GE (transport_->playhead ()->ticks (), current_pos);
 }
 
 // Test backward movement from beginning
-TEST_F (TransportActionsTest, BackwardFromBeginning)
+TEST_F (TransportControllerTest, BackwardFromBeginning)
 {
   // Start at position 0
   transport_->move_playhead (units::ticks (0.0), true);
 
   // Should not go negative
-  transport_actions_->moveBackward ();
+  transport_controller_->moveBackward ();
   EXPECT_GE (transport_->playhead ()->ticks (), 0.0);
 }
 
 // Test forward movement snaps to grid
-TEST_F (TransportActionsTest, ForwardSnapsToGrid)
+TEST_F (TransportControllerTest, ForwardSnapsToGrid)
 {
   // Move to a position that's not on the snap grid
   const double off_grid_ticks = 100.0; // Not on quarter note boundary
   transport_->move_playhead (units::ticks (off_grid_ticks), true);
 
   // Forward movement should snap to next grid point
-  transport_actions_->moveForward ();
+  transport_controller_->moveForward ();
   EXPECT_GT (transport_->playhead ()->ticks (), off_grid_ticks);
 }
 
 // Test backward movement snaps to grid
-TEST_F (TransportActionsTest, BackwardSnapsToGrid)
+TEST_F (TransportControllerTest, BackwardSnapsToGrid)
 {
   // Move to a position that's not on the snap grid
   const double off_grid_ticks = 3850.0; // Not on quarter note boundary
   transport_->move_playhead (units::ticks (off_grid_ticks), true);
 
   // Backward movement should snap to previous grid point
-  transport_actions_->moveBackward ();
+  transport_controller_->moveBackward ();
   EXPECT_LT (transport_->playhead ()->ticks (), off_grid_ticks);
 }
 
 // Test repeated forward movement
-TEST_F (TransportActionsTest, RepeatedForwardMovement)
+TEST_F (TransportControllerTest, RepeatedForwardMovement)
 {
   transport_->move_playhead (units::ticks (0.0), true);
 
   double prev_pos = transport_->playhead ()->ticks ();
   for (int i = 0; i < 5; ++i)
     {
-      transport_actions_->moveForward ();
+      transport_controller_->moveForward ();
       EXPECT_GT (transport_->playhead ()->ticks (), prev_pos);
       prev_pos = transport_->playhead ()->ticks ();
     }
 }
 
 // Test repeated backward movement
-TEST_F (TransportActionsTest, RepeatedBackwardMovement)
+TEST_F (TransportControllerTest, RepeatedBackwardMovement)
 {
   // Start at a higher position
   const double start_ticks = 9600.0; // 10 beats
@@ -118,10 +118,10 @@ TEST_F (TransportActionsTest, RepeatedBackwardMovement)
   double prev_pos = transport_->playhead ()->ticks ();
   for (int i = 0; i < 5; ++i)
     {
-      transport_actions_->moveBackward ();
+      transport_controller_->moveBackward ();
       EXPECT_LT (transport_->playhead ()->ticks (), prev_pos);
       prev_pos = transport_->playhead ()->ticks ();
     }
 }
 
-} // namespace zrythm::actions
+} // namespace zrythm::controllers

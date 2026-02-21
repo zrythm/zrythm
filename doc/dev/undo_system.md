@@ -11,6 +11,7 @@ SPDX-License-Identifier: FSFAP
   - Commands: immutable, reversible single-concern mutations.
   - Undo-Stack: owns commands, persistence, global hooks.
   - Actions (Operators): thin, stateless façade that only produces commands.
+  - Controllers: QML-facing orchestrators for non-undoable operations (e.g., transport navigation, project save/load).
   - UI (QML): declarative views that use operators to edit values, zero direct model mutation.
   - Factories: handle creation and initialization of model objects.
 
@@ -28,7 +29,9 @@ graph TD
     model --> commands[zrythm::commands]
     commands --> undo[zrythm::undo]
     undo --> actions[zrythm::actions]
+    undo --> controllers[zrythm::controllers]
     actions --> gui[zrythm::gui]
+    controllers --> gui
 ```
 
 | Module        | Responsibility                                | Public API Examples |
@@ -38,7 +41,8 @@ graph TD
 | `zrythm::model::Factories` | Object creation & initialization        | `TrackFactory::create()` |
 | `zrythm::commands` | Concrete `QUndoCommand` subclasses          | `RenameTrackCmd`, `AddTrackCmd` |
 | `zrythm::undo`   | Undo-stack container, save/load, hooks        | `UndoStack` QML type|
-| `zrythm::actions` | Controllers that expose semantic actions   | `TrackOperator::rename()`, `ProjectActions.addMidiTrack()` |
+| `zrythm::actions` | Controllers that produce commands for undoable operations | `TrackOperator::rename()`, `ProjectActions.addMidiTrack()` |
+| `zrythm::controllers` | Controllers for non-undoable operations (navigation, save/load) | `TransportController::moveForward()` |
 | `zrythm::gui`    | Qt-Quick UI, makes changes via operators      | `TrackView.qml`     |
 
 ---
@@ -117,16 +121,38 @@ Two types of actions:
 2. **Global Actions**: Stateless functions for object creation (e.g., `ProjectActions.addMidiTrack()`)
 
 Responsibilities:
-- Provide high-level, QML-friendly API
+- Provide high-level, QML-friendly API for undoable operations
 - Orchestrate complex operations (potentially multiple commands)
 - Use Factories to create new objects
-- Create Commands and push to UndoStack
+- **Create Commands and push to UndoStack** (key distinction from Controllers)
+
+### Controllers (`zrythm::controllers`)
+QML-facing orchestrators for operations that don't require undo/redo:
+
+Responsibilities:
+- Provide high-level, QML-friendly API for non-undoable operations
+- Handle navigation (e.g., playhead movement with `TransportController`)
+- Orchestrate project save/load
+- May read/serialize undo state but **never produce commands**
 
 ### Undo Stack (`zrythm::undo`)
 - Owns and manages command lifecycle
 - Handles persistence and serialization
 - Provides global hooks for undo/redo events
 - Exposed as QML type for UI integration
+
+### Controllers (`zrythm::controllers`)
+QML-facing orchestrators for operations that don't require undo:
+
+Responsibilities:
+- Provide high-level, QML-friendly API for non-undoable operations
+- Handle navigation (e.g., playhead movement)
+- Orchestrate project save/load (may read/serialize undo state)
+- Direct model manipulation for ephemeral UI state
+
+Key distinction from Actions:
+- **Actions** produce commands and push to UndoStack
+- **Controllers** never produce commands (may read/serialize undo state but don't modify it)
 
 ---
 
@@ -189,6 +215,8 @@ Button {
 
 ## 7. Non-Undoable State
 - View-only flags (visibility, window geometry) bypass operators; mutate model or view-model directly.
+- Transport navigation (playhead movement) uses Controllers instead of Actions.
+- Project save/load operations use Controllers (may serialize undo state but don't produce commands).
 
 ---
 

@@ -1,13 +1,13 @@
-// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "actions/transport_actions.h"
+#include "controllers/transport_controller.h"
 
-namespace zrythm::actions
+namespace zrythm::controllers
 {
 
 void
-TransportActions::moveBackward ()
+TransportController::moveBackward ()
 {
   const auto &playhead = transport_.playhead ()->playhead ();
   const auto &tempo_map = playhead.get_tempo_map ();
@@ -38,7 +38,7 @@ TransportActions::moveBackward ()
 }
 
 void
-TransportActions::moveForward ()
+TransportController::moveForward ()
 {
   const auto &playhead = transport_.playhead ()->playhead ();
   double      pos_ticks =
@@ -46,4 +46,4 @@ TransportActions::moveForward ()
   transport_.move_playhead (units::ticks (pos_ticks), true);
 }
 
-} // namespace zrythm::actions
+} // namespace zrythm::controllers

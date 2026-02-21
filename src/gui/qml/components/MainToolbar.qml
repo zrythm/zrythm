@@ -22,7 +22,7 @@ ZrythmToolBar {
       metronome: root.controlRoom.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport
-      transportActions: root.projectUiState.transportActions
+      transportController: root.projectUiState.transportController
     }
   ]
   leftItems: [

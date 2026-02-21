@@ -13,7 +13,6 @@ target_sources(zrythm_actions_lib
     plugin_importer.cpp
     track_creator.cpp
     track_operator.cpp
-    transport_actions.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -26,7 +25,6 @@ target_sources(zrythm_actions_lib
       plugin_importer.h
       track_creator.h
       track_operator.h
-      transport_actions.h
 )
 
 target_include_directories(zrythm_actions_lib

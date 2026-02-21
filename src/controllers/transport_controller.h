@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,20 +8,22 @@
 
 #include <QtQmlIntegration>
 
-namespace zrythm::actions
+namespace zrythm::controllers
 {
 
 /**
- * @brief Actions for transport navigation.
+ * @brief Controller for transport navigation.
+ *
+ * Provides QML-friendly methods for moving the playhead.
  */
-class TransportActions : public QObject
+class TransportController : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
-  explicit TransportActions (
+  explicit TransportController (
     dsp::Transport &transport,
     dsp::SnapGrid  &snap_grid,
     QObject *       parent = nullptr)
@@ -48,4 +50,4 @@ private:
   dsp::SnapGrid  &snap_grid_;
 };
 
-} // namespace zrythm::actions
+} // namespace zrythm::controllers

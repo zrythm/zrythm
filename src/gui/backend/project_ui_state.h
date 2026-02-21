@@ -8,7 +8,7 @@
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
-#include "actions/transport_actions.h"
+#include "controllers/transport_controller.h"
 #include "dsp/snap_grid.h"
 #include "gui/backend/arranger_tool.h"
 #include "gui/backend/backend/clip_editor.h"
@@ -57,8 +57,8 @@ class ProjectUiState : public QObject
   Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::actions::TransportActions * transportActions READ transportActions
-      CONSTANT FINAL)
+    zrythm::controllers::TransportController * transportController READ
+      transportController CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -86,7 +86,7 @@ public:
   undo::UndoStack *                        undoStack () const;
   dsp::SnapGrid *                          snapGridTimeline () const;
   dsp::SnapGrid *                          snapGridEditor () const;
-  actions::TransportActions *              transportActions () const;
+  controllers::TransportController *       transportController () const;
 
   QString projectDirectory () const;
   void    setProjectDirectory (const QString &directory);
@@ -159,7 +159,7 @@ private:
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
 
-  /** Transport navigation actions. */
-  utils::QObjectUniquePtr<actions::TransportActions> transport_actions_;
+  /** Transport navigation controller. */
+  utils::QObjectUniquePtr<controllers::TransportController> transport_controller_;
 };
 }

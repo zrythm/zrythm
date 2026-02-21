@@ -84,8 +84,8 @@ ProjectUiState::ProjectUiState (
           *arranger_object_creator_,
           *track_creator_,
           this)),
-      transport_actions_ (
-        utils::make_qobject_unique<actions::TransportActions> (
+      transport_controller_ (
+        utils::make_qobject_unique<controllers::TransportController> (
           *project_->transport_,
           *snap_grid_timeline_,
           this))
@@ -233,10 +233,10 @@ ProjectUiState::snapGridEditor () const
   return snap_grid_editor_.get ();
 }
 
-actions::TransportActions *
-ProjectUiState::transportActions () const
+controllers::TransportController *
+ProjectUiState::transportController () const
 {
-  return transport_actions_.get ();
+  return transport_controller_.get ();
 }
 
 std::optional<fs::path>

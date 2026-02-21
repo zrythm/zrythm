@@ -1,31 +1,32 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmControllers
+import ZrythmStyle
 
 RowLayout {
   id: root
 
   required property TempoMap tempoMap
   required property Transport transport
-  required property TransportActions transportActions
+  required property TransportController transportController
   required property Metronome metronome
 
   LinkedButtons {
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-backward-large-symbolic.svg")
 
-      onClicked: root.transportActions.moveBackward()
+      onClicked: root.transportController.moveBackward()
     }
 
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-forward-large-symbolic.svg")
 
-      onClicked: root.transportActions.moveForward()
+      onClicked: root.transportController.moveForward()
     }
 
     Button {
