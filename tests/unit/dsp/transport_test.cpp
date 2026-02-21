@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/snap_grid.h"
 #include "dsp/tempo_map.h"
 #include "dsp/transport.h"
 
@@ -24,8 +23,6 @@ protected:
     scoped_qt_app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
     tempo_map_ = std::make_unique<TempoMap> (SAMPLE_RATE);
-    snap_grid_ = std::make_unique<SnapGrid> (
-      *tempo_map_, utils::NoteLength::Note_1_4, [] () { return 0.0; });
 
     // Setup config provider with default values
     config_provider_ = {
@@ -34,13 +31,11 @@ protected:
       .recording_preroll_bars_ = [] () { return 0; }
     };
 
-    transport_ =
-      std::make_unique<Transport> (*tempo_map_, *snap_grid_, config_provider_);
+    transport_ = std::make_unique<Transport> (*tempo_map_, config_provider_);
   }
 
   std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qt_app_;
   std::unique_ptr<TempoMap>                             tempo_map_;
-  std::unique_ptr<SnapGrid>                             snap_grid_;
   std::unique_ptr<Transport>                            transport_;
   Transport::ConfigProvider                             config_provider_;
 };
@@ -142,23 +137,6 @@ TEST_F (TransportTest, PlayheadMovement)
   EXPECT_DOUBLE_EQ (transport_->cuePosition ()->ticks (), new_ticks);
 }
 
-// Test backward/forward movement
-TEST_F (TransportTest, BackwardForwardMovement)
-{
-  // Move to a position first
-  const double start_ticks = 3840.0; // 4 beats
-  transport_->move_playhead (units::ticks (start_ticks), true);
-
-  // Test backward movement
-  const double current_pos = transport_->playhead ()->ticks ();
-  transport_->moveBackward ();
-  EXPECT_LT (transport_->playhead ()->ticks (), current_pos);
-
-  // Test forward movement
-  transport_->moveForward ();
-  EXPECT_GE (transport_->playhead ()->ticks (), current_pos);
-}
-
 // Test request pause
 TEST_F (TransportTest, RequestPause)
 {
@@ -188,30 +166,6 @@ TEST_F (TransportTest, RequestRollWithRecording)
   transport_->requestRoll ();
 
   EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::RollRequested);
-}
-
-// Test loop range setting
-TEST_F (TransportTest, LoopRangeSetting)
-{
-  const double start_pos = 960.0; // 1 beat
-  const double end_pos = 2880.0;  // 3 beats
-
-  // Set loop start
-  transport_->set_loop_range (
-    true, units::ticks (0), units::ticks (start_pos), false);
-  EXPECT_DOUBLE_EQ (transport_->loopStartPosition ()->ticks (), start_pos);
-
-  // Set loop end
-  transport_->set_loop_range (
-    false, units::ticks (0), units::ticks (end_pos), false);
-  EXPECT_DOUBLE_EQ (transport_->loopEndPosition ()->ticks (), end_pos);
-
-  // Verify loop range through ITransport interface
-  auto [loop_start, loop_end] = transport_->get_loop_range_positions ();
-  EXPECT_DOUBLE_EQ (
-    tempo_map_->samples_to_tick (loop_start).in (units::ticks), start_pos);
-  EXPECT_DOUBLE_EQ (
-    tempo_map_->samples_to_tick (loop_end).in (units::ticks), end_pos);
 }
 
 // Test punch range position checking
@@ -305,7 +259,7 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
   };
 
   auto countin_transport =
-    std::make_unique<Transport> (*tempo_map_, *snap_grid_, countin_config);
+    std::make_unique<Transport> (*tempo_map_, countin_config);
 
   // Request roll to trigger count-in
   countin_transport->requestRoll ();
@@ -336,7 +290,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
   };
 
   auto preroll_transport =
-    std::make_unique<Transport> (*tempo_map_, *snap_grid_, preroll_config);
+    std::make_unique<Transport> (*tempo_map_, preroll_config);
 
   // Enable recording and request roll to trigger preroll
   preroll_transport->setRecordEnabled (true);
@@ -373,7 +327,7 @@ TEST_F (TransportTest, Serialization)
   j = *transport_;
 
   // Create new transport and deserialize
-  Transport new_transport (*tempo_map_, *snap_grid_, config_provider_);
+  Transport new_transport (*tempo_map_, config_provider_);
   j.get_to (new_transport);
 
   // Verify positions were restored
@@ -440,11 +394,6 @@ TEST_F (TransportTest, EdgeCases)
   // Test moving to negative position
   transport_->move_playhead (units::ticks (-100.0), false);
   EXPECT_GE (transport_->playhead ()->ticks (), 0.0);
-
-  // Test setting loop range with negative positions
-  transport_->set_loop_range (
-    true, units::ticks (0), units::ticks (-100), false);
-  EXPECT_GE (transport_->loopStartPosition ()->ticks (), 0.0);
 
   // Test very large position
   const auto large_ticks = units::ticks (1000000.0);

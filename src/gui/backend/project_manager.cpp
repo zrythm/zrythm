@@ -186,8 +186,8 @@ ProjectManager::create_default (
           },
           *zapp->controlRoom ()->metronome (),
           *zapp->controlRoom ()->monitorFader ());
-        prj_ui_state =
-          utils::make_qobject_unique<ProjectUiState> (std::move (prj));
+        prj_ui_state = utils::make_qobject_unique<ProjectUiState> (
+          app_settings_, std::move (prj));
       }
       prj_ui_state->setTitle (name.to_qstring ());
       prj_ui_state->project ()->add_default_tracks ();
@@ -304,8 +304,8 @@ ProjectManager::loadProject (const QString &filepath)
           *zapp->controlRoom ()->metronome (),
           *zapp->controlRoom ()->monitorFader ());
 
-        auto prj_ui_state =
-          utils::make_qobject_unique<ProjectUiState> (std::move (prj));
+        auto prj_ui_state = utils::make_qobject_unique<ProjectUiState> (
+          app_settings_, std::move (prj));
 
         // Deserialize JSON into Project
         structure::project::ProjectJsonSerializer::deserialize (

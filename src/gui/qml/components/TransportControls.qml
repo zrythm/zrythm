@@ -12,19 +12,20 @@ RowLayout {
 
   required property TempoMap tempoMap
   required property Transport transport
+  required property TransportActions transportActions
   required property Metronome metronome
 
   LinkedButtons {
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-backward-large-symbolic.svg")
 
-      onClicked: root.transport.moveBackward()
+      onClicked: root.transportActions.moveBackward()
     }
 
     Button {
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "seek-forward-large-symbolic.svg")
 
-      onClicked: root.transport.moveForward()
+      onClicked: root.transportActions.moveForward()
     }
 
     Button {

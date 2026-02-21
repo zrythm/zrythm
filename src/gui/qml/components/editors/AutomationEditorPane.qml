@@ -105,7 +105,7 @@ GridLayout {
     objectCreator: root.projectUiState.arrangerObjectCreator
     ruler: ruler
     selectionOperator: root.selectionOperator
-    snapGrid: root.project.snapGridEditor
+    snapGrid: root.projectUiState.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.projectUiState.tool
     transport: root.project.transport

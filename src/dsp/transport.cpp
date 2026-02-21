@@ -10,7 +10,6 @@ namespace zrythm::dsp
 {
 Transport::Transport (
   const dsp::TempoMap &tempo_map,
-  const dsp::SnapGrid &snap_grid,
   ConfigProvider       config_provider,
   QObject *            parent)
     : QObject (parent), playhead_ (tempo_map),
@@ -39,7 +38,7 @@ Transport::Transport (
         utils::make_qobject_unique<
           dsp::AtomicPositionQmlAdapter> (punch_out_position_, std::nullopt, this)),
       property_notification_timer_ (new QTimer (this)),
-      config_provider_ (std::move (config_provider)), snap_grid_ (snap_grid)
+      config_provider_ (std::move (config_provider))
 {
   z_debug ("Creating transport...");
 
@@ -242,66 +241,11 @@ Transport::move_playhead (units::precise_tick_t target_ticks, bool set_cue_point
     }
 }
 
-void
-Transport::set_loop_range (
-  bool                  range1,
-  units::precise_tick_t start_pos,
-  units::precise_tick_t pos,
-  bool                  snap)
-{
-  auto * pos_to_set = range1 ? &loop_start_position_ : &loop_end_position_;
-
-  if (pos < units::ticks (0))
-    {
-      pos_to_set->set_ticks (units::ticks (0));
-    }
-  else
-    {
-      pos_to_set->set_ticks (pos);
-    }
-
-  if (snap)
-    {
-      pos_to_set->set_ticks (
-        snap_grid_.snap (pos_to_set->get_ticks (), start_pos));
-    }
-}
-
 bool
 Transport::position_is_inside_punch_range (const units::sample_t pos)
 {
   return pos >= punch_in_position_.get_samples ()
          && pos < punch_out_position_.get_samples ();
-}
-
-void
-Transport::moveBackward ()
-{
-  const auto &tempo_map = playhead_.get_tempo_map ();
-  auto        pos_ticks = units::ticks (
-    snap_grid_.prevSnapPoint (playhead_.position_ticks ().in (units::ticks)));
-  const auto pos_frames = tempo_map.tick_to_samples_rounded (pos_ticks);
-  /* if prev snap point is exactly at the playhead or very close it, go back
-   * more */
-  const auto playhead_ticks = playhead_.position_ticks ();
-  const auto playhead_frames =
-    tempo_map.tick_to_samples_rounded (playhead_ticks);
-  if (
-    pos_frames > units::samples(0)
-    && (pos_frames == playhead_frames || (isRolling () && (tempo_map.tick_to_seconds(playhead_ticks) - tempo_map.tick_to_seconds(pos_ticks) < REPEATED_BACKWARD_MS))))
-    {
-      pos_ticks = units::ticks (snap_grid_.prevSnapPoint (
-        (pos_ticks - units::ticks (1.0)).in (units::ticks)));
-    }
-  move_playhead (pos_ticks, true);
-}
-
-void
-Transport::moveForward ()
-{
-  double pos_ticks =
-    snap_grid_.nextSnapPoint (playhead_.position_ticks ().in (units::ticks));
-  move_playhead (units::ticks (pos_ticks), true);
 }
 
 void

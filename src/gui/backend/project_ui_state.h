@@ -8,6 +8,8 @@
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
+#include "actions/transport_actions.h"
+#include "dsp/snap_grid.h"
 #include "gui/backend/arranger_tool.h"
 #include "gui/backend/backend/clip_editor.h"
 #include "gui/dsp/quantize_options.h"
@@ -50,6 +52,13 @@ class ProjectUiState : public QObject
   Q_PROPERTY (
     QString projectDirectory READ projectDirectory WRITE setProjectDirectory
       NOTIFY projectDirectoryChanged FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::actions::TransportActions * transportActions READ transportActions
+      CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -57,6 +66,7 @@ public:
   using QuantizeOptions = old_dsp::QuantizeOptions;
 
   ProjectUiState (
+    utils::AppSettings                                    &app_settings,
     utils::QObjectUniquePtr<structure::project::Project> &&project);
 
   // =========================================================
@@ -74,6 +84,9 @@ public:
   actions::FileImporter *                  fileImporter () const;
   actions::PluginImporter *                pluginImporter () const;
   undo::UndoStack *                        undoStack () const;
+  dsp::SnapGrid *                          snapGridTimeline () const;
+  dsp::SnapGrid *                          snapGridEditor () const;
+  actions::TransportActions *              transportActions () const;
 
   QString projectDirectory () const;
   void    setProjectDirectory (const QString &directory);
@@ -101,6 +114,8 @@ private:
   static constexpr auto kQuantizeOptsTimelineKey = "quantizeOptsTimeline"sv;
   static constexpr auto kQuantizeOptsEditorKey = "quantizeOptsEditor"sv;
   static constexpr auto kUndoStackKey = "undoStack"sv;
+  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
+  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
 
 private:
   /** Project title. */
@@ -108,6 +123,8 @@ private:
 
   /** Project directory. */
   fs::path project_directory_;
+
+  utils::AppSettings &app_settings_;
 
   utils::QObjectUniquePtr<structure::project::Project> project_;
 
@@ -130,10 +147,19 @@ private:
 
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
 
+  /** Snap/Grid info for the timeline. */
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
+
+  /** Snap/Grid info for the editor. */
+  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
+
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
                                                    arranger_object_creator_;
   utils::QObjectUniquePtr<actions::TrackCreator>   track_creator_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
+
+  /** Transport navigation actions. */
+  utils::QObjectUniquePtr<actions::TransportActions> transport_actions_;
 };
 }

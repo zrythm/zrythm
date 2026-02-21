@@ -9,8 +9,9 @@
 namespace zrythm::gui
 {
 ProjectUiState::ProjectUiState (
+  utils::AppSettings                                    &app_settings,
   utils::QObjectUniquePtr<structure::project::Project> &&project)
-    : project_ (std::move (project)),
+    : app_settings_ (app_settings), project_ (std::move (project)),
       tool_ (new gui::backend::ArrangerTool (this)),
       clip_editor_ (
         utils::make_qobject_unique<ClipEditor> (
@@ -33,12 +34,28 @@ ProjectUiState::ProjectUiState (
                 action, recalculate_graph);
           },
           this)),
+      snap_grid_timeline_ (
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          project_->tempo_map (),
+          utils::NoteLength::Bar,
+          [this] {
+            return app_settings_.timelineLastCreatedObjectLengthInTicks ();
+          },
+          this)),
+      snap_grid_editor_ (
+        utils::make_qobject_unique<dsp::SnapGrid> (
+          project_->tempo_map (),
+          utils::NoteLength::Note_1_8,
+          [this] {
+            return app_settings_.editorLastCreatedObjectLengthInTicks ();
+          },
+          this)),
       arranger_object_creator_ (
         utils::make_qobject_unique<zrythm::actions::ArrangerObjectCreator> (
           *undo_stack_,
           *project_->arrangerObjectFactory (),
-          *project_->snapGridTimeline (),
-          *project_->snapGridEditor (),
+          *snap_grid_timeline_,
+          *snap_grid_editor_,
           this)),
       track_creator_ (
         utils::make_qobject_unique<zrythm::actions::TrackCreator> (
@@ -66,6 +83,11 @@ ProjectUiState::ProjectUiState (
           *undo_stack_,
           *arranger_object_creator_,
           *track_creator_,
+          this)),
+      transport_actions_ (
+        utils::make_qobject_unique<actions::TransportActions> (
+          *project_->transport_,
+          *snap_grid_timeline_,
           this))
 {
   project_->setParent (this);
@@ -197,6 +219,24 @@ undo::UndoStack *
 ProjectUiState::undoStack () const
 {
   return undo_stack_.get ();
+}
+
+dsp::SnapGrid *
+ProjectUiState::snapGridTimeline () const
+{
+  return snap_grid_timeline_.get ();
+}
+
+dsp::SnapGrid *
+ProjectUiState::snapGridEditor () const
+{
+  return snap_grid_editor_.get ();
+}
+
+actions::TransportActions *
+ProjectUiState::transportActions () const
+{
+  return transport_actions_.get ();
 }
 
 std::optional<fs::path>

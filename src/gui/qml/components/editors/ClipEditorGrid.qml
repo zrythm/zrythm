@@ -53,7 +53,7 @@ GridLayout {
     ]
     leftItems: [
       SnapGridButton {
-        snapGrid: root.project.snapGridEditor
+        snapGrid: root.projectUiState.snapGridEditor
       }
     ]
     rightItems: [

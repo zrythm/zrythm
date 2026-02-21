@@ -8,7 +8,6 @@
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/metronome.h"
 #include "dsp/port_connections_manager.h"
-#include "dsp/snap_grid.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 #include "plugins/plugin.h"
@@ -38,8 +37,6 @@ namespace zrythm::structure::project
 #define P_MARKER_TRACK (TRACKLIST->singletonTracks ()->markerTrack ())
 #define P_MASTER_TRACK (TRACKLIST->singletonTracks ()->masterTrack ())
 #define P_MODULATOR_TRACK (TRACKLIST->singletonTracks ()->modulatorTrack ())
-#define SNAP_GRID_TIMELINE (PROJECT->snapGridTimeline ())
-#define SNAP_GRID_EDITOR (PROJECT->snapGridEditor ())
 #define MONITOR_FADER (PROJECT->controlRoom ()->monitor_fader_)
 #define ROUTER (&PROJECT->engine ()->graph_dispatcher ())
 #define AUDIO_ENGINE (PROJECT->engine ())
@@ -68,10 +65,6 @@ class Project final : public QObject
   Q_PROPERTY (
     zrythm::structure::arrangement::TempoObjectManager * tempoObjectManager READ
       tempoObjectManager CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
   friend struct PluginBuilderForDeserialization;
@@ -105,8 +98,6 @@ public:
   dsp::Transport *                             getTransport () const;
   dsp::AudioEngine *                           engine () const;
   dsp::TempoMapWrapper *                       getTempoMap () const;
-  dsp::SnapGrid *                              snapGridTimeline () const;
-  dsp::SnapGrid *                              snapGridEditor () const;
   structure::arrangement::TempoObjectManager * tempoObjectManager () const;
 
   Q_SIGNAL void aboutToBeDeleted ();
@@ -205,8 +196,6 @@ private:
   static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
   static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
   static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
-  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
-  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
@@ -245,13 +234,6 @@ public:
    * Must be free'd after engine.
    */
   utils::QObjectUniquePtr<dsp::PortConnectionsManager> port_connections_manager_;
-
-private:
-  /** Snap/Grid info for the editor. */
-  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
-
-  /** Snap/Grid info for the timeline. */
-  utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;
 
 public:
   /**

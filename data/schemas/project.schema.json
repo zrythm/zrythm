@@ -35,6 +35,20 @@
       "type": "string",
       "description": "Project title"
     },
+    "uiState": {
+      "type": "object",
+      "description": "UI-specific state (snap grids, editor settings, etc.)",
+      "properties": {
+        "snapGridTimeline": {
+          "$ref": "#/definitions/snapGrid",
+          "description": "Timeline snap/grid settings"
+        },
+        "snapGridEditor": {
+          "$ref": "#/definitions/snapGrid",
+          "description": "Editor (piano roll, chord editor, etc.) snap/grid settings"
+        }
+      }
+    },
     "projectData": {
       "type": "object",
       "description": "Project data",
@@ -123,14 +137,6 @@
               "$ref": "#/definitions/position"
             }
           }
-        },
-        "snapGridTimeline": {
-          "$ref": "#/definitions/snapGrid",
-          "description": "Timeline snap/grid settings"
-        },
-        "snapGridEditor": {
-          "$ref": "#/definitions/snapGrid",
-          "description": "Editor (piano roll, chord editor, etc.) snap/grid settings"
         },
         "tracklist": {
           "type": "object",

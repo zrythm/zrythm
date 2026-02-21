@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <filesystem>
 #include <utility>
 
 #include "dsp/engine.h"
@@ -44,26 +43,9 @@ Project::Project (
       hw_interface_ (hw_interface),
       plugin_format_manager_ (plugin_format_manager),
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
-      snap_grid_editor_ (
-        utils::make_qobject_unique<dsp::SnapGrid> (
-          tempo_map_,
-          utils::NoteLength::Note_1_8,
-          [this] {
-            return app_settings_.editorLastCreatedObjectLengthInTicks ();
-},
-          this)),
-      snap_grid_timeline_ (
-        utils::make_qobject_unique<dsp::SnapGrid> (
-          tempo_map_,
-          utils::NoteLength::Bar,
-          [this] {
-            return app_settings_.timelineLastCreatedObjectLengthInTicks ();
-          },
-          this)),
       transport_ (
         utils::make_qobject_unique<dsp::Transport> (
           tempo_map_,
-          *snap_grid_timeline_,
           dsp::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
               [this] () { return app_settings_.transportReturnToCue (); },
@@ -71,7 +53,7 @@ Project::Project (
               [this] () { return app_settings_.metronomeCountIn (); },
             .recording_preroll_bars_ =
               [this] () { return app_settings_.recordingPreroll (); },
-          },
+},
           this)),
       audio_engine_ (
         utils::make_qobject_unique<dsp::AudioEngine> (
@@ -447,24 +429,10 @@ Project::tempoObjectManager () const
   return tempo_object_manager_.get ();
 }
 
-dsp::SnapGrid *
-Project::snapGridTimeline () const
-{
-  return snap_grid_timeline_.get ();
-}
-
-dsp::SnapGrid *
-Project::snapGridEditor () const
-{
-  return snap_grid_editor_.get ();
-}
-
 void
 to_json (nlohmann::json &j, const Project &project)
 {
   j[Project::kTempoMapKey] = project.tempo_map_;
-  j[Project::kSnapGridTimelineKey] = project.snap_grid_timeline_;
-  j[Project::kSnapGridEditorKey] = project.snap_grid_editor_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
@@ -616,16 +584,6 @@ from_json (const nlohmann::json &j, Project &project)
     registries.at (Project::kFileAudioSourceRegistryKey),
     *project.file_audio_source_registry_,
     FileAudioSourceBuilderForDeserialization{});
-
-  // Optional fields - use default-constructed values if not present
-  if (j.contains (Project::kSnapGridTimelineKey))
-    {
-      j.at (Project::kSnapGridTimelineKey).get_to (*project.snap_grid_timeline_);
-    }
-  if (j.contains (Project::kSnapGridEditorKey))
-    {
-      j.at (Project::kSnapGridEditorKey).get_to (*project.snap_grid_editor_);
-    }
 
   // Transport is required
   j.at (Project::kTransportKey).get_to (*project.transport_);

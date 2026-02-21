@@ -187,7 +187,7 @@ ColumnLayout {
               objectCreator: root.projectUiState.arrangerObjectCreator
               ruler: ruler
               selectionOperator: timelinePane.selectionOperator
-              snapGrid: root.project.snapGridTimeline
+              snapGrid: root.projectUiState.snapGridTimeline
               tempoMap: root.project.tempoMap
               tempoObjectManager: root.project.tempoObjectManager
               tool: root.projectUiState.tool
@@ -209,7 +209,7 @@ ColumnLayout {
             pinned: true
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
-            snapGrid: root.project.snapGridTimeline
+            snapGrid: root.projectUiState.snapGridTimeline
             tempoMap: root.project.tempoMap
             timeline: root.projectUiState.timeline
             tool: root.projectUiState.tool
@@ -273,7 +273,7 @@ ColumnLayout {
             pinned: false
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
-            snapGrid: root.project.snapGridTimeline
+            snapGrid: root.projectUiState.snapGridTimeline
             tempoMap: root.project.tempoMap
             timeline: root.projectUiState.timeline
             tool: root.projectUiState.tool

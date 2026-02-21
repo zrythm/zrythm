@@ -22,6 +22,7 @@ ZrythmToolBar {
       metronome: root.controlRoom.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport
+      transportActions: root.projectUiState.transportActions
     }
   ]
   leftItems: [
@@ -60,7 +61,7 @@ ZrythmToolBar {
       tool: root.projectUiState.tool
     },
     SnapGridButton {
-      snapGrid: root.project.snapGridTimeline
+      snapGrid: root.projectUiState.snapGridTimeline
     }
   ]
   rightItems: [

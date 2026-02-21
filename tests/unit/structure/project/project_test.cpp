@@ -265,8 +265,6 @@ TEST_F (ProjectTest, QmlPropertyAccessors)
   EXPECT_NE (project->engine (), nullptr);
   EXPECT_NE (project->getTransport (), nullptr);
   EXPECT_NE (project->getTempoMap (), nullptr);
-  EXPECT_NE (project->snapGridTimeline (), nullptr);
-  EXPECT_NE (project->snapGridEditor (), nullptr);
   EXPECT_NE (project->tempoObjectManager (), nullptr);
 }
 
@@ -324,22 +322,6 @@ TEST_F (ProjectTest, MonitorFaderAndMetronome)
 // ============================================================================
 // Snap Grid Tests
 // ============================================================================
-
-TEST_F (ProjectTest, SnapGridDefaults)
-{
-  auto project = create_minimal_project ();
-  ASSERT_NE (project, nullptr);
-
-  // Test that snap grids are accessible
-  auto * timeline_snap = project->snapGridTimeline ();
-  auto * editor_snap = project->snapGridEditor ();
-
-  EXPECT_NE (timeline_snap, nullptr);
-  EXPECT_NE (editor_snap, nullptr);
-
-  // Verify they are different instances
-  EXPECT_NE (timeline_snap, editor_snap);
-}
 
 // ============================================================================
 // Transport Tests

@@ -12,6 +12,7 @@ add_executable(zrythm_actions_unit_tests
   plugin_importer_test.cpp
   track_creator_test.cpp
   track_operator_test.cpp
+  transport_actions_test.cpp
 )
 
 set_target_properties(zrythm_actions_unit_tests PROPERTIES

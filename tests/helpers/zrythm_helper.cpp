@@ -31,6 +31,9 @@
  * ---
  */
 
+#error \
+  "WARNING: THIS IS LEGACY CODE. IT IS NOT USED ANYMORE AND SHOULD NOT BE USED.
+
 #include "zrythm-test-config.h"
 
 #define DOCTEST_CONFIG_IMPLEMENTATION_IN_DLL

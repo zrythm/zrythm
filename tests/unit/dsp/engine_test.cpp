@@ -32,10 +32,6 @@ protected:
     // Create real tempo map
     tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (48000.0));
 
-    // Create real snap grid
-    snap_grid_ = std::make_unique<SnapGrid> (
-      *tempo_map_, utils::NoteLength::Note_1_4, [] () { return 0.0; });
-
     // Setup config provider with default values
     config_provider_ = {
       .return_to_cue_on_pause_ = [] () { return false; },
@@ -44,8 +40,7 @@ protected:
     };
 
     // Create real transport with default settings
-    transport_ =
-      std::make_unique<Transport> (*tempo_map_, *snap_grid_, config_provider_);
+    transport_ = std::make_unique<Transport> (*tempo_map_, config_provider_);
 
     // Create real graph builder using the actual implementation
     // We'll use a simple mock implementation for testing
@@ -84,7 +79,6 @@ protected:
   };
 
   std::unique_ptr<TempoMap>                     tempo_map_;
-  std::unique_ptr<SnapGrid>                     snap_grid_;
   std::unique_ptr<Transport>                    transport_;
   std::unique_ptr<MockProcessable>              processable_;
   std::unique_ptr<MockGraphBuilder>             graph_builder_;

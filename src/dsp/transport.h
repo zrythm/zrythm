@@ -6,7 +6,6 @@
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/itransport.h"
 #include "dsp/playhead_qml_adapter.h"
-#include "dsp/snap_grid.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::dsp
@@ -244,7 +243,6 @@ public:
 
   Transport (
     const dsp::TempoMap &tempo_map,
-    const dsp::SnapGrid &snap_grid,
     ConfigProvider       config_provider,
     QObject *            parent = nullptr);
 
@@ -292,9 +290,6 @@ public:
   {
     return punch_out_position_adapter_.get ();
   }
-
-  Q_INVOKABLE void moveBackward () [[clang::blocking]];
-  Q_INVOKABLE void moveForward () [[clang::blocking]];
 
   /**
    * Request pause.
@@ -438,17 +433,6 @@ public:
       }
   }
 
-  /**
-   * Set the loop range.
-   *
-   * @param start True to set start pos, false to set end pos.
-   */
-  void set_loop_range (
-    bool                  start,
-    units::precise_tick_t start_pos,
-    units::precise_tick_t pos,
-    bool                  snap);
-
   bool position_is_inside_punch_range (units::sample_t pos);
 
   auto playhead_ticks_before_pause () const [[clang::blocking]]
@@ -583,7 +567,5 @@ private:
   std::atomic<bool> needs_property_notification_{ false };
 
   ConfigProvider config_provider_;
-
-  const dsp::SnapGrid &snap_grid_;
 };
 }

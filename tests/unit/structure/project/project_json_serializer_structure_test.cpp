@@ -401,8 +401,6 @@ TEST_F (ProjectSerializationTest, SerializeProject_OptionalFields)
     ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
   auto &pd = j["projectData"];
 
-  EXPECT_TRUE (pd.contains ("snapGridTimeline"));
-  EXPECT_TRUE (pd.contains ("snapGridEditor"));
   EXPECT_TRUE (pd.contains ("audioPool"));
   EXPECT_TRUE (pd.contains ("portConnectionsManager"));
   EXPECT_TRUE (pd.contains ("tempoObjectManager"));
@@ -429,21 +427,6 @@ TEST_F (ProjectSerializationTest, SerializeProject_AudioPoolStructure)
       assert_valid_uuid (entry[0].get<std::string> ());
       EXPECT_TRUE (entry[1].is_number ());
     }
-}
-
-TEST_F (ProjectSerializationTest, SerializeProject_SnapGridStructure)
-{
-  auto project = create_minimal_project ();
-  ASSERT_NE (project, nullptr);
-
-  nlohmann::json j =
-    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
-
-  auto &snap_timeline = j["projectData"]["snapGridTimeline"];
-  EXPECT_TRUE (snap_timeline.is_object ());
-
-  auto &snap_editor = j["projectData"]["snapGridEditor"];
-  EXPECT_TRUE (snap_editor.is_object ());
 }
 
 // ============================================================================

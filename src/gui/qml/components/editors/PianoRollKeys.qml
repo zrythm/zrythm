@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -6,8 +6,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 // Keys on the left side of the MIDI editor
 Item {
@@ -51,7 +51,7 @@ Item {
     Repeater {
       id: repeater
 
-      model: endNote - startNote + 1
+      model: root.endNote - root.startNote + 1
 
       Item {
         id: keyItem
@@ -80,7 +80,7 @@ Item {
           anchors.left: parent.left
           anchors.top: topBorder.visible ? topBorder.bottom : parent.top
           border.width: 0
-          color: parent.isPressed && root.pianoRoll.isWhiteKey(midiNote) ? root.whiteKeyPressedColor : "white"
+          color: parent.isPressed && root.pianoRoll.isWhiteKey(keyItem.midiNote) ? root.whiteKeyPressedColor : "white"
           width: parent.width
         }
 
@@ -91,7 +91,7 @@ Item {
           color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
           height: parent.height
           topRightRadius: root.blackKeyRadius
-          visible: root.pianoRoll.isBlackKey(midiNote)
+          visible: root.pianoRoll.isBlackKey(keyItem.midiNote)
           width: root.blackKeyWidth
 
           anchors {
@@ -116,8 +116,8 @@ Item {
         // Note label (C notes only)
         Text {
           color: parent.isPressed ? root.labelPressedColor : root.labelColor
-          text: root.noteName(midiNote)
-          visible: root.pianoRoll.isWhiteKey(midiNote) && (midiNote % 12 === 0)
+          text: root.noteName(keyItem.midiNote)
+          visible: root.pianoRoll.isWhiteKey(keyItem.midiNote) && (keyItem.midiNote % 12 === 0)
 
           font {
             family: "Monospace"

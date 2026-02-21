@@ -91,9 +91,9 @@ Button {
             }
 
             Switch {
-              checked: snapGrid.snapToGrid
+              checked: root.snapGrid.snapToGrid
 
-              onToggled: snapGrid.snapToGrid = checked
+              onToggled: root.snapGrid.snapToGrid = checked
             }
           }
 
@@ -105,10 +105,10 @@ Button {
             }
 
             Switch {
-              checked: snapGrid.snapAdaptive
-              enabled: snapGrid.snapToGrid
+              checked: root.snapGrid.snapAdaptive
+              enabled: root.snapGrid.snapToGrid
 
-              onToggled: snapGrid.snapAdaptive = checked
+              onToggled: root.snapGrid.snapAdaptive = checked
             }
           }
 
@@ -121,7 +121,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (snapGrid.snapNoteLength) {
+                switch (root.snapGrid.snapNoteLength) {
                 case SnapGrid.NoteLength.Bar:
                   return 0;
                 case SnapGrid.NoteLength.Note_1_1:
@@ -144,12 +144,12 @@ Button {
                   return 3;
                 }
               }
-              enabled: snapGrid.snapToGrid && !snapGrid.snapAdaptive
+              enabled: root.snapGrid.snapToGrid && !root.snapGrid.snapAdaptive
               model: [qsTr("Bar"), qsTr("1/1"), qsTr("1/2"), qsTr("1/4"), qsTr("1/8"), qsTr("1/16"), qsTr("1/32"), qsTr("1/64"), qsTr("1/128")]
 
               onActivated: {
                 const lengths = [SnapGrid.NoteLength.Bar, SnapGrid.NoteLength.Note_1_1, SnapGrid.NoteLength.Note_1_2, SnapGrid.NoteLength.Note_1_4, SnapGrid.NoteLength.Note_1_8, SnapGrid.NoteLength.Note_1_16, SnapGrid.NoteLength.Note_1_32, SnapGrid.NoteLength.Note_1_64, SnapGrid.NoteLength.Note_1_128];
-                snapGrid.snapNoteLength = lengths[currentIndex];
+                root.snapGrid.snapNoteLength = lengths[currentIndex];
               }
             }
           }
@@ -174,12 +174,12 @@ Button {
                   return 0;
                 }
               }
-              enabled: snapGrid.snapToGrid && !snapGrid.snapAdaptive
+              enabled: root.snapGrid.snapToGrid && !root.snapGrid.snapAdaptive
               model: [qsTr("Normal"), qsTr("Triplet"), qsTr("Dotted")]
 
               onActivated: {
                 const types = [SnapGrid.NoteType.Normal, SnapGrid.NoteType.Triplet, SnapGrid.NoteType.Dotted];
-                snapGrid.snapNoteType = types[currentIndex];
+                root.snapGrid.snapNoteType = types[currentIndex];
               }
             }
           }
@@ -192,10 +192,10 @@ Button {
             }
 
             Switch {
-              checked: snapGrid.keepOffset
-              enabled: snapGrid.snapToGrid
+              checked: root.snapGrid.keepOffset
+              enabled: root.snapGrid.snapToGrid
 
-              onToggled: snapGrid.keepOffset = checked
+              onToggled: root.snapGrid.keepOffset = checked
             }
           }
 
@@ -207,10 +207,10 @@ Button {
             }
 
             Switch {
-              checked: snapGrid.snapToEvents
-              enabled: snapGrid.snapToGrid
+              checked: root.snapGrid.snapToEvents
+              enabled: root.snapGrid.snapToGrid
 
-              onToggled: snapGrid.snapToEvents = checked
+              onToggled: root.snapGrid.snapToEvents = checked
             }
           }
         }
@@ -245,19 +245,19 @@ Button {
                   return 0;
                 }
               }
-              enabled: snapGrid.snapToGrid
+              enabled: root.snapGrid.snapToGrid
               model: [qsTr("Link to snap"), qsTr("Last object"), qsTr("Custom")]
 
               onActivated: {
                 const types = [SnapGrid.NoteLengthType.Link, SnapGrid.NoteLengthType.LastObject, SnapGrid.NoteLengthType.Custom];
-                snapGrid.lengthType = types[currentIndex];
+                root.snapGrid.lengthType = types[currentIndex];
               }
             }
           }
 
           // Custom length selection (only visible when Custom is selected)
           RowLayout {
-            visible: snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
+            visible: root.snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
 
             Label {
               Layout.fillWidth: true
@@ -266,7 +266,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (snapGrid.default_note_length) {
+                switch (root.snapGrid.default_note_length) {
                 case SnapGrid.NoteLength.Bar:
                   return 0;
                 case SnapGrid.NoteLength.Note_1_1:
@@ -289,19 +289,19 @@ Button {
                   return 3;
                 }
               }
-              enabled: snapGrid.snapToGrid && snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
+              enabled: root.snapGrid.snapToGrid && root.snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
               model: [qsTr("Bar"), qsTr("1/1"), qsTr("1/2"), qsTr("1/4"), qsTr("1/8"), qsTr("1/16"), qsTr("1/32"), qsTr("1/64"), qsTr("1/128")]
 
               onActivated: {
                 const lengths = [SnapGrid.NoteLength.Bar, SnapGrid.NoteLength.Note_1_1, SnapGrid.NoteLength.Note_1_2, SnapGrid.NoteLength.Note_1_4, SnapGrid.NoteLength.Note_1_8, SnapGrid.NoteLength.Note_1_16, SnapGrid.NoteLength.Note_1_32, SnapGrid.NoteLength.Note_1_64, SnapGrid.NoteLength.Note_1_128];
-                snapGrid.default_note_length = lengths[currentIndex];
+                root.snapGrid.default_note_length = lengths[currentIndex];
               }
             }
           }
 
           // Custom type selection (only visible when Custom is selected)
           RowLayout {
-            visible: snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
+            visible: root.snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
 
             Label {
               Layout.fillWidth: true
@@ -310,7 +310,7 @@ Button {
 
             ComboBox {
               currentIndex: {
-                switch (snapGrid.default_note_type) {
+                switch (root.snapGrid.default_note_type) {
                 case SnapGrid.NoteType.Normal:
                   return 0;
                 case SnapGrid.NoteType.Triplet:
@@ -321,12 +321,12 @@ Button {
                   return 0;
                 }
               }
-              enabled: snapGrid.snapToGrid && snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
+              enabled: root.snapGrid.snapToGrid && root.snapGrid.lengthType === SnapGrid.NoteLengthType.Custom
               model: [qsTr("Normal"), qsTr("Triplet"), qsTr("Dotted")]
 
               onActivated: {
                 const types = [SnapGrid.NoteType.Normal, SnapGrid.NoteType.Triplet, SnapGrid.NoteType.Dotted];
-                snapGrid.default_note_type = types[currentIndex];
+                root.snapGrid.default_note_type = types[currentIndex];
               }
             }
           }
