@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-namespace zrythm::gui::backend
+namespace zrythm::structure::project
 {
 
 class ArrangerTool : public QObject
@@ -51,4 +51,4 @@ private:
   ToolType tool_{ ToolType::Select };
 };
 
-}; // namespace zrythm::gui::backend
+} // namespace zrythm::structure::project

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -12,16 +12,11 @@
 
 class ArrangerSelections;
 
-/**
- * @addtogroup gui_backend
- *
- * @{
- */
-
-#define CLIP_EDITOR (PROJECT->clip_editor_)
+namespace zrythm::structure::project
+{
 
 /**
- * Backend for the clip editor part of the UI.
+ * @brief Backend for the clip editor part of the UI.
  */
 class ClipEditor : public QObject
 {
@@ -166,7 +161,7 @@ private:
     j.at (kAudioClipEditorKey).get_to (*editor.audio_clip_editor_);
   }
 
-public:
+private:
   ArrangerObjectRegistry &object_registry_;
   TrackResolver           track_resolver_;
 
@@ -181,6 +176,4 @@ public:
   utils::QObjectUniquePtr<structure::arrangement::ChordEditor> chord_editor_;
 };
 
-/**
- * @}
- */
+} // namespace zrythm::structure::project

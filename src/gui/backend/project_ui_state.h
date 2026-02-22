@@ -10,10 +10,10 @@
 #include "actions/track_creator.h"
 #include "controllers/transport_controller.h"
 #include "dsp/snap_grid.h"
-#include "gui/backend/arranger_tool.h"
-#include "gui/backend/backend/clip_editor.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/arrangement/timeline.h"
+#include "structure/project/arranger_tool.h"
+#include "structure/project/clip_editor.h"
 #include "structure/project/project.h"
 #include "undo/undo_stack.h"
 
@@ -34,8 +34,11 @@ class ProjectUiState : public QObject
   Q_PROPERTY (
     zrythm::structure::arrangement::Timeline * timeline READ timeline CONSTANT
       FINAL)
-  Q_PROPERTY (zrythm::gui::backend::ArrangerTool * tool READ tool CONSTANT FINAL)
-  Q_PROPERTY (ClipEditor * clipEditor READ clipEditor CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::project::ArrangerTool * tool READ tool CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::structure::project::ClipEditor * clipEditor READ clipEditor CONSTANT
+      FINAL)
   Q_PROPERTY (
     zrythm::structure::project::Project * project READ project CONSTANT FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
@@ -76,8 +79,8 @@ public:
   QString                                  getTitle () const;
   void                                     setTitle (const QString &title);
   structure::project::Project *            project () const;
-  gui::backend::ArrangerTool *             tool () const;
-  ClipEditor *                             clipEditor () const;
+  structure::project::ArrangerTool *       tool () const;
+  structure::project::ClipEditor *         clipEditor () const;
   structure::arrangement::Timeline *       timeline () const;
   zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
   zrythm::actions::TrackCreator *          trackCreator () const;
@@ -131,10 +134,10 @@ private:
   /**
    * @brief Currently selected arranger tool.
    */
-  utils::QObjectUniquePtr<gui::backend::ArrangerTool> tool_;
+  utils::QObjectUniquePtr<structure::project::ArrangerTool> tool_;
 
   /** Backend for the widget. */
-  utils::QObjectUniquePtr<ClipEditor> clip_editor_;
+  utils::QObjectUniquePtr<structure::project::ClipEditor> clip_editor_;
 
   /** Timeline editor backend. */
   utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;

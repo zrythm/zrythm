@@ -3,7 +3,6 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    clip_editor.cpp
     clipboard.cpp
     file_manager.cpp
     theme_manager.h

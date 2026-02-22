@@ -33,6 +33,8 @@ target_link_libraries(zrythm_structure_project_lib
 
 target_sources(zrythm_structure_project_lib
   PRIVATE
+    arranger_tool.cpp
+    clip_editor.cpp
     project.cpp
     project_graph_builder.cpp
     project_json_serializer.cpp
@@ -43,6 +45,8 @@ target_sources(zrythm_structure_project_lib
     FILE_SET HEADERS
     BASE_DIRS "../.."
     FILES
+      arranger_tool.h
+      clip_editor.h
       project.h
       project_graph_builder.h
       project_json_serializer.h

@@ -22,7 +22,7 @@ cmake --build builddir_cmake --config Debug
 
 ```bash
 # Run all tests via CTest
-cd builddir_cmake && ctest --output-on-failure -j$(nproc)
+ctest --test-dir builddir_cmake --output-on-failure -j$(nproc)
 
 # Run specific test binary directly
 ./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests
@@ -173,6 +173,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 - **Dependencies**: Fetched via CPM to `.cache/CPM/` (safe to delete, will re-fetch)
 - **Binary Output**: `builddir_cmake/products/bin/`
 - **Tests**: Enable with `-DZRYTHM_TESTS=ON` during CMake configuration
+- **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build builddir_cmake`, `ctest --test-dir builddir_cmake`)
 
 ### C++23 Features
 

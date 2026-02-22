@@ -12,9 +12,9 @@ ProjectUiState::ProjectUiState (
   utils::AppSettings                                    &app_settings,
   utils::QObjectUniquePtr<structure::project::Project> &&project)
     : app_settings_ (app_settings), project_ (std::move (project)),
-      tool_ (new gui::backend::ArrangerTool (this)),
+      tool_ (new structure::project::ArrangerTool (this)),
       clip_editor_ (
-        utils::make_qobject_unique<ClipEditor> (
+        utils::make_qobject_unique<structure::project::ClipEditor> (
           project_->get_arranger_object_registry (),
           [&] (const auto &id) {
             return project_->get_track_registry ().find_by_id_or_throw (id);
@@ -179,13 +179,13 @@ ProjectUiState::timeline () const
   return timeline_.get ();
 }
 
-gui::backend::ArrangerTool *
+structure::project::ArrangerTool *
 ProjectUiState::tool () const
 {
   return tool_.get ();
 }
 
-ClipEditor *
+structure::project::ClipEditor *
 ProjectUiState::clipEditor () const
 {
   return clip_editor_.get ();

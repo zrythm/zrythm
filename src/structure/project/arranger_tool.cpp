@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/arranger_tool.h"
+#include "structure/project/arranger_tool.h"
 
-namespace zrythm::gui::backend
+namespace zrythm::structure::project
 {
 
 ArrangerTool::ArrangerTool (QObject * parent) : QObject (parent) { }
@@ -47,4 +47,4 @@ from_json (const nlohmann::json &j, ArrangerTool &tool)
   j.get_to (tool.tool_);
 }
 
-} // namespace zrythm::gui::backend
+} // namespace zrythm::structure::project
