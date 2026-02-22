@@ -12,8 +12,8 @@ ZrythmToolBar {
 
   required property AppSettings appSettings
   required property ControlRoom controlRoom
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
 
   centerItems: [
     TransportControls {
@@ -22,7 +22,7 @@ ZrythmToolBar {
       metronome: root.controlRoom.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport
-      transportController: root.projectUiState.transportController
+      transportController: root.session.transportController
     }
   ]
   leftItems: [
@@ -47,21 +47,21 @@ ZrythmToolBar {
       id: undoBtn
 
       isUndo: true
-      undoStack: root.projectUiState.undoStack
+      undoStack: root.session.undoStack
     },
     UndoSplitButton {
       id: redoBtn
 
       isUndo: false
-      undoStack: root.projectUiState.undoStack
+      undoStack: root.session.undoStack
     },
     ToolBox {
       id: toolBox
 
-      tool: root.projectUiState.tool
+      tool: root.session.uiState.tool
     },
     SnapGridButton {
-      snapGrid: root.projectUiState.snapGridTimeline
+      snapGrid: root.session.uiState.snapGridTimeline
     }
   ]
   rightItems: [

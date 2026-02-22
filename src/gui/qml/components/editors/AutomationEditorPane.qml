@@ -12,10 +12,10 @@ GridLayout {
 
   required property AutomationEditor automationEditor
   required property ClipEditor clipEditor
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
   required property AutomationRegion region
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.projectUiState.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
   columnSpacing: 0
   columns: 3
@@ -102,14 +102,14 @@ GridLayout {
     arrangerSelectionModel: arrangerSelectionModel
     automationEditor: root.automationEditor
     clipEditor: root.clipEditor
-    objectCreator: root.projectUiState.arrangerObjectCreator
+    objectCreator: root.session.arrangerObjectCreator
     ruler: ruler
     selectionOperator: root.selectionOperator
-    snapGrid: root.projectUiState.snapGridEditor
+    snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
-    tool: root.projectUiState.tool
+    tool: root.session.uiState.tool
     transport: root.project.transport
-    undoStack: root.projectUiState.undoStack
+    undoStack: root.session.undoStack
     unifiedObjectsModel: unifiedObjectsModel
   }
 }

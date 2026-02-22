@@ -12,8 +12,8 @@ GridLayout {
   id: root
 
   required property ClipEditor clipEditor
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
   readonly property var region: clipEditor.region
   readonly property var track: clipEditor.track
 
@@ -53,7 +53,7 @@ GridLayout {
     ]
     leftItems: [
       SnapGridButton {
-        snapGrid: root.projectUiState.snapGridEditor
+        snapGrid: root.session.uiState.snapGridEditor
       }
     ]
     rightItems: [
@@ -89,7 +89,7 @@ GridLayout {
       sourceComponent: MidiEditorPane {
         clipEditor: root.clipEditor
         pianoRoll: root.clipEditor.pianoRoll
-        projectUiState: root.projectUiState
+        session: root.session
         region: root.region
       }
     }
@@ -100,7 +100,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 1
 
       sourceComponent: AudioEditorPane {
-        projectUiState: root.projectUiState
+        session: root.session
         region: root.region
       }
     }
@@ -113,7 +113,7 @@ GridLayout {
       sourceComponent: AutomationEditorPane {
         clipEditor: root.clipEditor
         automationEditor: root.clipEditor.automationEditor
-        projectUiState: root.projectUiState
+        session: root.session
         region: root.region
       }
     }
@@ -124,7 +124,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 3
 
       sourceComponent: ChordEditorPane {
-        projectUiState: root.projectUiState
+        session: root.session
         region: root.region
       }
     }

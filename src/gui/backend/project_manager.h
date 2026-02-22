@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "gui/backend/project_ui_state.h"
+#include "gui/backend/project_session.h"
 #include "gui/backend/recent_projects_model.h"
 
 #include <QFutureWatcher>
@@ -11,7 +11,7 @@
 
 // DEPRECATED - do not use in new code
 #define PROJECT \
-  (zrythm::gui::ProjectManager::get_instance ()->activeProject ()->project ())
+  (zrythm::gui::ProjectManager::get_instance ()->activeSession ()->project ())
 
 namespace zrythm::gui
 {
@@ -24,8 +24,8 @@ class ProjectManager : public QObject
     zrythm::gui::RecentProjectsModel * recentProjects READ getRecentProjects
       CONSTANT)
   Q_PROPERTY (
-    zrythm::gui::ProjectUiState * activeProject READ activeProject WRITE
-      setActiveProject NOTIFY activeProjectChanged)
+    zrythm::gui::ProjectSession * activeSession READ activeSession WRITE
+      setActiveSession NOTIFY activeSessionChanged)
   QML_UNCREATABLE ("")
 
 public:
@@ -34,7 +34,7 @@ public:
   using Template = fs::path;
   using TemplateList = std::vector<Template>;
   using ProjectLoadResult =
-    std::variant<utils::QObjectUniquePtr<ProjectUiState>, QString>;
+    std::variant<utils::QObjectUniquePtr<ProjectSession>, QString>;
 
   static ProjectManager * get_instance ();
 
@@ -61,13 +61,13 @@ public:
 
   RecentProjectsModel * getRecentProjects () const;
 
-  ProjectUiState * activeProject () const;
-  void             setActiveProject (ProjectUiState * project);
+  ProjectSession * activeSession () const;
+  void             setActiveSession (ProjectSession * project);
 
 Q_SIGNALS:
-  void projectLoaded (ProjectUiState * project);
+  void projectLoaded (ProjectSession * project);
   void projectLoadingFailed (const QString &errorMessage);
-  void activeProjectChanged (ProjectUiState * project);
+  void activeSessionChanged (ProjectSession * project);
 
 private:
   /**
@@ -94,7 +94,7 @@ private:
    * to @p prj_dir.
    * @throw ZrythmException if an error occurred.
    */
-  utils::QObjectUniquePtr<ProjectUiState> create_default (
+  utils::QObjectUniquePtr<ProjectSession> create_default (
     const fs::path          &prj_dir,
     const utils::Utf8String &name,
     bool                     with_engine);
@@ -123,9 +123,9 @@ private:
   RecentProjectsModel * recent_projects_model_ = nullptr;
 
   /**
-   * @brief Currently active project.
+   * @brief Currently active project session.
    */
-  utils::QObjectUniquePtr<ProjectUiState> active_project_;
+  utils::QObjectUniquePtr<ProjectSession> active_session_;
 
   /**
    * @brief Future watcher for when a project is loaded (or fails to load).

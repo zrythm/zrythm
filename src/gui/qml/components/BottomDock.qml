@@ -12,8 +12,8 @@ import ZrythmStyle 1.0
 ColumnLayout {
   id: root
 
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
 
   spacing: 0
 
@@ -29,7 +29,7 @@ ColumnLayout {
 
       Layout.fillHeight: true
       Layout.fillWidth: true
-      currentIndex: root.projectUiState.clipEditor.region ? 1 : 0
+      currentIndex: root.session.uiState.clipEditor.region ? 1 : 0
 
       PlaceholderPage {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
@@ -45,17 +45,17 @@ ColumnLayout {
         visible: active
 
         sourceComponent: ClipEditorGrid {
-          clipEditor: root.projectUiState.clipEditor
-          projectUiState: root.projectUiState
+          clipEditor: root.session.uiState.clipEditor
+          session: root.session
         }
       }
     }
 
     MixerView {
       audioEngine: root.project.engine
-      pluginImporter: root.projectUiState.pluginImporter
+      pluginImporter: root.session.pluginImporter
       tracklist: root.project.tracklist
-      undoStack: root.projectUiState.undoStack
+      undoStack: root.session.undoStack
     }
 
     Repeater {

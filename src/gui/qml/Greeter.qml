@@ -21,9 +21,9 @@ ApplicationWindow {
   readonly property ProjectManager projectManager: app?.projectManager ?? null
   readonly property AppSettings appSettings: app?.appSettings ?? null
 
-  function openProjectWindow(projectUiState) {
-    let newWindow = projectWindowComponent.createObject(projectUiState, {
-      "projectUiState": projectUiState,
+  function openProjectWindow(session) {
+    let newWindow = projectWindowComponent.createObject(session, {
+      "session": session,
       "deviceManager": deviceManager,
       "appSettings": appSettings,
       "controlRoom": app.controlRoom
@@ -511,11 +511,11 @@ ApplicationWindow {
     }
 
     Connections {
-      function onProjectLoaded(projectUiState : ProjectUiState) {
-        console.log("Project loaded: ", projectUiState.title);
-        root.projectManager.activeProject = projectUiState;
-        console.log("Opening project: ", root.projectManager.activeProject.title);
-        root.openProjectWindow(projectUiState);
+      function onProjectLoaded(session : ProjectSession) {
+        console.log("Project loaded: ", session.title);
+        root.projectManager.activeSession = session;
+        console.log("Opening project: ", root.projectManager.activeSession.title);
+        root.openProjectWindow(session);
       }
 
       function onProjectLoadingFailed(errorMessage : string) {

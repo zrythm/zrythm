@@ -40,8 +40,8 @@ ApplicationWindow {
       root.visibility = root.visibility === Window.FullScreen ? Window.AutomaticVisibility : Window.FullScreen;
     }
   }
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
 
   function closeAndDestroy() {
     console.log("Closing and destroying project window");
@@ -50,7 +50,7 @@ ApplicationWindow {
   }
 
   height: 720
-  title: projectUiState.title
+  title: session.title
   visible: true
   width: 1280
 
@@ -58,7 +58,7 @@ ApplicationWindow {
     id: headerBar
 
     appSettings: root.appSettings
-    projectUiState: root.projectUiState
+    session: root.session
     controlRoom: root.controlRoom
   }
   menuBar: MainMenuBar {
@@ -124,8 +124,8 @@ ApplicationWindow {
   ExportDialog {
     id: exportDialog
 
-    exportDirectory: root.projectUiState.projectDirectory + "/exports"
-    projectUiState: root.projectUiState
+    exportDirectory: root.session.projectDirectory + "/exports"
+    session: root.session
   }
 
   // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)
@@ -241,18 +241,18 @@ ApplicationWindow {
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.projectUiState.undoStack && root.projectUiState.undoStack.canUndo
+    enabled: root.session.undoStack && root.session.undoStack.canUndo
     sequences: [StandardKey.Undo]
 
-    onActivated: root.projectUiState.undoStack.undo()
+    onActivated: root.session.undoStack.undo()
   }
 
   Shortcut {
     context: Qt.ApplicationShortcut
-    enabled: root.projectUiState.undoStack && root.projectUiState.undoStack.canRedo
+    enabled: root.session.undoStack && root.session.undoStack.canRedo
     sequences: [StandardKey.Redo]
 
-    onActivated: root.projectUiState.undoStack.redo()
+    onActivated: root.session.undoStack.redo()
   }
 
   // Global spacebar for play/pause
@@ -286,7 +286,7 @@ ApplicationWindow {
     sequence: "1"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Select;
+      root.session.uiState.tool.toolValue = ArrangerTool.Select;
     }
   }
 
@@ -294,7 +294,7 @@ ApplicationWindow {
     sequence: "2"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Edit;
+      root.session.uiState.tool.toolValue = ArrangerTool.Edit;
     }
   }
 
@@ -302,7 +302,7 @@ ApplicationWindow {
     sequence: "3"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Cut;
+      root.session.uiState.tool.toolValue = ArrangerTool.Cut;
     }
   }
 
@@ -310,7 +310,7 @@ ApplicationWindow {
     sequence: "4"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Eraser;
+      root.session.uiState.tool.toolValue = ArrangerTool.Eraser;
     }
   }
 
@@ -318,7 +318,7 @@ ApplicationWindow {
     sequence: "5"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Ramp;
+      root.session.uiState.tool.toolValue = ArrangerTool.Ramp;
     }
   }
 
@@ -326,7 +326,7 @@ ApplicationWindow {
     sequence: "6"
 
     onActivated: {
-      root.projectUiState.tool.toolValue = ArrangerTool.Audition;
+      root.session.uiState.tool.toolValue = ArrangerTool.Audition;
     }
   }
 
@@ -345,11 +345,11 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
-        pluginImporter: root.projectUiState.pluginImporter
+        pluginImporter: root.session.pluginImporter
         project: root.project
         trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist
-        undoStack: root.projectUiState.undoStack
+        undoStack: root.session.undoStack
         visible: root.appSettings.leftPanelVisible
       }
 
@@ -367,7 +367,7 @@ ApplicationWindow {
           SplitView.fillWidth: true
           SplitView.minimumHeight: implicitHeight
           SplitView.preferredHeight: 200
-          projectUiState: root.projectUiState
+          session: root.session
           trackSelectionModel: trackSelectionModel
         }
 
@@ -377,7 +377,7 @@ ApplicationWindow {
           SplitView.fillWidth: true
           SplitView.minimumHeight: 40
           SplitView.preferredHeight: 240
-          projectUiState: root.projectUiState
+          session: root.session
           visible: root.appSettings.bottomPanelVisible
         }
       }
@@ -388,7 +388,7 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 30
         SplitView.preferredWidth: 200
-        pluginImporter: root.projectUiState.pluginImporter
+        pluginImporter: root.session.pluginImporter
         project: root.project
         visible: root.appSettings.rightPanelVisible
       }

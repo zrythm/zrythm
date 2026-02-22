@@ -37,12 +37,12 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
               {
                 return dummy_tracks;
               }
-            auto * project_ui_state = project_manager_->activeProject ();
-            if (project_ui_state == nullptr)
+            auto * project_session = project_manager_->activeSession ();
+            if (project_session == nullptr)
               {
                 return dummy_tracks;
               }
-            return project_ui_state->project ()->tracks_rt_;
+            return project_session->project ()->tracks_rt_;
           },
           this))
 {

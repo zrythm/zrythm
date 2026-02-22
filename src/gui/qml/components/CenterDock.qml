@@ -14,8 +14,8 @@ import Qt.labs.synchronizer
 ColumnLayout {
   id: root
 
-  readonly property Project project: projectUiState.project
-  required property ProjectUiState projectUiState
+  readonly property Project project: session.project
+  required property ProjectSession session
   readonly property int rulerHeight: 24
   readonly property int tempoMapLaneHeight: 24
   readonly property int tempoMapLaneSpacing: 1
@@ -48,7 +48,7 @@ ColumnLayout {
           Layout.fillWidth: true
           Layout.maximumHeight: root.rulerHeight
           Layout.minimumHeight: root.rulerHeight
-          trackCreator: root.projectUiState.trackCreator
+          trackCreator: root.session.trackCreator
           tracklist: root.project.tracklist
         }
 
@@ -81,7 +81,7 @@ ColumnLayout {
           pinned: true
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
-          undoStack: root.projectUiState.undoStack
+          undoStack: root.session.undoStack
         }
 
         TracklistView {
@@ -93,7 +93,7 @@ ColumnLayout {
           pinned: false
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
-          undoStack: root.projectUiState.undoStack
+          undoStack: root.session.undoStack
 
           footer: TracklistDropArea {
             id: tracklistDropArea
@@ -102,15 +102,15 @@ ColumnLayout {
             width: unpinnedTracklist.width
 
             onFilesDropped: filePaths => {
-              root.projectUiState.fileImporter.importFiles(filePaths, 0, null);
+              root.session.fileImporter.importFiles(filePaths, 0, null);
             }
             onPluginDescriptorDropped: descriptor => {
-              root.projectUiState.pluginImporter.importPluginToNewTrack(descriptor);
+              root.session.pluginImporter.importPluginToNewTrack(descriptor);
             }
           }
 
           Synchronizer {
-            sourceObject: root.projectUiState.timeline.editorSettings
+            sourceObject: root.session.uiState.timeline.editorSettings
             sourceProperty: "y"
             targetObject: unpinnedTracklist
             targetProperty: "contentY"
@@ -129,10 +129,10 @@ ColumnLayout {
         sourceComponent: ClipLauncherView {
           clipLauncher: root.project.clipLauncher
           clipPlaybackService: root.project.clipPlaybackService
-          fileImporter: root.projectUiState.fileImporter
-          objectCreator: root.projectUiState.arrangerObjectCreator
+          fileImporter: root.session.fileImporter
+          objectCreator: root.session.arrangerObjectCreator
           rulerHeight: root.rulerHeight
-          timeline: root.projectUiState.timeline
+          timeline: root.session.uiState.timeline
           trackCollection: root.project.tracklist.collection
         }
       }
@@ -150,7 +150,7 @@ ColumnLayout {
         sourceComponent: ColumnLayout {
           id: timelinePane
 
-          readonly property ArrangerObjectSelectionOperator selectionOperator: root.projectUiState.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+          readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
           spacing: 1
 
@@ -159,7 +159,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: root.rulerHeight
-            editorSettings: root.projectUiState.timeline.editorSettings
+            editorSettings: root.session.uiState.timeline.editorSettings
             tempoMap: root.project.tempoMap
             transport: root.project.transport
           }
@@ -180,19 +180,19 @@ ColumnLayout {
 
               anchors.fill: parent
               arrangerSelectionModel: arrangerSelectionModel
-              clipEditor: root.projectUiState.clipEditor
-              editorSettings: root.projectUiState.timeline.editorSettings
+              clipEditor: root.session.uiState.clipEditor
+              editorSettings: root.session.uiState.timeline.editorSettings
               laneHeight: root.tempoMapLaneHeight
               laneSpacing: root.tempoMapLaneSpacing
-              objectCreator: root.projectUiState.arrangerObjectCreator
+              objectCreator: root.session.arrangerObjectCreator
               ruler: ruler
               selectionOperator: timelinePane.selectionOperator
-              snapGrid: root.projectUiState.snapGridTimeline
+              snapGrid: root.session.uiState.snapGridTimeline
               tempoMap: root.project.tempoMap
               tempoObjectManager: root.project.tempoObjectManager
-              tool: root.projectUiState.tool
+              tool: root.session.uiState.tool
               transport: root.project.transport
-              undoStack: root.projectUiState.undoStack
+              undoStack: root.session.undoStack
               unifiedObjectsModel: unifiedObjectsModel
             }
           }
@@ -204,18 +204,18 @@ ColumnLayout {
             Layout.maximumHeight: pinnedTracklist.height
             Layout.minimumHeight: pinnedTracklist.height
             arrangerSelectionModel: arrangerSelectionModel
-            clipEditor: root.projectUiState.clipEditor
-            objectCreator: root.projectUiState.arrangerObjectCreator
+            clipEditor: root.session.uiState.clipEditor
+            objectCreator: root.session.arrangerObjectCreator
             pinned: true
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
-            snapGrid: root.projectUiState.snapGridTimeline
+            snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
-            timeline: root.projectUiState.timeline
-            tool: root.projectUiState.tool
+            timeline: root.session.uiState.timeline
+            tool: root.session.uiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
-            undoStack: root.projectUiState.undoStack
+            undoStack: root.session.undoStack
             unifiedObjectsModel: unifiedObjectsModel
           }
 
@@ -239,7 +239,7 @@ ColumnLayout {
                 const arrangerObject = getObjectFromUnifiedIndex(current);
                 if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                   console.log("current region changed, setting clip editor region to ", arrangerObject.name.name);
-                  root.projectUiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
+                  root.session.uiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
                 }
               }
             }
@@ -255,7 +255,7 @@ ColumnLayout {
                   const arrangerObject = getObjectFromUnifiedIndex(deselectedRange.topLeft);
                   if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
                     console.log("previous region changed, unsetting clip editor region");
-                    root.projectUiState.clipEditor.unsetRegion();
+                    root.session.uiState.clipEditor.unsetRegion();
                   }
                 });
               }
@@ -268,18 +268,18 @@ ColumnLayout {
             Layout.fillHeight: true
             Layout.fillWidth: true
             arrangerSelectionModel: arrangerSelectionModel
-            clipEditor: root.projectUiState.clipEditor
-            objectCreator: root.projectUiState.arrangerObjectCreator
+            clipEditor: root.session.uiState.clipEditor
+            objectCreator: root.session.arrangerObjectCreator
             pinned: false
             ruler: ruler
             selectionOperator: timelinePane.selectionOperator
-            snapGrid: root.projectUiState.snapGridTimeline
+            snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
-            timeline: root.projectUiState.timeline
-            tool: root.projectUiState.tool
+            timeline: root.session.uiState.timeline
+            tool: root.session.uiState.tool
             tracklist: root.project.tracklist
             transport: root.project.transport
-            undoStack: root.projectUiState.undoStack
+            undoStack: root.session.undoStack
             unifiedObjectsModel: unifiedObjectsModel
 
             Synchronizer on arrangerContentHeight {

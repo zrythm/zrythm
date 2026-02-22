@@ -41,6 +41,7 @@ target_sources(zrythm_structure_project_lib
     project_loader.cpp
     project_path_provider.cpp
     project_saver.cpp
+    project_ui_state.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS "../.."
@@ -53,6 +54,7 @@ target_sources(zrythm_structure_project_lib
       project_loader.h
       project_path_provider.h
       project_saver.h
+      project_ui_state.h
 )
 
 set_target_properties(zrythm_structure_project_lib PROPERTIES

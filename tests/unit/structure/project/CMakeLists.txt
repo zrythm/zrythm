@@ -9,6 +9,7 @@ add_executable(zrythm_structure_project_unit_tests
   project_json_serializer_validation_test.cpp
   project_loader_test.cpp
   project_test.cpp
+  project_ui_state_test.cpp
 )
 
 set_target_properties(zrythm_structure_project_unit_tests PROPERTIES
