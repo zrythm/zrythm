@@ -1,10 +1,12 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "controllers/project_json_serializer.h"
+#include "controllers/project_saver.h"
 #include "structure/project/project.h"
-#include "structure/project/project_json_serializer.h"
 #include "structure/project/project_path_provider.h"
-#include "structure/project/project_saver.h"
+#include "structure/project/project_ui_state.h"
+#include "undo/undo_stack.h"
 #include "utils/io_utils.h"
 #include "utils/views.h"
 
@@ -12,7 +14,7 @@
 
 #include <zstd.h>
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 inline auto
@@ -22,8 +24,13 @@ plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
     [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
 }
 
-ProjectSaver::ProjectSaver (const Project &project, utils::Version app_version)
-    : project_ (project), app_version_ (app_version)
+ProjectSaver::ProjectSaver (
+  const structure::project::Project        &project,
+  const structure::project::ProjectUiState &ui_state,
+  const undo::UndoStack                    &undo_stack,
+  utils::Version                            app_version)
+    : project_ (project), ui_state_ (ui_state), undo_stack_ (undo_stack),
+      app_version_ (app_version)
 {
 }
 
@@ -312,9 +319,9 @@ ProjectSaver::autosave_cb (void * data)
 
 void
 ProjectSaver::cleanup_plugin_state_dirs (
-  const Project  &main_project,
-  const fs::path &project_dir,
-  bool            is_backup)
+  const structure::project::Project &main_project,
+  const fs::path                    &project_dir,
+  bool                               is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
 
@@ -463,8 +470,8 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     z_debug ("serializing project to json...");
     QElapsedTimer timer;
     timer.start ();
-    auto json =
-      ProjectJsonSerializer::serialize (project_, app_version_, title.view ());
+    auto json = ProjectJsonSerializer::serialize (
+      project_, ui_state_, undo_stack_, app_version_, title.view ());
     z_debug ("time to serialize: {}ms", timer.elapsed ());
     return json;
   };
@@ -491,8 +498,12 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
       char * compressed_json{};
       size_t compressed_size{};
 
+      const auto json_str = json.dump (2);
+      utils::io::set_file_contents (
+        temp_project_file_path.parent_path () / "project-debug.json",
+        utils::Utf8String::from_utf8_encoded_string (json_str));
+
       /* compress */
-      const auto json_str = json.dump ();
       // warning: this byte array depends on json_str being alive while it's used
       QByteArray src_data = QByteArray::fromRawData (
         json_str.c_str (), static_cast<qsizetype> (json_str.length ()));
@@ -565,4 +576,5 @@ ProjectSaver::has_unsaved_changes () const
 #endif
   return true;
 }
+
 }

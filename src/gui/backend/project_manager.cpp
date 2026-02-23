@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "controllers/project_json_serializer.h"
+#include "controllers/project_loader.h"
+#include "controllers/project_saver.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/project_session.h"
 #include "gui/backend/zrythm_application.h"
-#include "structure/project/project_json_serializer.h"
-#include "structure/project/project_loader.h"
-#include "structure/project/project_saver.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
@@ -198,7 +198,7 @@ ProjectManager::create_default (
 
   {
     /* create standard dirs */
-    structure::project::ProjectSaver::make_project_dirs (project_dir_path);
+    controllers::ProjectSaver::make_project_dirs (project_dir_path);
   }
 
   project_session->uiState ()->clipEditor ()->init ();
@@ -234,8 +234,9 @@ ProjectManager::createNewProject (
   })
     .then (
       [this, project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
-        structure::project::ProjectSaver saver (
-          *session->project (), Zrythm::get_app_version ());
+        controllers::ProjectSaver saver (
+          *session->project (), *session->uiState (), *session->undoStack (),
+          Zrythm::get_app_version ());
         auto future = saver.save (project_dir_path, false);
         try
           {
@@ -283,12 +284,11 @@ ProjectManager::loadProject (const QString &filepath)
 
   // Step 1: Load and validate JSON (background thread - file I/O only)
   QtConcurrent::run ([project_dir] () {
-    return structure::project::ProjectLoader::load_from_directory (project_dir);
+    return controllers::ProjectLoader::load_from_directory (project_dir);
   })
     .then (
       this,
-      [this,
-       project_dir] (structure::project::ProjectLoader::LoadResult load_result) {
+      [this, project_dir] (controllers::ProjectLoader::LoadResult load_result) {
         // Steps 2-6: All on main thread
 
         // Create project with all required dependencies
@@ -307,9 +307,10 @@ ProjectManager::loadProject (const QString &filepath)
         auto project_session = utils::make_qobject_unique<ProjectSession> (
           app_settings_, std::move (prj));
 
-        // Deserialize JSON into Project
-        structure::project::ProjectJsonSerializer::deserialize (
-          load_result.json, *project_session->project ());
+        // Deserialize JSON into Project, ProjectUiState, and UndoStack
+        controllers::ProjectLoader::deserialize (
+          load_result.json, *project_session->project (),
+          *project_session->uiState (), *project_session->undoStack ());
 
         // Set title from loaded project
         project_session->setTitle (load_result.title.to_qstring ());

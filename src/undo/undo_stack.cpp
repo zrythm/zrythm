@@ -202,7 +202,8 @@ UndoStack::setIndex (int idx)
 void
 to_json (nlohmann::json &j, const UndoStack &u)
 {
-  // TODO
+  j = nlohmann::json::object ();
+  // TODO: serialize undo stack commands
 }
 
 void

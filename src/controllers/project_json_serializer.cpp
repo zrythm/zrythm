@@ -1,14 +1,16 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "controllers/project_json_serializer.h"
 #include "structure/project/project.h"
 #include "structure/project/project_json_schema.h"
-#include "structure/project/project_json_serializer.h"
+#include "structure/project/project_ui_state.h"
+#include "undo/undo_stack.h"
 #include "utils/serialization.h"
 
 #include <nlohmann/json-schema.hpp>
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 namespace
@@ -30,7 +32,7 @@ public:
 private:
   SchemaValidator ()
       : validator_ (
-          nlohmann::json::parse (kProjectSchemaJsonStr),
+          nlohmann::json::parse (structure::project::kProjectSchemaJsonStr),
           nullptr,
           nlohmann::json_schema::default_string_format_check,
           nullptr)
@@ -44,9 +46,11 @@ private:
 
 nlohmann::json
 ProjectJsonSerializer::serialize (
-  const Project        &project,
-  const utils::Version &app_version,
-  std::string_view      title)
+  const structure::project::Project        &project,
+  const structure::project::ProjectUiState &ui_state,
+  const undo::UndoStack                    &undo_stack,
+  const utils::Version                     &app_version,
+  std::string_view                          title)
 {
   nlohmann::json j;
 
@@ -56,6 +60,8 @@ ProjectJsonSerializer::serialize (
   j[kDatetimeKey] = utils::datetime::get_current_as_iso8601_string ();
   j[kTitle] = title;
   j[kProjectData] = project;
+  j[kUiState] = ui_state;
+  j[kUndoHistory] = undo_stack;
 
   return j;
 }
@@ -75,7 +81,11 @@ ProjectJsonSerializer::validate_json (const nlohmann::json &j)
 }
 
 void
-ProjectJsonSerializer::deserialize (const nlohmann::json &j, Project &project)
+ProjectJsonSerializer::deserialize (
+  const nlohmann::json               &j,
+  structure::project::Project        &project,
+  structure::project::ProjectUiState &ui_state,
+  undo::UndoStack                    &undo_stack)
 {
   validate_json (j);
 
@@ -104,9 +114,20 @@ ProjectJsonSerializer::deserialize (const nlohmann::json &j, Project &project)
       // return;
     }
 
-  // The actual deserialization is done by Project's friend from_json function
-  // Data is nested under projectData key
+  // Deserialize core project data
   from_json (j.at (kProjectData), project);
+
+  // Deserialize UI state (if present)
+  if (j.contains (kUiState))
+    {
+      from_json (j.at (kUiState), ui_state);
+    }
+
+  // Deserialize undo history (if present)
+  if (j.contains (kUndoHistory))
+    {
+      from_json (j.at (kUndoHistory), undo_stack);
+    }
 }
 
 }

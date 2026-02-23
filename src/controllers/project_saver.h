@@ -1,29 +1,67 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "utils/progress_info.h"
+#include <filesystem>
+#include <string>
+
+#include "utils/types.h"
+#include "utils/utf8_string.h"
 #include "utils/version.h"
 
+#include <QByteArray>
 #include <QFuture>
 
 namespace zrythm::structure::project
 {
 class Project;
+class ProjectUiState;
+}
 
+namespace zrythm::undo
+{
+class UndoStack;
+}
+
+namespace zrythm::controllers
+{
+
+/**
+ * @brief Handles saving of Zrythm projects to disk.
+ *
+ * This class orchestrates the complete project saving pipeline:
+ * 1. Creating project directories
+ * 2. Writing audio pool files
+ * 3. Writing plugin states
+ * 4. Serializing project JSON (Project + ProjectUiState + UndoStack)
+ * 5. Compressing and writing to disk
+ */
 class ProjectSaver
 {
 public:
-  ProjectSaver (const Project &project, utils::Version app_version);
+  /**
+   * @brief Constructs a ProjectSaver for the given project components.
+   *
+   * @param project The core project data to save.
+   * @param ui_state The UI state to save.
+   * @param undo_stack The undo history to save.
+   * @param app_version Version of the application.
+   */
+  ProjectSaver (
+    const structure::project::Project        &project,
+    const structure::project::ProjectUiState &ui_state,
+    const undo::UndoStack                    &undo_stack,
+    utils::Version                            app_version);
 
   /**
-   * Saves the project asynchronously to the directory set previously in Project.
+   * Saves the project asynchronously to the specified directory.
    *
    * @param path The directory to save the project in (including the title).
-   * @param is_backup 1 if this is a backup. Backups will be saved as <original
-   * filename>.bak<num>.
+   * @param is_backup True if this is a backup. Backups will be saved as
+   *                  <original filename>.bak<num>.
    *
+   * @return A QFuture that resolves to the project title on success.
    * @throw ZrythmException If any step failed.
    */
   [[nodiscard]] QFuture<utils::Utf8String>
@@ -41,17 +79,18 @@ public:
   /**
    * @brief Creates the project directories.
    *
+   * @param project_directory The root project directory.
    * @throw ZrythmException If the directories cannot be created.
    */
   static void make_project_dirs (const fs::path &project_directory);
 
   /**
-   * Compresses/decompress a project from a file/data to a file/data.
+   * Compresses or decompresses project data using zstd.
    *
    * @param compress True to compress, false to decompress.
    * @param[out] _dest Pointer to a location to allocate memory.
    * @param[out] _dest_size Pointer to a location to store the size of the
-   * allocated memory.
+   *                        allocated memory.
    * @param src Input bytes to compress/decompress.
    *
    * @throw ZrythmException If the compression/decompression fails.
@@ -77,8 +116,7 @@ public:
   /**
    * Returns the uncompressed text representation of the saved project file.
    *
-   * @param backup Whether to use the project file from the most recent
-   * backup.
+   * @param project_dir The project directory.
    *
    * @throw ZrythmException If an error occurs.
    */
@@ -99,30 +137,27 @@ private:
   /**
    * Cleans up unnecessary plugin state dirs from the main project.
    *
-   * This is called during save on the newly cloned project to be saved.
-   *
    * @param main_project The main project.
+   * @param project_dir The project directory being saved to.
    * @param is_backup Whether this is for a backup.
    */
   void cleanup_plugin_state_dirs (
-    const Project  &main_project,
-    const fs::path &project_dir,
-    bool            is_backup);
+    const structure::project::Project &main_project,
+    const fs::path                    &project_dir,
+    bool                               is_backup);
 
 private:
-  const Project &project_;
-  // std::optional<gui::actions::UndoableActionPtrVariant>
-  // last_action_in_last_successful_autosave_;
+  const structure::project::Project        &project_;
+  const structure::project::ProjectUiState &ui_state_;
+  const undo::UndoStack                    &undo_stack_;
 
   /** Last successful autosave timestamp. */
   SteadyTimePoint last_successful_autosave_time_;
-
-  /** Used to check if the project has unsaved changes. */
-  // std::optional<gui::actions::UndoableActionPtrVariant> last_saved_action_;
 
   /** Semaphore used to block saving. */
   std::binary_semaphore save_sem_{ 1 };
 
   utils::Version app_version_;
 };
+
 }

@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::structure::project
 {
 

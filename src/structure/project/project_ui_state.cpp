@@ -69,4 +69,28 @@ ProjectUiState::snapGridEditor () const
   return snap_grid_editor_.get ();
 }
 
+void
+to_json (nlohmann::json &j, const ProjectUiState &p)
+{
+  j = nlohmann::json{
+    { ProjectUiState::kSnapGridTimelineKey, *p.snap_grid_timeline_ },
+    { ProjectUiState::kSnapGridEditorKey,   *p.snap_grid_editor_   }
+  };
+}
+
+void
+from_json (const nlohmann::json &j, ProjectUiState &p)
+{
+  if (j.contains (ProjectUiState::kSnapGridTimelineKey))
+    {
+      from_json (
+        j.at (ProjectUiState::kSnapGridTimelineKey), *p.snap_grid_timeline_);
+    }
+  if (j.contains (ProjectUiState::kSnapGridEditorKey))
+    {
+      from_json (
+        j.at (ProjectUiState::kSnapGridEditorKey), *p.snap_grid_editor_);
+    }
+}
+
 } // namespace zrythm::structure::project

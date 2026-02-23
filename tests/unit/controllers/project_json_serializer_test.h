@@ -9,9 +9,11 @@
 #include <set>
 #include <string>
 
+#include "controllers/project_json_serializer.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "structure/project/project.h"
-#include "structure/project/project_json_serializer.h"
+#include "structure/project/project_ui_state.h"
+#include "undo/undo_stack.h"
 #include "utils/io_utils.h"
 
 #include "helpers/mock_audio_io_device.h"
@@ -21,7 +23,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 // ============================================================================
@@ -201,6 +203,8 @@ protected:
 
   void TearDown () override
   {
+    undo_stack.reset ();
+    ui_state.reset ();
     metronome.reset ();
     monitor_fader.reset ();
     param_registry.reset ();
@@ -210,7 +214,7 @@ protected:
     hw_interface.reset ();
   }
 
-  std::unique_ptr<Project> create_minimal_project ()
+  std::unique_ptr<structure::project::Project> create_minimal_project ()
   {
     structure::project::Project::ProjectDirectoryPathProvider path_provider =
       [this] (bool for_backup) {
@@ -226,11 +230,24 @@ protected:
       return nullptr;
     };
 
-    auto project = std::make_unique<Project> (
+    auto project = std::make_unique<structure::project::Project> (
       *app_settings, path_provider, *hw_interface, plugin_format_manager,
       window_factory, *metronome, *monitor_fader);
 
     return project;
+  }
+
+  void create_ui_state_and_undo_stack (structure::project::Project &project)
+  {
+    ui_state = utils::make_qobject_unique<structure::project::ProjectUiState> (
+      project, *app_settings);
+
+    undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+      [&project] (const std::function<void ()> &action, bool recalculate_graph) {
+        project.engine ()->execute_function_with_paused_processing_synchronously (
+          action, recalculate_graph);
+      },
+      nullptr);
   }
 
   // Helper to verify a UUID string format
@@ -266,6 +283,8 @@ protected:
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry;
   utils::QObjectUniquePtr<dsp::Fader>              monitor_fader;
   utils::QObjectUniquePtr<dsp::Metronome>          metronome;
+  utils::QObjectUniquePtr<structure::project::ProjectUiState> ui_state;
+  utils::QObjectUniquePtr<undo::UndoStack>                    undo_stack;
 };
 
-} // namespace zrythm::structure::project
+} // namespace zrythm::controllers

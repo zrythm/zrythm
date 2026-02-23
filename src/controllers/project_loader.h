@@ -12,6 +12,17 @@
 
 namespace zrythm::structure::project
 {
+class Project;
+class ProjectUiState;
+}
+
+namespace zrythm::undo
+{
+class UndoStack;
+}
+
+namespace zrythm::controllers
+{
 
 /**
  * @brief Handles loading of Zrythm projects from disk.
@@ -22,6 +33,7 @@ namespace zrythm::structure::project
  * 3. JSON parsing
  * 4. Schema validation
  * 5. Metadata extraction
+ * 6. Deserialization of Project, ProjectUiState, and UndoStack
  */
 class ProjectLoader
 {
@@ -71,6 +83,21 @@ public:
    * @return The project title, or "Untitled" if not found.
    */
   static utils::Utf8String extract_title (const nlohmann::json &j);
+
+  /**
+   * @brief Deserializes the project data into the given objects.
+   *
+   * @param j The JSON to deserialize from.
+   * @param project The project instance to populate.
+   * @param ui_state The UI state instance to populate.
+   * @param undo_stack The undo stack instance to populate.
+   * @throw ZrythmException on deserialization error.
+   */
+  static void deserialize (
+    const nlohmann::json               &j,
+    structure::project::Project        &project,
+    structure::project::ProjectUiState &ui_state,
+    undo::UndoStack                    &undo_stack);
 };
 
 }

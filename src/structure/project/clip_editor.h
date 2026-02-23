@@ -73,24 +73,8 @@ public:
     return automation_editor_.get ();
   }
 
-  QVariant region () const
-  {
-    if (has_region ())
-      {
-        return QVariant::fromStdVariant (get_region_and_track ()->first);
-      }
-
-    return {};
-  }
-  QVariant track () const
-  {
-    if (has_region ())
-      {
-        return QVariant::fromStdVariant (get_region_and_track ()->second);
-      }
-
-    return {};
-  }
+  QVariant         region () const;
+  QVariant         track () const;
   Q_INVOKABLE void setRegion (QVariant region, QVariant track);
   Q_INVOKABLE void unsetRegion ();
   Q_SIGNAL void    regionChanged (QVariant region);
@@ -128,15 +112,7 @@ public:
   friend void init_from (
     ClipEditor            &obj,
     const ClipEditor      &other,
-    utils::ObjectCloneType clone_type)
-
-  {
-    obj.region_id_ = other.region_id_;
-    init_from (*obj.audio_clip_editor_, *other.audio_clip_editor_, clone_type);
-    init_from (*obj.automation_editor_, *other.automation_editor_, clone_type);
-    init_from (*obj.chord_editor_, *other.chord_editor_, clone_type);
-    init_from (*obj.piano_roll_, *other.piano_roll_, clone_type);
-  }
+    utils::ObjectCloneType clone_type);
 
 private:
   static constexpr auto kRegionIdKey = "regionId"sv;
@@ -144,22 +120,8 @@ private:
   static constexpr auto kAutomationEditorKey = "automationEditor"sv;
   static constexpr auto kChordEditorKey = "chordEditor"sv;
   static constexpr auto kAudioClipEditorKey = "audioClipEditor"sv;
-  friend void           to_json (nlohmann::json &j, const ClipEditor &editor)
-  {
-    j[kRegionIdKey] = editor.region_id_;
-    j[kPianoRollKey] = editor.piano_roll_;
-    j[kAutomationEditorKey] = editor.automation_editor_;
-    j[kChordEditorKey] = editor.chord_editor_;
-    j[kAudioClipEditorKey] = editor.audio_clip_editor_;
-  }
-  friend void from_json (const nlohmann::json &j, ClipEditor &editor)
-  {
-    j.at (kRegionIdKey).get_to (editor.region_id_);
-    j.at (kPianoRollKey).get_to (*editor.piano_roll_);
-    j.at (kAutomationEditorKey).get_to (*editor.automation_editor_);
-    j.at (kChordEditorKey).get_to (*editor.chord_editor_);
-    j.at (kAudioClipEditorKey).get_to (*editor.audio_clip_editor_);
-  }
+  friend void           to_json (nlohmann::json &j, const ClipEditor &editor);
+  friend void           from_json (const nlohmann::json &j, ClipEditor &editor);
 
 private:
   ArrangerObjectRegistry &object_registry_;

@@ -20,9 +20,20 @@ cmake --build builddir_cmake --config Debug
 
 ### Testing
 
+**IMPORTANT:** Always use `ctest --test-dir builddir_cmake` rather than `cd builddir_cmake && ctest`. The `--test-dir` flag allows running tests from any directory without changing the working directory.
+
 ```bash
 # Run all tests via CTest
 ctest --test-dir builddir_cmake --output-on-failure -j$(nproc)
+
+# Run specific tests by pattern (uses regex matching on test names)
+# Test names follow the pattern: TestClassName.TestMethodName
+ctest --test-dir builddir_cmake -R "ProjectSerializationTest" --output-on-failure
+ctest --test-dir builddir_cmake -R "ProjectLoaderTest" --output-on-failure
+ctest --test-dir builddir_cmake -R "TransportControllerTest" --output-on-failure
+
+# List all available tests to see test names
+ctest --test-dir builddir_cmake -N
 
 # Run specific test binary directly
 ./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests

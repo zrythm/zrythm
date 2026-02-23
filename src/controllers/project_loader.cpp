@@ -1,15 +1,17 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/project/project_json_serializer.h"
-#include "structure/project/project_loader.h"
+#include "controllers/project_json_serializer.h"
+#include "controllers/project_loader.h"
+#include "controllers/project_saver.h"
 #include "structure/project/project_path_provider.h"
-#include "structure/project/project_saver.h"
+#include "structure/project/project_ui_state.h"
+#include "undo/undo_stack.h"
 #include "utils/io_utils.h"
 
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 std::string
@@ -75,6 +77,16 @@ ProjectLoader::load_from_directory (const fs::path &project_dir)
     .title = std::move (title),
     .project_directory = project_dir
   };
+}
+
+void
+ProjectLoader::deserialize (
+  const nlohmann::json               &j,
+  structure::project::Project        &project,
+  structure::project::ProjectUiState &ui_state,
+  undo::UndoStack                    &undo_stack)
+{
+  ProjectJsonSerializer::deserialize (j, project, ui_state, undo_stack);
 }
 
 }

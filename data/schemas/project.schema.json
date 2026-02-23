@@ -49,6 +49,10 @@
         }
       }
     },
+    "undoHistory": {
+      "type": "object",
+      "description": "Undo/redo history (commands that can be undone/redone) - TODO: structure to be defined when serialization is implemented"
+    },
     "projectData": {
       "type": "object",
       "description": "Project data",

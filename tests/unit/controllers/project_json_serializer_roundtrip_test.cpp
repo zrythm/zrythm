@@ -3,7 +3,7 @@
 
 #include "project_json_serializer_test.h"
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 // ============================================================================
@@ -14,21 +14,26 @@ TEST_F (ProjectSerializationTest, RoundTrip_MinimalProject)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "RoundTrip Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "RoundTrip Test");
 
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); });
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
 
   EXPECT_NO_THROW ({
-    ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+    ProjectJsonSerializer::deserialize (
+      j1, *deserialized_project, *ui_state, *undo_stack);
   });
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "RoundTrip Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "RoundTrip Test");
 
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
@@ -63,16 +68,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_RegistriesPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto &regs1 = j1["projectData"]["registries"];
   auto &regs2 = j2["projectData"]["registries"];
@@ -120,16 +128,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_TracklistPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto &tl1 = j1["projectData"]["tracklist"];
   auto &tl2 = j2["projectData"]["tracklist"];
@@ -173,13 +184,16 @@ TEST_F (ProjectSerializationTest, RoundTrip_OptionalFieldsMissing)
 
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
+  create_ui_state_and_undo_stack (*project);
 
   // Should deserialize without throwing (optional fields use defaults)
-  EXPECT_NO_THROW ({ ProjectJsonSerializer::deserialize (j, *project); });
+  EXPECT_NO_THROW ({
+    ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
+  });
 
   // Serialize back and verify it validates
-  nlohmann::json j2 =
-    ProjectJsonSerializer::serialize (*project, TEST_APP_VERSION, "Test");
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 }
 
@@ -187,16 +201,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_FolderHierarchyPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // Verify folderParents and expandedTracks are preserved (if present)
   auto &tl1 = j1["projectData"]["tracklist"];
@@ -250,16 +267,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_ClipLauncherPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto &cl1 = j1["projectData"]["clipLauncher"];
   auto &cl2 = j2["projectData"]["clipLauncher"];
@@ -295,16 +315,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_AllUuidsPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // Extract all UUIDs from both serializations
   auto uuids1 = extract_all_uuids (j1);
@@ -330,16 +353,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_ObjectCountConsistent)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // Object count should be identical
   EXPECT_EQ (count_objects (j1), count_objects (j2))
@@ -351,16 +377,19 @@ TEST_F (ProjectSerializationTest, RoundTrip_AllRegistrySizesPreserved)
 {
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
+  create_ui_state_and_undo_stack (*original_project);
 
   nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, TEST_APP_VERSION, "Test");
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto deserialized_project = create_minimal_project ();
   ASSERT_NE (deserialized_project, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *deserialized_project);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
 
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, TEST_APP_VERSION, "Test");
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   auto &regs1 = j1["projectData"]["registries"];
   auto &regs2 = j2["projectData"]["registries"];
@@ -383,28 +412,31 @@ TEST_F (ProjectSerializationTest, RoundTrip_Idempotent)
 {
   auto project1 = create_minimal_project ();
   ASSERT_NE (project1, nullptr);
+  create_ui_state_and_undo_stack (*project1);
 
   // First serialization
-  nlohmann::json j1 =
-    ProjectJsonSerializer::serialize (*project1, TEST_APP_VERSION, "Test");
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *project1, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // Deserialize into project2
   auto project2 = create_minimal_project ();
   ASSERT_NE (project2, nullptr);
-  ProjectJsonSerializer::deserialize (j1, *project2);
+  create_ui_state_and_undo_stack (*project2);
+  ProjectJsonSerializer::deserialize (j1, *project2, *ui_state, *undo_stack);
 
   // Second serialization
-  nlohmann::json j2 =
-    ProjectJsonSerializer::serialize (*project2, TEST_APP_VERSION, "Test");
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *project2, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // Deserialize into project3
   auto project3 = create_minimal_project ();
   ASSERT_NE (project3, nullptr);
-  ProjectJsonSerializer::deserialize (j2, *project3);
+  create_ui_state_and_undo_stack (*project3);
+  ProjectJsonSerializer::deserialize (j2, *project3, *ui_state, *undo_stack);
 
   // Third serialization - should be identical to second
-  nlohmann::json j3 =
-    ProjectJsonSerializer::serialize (*project3, TEST_APP_VERSION, "Test");
+  nlohmann::json j3 = ProjectJsonSerializer::serialize (
+    *project3, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   // j2 and j3 should have identical UUID sets
   auto uuids2 = extract_all_uuids (j2);

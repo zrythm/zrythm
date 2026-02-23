@@ -5,11 +5,17 @@ qt_add_library(zrythm_controllers_lib STATIC)
 
 target_sources(zrythm_controllers_lib
   PRIVATE
+    project_json_serializer.cpp
+    project_loader.cpp
+    project_saver.cpp
     transport_controller.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
+      project_json_serializer.h
+      project_loader.h
+      project_saver.h
       transport_controller.h
 )
 

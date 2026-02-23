@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 

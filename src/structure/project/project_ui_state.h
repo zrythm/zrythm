@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "dsp/snap_grid.h"
 #include "structure/arrangement/timeline.h"
 #include "structure/project/arranger_tool.h"
@@ -10,6 +12,8 @@
 #include "structure/project/project.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::project
 {
@@ -58,6 +62,12 @@ public:
   structure::arrangement::Timeline * timeline () const;
   dsp::SnapGrid *                    snapGridTimeline () const;
   dsp::SnapGrid *                    snapGridEditor () const;
+
+private:
+  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
+  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
+  friend void           to_json (nlohmann::json &j, const ProjectUiState &p);
+  friend void           from_json (const nlohmann::json &j, ProjectUiState &p);
 
 private:
   utils::AppSettings &app_settings_;

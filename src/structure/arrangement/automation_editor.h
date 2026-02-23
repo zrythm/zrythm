@@ -6,6 +6,8 @@
 #include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::structure::arrangement
 {
 

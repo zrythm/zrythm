@@ -37,10 +37,7 @@ target_sources(zrythm_structure_project_lib
     clip_editor.cpp
     project.cpp
     project_graph_builder.cpp
-    project_json_serializer.cpp
-    project_loader.cpp
     project_path_provider.cpp
-    project_saver.cpp
     project_ui_state.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -50,10 +47,7 @@ target_sources(zrythm_structure_project_lib
       clip_editor.h
       project.h
       project_graph_builder.h
-      project_json_serializer.h
-      project_loader.h
       project_path_provider.h
-      project_saver.h
       project_ui_state.h
 )
 

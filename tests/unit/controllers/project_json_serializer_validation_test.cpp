@@ -5,7 +5,7 @@
 
 #include <fmt/format.h>
 
-namespace zrythm::structure::project
+namespace zrythm::controllers
 {
 
 // ============================================================================
