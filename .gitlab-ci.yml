@@ -314,6 +314,26 @@ check:exif:
       cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --target run_all_benchmarks ;
     fi
 
+check:qmllint:
+  extends: .gnu-linux-template
+  stage: check
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: Debug
+  script:
+    - cmake --build ${BUILDDIR}-Debug --config Debug --target all_qmllint 2>&1 | tee qmllint_output.txt
+    - |
+      WARNING_COUNT=$(grep 'Warning: ' qmllint_output.txt | grep "${CI_PROJECT_DIR}/src/gui/qml/" | grep -v 'ZrythmStyle' | grep -v 'not found on type "QObject"' | grep -v 'not found on type "QQuickItem"' | grep -v 'Type "QColor" of property "color" not found' | wc -l)
+      echo "QML lint warning count (filtered): ${WARNING_COUNT}"
+      if [ "${WARNING_COUNT}" -gt 17 ]; then
+        echo "Error: QML lint warning count (${WARNING_COUNT}) exceeds threshold (17)"
+        exit 1
+      fi
+      echo "QML lint check passed"
+
 check:clang-tidy:
   rules:
     - when: never # temporarily disable due to compilation issues
