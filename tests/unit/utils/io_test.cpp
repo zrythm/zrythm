@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <fstream>
@@ -243,5 +243,60 @@ TEST (IoTest, MoveFile)
     // Verify content is preserved
     auto read_data = utils::io::read_file_contents (dest_file);
     EXPECT_EQ (read_data, QByteArray::fromStdString (test_data.str ()));
+  }
+
+  // Test moving to existing destination without force (should fail)
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "source.txt";
+    auto dest_file = dir_path / "destination.txt";
+
+    // Create both source and destination files
+    utils::io::set_file_contents (src_file, u8"source content");
+    utils::io::set_file_contents (dest_file, u8"dest content");
+    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (fs::exists (dest_file));
+
+    // Attempt to move without force - should fail
+    EXPECT_THROW (utils::io::move_file (dest_file, src_file), ZrythmException);
+
+    // Both files should still exist
+    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (fs::exists (dest_file));
+
+    // Destination should have original content
+    auto read_data = utils::io::read_file_contents (dest_file);
+    EXPECT_EQ (read_data.toStdString (), "dest content");
+  }
+
+  // Test moving to existing destination with force (should succeed)
+  {
+    auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+    auto dir_path =
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+    auto src_file = dir_path / "source.txt";
+    auto dest_file = dir_path / "destination.txt";
+
+    // Create both source and destination files
+    utils::Utf8String src_content = u8"new content from source";
+    utils::io::set_file_contents (src_file, src_content);
+    utils::io::set_file_contents (dest_file, u8"old dest content");
+    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (fs::exists (dest_file));
+
+    // Move with force - should succeed
+    EXPECT_NO_THROW (utils::io::move_file (dest_file, src_file, true));
+
+    // Source should be removed, destination should exist
+    EXPECT_FALSE (fs::exists (src_file));
+    EXPECT_TRUE (fs::exists (dest_file));
+
+    // Destination should have source content
+    auto read_data = utils::io::read_file_contents (dest_file);
+    EXPECT_EQ (read_data, QByteArray::fromStdString (src_content.str ()));
   }
 }

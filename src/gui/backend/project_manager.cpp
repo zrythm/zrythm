@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/project_json_serializer.h"
@@ -124,12 +124,6 @@ ProjectManager::getNextAvailableProjectName (
   return ret;
 }
 
-void
-ProjectManager::add_to_recent_projects (const QString &path)
-{
-  recent_projects_model_->addRecentProject (path);
-}
-
 RecentProjectsModel *
 ProjectManager::getRecentProjects () const
 {
@@ -196,11 +190,6 @@ ProjectManager::create_default (
     Qt::BlockingQueuedConnection);
   project_session->moveToThread (this->thread ());
 
-  {
-    /* create standard dirs */
-    controllers::ProjectSaver::make_project_dirs (project_dir_path);
-  }
-
   project_session->uiState ()->clipEditor ()->init ();
 
   z_debug ("done creating default project");
@@ -232,30 +221,33 @@ ProjectManager::createNewProject (
         : nullptr; // TODO: template handling
     return project_session;
   })
-    .then (
-      [this, project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
-        controllers::ProjectSaver saver (
-          *session->project (), *session->uiState (), *session->undoStack (),
-          Zrythm::get_app_version ());
-        auto future = saver.save (project_dir_path, false);
-        try
-          {
-            // This will throw on failure
-            future.waitForFinished ();
-          }
-        catch (...)
-          {
-            // ... so catch the exception here, delete the ProjectSession object
-            // in the main thread (which owns it), and re-throw to trigger the
-            // onFailed() block.
-            QMetaObject::invokeMethod (
-              this,
-              [session_ptr = session.release ()] () { delete session_ptr; });
-            throw;
-          }
-        session->setTitle (future.result ());
-        return session;
-      })
+    .then ([this,
+            project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
+      auto future = controllers::ProjectSaver::save (
+        *session->project (), *session->uiState (), *session->undoStack (),
+        Zrythm::get_app_version (), project_dir_path, false);
+      try
+        {
+          // This will throw on failure
+          future.waitForFinished ();
+        }
+      catch (...)
+        {
+          // ... so catch the exception here, delete the ProjectSession object
+          // in the main thread (which owns it), and re-throw to trigger the
+          // onFailed() block.
+          QMetaObject::invokeMethod (this, [session_ptr = session.release ()] () {
+            delete session_ptr;
+          });
+          throw;
+        }
+      const auto saved_path =
+        utils::Utf8String::from_qstring (future.result ()).to_path ();
+      session->setTitle (
+        utils::Utf8String::from_path (utils::io::path_get_basename (saved_path))
+          .to_qstring ());
+      return session;
+    })
     .then (
       this,
       [this, project_dir_path] (
@@ -332,7 +324,7 @@ ProjectManager::loadProject (const QString &filepath)
         session->project ()->engine ()->set_running (true);
 
         // Add to recent projects
-        add_to_recent_projects (
+        recent_projects_model_->addRecentProject (
           utils::Utf8String::from_path (project_dir).to_qstring ());
 
         // Emit success signal

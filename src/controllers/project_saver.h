@@ -30,42 +30,39 @@ namespace zrythm::controllers
 /**
  * @brief Handles saving of Zrythm projects to disk.
  *
- * This class orchestrates the complete project saving pipeline:
- * 1. Creating project directories
- * 2. Writing audio pool files
- * 3. Writing plugin states
- * 4. Serializing project JSON (Project + ProjectUiState + UndoStack)
- * 5. Compressing and writing to disk
+ * This class provides static methods for project saving operations.
  */
 class ProjectSaver
 {
 public:
   /**
-   * @brief Constructs a ProjectSaver for the given project components.
+   * Saves the project asynchronously to the specified directory.
    *
    * @param project The core project data to save.
    * @param ui_state The UI state to save.
    * @param undo_stack The undo history to save.
    * @param app_version Version of the application.
-   */
-  ProjectSaver (
-    const structure::project::Project        &project,
-    const structure::project::ProjectUiState &ui_state,
-    const undo::UndoStack                    &undo_stack,
-    utils::Version                            app_version);
-
-  /**
-   * Saves the project asynchronously to the specified directory.
-   *
    * @param path The directory to save the project in (including the title).
    * @param is_backup True if this is a backup. Backups will be saved as
    *                  <original filename>.bak<num>.
    *
-   * @return A QFuture that resolves to the project title on success.
+   * @return A QFuture that resolves to the project path on success.
    * @throw ZrythmException If any step failed.
+   *
+   * @warning The returned QFuture uses continuations that run on the main
+   *          thread. Do NOT call waitForFinished() on the main thread without
+   *          processing Qt events, as this will cause a deadlock. Instead:
+   *          - Use QFutureWatcher with signals/slots, or
+   *          - Process events while waiting (e.g., QEventLoop), or
+   *          - Wait from a non-main thread
    */
-  [[nodiscard]] QFuture<utils::Utf8String>
-  save (const fs::path &path, bool is_backup);
+  [[nodiscard]] static QFuture<QString> save (
+    const structure::project::Project        &project,
+    const structure::project::ProjectUiState &ui_state,
+    const undo::UndoStack                    &undo_stack,
+    utils::Version                            app_version,
+    const fs::path                           &path,
+    bool                                      is_backup);
 
   /**
    * Autosave callback.
@@ -123,8 +120,6 @@ public:
   static std::string
   get_existing_uncompressed_text (const fs::path &project_dir);
 
-  bool has_unsaved_changes () const;
-
 private:
   /**
    * Sets (and creates on the disk) the next available backup dir to use for
@@ -132,7 +127,7 @@ private:
    *
    * @throw ZrythmException If the backup dir cannot be created.
    */
-  void set_and_create_next_available_backup_dir ();
+  static void set_and_create_next_available_backup_dir ();
 
   /**
    * Cleans up unnecessary plugin state dirs from the main project.
@@ -141,23 +136,10 @@ private:
    * @param project_dir The project directory being saved to.
    * @param is_backup Whether this is for a backup.
    */
-  void cleanup_plugin_state_dirs (
+  static void cleanup_plugin_state_dirs (
     const structure::project::Project &main_project,
     const fs::path                    &project_dir,
     bool                               is_backup);
-
-private:
-  const structure::project::Project        &project_;
-  const structure::project::ProjectUiState &ui_state_;
-  const undo::UndoStack                    &undo_stack_;
-
-  /** Last successful autosave timestamp. */
-  SteadyTimePoint last_successful_autosave_time_;
-
-  /** Semaphore used to block saving. */
-  std::binary_semaphore save_sem_{ 1 };
-
-  utils::Version app_version_;
 };
 
 }

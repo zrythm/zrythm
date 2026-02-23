@@ -1,8 +1,7 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_IO_H__
-#define __UTILS_IO_H__
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -252,12 +251,13 @@ copy_file (const fs::path &destfile, const fs::path &srcfile);
 /**
  * @brief Moves (renames) a file from a source path to a destination path.
  *
- * @param destfile
- * @param srcfile
+ * @param destfile The destination file path.
+ * @param srcfile The source file path.
+ * @param force If true, overwrites the destination file if it exists.
  * @throw ZrythmException If the file rename operation fails.
  */
 void
-move_file (const fs::path &destfile, const fs::path &srcfile);
+move_file (const fs::path &destfile, const fs::path &srcfile, bool force = false);
 
 /**
  * Returns a newly allocated path that is either
@@ -363,5 +363,3 @@ QStringList
 split_paths (const QString &paths);
 
 }; // namespace zrythm::utils::io
-
-#endif

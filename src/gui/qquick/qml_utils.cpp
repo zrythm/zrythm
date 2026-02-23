@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -9,6 +9,7 @@
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/region_renderer.h"
+#include "utils/io_utils.h"
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
@@ -29,6 +30,15 @@ QUrl
 QmlUtils::localFileToQUrl (const QString &path)
 {
   return QUrl::fromLocalFile (path);
+}
+
+QString
+QmlUtils::pathBasename (const QString &path)
+{
+  return utils::Utf8String::from_path (
+           utils::io::path_get_basename (
+             utils::Utf8String::from_qstring (path).to_path ()))
+    .to_qstring ();
 }
 
 float

@@ -253,6 +253,7 @@ set(rel_qml_file_paths
   components/PluginSlotView.qml
   components/RightDock.qml
   components/Ruler.qml
+  components/SaveController.qml
   components/SnapGridButton.qml
   components/SpectrumAnalyzer.qml
   components/TempoMapLaneHeader.qml
@@ -325,6 +326,7 @@ qt_add_qml_module(zrythm
     TARGET zrythm_structure_project_lib
     TARGET zrythm_commands_lib
     TARGET zrythm_undo_lib
+    TARGET zrythm_controllers_lib
     TARGET zrythm_actions_lib
     TARGET zrythm_gui_lib
     TARGET zrythm_style

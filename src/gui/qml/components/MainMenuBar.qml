@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import "../config.js" as Config
@@ -13,17 +13,27 @@ MenuBar {
   required property AboutDialog aboutDialog
   required property DeviceManager deviceManager
   required property ExportDialog exportDialog
-  required property Project project
+  readonly property Project project: session.project
+  required property SaveController saveController
+  required property ProjectSession session
 
   Menu {
     title: qsTr("&File")
 
-    Action {
-      text: qsTr("Open")
+    MenuItem {
+      action: root.saveController.saveAction
+    }
+
+    MenuItem {
+      action: root.saveController.saveAsAction
     }
 
     Action {
-      text: qsTr("Export...")
+      text: qsTr("Load…")
+    }
+
+    Action {
+      text: qsTr("Export…")
 
       onTriggered: {
         root.exportDialog.open();

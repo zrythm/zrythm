@@ -6,6 +6,7 @@ add_executable(zrythm_controllers_unit_tests
   project_json_serializer_structure_test.cpp
   project_json_serializer_validation_test.cpp
   project_loader_test.cpp
+  project_saver_test.cpp
   transport_controller_test.cpp
 )
 

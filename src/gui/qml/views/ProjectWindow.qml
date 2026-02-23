@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -41,6 +41,7 @@ ApplicationWindow {
     }
   }
   readonly property Project project: session.project
+  readonly property SaveController saveController: saveController
   required property ProjectSession session
 
   function closeAndDestroy() {
@@ -58,8 +59,8 @@ ApplicationWindow {
     id: headerBar
 
     appSettings: root.appSettings
-    session: root.session
     controlRoom: root.controlRoom
+    session: root.session
   }
   menuBar: MainMenuBar {
     id: mainMenuBar
@@ -67,7 +68,8 @@ ApplicationWindow {
     aboutDialog: aboutDialog
     deviceManager: root.deviceManager
     exportDialog: exportDialog
-    project: root.project
+    saveController: root.saveController
+    session: root.session
   }
 
   Component.onCompleted: {
@@ -270,17 +272,6 @@ ApplicationWindow {
     }
   }
 
-  Shortcut {
-    context: Qt.ApplicationShortcut
-    sequences: [StandardKey.Save]
-
-    onActivated: {
-      console.log("save requested");
-      // TODO
-      // root.project.save();
-    }
-  }
-
   // Tools
   Shortcut {
     sequence: "1"
@@ -328,6 +319,12 @@ ApplicationWindow {
     onActivated: {
       root.session.uiState.tool.toolValue = ArrangerTool.Audition;
     }
+  }
+
+  SaveController {
+    id: saveController
+
+    session: root.session
   }
 
   ColumnLayout {

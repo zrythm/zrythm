@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -10,6 +10,7 @@
 #include "actions/track_creator.h"
 #include "controllers/transport_controller.h"
 #include "gui/dsp/quantize_options.h"
+#include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
@@ -81,6 +82,26 @@ public:
   Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
               createArrangerObjectSelectionOperator (
                 QItemSelectionModel * selectionModel) const;
+
+  /**
+   * @brief Saves the project to the current project directory.
+   *
+   * @return A QFutureQmlWrapper that resolves to the saved project path on
+   * success.
+   * @pre projectDirectory must be set.
+   */
+  Q_INVOKABLE qquick::QFutureQmlWrapper * save ();
+
+  /**
+   * @brief Saves the project to a new directory.
+   *
+   * Updates projectDirectory and title on success.
+   *
+   * @param path The new directory path to save to.
+   * @return A QFutureQmlWrapper that resolves to the saved project path on
+   * success.
+   */
+  Q_INVOKABLE qquick::QFutureQmlWrapper * saveAs (const QString &path);
 
   /**
    * @brief Finds a backup directory newer than the main project file.

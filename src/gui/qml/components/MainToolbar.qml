@@ -125,36 +125,6 @@ ZrythmToolBar {
         }
 
         MenuItem {
-          // Implement save action
-
-          text: qsTr("Save")
-
-          onTriggered: {}
-        }
-
-        MenuItem {
-          // Implement save as action
-
-          text: qsTr("Save As…")
-
-          onTriggered: {}
-        }
-
-        MenuSeparator {
-        }
-
-        MenuItem {
-          // Implement export as action
-
-          text: qsTr("Export As…")
-
-          onTriggered: {}
-        }
-
-        MenuSeparator {
-        }
-
-        MenuItem {
           // Open preferences dialog
 
           text: qsTr("Preferences")
@@ -166,14 +136,6 @@ ZrythmToolBar {
           // Show keyboard shortcuts
 
           text: qsTr("Keyboard Shortcuts")
-
-          onTriggered: {}
-        }
-
-        MenuItem {
-          // Show about dialog
-
-          text: qsTr("About Zrythm Long Long Long Long Long Long Long")
 
           onTriggered: {}
         }

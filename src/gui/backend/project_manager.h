@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -56,8 +56,6 @@ public:
     const QString &name,
     const QUrl    &templateUrl = QUrl{});
   Q_INVOKABLE void loadProject (const QString &filepath);
-
-  void add_to_recent_projects (const QString &path);
 
   RecentProjectsModel * getRecentProjects () const;
 

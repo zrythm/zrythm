@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -352,8 +352,16 @@ copy_file (const fs::path &destfile, const fs::path &srcfile)
 }
 
 void
-move_file (const fs::path &destfile, const fs::path &srcfile)
+move_file (const fs::path &destfile, const fs::path &srcfile, bool force)
 {
+  if (force && path_exists (destfile))
+    {
+      z_debug (
+        "Removing existing destination file: {}",
+        Utf8String::from_path (destfile));
+      utils::io::remove (destfile);
+    }
+
   auto src_file = QFile (srcfile);
   if (!src_file.rename (destfile))
     {

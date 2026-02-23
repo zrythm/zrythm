@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "controllers/project_saver.h"
 #include "gui/backend/project_session.h"
 #include "structure/project/project_path_provider.h"
+#include "utils/io_utils.h"
 
 #include <QQmlEngine>
 
@@ -247,6 +249,55 @@ ProjectSession::get_newer_backup ()
     }
 
   return result;
+}
+
+gui::qquick::QFutureQmlWrapper *
+ProjectSession::save ()
+{
+  assert (!project_directory_.empty ());
+
+  auto future = controllers::ProjectSaver::save (
+    *project_, *ui_state_, *undo_stack_, Zrythm::get_app_version (),
+    project_directory_, false);
+
+  auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
+  QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
+
+  return wrapper;
+}
+
+gui::qquick::QFutureQmlWrapper *
+ProjectSession::saveAs (const QString &path)
+{
+  auto new_path = utils::Utf8String::from_qstring (path).to_path ();
+
+  auto future = controllers::ProjectSaver::save (
+    *project_, *ui_state_, *undo_stack_, Zrythm::get_app_version (), new_path,
+    false);
+
+  auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
+
+  // Update project directory and title when save completes
+  QObject::connect (
+    wrapper, &gui::qquick::QFutureQmlWrapperT<QString>::finished, this,
+    [this, new_path, future] () {
+      if (future.resultCount () > 0)
+        {
+          auto saved_path = future.result ();
+          if (!saved_path.isEmpty ())
+            {
+              setProjectDirectory (saved_path);
+              setTitle (
+                utils::Utf8String::from_path (
+                  utils::io::path_get_basename (new_path))
+                  .to_qstring ());
+            }
+        }
+    });
+
+  QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
+
+  return wrapper;
 }
 
 } // namespace zrythm::gui

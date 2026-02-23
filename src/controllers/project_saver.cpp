@@ -24,16 +24,6 @@ plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
     [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
 }
 
-ProjectSaver::ProjectSaver (
-  const structure::project::Project        &project,
-  const structure::project::ProjectUiState &ui_state,
-  const undo::UndoStack                    &undo_stack,
-  utils::Version                            app_version)
-    : project_ (project), ui_state_ (ui_state), undo_stack_ (undo_stack),
-      app_version_ (app_version)
-{
-}
-
 void
 ProjectSaver::make_project_dirs (const fs::path &project_directory)
 {
@@ -332,12 +322,15 @@ ProjectSaver::cleanup_plugin_state_dirs (
     {
       plugins.push_back (pl_var);
     }
+// TODO: if backup, add the backup's values too
+#if 0
   for (
     const auto &pl_var :
     project_.get_plugin_registry ().get_hash_map () | std::views::values)
     {
       plugins.push_back (pl_var);
     }
+#endif
 
   for (const auto &[i, pl_var] : utils::views::enumerate (plugins))
     {
@@ -380,8 +373,14 @@ ProjectSaver::cleanup_plugin_state_dirs (
   z_debug ("cleaned plugin state directories");
 }
 
-QFuture<utils::Utf8String>
-ProjectSaver::save (const fs::path &path, const bool is_backup)
+QFuture<QString>
+ProjectSaver::save (
+  const structure::project::Project        &project,
+  const structure::project::ProjectUiState &ui_state,
+  const undo::UndoStack                    &undo_stack,
+  utils::Version                            app_version,
+  const fs::path                           &path,
+  bool                                      is_backup)
 {
   z_info ("Saving project at {}, is backup: {}", path, is_backup);
 
@@ -401,7 +400,7 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
   /* pause engine */
   EngineState state{};
   bool        engine_paused = false;
-  auto *      engine = project_.engine ();
+  auto *      engine = project.engine ();
   if (engine->activated ())
     {
       engine->wait_for_pause (state, false, true);
@@ -416,7 +415,7 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
   };
 
   /* Subtask lambdas */
-  const auto create_dirs_task = [this, is_backup, path] () {
+  const auto create_dirs_task = [is_backup, path] () {
     if (is_backup)
       {
         set_and_create_next_available_backup_dir ();
@@ -425,7 +424,7 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     make_project_dirs (path);
   };
 
-  const auto write_pool_task = [this, is_backup] () {
+  const auto write_pool_task = [&project, is_backup] () {
 // TODO
 #if 0
     if (this == get_active_instance ())
@@ -434,10 +433,10 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
         pool_->remove_unused (is_backup);
       }
 #endif
-    project_.pool_->write_to_disk (is_backup);
+    project.pool_->write_to_disk (is_backup);
   };
 
-  const auto write_plugin_states_task = [this, is_backup, path] () {
+  const auto write_plugin_states_task = [&project, is_backup, path] () {
     if (is_backup)
       {
         throw std::runtime_error ("unimplemented");
@@ -460,21 +459,22 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     if (!is_backup)
       {
         /* cleanup unused plugin states */
-        cleanup_plugin_state_dirs (project_, path, is_backup);
+        cleanup_plugin_state_dirs (project, path, is_backup);
       }
 
     /* TODO verify all plugin states exist */
   };
 
-  const auto build_json_task = [this, title] () {
-    z_debug ("serializing project to json...");
-    QElapsedTimer timer;
-    timer.start ();
-    auto json = ProjectJsonSerializer::serialize (
-      project_, ui_state_, undo_stack_, app_version_, title.view ());
-    z_debug ("time to serialize: {}ms", timer.elapsed ());
-    return json;
-  };
+  const auto build_json_task =
+    [&project, &ui_state, &undo_stack, app_version, title] () {
+      z_debug ("serializing project to json...");
+      QElapsedTimer timer;
+      timer.start ();
+      auto json = ProjectJsonSerializer::serialize (
+        project, ui_state, undo_stack, app_version, title.view ());
+      z_debug ("time to serialize: {}ms", timer.elapsed ());
+      return json;
+    };
 
   const auto validate_json_task = [] (const nlohmann::json &json) {
     z_debug ("Validating project JSON...");
@@ -517,7 +517,7 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     };
 
   const auto rename_file_task = [project_file_path, temp_project_file_path] () {
-    utils::io::move_file (project_file_path, temp_project_file_path);
+    utils::io::move_file (project_file_path, temp_project_file_path, true);
   };
 
   return QtConcurrent::run (create_dirs_task)
@@ -529,52 +529,25 @@ ProjectSaver::save (const fs::path &path, const bool is_backup)
     .then (QtFuture::Launch::Sync, rename_file_task)
     .then (
       engine,
-      [path, is_backup, resume_engine, title] () {
-  /* TODO: track last saved action */
-// TODO
-#if 0
-          auto last_action = legacy_undo_manager_->get_last_action ();
-          if (is_backup)
-            {
-              last_action_in_last_successful_autosave_ = last_action;
-            }
-          else
-            {
-              last_saved_action_ = last_action;
-            }
-#endif
+      [path, is_backup, resume_engine] () {
         z_info (
           "Successfully saved project at {}, is backup: {}", path, is_backup);
         resume_engine ();
-        return title;
+        return utils::Utf8String::from_path (path).to_qstring ();
       })
     .onCanceled (
       engine,
       [resume_engine] () {
         z_debug ("Project save canceled");
         resume_engine ();
-        return u8"";
+        return QString{};
       })
     .onFailed (engine, [resume_engine] () {
       const auto msg = "Project save failed"sv;
       z_warning (msg);
       resume_engine ();
       throw ZrythmException (msg);
-      return u8"";
+      return QString{};
     });
 }
-
-bool
-ProjectSaver::has_unsaved_changes () const
-{
-  /* simply check if the last performed action matches the last action when
-   * the project was last saved/loaded */
-  // TODO
-#if 0
-  auto last_performed_action = legacy_undo_manager_->get_last_action ();
-  return last_performed_action != last_saved_action_;
-#endif
-  return true;
-}
-
 }
