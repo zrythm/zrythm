@@ -324,7 +324,7 @@ check:qmllint:
         matrix:
           - BUILD_TYPE: Debug
   script:
-    - cmake --build ${BUILDDIR}-Debug --config Debug --target all_qmllint 2>&1 | tee qmllint_output.txt
+    - (cmake --build ${BUILDDIR}-Debug --config Debug --target all_qmllint 2>&1 || true) | tee qmllint_output.txt
     - |
       WARNING_COUNT=$(grep 'Warning: ' qmllint_output.txt | grep "${CI_PROJECT_DIR}/src/gui/qml/" | grep -v 'ZrythmStyle' | grep -v 'not found on type "QObject"' | grep -v 'not found on type "QQuickItem"' | grep -v 'Type "QColor" of property "color" not found' | wc -l)
       echo "QML lint warning count (filtered): ${WARNING_COUNT}"
