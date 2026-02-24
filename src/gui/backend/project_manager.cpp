@@ -275,9 +275,7 @@ ProjectManager::loadProject (const QString &filepath)
   z_debug ("Loading project from {}", project_dir);
 
   // Step 1: Load and validate JSON (background thread - file I/O only)
-  QtConcurrent::run ([project_dir] () {
-    return controllers::ProjectLoader::load_from_directory (project_dir);
-  })
+  controllers::ProjectLoader::load_from_directory (project_dir)
     .then (
       this,
       [this, project_dir] (controllers::ProjectLoader::LoadResult load_result) {

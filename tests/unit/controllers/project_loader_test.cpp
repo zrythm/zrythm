@@ -15,9 +15,9 @@ class ProjectLoaderTest : public ProjectSerializationTest
 
 TEST_F (ProjectLoaderTest, LoadNonexistentDirectory)
 {
-  EXPECT_THROW (
-    { ProjectLoader::load_from_directory ("/nonexistent/path/to/project"); },
-    ZrythmException);
+  auto future =
+    ProjectLoader::load_from_directory ("/nonexistent/path/to/project");
+  EXPECT_ANY_THROW ({ future.waitForFinished (); });
 }
 
 TEST_F (ProjectLoaderTest, ParseInvalidJson)
@@ -113,8 +113,49 @@ TEST_F (ProjectLoaderTest, LoadFromDirectoryMissingProjectFile)
   auto temp_path = project_dir / "empty_project";
   fs::create_directories (temp_path);
 
-  EXPECT_THROW (
-    { ProjectLoader::load_from_directory (temp_path); }, ZrythmException);
+  auto future = ProjectLoader::load_from_directory (temp_path);
+  EXPECT_ANY_THROW ({ future.waitForFinished (); });
+}
+
+TEST_F (ProjectLoaderTest, LoadFromDirectoryAsync)
+{
+  // Create a minimal project and save it
+  auto project = create_minimal_project ();
+  create_ui_state_and_undo_stack (*project);
+
+  constexpr utils::Version test_version{ 2, 0, {} };
+  nlohmann::json           j = ProjectJsonSerializer::serialize (
+    *project, *ui_state, *undo_stack, test_version, "Async Load Test");
+
+  ProjectSaver::make_project_dirs (project_dir);
+
+  std::string json_str = j.dump ();
+  char *      compressed_data = nullptr;
+  size_t      compressed_size = 0;
+  QByteArray  src_data = QByteArray::fromRawData (
+    json_str.c_str (), static_cast<qsizetype> (json_str.length ()));
+  ProjectSaver::compress (&compressed_data, &compressed_size, src_data);
+
+  auto project_file_path =
+    project_dir
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
+  utils::io::set_file_contents (
+    project_file_path, compressed_data, compressed_size);
+  free (compressed_data);
+
+  // Load asynchronously
+  auto future = ProjectLoader::load_from_directory (project_dir);
+
+  // Wait for completion
+  EXPECT_NO_THROW ({ future.waitForFinished (); });
+
+  // Verify result
+  EXPECT_TRUE (future.isFinished ());
+  auto result = future.result ();
+  EXPECT_EQ (result.title.view (), "Async Load Test");
+  EXPECT_EQ (result.project_directory, project_dir);
+  EXPECT_TRUE (result.json.contains ("documentType"));
 }
 
 } // namespace zrythm::controllers

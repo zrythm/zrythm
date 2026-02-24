@@ -8,6 +8,8 @@
 
 #include "utils/utf8_string.h"
 
+#include <QFuture>
+
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::project
@@ -52,10 +54,11 @@ public:
    * @brief Loads and validates a project from the specified directory.
    *
    * @param project_dir The project directory containing project.zpj
-   * @return LoadResult containing the parsed JSON and metadata.
+   * @return QFuture containing LoadResult with the parsed JSON and metadata.
    * @throw ZrythmException if loading fails.
    */
-  static LoadResult load_from_directory (const fs::path &project_dir);
+  [[nodiscard]] static QFuture<LoadResult>
+  load_from_directory (const fs::path &project_dir);
 
   /**
    * @brief Reads and decompresses the project file.

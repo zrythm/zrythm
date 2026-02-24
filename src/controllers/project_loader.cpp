@@ -9,6 +9,8 @@
 #include "undo/undo_stack.h"
 #include "utils/io_utils.h"
 
+#include <QtConcurrentRun>
+
 #include <nlohmann/json.hpp>
 
 namespace zrythm::controllers
@@ -51,32 +53,58 @@ ProjectLoader::extract_title (const nlohmann::json &j)
   return utils::Utf8String::from_utf8_encoded_string ("Untitled");
 }
 
-ProjectLoader::LoadResult
+QFuture<ProjectLoader::LoadResult>
 ProjectLoader::load_from_directory (const fs::path &project_dir)
 {
   z_info ("Loading project from {}", project_dir);
 
-  // 1. Verify directory exists
-  if (!fs::is_directory (project_dir))
-    {
-      throw ZrythmException (
-        fmt::format ("Project directory does not exist: {}", project_dir));
-    }
+  return QtConcurrent::run ([project_dir] (QPromise<LoadResult> &promise) {
+    promise.setProgressRange (0, 4);
 
-  // 2. Read and decompress
-  auto json_str = get_uncompressed_project_text (project_dir);
+    // 1. Verify directory exists
+    promise.setProgressValueAndText (0, QObject::tr ("Verifying directory..."));
+    promise.suspendIfRequested ();
+    if (promise.isCanceled ())
+      return;
 
-  // 3. Parse and validate
-  auto j = parse_and_validate (json_str);
+    if (!fs::is_directory (project_dir))
+      {
+        throw ZrythmException (
+          fmt::format ("Project directory does not exist: {}", project_dir));
+      }
 
-  // 4. Extract metadata
-  auto title = extract_title (j);
+    // 2. Read and decompress
+    promise.setProgressValueAndText (1, QObject::tr ("Reading project file..."));
+    promise.suspendIfRequested ();
+    if (promise.isCanceled ())
+      return;
 
-  return LoadResult{
-    .json = std::move (j),
-    .title = std::move (title),
-    .project_directory = project_dir
-  };
+    auto json_str = get_uncompressed_project_text (project_dir);
+
+    // 3. Parse and validate
+    promise.setProgressValueAndText (2, QObject::tr ("Parsing project data..."));
+    promise.suspendIfRequested ();
+    if (promise.isCanceled ())
+      return;
+
+    auto j = parse_and_validate (json_str);
+
+    // 4. Extract metadata
+    promise.setProgressValueAndText (3, QObject::tr ("Extracting metadata..."));
+    promise.suspendIfRequested ();
+    if (promise.isCanceled ())
+      return;
+
+    auto title = extract_title (j);
+
+    promise.setProgressValueAndText (4, QObject::tr ("Load complete"));
+
+    promise.addResult (
+      LoadResult{
+        .json = std::move (j),
+        .title = std::move (title),
+        .project_directory = project_dir });
+  });
 }
 
 void
