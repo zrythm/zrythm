@@ -313,8 +313,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
 
   // Create a plugin in the project's plugin registry
   auto &plugin_registry = original_project->get_plugin_registry ();
-  auto &port_registry = original_project->get_port_registry ();
-  auto &param_registry = original_project->get_param_registry ();
+  auto &project_port_registry = original_project->get_port_registry ();
+  auto &project_param_registry = original_project->get_param_registry ();
 
   // Create plugin descriptor
   auto descriptor = std::make_unique<plugins::PluginDescriptor> ();
@@ -327,7 +327,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   // Create the plugin
   auto plugin_ref = plugin_registry.create_object<plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry, .param_registry_ = param_registry },
+      .port_registry_ = project_port_registry,
+      .param_registry_ = project_param_registry },
     [project_dir = this->project_dir] () { return project_dir / "plugins"; },
     nullptr);
   auto * plugin = plugin_ref.get_object_as<plugins::InternalPluginBase> ();
