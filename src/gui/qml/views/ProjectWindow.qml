@@ -14,6 +14,7 @@ ApplicationWindow {
   id: root
 
   property Arranger activeArranger: null
+  required property AlertManager alertManager
   required property AppSettings appSettings
   required property ControlRoom controlRoom
   readonly property Action deleteAction: Action {
@@ -48,6 +49,7 @@ ApplicationWindow {
     console.log("Closing and destroying project window");
     close();
     destroy();
+    root.project.engine.deactivate();
   }
 
   height: 720
@@ -78,9 +80,19 @@ ApplicationWindow {
     project.engine.activate();
   }
   onClosing: {
-    console.log("Application shutting down");
+    console.log("Closing project window...");
     closeAndDestroy();
-    Qt.quit();
+  }
+
+  Connections {
+    function onAlertRequested(title, message) {
+      console.log("Alert requested: ", title, message);
+      alertDialog.alertTitle = title;
+      alertDialog.alertMessage = message;
+      alertDialog.open();
+    }
+
+    target: root.alertManager
   }
 
   Connections {
@@ -128,6 +140,12 @@ ApplicationWindow {
 
     exportDirectory: root.session.projectDirectory + "/exports"
     session: root.session
+  }
+
+  ZrythmAlertDialog {
+    id: alertDialog
+
+    anchors.centerIn: parent
   }
 
   // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)

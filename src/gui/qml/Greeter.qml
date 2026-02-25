@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,21 +15,26 @@ ApplicationWindow {
 
   readonly property AlertManager alertManager: app?.alertManager ?? null
   readonly property ZrythmApplication app: GlobalState.application
+  readonly property AppSettings appSettings: app?.appSettings ?? null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
-  readonly property AppSettings appSettings: app?.appSettings ?? null
 
   function openProjectWindow(session) {
     let newWindow = projectWindowComponent.createObject(session, {
       "session": session,
       "deviceManager": deviceManager,
       "appSettings": appSettings,
-      "controlRoom": app.controlRoom
+      "controlRoom": app.controlRoom,
+      "alertManager": alertManager
     }) as ProjectWindow;
+    newWindow.closing.connect(function () {
+      root.show();
+    });
     newWindow.show();
-    root.close();
+    stack.push(projectSelectorPage);
+    root.hide();
   }
 
   font.family: Style.fontFamily
@@ -511,14 +516,14 @@ ApplicationWindow {
     }
 
     Connections {
-      function onProjectLoaded(session : ProjectSession) {
+      function onProjectLoaded(session: ProjectSession) {
         console.log("Project loaded: ", session.title);
         root.projectManager.activeSession = session;
         console.log("Opening project: ", root.projectManager.activeSession.title);
         root.openProjectWindow(session);
       }
 
-      function onProjectLoadingFailed(errorMessage : string) {
+      function onProjectLoadingFailed(errorMessage: string) {
         console.log("Project loading failed: ", errorMessage);
         stack.pop();
         root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);

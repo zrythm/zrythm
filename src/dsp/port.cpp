@@ -27,7 +27,6 @@ void
 to_json (nlohmann::json &j, const Port &p)
 {
   to_json (j, static_cast<const Port::UuidIdentifiableObject &> (p));
-  j[Port::kTypeId] = p.type_;
   j[Port::kFlowId] = p.flow_;
   j[Port::kLabelId] = p.label_;
   j[Port::kSymbolId] = p.sym_;
@@ -41,7 +40,6 @@ void
 from_json (const nlohmann::json &j, Port &p)
 {
   from_json (j, static_cast<Port::UuidIdentifiableObject &> (p));
-  j.at (Port::kTypeId).get_to (p.type_);
   j.at (Port::kFlowId).get_to (p.flow_);
   j.at (Port::kLabelId).get_to (p.label_);
   j.at (Port::kSymbolId).get_to (p.sym_);

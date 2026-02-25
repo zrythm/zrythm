@@ -5,6 +5,7 @@
 
 #include "gui/backend/project_session.h"
 #include "gui/backend/recent_projects_model.h"
+#include "gui/qquick/qfuture_qml_wrapper.h"
 
 #include <QFutureWatcher>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -55,7 +56,15 @@ public:
     const QUrl    &directory,
     const QString &name,
     const QUrl    &templateUrl = QUrl{});
-  Q_INVOKABLE void loadProject (const QString &filepath);
+
+  /**
+   * @brief Loads a project from the specified directory.
+   *
+   * @param filepath The project directory path.
+   * @return A QFutureQmlWrapper that resolves to the loaded project path on
+   * success.
+   */
+  Q_INVOKABLE qquick::QFutureQmlWrapper * loadProject (const QString &filepath);
 
   RecentProjectsModel * getRecentProjects () const;
 

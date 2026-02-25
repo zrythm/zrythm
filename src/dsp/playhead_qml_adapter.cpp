@@ -10,19 +10,14 @@ namespace zrythm::dsp
 
 PlayheadQmlWrapper::PlayheadQmlWrapper (Playhead &playhead, QObject * parent)
     : QObject (parent), playhead_ (playhead),
-      last_ticks_ (playhead_.position_ticks ().in (units::ticks))
+      last_ticks_ (playhead_.position_ticks ().in (units::ticks)),
+      timer_ (utils::make_qobject_unique<QTimer> (this))
 {
   // Set up timer to update at ~60Hz (16ms) on the main thread
-  QMetaObject::invokeMethod (
-    QCoreApplication::instance (),
-    [this] {
-      timer_ = new QTimer (QCoreApplication::instance ());
-      timer_->setInterval (16);
-      connect (
-        timer_.get (), &QTimer::timeout, this, &PlayheadQmlWrapper::updateTicks);
-      timer_->start ();
-    },
-    Qt::QueuedConnection);
+  timer_->setInterval (16);
+  connect (
+    timer_.get (), &QTimer::timeout, this, &PlayheadQmlWrapper::updateTicks);
+  timer_->start ();
 }
 
 double

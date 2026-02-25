@@ -206,9 +206,11 @@ private:
   std::vector<TrackUuidReference> tracks_;
 
   /**
-   * @brief A map of foldable tracks and whether they are expanded.
+   * @brief UUIDs of expanded foldable tracks.
+   *
+   * Tracks not in this set are considered collapsed.
    */
-  std::unordered_map<Track::Uuid, bool> track_expanded_;
+  std::unordered_set<Track::Uuid> expanded_tracks_;
 
   /**
    * @brief A map of folder parents.

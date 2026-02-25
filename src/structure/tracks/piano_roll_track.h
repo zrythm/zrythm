@@ -92,28 +92,11 @@ public:
 
 private:
   static constexpr auto kDrumModeKey = "drumMode"sv;
-  static constexpr auto kMidiChKey = "midiCh"sv;
+  static constexpr auto kMidiChKey = "midiChannel"sv;
   static constexpr auto kPassthroughMidiInputKey = "passthroughMidiInput"sv;
   static constexpr auto kMidiChannelsKey = "midiChannels"sv;
-  friend void to_json (nlohmann::json &j, const PianoRollTrackMixin &track)
-  {
-    j[kDrumModeKey] = track.drum_mode_;
-    j[kMidiChKey] = track.midi_ch_;
-    j[kPassthroughMidiInputKey] = track.passthrough_midi_input_.load ();
-    j[kMidiChannelsKey] = track.midi_channels_;
-  }
-  friend void from_json (const nlohmann::json &j, PianoRollTrackMixin &track)
-  {
-    j.at (kDrumModeKey).get_to (track.drum_mode_);
-    j.at (kMidiChKey).get_to (track.midi_ch_);
-    bool passthrough_midi_input{};
-    j.at (kPassthroughMidiInputKey).get_to (passthrough_midi_input);
-    track.passthrough_midi_input_.store (passthrough_midi_input);
-    if (j.contains (kMidiChannelsKey))
-      {
-        j.at (kMidiChannelsKey).get_to (track.midi_channels_);
-      }
-  }
+  friend void to_json (nlohmann::json &j, const PianoRollTrackMixin &track);
+  friend void from_json (const nlohmann::json &j, PianoRollTrackMixin &track);
 
   friend void init_from (
     PianoRollTrackMixin       &obj,

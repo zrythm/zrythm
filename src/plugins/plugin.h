@@ -295,18 +295,12 @@ protected:
   dsp::ProcessorParameterUuidReference generate_default_gain_param () const;
 
 private:
-  static constexpr auto kSettingKey = "setting"sv;
+  static constexpr auto kConfigurationKey = "configuration"sv;
   static constexpr auto kProgramIndexKey = "programIndex"sv;
+  static constexpr auto kProtocolKey = "protocol"sv;
   static constexpr auto kVisibleKey = "visible"sv;
-  friend void           to_json (nlohmann::json &j, const Plugin &p)
-  {
-    to_json (j, static_cast<const UuidIdentifiableObject &> (p));
-    to_json (j, static_cast<const dsp::ProcessorBase &> (p));
-    j[kSettingKey] = p.configuration_;
-    j[kProgramIndexKey] = p.program_index_;
-    j[kVisibleKey] = p.visible_;
-  }
-  friend void from_json (const nlohmann::json &j, Plugin &p);
+  friend void           to_json (nlohmann::json &j, const Plugin &p);
+  friend void           from_json (const nlohmann::json &j, Plugin &p);
 
 protected:
   /** Set to true if instantiation failed and the plugin will be treated as

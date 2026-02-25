@@ -104,7 +104,6 @@ protected:
   init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type);
 
 private:
-  static constexpr auto kTypeId = "type"sv;
   static constexpr auto kFlowId = "flow"sv;
   static constexpr auto kLabelId = "label"sv;
   static constexpr auto kSymbolId = "symbol"sv;

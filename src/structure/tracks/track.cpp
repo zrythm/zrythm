@@ -538,7 +538,7 @@ void
 to_json (nlohmann::json &j, const Track &track)
 {
   to_json (j, static_cast<const Track::UuidIdentifiableObject &> (track));
-  j[Track::kTypeKey] = track.type_;
+  // Note: type_ is not serialized here - the variant serializer handles it
   j[Track::kNameKey] = track.name_;
   // j[Track::kIconNameKey] = track.icon_name_;
   j[Track::kVisibleKey] = track.visible_;
@@ -568,7 +568,7 @@ to_json (nlohmann::json &j, const Track &track)
     }
   if (track.lanes_)
     {
-      j[Track::kTrackLanesKey] = track.lanes_;
+      to_json (j, *track.lanes_);
     }
   if (track.recordable_track_mixin_)
     {
@@ -586,7 +586,7 @@ void
 from_json (const nlohmann::json &j, Track &track)
 {
   from_json (j, static_cast<Track::UuidIdentifiableObject &> (track));
-  j.at (Track::kTypeKey).get_to (track.type_);
+  // Note: type_ is not deserialized here - the variant deserializer handles it
   j.at (Track::kNameKey).get_to (track.name_);
   // j.at (Track::kIconNameKey).get_to (track.icon_name_);
   j.at (Track::kVisibleKey).get_to (track.visible_);
@@ -629,7 +629,7 @@ from_json (const nlohmann::json &j, Track &track)
     }
   if (track.lanes_)
     {
-      j[Track::kTrackLanesKey].get_to (*track.lanes_);
+      from_json (j, *track.lanes_);
     }
   if (track.recordable_track_mixin_)
     {

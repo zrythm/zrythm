@@ -612,7 +612,6 @@ protected:
   }
 
 private:
-  static constexpr auto kTypeKey = "type"sv;
   static constexpr auto kNameKey = "name"sv;
   static constexpr auto kIconNameKey = "iconName"sv;
   static constexpr auto kVisibleKey = "visible"sv;
@@ -629,7 +628,6 @@ private:
   static constexpr auto kModulatorsKey = "modulators"sv;
   static constexpr auto kModulatorMacroProcessorsKey =
     "modulatorMacroProcessors"sv;
-  static constexpr auto kTrackLanesKey = "lanes"sv;
   static constexpr auto kRecordingParamKey = "recordingParam"sv;
   static constexpr auto kPianoRollKey = "pianoRoll"sv;
   static constexpr auto kClipLauncherModeKey = "clipLauncherMode"sv;

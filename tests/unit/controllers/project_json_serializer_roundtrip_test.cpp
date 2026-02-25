@@ -306,6 +306,169 @@ TEST_F (ProjectSerializationTest, RoundTrip_ClipLauncherPreserved)
     }
 }
 
+TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
+{
+  auto original_project = create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Create a plugin in the project's plugin registry
+  auto &plugin_registry = original_project->get_plugin_registry ();
+  auto &port_registry = original_project->get_port_registry ();
+  auto &param_registry = original_project->get_param_registry ();
+
+  // Create plugin descriptor
+  auto descriptor = std::make_unique<plugins::PluginDescriptor> ();
+  descriptor->name_ = u8"Test EQ Plugin";
+  descriptor->protocol_ = plugins::Protocol::ProtocolType::CLAP;
+
+  plugins::PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+
+  // Create the plugin
+  auto plugin_ref = plugin_registry.create_object<plugins::InternalPluginBase> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = port_registry, .param_registry_ = param_registry },
+    [project_dir = this->project_dir] () { return project_dir / "plugins"; },
+    nullptr);
+  auto * plugin = plugin_ref.get_object_as<plugins::InternalPluginBase> ();
+  plugin->set_configuration (config);
+
+  create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Plugin Test");
+
+  // Validate against schema
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); });
+
+  // Verify plugin is in the registry with correct structure
+  auto &plugins1 = j1["projectData"]["registries"]["pluginRegistry"];
+  EXPECT_EQ (plugins1.size (), 1);
+  EXPECT_TRUE (plugins1[0].contains ("protocol"));
+  EXPECT_TRUE (plugins1[0].contains ("configuration"));
+
+  // Deserialize into new project
+  auto deserialized_project = create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Plugin Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify plugin registry sizes match
+  auto &plugins2 = j2["projectData"]["registries"]["pluginRegistry"];
+  EXPECT_EQ (plugins1.size (), plugins2.size ());
+
+  // Verify plugin UUID is preserved
+  std::set<std::string> plugin_ids1;
+  std::set<std::string> plugin_ids2;
+  for (const auto &p : plugins1)
+    plugin_ids1.insert (p["id"].get<std::string> ());
+  for (const auto &p : plugins2)
+    plugin_ids2.insert (p["id"].get<std::string> ());
+  EXPECT_EQ (plugin_ids1, plugin_ids2) << "Plugin IDs not preserved";
+}
+
+/// List of non-singleton track types to test
+using NonSingletonTrackTypes = ::testing::Types<
+  structure::tracks::MidiTrack,
+  structure::tracks::AudioTrack,
+  structure::tracks::InstrumentTrack,
+  structure::tracks::MidiGroupTrack,
+  structure::tracks::AudioGroupTrack,
+  structure::tracks::FolderTrack,
+  structure::tracks::MidiBusTrack,
+  structure::tracks::AudioBusTrack>;
+
+template <typename TrackT>
+class TrackRoundTripTest : public ProjectSerializationTest
+{
+};
+
+TYPED_TEST_SUITE (TrackRoundTripTest, NonSingletonTrackTypes);
+
+TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
+{
+  using TrackType = TypeParam;
+
+  auto original_project = this->create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Create a track using the project's track factory
+  auto track_ref =
+    original_project->track_factory_->template create_empty_track<TrackType> ();
+  auto * track = track_ref.template get_object_as<TrackType> ();
+  ASSERT_NE (track, nullptr);
+  track->setName (u8"Test Track");
+
+  // Add the track to the tracklist
+  original_project->tracklist ()->collection ()->add_track (track_ref);
+
+  this->create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *this->ui_state, *this->undo_stack,
+    this->TEST_APP_VERSION, "Track Test");
+
+  // Validate against schema
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); });
+
+  // Verify track is in the registry
+  auto &tracks1 = j1["projectData"]["registries"]["trackRegistry"];
+  EXPECT_GE (tracks1.size (), 1)
+    << "Track registry should contain the test track";
+
+  // Verify track appears in tracklist
+  auto &tl1 = j1["projectData"]["tracklist"]["tracks"];
+  EXPECT_GE (tl1.size (), 1) << "Tracklist should contain the track reference";
+
+  // Deserialize into new project
+  auto deserialized_project = this->create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  this->create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *this->ui_state, *this->undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *this->ui_state, *this->undo_stack,
+    this->TEST_APP_VERSION, "Track Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify track registry sizes match
+  auto &tracks2 = j2["projectData"]["registries"]["trackRegistry"];
+  EXPECT_EQ (tracks1.size (), tracks2.size ()) << "Track registry size mismatch";
+
+  // Verify track UUID is preserved
+  std::set<std::string> track_ids1;
+  std::set<std::string> track_ids2;
+  for (const auto &t : tracks1)
+    track_ids1.insert (t["id"].get<std::string> ());
+  for (const auto &t : tracks2)
+    track_ids2.insert (t["id"].get<std::string> ());
+  EXPECT_EQ (track_ids1, track_ids2) << "Track IDs not preserved";
+
+  // Verify tracklist track references are preserved
+  auto &tl2 = j2["projectData"]["tracklist"]["tracks"];
+  EXPECT_EQ (tl1.size (), tl2.size ()) << "Tracklist size mismatch";
+  for (size_t i = 0; i < tl1.size () && i < tl2.size (); ++i)
+    {
+      EXPECT_EQ (tl1[i], tl2[i])
+        << "Track reference at index " << i << " differs";
+    }
+}
+
 // ============================================================================
 // Property-Based Round-Trip Tests
 // ============================================================================

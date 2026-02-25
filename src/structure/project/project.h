@@ -213,12 +213,14 @@ private:
 
   plugins::PluginHostWindowFactory plugin_host_window_provider_;
 
-  dsp::FileAudioSourceRegistry *    file_audio_source_registry_{};
-  dsp::PortRegistry *               port_registry_{};
-  dsp::ProcessorParameterRegistry * param_registry_{};
-  PluginRegistry *                  plugin_registry_{};
-  structure::arrangement::ArrangerObjectRegistry * arranger_object_registry_{};
-  structure::tracks::TrackRegistry *               track_registry_{};
+  utils::QObjectUniquePtr<dsp::FileAudioSourceRegistry>
+                                             file_audio_source_registry_;
+  utils::QObjectUniquePtr<dsp::PortRegistry> port_registry_;
+  utils::QObjectUniquePtr<dsp::ProcessorParameterRegistry> param_registry_;
+  utils::QObjectUniquePtr<PluginRegistry>                  plugin_registry_;
+  utils::QObjectUniquePtr<structure::arrangement::ArrangerObjectRegistry>
+    arranger_object_registry_;
+  utils::QObjectUniquePtr<structure::tracks::TrackRegistry> track_registry_;
 
   ProjectDirectoryPathProvider project_directory_path_provider_;
 

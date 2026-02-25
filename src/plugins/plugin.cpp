@@ -160,12 +160,29 @@ Plugin::init_param_caches ()
 }
 
 void
+to_json (nlohmann::json &j, const Plugin &p)
+{
+  to_json (j, static_cast<const Plugin::UuidIdentifiableObject &> (p));
+  to_json (j, static_cast<const dsp::ProcessorBase &> (p));
+  j[Plugin::kConfigurationKey] = p.configuration_;
+  if (p.program_index_.has_value ())
+    {
+      j[Plugin::kProgramIndexKey] = *p.program_index_;
+    }
+  j[Plugin::kProtocolKey] = p.get_protocol ();
+  j[Plugin::kVisibleKey] = p.visible_;
+}
+
+void
 from_json (const nlohmann::json &j, Plugin &p)
 {
   from_json (j, static_cast<Plugin::UuidIdentifiableObject &> (p));
   from_json (j, static_cast<dsp::ProcessorBase &> (p));
-  j.at (Plugin::kSettingKey).get_to (p.configuration_);
-  j.at (Plugin::kProgramIndexKey).get_to (p.program_index_);
+  j.at (Plugin::kConfigurationKey).get_to (p.configuration_);
+  if (j.contains (Plugin::kProgramIndexKey))
+    {
+      p.program_index_ = j[Plugin::kProgramIndexKey].get<int> ();
+    }
   j.at (Plugin::kVisibleKey).get_to (p.visible_);
 
   if (p.configuration_)

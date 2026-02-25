@@ -740,23 +740,11 @@
               "maximum": 10,
               "description": "Plugin protocol: 0=internal, 1=lv2, 2=dssi, 3=ladspa, 4=vst, 5=vst3, 6=au, 7=sfz, 8=sf2, 9=clap, 10=jsfx"
             },
-            "setting": {
+            "configuration": {
               "$ref": "#/definitions/pluginConfiguration"
             },
             "programIndex": {
               "type": "integer"
-            },
-            "inlineState": {
-              "$comment": "JUCE-compatible inline plugin state as a base64-encoded string",
-              "type": "string"
-            },
-            "statePath": {
-              "$comment": "Path to the plugin state, if not using inline state",
-              "type": "string"
-            },
-            "statePathIsDirectory": {
-              "$comment": "Whether the statePath is a directory (assumed to be a file if false)",
-              "type": "boolean"
             },
             "visible": {
               "$comment": "Whether the plugin UI is currently opened",
@@ -766,7 +754,7 @@
           "required": [
             "id",
             "protocol",
-            "setting"
+            "configuration"
           ]
         }
       ]
@@ -994,7 +982,7 @@
                   "type": "boolean",
                   "description": "Whether drum mode in the piano roll is enabled for this track"
                 },
-                "midiCh": {
+                "midiChannel": {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 16,

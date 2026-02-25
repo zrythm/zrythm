@@ -28,8 +28,8 @@ MenuBar {
       action: root.saveController.saveAsAction
     }
 
-    Action {
-      text: qsTr("Load…")
+    MenuItem {
+      action: root.saveController.loadAction
     }
 
     Action {

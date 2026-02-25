@@ -644,6 +644,31 @@ from_json (const nlohmann::json &j, Tracklist &t)
 {
   j.at (Tracklist::kPinnedTracksCutoffKey).get_to (t.pinned_tracks_cutoff_);
   from_json (j, *t.track_collection_);
+  for (const auto &track_ref : t.track_collection_->tracks ())
+    {
+      const auto track_var = track_ref.get_object ();
+      std::visit (
+        [&] (auto &&track) {
+          using TrackT = base_type<decltype (track)>;
+          if constexpr (std::is_same_v<TrackT, ChordTrack>)
+            {
+              t.singletonTracks ()->setChordTrack (track);
+            }
+          else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
+            {
+              t.singletonTracks ()->setMarkerTrack (track);
+            }
+          else if constexpr (std::is_same_v<TrackT, MasterTrack>)
+            {
+              t.singletonTracks ()->setMasterTrack (track);
+            }
+          else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
+            {
+              t.singletonTracks ()->setModulatorTrack (track);
+            }
+        },
+        track_var);
+    }
   from_json (j, *t.track_routing_);
 }
 

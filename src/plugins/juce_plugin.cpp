@@ -615,4 +615,30 @@ JucePlugin::hide_editor ()
   editor_visible_ = false;
 }
 
+void
+to_json (nlohmann::json &j, const JucePlugin &p)
+{
+  to_json (j, static_cast<const Plugin &> (p));
+  if (p.juce_plugin_)
+    {
+      juce::MemoryBlock state_data;
+      p.juce_plugin_->getStateInformation (state_data);
+      auto encoded = state_data.toBase64Encoding ();
+      j[JucePlugin::kStateKey] = encoded.toStdString ();
+    }
+}
+void
+from_json (const nlohmann::json &j, JucePlugin &p)
+{
+  // Note that state must be deserialized first, because the Plugin
+  // deserialization may cause an instantiation
+  std::string state_str;
+  j[JucePlugin::kStateKey].get_to (state_str);
+  p.state_to_apply_.emplace ();
+  p.state_to_apply_->fromBase64Encoding (state_str);
+
+  // Now that we have the state, continue deserializing base Plugin...
+  from_json (j, static_cast<Plugin &> (p));
+}
+
 } // namespace zrythm::plugins

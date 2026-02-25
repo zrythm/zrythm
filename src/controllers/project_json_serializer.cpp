@@ -89,44 +89,52 @@ ProjectJsonSerializer::deserialize (
 {
   validate_json (j);
 
-  // Check schema version compatibility
-  utils::Version schema_version;
-  from_json (j.at (utils::serialization::kSchemaVersionKey), schema_version);
+  try
+    {
+      // Check schema version compatibility
+      utils::Version schema_version;
+      from_json (j.at (utils::serialization::kSchemaVersionKey), schema_version);
 
-  // Reject files from future major versions
-  if (schema_version.major > SCHEMA_VERSION.major)
+      // Reject files from future major versions
+      if (schema_version.major > SCHEMA_VERSION.major)
+        {
+          throw ZrythmException (
+            fmt::format (
+              "Project file is from a newer version (format {}.x) - please upgrade Zrythm",
+              schema_version.major));
+        }
+
+      // Warn about older major versions (may need migration in the future)
+      if (schema_version.major < SCHEMA_VERSION.major)
+        {
+          z_warning (
+            "Project file is from an older format version ({}.{}) - migration may be needed",
+            schema_version.major, schema_version.minor);
+          // In the future, add migration logic here:
+          // auto migrated_json = migrate_to_current_version(j);
+          // from_json (migrated_json.at (kProjectData), project);
+          // return;
+        }
+
+      // Deserialize core project data
+      from_json (j.at (kProjectData), project);
+
+      // Deserialize UI state (if present)
+      if (j.contains (kUiState))
+        {
+          from_json (j.at (kUiState), ui_state);
+        }
+
+      // Deserialize undo history (if present)
+      if (j.contains (kUndoHistory))
+        {
+          from_json (j.at (kUndoHistory), undo_stack);
+        }
+    }
+  catch (const std::exception &e)
     {
       throw ZrythmException (
-        fmt::format (
-          "Project file is from a newer version (format {}.x) - please upgrade Zrythm",
-          schema_version.major));
-    }
-
-  // Warn about older major versions (may need migration in the future)
-  if (schema_version.major < SCHEMA_VERSION.major)
-    {
-      z_warning (
-        "Project file is from an older format version ({}.{}) - migration may be needed",
-        schema_version.major, schema_version.minor);
-      // In the future, add migration logic here:
-      // auto migrated_json = migrate_to_current_version(j);
-      // from_json (migrated_json.at (kProjectData), project);
-      // return;
-    }
-
-  // Deserialize core project data
-  from_json (j.at (kProjectData), project);
-
-  // Deserialize UI state (if present)
-  if (j.contains (kUiState))
-    {
-      from_json (j.at (kUiState), ui_state);
-    }
-
-  // Deserialize undo history (if present)
-  if (j.contains (kUndoHistory))
-    {
-      from_json (j.at (kUndoHistory), undo_stack);
+        fmt::format ("Project JSON deserialization failed: {}", e.what ()));
     }
 }
 

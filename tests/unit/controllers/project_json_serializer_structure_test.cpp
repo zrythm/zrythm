@@ -345,7 +345,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PluginRegistryStructure)
       EXPECT_TRUE (plugin["outputPorts"].is_array ());
       EXPECT_TRUE (plugin.contains ("parameters"));
       EXPECT_TRUE (plugin["parameters"].is_array ());
-      EXPECT_TRUE (plugin.contains ("setting"));
+      EXPECT_TRUE (plugin.contains ("configuration"));
     }
 }
 

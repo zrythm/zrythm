@@ -116,29 +116,8 @@ private:
   void hide_editor ();
 
   static constexpr auto kStateKey = "state"sv;
-  friend void           to_json (nlohmann::json &j, const JucePlugin &p)
-  {
-    to_json (j, static_cast<const Plugin &> (p));
-    if (p.juce_plugin_)
-      {
-        juce::MemoryBlock state_data;
-        p.juce_plugin_->getStateInformation (state_data);
-        auto encoded = state_data.toBase64Encoding ();
-        j[kStateKey] = encoded.toStdString ();
-      }
-  }
-  friend void from_json (const nlohmann::json &j, JucePlugin &p)
-  {
-    // Note that state must be deserialized first, because the Plugin
-    // deserialization may cause an instantiation
-    std::string state_str;
-    j[kStateKey].get_to (state_str);
-    p.state_to_apply_.emplace ();
-    p.state_to_apply_->fromBase64Encoding (state_str);
-
-    // Now that we have the state, continue deserializing base Plugin...
-    from_json (j, static_cast<Plugin &> (p));
-  }
+  friend void           to_json (nlohmann::json &j, const JucePlugin &p);
+  friend void           from_json (const nlohmann::json &j, JucePlugin &p);
 
 private:
   // ============================================================================

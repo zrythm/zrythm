@@ -106,15 +106,9 @@ TrackCollection::data (const QModelIndex &index, int role) const
     case TrackPtrRole:
       return QVariant::fromStdVariant (track_var);
     case TrackFoldableRole:
-      return track_expanded_.contains (track_ref.id ());
+      return Track::type_is_foldable (track_ref.get_object_base ()->type ());
     case TrackExpandedRole:
-      {
-        auto it = track_expanded_.find (track_ref.id ());
-        if (it == track_expanded_.end ())
-          return false;
-
-        return it->second;
-      }
+      return expanded_tracks_.contains (track_ref.id ());
     case TrackDepthRole:
       {
         int         depth = 0;
@@ -196,7 +190,7 @@ TrackCollection::insert_track (const TrackUuidReference &track_id, int pos)
   auto * track = tracks::from_variant (track_id.get_object ());
   if (Track::type_is_foldable (track->type ()))
     {
-      track_expanded_[track->get_uuid ()] = true;
+      expanded_tracks_.insert (track->get_uuid ());
     }
 
   // If inserting at a specific position, move it there
@@ -222,8 +216,8 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
   beginRemoveRows (
     {}, static_cast<int> (track_index), static_cast<int> (track_index));
 
-  // Remove from foldable track maps
-  track_expanded_.erase (track_id);
+  // Remove from expanded tracks set
+  expanded_tracks_.erase (track_id);
 
   // Remove from folder parent map (both as child and as parent)
   folder_parent_.erase (track_id);
@@ -279,7 +273,7 @@ TrackCollection::clear ()
 {
   beginResetModel ();
   tracks_.clear ();
-  track_expanded_.clear ();
+  expanded_tracks_.clear ();
   folder_parent_.clear ();
   endResetModel ();
 }
@@ -291,26 +285,26 @@ TrackCollection::clear ()
 void
 TrackCollection::set_track_expanded (const Track::Uuid &track_id, bool expanded)
 {
-  if (track_expanded_.contains (track_id))
+  if (expanded)
     {
-      track_expanded_[track_id] = expanded;
-
-      const auto   track_index = static_cast<int> (get_track_index (track_id));
-      QModelIndex  model_index = createIndex (track_index, 0);
-      QVector<int> roles;
-      roles << TrackExpandedRole;
-      Q_EMIT dataChanged (model_index, model_index, roles);
+      expanded_tracks_.insert (track_id);
     }
+  else
+    {
+      expanded_tracks_.erase (track_id);
+    }
+
+  const auto   track_index = static_cast<int> (get_track_index (track_id));
+  QModelIndex  model_index = createIndex (track_index, 0);
+  QVector<int> roles;
+  roles << TrackExpandedRole;
+  Q_EMIT dataChanged (model_index, model_index, roles);
 }
 
 bool
 TrackCollection::get_track_expanded (const Track::Uuid &track_id) const
 {
-  if (track_expanded_.contains (track_id))
-    {
-      return track_expanded_.at (track_id);
-    }
-  return false;
+  return expanded_tracks_.contains (track_id);
 }
 
 void
@@ -443,7 +437,7 @@ to_json (nlohmann::json &j, const TrackCollection &collection)
 {
   j[TrackCollection::kTracksKey] = collection.tracks_;
   j[TrackCollection::kFolderParentsKey] = collection.folder_parent_;
-  j[TrackCollection::kExpandedTracksKey] = collection.track_expanded_;
+  j[TrackCollection::kExpandedTracksKey] = collection.expanded_tracks_;
 }
 
 void
@@ -465,7 +459,7 @@ from_json (const nlohmann::json &j, TrackCollection &collection)
   if (j.contains (TrackCollection::kExpandedTracksKey))
     {
       j.at (TrackCollection::kExpandedTracksKey)
-        .get_to (collection.track_expanded_);
+        .get_to (collection.expanded_tracks_);
     }
 }
 

@@ -8,6 +8,28 @@ import Zrythm
 Item {
   id: root
 
+  readonly property Action loadAction: Action {
+    shortcut: StandardKey.Open
+    text: qsTr("Load…")
+
+    onTriggered: {
+      root.loadFolderDialog.open();
+    }
+  }
+  property FolderDialog loadFolderDialog: FolderDialog {
+    title: qsTr("Load Project")
+
+    onAccepted: {
+      root.loadProgressDialog.resetValues();
+      root.loadProgressDialog.open();
+      root.loadFuture = GlobalState.application.projectManager.loadProject(QmlUtils.toPathString(selectedFolder));
+    }
+  }
+  property QFutureQmlWrapper loadFuture
+  property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
+    future: root.loadFuture
+    labelText: qsTr("Loading project...")
+  }
   readonly property Action saveAction: Action {
     shortcut: StandardKey.Save
     text: qsTr("Save")
@@ -46,7 +68,7 @@ Item {
 
   Connections {
     function onFinished() {
-      const savedPath = root.saveFuture.resultVar;
+      const savedPath = root.saveFuture.resultVar();
       if (savedPath && savedPath !== "") {
         GlobalState.application.projectManager.recentProjects.addRecentProject(savedPath);
       }
