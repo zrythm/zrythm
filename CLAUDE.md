@@ -70,14 +70,14 @@ Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and us
 
 ```bash
 # CI/CD
-glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm
-glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm
+glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get job logs (use | tail -N for large outputs)
+glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List pipeline jobs
 
 # Issues
-glab issue view <id> -R https://gitlab.zrythm.org/zrythm/zrythm
-glab issue close <id> -R https://gitlab.zrythm.org/zrythm/zrythm
-glab issue note <id> -R https://gitlab.zrythm.org/zrythm/zrythm -m "comment"
-glab issue update <id> -R https://gitlab.zrythm.org/zrythm/zrythm --label "label-name"
+glab issue view <id> -R https://gitlab.zrythm.org/zrythm/zrythm    # View issue details
+glab issue close <id> -R https://gitlab.zrythm.org/zrythm/zrythm   # Close an issue
+glab issue note <id> -R https://gitlab.zrythm.org/zrythm/zrythm -m "comment"  # Add comment to issue
+glab issue update <id> -R https://gitlab.zrythm.org/zrythm/zrythm --label "label-name"  # Add label to issue
 ```
 
 ---
@@ -201,6 +201,7 @@ Zrythm makes extensive use of modern C++ features:
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
+- Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
 
 ### Unit Safety
 
