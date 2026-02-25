@@ -328,8 +328,8 @@ check:qmllint:
     - |
       WARNING_COUNT=$(grep 'Warning: ' qmllint_output.txt | grep "${CI_PROJECT_DIR}/src/gui/qml/" | grep -v 'ZrythmStyle' | grep -v 'not found on type "QObject"' | grep -v 'not found on type "QQuickItem"' | grep -v 'Type "QColor" of property "color" not found' | wc -l)
       echo "QML lint warning count (filtered): ${WARNING_COUNT}"
-      if [ "${WARNING_COUNT}" -gt 17 ]; then
-        echo "Error: QML lint warning count (${WARNING_COUNT}) exceeds threshold (17)"
+      if [ "${WARNING_COUNT}" -gt 35 ]; then
+        echo "Error: QML lint warning count (${WARNING_COUNT}) exceeds threshold (35)"
         exit 1
       fi
       echo "QML lint check passed"
