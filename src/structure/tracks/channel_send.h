@@ -6,6 +6,7 @@
 #include "dsp/audio_port.h"
 #include "dsp/midi_port.h"
 #include "dsp/parameter.h"
+#include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "utils/icloneable.h"
 
@@ -15,19 +16,26 @@ namespace zrythm::structure::tracks
 /**
  * Channel send.
  *
- * The actual connection is tracked separately by PortConnectionsManager.
+ * Sends route audio or MIDI signals from a channel to a destination port.
+ * The destination must be an input port of the same type (Audio or MIDI).
  */
 class ChannelSend : public QObject, public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * amountParam READ amountParam CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * enabledParam READ enabledParam CONSTANT)
+  Q_PROPERTY (
+    QVariant destinationPort READ destinationPort WRITE setDestinationPort
+      NOTIFY destinationPortChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
   struct ChannelSendProcessingCaches
   {
     dsp::ProcessorParameter *     amount_param_{};
+    dsp::ProcessorParameter *     enabled_param_{};
     std::vector<dsp::AudioPort *> audio_ins_rt_;
     std::vector<dsp::AudioPort *> audio_outs_rt_;
     dsp::MidiPort *               midi_in_rt_{};
@@ -59,6 +67,21 @@ public:
   {
     return get_parameters ().front ().get_object_as<dsp::ProcessorParameter> ();
   }
+
+  /**
+   * @brief Whether this send is enabled.
+   *
+   * When disabled, the send outputs silence (audio) or no events (MIDI).
+   */
+  dsp::ProcessorParameter * enabledParam () const;
+
+  /**
+   * @brief QML accessor for destination port.
+   */
+  QVariant destinationPort () const;
+  void     setDestinationPort (const QVariant &port);
+
+  Q_SIGNAL void destinationPortChanged ();
 
   // ============================================================================
 
@@ -105,9 +128,34 @@ public:
     return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
+  /**
+   * @brief Returns the destination port reference, if set.
+   */
+  [[nodiscard]] auto destination_port () const { return destination_port_; }
+
+  /**
+   * @brief Sets the destination port.
+   *
+   * @param port The destination port reference.
+   * @throws std::invalid_argument if the port is not an input port of a
+   *         compatible type (Audio or MIDI matching this send's type).
+   */
+  void set_destination_port (dsp::PortUuidReference port);
+
+  /**
+   * @brief Clears the destination port.
+   */
+  void clear_destination_port ();
+
+  /**
+   * @brief Checks if this send has a destination configured.
+   */
+  bool has_destination () const { return destination_port_.has_value (); }
+
 private:
   static constexpr auto kSignalTypeKey = "signalType"sv;
   static constexpr auto kIsPrefaderKey = "isPrefader"sv;
+  static constexpr auto kDestinationPortKey = "destinationPort"sv;
   friend void           to_json (nlohmann::json &j, const ChannelSend &p);
   friend void           from_json (const nlohmann::json &j, ChannelSend &p);
 
@@ -123,6 +171,13 @@ private:
    * @brief Whether this is a prefader send (as opposed to post-fader).
    */
   bool is_prefader_{};
+
+  /**
+   * @brief Reference to the destination input port.
+   *
+   * Must be an input port of the same type as signal_type_ (Audio or MIDI).
+   */
+  std::optional<dsp::PortUuidReference> destination_port_;
 
   // Processing caches
   std::unique_ptr<ChannelSendProcessingCaches> processing_caches_;

@@ -69,12 +69,14 @@ TEST_F (ChannelSendTest, ConstructionAndBasicProperties)
   EXPECT_EQ (audio_send_->is_midi (), false);
   EXPECT_EQ (audio_send_->is_prefader (), true);
   EXPECT_NE (audio_send_->amountParam (), nullptr);
+  EXPECT_NE (audio_send_->enabledParam (), nullptr);
 
   // Test MIDI send
   EXPECT_EQ (midi_send_->is_audio (), false);
   EXPECT_EQ (midi_send_->is_midi (), true);
   EXPECT_EQ (midi_send_->is_prefader (), false);
   EXPECT_NE (midi_send_->amountParam (), nullptr);
+  EXPECT_NE (midi_send_->enabledParam (), nullptr);
 }
 
 TEST_F (ChannelSendTest, PortConfiguration)
@@ -117,6 +119,87 @@ TEST_F (ChannelSendTest, ParameterFunctionality)
   // Test clamping
   amount_param->setBaseValue (1.5f);
   EXPECT_NEAR (amount_param->baseValue (), 1.f, 0.001f);
+}
+
+TEST_F (ChannelSendTest, EnabledParameter)
+{
+  auto * enabled_param = audio_send_->enabledParam ();
+  EXPECT_NE (enabled_param, nullptr);
+
+  // Test toggle parameter range
+  EXPECT_NEAR (enabled_param->range ().minf_, 0.0f, 0.001f);
+  EXPECT_NEAR (enabled_param->range ().maxf_, 1.0f, 0.001f);
+  EXPECT_NEAR (enabled_param->range ().deff_, 1.0f, 0.001f); // Default enabled
+
+  // Test enabled by default
+  EXPECT_NEAR (enabled_param->baseValue (), 1.0f, 0.001f);
+
+  // Test disabling
+  enabled_param->setBaseValue (0.0f);
+  EXPECT_NEAR (enabled_param->baseValue (), 0.0f, 0.001f);
+
+  // Test re-enabling
+  enabled_param->setBaseValue (1.0f);
+  EXPECT_NEAR (enabled_param->baseValue (), 1.0f, 0.001f);
+}
+
+TEST_F (ChannelSendTest, DestinationPort)
+{
+  // Initially no destination
+  EXPECT_FALSE (audio_send_->has_destination ());
+  EXPECT_FALSE (audio_send_->destination_port ().has_value ());
+
+  // Create a destination audio input port
+  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Destination Input", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Stereo, 2);
+
+  // Set destination
+  audio_send_->set_destination_port (dest_port_ref);
+  EXPECT_TRUE (audio_send_->has_destination ());
+  EXPECT_TRUE (audio_send_->destination_port ().has_value ());
+
+  // Clear destination
+  audio_send_->clear_destination_port ();
+  EXPECT_FALSE (audio_send_->has_destination ());
+  EXPECT_FALSE (audio_send_->destination_port ().has_value ());
+}
+
+TEST_F (ChannelSendTest, DestinationPortTypeValidation)
+{
+  // Create an audio input port
+  auto audio_input_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Audio Input", dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Stereo, 2);
+
+  // Create a MIDI input port
+  auto midi_input_ref = port_registry_->create_object<dsp::MidiPort> (
+    u8"MIDI Input", dsp::PortFlow::Input);
+
+  // Audio send should accept audio input
+  EXPECT_NO_THROW (audio_send_->set_destination_port (audio_input_ref));
+
+  // Audio send should reject MIDI input
+  EXPECT_THROW (
+    audio_send_->set_destination_port (midi_input_ref), std::invalid_argument);
+
+  // MIDI send should accept MIDI input
+  EXPECT_NO_THROW (midi_send_->set_destination_port (midi_input_ref));
+
+  // MIDI send should reject audio input
+  EXPECT_THROW (
+    midi_send_->set_destination_port (audio_input_ref), std::invalid_argument);
+}
+
+TEST_F (ChannelSendTest, DestinationPortFlowValidation)
+{
+  // Create an audio OUTPUT port (wrong flow)
+  auto audio_output_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Audio Output", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo,
+    2);
+
+  // Audio send should reject output ports
+  EXPECT_THROW (
+    audio_send_->set_destination_port (audio_output_ref), std::invalid_argument);
 }
 
 TEST_F (ChannelSendTest, PrepareAndReleaseResources)
@@ -194,6 +277,43 @@ TEST_F (ChannelSendTest, AudioProcessing)
     }
 }
 
+TEST_F (ChannelSendTest, AudioProcessingWhenDisabled)
+{
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  auto &stereo_in = audio_send_->get_stereo_in_port ();
+  auto &stereo_out = audio_send_->get_stereo_out_port ();
+
+  // Set amount to 1.0 (unity gain)
+  audio_send_->amountParam ()->setBaseValue (
+    audio_send_->amountParam ()->range ().convertTo0To1 (1.0f));
+
+  // Disable the send
+  audio_send_->enabledParam ()->setBaseValue (0.0f);
+
+  // Fill input with non-zero data
+  for (int i = 0; i < 512; i++)
+    {
+      stereo_in.buffers ()->setSample (0, i, 1.0f);
+      stereo_in.buffers ()->setSample (1, i, 2.0f);
+    }
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+  audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  // Output should be silent when disabled
+  for (int i = 0; i < 512; i++)
+    {
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 0.0f, 1e-6);
+      EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 0.0f, 1e-6);
+    }
+}
+
 TEST_F (ChannelSendTest, MidiProcessing)
 {
   midi_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
@@ -221,12 +341,45 @@ TEST_F (ChannelSendTest, MidiProcessing)
   EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
 }
 
+TEST_F (ChannelSendTest, MidiProcessingWhenDisabled)
+{
+  midi_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  auto &midi_in = midi_send_->get_midi_in_port ();
+  auto &midi_out = midi_send_->get_midi_out_port ();
+
+  // Disable the send
+  midi_send_->enabledParam ()->setBaseValue (0.0f);
+
+  // Add MIDI events to input
+  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
+  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
+
+  EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 512
+  };
+  midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  // Output should be empty when disabled
+  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
+}
+
 TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
 {
   audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Set some parameter values
   audio_send_->amountParam ()->setBaseValue (0.75f);
+  audio_send_->enabledParam ()->setBaseValue (1.0f);
+
+  // Set a destination port
+  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Destination Input", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Stereo, 2);
+  audio_send_->set_destination_port (dest_port_ref);
 
   // Serialize
   nlohmann::json j = *audio_send_;
@@ -255,6 +408,13 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   EXPECT_EQ (deserialized.is_midi (), false);
   EXPECT_EQ (deserialized.is_prefader (), true);
   EXPECT_NEAR (deserialized.amountParam ()->baseValue (), 0.75f, 0.001f);
+
+  // Verify destination port was serialized
+  EXPECT_TRUE (deserialized.has_destination ());
+  EXPECT_TRUE (deserialized.destination_port ().has_value ());
+  EXPECT_EQ (
+    deserialized.destination_port ()->id (),
+    dest_port_ref.get_object_base ()->get_uuid ());
 }
 
 TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
@@ -263,6 +423,7 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
 
   // Set some parameter values
   midi_send_->amountParam ()->setBaseValue (0.7f);
+  midi_send_->enabledParam ()->setBaseValue (0.0f); // Disabled
 
   // Serialize
   nlohmann::json j = *midi_send_;
@@ -286,6 +447,30 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
   EXPECT_EQ (deserialized.is_midi (), true);
   EXPECT_EQ (deserialized.is_prefader (), false);
   EXPECT_NEAR (deserialized.amountParam ()->baseValue (), 0.7f, 0.001f);
+  // Enabled should be false
+  EXPECT_NEAR (deserialized.enabledParam ()->baseValue (), 0.0f, 0.001f);
+}
+
+TEST_F (ChannelSendTest, JsonSerializationWithoutDestination)
+{
+  audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  // Don't set a destination port
+
+  // Serialize
+  nlohmann::json j = *audio_send_;
+
+  // Create new send from JSON
+  ChannelSend deserialized (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    dsp::PortType::Audio, 2, false);
+
+  from_json (j, deserialized);
+
+  // Verify no destination
+  EXPECT_FALSE (deserialized.has_destination ());
+  EXPECT_FALSE (deserialized.destination_port ().has_value ());
 }
 
 TEST_F (ChannelSendTest, DifferentSlotNumbers)
@@ -315,6 +500,14 @@ TEST_F (ChannelSendTest, DifferentSlotNumbers)
   EXPECT_NE (
     send1.amountParam ()->get_unique_id (),
     send3.amountParam ()->get_unique_id ());
+
+  // Also check enabled params are different
+  EXPECT_NE (
+    send1.enabledParam ()->get_unique_id (),
+    send2.enabledParam ()->get_unique_id ());
+  EXPECT_NE (
+    send2.enabledParam ()->get_unique_id (),
+    send3.enabledParam ()->get_unique_id ());
 }
 
 TEST_F (ChannelSendTest, EdgeCases)

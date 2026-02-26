@@ -595,8 +595,20 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   audio_channel_ = createAudioChannel ();
   ASSERT_NE (audio_channel_, nullptr);
 
+  // Create a destination audio input port and set it on the send BEFORE building
+  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Destination Track Input", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Stereo, 2);
+
+  auto &send = audio_channel_->pre_fader_sends ().front ();
+  send->set_destination_port (dest_port_ref);
+  ASSERT_TRUE (send->has_destination ());
+
   // Add nodes first
   ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  // Add destination port node to graph (required for connection)
+  graph_.add_node_for_processable (*dest_port_ref.get_object_base ());
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -613,10 +625,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   // Verify basic connections
   verifyBasicAudioChannelConnections (*track_processor);
 
-  // Check also that pre-fader has connections to sends
+  // Check that pre-fader has connections to sends
   verifyProcessorsConnected (
     audio_channel_->get_audio_pre_fader (),
     *audio_channel_->pre_fader_sends ().front ());
+
+  // Verify send output is connected to destination port by ChannelSubgraphBuilder
+  EXPECT_TRUE (hasConnection (
+    send->get_stereo_out_port (), *dest_port_ref.get_object_base ()));
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
@@ -624,8 +640,20 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   audio_channel_ = createAudioChannel ();
   ASSERT_NE (audio_channel_, nullptr);
 
+  // Create a destination audio input port and set it on the send BEFORE building
+  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
+    u8"Destination Track Input", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Stereo, 2);
+
+  auto &send = audio_channel_->post_fader_sends ().front ();
+  send->set_destination_port (dest_port_ref);
+  ASSERT_TRUE (send->has_destination ());
+
   // Add nodes first
   ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  // Add destination port node to graph (required for connection)
+  graph_.add_node_for_processable (*dest_port_ref.get_object_base ());
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -645,6 +673,10 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   // Check that fader has connections to sends
   verifyProcessorsConnected (
     audio_channel_->get_fader (), *audio_channel_->post_fader_sends ().front ());
+
+  // Verify send output is connected to destination port by ChannelSubgraphBuilder
+  EXPECT_TRUE (hasConnection (
+    send->get_stereo_out_port (), *dest_port_ref.get_object_base ()));
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)

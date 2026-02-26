@@ -711,6 +711,14 @@
       "allOf": [
         {
           "$ref": "#/definitions/processorBase"
+        },
+        {
+          "properties": {
+            "destinationPort": {
+              "$ref": "#/definitions/uuid",
+              "description": "UUID of the destination input port (must be Audio or MIDI type matching the send)"
+            }
+          }
         }
       ]
     },

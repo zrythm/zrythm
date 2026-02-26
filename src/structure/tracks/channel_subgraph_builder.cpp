@@ -333,6 +333,13 @@ ChannelSubgraphBuilder::add_connections (
           connect_ports (
             ch.get_midi_pre_fader ().get_midi_out_port (0).get_uuid (),
             send->get_midi_in_port ().get_uuid ());
+
+          // connect send output to destination port (if set)
+          if (auto dest = send->destination_port ())
+            {
+              connect_ports (
+                send->get_midi_out_port ().get_uuid (), dest->id ());
+            }
         }
       else if (send->is_audio ())
         {
@@ -340,6 +347,13 @@ ChannelSubgraphBuilder::add_connections (
           connect_ports (
             ch.get_audio_pre_fader ().get_audio_out_port ().get_uuid (),
             send->get_stereo_in_port ().get_uuid ());
+
+          // connect send output to destination port (if set)
+          if (auto dest = send->destination_port ())
+            {
+              connect_ports (
+                send->get_stereo_out_port ().get_uuid (), dest->id ());
+            }
         }
     }
   for (const auto &send : ch.post_fader_sends ())
@@ -352,6 +366,13 @@ ChannelSubgraphBuilder::add_connections (
           connect_ports (
             fader->get_output_ports ().front ().id (),
             send->get_midi_in_port ().get_uuid ());
+
+          // connect send output to destination port (if set)
+          if (auto dest = send->destination_port ())
+            {
+              connect_ports (
+                send->get_midi_out_port ().get_uuid (), dest->id ());
+            }
         }
       else if (send->is_audio ())
         {
@@ -359,6 +380,13 @@ ChannelSubgraphBuilder::add_connections (
           connect_ports (
             fader->get_output_ports ().front ().id (),
             send->get_stereo_in_port ().get_uuid ());
+
+          // connect send output to destination port (if set)
+          if (auto dest = send->destination_port ())
+            {
+              connect_ports (
+                send->get_stereo_out_port ().get_uuid (), dest->id ());
+            }
         }
     }
 

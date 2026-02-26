@@ -19,6 +19,7 @@ ChannelSend::ChannelSend (
     : QObject (parent), dsp::ProcessorBase (dependencies),
       signal_type_ (signal_type), is_prefader_ (is_prefader)
 {
+  // Amount parameter (volume/gain)
   add_parameter (dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
     dependencies.port_registry_,
     dsp::ProcessorParameter::UniqueId (
@@ -27,6 +28,16 @@ ChannelSend::ChannelSend (
     dsp::ParameterRange (
       dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
     utils::Utf8String::from_qstring (QObject::tr ("Amount"))));
+
+  // Enabled parameter (toggle)
+  add_parameter (
+    dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
+      dependencies.port_registry_,
+      dsp::ProcessorParameter::UniqueId (
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("channel_send_{}_enabled", slot + 1))),
+      dsp::ParameterRange::make_toggle (true),
+      utils::Utf8String::from_qstring (QObject::tr ("Enabled"))));
 
   if (is_audio ())
     {
@@ -75,6 +86,63 @@ ChannelSend::ChannelSend (
         "{} Send {}", is_prefader_ ? "Pre-Fader" : "Post-Fader", slot + 1)));
 }
 
+dsp::ProcessorParameter *
+ChannelSend::enabledParam () const
+{
+  return get_parameters ().at (1).get_object_as<dsp::ProcessorParameter> ();
+}
+
+QVariant
+ChannelSend::destinationPort () const
+{
+  if (destination_port_)
+    {
+      return QVariant::fromStdVariant (destination_port_->get_object ());
+    }
+  return QVariant{};
+}
+
+void
+ChannelSend::setDestinationPort (const QVariant &port)
+{
+  const auto * port_ptr = port.value<dsp::Port *> ();
+  set_destination_port (
+    dsp::PortUuidReference{
+      port_ptr->get_uuid (), dependencies ().port_registry_ });
+}
+
+void
+ChannelSend::set_destination_port (dsp::PortUuidReference port)
+{
+  // Validate that the port is an input port
+  if (!port.get_object_base ()->is_input ())
+    {
+      throw std::invalid_argument (
+        "Destination port must be an input port, not an output port");
+    }
+
+  // Validate that the port type matches the send type
+  const auto port_type = port.get_object_base ()->type ();
+  if (port_type != signal_type_)
+    {
+      throw std::invalid_argument (
+        fmt::format (
+          "Destination port type {} does not match send type {}. "
+          "Only Audio and MIDI ports of matching types are allowed.",
+          static_cast<int> (port_type), static_cast<int> (signal_type_)));
+    }
+
+  destination_port_.emplace (std::move (port));
+  Q_EMIT destinationPortChanged ();
+}
+
+void
+ChannelSend::clear_destination_port ()
+{
+  destination_port_.reset ();
+  Q_EMIT destinationPortChanged ();
+}
+
 void
 ChannelSend::custom_process_block (
   const EngineProcessTimeInfo time_nfo,
@@ -83,11 +151,19 @@ ChannelSend::custom_process_block (
 {
   const auto local_offset = time_nfo.local_offset_;
   const auto nframes = time_nfo.nframes_;
+
+  // Check if enabled
+  const auto is_enabled =
+    processing_caches_->enabled_param_->range ().is_toggled (
+      processing_caches_->enabled_param_->currentValue ());
+
   if (is_audio ())
     {
       const auto &amount_param = processing_caches_->amount_param_;
       const auto  amount_val =
-        amount_param->range ().convertFrom0To1 (amount_param->currentValue ());
+        is_enabled
+           ? amount_param->range ().convertFrom0To1 (amount_param->currentValue ())
+           : 0.f;
       for (
         const auto &[out, in] : std::views::zip (
           processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))
@@ -97,9 +173,13 @@ ChannelSend::custom_process_block (
     }
   else if (is_midi ())
     {
-      processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
-        processing_caches_->midi_in_rt_->midi_events_.active_events_,
-        local_offset, nframes);
+      if (is_enabled)
+        {
+          processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
+            processing_caches_->midi_in_rt_->midi_events_.active_events_,
+            local_offset, nframes);
+        }
+      // When disabled, don't copy any MIDI events (output remains empty)
     }
 }
 
@@ -112,6 +192,7 @@ ChannelSend::custom_prepare_for_processing (
   processing_caches_ = std::make_unique<ChannelSendProcessingCaches> ();
 
   processing_caches_->amount_param_ = amountParam ();
+  processing_caches_->enabled_param_ = enabledParam ();
   if (is_midi ())
     {
       processing_caches_->midi_in_rt_ = &get_midi_in_port ();
@@ -142,6 +223,10 @@ init_from (
   //   static_cast<const dsp::ProcessorBase &> (other), clone_type);
   obj.signal_type_ = other.signal_type_;
   obj.is_prefader_ = other.is_prefader_;
+  if (other.destination_port_)
+    {
+      obj.destination_port_.emplace (*other.destination_port_);
+    }
 }
 
 void
@@ -150,6 +235,10 @@ to_json (nlohmann::json &j, const ChannelSend &p)
   to_json (j, static_cast<const dsp::ProcessorBase &> (p));
   j[ChannelSend::kSignalTypeKey] = p.signal_type_;
   j[ChannelSend::kIsPrefaderKey] = p.is_prefader_;
+  if (p.destination_port_)
+    {
+      j[ChannelSend::kDestinationPortKey] = *p.destination_port_;
+    }
 }
 
 void
@@ -158,6 +247,11 @@ from_json (const nlohmann::json &j, ChannelSend &p)
   from_json (j, static_cast<dsp::ProcessorBase &> (p));
   j.at (ChannelSend::kSignalTypeKey).get_to (p.signal_type_);
   j.at (ChannelSend::kIsPrefaderKey).get_to (p.is_prefader_);
+  if (j.contains (ChannelSend::kDestinationPortKey))
+    {
+      p.destination_port_.emplace (p.dependencies ().port_registry_);
+      j.at (ChannelSend::kDestinationPortKey).get_to (*p.destination_port_);
+    }
 }
 
 ChannelSend::~ChannelSend () = default;
