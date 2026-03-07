@@ -106,20 +106,9 @@ private:
   static constexpr auto kBusLayoutId = "busLayout"sv;
   static constexpr auto kPurposeId = "purpose"sv;
   static constexpr auto kRequiresLimitingId = "requiresLimiting"sv;
-  friend void           to_json (nlohmann::json &j, const AudioPort &port)
-  {
-    to_json (j, static_cast<const Port &> (port));
-    j[kBusLayoutId] = port.layout_;
-    j[kPurposeId] = port.purpose_;
-    j[kRequiresLimitingId] = port.requires_limiting_;
-  }
-  friend void from_json (const nlohmann::json &j, AudioPort &port)
-  {
-    from_json (j, static_cast<Port &> (port));
-    j.at (kBusLayoutId).get_to (port.layout_);
-    j.at (kPurposeId).get_to (port.purpose_);
-    j.at (kRequiresLimitingId).get_to (port.requires_limiting_);
-  }
+  static constexpr auto kChannels = "channels"sv;
+  friend void           to_json (nlohmann::json &j, const AudioPort &port);
+  friend void           from_json (const nlohmann::json &j, AudioPort &port);
 
 private:
   BusLayout layout_{};

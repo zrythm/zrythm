@@ -82,46 +82,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_RegistriesPreserved)
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
     *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
-  auto &regs1 = j1["projectData"]["registries"];
-  auto &regs2 = j2["projectData"]["registries"];
-
-  EXPECT_EQ (regs1["portRegistry"].size (), regs2["portRegistry"].size ());
-  EXPECT_EQ (regs1["paramRegistry"].size (), regs2["paramRegistry"].size ());
-  EXPECT_EQ (regs1["trackRegistry"].size (), regs2["trackRegistry"].size ());
-  EXPECT_EQ (regs1["pluginRegistry"].size (), regs2["pluginRegistry"].size ());
-  EXPECT_EQ (
-    regs1["arrangerObjectRegistry"].size (),
-    regs2["arrangerObjectRegistry"].size ());
-  EXPECT_EQ (
-    regs1["fileAudioSourceRegistry"].size (),
-    regs2["fileAudioSourceRegistry"].size ());
-
-  // Verify actual port IDs are preserved (not just counts)
-  std::set<std::string> port_ids_1, port_ids_2;
-  for (const auto &port : regs1["portRegistry"])
-    port_ids_1.insert (port["id"].get<std::string> ());
-  for (const auto &port : regs2["portRegistry"])
-    port_ids_2.insert (port["id"].get<std::string> ());
-  EXPECT_EQ (port_ids_1, port_ids_2)
-    << "Port IDs not preserved across round-trip";
-
-  // Verify track IDs are preserved
-  std::set<std::string> track_ids_1, track_ids_2;
-  for (const auto &track : regs1["trackRegistry"])
-    track_ids_1.insert (track["id"].get<std::string> ());
-  for (const auto &track : regs2["trackRegistry"])
-    track_ids_2.insert (track["id"].get<std::string> ());
-  EXPECT_EQ (track_ids_1, track_ids_2)
-    << "Track IDs not preserved across round-trip";
-
-  // Verify arranger object IDs are preserved
-  std::set<std::string> obj_ids_1, obj_ids_2;
-  for (const auto &obj : regs1["arrangerObjectRegistry"])
-    obj_ids_1.insert (obj["id"].get<std::string> ());
-  for (const auto &obj : regs2["arrangerObjectRegistry"])
-    obj_ids_2.insert (obj["id"].get<std::string> ());
-  EXPECT_EQ (obj_ids_1, obj_ids_2)
-    << "Arranger object IDs not preserved across round-trip";
+  expect_registries_match (j1, j2);
 }
 
 TEST_F (ProjectSerializationTest, RoundTrip_TracklistPreserved)
@@ -364,18 +325,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   // Validate again
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
-  // Verify plugin registry sizes match
-  auto &plugins2 = j2["projectData"]["registries"]["pluginRegistry"];
-  EXPECT_EQ (plugins1.size (), plugins2.size ());
-
-  // Verify plugin UUID is preserved
-  std::set<std::string> plugin_ids1;
-  std::set<std::string> plugin_ids2;
-  for (const auto &p : plugins1)
-    plugin_ids1.insert (p["id"].get<std::string> ());
-  for (const auto &p : plugins2)
-    plugin_ids2.insert (p["id"].get<std::string> ());
-  EXPECT_EQ (plugin_ids1, plugin_ids2) << "Plugin IDs not preserved";
+  // Verify all registries match (sizes and IDs)
+  expect_registries_match (j1, j2);
 }
 
 /// List of non-singleton track types to test
@@ -423,11 +374,6 @@ TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
   // Validate against schema
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); });
 
-  // Verify track is in the registry
-  auto &tracks1 = j1["projectData"]["registries"]["trackRegistry"];
-  EXPECT_GE (tracks1.size (), 1)
-    << "Track registry should contain the test track";
-
   // Verify track appears in tracklist
   auto &tl1 = j1["projectData"]["tracklist"]["tracks"];
   EXPECT_GE (tl1.size (), 1) << "Tracklist should contain the track reference";
@@ -447,18 +393,68 @@ TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
   // Validate again
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
-  // Verify track registry sizes match
-  auto &tracks2 = j2["projectData"]["registries"]["trackRegistry"];
-  EXPECT_EQ (tracks1.size (), tracks2.size ()) << "Track registry size mismatch";
+  // Verify all registries match (sizes and IDs)
+  expect_registries_match (j1, j2);
 
-  // Verify track UUID is preserved
-  std::set<std::string> track_ids1;
-  std::set<std::string> track_ids2;
-  for (const auto &t : tracks1)
-    track_ids1.insert (t["id"].get<std::string> ());
-  for (const auto &t : tracks2)
-    track_ids2.insert (t["id"].get<std::string> ());
-  EXPECT_EQ (track_ids1, track_ids2) << "Track IDs not preserved";
+  // Verify automation track counts match for each track
+  {
+    auto &regs1 = j1["projectData"]["registries"];
+    auto &regs2 = j2["projectData"]["registries"];
+
+    // Build map of track ID -> track JSON for both serializations
+    std::map<std::string, const nlohmann::json *> tracks_by_id1, tracks_by_id2;
+    for (const auto &track_json : regs1["trackRegistry"])
+      tracks_by_id1[track_json["id"].get<std::string> ()] = &track_json;
+    for (const auto &track_json : regs2["trackRegistry"])
+      tracks_by_id2[track_json["id"].get<std::string> ()] = &track_json;
+
+    // Check automation track counts for each track
+    for (const auto &[id, track1_ptr] : tracks_by_id1)
+      {
+        auto it2 = tracks_by_id2.find (id);
+        if (it2 == tracks_by_id2.end ())
+          continue;
+
+        const auto &track1 = *track1_ptr;
+        const auto &track2 = *it2->second;
+
+        if (
+          track1.contains ("automationTracklist")
+          && track2.contains ("automationTracklist"))
+          {
+            const auto &at1 = track1["automationTracklist"]["automationTracks"];
+            const auto &at2 = track2["automationTracklist"]["automationTracks"];
+
+            EXPECT_EQ (at1.size (), at2.size ())
+              << "Track " << id << " automation track count mismatch";
+
+            if (at1.size () != at2.size ())
+              {
+                // Print which automation tracks differ
+                std::set<std::string> at_ids1, at_ids2;
+                for (const auto &at : at1)
+                  at_ids1.insert (at["id"].get<std::string> ());
+                for (const auto &at : at2)
+                  at_ids2.insert (at["id"].get<std::string> ());
+
+                for (const auto &at_id : at_ids1)
+                  {
+                    if (!at_ids2.contains (at_id))
+                      std::cout
+                        << "  Automation track " << at_id
+                        << " from j1 missing in j2\n";
+                  }
+                for (const auto &at_id : at_ids2)
+                  {
+                    if (!at_ids1.contains (at_id))
+                      std::cout
+                        << "  Automation track " << at_id
+                        << " from j2 missing in j1\n";
+                  }
+              }
+          }
+      }
+  }
 
   // Verify tracklist track references are preserved
   auto &tl2 = j2["projectData"]["tracklist"]["tracks"];
@@ -534,41 +530,6 @@ TEST_F (ProjectSerializationTest, RoundTrip_ObjectCountConsistent)
   // Object count should be identical
   EXPECT_EQ (count_objects (j1), count_objects (j2))
     << "Object count changed across round-trip";
-}
-
-/// Property-based test: Registry sizes should be preserved
-TEST_F (ProjectSerializationTest, RoundTrip_AllRegistrySizesPreserved)
-{
-  auto original_project = create_minimal_project ();
-  ASSERT_NE (original_project, nullptr);
-  create_ui_state_and_undo_stack (*original_project);
-
-  nlohmann::json j1 = ProjectJsonSerializer::serialize (
-    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-
-  auto deserialized_project = create_minimal_project ();
-  ASSERT_NE (deserialized_project, nullptr);
-  create_ui_state_and_undo_stack (*deserialized_project);
-  ProjectJsonSerializer::deserialize (
-    j1, *deserialized_project, *ui_state, *undo_stack);
-
-  nlohmann::json j2 = ProjectJsonSerializer::serialize (
-    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-
-  auto &regs1 = j1["projectData"]["registries"];
-  auto &regs2 = j2["projectData"]["registries"];
-
-  // Check each registry size
-  const std::array<std::string, 6> registry_names = {
-    "portRegistry",  "paramRegistry",          "pluginRegistry",
-    "trackRegistry", "arrangerObjectRegistry", "fileAudioSourceRegistry",
-  };
-
-  for (const auto &name : registry_names)
-    {
-      EXPECT_EQ (regs1[name].size (), regs2[name].size ())
-        << "Registry " << name << " size changed across round-trip";
-    }
 }
 
 /// Property-based test: Second round-trip should be identical to first

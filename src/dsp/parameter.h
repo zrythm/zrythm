@@ -373,19 +373,14 @@ public:
   const auto &get_unique_id () const { return unique_id_; }
 
 private:
-  // Some of these don't need serialization because they'll be created
-  // even when loading from json.
-  // We just need to serialize IDs, the value, and possibly the label too for
-  // debugging.
+  // Serialization keys
   static constexpr auto kUniqueIdKey = "uniqueId"sv;
-  // static constexpr auto kTypeKey = "type"sv;
-  // static constexpr auto kRangeKey = "range"sv;
-  // static constexpr auto kUnitKey = "unit"sv;
+  static constexpr auto kRangeKey = "range"sv;
   static constexpr auto kLabelKey = "label"sv;
-  // static constexpr auto kSymbolKey = "symbol"sv;
-  // static constexpr auto kDescriptionKey = "description"sv;
-  // static constexpr auto kAutomatableKey = "automatable"sv;
-  // static constexpr auto kHiddenKey = "hidden"sv;
+  static constexpr auto kSymbolKey = "symbol"sv;
+  static constexpr auto kDescriptionKey = "description"sv;
+  static constexpr auto kAutomatableKey = "automatable"sv;
+  static constexpr auto kHiddenKey = "hidden"sv;
   static constexpr auto kBaseValueKey = "baseValue"sv;
   static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
   friend void to_json (nlohmann::json &j, const ProcessorParameter &p);

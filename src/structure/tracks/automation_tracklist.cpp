@@ -393,6 +393,7 @@ to_json (nlohmann::json &j, const AutomationTracklist &ats)
 void
 from_json (const nlohmann::json &j, AutomationTracklist &ats)
 {
+  ats.automation_tracks_.clear ();
   for (const auto &ath_json : j.at (AutomationTracklist::kAutomationTracksKey))
     {
       auto automation_track_holder =

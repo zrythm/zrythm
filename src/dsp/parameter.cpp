@@ -11,14 +11,28 @@
 namespace zrythm::dsp
 {
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE (
-  ParameterRange,
-  type_,
-  minf_,
-  maxf_,
-  zerof_,
-  deff_,
-  unit_)
+void
+to_json (nlohmann::json &j, const ParameterRange &p)
+{
+  j["type"] =
+    static_cast<std::underlying_type_t<ParameterRange::Type>> (p.type_);
+  j["min"] = p.minf_;
+  j["max"] = p.maxf_;
+  j["def"] = p.deff_;
+  j["zero"] = p.zerof_;
+}
+
+void
+from_json (const nlohmann::json &j, ParameterRange &p)
+{
+  p.type_ = static_cast<ParameterRange::Type> (
+    j.at ("type").get<std::underlying_type_t<ParameterRange::Type>> ());
+  j.at ("min").get_to (p.minf_);
+  j.at ("max").get_to (p.maxf_);
+  j.at ("def").get_to (p.deff_);
+  if (j.contains ("zero"))
+    j.at ("zero").get_to (p.zerof_);
+}
 
 ProcessorParameter::ProcessorParameter (
   PortRegistry     &port_registry,
@@ -115,8 +129,15 @@ to_json (nlohmann::json &j, const ProcessorParameter &p)
   to_json (
     j, static_cast<const ProcessorParameter::UuidIdentifiableObject &> (p));
   j[ProcessorParameter::kUniqueIdKey] = p.unique_id_;
+  j[ProcessorParameter::kRangeKey] = p.range_;
   j[ProcessorParameter::kLabelKey] = p.label_;
+  if (p.symbol_.has_value ())
+    j[ProcessorParameter::kSymbolKey] = *p.symbol_;
+  if (p.description_.has_value ())
+    j[ProcessorParameter::kDescriptionKey] = *p.description_;
   j[ProcessorParameter::kBaseValueKey] = p.base_value_.load ();
+  j[ProcessorParameter::kAutomatableKey] = p.automatable_;
+  j[ProcessorParameter::kHiddenKey] = p.hidden_;
   j[ProcessorParameter::kModulationSourcePortIdKey] = p.modulation_input_uuid_;
 }
 
@@ -125,10 +146,22 @@ from_json (const nlohmann::json &j, ProcessorParameter &p)
 {
   from_json (j, static_cast<ProcessorParameter::UuidIdentifiableObject &> (p));
   j.at (ProcessorParameter::kUniqueIdKey).get_to (p.unique_id_);
+  j.at (ProcessorParameter::kRangeKey).get_to (p.range_);
   j.at (ProcessorParameter::kLabelKey).get_to (p.label_);
+  if (j.contains (ProcessorParameter::kSymbolKey))
+    j.at (ProcessorParameter::kSymbolKey).get_to (p.symbol_);
+  if (j.contains (ProcessorParameter::kDescriptionKey))
+    {
+      p.description_ = utils::Utf8String::from_utf8_encoded_string (
+        j.at (ProcessorParameter::kDescriptionKey).get<std::string> ());
+    }
   float base_val{};
   j.at (ProcessorParameter::kBaseValueKey).get_to (base_val);
   p.base_value_.store (base_val);
+  if (j.contains (ProcessorParameter::kAutomatableKey))
+    j.at (ProcessorParameter::kAutomatableKey).get_to (p.automatable_);
+  if (j.contains (ProcessorParameter::kHiddenKey))
+    j.at (ProcessorParameter::kHiddenKey).get_to (p.hidden_);
   j.at (ProcessorParameter::kModulationSourcePortIdKey)
     .get_to (p.modulation_input_uuid_);
 }

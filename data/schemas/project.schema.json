@@ -570,7 +570,7 @@
         {
           "properties": {
             "type": {
-              "const": 0
+              "const": 1
             },
             "busLayout": {
               "type": "integer",
@@ -586,8 +586,16 @@
             },
             "requiresLimiting": {
               "type": "boolean"
+            },
+            "channels": {
+              "type": "integer",
+              "description": "Number of channels"
             }
-          }
+          },
+          "required": [
+            "busLayout",
+            "channels"
+          ]
         }
       ]
     },
@@ -600,7 +608,7 @@
         {
           "properties": {
             "type": {
-              "const": 1
+              "const": 0
             }
           }
         }
@@ -635,6 +643,40 @@
         }
       ]
     },
+    "parameterRange": {
+      "$comment": "Parameter range definition (min, max, default values, type)",
+      "type": "object",
+      "required": [
+        "type",
+        "min",
+        "max",
+        "def"
+      ],
+      "properties": {
+        "type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6,
+          "description": "Parameter type: 0=Linear, 1=Toggle, 2=Integer, 3=GainAmplitude, 4=Logarithmic, 5=Enumeration, 6=Trigger"
+        },
+        "min": {
+          "type": "number",
+          "description": "Minimum value"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum value"
+        },
+        "def": {
+          "type": "number",
+          "description": "Default value"
+        },
+        "zero": {
+          "type": "number",
+          "description": "Zero position value"
+        }
+      }
+    },
     "parameter": {
       "$comment": "Processor parameter",
       "allOf": [
@@ -646,9 +688,35 @@
             "uniqueId": {
               "type": "string"
             },
+            "label": {
+              "type": "string",
+              "description": "Human-readable label for the parameter"
+            },
+            "symbol": {
+              "type": "string",
+              "description": "Short symbol/identifier for the parameter"
+            },
+            "description": {
+              "type": "string",
+              "description": "Detailed description of what the parameter does"
+            },
             "baseValue": {
               "type": "number",
               "description": "Normalized parameter value set by the user in the UI (0.0-1.0)"
+            },
+            "range": {
+              "$ref": "#/definitions/parameterRange",
+              "description": "Parameter range definition"
+            },
+            "automatable": {
+              "type": "boolean",
+              "description": "Whether this parameter can be automated",
+              "default": true
+            },
+            "hidden": {
+              "type": "boolean",
+              "description": "Whether this parameter is hidden from the UI",
+              "default": false
             },
             "modulationSource": {
               "$ref": "#/definitions/uuid",
@@ -657,7 +725,8 @@
           },
           "required": [
             "uniqueId",
-            "baseValue"
+            "baseValue",
+            "range"
           ]
         }
       ]

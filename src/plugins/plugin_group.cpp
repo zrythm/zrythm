@@ -130,36 +130,6 @@ PluginGroup::element_at_idx (size_t idx) const
   return data (index (static_cast<int> (idx)), DeviceGroupPtrRole);
 }
 
-struct BuilderForDeserialization
-{
-  BuilderForDeserialization (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    PluginRegistry                               &plugin_registry)
-      : dependencies_ (dependencies), plugin_registry_ (plugin_registry)
-  {
-  }
-
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    if constexpr (std::is_same_v<T, plugins::PluginUuidReference>)
-      {
-        auto pl_ref_ptr =
-          std::make_unique<PluginUuidReference> (plugin_registry_);
-        return pl_ref_ptr;
-      }
-    else
-      {
-        return std::make_unique<utils::QObjectUniquePtr<PluginGroup>> (
-          utils::make_qobject_unique<PluginGroup> (
-            dependencies_, plugin_registry_, PluginGroup::DeviceGroupType::Audio,
-            PluginGroup::ProcessingTypeHint::Parallel));
-      }
-  }
-
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
-  PluginRegistry                               &plugin_registry_;
-};
-
 void
 PluginGroup::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
 {
@@ -185,7 +155,20 @@ PluginGroup::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
 void
 to_json (nlohmann::json &j, const PluginGroup &l)
 {
-  j[PluginGroup::kDeviceGroupsKey] = l.pimpl_->devices_;
+  auto device_groups_json = nlohmann::json::array ();
+  for (const auto &device_or_group : l.pimpl_->devices_)
+    {
+      if (device_or_group.index () == 0)
+        {
+          nlohmann::json group_json = std::get<0> (device_or_group);
+          device_groups_json.push_back (group_json);
+        }
+      else
+        {
+          device_groups_json.push_back (std::get<1> (device_or_group));
+        }
+    }
+  j[PluginGroup::kDeviceGroupsKey] = device_groups_json;
   j[PluginGroup::kFaderKey] = *l.fader_;
 }
 void
@@ -193,13 +176,22 @@ from_json (const nlohmann::json &j, PluginGroup &l)
 {
   for (const auto &device_group_json : j.at (PluginGroup::kDeviceGroupsKey))
     {
-      std::variant<
-        utils::QObjectUniquePtr<PluginGroup>, plugins::PluginUuidReference>
-        var;
-      utils::serialization::variant_from_json_with_builder (
-        device_group_json, var,
-        BuilderForDeserialization{ l.dependencies_, l.plugin_registry_ });
-      l.pimpl_->devices_.emplace_back (std::move (var));
+      if (device_group_json.is_string ())
+        {
+          plugins::PluginUuidReference plugin_id{
+            device_group_json.get<plugins::Plugin::Uuid> (), l.plugin_registry_
+          };
+          l.pimpl_->devices_.emplace_back (std::move (plugin_id));
+        }
+      else
+        {
+          auto group = utils::make_qobject_unique<PluginGroup> (
+            l.dependencies_, l.plugin_registry_,
+            PluginGroup::DeviceGroupType::Audio,
+            PluginGroup::ProcessingTypeHint::Parallel);
+          device_group_json.get_to (*group);
+          l.pimpl_->devices_.emplace_back (std::move (group));
+        }
     }
   j.at (PluginGroup::kFaderKey).get_to (*l.fader_);
 }

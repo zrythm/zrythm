@@ -934,8 +934,10 @@ TrackProcessor::custom_prepare_for_processing (
     {
       auto &stereo_in = get_stereo_in_port ();
       processing_caches_->audio_ins_rt_.push_back (&stereo_in);
+      assert (stereo_in.num_channels () > 0);
       auto &stereo_out = get_stereo_out_port ();
       processing_caches_->audio_outs_rt_.push_back (&stereo_out);
+      assert (stereo_out.num_channels () > 0);
     }
   else if (is_midi ())
     {

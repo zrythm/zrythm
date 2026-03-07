@@ -200,6 +200,13 @@ TEST (ProjectJsonSerializerValidationTest, ValidateJsonWithValidParameter)
   param["id"] = "770e8400-e29b-41d4-a716-446655440002";
   param["uniqueId"] = "fader-volume";
   param["baseValue"] = 0.75;
+  param["range"] = {
+    { "type", 0   }, // Linear
+    { "min",  0.0 },
+    { "max",  1.0 },
+    { "def",  0.5 },
+    { "zero", 0.5 }
+  };
 
   j["projectData"]["registries"]["paramRegistry"].push_back (param);
 

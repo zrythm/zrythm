@@ -245,4 +245,24 @@ AudioPort::process_block (
         }
     }
 }
+
+void
+to_json (nlohmann::json &j, const AudioPort &port)
+{
+  to_json (j, static_cast<const Port &> (port));
+  j[AudioPort::kBusLayoutId] = port.layout_;
+  j[AudioPort::kPurposeId] = port.purpose_;
+  j[AudioPort::kRequiresLimitingId] = port.requires_limiting_;
+  j[AudioPort::kChannels] = port.num_channels_;
+}
+
+void
+from_json (const nlohmann::json &j, AudioPort &port)
+{
+  from_json (j, static_cast<Port &> (port));
+  j.at (AudioPort::kBusLayoutId).get_to (port.layout_);
+  j.at (AudioPort::kPurposeId).get_to (port.purpose_);
+  j.at (AudioPort::kRequiresLimitingId).get_to (port.requires_limiting_);
+  j.at (AudioPort::kChannels).get_to (port.num_channels_);
+}
 } // namespace zrythm::dsp
