@@ -490,11 +490,14 @@ update-manual:
     - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
-    #- ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
     - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
+  after_script:
+    - chmod 600 "$SSH_PRIVATE_KEY"
 
 update-dev-docs:
   extends: .gnu-linux-template
@@ -513,11 +516,14 @@ update-dev-docs:
     - rsync -av --no-group --omit-dir-times "${BUILDDIR}"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
     - eval $(ssh-agent -s)
-    #- ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
     - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
+  after_script:
+    - chmod 600 "$SSH_PRIVATE_KEY"
 
 deploy:installers:
   extends: .gnu-linux-template
