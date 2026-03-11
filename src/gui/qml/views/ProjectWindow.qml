@@ -42,7 +42,6 @@ ApplicationWindow {
     }
   }
   readonly property Project project: session.project
-  readonly property SaveController saveController: saveController
   required property ProjectSession session
 
   function closeAndDestroy() {
@@ -70,7 +69,8 @@ ApplicationWindow {
     aboutDialog: aboutDialog
     deviceManager: root.deviceManager
     exportDialog: exportDialog
-    saveController: root.saveController
+    loadController: loadController
+    saveController: saveController
     session: root.session
   }
 
@@ -337,6 +337,11 @@ ApplicationWindow {
     onActivated: {
       root.session.uiState.tool.toolValue = ArrangerTool.Audition;
     }
+  }
+
+  LoadController {
+    id: loadController
+
   }
 
   SaveController {

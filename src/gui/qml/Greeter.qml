@@ -17,11 +17,6 @@ ApplicationWindow {
   readonly property ZrythmApplication app: GlobalState.application
   readonly property AppSettings appSettings: app?.appSettings ?? null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
-  property QFutureQmlWrapper loadFuture
-  property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
-    future: root.loadFuture
-    labelText: qsTr("Loading project...")
-  }
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
@@ -52,6 +47,11 @@ ApplicationWindow {
 
   AboutDialog {
     id: aboutDialog
+
+  }
+
+  LoadController {
+    id: loadController
 
   }
 
@@ -321,6 +321,8 @@ ApplicationWindow {
 
           Button {
             text: qsTr("Open From Path...")
+
+            onClicked: loadController.openLoadDialog()
           }
         }
         rightActions: ToolButton {
@@ -372,7 +374,7 @@ ApplicationWindow {
             }
 
             onClicked: {
-              root.loadFuture = root.projectManager.loadProject(projectItem.path);
+              loadController.loadFuture = root.projectManager.loadProject(projectItem.path);
             }
           }
 

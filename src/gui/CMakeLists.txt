@@ -253,6 +253,7 @@ set(rel_qml_file_paths
   components/PluginSlotView.qml
   components/RightDock.qml
   components/Ruler.qml
+  components/LoadController.qml
   components/SaveController.qml
   components/SnapGridButton.qml
   components/SpectrumAnalyzer.qml

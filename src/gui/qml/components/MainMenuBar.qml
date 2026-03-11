@@ -13,6 +13,7 @@ MenuBar {
   required property AboutDialog aboutDialog
   required property DeviceManager deviceManager
   required property ExportDialog exportDialog
+  required property LoadController loadController
   readonly property Project project: session.project
   required property SaveController saveController
   required property ProjectSession session
@@ -29,7 +30,7 @@ MenuBar {
     }
 
     MenuItem {
-      action: root.saveController.loadAction
+      action: root.loadController.loadAction
     }
 
     Action {
