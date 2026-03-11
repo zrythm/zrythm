@@ -108,3 +108,20 @@ RecentProjectsModel::clearRecentProjects ()
   store_recent_projects ({});
   endResetModel ();
 }
+
+void
+RecentProjectsModel::clearNonExistingProjects ()
+{
+  beginResetModel ();
+  auto       recent_projects = app_settings_.recent_projects ();
+  const auto removed_count = recent_projects.removeIf ([] (const auto &path) {
+    return !utils::io::path_exists (
+      utils::Utf8String::from_qstring (path).to_path ());
+  });
+  if (removed_count > 0)
+    {
+      z_info ("Cleared {} non-existing projects");
+    }
+  store_recent_projects (recent_projects);
+  endResetModel ();
+}

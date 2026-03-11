@@ -17,6 +17,11 @@ ApplicationWindow {
   readonly property ZrythmApplication app: GlobalState.application
   readonly property AppSettings appSettings: app?.appSettings ?? null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
+  property QFutureQmlWrapper loadFuture
+  property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
+    future: root.loadFuture
+    labelText: qsTr("Loading project...")
+  }
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
@@ -347,13 +352,11 @@ ApplicationWindow {
         ListView {
           id: recentProjectsListView
 
-          function clearRecentProjects() {
-            model.clearRecentProjects();
-          }
+          readonly property RecentProjectsModel recentProjects: root.projectManager?.recentProjects
 
           anchors.fill: parent
           anchors.margins: 16
-          model: root.projectManager?.recentProjects
+          model: recentProjects
 
           delegate: ItemDelegate {
             id: projectItem
@@ -368,7 +371,13 @@ ApplicationWindow {
               verticalAlignment: Qt.AlignVCenter
             }
 
-            onClicked: root.projectManager.loadProject(projectItem.path)
+            onClicked: {
+              root.loadFuture = root.projectManager.loadProject(projectItem.path);
+            }
+          }
+
+          Component.onCompleted: {
+            recentProjects.clearNonExistingProjects();
           }
         }
       }
@@ -467,12 +476,13 @@ ApplicationWindow {
         console.log("Project loaded: ", session.title);
         root.projectManager.activeSession = session;
         console.log("Opening project: ", root.projectManager.activeSession.title);
+        root.projectManager.recentProjects.addRecentProject(root.projectManager.activeSession.projectDirectory);
         root.openProjectWindow(session);
       }
 
       function onProjectLoadingFailed(errorMessage: string) {
         console.log("Project loading failed: ", errorMessage);
-        stack.pop();
+        stack.push(projectSelectorPage);
         root.alertManager.showAlert(qsTr("Project Loading Failed"), errorMessage);
       }
 

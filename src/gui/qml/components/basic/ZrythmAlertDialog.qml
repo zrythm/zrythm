@@ -17,14 +17,14 @@ Dialog {
   Column {
     spacing: 10
 
-    Text {
+    Label {
       id: titleText
 
       font.bold: true
       font.pixelSize: 16
     }
 
-    Text {
+    Label {
       id: messageText
 
       width: parent.width

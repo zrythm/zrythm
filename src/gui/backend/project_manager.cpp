@@ -316,7 +316,18 @@ ProjectManager::loadProject (const QString &filepath)
             promise.future ().progressValue (), text);
         });
 
-      load_future.waitForFinished ();
+      try
+        {
+          load_future.waitForFinished ();
+        }
+      catch (const std::exception &e)
+        {
+          // FIXME: I can't get the original exception message here
+          z_warning ("Failed to load project: {}", e.what ());
+          Q_EMIT projectLoadingFailed (
+            "Failed to load project data. See the log for details.");
+          promise.setException (std::make_exception_ptr (e));
+        }
 
       if (load_future.isCanceled ())
         {

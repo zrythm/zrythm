@@ -34,6 +34,7 @@ public:
   Q_INVOKABLE virtual QVariant resultVar () const = 0;
   Q_INVOKABLE virtual void     cancel () = 0;
   Q_INVOKABLE virtual bool     isCanceled () const = 0;
+  Q_INVOKABLE virtual bool     isValid () const = 0;
 
 Q_SIGNALS:
   void progressValueChanged (int value);
@@ -87,6 +88,7 @@ public:
 
   void cancel () override { future_.cancel (); }
   bool isCanceled () const override { return future_.isCanceled (); }
+  bool isValid () const override { return future_.isValid (); }
 
 private:
   QFuture<T>        future_;

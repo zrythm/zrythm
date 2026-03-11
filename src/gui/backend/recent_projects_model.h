@@ -39,6 +39,7 @@ public:
   Q_INVOKABLE void addRecentProject (const QString &path);
   Q_INVOKABLE void removeRecentProject (const QString &path);
   Q_INVOKABLE void clearRecentProjects ();
+  Q_INVOKABLE void clearNonExistingProjects ();
 
 private:
   std::vector<std::unique_ptr<ProjectInfo>> get_recent_projects () const;
