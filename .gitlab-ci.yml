@@ -496,7 +496,6 @@ update-manual:
     - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
-  after_script:
     - chmod 600 "$SSH_PRIVATE_KEY"
 
 update-dev-docs:
@@ -522,7 +521,6 @@ update-dev-docs:
     - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - *unix-activate-venv
-  after_script:
     - chmod 600 "$SSH_PRIVATE_KEY"
 
 deploy:installers:
