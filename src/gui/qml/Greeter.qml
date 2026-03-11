@@ -202,9 +202,7 @@ ApplicationWindow {
     Component {
       id: configPage
 
-      Page {
-        // Add configuration content here
-
+      NavigatablePage {
         title: qsTr("Configuration")
 
         footer: DialogButtonBox {
@@ -224,26 +222,6 @@ ApplicationWindow {
               console.log("Proceeding to next page...");
               root.appSettings.first_run = false;
               stack.push(progressPage);
-            }
-          }
-        }
-        header: ToolBar {
-          RowLayout {
-            anchors.fill: parent
-
-            ToolButton {
-              text: qsTr("‹")
-
-              onClicked: stack.pop()
-            }
-
-            Label {
-              Layout.fillWidth: true
-              elide: Text.ElideRight
-              font.bold: true
-              horizontalAlignment: Qt.AlignHCenter
-              text: qsTr("Configuration")
-              verticalAlignment: Qt.AlignVCenter
             }
           }
         }
@@ -323,7 +301,8 @@ ApplicationWindow {
     Component {
       id: projectSelectorPage
 
-      Page {
+      NavigatablePage {
+        showBackButton: false
         title: qsTr("Open a Project")
 
         footer: DialogButtonBox {
@@ -332,85 +311,35 @@ ApplicationWindow {
           Button {
             text: qsTr("Create New Project...")
 
-            onClicked: stack.push(createProjectPage)
+            onClicked: stack.push(createProjectPageComponent)
           }
 
           Button {
             text: qsTr("Open From Path...")
           }
         }
-        header: ToolBar {
-          RowLayout {
-            anchors.fill: parent
+        rightActions: ToolButton {
+          icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
 
-            Label {
-              Layout.fillWidth: true
-              elide: Text.ElideRight
-              horizontalAlignment: Qt.AlignHCenter
-              text: qsTr("Open a Project")
-              verticalAlignment: Qt.AlignVCenter
-            }
+          onClicked: menu.open()
 
-            ToolButton {
-              icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
+          Menu {
+            id: menu
 
-              onClicked: menu.open()
+            Action {
+              text: qsTr("Device Selector")
 
-              Menu {
-                id: menu
-
-                Action {
-                  text: qsTr("Device Selector")
-
-                  onTriggered: {
-                    root.deviceManager.showDeviceSelector();
-                  }
-                }
-
-                MenuItem {
-                  // Handle about action
-
-                  text: qsTr("About Zrythm")
-
-                  onTriggered: aboutDialog.open()
-                }
+              onTriggered: {
+                root.deviceManager.showDeviceSelector();
               }
             }
-          }
-        }
 
-        Component {
-          id: projectDelegate
+            MenuItem {
+              // Handle about action
 
-          Rectangle {
-            id: projectItem
+              text: qsTr("About Zrythm")
 
-            property bool isCurrent: ListView.isCurrentItem
-            readonly property ListView lv: ListView.view
-            required property string path
-
-            border.color: palette.text
-            border.width: 1
-            clip: true
-            color: palette.base
-            implicitHeight: projectTxt.implicitHeight + 2 * 2
-            implicitWidth: lv.width
-            radius: 8
-
-            Text {
-              id: projectTxt
-
-              color: palette.text
-              horizontalAlignment: Qt.AlignHCenter
-              text: projectItem.path
-
-              anchors {
-                left: parent.left
-                leftMargin: 2
-                right: parent.right
-                rightMargin: 2
-                verticalCenter: parent.verticalCenter
-              }
+              onTriggered: aboutDialog.open()
             }
           }
         }
@@ -423,16 +352,34 @@ ApplicationWindow {
           }
 
           anchors.fill: parent
-          delegate: projectDelegate
+          anchors.margins: 16
           model: root.projectManager?.recentProjects
+
+          delegate: ItemDelegate {
+            id: projectItem
+
+            required property string path
+
+            width: recentProjectsListView.width
+
+            contentItem: Label {
+              elide: Text.ElideMiddle
+              text: projectItem.path
+              verticalAlignment: Qt.AlignVCenter
+            }
+
+            onClicked: root.projectManager.loadProject(projectItem.path)
+          }
         }
       }
     }
 
     Component {
-      id: createProjectPage
+      id: createProjectPageComponent
 
-      Page {
+      NavigatablePage {
+        id: createProjectPage
+
         title: qsTr("Create New Project")
 
         ColumnLayout {
@@ -490,7 +437,7 @@ ApplicationWindow {
     Component {
       id: projectCreationProgressPage
 
-      Page {
+      NavigatablePage {
         title: qsTr("Creating Project")
 
         ColumnLayout {
@@ -547,6 +494,43 @@ ApplicationWindow {
       id: alertDialog
 
       anchors.centerIn: parent
+    }
+  }
+
+  // Inline component for pages with standard navigation header
+  component NavigatablePage: Page {
+    id: navigatablePage
+
+    // Public API
+    property alias rightActions: rightActionsRow.data
+    property bool showBackButton: navigatablePage.StackView.view && navigatablePage.StackView.view.depth > 1
+
+    header: ToolBar {
+      RowLayout {
+        anchors.fill: parent
+
+        ToolButton {
+          text: qsTr("‹")
+          visible: navigatablePage.showBackButton
+
+          onClicked: navigatablePage.StackView.view.pop()
+        }
+
+        Label {
+          Layout.fillWidth: true
+          elide: Text.ElideRight
+          font.bold: true
+          horizontalAlignment: Qt.AlignHCenter
+          text: navigatablePage.title
+          verticalAlignment: Qt.AlignVCenter
+        }
+
+        RowLayout {
+          id: rightActionsRow
+
+          spacing: 4
+        }
+      }
     }
   }
 }
