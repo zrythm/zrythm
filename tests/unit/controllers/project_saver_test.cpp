@@ -5,30 +5,10 @@
 #include "project_json_serializer_test.h"
 #include "structure/project/project_path_provider.h"
 
-#include <QEventLoop>
-#include <QFutureWatcher>
+#include "helpers/qt_helpers.h"
 
 namespace zrythm::controllers
 {
-
-/// Helper to wait for a QFuture while processing Qt events
-template <typename T>
-void
-waitForFutureWithEvents (QFuture<T> &future, int timeout_ms = 30000)
-{
-  QFutureWatcher<T> watcher;
-  QEventLoop        loop;
-
-  QObject::connect (
-    &watcher, &QFutureWatcher<T>::finished, &loop, &QEventLoop::quit);
-
-  watcher.setFuture (future);
-
-  // Timeout to prevent infinite hang
-  QTimer::singleShot (timeout_ms, &loop, &QEventLoop::quit);
-
-  loop.exec ();
-}
 
 class ProjectSaverTest : public ProjectSerializationTest
 {
@@ -196,7 +176,7 @@ TEST_F (ProjectSaverTest, SaveCreatesProjectFile)
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, save_dir, false);
 
   // Wait for the save to complete while processing Qt events
-  waitForFutureWithEvents (future);
+  test_helpers::waitForFutureWithEvents (future);
 
   ASSERT_TRUE (future.isFinished ()) << "Save operation timed out";
 
@@ -241,7 +221,7 @@ TEST_F (ProjectSaverTest, SaveReturnsProjectPath)
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, save_dir, false);
 
   // Wait for the save to complete while processing Qt events
-  waitForFutureWithEvents (future);
+  test_helpers::waitForFutureWithEvents (future);
 
   ASSERT_TRUE (future.isFinished ()) << "Save operation timed out";
 
@@ -267,7 +247,7 @@ TEST_F (ProjectSaverTest, SaveTwiceToSameDirectory)
   {
     auto future = ProjectSaver::save (
       *project, *ui_state, *undo_stack, TEST_APP_VERSION, save_dir, false);
-    waitForFutureWithEvents (future);
+    test_helpers::waitForFutureWithEvents (future);
     ASSERT_TRUE (future.isFinished ()) << "First save timed out";
     EXPECT_FALSE (future.result ().isEmpty ());
   }
@@ -276,7 +256,7 @@ TEST_F (ProjectSaverTest, SaveTwiceToSameDirectory)
   {
     auto future = ProjectSaver::save (
       *project, *ui_state, *undo_stack, TEST_APP_VERSION, save_dir, false);
-    waitForFutureWithEvents (future);
+    test_helpers::waitForFutureWithEvents (future);
     ASSERT_TRUE (future.isFinished ()) << "Second save timed out";
     EXPECT_FALSE (future.result ().isEmpty ());
   }

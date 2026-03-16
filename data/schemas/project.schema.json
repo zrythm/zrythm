@@ -338,50 +338,7 @@
               "type": "array",
               "description": "All audio file references",
               "items": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "filename",
-                  "filePath"
-                ],
-                "properties": {
-                  "id": {
-                    "$ref": "#/definitions/uuid"
-                  },
-                  "filename": {
-                    "type": "string"
-                  },
-                  "filePath": {
-                    "type": "string",
-                    "description": "Relative path in the project audio pool"
-                  },
-                  "sampleRate": {
-                    "type": "integer"
-                  },
-                  "channels": {
-                    "type": "integer",
-                    "enum": [
-                      1,
-                      2
-                    ]
-                  },
-                  "frames": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "bitsPerSample": {
-                    "type": "integer",
-                    "minimum": 8,
-                    "maximum": 32,
-                    "description": "Bit depth (8, 16, 24, or 32)"
-                  },
-                  "format": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 4,
-                    "description": "Audio format: 1=mp3, 2=flac, 3=ogg, 4=wav"
-                  }
-                }
+                "$ref": "#/definitions/fileAudioSource"
               }
             }
           }
@@ -443,7 +400,7 @@
           "maximum": 1,
           "description": "Curve curviness: <0 tilts down, >0 tilts up, 0 is straight line"
         },
-        "algo": {
+        "algorithm": {
           "type": "integer",
           "minimum": 0,
           "maximum": 4,
@@ -523,6 +480,31 @@
           "$ref": "#/definitions/uuid"
         }
       }
+    },
+    "fileAudioSource": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/registryObjectBase"
+        },
+        {
+          "required": [
+            "name",
+            "bpm"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Original filename before import (for display purposes)"
+            },
+            "bpm": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 1000,
+              "description": "Reference BPM for musical mode (BPM when imported)"
+            }
+          }
+        }
+      ]
     },
     "portBase": {
       "$comment": "Base class for all port types",
@@ -1328,6 +1310,11 @@
             },
             "loopEndPosition": {
               "$ref": "#/definitions/position"
+            },
+            "trackBounds": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether loop positions should track the object's bounds length"
             }
           },
           "required": [

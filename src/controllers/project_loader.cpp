@@ -115,6 +115,9 @@ ProjectLoader::deserialize (
   undo::UndoStack                    &undo_stack)
 {
   ProjectJsonSerializer::deserialize (j, project, ui_state, undo_stack);
+
+  // Load audio files for each FileAudioSource
+  project.pool_->init_loaded ();
 }
 
 }

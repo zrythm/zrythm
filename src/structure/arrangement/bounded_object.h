@@ -87,14 +87,8 @@ private:
     utils::ObjectCloneType      clone_type);
 
   static constexpr auto kLengthKey = "length"sv;
-  friend auto to_json (nlohmann::json &j, const ArrangerObjectBounds &object)
-  {
-    j[kLengthKey] = object.length_;
-  }
-  friend auto from_json (const nlohmann::json &j, ArrangerObjectBounds &object)
-  {
-    j.at (kLengthKey).get_to (object.length_);
-  }
+  friend void to_json (nlohmann::json &j, const ArrangerObjectBounds &object);
+  friend void from_json (const nlohmann::json &j, ArrangerObjectBounds &object);
 
   auto position () const -> const dsp::AtomicPositionQmlAdapter *
   {

@@ -195,8 +195,6 @@ private:
 
   static constexpr auto kNameKey = "name"sv;
   static constexpr auto kBpmKey = "bpm"sv;
-  static constexpr auto kBitDepthKey = "bitDepth"sv;
-  static constexpr auto kSamplerateKey = "samplerate"sv;
   friend void to_json (nlohmann::json &j, const FileAudioSource &clip);
   friend void from_json (const nlohmann::json &j, FileAudioSource &clip);
 

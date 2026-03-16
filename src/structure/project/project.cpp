@@ -573,6 +573,12 @@ from_json (const nlohmann::json &j, Project &project)
   from_json_with_builder (
     registries.at (Project::kPluginRegistryKey), *project.plugin_registry_,
     PluginBuilderForDeserialization{ project });
+  // FileAudioSourceRegistry must be deserialized before ArrangerObjectRegistry
+  // because AudioSourceObject references FileAudioSource
+  from_json_with_builder (
+    registries.at (Project::kFileAudioSourceRegistryKey),
+    *project.file_audio_source_registry_,
+    FileAudioSourceBuilderForDeserialization{});
   from_json_with_builder (
     registries.at (Project::kArrangerObjectRegistryKey),
     *project.arranger_object_registry_,
@@ -580,10 +586,6 @@ from_json (const nlohmann::json &j, Project &project)
   from_json_with_builder (
     registries.at (Project::kTrackRegistryKey), *project.track_registry_,
     TrackBuilderForDeserialization{ project });
-  from_json_with_builder (
-    registries.at (Project::kFileAudioSourceRegistryKey),
-    *project.file_audio_source_registry_,
-    FileAudioSourceBuilderForDeserialization{});
 
   // Transport is required
   j.at (Project::kTransportKey).get_to (*project.transport_);

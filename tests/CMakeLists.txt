@@ -36,6 +36,7 @@ target_sources(zrythm_test_helpers_lib
       helpers/mock_audio_io_device.h
       helpers/mock_qobject.h
       helpers/mock_settings_backend.h
+      helpers/qt_helpers.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
 )

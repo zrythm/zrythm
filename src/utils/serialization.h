@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -51,28 +51,28 @@ static constexpr auto kVariantTypeKey = "type"sv;
 static constexpr auto kVariantNonObjectValueKey = "nonObjectValue"sv;
 
 /**
- * @brief Deserializer for a variant of pointers buildable with a builder.
+ * @brief Creates an object from JSON without deserializing its data.
  *
- * @tparam Variant The variant of pointers to deserialize.
+ * This is the first phase of two-phase deserialization. It creates the object
+ * using the builder but does not deserialize any data. This allows all objects
+ * to be registered before any inter-object references are resolved during data
+ * deserialization.
+ *
+ * @tparam Variant The variant of pointers to create.
  * @tparam BuilderT The builder type.
- * @param j The JSON value to deserialize.
- * @param var The variant to deserialize into.
- * @param builder The builder to use to create the objects.
- * @return The deserialized variant.
+ * @param j The JSON value containing the object data.
+ * @param var The variant to store the created object.
+ * @param builder The builder to use to create the object.
  */
 template <StdVariant Variant, ObjectBuilder BuilderT>
-inline auto
-variant_from_json_with_builder (
+inline void
+variant_create_object_only (
   const nlohmann::json &j,
   Variant              &var,
   const BuilderT       &builder)
 {
   const auto index =
     j.at (zrythm::utils::serialization::kVariantTypeKey).get<int> ();
-
-  // Create a copy of j without the "type" field for value deserialization
-  nlohmann::json value_json = j;
-  value_json.erase (zrythm::utils::serialization::kVariantTypeKey);
 
   auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
     Variant result{};
@@ -84,34 +84,12 @@ variant_from_json_with_builder (
         {
           auto object_ptr = builder.template build<StrippedType> ();
 
-          if constexpr (std::is_copy_constructible_v<StrippedType>)
-            {
-              if (value_json.contains (
-                    utils::serialization::kVariantNonObjectValueKey))
-                {
-                  value_json[utils::serialization::kVariantNonObjectValueKey]
-                    .get_to (*object_ptr);
-                  result = *object_ptr;
-                  return;
-                }
-            }
-
           if constexpr (std::is_pointer_v<Type>)
-            {
-              value_json.get_to (*object_ptr);
-              result = object_ptr.release ();
-            }
+            result = object_ptr.release ();
           else if constexpr (std::is_copy_constructible_v<Type>)
-            {
-              value_json.get_to (*object_ptr);
-              result = *object_ptr;
-            }
+            result = *object_ptr;
           else if constexpr (is_derived_from_template_v<QObjectUniquePtr, Type>)
-            {
-              Type t = std::move (*object_ptr);
-              value_json.get_to (*t);
-              result = std::move (t);
-            }
+            result = std::move (*object_ptr);
           else
             {
               DEBUG_TEMPLATE_PARAM (Type)
@@ -128,6 +106,77 @@ variant_from_json_with_builder (
   };
 
   var = creator (std::make_index_sequence<std::variant_size_v<Variant>>{});
+}
+
+/**
+ * @brief Deserializes data into an existing variant object.
+ *
+ * This is the second phase of two-phase deserialization. It deserializes all
+ * data (except the type field) into the object stored in the variant.
+ *
+ * @tparam Variant The variant containing the object to deserialize into.
+ * @param j The JSON value containing the object data.
+ * @param var The variant containing the object to deserialize into.
+ */
+template <StdVariant Variant>
+inline void
+variant_deserialize_data (const nlohmann::json &j, Variant &var)
+{
+  // Create a copy of j without the "type" field for value deserialization
+  nlohmann::json value_json = j;
+  value_json.erase (zrythm::utils::serialization::kVariantTypeKey);
+
+  std::visit (
+    [&] (auto &&obj) {
+      using ObjType = std::decay_t<decltype (obj)>;
+      if constexpr (std::is_pointer_v<ObjType>)
+        {
+          if (value_json.contains (kVariantNonObjectValueKey))
+            value_json[kVariantNonObjectValueKey].get_to (*obj);
+          else
+            value_json.get_to (*obj);
+        }
+      else if constexpr (is_derived_from_template_v<QObjectUniquePtr, ObjType>)
+        {
+          if (value_json.contains (kVariantNonObjectValueKey))
+            value_json[kVariantNonObjectValueKey].get_to (*obj);
+          else
+            value_json.get_to (*obj);
+        }
+      else
+        {
+          if (value_json.contains (kVariantNonObjectValueKey))
+            value_json[kVariantNonObjectValueKey].get_to (obj);
+          else
+            value_json.get_to (obj);
+        }
+    },
+    var);
+}
+
+/**
+ * @brief Deserializer for a variant of pointers buildable with a builder.
+ *
+ * This is a convenience function that combines object creation and
+ * deserialization in a single step. For cases where two-phase deserialization
+ * is needed (e.g., when objects reference each other), use
+ * variant_create_object_only() and variant_deserialize_data() separately.
+ *
+ * @tparam Variant The variant of pointers to deserialize.
+ * @tparam BuilderT The builder type.
+ * @param j The JSON value to deserialize.
+ * @param var The variant to deserialize into.
+ * @param builder The builder to use to create the objects.
+ */
+template <StdVariant Variant, ObjectBuilder BuilderT>
+inline void
+variant_from_json_with_builder (
+  const nlohmann::json &j,
+  Variant              &var,
+  const BuilderT       &builder)
+{
+  variant_create_object_only (j, var, builder);
+  variant_deserialize_data (j, var);
 }
 
 }; // namespace zrythm::utils::serialization

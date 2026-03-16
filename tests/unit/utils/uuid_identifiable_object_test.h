@@ -121,3 +121,70 @@ protected:
   DerivedTestObject * obj2_{};
   DerivedTestObject * obj3_{};
 };
+
+// ============================================================================
+// Test types for destruction order testing
+// ============================================================================
+
+/**
+ * @brief Test object that holds a UuidReference to another object.
+ *
+ * Used to test proper destruction order when the registry is destroyed
+ * while objects contain references to other objects in the same registry.
+ */
+class ContainerTestObject : public QObject, public BaseTestObject
+{
+  Q_OBJECT
+public:
+  // The registry type that will contain this object
+  using ContainerRegistry = utils::
+    OwningObjectRegistry<std::variant<ContainerTestObject *>, BaseTestObject>;
+  using UuidRef = utils::UuidReference<ContainerRegistry>;
+
+  explicit ContainerTestObject (int /* unused dependency */) { }
+  explicit ContainerTestObject (TestUuid id, std::string name)
+      : BaseTestObject (id), name_ (std::move (name))
+  {
+  }
+
+  void set_contained_ref (UuidRef ref) { contained_ref_ = std::move (ref); }
+
+  [[nodiscard]] std::string name () const { return name_; }
+
+  friend void init_from (
+    ContainerTestObject       &obj,
+    const ContainerTestObject &other,
+    ObjectCloneType            clone_type)
+  {
+    obj.name_ = other.name_;
+  }
+
+  NLOHMANN_DEFINE_DERIVED_TYPE_INTRUSIVE (
+    ContainerTestObject,
+    BaseTestObject,
+    name_)
+
+private:
+  std::string            name_;
+  std::optional<UuidRef> contained_ref_;
+
+  BOOST_DESCRIBE_CLASS (ContainerTestObject, (BaseTestObject), (), (), (name_))
+};
+
+// Builder for ContainerTestObject deserialization
+class ContainerTestObjectBuilder
+{
+public:
+  template <typename ObjectT> auto build () const
+  {
+    return std::make_unique<ObjectT> (42);
+  }
+};
+static_assert (ObjectBuilder<ContainerTestObjectBuilder>);
+
+inline void
+from_json (const nlohmann::json &j, ContainerTestObject::ContainerRegistry &obj)
+{
+  auto builder = ContainerTestObjectBuilder{};
+  from_json_with_builder (j, obj, builder);
+}

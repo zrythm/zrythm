@@ -24,6 +24,7 @@ target_sources(zrythm_arrangement_lib
     chord_editor.cpp
     chord_object.cpp
     chord_region.cpp
+    colored_object.cpp
     editor_settings.cpp
     fadeable_object.cpp
     loopable_object.cpp

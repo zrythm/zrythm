@@ -28,9 +28,11 @@ AudioPool::init_loaded ()
 {
   for (auto * clip : get_clip_ptrs ())
     {
+      const auto name = clip->get_name ();
       clip->init_from_file (
-        get_clip_path (clip->get_uuid (), false), clip->get_samplerate (),
+        get_clip_path (clip->get_uuid (), false), sample_rate_getter_ (),
         clip->get_bpm ());
+      clip->set_name (name);
     }
 }
 

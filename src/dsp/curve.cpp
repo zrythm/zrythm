@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -33,6 +33,8 @@
 #include "utils/debug.h"
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
@@ -209,6 +211,20 @@ operator== (const CurveOptions &a, const CurveOptions &b)
 {
   return utils::math::floats_equal (a.curviness_, b.curviness_)
          && a.algo_ == b.algo_;
+}
+
+void
+to_json (nlohmann::json &j, const CurveOptions &opts)
+{
+  j[CurveOptions::kCurvinessKey] = opts.curviness_;
+  j[CurveOptions::kAlgorithmKey] = opts.algo_;
+}
+
+void
+from_json (const nlohmann::json &j, CurveOptions &opts)
+{
+  j.at (CurveOptions::kCurvinessKey).get_to (opts.curviness_);
+  j.at (CurveOptions::kAlgorithmKey).get_to (opts.algo_);
 }
 
 } // namespace zrythm::dsp

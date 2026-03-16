@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -332,6 +332,14 @@ public:
   {
   }
 
+  ~OwningObjectRegistry ()
+  {
+    destroying_ = true;
+    // ~QObject() will delete all children, which may trigger UuidReference
+    // destructors that call release_reference(). The destroying_ flag tells
+    // release_reference() to skip reference counting during destruction.
+  }
+
   // ========================================================================
   // QML/QObject Interface
   // ========================================================================
@@ -477,6 +485,9 @@ public:
   {
     assert (is_main_thread ());
 
+    if (destroying_)
+      return;
+
     if (--ref_counts_[id] <= 0)
       {
         delete_object_by_id (id);
@@ -516,12 +527,36 @@ public:
     OwningObjectRegistry &obj,
     const BuilderT       &builder)
   {
+    // Phase 1: Create and register all objects (no data deserialization yet)
+    // This ensures all objects exist in the registry before any references
+    // are resolved during data deserialization.
+    std::vector<std::pair<VariantT, nlohmann::json>> deferred;
+    deferred.reserve (j.size ());
     for (const auto &object_var_json : j)
       {
         VariantT object_var;
-        utils::serialization::variant_from_json_with_builder (
+        utils::serialization::variant_create_object_only (
           object_var_json, object_var, builder);
+
+        // Set UUID from JSON before registering, so the object is registered
+        // under the correct UUID.
+        std::visit (
+          [&object_var_json] (auto &&ptr) {
+            from_json (
+              object_var_json,
+              static_cast<utils::UuidIdentifiableObject<BaseT> &> (*ptr));
+          },
+          object_var);
+
         obj.register_object (object_var);
+        deferred.emplace_back (object_var, object_var_json);
+      }
+
+    // Phase 2: Deserialize data into all objects
+    // Now all UUID references can be resolved since all objects are registered.
+    for (auto &[object_var, json] : deferred)
+      {
+        utils::serialization::variant_deserialize_data (json, object_var);
       }
   }
 
@@ -574,6 +609,15 @@ private:
   boost::unordered::unordered_flat_map<UuidType, int> ref_counts_;
 
   RTThreadId main_thread_id_;
+
+  /**
+   * @brief Flag to indicate the registry is being destroyed.
+   *
+   * When true, release_reference() becomes a no-op to avoid accessing member
+   * variables during child destruction (which happens in ~QObject() before
+   * member destructors run).
+   */
+  bool destroying_ = false;
 };
 
 /**

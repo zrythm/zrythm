@@ -103,9 +103,9 @@ private:
     return bounds_.length ();
   }
 
-  static constexpr auto kClipStartPosKey = "clipStartPos"sv;
-  static constexpr auto kLoopStartPosKey = "loopStartPos"sv;
-  static constexpr auto kLoopEndPosKey = "loopEndPos"sv;
+  static constexpr auto kClipStartPosKey = "clipStartPosition"sv;
+  static constexpr auto kLoopStartPosKey = "loopStartPosition"sv;
+  static constexpr auto kLoopEndPosKey = "loopEndPosition"sv;
   static constexpr auto kTrackBoundsKey = "trackBounds"sv;
   friend auto to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object)
   {

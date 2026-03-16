@@ -467,6 +467,312 @@ TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
 }
 
 // ============================================================================
+// Arranger Object Round-Trip Tests
+// ============================================================================
+// These tests verify that C++ serialization of arranger objects produces
+// schema-valid JSON. This catches mismatches between C++ serialization keys
+// and schema property names (e.g., "clipStartPos" vs "clipStartPosition").
+// ============================================================================
+
+/// Test that a project with MIDI track + MIDI region + MIDI note validates
+TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
+{
+  auto original_project = create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Create MIDI track
+  auto track_ref = original_project->track_factory_->create_empty_track<
+    structure::tracks::MidiTrack> ();
+  auto * track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  ASSERT_NE (track, nullptr);
+  track->setName (u8"MIDI Track");
+  original_project->tracklist ()->collection ()->add_track (track_ref);
+
+  // Add MIDI region with note to the first lane
+  {
+    auto  &factory = *original_project->arrangerObjectFactory ();
+    auto * lane = track->lanes ()->at (0);
+    ASSERT_NE (lane, nullptr);
+
+    auto region_ref =
+      factory.get_builder<structure::arrangement::MidiRegion> ()
+        .with_start_ticks (0)
+        .with_end_ticks (960)
+        .with_name (u8"MIDI Region")
+        .build_in_registry ();
+    auto * region =
+      region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+    lane->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiRegion>::add_object (region_ref);
+
+    auto note_ref =
+      factory.get_builder<structure::arrangement::MidiNote> ()
+        .with_start_ticks (0)
+        .with_pitch (60)
+        .with_velocity (100)
+        .build_in_registry ();
+    region->add_object (note_ref);
+  }
+
+  create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "MIDI Region Test");
+
+  // Validate against schema - this catches code/schema mismatches
+  EXPECT_NO_THROW ({
+    ProjectJsonSerializer::validate_json (j1);
+  }) << "MIDI region serialization should produce schema-valid JSON";
+
+  // Verify arranger objects are in the registry
+  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  EXPECT_GE (obj_registry.size (), 2)
+    << "Should have at least MIDI region and MIDI note";
+
+  // Deserialize
+  auto deserialized_project = create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "MIDI Region Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify registries match
+  expect_registries_match (j1, j2);
+}
+
+/// Test that a project with Audio track + Audio region validates
+TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
+{
+  auto original_project = create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Create Audio track
+  auto track_ref = original_project->track_factory_->create_empty_track<
+    structure::tracks::AudioTrack> ();
+  auto * track = track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  ASSERT_NE (track, nullptr);
+  track->setName (u8"Audio Track");
+  original_project->tracklist ()->collection ()->add_track (track_ref);
+
+  // Add audio region (has loop properties that must match schema) to first lane
+  {
+    auto  &factory = *original_project->arrangerObjectFactory ();
+    auto * lane = track->lanes ()->at (0);
+    ASSERT_NE (lane, nullptr);
+
+    auto &file_registry = original_project->get_file_audio_source_registry ();
+    auto  audio_source_ref = file_registry.create_object<dsp::FileAudioSource> (
+      2, 1, units::sample_rate (44100), 120, u8"test_audio.wav");
+
+    auto region_ref =
+      factory.create_audio_region_with_clip (audio_source_ref, 0);
+    auto * region =
+      region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+    region->name ()->setName (u8"Audio Region");
+    lane->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioRegion>::add_object (region_ref);
+  }
+
+  create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Audio Region Test");
+
+  // Validate against schema - this catches clipStartPos/loopStartPos/loopEndPos
+  // mismatches with schema's clipStartPosition/loopStartPosition/loopEndPosition
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); })
+    << "Audio region serialization should produce schema-valid JSON. "
+    << "Check for property name mismatches (e.g., clipStartPos vs clipStartPosition)";
+
+  // Verify arranger objects are in the registry
+  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  EXPECT_GE (obj_registry.size (), 2)
+    << "Should have at least audio region and audio source object";
+
+  // Deserialize
+  auto deserialized_project = create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Audio Region Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify registries match
+  expect_registries_match (j1, j2);
+}
+
+/// Test that a project with track + Automation region + Automation point
+/// validates
+TEST_F (ProjectSerializationTest, RoundTrip_AutomationRegionWithPoint_Validates)
+{
+  auto original_project = create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Create an Audio track (ChannelTrack that supports automation)
+  auto track_ref = original_project->track_factory_->create_empty_track<
+    structure::tracks::AudioTrack> ();
+  auto * track = track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  ASSERT_NE (track, nullptr);
+  track->setName (u8"Audio Track with Automation");
+  original_project->tracklist ()->collection ()->add_track (track_ref);
+
+  // Add automation region with point
+  {
+    auto &factory = *original_project->arrangerObjectFactory ();
+    auto  region_ref =
+      factory.get_builder<structure::arrangement::AutomationRegion> ()
+        .with_start_ticks (0)
+        .with_end_ticks (960)
+        .with_name (u8"Automation Region")
+        .build_in_registry ();
+    auto * region =
+      region_ref.get_object_as<structure::arrangement::AutomationRegion> ();
+    track->automationTracklist ()->automation_track_at (0)->add_object (
+      region_ref);
+
+    auto point_ref =
+      factory.get_builder<structure::arrangement::AutomationPoint> ()
+        .with_start_ticks (0)
+        .with_automatable_value (0.75)
+        .build_in_registry ();
+    region->add_object (point_ref);
+  }
+
+  create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Automation Region Test");
+
+  // Validate against schema - this catches code/schema mismatches for
+  // automation regions (which also have loop properties like
+  // clipStartPosition/loopStartPosition)
+  EXPECT_NO_THROW ({
+    ProjectJsonSerializer::validate_json (j1);
+  }) << "Automation region serialization should produce schema-valid JSON";
+
+  // Verify arranger objects are in the registry
+  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  EXPECT_GE (obj_registry.size (), 2)
+    << "Should have at least automation region and automation point";
+
+  // Deserialize
+  auto deserialized_project = create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Automation Region Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify registries match
+  expect_registries_match (j1, j2);
+}
+
+/// Test that a project with Chord track + Chord region + Chord object validates
+TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
+{
+  auto original_project = create_minimal_project ();
+  ASSERT_NE (original_project, nullptr);
+
+  // Get the chord track (singleton)
+  {
+    auto track_ref = original_project->track_factory_->create_empty_track<
+      structure::tracks::ChordTrack> ();
+    original_project->tracklist ()->collection ()->add_track (track_ref);
+    original_project->tracklist ()->singletonTracks ()->setChordTrack (
+      track_ref.get_object_as<structure::tracks::ChordTrack> ());
+  }
+  auto * chord_track =
+    original_project->tracklist ()->singletonTracks ()->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  // Add chord region with chord object
+  {
+    auto &factory = *original_project->arrangerObjectFactory ();
+    auto  region_ref =
+      factory.get_builder<structure::arrangement::ChordRegion> ()
+        .with_start_ticks (0)
+        .with_end_ticks (960)
+        .with_name (u8"Chord Region")
+        .build_in_registry ();
+    auto * region =
+      region_ref.get_object_as<structure::arrangement::ChordRegion> ();
+    chord_track->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::ChordRegion>::add_object (region_ref);
+
+    auto chord_ref =
+      factory.get_builder<structure::arrangement::ChordObject> ()
+        .with_start_ticks (0)
+        .with_chord_descriptor (0)
+        .build_in_registry ();
+    region->add_object (chord_ref);
+  }
+
+  create_ui_state_and_undo_stack (*original_project);
+
+  // Serialize
+  nlohmann::json j1 = ProjectJsonSerializer::serialize (
+    *original_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Chord Region Test");
+
+  // Validate against schema - this catches code/schema mismatches for chord
+  // regions (which also have loop properties)
+  EXPECT_NO_THROW ({
+    ProjectJsonSerializer::validate_json (j1);
+  }) << "Chord region serialization should produce schema-valid JSON";
+
+  // Verify arranger objects are in the registry
+  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  EXPECT_GE (obj_registry.size (), 2)
+    << "Should have at least chord region and chord object";
+
+  // Deserialize
+  auto deserialized_project = create_minimal_project ();
+  ASSERT_NE (deserialized_project, nullptr);
+  create_ui_state_and_undo_stack (*deserialized_project);
+  ProjectJsonSerializer::deserialize (
+    j1, *deserialized_project, *ui_state, *undo_stack);
+
+  // Serialize again
+  nlohmann::json j2 = ProjectJsonSerializer::serialize (
+    *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION,
+    "Chord Region Test");
+
+  // Validate again
+  EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
+
+  // Verify registries match
+  expect_registries_match (j1, j2);
+}
+
+// ============================================================================
 // Property-Based Round-Trip Tests
 // ============================================================================
 

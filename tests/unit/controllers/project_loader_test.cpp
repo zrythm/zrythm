@@ -5,6 +5,9 @@
 #include "controllers/project_saver.h"
 #include "project_json_serializer_test.h"
 #include "structure/project/project_path_provider.h"
+#include "utils/audio.h"
+
+#include "helpers/qt_helpers.h"
 
 namespace zrythm::controllers
 {
@@ -156,6 +159,83 @@ TEST_F (ProjectLoaderTest, LoadFromDirectoryAsync)
   EXPECT_EQ (result.title.view (), "Async Load Test");
   EXPECT_EQ (result.project_directory, project_dir);
   EXPECT_TRUE (result.json.contains ("documentType"));
+}
+
+TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
+{
+  // Create a project with an audio file
+  auto project = create_minimal_project ();
+  create_ui_state_and_undo_stack (*project);
+
+  // Create a FileAudioSource with some audio data
+  constexpr int             num_channels = 2;
+  constexpr int             num_frames = 100;
+  utils::audio::AudioBuffer buffer (num_channels, num_frames);
+  for (int ch = 0; ch < num_channels; ++ch)
+    {
+      for (int i = 0; i < num_frames; ++i)
+        {
+          buffer.setSample (ch, i, 0.5f);
+        }
+    }
+
+  const double test_bpm = 120.0;
+  auto         clip_ref =
+    project->get_file_audio_source_registry ().create_object<dsp::FileAudioSource> (
+      buffer, dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
+      project->engine ()->get_sample_rate (), test_bpm,
+      utils::Utf8String::from_utf8_encoded_string ("test_clip"));
+  auto clip_id = clip_ref.id ();
+
+  // Save the project (this writes audio files to disk via
+  // AudioPool::write_to_disk)
+  auto save_future = ProjectSaver::save (
+    *project, *ui_state, *undo_stack, TEST_APP_VERSION, project_dir, false);
+  test_helpers::waitForFutureWithEvents (save_future);
+
+  // Verify the audio file was written to the pool
+  auto pool_path =
+    project_dir
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir);
+  auto clip_path =
+    pool_path
+    / fmt::format (
+      "{}.wav", clip_id.value_.toString (QUuid::WithoutBraces).toStdString ());
+  EXPECT_TRUE (utils::io::path_exists (clip_path))
+    << "Audio file should exist at: " << clip_path;
+
+  // Load the project into a new Project instance
+  auto loaded_project = create_minimal_project ();
+  auto loaded_ui_state = utils::make_qobject_unique<
+    structure::project::ProjectUiState> (*loaded_project, *app_settings);
+  auto loaded_undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [&] (const std::function<void ()> &action, bool recalculate_graph) {
+      loaded_project->engine ()
+        ->execute_function_with_paused_processing_synchronously (
+          action, recalculate_graph);
+    },
+    nullptr);
+
+  auto load_result = ProjectLoader::load_from_directory (project_dir);
+  load_result.waitForFinished ();
+  auto json = load_result.result ().json;
+
+  ProjectLoader::deserialize (
+    json, *loaded_project, *loaded_ui_state, *loaded_undo_stack);
+
+  // Verify the FileAudioSource was loaded correctly
+  auto * loaded_clip = std::get<dsp::FileAudioSource *> (
+    loaded_project->get_file_audio_source_registry ().find_by_id_or_throw (
+      clip_id));
+
+  // These fields are serialized in JSON
+  EXPECT_EQ (loaded_clip->get_name ().view (), "test_clip");
+  EXPECT_EQ (loaded_clip->get_bpm (), test_bpm);
+
+  // These fields are read from the audio file during init_loaded()
+  EXPECT_EQ (loaded_clip->get_num_channels (), num_channels);
+  EXPECT_EQ (loaded_clip->get_num_frames (), num_frames);
 }
 
 } // namespace zrythm::controllers

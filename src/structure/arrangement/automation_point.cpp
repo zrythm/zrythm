@@ -38,4 +38,18 @@ init_from (
 
 AutomationPoint::~AutomationPoint () = default;
 
+void
+to_json (nlohmann::json &j, const AutomationPoint &point)
+{
+  to_json (j, static_cast<const ArrangerObject &> (point));
+  j[AutomationPoint::kNormalizedValueKey] = point.normalized_value_;
+  j[AutomationPoint::kCurveOptionsKey] = point.curve_opts_;
+}
+void
+from_json (const nlohmann::json &j, AutomationPoint &point)
+{
+  from_json (j, static_cast<ArrangerObject &> (point));
+  j.at (AutomationPoint::kNormalizedValueKey).get_to (point.normalized_value_);
+  j.at (AutomationPoint::kCurveOptionsKey).get_to (point.curve_opts_);
+}
 }

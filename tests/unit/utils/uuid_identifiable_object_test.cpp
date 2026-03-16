@@ -429,4 +429,130 @@ TEST_F (UuidIdentifiableObjectRegistryTest, RegistrySerialization)
   std::visit (
     [] (auto * obj) { EXPECT_EQ (obj->name (), "Object1"); }, obj1_var);
 }
+
+/**
+ * @brief Tests that registry destruction handles objects containing
+ *        UuidReferences correctly when external references are held.
+ *
+ * When UuidReference objects are held externally, objects are deleted via
+ * reference counting before the registry destructor runs. This test verifies
+ * that this scenario works correctly.
+ */
+class DestructionWithExternalReferencesTest
+    : public ::testing::TestWithParam<bool>
+{
+};
+
+TEST_P (DestructionWithExternalReferencesTest, HandlesBothCreationOrders)
+{
+  const bool create_referenced_first = GetParam ();
+  using ContainerRegistry = ContainerTestObject::ContainerRegistry;
+
+  // Create a registry in a scope so it gets destroyed at the end
+  {
+    ContainerRegistry registry;
+
+    // Create objects in specified order
+    ContainerTestObject::UuidRef container_ref{ registry };
+    ContainerTestObject::UuidRef referenced_ref{ registry };
+    if (create_referenced_first)
+      {
+        referenced_ref = registry.create_object<ContainerTestObject> (
+          TestUuid{ QUuid::createUuid () }, "Referenced");
+        container_ref = registry.create_object<ContainerTestObject> (
+          TestUuid{ QUuid::createUuid () }, "Container");
+      }
+    else
+      {
+        container_ref = registry.create_object<ContainerTestObject> (
+          TestUuid{ QUuid::createUuid () }, "Container");
+        referenced_ref = registry.create_object<ContainerTestObject> (
+          TestUuid{ QUuid::createUuid () }, "Referenced");
+      }
+
+    // Get raw pointer and set up the reference
+    auto * container = container_ref.get_object_as<ContainerTestObject> ();
+    container->set_contained_ref (referenced_ref);
+
+    // Registry goes out of scope here - this should not cause use-after-free
+  }
+
+  // If we get here without ASan errors, the test passes
+  SUCCEED () << "Registry destruction completed without use-after-free";
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  UuidIdentifiableObjectRegistryDestructionTest,
+  DestructionWithExternalReferencesTest,
+  ::testing::Bool (),
+  [] (const ::testing::TestParamInfo<bool> &info) {
+    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  });
+
+/**
+ * @brief Tests destruction when objects are deleted via Qt parent-child,
+ *        not via ref counting.
+ *
+ * This reproduces the exact scenario from the real code: objects created
+ * without external UuidReference holders, so they're deleted via Qt's
+ * parent-child mechanism when the registry is destroyed.
+ *
+ * Regression test for: heap-use-after-free in ~OwningObjectRegistry()
+ */
+class DestructionViaQtParentChildTest : public ::testing::TestWithParam<bool>
+{
+};
+
+TEST_P (DestructionViaQtParentChildTest, HandlesBothRegistrationOrders)
+{
+  const bool register_referenced_first = GetParam ();
+  using ContainerRegistry = ContainerTestObject::ContainerRegistry;
+
+  // Create a registry in a scope so it gets destroyed at the end
+  {
+    ContainerRegistry registry;
+
+    // Create objects directly (not via create_object) so they have no external
+    // UuidReference holding them. This ensures they're deleted via Qt's
+    // parent-child mechanism, not via ref counting.
+    auto * container_obj =
+      new ContainerTestObject (TestUuid{ QUuid::createUuid () }, "Container");
+    auto * referenced_obj =
+      new ContainerTestObject (TestUuid{ QUuid::createUuid () }, "Referenced");
+
+    // Register objects in specified order - this sets the registry as parent
+    if (register_referenced_first)
+      {
+        registry.register_object (referenced_obj);
+        registry.register_object (container_obj);
+      }
+    else
+      {
+        registry.register_object (container_obj);
+        registry.register_object (referenced_obj);
+      }
+
+    // Create a UuidReference to the referenced object and store it in the
+    // container. This increments the referenced object's ref_count to 1.
+    {
+      ContainerTestObject::UuidRef ref (referenced_obj->get_uuid (), registry);
+      container_obj->set_contained_ref (ref);
+      // ref goes out of scope here, but the copy inside container_obj keeps
+      // ref_count = 1
+    }
+
+    // Registry goes out of scope here - this should not cause use-after-free
+  }
+
+  // If we get here without ASan errors, the test passes
+  SUCCEED () << "Registry destruction completed without use-after-free";
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  UuidIdentifiableObjectRegistryDestructionTest,
+  DestructionViaQtParentChildTest,
+  ::testing::Bool (),
+  [] (const ::testing::TestParamInfo<bool> &info) {
+    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  });
 }

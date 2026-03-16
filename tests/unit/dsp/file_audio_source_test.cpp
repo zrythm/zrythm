@@ -204,9 +204,6 @@ TEST_F (FileAudioSourceTest, Serialization)
 
   // Verify properties
   EXPECT_EQ (deserialized.get_name ().str (), "serial_test");
-  EXPECT_EQ (
-    deserialized.get_bit_depth (), FileAudioSource::BitDepth::BIT_DEPTH_16);
-  EXPECT_EQ (deserialized.get_samplerate (), project_sample_rate);
 }
 
 } // namespace zrythm::dsp

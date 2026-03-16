@@ -54,20 +54,10 @@ private:
     const AutomationPoint &other,
     utils::ObjectCloneType clone_type);
 
-  static constexpr auto kNormalizedValueKey = "normalized_value"sv;
-  static constexpr auto kCurveOptionsKey = "curve_options"sv;
-  friend void to_json (nlohmann::json &j, const AutomationPoint &point)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (point));
-    j[kNormalizedValueKey] = point.normalized_value_;
-    j[kCurveOptionsKey] = point.curve_opts_;
-  }
-  friend void from_json (const nlohmann::json &j, AutomationPoint &point)
-  {
-    from_json (j, static_cast<ArrangerObject &> (point));
-    j.at (kNormalizedValueKey).get_to (point.normalized_value_);
-    j.at (kCurveOptionsKey).get_to (point.curve_opts_);
-  }
+  static constexpr auto kNormalizedValueKey = "normalizedValue"sv;
+  static constexpr auto kCurveOptionsKey = "curveOptions"sv;
+  friend void to_json (nlohmann::json &j, const AutomationPoint &point);
+  friend void from_json (const nlohmann::json &j, AutomationPoint &point);
 
 private:
   /** Normalized value (0 to 1) used as a cache. */

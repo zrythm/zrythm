@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,7 +8,9 @@
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+using namespace std::string_view_literals;
 
 namespace zrythm::dsp
 {
@@ -105,7 +107,11 @@ public:
 
   friend bool operator== (const CurveOptions &a, const CurveOptions &b);
 
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE (CurveOptions, algo_, curviness_)
+private:
+  static constexpr auto kCurvinessKey = "curviness"sv;
+  static constexpr auto kAlgorithmKey = "algorithm"sv;
+  friend void           to_json (nlohmann::json &j, const CurveOptions &opts);
+  friend void           from_json (const nlohmann::json &j, CurveOptions &opts);
 
 public:
   /** Curviness between -1 and 1, where < 0 tils downwards, > 0

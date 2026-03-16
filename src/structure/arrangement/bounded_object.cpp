@@ -110,4 +110,16 @@ init_from (
 {
   obj.length_.set_ticks (other.length_.get_ticks ());
 }
+
+void
+to_json (nlohmann::json &j, const ArrangerObjectBounds &object)
+{
+  j[ArrangerObjectBounds::kLengthKey] = object.length_;
+}
+
+void
+from_json (const nlohmann::json &j, ArrangerObjectBounds &object)
+{
+  j.at (ArrangerObjectBounds::kLengthKey).get_to (object.length_);
+}
 }
