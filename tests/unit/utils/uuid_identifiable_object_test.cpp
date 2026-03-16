@@ -485,8 +485,8 @@ INSTANTIATE_TEST_SUITE_P (
   UuidIdentifiableObjectRegistryDestructionTest,
   DestructionWithExternalReferencesTest,
   ::testing::Bool (),
-  [] (const ::testing::TestParamInfo<bool> &info) {
-    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  [] (const ::testing::TestParamInfo<bool> &param_info) {
+    return param_info.param ? "ReferencedFirst" : "ContainerFirst";
   });
 
 /**
@@ -552,7 +552,7 @@ INSTANTIATE_TEST_SUITE_P (
   UuidIdentifiableObjectRegistryDestructionTest,
   DestructionViaQtParentChildTest,
   ::testing::Bool (),
-  [] (const ::testing::TestParamInfo<bool> &info) {
-    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  [] (const ::testing::TestParamInfo<bool> &param_info) {
+    return param_info.param ? "ReferencedFirst" : "ContainerFirst";
   });
 }
