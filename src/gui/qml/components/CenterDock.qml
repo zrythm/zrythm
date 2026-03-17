@@ -160,6 +160,7 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: root.rulerHeight
             editorSettings: root.session.uiState.timeline.editorSettings
+            snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
             transport: root.project.transport
           }

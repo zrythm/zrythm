@@ -63,6 +63,7 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.pianoRoll.editorSettings
+    snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
     transport: root.project.transport
     region: root.region

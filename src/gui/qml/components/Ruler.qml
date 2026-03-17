@@ -12,12 +12,25 @@ import Qt.labs.synchronizer
 Item {
   id: root
 
+  enum CurrentAction {
+    None,
+    MovingPlayhead,
+    MovingLoopStart,
+    MovingLoopEnd,
+    MovingLoopRange
+  }
+
   readonly property real barLineOpacity: 0.8
   readonly property real beatLineOpacity: 0.6
   readonly property alias contentWidth: scrollView.contentWidth
+  property bool ctrlHeld: false
+  property int currentAction: Ruler.CurrentAction.None
   readonly property real defaultPxPerTick: 0.03
   readonly property real detailMeasureLabelPxThreshold: 64 // threshold to show/hide labels for more detailed measures
   readonly property real detailMeasurePxThreshold: 32 // threshold to show/hide more detailed measures
+  property real dragStartLoopEndTicks: 0
+  property real dragStartLoopStartTicks: 0
+  property real dragStartX: 0
   required property EditorSettings editorSettings
   readonly property int endBar: {
     root.tempoMapChangedFlag; // binding
@@ -32,7 +45,10 @@ Item {
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * (editorSettings?.horizontalZoomLevel ?? 1)
   property ArrangerObject region: null
+  property bool shiftHeld: false
+  readonly property bool shouldSnap: !root.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
   readonly property real sixteenthLineOpacity: 0.4
+  required property SnapGrid snapGrid
   readonly property int startBar: {
     tempoMapChangedFlag; // binding
     return tempoMap.getMusicalPosition(visibleStartTick).bar;
@@ -45,6 +61,37 @@ Item {
   readonly property int visibleBarCount: endBar - startBar + 1
   readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
   readonly property real visibleStartTick: (editorSettings?.x ?? 1) / pxPerTick
+
+  function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
+    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
+  }
+
+  function getActionAtPosition(x: real, y: real, ctrlPressed: bool): int {
+    if (!root.transport.loopEnabled)
+      return Ruler.CurrentAction.MovingPlayhead;
+
+    const loopStartX = loopRange.startX;
+    const loopEndX = loopRange.endX;
+    const markerWidth = loopRange.loopMarkerWidth;
+
+    // Check if over loop start marker
+    if (x >= loopStartX && x <= loopStartX + markerWidth && y <= loopRange.loopMarkerHeight)
+      return Ruler.CurrentAction.MovingLoopStart;
+
+    // Check if over loop end marker
+    if (x >= loopEndX - markerWidth && x <= loopEndX && y <= loopRange.loopMarkerHeight)
+      return Ruler.CurrentAction.MovingLoopEnd;
+
+    // Check if over loop range (only when Ctrl is held)
+    if (x >= loopStartX && x <= loopEndX && ctrlPressed)
+      return Ruler.CurrentAction.MovingLoopRange;
+
+    return Ruler.CurrentAction.MovingPlayhead;
+  }
+
+  function ticksFromX(x: real): real {
+    return x / (root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel);
+  }
 
   clip: true
   implicitHeight: 24
@@ -355,25 +402,80 @@ ${sixteenthRect.sixteenth}`
     }
 
     MouseArea {
-      property bool dragging: false
+      id: rulerMouseArea
 
       acceptedButtons: Qt.LeftButton | Qt.RightButton
       anchors.fill: parent
+      hoverEnabled: true
       preventStealing: true
 
       onPositionChanged: mouse => {
-        if (dragging) {
-          root.transport.playhead.ticks = mouse.x / (root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel);
+        // Track modifiers
+        root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+        root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
+
+        // Update cursor based on hover position
+        if (!pressed) {
+          const hoverAction = root.getActionAtPosition(mouse.x, mouse.y, root.ctrlHeld);
+          if (hoverAction === Ruler.CurrentAction.MovingLoopStart || hoverAction === Ruler.CurrentAction.MovingLoopEnd) {
+            cursorShape = Qt.SizeHorCursor;
+          } else if (hoverAction === Ruler.CurrentAction.MovingLoopRange) {
+            cursorShape = Qt.SizeAllCursor;
+          } else {
+            cursorShape = Qt.ArrowCursor;
+          }
+          return;
+        }
+
+        // Handle drag actions
+        const currentTicks = root.ticksFromX(mouse.x);
+        const tickDelta = root.ticksFromX(mouse.x - root.dragStartX);
+
+        switch (root.currentAction) {
+        case Ruler.CurrentAction.MovingPlayhead:
+          root.transport.playhead.ticks = root.calculateSnappedPosition(currentTicks, root.ticksFromX(root.dragStartX));
+          break;
+        case Ruler.CurrentAction.MovingLoopStart:
+          const newStartTicks = root.dragStartLoopStartTicks + tickDelta;
+          const snappedStartTicks = root.calculateSnappedPosition(newStartTicks, root.dragStartLoopStartTicks);
+          // Clamp: start must be >= 0 and < end position
+          root.transport.loopStartPosition.ticks = Math.max(0, Math.min(snappedStartTicks, root.transport.loopEndPosition.ticks - 1));
+          break;
+        case Ruler.CurrentAction.MovingLoopEnd:
+          const newEndTicks = root.dragStartLoopEndTicks + tickDelta;
+          const snappedEndTicks = root.calculateSnappedPosition(newEndTicks, root.dragStartLoopEndTicks);
+          // Clamp: end must be > start position
+          root.transport.loopEndPosition.ticks = Math.max(snappedEndTicks, root.transport.loopStartPosition.ticks + 1);
+          break;
+        case Ruler.CurrentAction.MovingLoopRange:
+          const loopLength = root.dragStartLoopEndTicks - root.dragStartLoopStartTicks;
+          const newRangeStartTicks = root.dragStartLoopStartTicks + tickDelta;
+          const snappedRangeStartTicks = root.calculateSnappedPosition(newRangeStartTicks, root.dragStartLoopStartTicks);
+          const clampedStartTicks = Math.max(0, snappedRangeStartTicks);
+          root.transport.loopStartPosition.ticks = clampedStartTicks;
+          root.transport.loopEndPosition.ticks = clampedStartTicks + loopLength;
+          break;
         }
       }
       onPressed: mouse => {
+        // Track modifiers
+        root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+        root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
+
         if (mouse.button === Qt.LeftButton) {
-          dragging = true;
-          root.transport.playhead.ticks = mouse.x / (root.defaultPxPerTick * root.editorSettings.horizontalZoomLevel);
+          root.dragStartX = mouse.x;
+          root.dragStartLoopStartTicks = root.transport.loopStartPosition.ticks;
+          root.dragStartLoopEndTicks = root.transport.loopEndPosition.ticks;
+          root.currentAction = root.getActionAtPosition(mouse.x, mouse.y, root.ctrlHeld);
+
+          // For playhead, also set initial position on press
+          if (root.currentAction === Ruler.CurrentAction.MovingPlayhead) {
+            root.transport.playhead.ticks = root.calculateSnappedPosition(root.ticksFromX(mouse.x), root.ticksFromX(mouse.x));
+          }
         }
       }
       onReleased: {
-        dragging = false;
+        root.currentAction = Ruler.CurrentAction.None;
       }
       onWheel: wheel => {
         if (wheel.modifiers & Qt.ControlModifier) {
