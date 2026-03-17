@@ -140,14 +140,14 @@ init_from (
 bool
 PluginDescriptor::isInstrument () const
 {
-  if (this->num_midi_ins_ == 0 || this->num_audio_outs_ == 0)
-    {
-      return false;
-    }
-
   if (this->category_ == PluginCategory::Instrument)
     {
       return true;
+    }
+
+  if (this->num_midi_ins_ == 0 || this->num_audio_outs_ == 0)
+    {
+      return false;
     }
 
   return
