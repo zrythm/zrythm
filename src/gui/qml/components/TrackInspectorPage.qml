@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import Zrythm
 
@@ -51,10 +52,30 @@ ColumnLayout {
       }
 
       Rectangle {
+        id: colorRect
+
         Layout.fillWidth: true
         Layout.preferredHeight: 20
         color: root.track.color
         radius: 4
+
+        MouseArea {
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+
+          onClicked: colorDialog.open()
+        }
+
+        ColorDialog {
+          id: colorDialog
+
+          selectedColor: root.track.color
+          title: qsTr("Choose Track Color")
+
+          onAccepted: {
+            trackOperator.setColor(selectedColor);
+          }
+        }
       }
 
       Label {
