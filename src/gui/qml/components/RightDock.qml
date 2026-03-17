@@ -42,13 +42,14 @@ ColumnLayout {
       }
     }
 
-    TabButton {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "minuet-chords.svg")
+    // TODO: enable after implementing chord presets
+    // TabButton {
+    //   icon.source: ResourceManager.getIconUrl("zrythm-dark", "minuet-chords.svg")
 
-      ToolTip {
-        text: qsTr("Chord Preset Browser")
-      }
-    }
+    //   ToolTip {
+    //     text: qsTr("Chord Preset Browser")
+    //   }
+    // }
   }
 
   StackLayout {
