@@ -217,6 +217,7 @@ set(rel_qml_file_paths
   components/arranger/TempoMapArranger.qml
   components/arranger/TempoObjectView.qml
   components/arranger/Timeline.qml
+  components/arranger/TimelineMinimap.qml
   components/arranger/TimeSignatureObjectView.qml
   components/arranger/VelocityArranger.qml
   components/dialogs/ProgressDialog.qml

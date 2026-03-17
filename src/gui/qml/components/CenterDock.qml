@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,8 +15,8 @@ ColumnLayout {
   id: root
 
   readonly property Project project: session.project
-  required property ProjectSession session
   readonly property int rulerHeight: 24
+  required property ProjectSession session
   readonly property int tempoMapLaneHeight: 24
   readonly property int tempoMapLaneSpacing: 1
   required property TrackSelectionModel trackSelectionModel
@@ -286,6 +286,17 @@ ColumnLayout {
               sourceObject: unpinnedTracklist
               sourceProperty: "contentHeight"
             }
+          }
+
+          TimelineMinimap {
+            id: timelineMinimap
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: 32
+            editorSettings: root.session.uiState.timeline.editorSettings
+            ruler: ruler
+            scrollViewWidth: unpinnedTimelineArranger.scrollViewWidth
+            tracklist: root.project.tracklist
           }
         }
       }

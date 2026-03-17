@@ -292,7 +292,7 @@ Arranger {
 
   editorSettings: timeline.editorSettings
   enableYScroll: !pinned
-  scrollView.ScrollBar.horizontal.policy: pinned ? ScrollBar.AlwaysOff : ScrollBar.AsNeeded
+  scrollView.ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
   content: ListView {
     id: tracksListView
