@@ -217,4 +217,20 @@ TEST_F (TrackOperatorTest, MixedOperations)
   EXPECT_EQ (track->color (), QColor ("red"));
 }
 
+// Test basic setComment operation with undo/redo
+TEST_F (TrackOperatorTest, SetCommentWithUndoRedo)
+{
+  track->setComment ("Initial comment");
+  track_operator->setComment ("New comment");
+
+  EXPECT_EQ (track->comment (), QString ("New comment"));
+  EXPECT_EQ (undo_stack->text (0), QString ("Change Track Comment"));
+
+  undo_stack->undo ();
+  EXPECT_EQ (track->comment (), QString ("Initial comment"));
+
+  undo_stack->redo ();
+  EXPECT_EQ (track->comment (), QString ("New comment"));
+}
+
 } // namespace zrythm::actions

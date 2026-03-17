@@ -50,6 +50,7 @@ public:
 
   Q_INVOKABLE void rename (const QString &newName);
   Q_INVOKABLE void setColor (const QColor &color);
+  Q_INVOKABLE void setComment (const QString &comment);
 
 private:
   structure::tracks::Track * track_{};

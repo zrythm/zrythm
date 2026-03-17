@@ -3,6 +3,7 @@
 
 #include "actions/track_operator.h"
 #include "commands/change_track_color_command.h"
+#include "commands/change_track_comment_command.h"
 #include "commands/rename_track_command.h"
 
 namespace zrythm::actions
@@ -19,6 +20,14 @@ TrackOperator::setColor (const QColor &color)
 {
   auto cmd =
     std::make_unique<commands::ChangeTrackColorCommand> (*track_, color);
+  undo_stack_->push (cmd.release ());
+}
+
+void
+TrackOperator::setComment (const QString &comment)
+{
+  auto cmd =
+    std::make_unique<commands::ChangeTrackCommentCommand> (*track_, comment);
   undo_stack_->push (cmd.release ());
 }
 }

@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
 
@@ -25,9 +26,15 @@ ColumnLayout {
   ExpanderBox {
     Layout.fillWidth: true
     icon.source: ResourceManager.getIconUrl("gnome-icon-library", "general-properties-symbolic.svg")
-    title: "Track Properties"
+    title: qsTr("Track Properties")
 
     frameContentItem: ColumnLayout {
+      spacing: 4
+
+      Label {
+        text: qsTr("Name")
+      }
+
       EditableLabel {
         id: trackNameLabel
 
@@ -40,13 +47,45 @@ ColumnLayout {
       }
 
       Label {
-        text: root.track.comment
+        text: qsTr("Color")
       }
 
       Rectangle {
         Layout.fillWidth: true
-        Layout.preferredHeight: 40
+        Layout.preferredHeight: 20
         color: root.track.color
+        radius: 4
+      }
+
+      Label {
+        text: qsTr("Notes")
+      }
+
+      ScrollView {
+        Layout.fillWidth: true
+        Layout.preferredHeight: Math.min(notesTextArea.implicitHeight + 16, 100)
+        clip: true
+
+        TextArea {
+          id: notesTextArea
+
+          text: root.track.comment
+          wrapMode: TextEdit.Wrap
+
+          onEditingFinished: {
+            if (text !== root.track.comment) {
+              trackOperator.setComment(text);
+            }
+          }
+
+          Connections {
+            function onCommentChanged(comment: string) {
+              notesTextArea.text = comment;
+            }
+
+            target: root.track
+          }
+        }
       }
     }
   }
