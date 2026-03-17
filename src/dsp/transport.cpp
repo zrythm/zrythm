@@ -117,6 +117,12 @@ Transport::setPlayState (PlayState state)
 }
 
 void
+Transport::movePlayhead (double ticks, bool setCuePoint)
+{
+  move_playhead (units::ticks (ticks), setCuePoint);
+}
+
+void
 init_from (
   Transport             &obj,
   const Transport       &other,

@@ -470,7 +470,7 @@ ${sixteenthRect.sixteenth}`
 
           // For playhead, also set initial position on press
           if (root.currentAction === Ruler.CurrentAction.MovingPlayhead) {
-            root.transport.playhead.ticks = root.calculateSnappedPosition(root.ticksFromX(mouse.x), root.ticksFromX(mouse.x));
+            root.transport.movePlayhead(root.calculateSnappedPosition(root.ticksFromX(mouse.x), root.ticksFromX(mouse.x)), true);
           }
         }
       }

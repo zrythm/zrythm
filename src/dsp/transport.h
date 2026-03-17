@@ -301,6 +301,17 @@ public:
    */
   Q_INVOKABLE void requestRoll () [[clang::blocking]];
 
+  /**
+   * @brief Moves the playhead to the given tick position.
+   *
+   * This is intended for user-initiated playhead moves (e.g., clicking on the
+   * ruler).
+   *
+   * @param ticks The target position in ticks.
+   * @param setCuePoint If true, also sets the cue position to this position.
+   */
+  Q_INVOKABLE void movePlayhead (double ticks, bool setCuePoint);
+
   // ==================================================================
 
   // ==================================================================
@@ -365,7 +376,8 @@ public:
    * Moves playhead to given pos.
    *
    * This is only for moves other than while playing and for looping while
-   * playing.
+   * playing. For example it should be used for moves when the user clicks on a
+   * position in the ruler.
    *
    * Should not be used during exporting.
    *
