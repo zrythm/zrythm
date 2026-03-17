@@ -302,5 +302,11 @@ Item {
     onReleased: {
       root.currentAction = TimelineMinimap.Action.None;
     }
+    onWheel: wheel => {
+      if (wheel.modifiers & Qt.ControlModifier) {
+        const multiplier = wheel.angleDelta.y > 0 ? 1.3 : 1 / 1.3;
+        root.editorSettings.horizontalZoomLevel = Math.min(Math.max(root.editorSettings.horizontalZoomLevel * multiplier, root.ruler.minZoomLevel), root.ruler.maxZoomLevel);
+      }
+    }
   }
 }
