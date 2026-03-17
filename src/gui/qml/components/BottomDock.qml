@@ -94,14 +94,15 @@ ColumnLayout {
       text: qsTr("Mixer")
     }
 
-    TabButton {
-      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "encoder-knob-symbolic.svg")
-      text: qsTr("Modulators")
-    }
+    // TODO: re-enable when features are implemented
+    // TabButton {
+    //   icon.source: ResourceManager.getIconUrl("gnome-icon-library", "encoder-knob-symbolic.svg")
+    //   text: qsTr("Modulators")
+    // }
 
-    TabButton {
-      icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
-      text: qsTr("Chord Pad")
-    }
+    // TabButton {
+    //   icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
+    //   text: qsTr("Chord Pad")
+    // }
   }
 }
