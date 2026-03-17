@@ -21,9 +21,9 @@ Control {
   required property int depth
   required property bool expanded
   required property bool foldable
-  required property int trackIndex
   property bool isResizing: false
   required property Track track // connected automatically when used as a delegate for a Tracklist model
+  required property int trackIndex
   readonly property var trackModelIndex: trackSelectionModel?.getModelIndex(trackIndex)
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
@@ -196,11 +196,13 @@ Control {
 
                       padding: root.buttonPadding
                       styleHeight: root.buttonHeight
+                      visible: false // currently unimplemented
                     }
 
                     MuteButton {
                       padding: root.buttonPadding
                       styleHeight: root.buttonHeight
+                      visible: false // currently unimplemented
                     }
                   }
                 }
