@@ -86,6 +86,55 @@ ArrangerObjectSelectionOperator::moveNotesByPitch (int pitch_delta)
 }
 
 bool
+ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
+{
+  if (velocity_delta == 0)
+    {
+      return true;
+    }
+
+  // Extract selected objects from selection model
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected for velocity change");
+      return false;
+    }
+
+  // Validate velocity changes
+  const auto all_valid = std::ranges::all_of (
+    selected_objects, [velocity_delta] (const auto &obj_ref) {
+      return std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              const auto new_velocity = obj->velocity () + velocity_delta;
+              return new_velocity >= 0 && new_velocity <= 127;
+            }
+          return false;
+        },
+        obj_ref.get_object ());
+    });
+
+  if (!all_valid)
+    {
+      z_warning ("Velocity change validation failed");
+      return false;
+    }
+
+  // Create and push command
+  auto * command = new commands::MoveArrangerObjectsCommand (
+    std::move (selected_objects), units::ticks (0),
+    static_cast<double> (velocity_delta),
+    commands::MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
+  undo_stack_.push (command);
+
+  return true;
+}
+
+bool
 ArrangerObjectSelectionOperator::deleteObjects ()
 {
   // Extract selected objects from selection model

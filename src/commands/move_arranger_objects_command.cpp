@@ -1,0 +1,172 @@
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "commands/move_arranger_objects_command.h"
+#include "structure/arrangement/arranger_object_all.h"
+
+namespace zrythm::commands
+{
+
+MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> objects,
+  units::precise_tick_t                                            tick_delta,
+  double             vertical_delta,
+  VerticalChangeType vertical_change_type)
+    : QUndoCommand (QObject::tr ("Move Objects")), objects_ (std::move (objects)),
+      tick_delta_ (tick_delta), vertical_delta_ (vertical_delta),
+      vertical_change_type_ (vertical_change_type)
+{
+  // Store original positions for undo
+  original_positions_.reserve (objects_.size ());
+  for (const auto &obj_ref : objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          original_positions_.push_back (
+            units::ticks (obj->position ()->ticks ()));
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              if (vertical_change_type_ == VerticalChangeType::Velocity)
+                {
+                  original_vertical_positions_.push_back (obj->velocity ());
+                }
+              else
+                {
+                  original_vertical_positions_.push_back (obj->pitch ());
+                }
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+            {
+              original_vertical_positions_.push_back (obj->value ());
+            }
+          else
+            {
+              original_vertical_positions_.push_back (0);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
+bool
+MoveArrangerObjectsCommand::mergeWith (const QUndoCommand * other)
+{
+  if (other->id () != id ())
+    return false;
+
+  // only merge if other command was made in quick succession of this
+  // command's redo() and operates on the same objects
+  const auto * other_cmd =
+    dynamic_cast<const MoveArrangerObjectsCommand *> (other);
+  const auto cur_time = std::chrono::steady_clock::now ();
+  const auto duration = cur_time - last_redo_timestamp_;
+  if (
+    std::chrono::duration_cast<std::chrono::milliseconds> (duration).count ()
+    > 1'000)
+    {
+      return false;
+    }
+
+  // Check if we're operating on the same set of objects
+  if (objects_.size () != other_cmd->objects_.size ())
+    return false;
+
+  if (
+    !std::ranges::equal (
+      objects_, other_cmd->objects_, {},
+      &structure::arrangement::ArrangerObjectUuidReference::id,
+      &structure::arrangement::ArrangerObjectUuidReference::id))
+    {
+      return false;
+    }
+
+  last_redo_timestamp_ = cur_time;
+  tick_delta_ += other_cmd->tick_delta_;
+  vertical_delta_ += other_cmd->vertical_delta_;
+  return true;
+}
+
+void
+MoveArrangerObjectsCommand::undo ()
+{
+  for (
+    const auto &[obj_ref, original_pos, original_vertical_pos] :
+    std::views::zip (objects_, original_positions_, original_vertical_positions_))
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          obj->position ()->setTicks (original_pos.in (units::ticks));
+          if (vertical_delta_ != 0)
+            {
+              if constexpr (
+                std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+                {
+                  if (vertical_change_type_ == VerticalChangeType::Velocity)
+                    {
+                      obj->setVelocity (
+                        static_cast<int> (original_vertical_pos));
+                    }
+                  else
+                    {
+                      obj->setPitch (static_cast<int> (original_vertical_pos));
+                    }
+                }
+              else if constexpr (
+                std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+                {
+                  obj->setValue (static_cast<float> (original_vertical_pos));
+                }
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
+void
+MoveArrangerObjectsCommand::redo ()
+{
+  for (
+    const auto &[obj_ref, original_pos, original_vertical_pos] :
+    std::views::zip (objects_, original_positions_, original_vertical_positions_))
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          obj->position ()->setTicks (
+            (original_pos + tick_delta_).in (units::ticks));
+          if (vertical_delta_ != 0)
+            {
+              if constexpr (
+                std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+                {
+                  if (vertical_change_type_ == VerticalChangeType::Velocity)
+                    {
+                      obj->setVelocity (
+                        static_cast<int> (
+                          original_vertical_pos + vertical_delta_));
+                    }
+                  else
+                    {
+                      obj->setPitch (
+                        static_cast<int> (
+                          original_vertical_pos + vertical_delta_));
+                    }
+                }
+              else if constexpr (
+                std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+                {
+                  obj->setValue (
+                    static_cast<float> (original_vertical_pos + vertical_delta_));
+                }
+            }
+        },
+        obj_ref.get_object ());
+    }
+  last_redo_timestamp_ = std::chrono::steady_clock::now ();
+}
+
+} // namespace zrythm::commands

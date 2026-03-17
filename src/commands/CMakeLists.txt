@@ -5,6 +5,7 @@ qt_add_library(zrythm_commands_lib STATIC)
 
 target_sources(zrythm_commands_lib
   PRIVATE
+    move_arranger_objects_command.cpp
     move_plugin_command.cpp
     resize_arranger_objects_command.cpp
   PUBLIC

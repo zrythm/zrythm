@@ -468,7 +468,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
         [&] (auto &&obj) {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               original_pitch = obj->pitch ();
             }
@@ -486,7 +486,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
         [&] (auto &&obj) {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
             }
@@ -505,7 +505,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
         [&] (auto &&obj) {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               EXPECT_EQ (obj->pitch (), original_pitch);
             }
@@ -520,7 +520,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
         [&] (auto &&obj) {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
             }
@@ -643,7 +643,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
         [&] (auto &&obj) {
           using ObjectT = base_type<decltype (obj)>;
           if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
               EXPECT_EQ (obj->pitch (), original_pitch);
             }
@@ -1689,6 +1689,186 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioRegion)
         structure::arrangement::AudioRegion>::get_children_vector ()
       .size (),
     initial_audio_region_count);
+}
+
+// Test changeVelocities functionality
+TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocities)
+{
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  const int velocity_delta = 15;
+
+  // Store original velocity for MIDI note
+  int original_velocity = 0;
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              original_velocity = obj->velocity ();
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  bool result = operator_->changeVelocities (velocity_delta);
+  EXPECT_TRUE (result);
+
+  // MIDI notes should have velocity changed
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Undo should restore original velocity
+  undo_stack_->undo ();
+
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              EXPECT_EQ (obj->velocity (), original_velocity);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Redo should apply velocity change again
+  undo_stack_->redo ();
+
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
+// Test changeVelocities with no selection (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesNoSelection)
+{
+  // Clear selection
+  selection_model_->clear ();
+
+  bool result = operator_->changeVelocities (10);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed for no selection
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test changeVelocities with zero delta (no-op)
+TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
+{
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  bool result = operator_->changeVelocities (0);
+  EXPECT_TRUE (result);
+
+  // No command should be pushed for zero delta
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test changeVelocities with invalid velocity (out of range)
+TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesInvalidVelocity)
+{
+  // Select note for testing
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  // Find MIDI note and set its velocity to 120 (close to max)
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              obj->setVelocity (120);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Try to change by 20 (would result in velocity 140, which is out of range)
+  bool result = operator_->changeVelocities (20);
+  EXPECT_FALSE (result);
+
+  // Velocity should remain unchanged
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              EXPECT_EQ (obj->velocity (), 120);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Try negative delta that would go below 0
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              obj->setVelocity (5);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  result = operator_->changeVelocities (-10);
+  EXPECT_FALSE (result);
+
+  // Velocity should remain unchanged
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
+            {
+              EXPECT_EQ (obj->velocity (), 5);
+            }
+        },
+        obj_ref.get_object ());
+    }
 }
 
 } // namespace zrythm::actions

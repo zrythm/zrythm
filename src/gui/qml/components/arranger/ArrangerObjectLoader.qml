@@ -23,6 +23,7 @@ Loader {
   required property real scrollX
   readonly property alias selectionTracker: selectionTracker
   required property UnifiedProxyModel unifiedObjectsModel
+  property bool useCustomWidth: false // use `width` instead of bounds-based
   readonly property bool useParentPosition: arrangerObject.parentObject !== null
 
   // Viewport culling
@@ -33,7 +34,7 @@ Loader {
 
   Binding on width {
     value: root.arrangerObject.bounds ? root.arrangerObject.bounds.length.ticks * root.pxPerTick : 0
-    when: root.arrangerObject.bounds
+    when: !root.useCustomWidth && root.arrangerObject.bounds
   }
 
   SelectionTracker {
@@ -42,13 +43,13 @@ Loader {
     // Dummy property to force the modelIndex to be recalculated
     property bool dummy: false
 
-    selectionModel: root.arrangerSelectionModel
     modelIndex: {
       root.unifiedObjectsModel.addSourceModel(root.model);
       const ret = root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0));
       dummy;
       return ret;
     }
+    selectionModel: root.arrangerSelectionModel
   }
 
   // When objects are added to previous source models in the unified model, the modelIndex above is not updated, so we force an update here when objects are added/removed

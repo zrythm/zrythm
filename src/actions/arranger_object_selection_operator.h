@@ -40,6 +40,8 @@ public:
 
   Q_INVOKABLE bool moveNotesByPitch (int pitch_delta);
 
+  Q_INVOKABLE bool changeVelocities (int velocity_delta);
+
   Q_INVOKABLE bool moveAutomationPointsByDelta (double delta);
 
   Q_INVOKABLE bool resizeObjects (

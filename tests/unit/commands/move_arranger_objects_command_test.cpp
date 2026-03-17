@@ -273,6 +273,125 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
     }
 }
 
+// Test velocity changes for MIDI notes
+TEST_F (MoveArrangerObjectsCommandTest, VelocityChangesMidiNotes)
+{
+  const int velocity_delta = 20;
+
+  // Store original velocity for MIDI note
+  int original_velocity = 0;
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              original_velocity = obj->velocity ();
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Create a command with velocity change (no horizontal movement)
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (0.0), velocity_delta,
+    MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
+
+  command.redo ();
+
+  // Check velocity changed for MIDI notes
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  command.undo ();
+
+  // Check velocity restored for MIDI notes
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->velocity (), original_velocity);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
+// Test velocity clamping at boundaries
+TEST_F (MoveArrangerObjectsCommandTest, VelocityClampingAtBoundaries)
+{
+  // First, set velocity to a high value
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              obj->setVelocity (120);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  // Try to increase velocity beyond 127
+  MoveArrangerObjectsCommand command (
+    test_objects_, units::ticks (0.0), 50.0,
+    MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
+
+  command.redo ();
+
+  // Velocity should be clamped to 127
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->velocity (), 127);
+            }
+        },
+        obj_ref.get_object ());
+    }
+
+  command.undo ();
+
+  // Velocity should be restored to 120
+  for (const auto &obj_ref : test_objects_)
+    {
+      std::visit (
+        [&] (auto &&obj) {
+          using ObjectT = base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
+            {
+              EXPECT_EQ (obj->velocity (), 120);
+            }
+        },
+        obj_ref.get_object ());
+    }
+}
+
 TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
 {
   // First, move the objects so that the total ticks are still positive
