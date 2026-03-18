@@ -190,7 +190,6 @@ set(rel_qml_file_paths
   components/basic/RotatedLabel.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
-  components/basic/ZrythmAlertDialog.qml
   components/basic/ZrythmFilePicker.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml

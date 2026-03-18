@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
@@ -494,18 +495,18 @@ ApplicationWindow {
     Connections {
       function onAlertRequested(title, message) {
         console.log("Alert requested: ", title, message);
-        alertDialog.alertTitle = title;
-        alertDialog.alertMessage = message;
+        alertDialog.text = title;
+        alertDialog.informativeText = message;
         alertDialog.open();
       }
 
       target: root.alertManager
     }
 
-    ZrythmAlertDialog {
+    MessageDialog {
       id: alertDialog
 
-      anchors.centerIn: parent
+      buttons: MessageDialog.Ok
     }
   }
 
