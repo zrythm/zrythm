@@ -508,8 +508,8 @@ public:
    */
   utils::Utf8String get_name () const { return name_; };
 
-  auto get_input_signal_type () const { return in_signal_type_; }
-  auto get_output_signal_type () const { return out_signal_type_; }
+  auto input_signal_type () const { return in_signal_type_; }
+  auto output_signal_type () const { return out_signal_type_; }
 
   /**
    * Returns the MIDI channel that this region should be played on, starting

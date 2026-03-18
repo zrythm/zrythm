@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -10,12 +10,12 @@ import Zrythm
 ColumnLayout {
   id: root
 
+  required property AudioEngine audioEngine
   required property Channel channel
   required property PluginImporter pluginImporter
   required property Track track
   required property Tracklist tracklist
   required property UndoStack undoStack
-  required property AudioEngine audioEngine
 
   implicitWidth: 48
 
@@ -82,23 +82,14 @@ ColumnLayout {
     TrackMeters {
       Layout.fillHeight: true
       Layout.fillWidth: false
-      channel: root.channel
       audioEngine: root.audioEngine
+      channel: root.channel
     }
   }
 
-  ComboBox {
-    Layout.fillWidth: true
-    textRole: "trackName"
-    valueRole: "track"
-
-    model: TrackFilterProxyModel {
-      sourceModel: root.tracklist.collection
-    }
-
-    Component.onCompleted: currentIndex = indexOfValue(root.tracklist.trackRouting.getOutputTrack(root.track))
-
-    // TODO: use an action class like TrackRoutingOperator
-    onActivated: root.tracklist.trackRouting.setOutputTrack(root.track, currentValue)
+  TrackRouteControl {
+    track: root.track
+    tracklist: root.tracklist
+    undoStack: root.undoStack
   }
 }

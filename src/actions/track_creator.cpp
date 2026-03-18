@@ -34,7 +34,7 @@ TrackCreator::addEmptyTrackFromType (
   // if audio output route to master
   std::visit (
     [&] (auto * track) {
-      if (track->get_output_signal_type () == dsp::PortType::Audio)
+      if (track->output_signal_type () == dsp::PortType::Audio)
         {
           undo_stack_.push (new commands::RouteTrackCommand (
             track_routing_, track_ref.id (),

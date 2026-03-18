@@ -266,6 +266,7 @@ set(rel_qml_file_paths
   components/TracklistView.qml
   components/TrackInspectorPage.qml
   components/TrackMeters.qml
+  components/TrackRouteControl.qml
   components/TrackSelectionModel.qml
   components/TrackView.qml
   components/TransportControls.qml

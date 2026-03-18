@@ -332,7 +332,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       std::visit (
                         [&] (const auto &output_track) {
                           if (
-                            output_track->get_input_signal_type ()
+                            output_track->input_signal_type ()
                             == dsp::PortType::Audio)
                             {
                               connect_ports (
@@ -342,7 +342,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                                    ->get_stereo_in_port ());
                             }
                           else if (
-                            output_track->get_input_signal_type ()
+                            output_track->input_signal_type ()
                             == dsp::PortType::Midi)
                             {
                               connect_ports (

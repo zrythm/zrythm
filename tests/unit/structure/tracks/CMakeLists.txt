@@ -16,8 +16,9 @@ add_executable(zrythm_structure_tracks_unit_tests
   track_factory_test.cpp
   track_lane_test.cpp
   track_lane_list_test.cpp
-  track_test.cpp
   track_processor_test.cpp
+  track_routing_test.cpp
+  track_test.cpp
 )
 
 set_target_properties(zrythm_structure_tracks_unit_tests PROPERTIES

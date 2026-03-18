@@ -126,7 +126,7 @@ ControlRoom::ControlRoom (
                   if (t->channel ())
                     {
                       if (
-                        t->get_output_signal_type () == dsp::PortType::Audio
+                        t->output_signal_type () == dsp::PortType::Audio
                         && t->channel ()->fader ()->currently_listened_rt ())
                         {
                           auto * f = t->channel ()->fader ();

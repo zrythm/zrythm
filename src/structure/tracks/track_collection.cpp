@@ -83,6 +83,7 @@ TrackCollection::roleNames () const
   roles[TrackFoldableRole] = "foldable";
   roles[TrackExpandedRole] = "expanded";
   roles[TrackDepthRole] = "depth";
+  roles[TrackNameRole] = "trackName";
   return roles;
 }
 
@@ -105,6 +106,8 @@ TrackCollection::data (const QModelIndex &index, int role) const
     {
     case TrackPtrRole:
       return QVariant::fromStdVariant (track_var);
+    case TrackNameRole:
+      return track_ref.get_object_base ()->name ();
     case TrackFoldableRole:
       return Track::type_is_foldable (track_ref.get_object_base ()->type ());
     case TrackExpandedRole:

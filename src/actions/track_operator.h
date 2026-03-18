@@ -3,9 +3,8 @@
 
 #pragma once
 
-#include <stdexcept>
-
 #include "structure/tracks/track_all.h"
+#include "structure/tracks/track_routing.h"
 #include "undo/undo_stack.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -21,6 +20,9 @@ class TrackOperator : public QObject
   Q_PROPERTY (
     zrythm::undo::UndoStack * undoStack READ undoStack WRITE setUndoStack NOTIFY
       undoStackChanged)
+  Q_PROPERTY (
+    zrythm::structure::tracks::TrackRouting * trackRouting READ trackRouting
+      WRITE setTrackRouting NOTIFY trackRoutingChanged)
   QML_ELEMENT
 
 public:
@@ -48,12 +50,28 @@ public:
   }
   Q_SIGNAL void undoStackChanged ();
 
+  structure::tracks::TrackRouting * trackRouting () const
+  {
+    return track_routing_;
+  }
+  void setTrackRouting (structure::tracks::TrackRouting * routing)
+  {
+    if (track_routing_ != routing)
+      {
+        track_routing_ = routing;
+        Q_EMIT trackRoutingChanged ();
+      }
+  }
+  Q_SIGNAL void trackRoutingChanged ();
+
   Q_INVOKABLE void rename (const QString &newName);
   Q_INVOKABLE void setColor (const QColor &color);
   Q_INVOKABLE void setComment (const QString &comment);
+  Q_INVOKABLE void setOutputTrack (structure::tracks::Track * destination);
 
 private:
-  structure::tracks::Track * track_{};
-  undo::UndoStack *          undo_stack_{};
+  structure::tracks::Track *        track_{};
+  undo::UndoStack *                 undo_stack_{};
+  structure::tracks::TrackRouting * track_routing_{};
 };
 }
