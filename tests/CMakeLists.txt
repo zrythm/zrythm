@@ -64,6 +64,7 @@ add_subdirectory(lv2plugins)
 
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
+add_subdirectory(integration)
 
 return() # TODO...
 

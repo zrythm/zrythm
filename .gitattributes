@@ -5,7 +5,7 @@
 ext/** linguist-vendored
 doc/dev/m.css/** linguist-vendored
 data/fonts/** linguist-vendored
-data/plugins/generated/** linguist-generated
+data/plugins/generated*/** linguist-generated
 resources/icons/** linguist-vendored
 git-packaging-hooks/** linguist-vendored
 src/audio/vamp-ports/*.h linguist-vendored

@@ -48,6 +48,9 @@ public:
     /** libdir/zrythm/lv2 */
     SYSTEM_BUNDLED_PLUGINSDIR,
 
+    /** libdir/vst3 (bundled VST3 plugins) */
+    SYSTEM_BUNDLED_VST3_PLUGINSDIR,
+
     /** Localization under "share". */
     SYSTEM_LOCALEDIR,
 

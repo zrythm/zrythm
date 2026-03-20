@@ -461,6 +461,12 @@ SPDX-FileCopyrightText = ["", "2009-2016 Albert Graef <aggraef@gmail.com>", "200
 SPDX-License-Identifier = "LGPL-3.0-or-later"
 
 [[annotations]]
+path = "data/plugins/generated-juce/**/**.cpp"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["", "2009-2016 Albert Graef <aggraef@gmail.com>", "2003-2022 GRAME, Centre National de Creation Musicale"]
+SPDX-License-Identifier = "LGPL-3.0-or-later"
+
+[[annotations]]
 path = ["data/samples/klick/README", "doc/user/scripting/api/**.rst", "ext/README", "git-packaging-hooks/README", "po/POTFILES", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "subprojects/**.wrap", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "po/zrythm.pot", "tools/stoat_**.txt", "tools/vg.sup", "VERSION.txt"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Alexandros Theodotou <alex@zrythm.org>"

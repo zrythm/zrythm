@@ -231,6 +231,13 @@ PluginProtocolPaths::get_vst3_paths ()
       add_expanded_paths (ret, paths_from_settings);
     }
 
+  /* add bundled VST3 plugins path */
+  auto &dir_mgr =
+    dynamic_cast<gui::ZrythmApplication *> (qApp)->get_directory_manager ();
+  auto bundled_vst3_path = dir_mgr.get_dir (
+    DirectoryManager::DirectoryType::SYSTEM_BUNDLED_VST3_PLUGINSDIR);
+  ret->add_path (bundled_vst3_path);
+
   ret->print (u8"VST3 paths");
 
   return ret;

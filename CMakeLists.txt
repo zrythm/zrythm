@@ -243,7 +243,7 @@ include(FindPython3)
 if (${ZRYTHM_SHELL_COMPLETIONS})
   find_program(FLEX_EXECUTABLE "flex" REQUIRED)
 endif()
-find_program(FAUST2LV2_EXECUTABLE "faust2lv2")
+find_program(FAUST2JUCE_EXECUTABLE "faust2juce")
 find_program(ITSTOOL_EXECUTABLE itstool)
 if(APPLE)
   find_program(RSVG_CONVERT_EXECUTABLE rsvg-convert
@@ -264,7 +264,7 @@ set(prog_name "Zrythm")
 set(prog_name_lowercase "zrythm")
 set(bundle_identifier "org.zrythm.Zrythm")
 set(copyright_name "Alexandros Theodotou")
-set(copyright_years "2018-2025")
+set(copyright_years "2018-2026")
 set(main_repo_url "https://gitlab.zrythm.org/zrythm/zrythm")
 set(issue_tracker_url "${main_repo_url}/-/issues")
 set(chatroom_url "https://matrix.to/#/#zrythmdaw:matrix.org")
@@ -401,6 +401,13 @@ if(NOT EXISTS "${attributions_sbom_filepath}")
     file(WRITE "${attributions_sbom_filepath}" "(No attributions included)")
   endif()
 endif()
+
+# JUCE properties
+set_directory_properties(PROPERTIES
+  JUCE_COMPANY_NAME "Zrythm"
+  JUCE_COMPANY_WEBSITE "${PROJECT_HOMEPAGE_URL}"
+  JUCE_COMPANY_COPYRIGHT  "Copyright (c) ${copyright_years} - ${copyright_name}"
+)
 
 #==============================================================================
 # Required Packages

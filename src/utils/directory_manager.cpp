@@ -62,6 +62,12 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
               get_dir (DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
             return parent_path / "lv2";
           }
+        case DirectoryManager::DirectoryType::SYSTEM_BUNDLED_VST3_PLUGINSDIR:
+          {
+            fs::path parent_path =
+              get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_LIBDIR);
+            return parent_path / "vst3";
+          }
         case DirectoryManager::DirectoryType::SYSTEM_LOCALEDIR:
           return prefix / DATADIR_NAME / "locale";
         case DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_DATADIR:
