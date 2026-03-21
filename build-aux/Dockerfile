@@ -45,7 +45,11 @@ RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.2.0/gcc-15.2.0.tar.xz && \
     make install && \
     cd .. && \
     rm -rf gcc-15.2.0.tar.xz gcc-15.2.0 && \
-    gcc --version && g++ --version
+    update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/local/bin/g++ 100 && \
+    update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc 100 && \
+    update-alternatives --install /usr/bin/c++ c++ /usr/local/bin/g++ 100 && \
+    cc --version && c++ --version && gcc --version && g++ --version
 
 
 # Build environment (FIXME: CPATH/LIBRARY_PATH might not be needed)
