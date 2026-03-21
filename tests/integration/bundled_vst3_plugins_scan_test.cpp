@@ -36,9 +36,11 @@ protected:
   static constexpr std::string_view EXPECTED_MANUFACTURER = "Zrythm";
   void                              SetUp () override
   {
-    // Create format manager and add VST3 format
+    // Create format manager and add only VST3 format
+    // (avoid picking up system plugins like AudioUnit on macOS)
     format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-    format_manager_->addDefaultFormats ();
+    format_manager_->addFormat (
+      std::make_unique<juce::VST3PluginFormat> ().release ());
 
     // Create known plugin list
     known_plugins_ = std::make_shared<juce::KnownPluginList> ();
