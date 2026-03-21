@@ -1,6 +1,10 @@
 # SPDX-FileCopyrightText: © 2019-2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+# Link all targets to the sanitizers lib - sanitizers require all the code to
+# be built with the same sanitizer flags.
+link_libraries(zrythm::sanitizers)
+
 add_subdirectory(backward-cpp)
 add_subdirectory(crill)
 add_subdirectory(dirent)
