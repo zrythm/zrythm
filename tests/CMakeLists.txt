@@ -5,11 +5,6 @@ if(NOT ZRYTHM_TESTS)
   return()
 endif()
 
-if("${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" STREQUAL "")
-  message(WARNING "Built-in plugins are not generated - generate them first")
-  return()
-endif()
-
 include(GoogleTest)
 function(zrythm_discover_tests TARGET_NAME)
   # see https://discourse.cmake.org/t/googletest-crash-when-using-cmake-xcode-arm64/5766/11
@@ -64,6 +59,15 @@ add_subdirectory(lv2plugins)
 
 add_subdirectory(unit)
 add_subdirectory(benchmarks)
+
+if(NOT ZRYTHM_BUNDLED_PLUGINS)
+  return()
+endif()
+if("${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" STREQUAL "")
+  message(WARNING "Built-in plugins are not generated - generate them first")
+  return()
+endif()
+
 add_subdirectory(integration)
 
 return() # TODO...
@@ -258,8 +262,6 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/zrythm-test-config.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/zrythm-test-config.h
 )
-
-# set(TEST_LINK_ARGS -fPIC)
 
 set(TESTS
 actions/arranger_selections

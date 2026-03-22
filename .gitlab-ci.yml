@@ -73,6 +73,7 @@ stages:
     BUILDDIR: "build_sanitizer"
     SANITIZER_TYPE: "address" # Default sanitizer
     RTSAN_OPTIONS: "suppressions=$CI_PROJECT_DIR/tools/rtsan_suppressions.supp"
+    WITH_BUNDLED_PLUGINS: "ON"
   before_script:
     - *unix-activate-venv
   script:
@@ -86,6 +87,7 @@ stages:
       -DZRYTHM_ENABLE_SANITIZER_${SANITIZER_TYPE}=ON
       -DZRYTHM_TESTS=ON
       -DZRYTHM_UNITY_BUILD=OFF
+      -DZRYTHM_BUNDLED_PLUGINS=${WITH_BUNDLED_PLUGINS}
     - cmake --build ${BUILDDIR}-${SANITIZER_TYPE} --parallel
     - ctest --test-dir ${BUILDDIR}-${SANITIZER_TYPE} --rerun-failed --output-on-failure
 
@@ -370,6 +372,8 @@ check:sanitizer-thread:
   variables:
     SANITIZER_TYPE: "THREAD"
     INSTALLED_QT_PREFIX: "/opt/Qt-6.10.0/Debug-tsan"
+    # Linker errors when building bundled plugins
+    WITH_BUNDLED_PLUGINS: "OFF"
 
 check:sanitizer-realtime:
   extends: .sanitizer-template
