@@ -164,9 +164,10 @@ if(FAUST2JUCE_EXECUTABLE)
 endif()
 
 # Install all VST3 plugins from the copy directory
+# On macOS, install into the app bundle's Contents/Resources/vst3 directory
 install(
   DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  DESTINATION "$<IF:$<PLATFORM_ID:Darwin>,$<TARGET_BUNDLE_DIR_NAME:zrythm>/Contents/Resources,${CMAKE_INSTALL_LIBDIR}>"
   COMPONENT Runtime
 )
 

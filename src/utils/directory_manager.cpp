@@ -64,9 +64,14 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
           }
         case DirectoryManager::DirectoryType::SYSTEM_BUNDLED_VST3_PLUGINSDIR:
           {
+#ifdef __APPLE__
+            // On macOS, VST3 plugins are bundled in Contents/Resources/vst3
+            return prefix / "Resources" / "vst3";
+#else
             fs::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_LIBDIR);
             return parent_path / "vst3";
+#endif
           }
         case DirectoryManager::DirectoryType::SYSTEM_LOCALEDIR:
           return prefix / DATADIR_NAME / "locale";

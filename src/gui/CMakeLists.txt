@@ -52,6 +52,13 @@ elseif(APPLE)
     COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS $<TARGET_FILE:plugin-scanner>
     COMMAND_EXPAND_LISTS
   )
+  # Copy bundled VST3 plugins to app bundle for debugging
+  if(ZRYTHM_BUNDLED_PLUGINS AND EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3")
+    add_custom_command(TARGET zrythm POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3" "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/Resources/vst3"
+      COMMENT "Copying bundled VST3 plugins to app bundle"
+    )
+  endif()
   if(XCODE)
     # Ad-hoc sign (error that these files are not signed otherwise)
     add_custom_command(TARGET zrythm POST_BUILD
