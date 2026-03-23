@@ -1277,6 +1277,18 @@ elseif(APPLE)
       COMMAND_ERROR_IS_FATAL ANY
     )
 
+    # Sign bundled VST3 plugins explicitly (required for notarization)
+    file(GLOB VST3_PLUGINS \"\$\{ZRYTHM_APP_BUNDLE_DIR\}/Contents/Resources/vst3/*.vst3\")
+    foreach(VST3_PLUGIN \$\{VST3_PLUGINS\})
+      execute_process(
+        COMMAND codesign
+          --force --verbose $<$<CONFIG:Release>:--options;runtime> $<$<CONFIG:Release>:--timestamp>
+          --sign \"${APPLE_APP_CODESIGN_IDENTITY}\"
+          \"\$\{VST3_PLUGIN\}\"
+        COMMAND_ERROR_IS_FATAL ANY
+      )
+    endforeach()
+
     # Code sign the app bundle
     # No need to notarize since we'll notarize the .dmg later, and it covers
     # the .app too

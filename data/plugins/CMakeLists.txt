@@ -110,6 +110,7 @@ foreach(plugin_info ${plugins})
         COPY_PLUGIN_AFTER_BUILD TRUE
         DESCRIPTION "${pl_descr}"
         VST3_CATEGORIES "${pl_type}"
+        BUNDLE_ID "org.zrythm.${pl_underscored_name}_plugin"
       )
 
       target_sources(${pl_underscored_name}_plugin
