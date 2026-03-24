@@ -6,12 +6,12 @@
 
 DspContextRAII::DspContextRAII ()
 {
-  z_info ("Starting DSP context...");
+  z_debug ("Starting DSP context...");
 
   ctx_ = std::make_unique<juce::ScopedNoDenormals> ();
 }
 
 DspContextRAII::~DspContextRAII ()
 {
-  z_info ("Destroying DSP context...");
+  z_debug ("Destroying DSP context...");
 }

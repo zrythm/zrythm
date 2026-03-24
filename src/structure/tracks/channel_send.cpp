@@ -162,8 +162,8 @@ ChannelSend::custom_process_block (
       const auto &amount_param = processing_caches_->amount_param_;
       const auto  amount_val =
         is_enabled
-           ? amount_param->range ().convertFrom0To1 (amount_param->currentValue ())
-           : 0.f;
+          ? amount_param->range ().convertFrom0To1 (amount_param->currentValue ())
+          : 0.f;
       for (
         const auto &[out, in] : std::views::zip (
           processing_caches_->audio_outs_rt_, processing_caches_->audio_ins_rt_))

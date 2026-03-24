@@ -94,8 +94,9 @@ PluginScannerSubprocess::handleAsyncUpdate ()
       if (pending_blocks_.empty ())
         return;
 
-      if (const auto results = do_scan (pending_blocks_.front ());
-          !results.isEmpty ())
+      if (
+        const auto results = do_scan (pending_blocks_.front ());
+        !results.isEmpty ())
         {
           send_results (results);
         }

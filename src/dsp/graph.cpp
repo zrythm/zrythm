@@ -56,8 +56,9 @@ Graph::print () const
 GraphNode *
 Graph::add_node_for_processable (IProcessable &node)
 {
-  if (auto * node_ptr = setup_nodes_.find_node_for_processable (node);
-      node_ptr != nullptr)
+  if (
+    auto * node_ptr = setup_nodes_.find_node_for_processable (node);
+    node_ptr != nullptr)
     {
       // don't allow duplicates
       return node_ptr;

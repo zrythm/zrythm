@@ -76,10 +76,10 @@ public:
   units::sample_rate_t    last_sample_rate_;
   nframes_t               last_max_block_length_ = 0;
   EngineProcessTimeInfo   last_time_info_{
-      .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
-      .nframes_ = 0
+    .g_start_frame_ = 0,
+    .g_start_frame_w_offset_ = 0,
+    .local_offset_ = 0,
+    .nframes_ = 0
   };
 };
 

@@ -126,8 +126,9 @@ SnapGrid::get_prev_or_next_snap_point (
         units::ticks (static_cast<int64_t> (std::round (out_ticks)));
       const auto time_signature_after =
         tempo_map_.time_signature_at_tick (out_ticks_rounded);
-      if (time_signature_after.is_different_time_signature (
-            time_signature_at_pivot_ticks))
+      if (
+        time_signature_after.is_different_time_signature (
+          time_signature_at_pivot_ticks))
         {
           // Always snap at boundary of time signature changes
           out_ticks = std::round (time_signature_after.tick.in (units::ticks));

@@ -83,14 +83,16 @@ PluginImporter::import (
 
             if (track_or_group.has_value ())
               {
-                if (std::holds_alternative<plugins::PluginGroup *> (
-                      track_or_group.value ()))
+                if (
+                  std::holds_alternative<plugins::PluginGroup *> (
+                    track_or_group.value ()))
                   {
                     return std::get<plugins::PluginGroup *> (
                       track_or_group.value ());
                   }
-                if (std::holds_alternative<structure::tracks::Track *> (
-                      track_or_group.value ()))
+                if (
+                  std::holds_alternative<structure::tracks::Track *> (
+                    track_or_group.value ()))
                   {
                     track = std::get<structure::tracks::Track *> (
                       track_or_group.value ());

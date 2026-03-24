@@ -1368,8 +1368,9 @@ ArrangerSelectionsAction::do_or_undo_create_or_delete (bool do_it, bool create)
 
   first_run_ = false;
 
-  if (std::ranges::any_of (
-        *sel_, ArrangerObjectSpan::type_projection<AutomationRegion>))
+  if (
+    std::ranges::any_of (
+      *sel_, ArrangerObjectSpan::type_projection<AutomationRegion>))
     {
       ROUTER->recalc_graph (false);
     }
@@ -1503,8 +1504,9 @@ ArrangerSelectionsAction::do_or_undo_record (bool do_it)
 
   first_run_ = false;
 
-  if (std::ranges::any_of (
-        *sel_, ArrangerObjectSpan::type_projection<AutomationRegion>))
+  if (
+    std::ranges::any_of (
+      *sel_, ArrangerObjectSpan::type_projection<AutomationRegion>))
     {
       ROUTER->recalc_graph (false);
     }

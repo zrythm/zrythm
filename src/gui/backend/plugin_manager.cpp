@@ -153,8 +153,9 @@ PluginManager::serialize_known_plugins ()
       return;
     }
 
-  if (known_plugin_list_->createXml ()->writeTo (
-        known_plugins_xml_path_str.to_juce_file ()))
+  if (
+    known_plugin_list_->createXml ()->writeTo (
+      known_plugins_xml_path_str.to_juce_file ()))
     {
       z_debug ("Saved known plugins to {}", known_plugins_xml_path_str);
     }

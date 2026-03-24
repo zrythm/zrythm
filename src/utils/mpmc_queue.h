@@ -114,8 +114,9 @@ public:
         intptr_t dif = (intptr_t) seq - (intptr_t) pos;
         if (dif == 0)
           {
-            if (_enqueue_pos.compare_exchange_weak (
-                  pos, pos + 1, std::memory_order_relaxed))
+            if (
+              _enqueue_pos.compare_exchange_weak (
+                pos, pos + 1, std::memory_order_relaxed))
               {
                 break;
               }
@@ -148,8 +149,9 @@ public:
         intptr_t dif = (intptr_t) seq - (intptr_t) (pos + 1);
         if (dif == 0)
           {
-            if (_dequeue_pos.compare_exchange_weak (
-                  pos, pos + 1, std::memory_order_relaxed))
+            if (
+              _dequeue_pos.compare_exchange_weak (
+                pos, pos + 1, std::memory_order_relaxed))
               {
                 break;
               }
