@@ -977,7 +977,7 @@ if(ZRYTHM_TESTS)
   CPMGetPackage(cpp_httplib)
 endif()
 
-find_package(Qt6 6.10
+find_package(Qt6 6.11
   COMPONENTS
     Core
     Gui
@@ -996,7 +996,7 @@ qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 qt_policy(SET QTP0005 NEW)
 target_compile_definitions(Qt6::Core INTERFACE
-  "QT_ENABLE_STRICT_MODE_UP_TO=0x060900"
+  "QT_ENABLE_STRICT_MODE_UP_TO=0x061100"
   "QT_NO_KEYWORDS"
 )
 get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
