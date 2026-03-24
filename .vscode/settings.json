@@ -28,12 +28,13 @@
     "-DZRYTHM_VERIFY_INTERFACE_HEADER_SETS=ON",
     "-DZRYTHM_COVERAGE=OFF",
     "-DZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS=ON",
-    "-DZRYTHM_BUILD_WITH_PIPE=ON"
+    "-DZRYTHM_BUILD_WITH_PIPE=ON",
+    "-DZRYTHM_BUNDLED_PLUGINS=ON"
   ],
   "cmake.environment": {
     "VIRTUAL_ENV": "${workspaceFolder}/venv",
     "LANG": "C.UTF-8",
-    "PATH": "/home/alex/opt/Qt6.9-Release/bin:${workspaceFolder}/venv/bin:${env:PATH}"
+    "PATH": "/home/alex/opt/Qt6.11.0/Release/bin:${workspaceFolder}/venv/bin:${env:PATH}"
   },
   "cmake.clearOutputBeforeBuild": false,
   "clang-tidy.buildPath": "builddir_cmake",
