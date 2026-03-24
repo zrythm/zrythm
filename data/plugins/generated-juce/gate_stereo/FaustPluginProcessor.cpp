@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Gate Stereo"
 version: "1.0"
-Code generated with Faust 2.83.1 (https://faust.grame.fr)
+Code generated with Faust 2.85.5 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/juce/juce-plugin.cpp -lang cpp -i -fpga-mem-th 4 -ct 1 -scn base_dsp -es 1 -mcd 16 -mdd 1024 -mdy 33 -uim -single -ftz 0
 ------------------------------------------------------------ */
 
@@ -137,12 +137,12 @@ Compilation options: -a /usr/share/faust/juce/juce-plugin.cpp -lang cpp -i -fpga
 #define __export__
 
 // Version as a global string
-#define FAUSTVERSION "2.83.1"
+#define FAUSTVERSION "2.85.5"
 
 // Version as separated [major,minor,patch] values
 #define FAUSTMAJORVERSION 2
-#define FAUSTMINORVERSION 83
-#define FAUSTPATCHVERSION 1
+#define FAUSTMINORVERSION 85
+#define FAUSTPATCHVERSION 5
 
 // Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
 // Use LIBFAUST_API for code that is compiled in faust and libfaust
@@ -994,6 +994,7 @@ class FAUST_API base_dsp {
          */
         virtual void metadata(Meta* m) = 0;
 
+
         /**
          * Read all controllers (buttons, sliders, etc.), and update the DSP state to be used by 'frame' or 'compute'.
          * This method will be filled with the -ec (--external-control) option.
@@ -1110,6 +1111,9 @@ class FAUST_API dsp_factory {
 
         /* Get warning messages list for a given compilation */
         virtual std::vector<std::string> getWarningMessages() = 0;
+
+        /* Return JSON description of the DSP (UI + metadata) */
+        virtual std::string getJSON() = 0;
 
         /* Create a new DSP instance, to be deleted with C++ 'delete' */
         virtual ::base_dsp* createDSPInstance() = 0;
@@ -1278,7 +1282,7 @@ class dsp_adapter : public decorator_dsp {
 };
 
 // Adapts a DSP for a different sample size
-template <typename REAL_INT, typename REAL_EXT>
+template <typename REAL_INT, typename REAL_EXT, int SIZE=4096>
 class dsp_sample_adapter : public decorator_dsp {
 
     private:
@@ -1310,12 +1314,12 @@ class dsp_sample_adapter : public decorator_dsp {
         {
             fAdaptedInputs = new REAL_INT*[base_dsp->getNumInputs()];
             for (int i = 0; i < base_dsp->getNumInputs(); i++) {
-                fAdaptedInputs[i] = new REAL_INT[4096];
+                fAdaptedInputs[i] = new REAL_INT[SIZE];
             }
 
             fAdaptedOutputs = new REAL_INT*[base_dsp->getNumOutputs()];
             for (int i = 0; i < base_dsp->getNumOutputs(); i++) {
-                fAdaptedOutputs[i] = new REAL_INT[4096];
+                fAdaptedOutputs[i] = new REAL_INT[SIZE];
             }
         }
 
@@ -1336,7 +1340,7 @@ class dsp_sample_adapter : public decorator_dsp {
 
         virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs)
         {
-            assert(count <= 4096);
+            assert(count <= SIZE);
             adaptInputBuffers(count, inputs);
             // DSP base class uses FAUSTFLOAT** type, so reinterpret_cast has to be used even if the real DSP uses REAL_INT
             fDSP->compute(count, reinterpret_cast<FAUSTFLOAT**>(fAdaptedInputs), reinterpret_cast<FAUSTFLOAT**>(fAdaptedOutputs));
@@ -1345,7 +1349,7 @@ class dsp_sample_adapter : public decorator_dsp {
 
         virtual void compute(double date_usec, int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs)
         {
-            assert(count <= 4096);
+            assert(count <= SIZE);
             adaptInputBuffers(count, inputs);
             // DSP base class uses FAUSTFLOAT** type, so reinterpret_cast has to be used even if the real DSP uses REAL_INT
             fDSP->compute(date_usec, count, reinterpret_cast<FAUSTFLOAT**>(fAdaptedInputs), reinterpret_cast<FAUSTFLOAT**>(fAdaptedOutputs));
@@ -3407,6 +3411,19 @@ class MetaDataUI {
             return ss;
         }
 
+        std::vector<std::pair<std::string, double> > parseOptionList(const std::string& desc) const
+        {
+            const char* mdescr = desc.c_str();
+            std::vector<std::string> names;
+            std::vector<double> values;
+            parseMenuList(mdescr, names, values);
+            std::vector<std::pair<std::string, double> > opts;
+            for (size_t i = 0; i < names.size(); i++) {
+                opts.push_back({names[i], values[i]});
+            }
+            return opts;
+        }
+
     public:
 
         virtual ~MetaDataUI()
@@ -3453,6 +3470,42 @@ class MetaDataUI {
         bool isHidden(FAUSTFLOAT* zone)
         {
             return fHiddenSet.count(zone) > 0;
+        }
+
+        std::string getTooltip(FAUSTFLOAT* zone) const
+        {
+            auto it = fTooltip.find(zone);
+            if (it != fTooltip.end()) {
+                return it->second;
+            }
+            return fGroupTooltip;
+        }
+
+        std::string getUnit(FAUSTFLOAT* zone) const
+        {
+            auto it = fUnit.find(zone);
+            if (it != fUnit.end()) {
+                return it->second;
+            }
+            return "";
+        }
+
+        std::vector<std::pair<std::string, double> > getRadioDescription(FAUSTFLOAT* zone) const
+        {
+            auto it = fRadioDescription.find(zone);
+            if (it == fRadioDescription.end()) {
+                return {};
+            }
+            return parseOptionList(it->second);
+        }
+
+        std::vector<std::pair<std::string, double> > getMenuDescription(FAUSTFLOAT* zone) const
+        {
+            auto it = fMenuDescription.find(zone);
+            if (it == fMenuDescription.end()) {
+                return {};
+            }
+            return parseOptionList(it->second);
         }
 
         /**
@@ -4492,11 +4545,12 @@ static void deleteClist(clist* cl)
 #include <algorithm>
 #include <limits>
 #include <iterator>
+#include <cstring>
 
 
 /*******************************************************************************
  * JSONUI : Faust User Interface
- * This class produce a complete JSON decription of the DSP instance.
+ * This class produce a complete JSON description of the DSP instance.
  *
  * Since 'shortname' can only be computed when all paths have been created,
  * the fAllUI vector is progressively filled with partially built UI items,
@@ -9195,11 +9249,14 @@ class proxy_dsp : public ::base_dsp {
  *
  * - Smoothing configuration: callers pass a duration in seconds; the class converts it to a
  *   sample count on instanceConstants(), then uses that count for ramp scheduling.
+ *   Callers can also choose the smoothing step size (in samples) to control how often controller
+ *   values are updated (default 1 sample).
  *
  * - Triggering: the ramp setup occurs at the beginning of each compute() (both variants). If no
  *   control has changed since the previous compute, no new ramp is created and processing runs at
- *   full block size. When a ramp is active, processing falls back to sample-by-sample computation
- *   until the ramp ends, then resumes block processing for the remaining frames.
+ *   full block size. When a ramp is active, processing uses blocks of `smoothingStep` samples
+ *   (default 1, max step is clamped to the current audio block size in `compute`) until the ramp ends,
+ *   then resumes block processing for the remaining frames.
  *
  * - State/ownership: the class owns its JSONUIDecoder; the wrapped base_dsp is owned by decorator_dsp.
  *   clone() deep-clones both the decoder JSON and the wrapped base_dsp and preserves the smoothing
@@ -9252,11 +9309,11 @@ struct LinearSmoother : public Smoother {
 
     // Advance one sample worth of linear interpolation and write zones.
     template <typename ControlContainer>
-    void step(ControlContainer& controls)
+    void step(ControlContainer& controls, int stepSamples)
     {
         size_t count = controls.size();
         for (size_t i = 0; i < count; ++i) {
-            controls[i].fCurrent += controls[i].fStep;
+            controls[i].fCurrent += controls[i].fStep * FAUSTFLOAT(stepSamples);
             *controls[i].fDspZone = controls[i].fCurrent;
         }
     }
@@ -9293,11 +9350,13 @@ struct ExpSmoother : public Smoother {
 
     // Apply exponential decay for one sample and write zones.
     template <typename ControlContainer>
-    void step(ControlContainer& controls)
+    void step(ControlContainer& controls, int stepSamples)
     {
         size_t count = controls.size();
+        double alpha = std::pow(fAlpha, stepSamples);
         for (size_t i = 0; i < count; ++i) {
-            controls[i].fCurrent = controls[i].fTarget + (controls[i].fCurrent - controls[i].fTarget) * FAUSTFLOAT(fAlpha);
+            controls[i].fCurrent = controls[i].fTarget
+                                    + (controls[i].fCurrent - controls[i].fTarget) * FAUSTFLOAT(alpha);
             *controls[i].fDspZone = controls[i].fCurrent;
         }
     }
@@ -9312,6 +9371,7 @@ class smoothing_dsp : public decorator_dsp {
         JSONUIDecoder* fDecoder;
         double fSmoothingSec;    // Smoothing duration in seconds (construction-time parameter)
         int fSmoothingSamples;   // Smoothing duration in samples (derived from samplerate)
+        int fSmoothingStep;      // Number of samples between smoothing updates
         int fRemaining;          // Remaining samples in current smoothing ramp
         using zone_param = JSONUIDecoderReal<FAUSTFLOAT>::ZoneParam;
 
@@ -9468,7 +9528,7 @@ class smoothing_dsp : public decorator_dsp {
         }
 
         // Initialize decoder and smoothing state using an existing base_dsp instance.
-        void init(const std::string& json, ::base_dsp* base_dsp, double smoothing_sec)
+        void init(const std::string& json, ::base_dsp* base_dsp, double smoothing_sec, int smoothing_step)
         {
             fDecoder = new JSONUIDecoder(json);
             collectControlZones(base_dsp);
@@ -9476,6 +9536,7 @@ class smoothing_dsp : public decorator_dsp {
             fInputPtrs.assign(getNumInputs(), nullptr);
             fOutputPtrs.assign(getNumOutputs(), nullptr);
             fSmoothingSec = smoothing_sec;
+            fSmoothingStep = std::max<int>(1, smoothing_step);
             fSmoothingSamples = 0;
             fRemaining = 0;
             resetSmoothingState();
@@ -9500,24 +9561,45 @@ class smoothing_dsp : public decorator_dsp {
 
     public:
 
+        /**
+         * Wrap an existing base_dsp and smooth its input controls.
+         *
+         * smoothing_sec : duration in seconds for non-toggle controls; <= 0 disables smoothing (controls jump).
+         * smoothing_step: number of samples between smoothing updates (minimum 1). Use values > 1 to reduce control update cost
+         *                 when audio blocks are large; max step is clamped to the current audio block size in compute().
+         *
+         * The constructor rebuilds the JSON UI from `base_dsp` so callers do not need to provide one explicitly.
+         */
         // Build from a concrete base_dsp, selecting smoothing duration (seconds).
-        smoothing_dsp(::base_dsp* base_dsp, double smoothing_sec = 0)
-        : decorator_dsp(base_dsp), fDecoder(nullptr), fSmoothingSec(smoothing_sec), fSmoothingSamples(0), fRemaining(0),
+        smoothing_dsp(::base_dsp* base_dsp, double smoothing_sec = 0, int smoothing_step = 1)
+        : decorator_dsp(base_dsp), fDecoder(nullptr), fSmoothingSec(smoothing_sec), fSmoothingSamples(0),
+          fSmoothingStep(std::max<int>(1, smoothing_step)), fRemaining(0),
           fSmoother()
         {
             // Build JSON description from the wrapped base_dsp and initialize smoothing
             JSONUI builder(base_dsp->getNumInputs(), base_dsp->getNumOutputs());
             base_dsp->metadata(&builder);
             base_dsp->buildUserInterface(&builder);
-            init(builder.JSON(), base_dsp, smoothing_sec);
+            init(builder.JSON(), base_dsp, smoothing_sec, smoothing_step);
         }
 
+        /**
+         * Wrap an existing base_dsp using a precomputed JSON UI description.
+         *
+         * Use this form when the JSON UI must match an external/remote representation exactly (for example, when proxying a DSP
+         * hosted elsewhere). The smoothing parameters behave the same as the other constructor.
+         *
+         * smoothing_sec : duration in seconds for non-toggle controls; <= 0 disables smoothing (controls jump).
+         * smoothing_step: number of samples between smoothing updates (minimum 1). Use values > 1 to reduce control update cost
+         *                 when audio blocks are large; max step is clamped to the current audio block size in compute().
+         */
         // Build from explicit JSON and a concrete base_dsp, with smoothing settings.
-        smoothing_dsp(const std::string& json, ::base_dsp* base_dsp, double smoothing_sec = 0)
-        : decorator_dsp(base_dsp), fDecoder(nullptr), fSmoothingSec(smoothing_sec), fSmoothingSamples(0), fRemaining(0),
+        smoothing_dsp(const std::string& json, ::base_dsp* base_dsp, double smoothing_sec = 0, int smoothing_step = 1)
+        : decorator_dsp(base_dsp), fDecoder(nullptr), fSmoothingSec(smoothing_sec), fSmoothingSamples(0),
+          fSmoothingStep(std::max<int>(1, smoothing_step)), fRemaining(0),
           fSmoother()
         {
-            init(json, base_dsp, smoothing_sec);
+            init(json, base_dsp, smoothing_sec, smoothing_step);
         }
 
         // Release decoder (wrapped base_dsp is owned by decorator_dsp).
@@ -9565,16 +9647,16 @@ class smoothing_dsp : public decorator_dsp {
         // Clone decoder JSON, wrapped base_dsp, and smoothing strategy
         virtual smoothing_dsp* clone()
         {
-            return new smoothing_dsp(fDecoder->fJSON, fDSP->clone(), fSmoothingSec);
+            return new smoothing_dsp(fDecoder->fJSON, fDSP->clone(), fSmoothingSec, fSmoothingStep);
         }
         // Forward metadata from decoder
         virtual void metadata(Meta* m) { fDecoder->metadata(m); }
 
-        // Top-level audio processing: apply pending control ramps sample-by-sample, then finish the block.
+        // Top-level audio processing: apply pending control ramps using the configured smoothing step, then finish the block.
         virtual void compute(int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs)
         {
             // Run control smoothing then process audio.
-            // If a ramp is active, we switch to per-sample processing to update controls each sample.
+            // If a ramp is active, we interleave control updates with audio in blocks of `fSmoothingStep` samples.
             // Once smoothing completes, remaining frames (if any) are processed in a single block.
 
             setupSmoothing();
@@ -9587,16 +9669,18 @@ class smoothing_dsp : public decorator_dsp {
                 // Smoothing
                 int offset = 0;
                 while (offset < count && fRemaining > 0) {
-                    // Update controls for this sample and advance the ramp
-                    fSmoother.step(fControls);
-                    if (--fRemaining == 0) {
+                    // Update controls for this smoothing step and advance the ramp
+                    int stepSize = std::min<int>({fSmoothingStep, fRemaining, count - offset});
+                    fSmoother.step(fControls, stepSize);
+                    fRemaining -= stepSize;
+                    if (fRemaining == 0) {
                         // Ensure exact target values when ramp ends
                         fSmoother.finish(fControls);
                     }
-                    // Compute one sample with updated controls
+                    // Compute this block with updated controls
                     setIO(fInputPtrs, fOutputPtrs, inputs, outputs, offset);
-                    decorator_dsp::compute(1, fInputPtrs.data(), fOutputPtrs.data());
-                    offset++;
+                    decorator_dsp::compute(stepSize, fInputPtrs.data(), fOutputPtrs.data());
+                    offset += stepSize;
                 }
 
                 // No active ramp: process remaining frames in one call
@@ -10632,6 +10716,7 @@ struct dsp_poly_factory : public dsp_factory {
     std::vector<std::string> getLibraryList() { return fProcessFactory->getLibraryList(); }
     std::vector<std::string> getIncludePathnames() { return fProcessFactory->getIncludePathnames(); }
     std::vector<std::string> getWarningMessages() { return fProcessFactory->getWarningMessages(); }
+    std::string getJSON() { return fProcessFactory->getJSON(); }
 
     std::string getEffectCode(const std::string& dsp_content)
     {
@@ -11151,12 +11236,21 @@ class juce_midi : public juce_midi_handler, public juce::MidiInputCallback {
 
         bool startMidi()
         {
-            if ((fMidiIn = juce::MidiInput::openDevice(juce::MidiInput::getDefaultDevice().name, this)) == nullptr) {
+            auto defaultIn = juce::MidiInput::getDefaultDevice();
+            auto defaultOut = juce::MidiOutput::getDefaultDevice();
+
+            if (defaultIn.identifier.isEmpty()
+                || (fMidiIn = juce::MidiInput::openDevice(defaultIn.identifier, this)) == nullptr)
+            {
                 return false;
             }
-            if ((fMidiOut = juce::MidiOutput::openDevice(juce::MidiInput::getDefaultDevice().name)) == nullptr) {
+
+            if (defaultOut.identifier.isEmpty()
+                || (fMidiOut = juce::MidiOutput::openDevice(defaultOut.identifier)) == nullptr)
+            {
                 return false;
             }
+
             fMidiIn->start();
             return true;
         }
@@ -11599,11 +11693,11 @@ struct mydsp : public base_dsp {
 		m->declare("misceffects.lib/gate_stereo:author", "Julius O. Smith III");
 		m->declare("misceffects.lib/gate_stereo:license", "STK-4.3");
 		m->declare("misceffects.lib/name", "Misc Effects Library");
-		m->declare("misceffects.lib/version", "2.5.1");
+		m->declare("misceffects.lib/version", "2.5.2");
 		m->declare("name", "Gate Stereo");
 		m->declare("platform.lib/name", "Generic Platform Library");
 		m->declare("platform.lib/version", "1.3.0");
-		m->declare("signals.lib/name", "Faust Signal Routing Library");
+		m->declare("signals.lib/name", "Faust Routing Library");
 		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
 		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
 		m->declare("signals.lib/version", "1.6.0");
@@ -12360,11 +12454,11 @@ void FaustPlugInAudioProcessor::process (juce::AudioBuffer<FloatType>& buffer, j
             if (isUsingDoublePrecision()) {
                 // Nothing to do
             } else {
-                fDSP = std::make_unique<dsp_sample_adapter<double, float>>(fDSP.release());
+                fDSP = std::make_unique<dsp_sample_adapter<double, float, 16384>>(fDSP.release());
             }
         } else {
             if (isUsingDoublePrecision()) {
-                fDSP = std::make_unique<dsp_sample_adapter<float, double>>(fDSP.release());
+                fDSP = std::make_unique<dsp_sample_adapter<float, double, 16384>>(fDSP.release());
             } else {
                 // Nothing to do
             }
@@ -12372,7 +12466,7 @@ void FaustPlugInAudioProcessor::process (juce::AudioBuffer<FloatType>& buffer, j
 
         // Possibly adapt DSP inputs/outputs number
         if (fDSP->getNumInputs() > getTotalNumInputChannels() || fDSP->getNumOutputs() > getTotalNumOutputChannels()) {
-            fDSP = std::make_unique<dsp_adapter>(fDSP.release(), getTotalNumInputChannels(), getTotalNumOutputChannels(), 4096);
+            fDSP = std::make_unique<dsp_adapter>(fDSP.release(), getTotalNumInputChannels(), getTotalNumOutputChannels(), 16384);
         }
     }
 
