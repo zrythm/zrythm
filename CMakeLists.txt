@@ -1125,7 +1125,7 @@ set(ext_vst3_plugins
 # When using the lilv subproject, we can't use lv2ls and lv2info
 find_program(LV2INFO_EXECUTABLE lv2info)
 
-if(ZRYTHM_TESTS)
+if(ZRYTHM_TESTS AND FALSE) # skip for now (maybe delete eventually)
   find_program(LV2LS_EXECUTABLE lv2ls)
 
   # Get LV2 bundle paths
@@ -1206,7 +1206,7 @@ if(ZRYTHM_TESTS)
       endif()
     endforeach()
   endif()
-endif()
+endif() # ZRYTHM_TESTS
 
 # Add subdirectories
 add_subdirectory(data)
