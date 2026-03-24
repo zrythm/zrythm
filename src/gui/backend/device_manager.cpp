@@ -65,7 +65,6 @@ DeviceManager::createAudioDeviceTypes (
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_ASIO ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_CoreAudio ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_iOSAudio ());
-  add_device (juce::AudioIODeviceType::createAudioIODeviceType_Bela ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_ALSA ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_JACK ());
   add_device (juce::AudioIODeviceType::createAudioIODeviceType_Oboe ());

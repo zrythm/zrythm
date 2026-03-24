@@ -33,7 +33,7 @@ protected:
       dsp::JuceHardwareAudioInterface::create (audio_device_manager);
 
     plugin_format_manager = std::make_shared<juce::AudioPluginFormatManager> ();
-    plugin_format_manager->addDefaultFormats ();
+    juce::addDefaultFormatsToManager (*plugin_format_manager);
 
     auto mock_backend = std::make_unique<test_helpers::MockSettingsBackend> ();
     mock_backend_ptr = mock_backend.get ();

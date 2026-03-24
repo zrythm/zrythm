@@ -163,8 +163,8 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
 {
   // formats must be initialized before starting to receive messages
   juce::Logger::writeToLog ("Adding default formats");
-  format_manager_.addDefaultFormats ();
-  format_manager_.addFormat (new plugins::CLAPPluginFormat ());
+  juce::addDefaultFormatsToManager (format_manager_);
+  format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());
@@ -184,8 +184,8 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
       const auto cmd_array = getCommandLineParameterArray ();
       if (cmd_array.size () >= 2)
         {
-          const auto format_name = cmd_array[0];
-          const auto identifier = cmd_array[1];
+          const auto &format_name = cmd_array[0];
+          const auto &identifier = cmd_array[1];
           juce::Logger::writeToLog (
             "Attempting to scan: " + format_name + " | " + identifier);
           juce::MemoryBlock        block;

@@ -30,8 +30,9 @@ PluginManager::PluginManager (
       carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
 #endif
 {
-  format_manager_->addDefaultFormats ();
-  format_manager_->addFormat (new zrythm::plugins::CLAPPluginFormat ());
+  juce::addDefaultFormatsToManager (*format_manager_);
+  format_manager_->addFormat (
+    std::make_unique<zrythm::plugins::CLAPPluginFormat> ());
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: CC0-1.0
 #
 # CPM Package Lock
@@ -40,8 +40,8 @@ CPMDeclarePackage(clap-helpers
 # juce
 CPMDeclarePackage(juce
   NAME juce
-  VERSION 8.0.10
-  GIT_TAG 3af3ce009f6a02f6fa651008fffb5b41743a9fab
+  VERSION 8.0.12
+  GIT_TAG 29396c22c93392d6738e021b83196283d6e4d850
   GITHUB_REPOSITORY juce-framework/JUCE
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
@@ -223,8 +223,8 @@ CPMDeclarePackage(GTest
 # benchmark
 CPMDeclarePackage(benchmark
   NAME benchmark
-  VERSION 1.9.2
-  GIT_TAG afa23b7699c17f1e26c88cbf95257b20d78d6247
+  VERSION 1.9.5
+  GIT_TAG 192ef10025eb2c4cdd392bc502f0c852196baa48
   GITHUB_REPOSITORY google/benchmark
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
