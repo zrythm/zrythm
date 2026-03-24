@@ -50,8 +50,8 @@ CPMDeclarePackage(juce
 # MbedTLS
 CPMDeclarePackage(MbedTLS
   NAME MbedTLS
-  VERSION 3.6.3
-  GIT_TAG 22098d41c6620ce07cf8a0134d37302355e1e5ef
+  VERSION 3.6.5
+  GIT_TAG e185d7fd85499c8ce5ca2a54f5cf8fe7dbe3f8df
   GITHUB_REPOSITORY Mbed-TLS/mbedtls
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
@@ -314,8 +314,8 @@ CPMDeclarePackage(mp-units
 # au
 CPMDeclarePackage(au
   NAME au
-  VERSION 0.5.0
-  GIT_TAG 4bcf0751aa235c1d50c240f71fbde616693dec87
+  VERSION 0.5.1
+  GIT_TAG a4cd560f20d3dfb71334a47c4de0e7086f28c6a5
   GITHUB_REPOSITORY aurora-opensource/au
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
