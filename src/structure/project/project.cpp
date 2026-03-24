@@ -498,8 +498,8 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [this] () {
-            return project_.project_directory_path_provider_ (false)
+          [&project = project_] () {
+            return project.project_directory_path_provider_ (false)
                    / structure::project::ProjectPathProvider::get_path (
                      structure::project::ProjectPathProvider::ProjectPath::
                        PluginStates);
@@ -511,14 +511,14 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [this] () {
-            return project_.project_directory_path_provider_ (false)
+          [&project = project_] () {
+            return project.project_directory_path_provider_ (false)
                    / structure::project::ProjectPathProvider::get_path (
                      structure::project::ProjectPathProvider::ProjectPath::
                        PluginStates);
           },
-          [this] () {
-            return project_.audio_engine_->graph_dispatcher ()
+          [&project = project_] () {
+            return project.audio_engine_->graph_dispatcher ()
               .is_processing_thread ();
           },
           project_.plugin_host_window_provider_);
@@ -529,21 +529,25 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [this] () {
-            return project_.project_directory_path_provider_ (false)
+          [&project = project_] () {
+            return project.project_directory_path_provider_ (false)
                    / structure::project::ProjectPathProvider::get_path (
                      structure::project::ProjectPathProvider::ProjectPath::
                        PluginStates);
           },
-          [this] (
+          [&project = project_] (
             const juce::PluginDescription &description,
             double initialSampleRate, int initialBufferSize,
             juce::AudioPluginFormat::PluginCreationCallback callback) {
-            project_.plugin_format_manager_->createPluginInstanceAsync (
+            project.plugin_format_manager_->createPluginInstanceAsync (
               description, initialSampleRate, initialBufferSize, callback);
           },
-          [this] () { return project_.audio_engine_->get_sample_rate (); },
-          [this] () { return project_.audio_engine_->get_block_length (); },
+          [&project = project_] () {
+            return project.audio_engine_->get_sample_rate ();
+          },
+          [&project = project_] () {
+            return project.audio_engine_->get_block_length ();
+          },
           project_.plugin_host_window_provider_);
       }
   }

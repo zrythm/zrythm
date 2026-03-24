@@ -3,6 +3,7 @@
 
 add_executable(zrythm_integration_tests
   bundled_vst3_plugins_scan_test.cpp
+  project_serialization_roundtrip_test.cpp
 )
 
 set_target_properties(zrythm_integration_tests PROPERTIES
@@ -13,6 +14,7 @@ set_target_properties(zrythm_integration_tests PROPERTIES
 target_link_libraries(zrythm_integration_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm_actions_lib
+  zrythm_controllers_lib
   zrythm_test_helpers_lib
 )
 
