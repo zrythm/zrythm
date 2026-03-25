@@ -205,7 +205,7 @@ configure:mac-arm:
       cmake -B ${BUILDDIR}-${BUILD_TYPE} ${COMMON_CMAKE_OPTIONS}
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
       -G "Xcode"
-      "-DCMAKE_PREFIX_PATH=/opt/Qt-6.11.0/${BUILD_TYPE}"
+      "-DCMAKE_PREFIX_PATH=/opt/Qt6.11.0/${BUILD_TYPE}"
       -DZRYTHM_UNITY_BUILD=ON
       -DAPPLE_APP_CODESIGN_IDENTITY="Developer ID Application: Alexandros Theodotou ($APPLE_NOTARIZATION_TEAM_ID)"
   parallel:
