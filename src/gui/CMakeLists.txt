@@ -59,14 +59,6 @@ elseif(APPLE)
       COMMENT "Copying bundled VST3 plugins to app bundle"
     )
   endif()
-  if(XCODE)
-    # Ad-hoc sign (error that these files are not signed otherwise)
-    add_custom_command(TARGET zrythm POST_BUILD
-      COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/zrythm_qt.part.conf"
-      COMMAND codesign -f -s - "$<TARGET_BUNDLE_CONTENT_DIR:zrythm>/MacOS/qt.conf"
-      COMMENT "Signing zrythm.app for Xcode POST_BUILD"
-    )
-  endif()
 endif()
 
 # add_subdirectory(resources)
