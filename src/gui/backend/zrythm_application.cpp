@@ -18,7 +18,8 @@
 #include <QQuickStyle>
 #include <QTimer>
 
-#include "engine-process/ipc_message.h"
+// FIXME: temporarily disabled - engine-process not currently used
+// #include "engine-process/ipc_message.h"
 #include "zrythm_application.h"
 #include <backward.hpp>
 
@@ -447,6 +448,7 @@ void
 ZrythmApplication::setup_ipc ()
 {
   return; // skip for now
+#if 0
   socket_ = new QLocalSocket (this);
   socket_->connectToServer (QString::fromUtf8 (IPC_SOCKET_NAME));
   if (socket_->waitForConnected (1000))
@@ -457,6 +459,7 @@ ZrythmApplication::setup_ipc ()
     {
       z_error ("Failed to connect to IPC server: {}", socket_->errorString ());
     }
+#endif
 }
 
 void

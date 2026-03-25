@@ -24,7 +24,8 @@
 #include "utils/networking.h"
 #include "utils/utf8_string.h"
 
-#include "engine-process/audio_engine_application.h"
+// FIXME: temporarily disabled - engine-process not currently used
+// #include "engine-process/audio_engine_application.h"
 
 using namespace zrythm;
 
@@ -34,7 +35,9 @@ using namespace Qt::StringLiterals;
 
 Zrythm::Zrythm ()
 {
-  z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process ());
+  // FIXME: temporarily disabled - engine-process not currently used
+  // z_return_if_fail (!engine::AudioEngineApplication::is_audio_engine_process
+  // ());
 }
 
 void
