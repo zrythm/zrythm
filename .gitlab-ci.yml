@@ -411,8 +411,12 @@ build:gnu/linux:
   artifacts:
     paths:
       - package-${BUILD_TYPE}/*.tar.xz*
-    when: on_success
+      - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
+    when: always # Not ideal, see GitLab.com #18744
     expire_in: "1 day"
+    reports:
+      junit: ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
 
 build:mac-arm:
   extends: .mac-arm-template
@@ -441,8 +445,11 @@ build:mac-arm:
   artifacts:
     paths:
       - package-${BUILD_TYPE}/*.dmg*
-    when: on_success
+      - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
+    when: always
     expire_in: "1 day"
+    reports:
+      junit: ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
 
 build:windows:
   extends: .windows-template
@@ -474,8 +481,11 @@ build:windows:
   artifacts:
     paths:
       - package-${BUILD_TYPE}/*.exe*
-    when: on_success
+      - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
+    when: always
     expire_in: "1 day"
+    reports:
+      junit: ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
 
 update-manual:
   extends: .gnu-linux-template

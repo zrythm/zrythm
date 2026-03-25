@@ -21,6 +21,7 @@ function(zrythm_discover_tests TARGET_NAME)
     gtest_discover_tests(${TARGET_NAME}
       # Default of 5s is too short on mac
       DISCOVERY_TIMEOUT 10
+      XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/test_results"
     )
   endif()
 endfunction()
