@@ -70,6 +70,7 @@ Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and us
 
 ```bash
 # CI/CD
+# Note: use 'trace' instead of 'view' - 'view' requires a TTY
 glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get job logs (use | tail -N for large outputs)
 glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List pipeline jobs
 

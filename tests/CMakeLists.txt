@@ -18,7 +18,10 @@ function(zrythm_discover_tests TARGET_NAME)
   if(WIN32)
     gtest_add_tests(TARGET ${TARGET_NAME})
   else()
-    gtest_discover_tests(${TARGET_NAME})
+    gtest_discover_tests(${TARGET_NAME}
+      # Default of 5s is too short on mac
+      DISCOVERY_TIMEOUT 10
+    )
   endif()
 endfunction()
 
