@@ -127,13 +127,18 @@ TEST (UuidIdentifiableObjectTest, UuidReferenceFormatter)
 
   utils::UuidReference<TestRegistry> ref (obj->get_uuid (), registry);
   std::string                        refStr = fmt::format ("{}", ref);
-  EXPECT_EQ (
-    refStr,
-    std::string ("{ .id_=")
-      + type_safe::get (obj->get_uuid ())
-          .toString (QUuid::WithoutBraces)
-          .toStdString ()
-      + std::string (" }"));
+
+  // Expected format: { .id_=<uuid>, .object=<formatted_object> }
+  std::string expectedUuid =
+    type_safe::get (obj->get_uuid ())
+      .toString (QUuid::WithoutBraces)
+      .toStdString ();
+
+  // Verify the format includes both UUID and object
+  EXPECT_THAT (refStr, testing::StartsWith ("{ .id_=" + expectedUuid));
+  EXPECT_THAT (refStr, testing::HasSubstr (", .object="));
+  EXPECT_THAT (refStr, testing::HasSubstr (".name_=RefTest"));
+  EXPECT_THAT (refStr, testing::EndsWith (" }"));
 }
 
 TEST_F (UuidIdentifiableObjectRegistryTest, BasicRegistration)

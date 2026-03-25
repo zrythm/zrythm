@@ -294,8 +294,6 @@ private:
 private:
   std::optional<UuidType> id_;
   OptionalRef<RegistryT>  registry_;
-
-  BOOST_DESCRIBE_CLASS (UuidReference<RegistryT>, (), (), (), (id_))
 };
 
 template <typename ReturnType, typename UuidType>
@@ -1003,6 +1001,34 @@ template <typename T>
 concept UuidType = requires (T t) {
   typename T::UuidTag;
   { type_safe::get (t) } -> std::convertible_to<QUuid>;
+};
+
+// Custom formatter for UuidReference - prints UUID and visited object
+template <typename RegistryT>
+struct fmt::formatter<zrythm::utils::UuidReference<RegistryT>>
+    : fmt::formatter<std::string_view>
+{
+  template <typename FormatContext>
+  auto
+  format (const zrythm::utils::UuidReference<RegistryT> &ref, FormatContext &ctx)
+    const
+  {
+    auto out = ctx.out ();
+    *out++ = '{';
+
+    // Format the UUID
+    out = fmt::format_to (out, " .id_={}", ref.id ());
+
+    // Visit and format the object
+    out = fmt::format_to (out, ", .object=");
+    out = std::visit (
+      [&] (auto &&obj) { return fmt::format_to (out, "{}", *obj); },
+      ref.get_object ());
+
+    *out++ = ' ';
+    *out++ = '}';
+    return out;
+  }
 };
 
 // Formatter for any UUID type from UuidIdentifiableObject

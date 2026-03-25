@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -335,49 +335,37 @@ struct fmt::formatter<
     return it;
   }
 
+  // Helper to iterate over a describe list without using mp_for_each (which is
+  // consteval)
+  template <typename List, typename F> static void for_each_descriptor (F &&f)
+  {
+    constexpr auto N = boost::mp11::mp_size<List>::value;
+    [&f]<std::size_t... Is> (std::index_sequence<Is...>) {
+      (f (boost::mp11::mp_at_c<List, Is>{}), ...);
+    }(std::make_index_sequence<N>{});
+  }
+
   auto format (T const &t, format_context &ctx) const
   {
     using namespace boost::describe;
 
-    using Bd = describe_bases<T, mod_any_access>;
-    using Md = describe_members<T, mod_any_access>;
+    using Bases = describe_bases<T, mod_any_access>;
+    using Members = describe_members<T, mod_any_access>;
 
-    auto out = ctx.out ();
+    // Collect formatted parts into a vector
+    std::vector<std::string> parts;
 
-    *out++ = '{';
-
-    bool first = true;
-
-    boost::mp11::mp_for_each<Bd> ([&] (auto D) {
-      if (!first)
-        {
-          *out++ = ',';
-        }
-
-      first = false;
-
-      out = fmt::format_to (out, " {}", (typename decltype (D)::type const &) t);
+    for_each_descriptor<Bases> ([&] (auto Base) {
+      using BaseType = typename decltype (Base)::type;
+      parts.push_back (fmt::format ("{}", static_cast<BaseType const &> (t)));
     });
 
-    boost::mp11::mp_for_each<Md> ([&] (auto D) {
-      if (!first)
-        {
-          *out++ = ',';
-        }
-
-      first = false;
-
-      out = fmt::format_to (out, " .{}={}", D.name, t.*D.pointer);
+    for_each_descriptor<Members> ([&] (auto Member) {
+      parts.push_back (fmt::format (".{}={}", Member.name, t.*Member.pointer));
     });
 
-    if (!first)
-      {
-        *out++ = ' ';
-      }
-
-    *out++ = '}';
-
-    return out;
+    // Use fmt::join to format with ", " separator
+    return fmt::format_to (ctx.out (), "{{ {} }}", fmt::join (parts, ", "));
   }
 };
 
