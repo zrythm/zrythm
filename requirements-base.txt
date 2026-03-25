@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: CC0-1.0
+
+# Base requirements - minimum set of direct dependencies
+# Transitive dependencies will be pulled in automatically
+# Versions are not pinned to allow latest compatible versions
+
+# Build tools
+cmake
+ninja
+
+# CMake formatting
+cmakelang
+
+# Compilation database utilities
+compdb
+
+# Documentation
+Sphinx
+furo
+sphinx-copybutton
+sphinx-intl
+sphinx-prompt
+sphinxcontrib-svg2pdfconverter
+
+# Code quality
+pre_commit
+
+# AWS/S3 operations
+boto3
+
+# Profiling
+gprof2dot
+
+# HTML parsing (for docs/scripts)
+beautifulsoup4
