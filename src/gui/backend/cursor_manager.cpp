@@ -213,7 +213,7 @@ CursorManager::unsetCursor ()
 {
   for (int i = 0; i < popped_cursor_count_; ++i)
     {
-      z_debug ("unsetting cursor");
+      z_trace ("unsetting cursor");
       QGuiApplication::restoreOverrideCursor ();
     }
   popped_cursor_count_ = 0;

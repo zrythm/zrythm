@@ -95,7 +95,7 @@ protected:
     }
     {
       formatManager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-      formatManager_->addFormat (new MockAudioFormat ());
+      formatManager_->addFormat (std::make_unique<MockAudioFormat> ());
       mockFormat_ =
         dynamic_cast<MockAudioFormat *> (formatManager_->getFormat (0));
       // this needs to be an actual format supported by
