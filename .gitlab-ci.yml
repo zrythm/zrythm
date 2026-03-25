@@ -481,11 +481,8 @@ build:windows:
   artifacts:
     paths:
       - package-${BUILD_TYPE}/*.exe*
-      - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
-    when: always
+    when: on_success
     expire_in: "1 day"
-    reports:
-      junit: ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
 
 update-manual:
   extends: .gnu-linux-template
