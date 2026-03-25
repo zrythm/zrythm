@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "structure/arrangement/arranger_object_factory.h"
 
 #include "./arranger_object_owner_test.h"
 
@@ -230,6 +231,175 @@ TEST_F (ArrangerObjectOwnerTest, ObjectCloning)
   EXPECT_NE (
     cloned_owner->ArrangerObjectOwner<MidiNote>::get_children_vector ()[0].id (),
     obj_ref.id ());
+}
+
+// ============================================================================
+// ParentObject Tests - Real Region Types
+// ============================================================================
+//
+// These tests verify that parentObject is correctly set when:
+// 1. Children are cloned (copy-move scenario)
+// 2. Children are deserialized (project loading scenario)
+//
+// The mock-based tests above cannot test this because MockArrangerObjectOwner
+// doesn't inherit from ArrangerObject.
+
+namespace
+{
+
+// Helper trait to get child type for a region type
+template <typename RegionT> struct ChildTypeForRegion;
+
+template <> struct ChildTypeForRegion<MidiRegion>
+{
+  using Type = MidiNote;
+};
+template <> struct ChildTypeForRegion<AutomationRegion>
+{
+  using Type = AutomationPoint;
+};
+template <> struct ChildTypeForRegion<ChordRegion>
+{
+  using Type = ChordObject;
+};
+
+} // namespace
+
+template <typename RegionT>
+class ArrangerObjectOwnerParentTest : public ::testing::Test
+{
+protected:
+  using ChildT = typename ChildTypeForRegion<RegionT>::Type;
+
+  void SetUp () override
+  {
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+
+    factory = std::make_unique<ArrangerObjectFactory> (
+      ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = *tempo_map,
+        .object_registry_ = registry,
+        .file_audio_source_registry_ = file_audio_source_registry,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+
+    // Create region
+    region_ref = std::make_unique<ArrangerObjectUuidReference> (
+      factory->template get_builder<RegionT> ()
+        .with_start_ticks (0.0)
+        .with_end_ticks (1920.0)
+        .build_in_registry ());
+  }
+
+  // Helper to create a child object and add it to the region
+  ArrangerObjectUuidReference create_and_add_child (double start_ticks = 100.0)
+  {
+    auto child_ref =
+      factory->template get_builder<ChildT> ()
+        .with_start_ticks (start_ticks)
+        .build_in_registry ();
+    region_ref->get_object_as<RegionT> ()->add_object (child_ref);
+    return child_ref;
+  }
+
+  std::unique_ptr<dsp::TempoMap>               tempo_map;
+  ArrangerObjectRegistry                       registry;
+  dsp::FileAudioSourceRegistry                 file_audio_source_registry;
+  std::unique_ptr<ArrangerObjectFactory>       factory;
+  std::unique_ptr<ArrangerObjectUuidReference> region_ref;
+};
+
+// Test only the region types that inherit from ArrangerObjectOwner and
+// ArrangerObject (AudioRegion excluded - its child AudioSourceObject has
+// different construction requirements)
+using RegionTypes = ::testing::Types<MidiRegion, AutomationRegion, ChordRegion>;
+TYPED_TEST_SUITE (ArrangerObjectOwnerParentTest, RegionTypes);
+
+TYPED_TEST (ArrangerObjectOwnerParentTest, AddObjectSetsParentObject)
+{
+  // Create and add a child via add_object() - this should set parentObject
+  auto child_ref = this->create_and_add_child ();
+
+  auto * region = this->region_ref->template get_object_as<TypeParam> ();
+  auto * child =
+    child_ref.template get_object_as<typename TestFixture::ChildT> ();
+
+  // Verify parentObject is set when added via add_object()
+  EXPECT_EQ (child->parentObject (), region)
+    << "Child added via add_object() should have parentObject set to region";
+}
+
+TYPED_TEST (ArrangerObjectOwnerParentTest, CloneSetsParentObjectOnChildren)
+{
+  // Create and add a child via add_object() - this correctly sets parentObject
+  auto original_child_ref = this->create_and_add_child ();
+
+  auto * original_region =
+    this->region_ref->template get_object_as<TypeParam> ();
+  auto * original_child =
+    original_child_ref.template get_object_as<typename TestFixture::ChildT> ();
+
+  // Verify original child has parentObject set
+  ASSERT_EQ (original_child->parentObject (), original_region)
+    << "Original child should have parentObject set";
+
+  // Clone the region using the factory (this is how copy-move works)
+  auto cloned_region_ref =
+    this->factory->clone_new_object_identity (*original_region);
+  auto * cloned_region = cloned_region_ref.template get_object_as<TypeParam> ();
+
+  // Verify the cloned region has children
+  ASSERT_EQ (cloned_region->get_children_vector ().size (), 1)
+    << "Cloned region should have the same number of children as original";
+
+  // Get the cloned child
+  auto * cloned_child = cloned_region->get_children_view ()[0];
+
+  // Verify parentObject is set on cloned children
+  EXPECT_EQ (cloned_child->parentObject (), cloned_region)
+    << "Cloned child should have parentObject pointing to cloned region";
+}
+
+TYPED_TEST (
+  ArrangerObjectOwnerParentTest,
+  DeserializationSetsParentObjectOnChildren)
+{
+  // Create and add a child via add_object()
+  auto original_child_ref = this->create_and_add_child ();
+
+  auto * original_region =
+    this->region_ref->template get_object_as<TypeParam> ();
+  auto * original_child =
+    original_child_ref.template get_object_as<typename TestFixture::ChildT> ();
+
+  // Verify original child has parentObject set
+  ASSERT_EQ (original_child->parentObject (), original_region)
+    << "Original child should have parentObject set";
+
+  // Serialize the region
+  nlohmann::json j;
+  to_json (j, *original_region);
+
+  // Create a new region and deserialize into it
+  auto new_region_ref =
+    this->factory->template get_builder<TypeParam> ().build_in_registry ();
+  auto * new_region = new_region_ref.template get_object_as<TypeParam> ();
+  from_json (j, *new_region);
+
+  // Verify the deserialized region has children
+  ASSERT_EQ (new_region->get_children_vector ().size (), 1)
+    << "Deserialized region should have the same number of children";
+
+  // Get the deserialized child
+  auto * deserialized_child = new_region->get_children_view ()[0];
+
+  // Verify parentObject is set on deserialized children
+  EXPECT_EQ (deserialized_child->parentObject (), new_region)
+    << "Deserialized child should have parentObject pointing to its region";
 }
 
 } // namespace zrythm::structure::arrangement
