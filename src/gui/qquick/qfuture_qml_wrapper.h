@@ -65,8 +65,8 @@ template <typename T> class QFutureQmlWrapperT : public QFutureQmlWrapper
 public:
   QFutureQmlWrapperT (QFuture<T> future) : future_ (future)
   {
-    watcher_.setFuture (future_);
     setup (watcher_);
+    watcher_.setFuture (future_);
   }
 
   int progressMinimum () const override { return watcher_.progressMinimum (); }

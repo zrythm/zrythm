@@ -193,14 +193,6 @@ Item {
       }
     }
 
-    Connections {
-      function onCollectionChanged() {
-        minimapBackground.requestPaint();
-      }
-
-      target: root.tracklist
-    }
-
     Timer {
       interval: 500
       repeat: true

@@ -8,7 +8,7 @@ Item {
   id: root
 
   property alias font: rotatedText.font
-  property int rotation: 270
+  property int labelRotation: 270
   property string text: "Text"
 
   implicitHeight: textMetrics.width
@@ -26,7 +26,7 @@ Item {
 
     anchors.fill: parent
     horizontalAlignment: Text.AlignHCenter
-    rotation: root.rotation
+    rotation: root.labelRotation
     text: root.text
     verticalAlignment: Text.AlignVCenter
   }

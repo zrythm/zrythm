@@ -297,7 +297,6 @@ ProjectManager::loadProject (const QString &filepath)
 
       // Scale subtask progress to 0-kStage1End range
       QFutureWatcher<controllers::ProjectLoader::LoadResult> load_watcher;
-      load_watcher.setFuture (load_future);
       QObject::connect (
         &load_watcher, &QFutureWatcherBase::progressValueChanged, &load_watcher,
         [&promise, &load_future] (int value) {
@@ -315,6 +314,7 @@ ProjectManager::loadProject (const QString &filepath)
           promise.setProgressValueAndText (
             promise.future ().progressValue (), text);
         });
+      load_watcher.setFuture (load_future);
 
       try
         {
