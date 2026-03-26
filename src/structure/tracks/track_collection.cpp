@@ -235,6 +235,9 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
 void
 TrackCollection::move_track (const Track::Uuid &track_id, int pos)
 {
+  assert (pos >= 0);
+  assert (pos < static_cast<int> (tracks_.size ()));
+
   auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
   if (track_it == tracks_.end ())
     return;

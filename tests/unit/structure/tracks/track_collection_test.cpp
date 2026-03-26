@@ -111,13 +111,101 @@ TEST_F (TrackCollectionTest, MoveTracks)
   track_collection->add_track (track2);
   track_collection->add_track (track3);
 
-  // Move track3 to position 0
+  // Initial order: track1, track2, track3
+  EXPECT_EQ (track_collection->get_track_ref_at_index (0).id (), track1.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (1).id (), track2.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (2).id (), track3.id ());
+
+  // Move track3 to position 0 (backward move)
   track_collection->move_track (track3.id (), 0);
 
-  // Verify new order
+  // New order: track3, track1, track2
   EXPECT_EQ (track_collection->get_track_ref_at_index (0).id (), track3.id ());
   EXPECT_EQ (track_collection->get_track_ref_at_index (1).id (), track1.id ());
   EXPECT_EQ (track_collection->get_track_ref_at_index (2).id (), track2.id ());
+}
+
+TEST_F (TrackCollectionTest, MoveTrackToLastPosition)
+{
+  auto track1 = create_folder_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_folder_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  // Initial order: track1, track2, track3 (indices 0, 1, 2)
+  // Move track1 to position 2 (last valid index)
+  track_collection->move_track (track1.id (), 2);
+
+  // Expected: track1 should end at index 2, others shift up
+  // track2 moves to 0, track3 moves to 1, track1 at 2
+  // Result: track2, track3, track1
+  EXPECT_EQ (track_collection->get_track_ref_at_index (0).id (), track2.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (1).id (), track3.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (2).id (), track1.id ());
+}
+
+TEST_F (TrackCollectionTest, MoveTrackToMiddlePosition)
+{
+  auto track1 = create_folder_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_folder_track ();
+  auto track4 = create_audio_bus_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+  track_collection->add_track (track4);
+
+  // Initial order: track1, track2, track3, track4 (indices 0, 1, 2, 3)
+  // Move track1 to position 2
+  track_collection->move_track (track1.id (), 2);
+
+  // Expected: track1 ends at index 2
+  // track2 at 0, track3 at 1, track1 at 2, track4 at 3
+  // Result: track2, track3, track1, track4
+  EXPECT_EQ (track_collection->get_track_ref_at_index (0).id (), track2.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (1).id (), track3.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (2).id (), track1.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (3).id (), track4.id ());
+}
+
+TEST_F (TrackCollectionTest, MoveTrackToSamePosition)
+{
+  auto track1 = create_folder_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_folder_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  // Move track2 to position 1 (where it already is) - should be no-op
+  track_collection->move_track (track2.id (), 1);
+
+  // Order should remain unchanged
+  EXPECT_EQ (track_collection->get_track_ref_at_index (0).id (), track1.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (1).id (), track2.id ());
+  EXPECT_EQ (track_collection->get_track_ref_at_index (2).id (), track3.id ());
+}
+
+TEST_F (TrackCollectionTest, MoveTrackBeyondLastPosition)
+{
+  auto track1 = create_folder_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_folder_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  // Initial order: track1, track2, track3 (indices 0, 1, 2)
+  // Try to move track1 to position 3 (beyond last valid index 2)
+  // This tests whether move_track handles out-of-bounds gracefully
+  // Current implementation will crash/assert - this test documents that
+  EXPECT_DEATH (track_collection->move_track (track1.id (), 3), "");
 }
 
 TEST_F (TrackCollectionTest, FoldableTrackDetection)
