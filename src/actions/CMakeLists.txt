@@ -11,6 +11,7 @@ target_sources(zrythm_actions_lib
     qobject_property_operator.cpp
     parameter_operator.cpp
     plugin_importer.cpp
+    track_collection_operator.cpp
     track_creator.cpp
     track_operator.cpp
   PUBLIC
@@ -23,6 +24,7 @@ target_sources(zrythm_actions_lib
       qobject_property_operator.h
       parameter_operator.h
       plugin_importer.h
+      track_collection_operator.h
       track_creator.h
       track_operator.h
 )
@@ -42,6 +44,7 @@ target_precompile_headers(zrythm_actions_lib PUBLIC
 target_link_libraries(zrythm_actions_lib
   PUBLIC
     ${zrythm_link_libs}
+    zrythm_commands_lib
     zrythm_undo_lib
     zrythm::include_dirs
     zrythm::all_compile_options
