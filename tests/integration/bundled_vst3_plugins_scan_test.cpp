@@ -39,8 +39,7 @@ protected:
     // Create format manager and add only VST3 format
     // (avoid picking up system plugins like AudioUnit on macOS)
     format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-    format_manager_->addFormat (
-      std::make_unique<juce::VST3PluginFormat> ().release ());
+    format_manager_->addFormat (std::make_unique<juce::VST3PluginFormat> ());
 
     // Create known plugin list
     known_plugins_ = std::make_shared<juce::KnownPluginList> ();
