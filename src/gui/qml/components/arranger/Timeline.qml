@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQml.Models
 import ZrythmArrangement
 import Zrythm
 
@@ -731,13 +732,26 @@ Arranger {
         }
       }
     }
-    model: TrackFilterProxyModel {
-      sourceModel: root.tracklist.collection
+    model: SortFilterProxyModel {
+      id: timelineProxyModel
 
-      Component.onCompleted: {
-        addVisibilityFilter(true);
-        addPinnedFilter(root.pinned);
+      model: root.tracklist.collection
+
+      filters: [
+        FunctionFilter {
+          function filter(data: TrackRoleData): bool {
+            return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track) === root.pinned;
+          }
+        }
+      ]
+    }
+
+    Connections {
+      function onPinnedTracksCutoffChanged() {
+        timelineProxyModel.invalidate();
       }
+
+      target: root.tracklist
     }
   }
 
@@ -746,5 +760,9 @@ Arranger {
 
     font: Style.arrangerObjectTextFont
     text: "Some text"
+  }
+
+  component TrackRoleData: QtObject {
+    required property Track track
   }
 }

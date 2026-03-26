@@ -43,8 +43,6 @@ target_sources(zrythm_gui_lib
     recent_projects_model.cpp
     resource_manager.h
     resource_manager.cpp
-    track_filter_proxy_model.h
-    track_filter_proxy_model.cpp
     translation_manager.h
     translation_manager.cpp
     ui.h

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import QtQml.Models
 import Zrythm
 
 import Qt.labs.synchronizer
@@ -29,27 +30,43 @@ Item {
   readonly property url switchToTimelineIconSource: ResourceManager.getIconUrl("gnome-icon-library", "ruler-angled-symbolic.svg")
   required property var timeline
   required property TrackCollection trackCollection
+  required property Tracklist tracklist
 
-  TrackFilterProxyModel {
+  SortFilterProxyModel {
     id: pinnedTrackModel
 
-    sourceModel: root.trackCollection
+    model: root.trackCollection
 
-    Component.onCompleted: {
-      addVisibilityFilter(true);
-      addPinnedFilter(true);
-    }
+    filters: [
+      FunctionFilter {
+        function filter(data: TrackRoleData): bool {
+          return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track);
+        }
+      }
+    ]
   }
 
-  TrackFilterProxyModel {
+  SortFilterProxyModel {
     id: unpinnedTrackModel
 
-    sourceModel: root.trackCollection
+    model: root.trackCollection
 
-    Component.onCompleted: {
-      addVisibilityFilter(true);
-      addPinnedFilter(false);
+    filters: [
+      FunctionFilter {
+        function filter(data: TrackRoleData): bool {
+          return root.tracklist.shouldBeVisible(data.track) && !root.tracklist.isTrackPinned(data.track);
+        }
+      }
+    ]
+  }
+
+  Connections {
+    function onPinnedTracksCutoffChanged() {
+      pinnedTrackModel.invalidate();
+      unpinnedTrackModel.invalidate();
     }
+
+    target: root.tracklist
   }
 
   RowLayout {
@@ -173,7 +190,7 @@ Item {
   component RowsForTrackModel: RowLayout {
     id: rowsForTrackModel
 
-    required property TrackFilterProxyModel model
+    required property SortFilterProxyModel model
 
     TrackStopButtonListView {
       Layout.preferredHeight: contentHeight
@@ -220,6 +237,9 @@ Item {
       Layout.rightMargin: 4
       model: rowsForTrackModel.model
     }
+  }
+  component TrackRoleData: QtObject {
+    required property Track track
   }
   component TrackSceneClipSlotListView: ListView {
     id: clipSlotsListView

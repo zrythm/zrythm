@@ -134,6 +134,7 @@ ColumnLayout {
           rulerHeight: root.rulerHeight
           timeline: root.session.uiState.timeline
           trackCollection: root.project.tracklist.collection
+          tracklist: root.project.tracklist
         }
       }
 

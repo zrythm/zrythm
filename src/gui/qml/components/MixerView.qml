@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
 
 import QtQuick.Layouts
 import QtQuick
+import QtQml.Models
 import Zrythm
 
 RowLayout {
@@ -27,13 +28,22 @@ RowLayout {
       tracklist: root.tracklist
       undoStack: root.undoStack
     }
-    model: TrackFilterProxyModel {
-      sourceModel: root.tracklist.collection
+    model: SortFilterProxyModel {
+      id: mixerProxyModel
 
-      Component.onCompleted: {
-        addVisibilityFilter(true);
-        addChannelFilter(true);
-      }
+      model: root.tracklist.collection
+
+      filters: [
+        FunctionFilter {
+          function filter(data: TrackRoleData): bool {
+            return root.tracklist.shouldBeVisible(data.track) && root.tracklist.hasChannel(data.track);
+          }
+        }
+      ]
     }
+  }
+
+  component TrackRoleData: QtObject {
+    required property Track track
   }
 }

@@ -62,6 +62,21 @@ public:
   Q_INVOKABLE TrackLane * getTrackLaneForObject (
     const arrangement::ArrangerObject * timelineObject) const;
 
+  Q_INVOKABLE bool isTrackPinned (const Track * track) const
+  {
+    return is_track_pinned (track->get_uuid ());
+  }
+
+  Q_INVOKABLE bool shouldBeVisible (const Track * track) const
+  {
+    return should_be_visible (track->get_uuid ());
+  }
+
+  Q_INVOKABLE bool hasChannel (const Track * track) const
+  {
+    return track->channel () != nullptr;
+  }
+
   TrackRouting * trackRouting () const { return track_routing_.get (); }
 
   int  pinnedTracksCutoff () const { return pinned_tracks_cutoff_; }

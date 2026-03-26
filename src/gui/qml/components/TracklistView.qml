@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQml.Models
 import Zrythm
 
 ListView {
@@ -40,11 +41,29 @@ ListView {
       when: !trackView.track.visible
     }
   }
-  model: TrackFilterProxyModel {
-    sourceModel: root.tracklist.collection
+  model: SortFilterProxyModel {
+    id: proxyModel
 
-    Component.onCompleted: {
-      addPinnedFilter(root.pinned);
+    model: root.tracklist.collection
+
+    filters: [
+      FunctionFilter {
+        function filter(data: TrackRoleData): bool {
+          return root.tracklist.isTrackPinned(data.track) === root.pinned;
+        }
+      }
+    ]
+  }
+
+  Connections {
+    function onPinnedTracksCutoffChanged() {
+      proxyModel.invalidate();
     }
+
+    target: root.tracklist
+  }
+
+  component TrackRoleData: QtObject {
+    property Track track
   }
 }
