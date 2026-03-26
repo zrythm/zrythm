@@ -7,6 +7,7 @@
 #include "dsp/itransport.h"
 #include "dsp/playhead_qml_adapter.h"
 #include "utils/icloneable.h"
+#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -407,14 +408,10 @@ public:
 
     if (prev)
       {
-        // Iterate backwards through marker_ticks with manual index.
-        // Equivalent to (but can't use enumerate yet on AppleClang):
-        // marker_ticks | std::views::enumerate | std::views::reverse
-        for (size_t i = 0; i < marker_ticks.size (); ++i)
+        for (
+          const auto &[index, marker_tick] :
+          marker_ticks | utils::views::enumerate | std::views::reverse)
           {
-            const auto  index = marker_ticks.size () - 1 - i;
-            const auto &marker_tick = marker_ticks[index];
-
             if (marker_tick >= playhead_.position_ticks ())
               continue;
 

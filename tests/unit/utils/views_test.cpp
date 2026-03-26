@@ -83,7 +83,6 @@ TEST (ViewsTest, EnumerateModification)
   EXPECT_EQ (vec[2], 6);
 }
 
-#if 0
 TEST (ViewsTest, EnumerateReverse)
 {
   std::vector<int> vec = { 10, 20, 30 };
@@ -102,7 +101,7 @@ TEST (ViewsTest, EnumerateFilter)
   std::vector<int> vec = { 1, 2, 3, 4, 5 };
   std::size_t      count = 0;
 
-  auto is_even = [] (const auto &pair) { return pair.second % 2 == 0; };
+  auto is_even = [] (const auto &tup) { return std::get<1> (tup) % 2 == 0; };
 
   for (
     const auto &[index, value] : enumerate (vec) | std::views::filter (is_even))
@@ -119,8 +118,9 @@ TEST (ViewsTest, EnumerateTransform)
   std::vector<int>         vec = { 1, 2, 3 };
   std::vector<std::string> expected = { "1-0", "2-1", "3-2" };
 
-  auto transform = [] (const auto &pair) {
-    return std::to_string (pair.second) + "-" + std::to_string (pair.first);
+  auto transform = [] (const auto &tup) {
+    return std::to_string (std::get<1> (tup)) + "-"
+           + std::to_string (std::get<0> (tup));
   };
 
   auto transformed_view = enumerate (vec) | std::views::transform (transform);
@@ -147,4 +147,3 @@ TEST (ViewsTest, EnumerateTake)
 
   EXPECT_EQ (count, 2);
 }
-#endif
