@@ -22,6 +22,10 @@ Control {
   required property bool expanded
   required property bool foldable
   property bool isResizing: false
+  property var listViewDraggedTrack: null
+  property int listViewDropTargetIndex: -1
+  property bool listViewIsLast: false
+  property int listViewPastEndIndex: -1
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property int trackIndex
   readonly property var trackModelIndex: trackSelectionModel?.getModelIndex(trackIndex)
@@ -29,11 +33,15 @@ Control {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
+  signal dropTargetChanged(int index)
+  signal trackDragEnded
+  signal trackDragStarted
+
   height: track.fullVisibleHeight
   hoverEnabled: true
   implicitHeight: 48
   implicitWidth: 200
-  opacity: Style.getOpacity(track.enabled, root.Window.active)
+  opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : Style.getOpacity(track.enabled, root.Window.active)
 
   background: Rectangle {
     color: {
@@ -81,6 +89,50 @@ Control {
           console.log("Range selection unimplemented");
         } else {
           root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+        }
+      }
+    }
+
+    DragHandler {
+      id: reorderDragHandler
+
+      target: null
+      xAxis.enabled: false
+
+      onActiveChanged: {
+        if (active) {
+          // Select the dragged track if it wasn't already selected
+          if (!root.trackSelectionModel.isSelected(root.trackModelIndex))
+            root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+          root.trackDragStarted();
+        } else {
+          root.trackDragEnded();
+        }
+      }
+      onTranslationChanged: {
+        if (active) {
+          const lv = root.ListView.view;
+          if (!lv)
+            return;
+
+          const scenePos = centroid.scenePosition;
+          const lvPoint = lv.mapFromItem(null, scenePos.x, scenePos.y);
+          const targetItem = lv.itemAt(lvPoint.x, lvPoint.y) as TrackView;
+
+          if (targetItem && targetItem !== root) {
+            const targetLocalPoint = targetItem.mapFromItem(null, scenePos.x, scenePos.y);
+            const idx = targetLocalPoint.y < targetItem.height / 2 ? targetItem.trackIndex : targetItem.trackIndex + 1;
+            root.dropTargetChanged(idx);
+          } else if (!targetItem && lvPoint.x >= 0 && lvPoint.x <= lv.width) {
+            // Cursor is within the ListView horizontally but not over any
+            // delegate - check if we're past the end of the track content.
+            const footerH = lv.footerItem ? lv.footerItem.height : 0;
+            const trackContentEnd = lv.contentHeight - footerH;
+            const cursorContentY = lvPoint.y + lv.contentY;
+            if (cursorContentY >= trackContentEnd - 10 && root.listViewPastEndIndex >= 0) {
+              root.dropTargetChanged(root.listViewPastEndIndex);
+            }
+          }
         }
       }
     }
@@ -268,6 +320,36 @@ Control {
 
     modelIndex: root.trackModelIndex
     selectionModel: root.trackSelectionModel
+  }
+
+  Rectangle {
+    id: dropIndicator
+
+    color: palette.highlight
+    height: 3
+    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetIndex === root.trackIndex && root.listViewDropTargetIndex >= 0
+    z: 100
+
+    anchors {
+      left: parent.left
+      right: parent.right
+      top: parent.top
+    }
+  }
+
+  Rectangle {
+    id: dropIndicatorBottom
+
+    color: palette.highlight
+    height: 3
+    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewIsLast && root.listViewDropTargetIndex === root.trackIndex + 1
+    z: 100
+
+    anchors {
+      bottom: parent.bottom
+      left: parent.left
+      right: parent.right
+    }
   }
 
   Component {

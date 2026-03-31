@@ -15,41 +15,82 @@ MoveTracksCommand::MoveTracksCommand (
       track_refs_ (std::move (track_refs)), target_position_ (target_position)
 {
   // Store original positions for undo
-  original_positions_.reserve (track_refs_.size ());
-  for (const auto &track_ref : track_refs_)
-    {
-      original_positions_.push_back (
-        static_cast<int> (collection_.get_track_index (track_ref.id ())));
-    }
+  original_positions_ =
+    track_refs_ | std::views::transform ([&] (const auto &ref) {
+      return static_cast<int> (collection_.get_track_index (ref.id ()));
+    })
+    | std::ranges::to<std::vector> ();
 }
 
 void
 MoveTracksCommand::undo ()
 {
-  // Move tracks back to their original positions.
-  // Process in forward order - same as redo, using the stored original positions.
-  for (
-    const auto &[track_ref, original_pos] :
-    std::views::zip (track_refs_, original_positions_))
+  // Same two-phase approach as redo(): remove all moved tracks, then insert
+  // them at their original positions.
+  auto current_positions =
+    track_refs_ | std::views::transform ([&] (const auto &ref) {
+      return static_cast<int> (collection_.get_track_index (ref.id ()));
+    })
+    | std::ranges::to<std::vector> ();
+
+  // Remove in reverse current position order using zip to pair
+  // indices with positions, then sort by position descending.
+  auto indexed =
+    std::views::zip (
+      std::views::iota (size_t{ 0 }, track_refs_.size ()), current_positions)
+    | std::ranges::to<std::vector> ();
+  std::ranges::sort (indexed, std::greater{}, [] (const auto &p) {
+    return std::get<1> (p);
+  });
+  for (auto [idx, _] : indexed)
     {
-      collection_.move_track (track_ref.id (), original_pos);
+      collection_.detach_track (track_refs_[idx].id ());
+    }
+
+  // Insert at original positions in forward order
+  auto orig_indexed =
+    std::views::zip (
+      std::views::iota (size_t{ 0 }, track_refs_.size ()), original_positions_)
+    | std::ranges::to<std::vector> ();
+  std::ranges::sort (orig_indexed, {}, [] (const auto &p) {
+    return std::get<1> (p);
+  });
+  for (auto [idx, pos] : orig_indexed)
+    {
+      collection_.reattach_track (track_refs_[idx], pos);
     }
 }
 
 void
 MoveTracksCommand::redo ()
 {
-  // target_position_ is where the first moved track should end up.
-  // Subsequent tracks go after it, maintaining their relative order.
-  // Move tracks in reverse order (highest target position first) to avoid
-  // interfering with positions of tracks that haven't been moved yet.
-  for (
-    const auto &[i, track_ref] :
-    utils::views::enumerate (track_refs_) | std::views::reverse)
+  // Phase 1: Remove all tracks in reverse order of their current positions
+  // to avoid index shifting during removal.
+  auto current_positions =
+    track_refs_ | std::views::transform ([&] (const auto &ref) {
+      return static_cast<int> (collection_.get_track_index (ref.id ()));
+    })
+    | std::ranges::to<std::vector> ();
+
+  auto indexed =
+    std::views::zip (
+      std::views::iota (size_t{ 0 }, track_refs_.size ()), current_positions)
+    | std::ranges::to<std::vector> ();
+  std::ranges::sort (indexed, std::greater{}, [] (const auto &p) {
+    return std::get<1> (p);
+  });
+  for (auto [idx, _] : indexed)
     {
-      // Calculate where this track should end up
-      int target_for_track = target_position_ + static_cast<int> (i);
-      collection_.move_track (track_ref.id (), target_for_track);
+      collection_.detach_track (track_refs_[idx].id ());
+    }
+
+  // Phase 2: Insert all tracks at the target position in their original
+  // relative order.
+  int insert_pos = target_position_;
+  for (const auto &track_ref : track_refs_)
+    {
+      collection_.reattach_track (track_ref, insert_pos);
+      ++insert_pos;
     }
 }
 

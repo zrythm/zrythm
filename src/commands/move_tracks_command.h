@@ -25,7 +25,7 @@ public:
    * @brief Constructs a new MoveTracksCommand.
    *
    * @param collection Reference to the TrackCollection.
-   * @param track_uuids UUIDs of the tracks to move, in their current order.
+   * @param track_refs References to the tracks to move, in their current order.
    * @param target_position The target position for the first track.
    */
   MoveTracksCommand (

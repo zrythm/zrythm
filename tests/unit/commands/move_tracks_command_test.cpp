@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/move_tracks_command.h"
+#include "structure/tracks/folder_track.h"
 #include "structure/tracks/track_collection.h"
 
 #include "unit/dsp/graph_helpers.h"
@@ -27,19 +28,30 @@ protected:
       std::make_unique<structure::tracks::TrackCollection> (*track_registry_);
   }
 
-  // Helper to create an audio bus track
-  structure::tracks::TrackUuidReference create_audio_bus_track ()
+  // Helper to create default track dependencies
+  structure::tracks::FinalTrackDependencies make_deps ()
   {
-    structure::tracks::FinalTrackDependencies deps{
+    return structure::tracks::FinalTrackDependencies{
       *tempo_map_wrapper_,  file_audio_source_registry_,
       plugin_registry_,     port_registry_,
       param_registry_,      obj_registry_,
       *track_registry_,     transport_,
       [] { return false; },
     };
+  }
 
+  // Helper to create an audio bus track
+  structure::tracks::TrackUuidReference create_audio_bus_track ()
+  {
     return track_registry_->create_object<structure::tracks::AudioBusTrack> (
-      std::move (deps));
+      make_deps ());
+  }
+
+  // Helper to create a folder track
+  structure::tracks::TrackUuidReference create_folder_track ()
+  {
+    return track_registry_->create_object<structure::tracks::FolderTrack> (
+      make_deps ());
   }
 
   // Test dependencies
@@ -316,6 +328,192 @@ TEST_F (MoveTracksCommandTest, MoveNonAdjacentTracks)
   EXPECT_EQ (collection_->get_track_index (track3.id ()), 2);
   EXPECT_EQ (collection_->get_track_index (track4.id ()), 3);
   EXPECT_EQ (collection_->get_track_index (track5.id ()), 4);
+}
+
+// Test moving non-contiguous tracks where some are above and some below the
+// target.
+TEST_F (MoveTracksCommandTest, MoveNonContiguousTracksAcrossTarget)
+{
+  auto track0 = create_audio_bus_track ();
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+  auto track4 = create_audio_bus_track ();
+  auto track5 = create_audio_bus_track ();
+
+  collection_->add_track (track0);
+  collection_->add_track (track1);
+  collection_->add_track (track2);
+  collection_->add_track (track3);
+  collection_->add_track (track4);
+  collection_->add_track (track5);
+
+  // Initial: [T0, T1, T2, T3, T4, T5]
+  // Select T1 (above target), T3 and T4 (below target).
+  // Drop target is position 2 (top of T2, so T2 shifts down).
+  // After removing selected tracks, remaining: [T0, T2, T5]
+  // Insert [T1, T3, T4] at position 1 → [T0, T1, T3, T4, T2, T5]
+  std::vector<structure::tracks::TrackUuidReference> tracks{
+    track1, track3, track4
+  };
+  MoveTracksCommand command (*collection_, tracks, 1);
+  command.redo ();
+
+  // All 3 moved tracks must be contiguous starting at position 1,
+  // with T2 (unselected) after them, not interleaved.
+  EXPECT_EQ (collection_->get_track_index (track0.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (track1.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (track3.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (track4.id ()), 3);
+  EXPECT_EQ (collection_->get_track_index (track2.id ()), 4);
+  EXPECT_EQ (collection_->get_track_index (track5.id ()), 5);
+
+  // Undo should restore original order
+  command.undo ();
+  EXPECT_EQ (collection_->get_track_index (track0.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (track1.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (track2.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (track3.id ()), 3);
+  EXPECT_EQ (collection_->get_track_index (track4.id ()), 4);
+  EXPECT_EQ (collection_->get_track_index (track5.id ()), 5);
+}
+
+// Test that moving a folder track with children preserves folder parent
+// relationships and expanded state.
+TEST_F (MoveTracksCommandTest, MoveFolderTrackWithChildrenPreservesMetadata)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, other]
+  collection_->add_track (folder);
+  collection_->add_track (child1);
+  collection_->add_track (child2);
+  collection_->add_track (other);
+
+  // Set up folder relationships
+  collection_->set_folder_parent (child1.id (), folder.id ());
+  collection_->set_folder_parent (child2.id (), folder.id ());
+
+  // Collapse the folder (insert_track auto-expands, so test that collapsed
+  // state is preserved)
+  collection_->set_track_expanded (folder.id (), false);
+
+  // Verify initial state
+  ASSERT_TRUE (collection_->get_folder_parent (child1.id ()).has_value ());
+  EXPECT_EQ (
+    collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  ASSERT_TRUE (collection_->get_folder_parent (child2.id ()).has_value ());
+  EXPECT_EQ (
+    collection_->get_folder_parent (child2.id ()).value (), folder.id ());
+  EXPECT_FALSE (collection_->get_track_expanded (folder.id ()));
+
+  // Move folder + children to position 1 (after 'other')
+  // This effectively swaps the groups: [other, folder, child1, child2]
+  std::vector<structure::tracks::TrackUuidReference> tracks{
+    folder, child1, child2
+  };
+  MoveTracksCommand command (*collection_, tracks, 1);
+  command.redo ();
+
+  // Verify positions moved correctly
+  EXPECT_EQ (collection_->get_track_index (other.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (folder.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (child1.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (child2.id ()), 3);
+
+  // Verify folder parent relationships survived the move
+  ASSERT_TRUE (collection_->get_folder_parent (child1.id ()).has_value ())
+    << "child1 lost its folder parent after move";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  ASSERT_TRUE (collection_->get_folder_parent (child2.id ()).has_value ())
+    << "child2 lost its folder parent after move";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child2.id ()).value (), folder.id ());
+
+  // Verify expanded state survived (was collapsed, should stay collapsed)
+  EXPECT_FALSE (collection_->get_track_expanded (folder.id ()))
+    << "folder was collapsed before move but became expanded after";
+
+  // Undo should also preserve metadata
+  command.undo ();
+  EXPECT_EQ (collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (child1.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (child2.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (other.id ()), 3);
+
+  ASSERT_TRUE (collection_->get_folder_parent (child1.id ()).has_value ())
+    << "child1 lost its folder parent after undo";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  EXPECT_FALSE (collection_->get_track_expanded (folder.id ()))
+    << "folder was collapsed before undo but became expanded after";
+}
+
+// Test that moving a child track out of a folder preserves the folder parent
+// relationship of the remaining children.
+TEST_F (MoveTracksCommandTest, MoveChildOutOfFolderPreservesRemainingMetadata)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, other]
+  collection_->add_track (folder);
+  collection_->add_track (child1);
+  collection_->add_track (child2);
+  collection_->add_track (other);
+
+  collection_->set_folder_parent (child1.id (), folder.id ());
+  collection_->set_folder_parent (child2.id (), folder.id ());
+  collection_->set_track_expanded (folder.id (), true);
+
+  // Move child1 after 'other' - it leaves the folder
+  std::vector<structure::tracks::TrackUuidReference> tracks{ child1 };
+  MoveTracksCommand command (*collection_, tracks, 3);
+  command.redo ();
+
+  // Verify positions: [folder, child2, other, child1]
+  EXPECT_EQ (collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (child2.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (other.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (child1.id ()), 3);
+
+  // child2 should still belong to the folder
+  ASSERT_TRUE (collection_->get_folder_parent (child2.id ()).has_value ())
+    << "child2 lost its folder parent when child1 was moved";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child2.id ()).value (), folder.id ());
+
+  // child1 should still have its folder parent (even though it moved away)
+  ASSERT_TRUE (collection_->get_folder_parent (child1.id ()).has_value ())
+    << "child1 lost its folder parent after moving out of the folder";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+
+  // Folder should still be expanded
+  EXPECT_TRUE (collection_->get_track_expanded (folder.id ()));
+
+  // Undo should restore original positions and metadata
+  command.undo ();
+  EXPECT_EQ (collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (collection_->get_track_index (child1.id ()), 1);
+  EXPECT_EQ (collection_->get_track_index (child2.id ()), 2);
+  EXPECT_EQ (collection_->get_track_index (other.id ()), 3);
+
+  ASSERT_TRUE (collection_->get_folder_parent (child1.id ()).has_value ())
+    << "child1 lost its folder parent after undo";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  ASSERT_TRUE (collection_->get_folder_parent (child2.id ()).has_value ())
+    << "child2 lost its folder parent after undo";
+  EXPECT_EQ (
+    collection_->get_folder_parent (child2.id ()).value (), folder.id ());
+  EXPECT_TRUE (collection_->get_track_expanded (folder.id ()));
 }
 
 } // namespace zrythm::commands

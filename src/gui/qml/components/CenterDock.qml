@@ -23,6 +23,13 @@ ColumnLayout {
 
   spacing: 0
 
+  TrackCollectionOperator {
+    id: trackCollectionOperator
+
+    collection: root.project.tracklist.collection
+    undoStack: root.session.undoStack
+  }
+
   StackLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -79,6 +86,7 @@ ColumnLayout {
           Layout.preferredHeight: contentHeight
           audioEngine: root.project.engine
           pinned: true
+          trackCollectionOperator: trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack
@@ -91,6 +99,7 @@ ColumnLayout {
           Layout.fillWidth: true
           audioEngine: root.project.engine
           pinned: false
+          trackCollectionOperator: trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
           undoStack: root.session.undoStack

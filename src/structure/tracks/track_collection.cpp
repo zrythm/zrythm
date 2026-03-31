@@ -233,6 +233,35 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
 }
 
 void
+TrackCollection::detach_track (const Track::Uuid &track_id)
+{
+  auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
+  if (track_it == tracks_.end ())
+    return;
+
+  const auto track_index = std::distance (tracks_.begin (), track_it);
+
+  beginRemoveRows (
+    {}, static_cast<int> (track_index), static_cast<int> (track_index));
+
+  // Intentionally do NOT clear expanded_tracks_ or folder_parent_ -
+  // the caller will reattach the track shortly.
+  // Note: rowsAboutToBeRemoved will disconnect solo/mute/listen signals.
+  // A matching reattach_track() call will reconnect them via rowsInserted.
+
+  tracks_.erase (track_it);
+  endRemoveRows ();
+}
+
+void
+TrackCollection::reattach_track (const TrackUuidReference &track_id, int pos)
+{
+  beginInsertRows ({}, pos, pos);
+  tracks_.insert (std::next (tracks_.begin (), pos), track_id);
+  endInsertRows ();
+}
+
+void
 TrackCollection::move_track (const Track::Uuid &track_id, int pos)
 {
   assert (pos >= 0);

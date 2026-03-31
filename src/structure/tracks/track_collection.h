@@ -126,6 +126,25 @@ public:
   void remove_track (const Track::Uuid &track_id);
 
   /**
+   * @brief Remove a track from the collection without clearing its folder
+   * metadata (expanded state and folder parent relationships).
+   *
+   * Use this when repositioning tracks that will be re-inserted immediately
+   * (e.g., during undo/redo of a move operation), so that folder metadata is
+   * preserved across the remove+insert cycle.
+   */
+  void detach_track (const Track::Uuid &track_id);
+
+  /**
+   * @brief Insert a track without initializing or modifying folder metadata.
+   *
+   * Unlike @ref insert_track, this does not auto-expand foldable tracks or
+   * modify @c expanded_tracks_. Use after @ref detach_track to re-insert a
+   * track while preserving its original folder state.
+   */
+  void reattach_track (const TrackUuidReference &track_id, int pos);
+
+  /**
    * @brief Move a track from one position to another.
    */
   void move_track (const Track::Uuid &track_id, int pos);
