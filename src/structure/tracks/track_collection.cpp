@@ -256,6 +256,7 @@ TrackCollection::detach_track (const Track::Uuid &track_id)
 void
 TrackCollection::reattach_track (const TrackUuidReference &track_id, int pos)
 {
+  pos = std::clamp (pos, 0, static_cast<int> (tracks_.size ()));
   beginInsertRows ({}, pos, pos);
   tracks_.insert (std::next (tracks_.begin (), pos), track_id);
   endInsertRows ();
@@ -345,7 +346,8 @@ TrackCollection::get_track_expanded (const Track::Uuid &track_id) const
 void
 TrackCollection::set_folder_parent (
   const Track::Uuid &child_id,
-  const Track::Uuid &parent_id)
+  const Track::Uuid &parent_id,
+  bool               auto_reposition)
 {
   // Ensure the parent track exists and is foldable
   if (!contains (parent_id) || !is_track_foldable (parent_id))
@@ -359,18 +361,27 @@ TrackCollection::set_folder_parent (
       throw std::invalid_argument ("Child track must exist");
     }
 
-  // Remember last child index
-  auto last_child_index = get_last_child_index (parent_id);
+  // Remember last child index before setting the relationship, so the new
+  // child isn't counted yet.
+  size_t last_child_index = 0;
+  if (auto_reposition)
+    {
+      last_child_index = get_last_child_index (parent_id);
+    }
 
   // Set the parent-child relationship
   folder_parent_[child_id] = parent_id;
 
-  // Move the child to be the last child of the parent
-  auto child_index = get_track_index (child_id);
-
-  if (static_cast<int> (child_index) != static_cast<int> (last_child_index) + 1)
+  if (auto_reposition)
     {
-      move_track (child_id, static_cast<int> (last_child_index) + 1);
+      auto child_index = get_track_index (child_id);
+
+      if (
+        static_cast<int> (child_index)
+        != static_cast<int> (last_child_index) + 1)
+        {
+          move_track (child_id, static_cast<int> (last_child_index) + 1);
+        }
     }
 }
 
@@ -385,7 +396,9 @@ TrackCollection::get_folder_parent (const Track::Uuid &child_id) const
 }
 
 void
-TrackCollection::remove_folder_parent (const Track::Uuid &child_id)
+TrackCollection::remove_folder_parent (
+  const Track::Uuid &child_id,
+  bool               auto_reposition)
 {
   if (!folder_parent_.contains (child_id))
     {
@@ -398,12 +411,15 @@ TrackCollection::remove_folder_parent (const Track::Uuid &child_id)
 
   folder_parent_.erase (child_id);
 
-  // Move the child to right after the folder's last child
-  auto child_index = get_track_index (child_id);
-
-  if (static_cast<int> (child_index) != static_cast<int> (last_child_index))
+  if (auto_reposition)
     {
-      move_track (child_id, static_cast<int> (last_child_index));
+      // Move the child to right after the folder's last child
+      auto child_index = get_track_index (child_id);
+
+      if (static_cast<int> (child_index) != static_cast<int> (last_child_index))
+        {
+          move_track (child_id, static_cast<int> (last_child_index));
+        }
     }
 }
 
@@ -412,6 +428,43 @@ TrackCollection::is_track_foldable (const Track::Uuid &track_id) const
 {
   auto track_var = get_track_at_index (get_track_index (track_id));
   return Track::type_is_foldable (tracks::from_variant (track_var)->type ());
+}
+
+bool
+TrackCollection::is_ancestor_of (
+  const Track::Uuid &possible_ancestor,
+  const Track::Uuid &track_id) const
+{
+  auto cur = track_id;
+  while (folder_parent_.contains (cur))
+    {
+      cur = folder_parent_.at (cur);
+      if (cur == possible_ancestor)
+        return true;
+    }
+  return false;
+}
+
+std::optional<Track::Uuid>
+TrackCollection::get_enclosing_folder (size_t index) const
+{
+  if (tracks_.empty () || index == 0)
+    return std::nullopt;
+
+  // Walk backward from index to find the nearest expanded foldable track
+  // whose child range covers `index`.
+  auto candidates =
+    tracks_ | std::views::take (index) | std::views::reverse
+    | std::views::filter ([&] (const auto &ref) {
+        return is_track_foldable (ref.id ()) && get_track_expanded (ref.id ())
+               && get_last_child_index (ref.id ()) >= index;
+      });
+
+  auto it = candidates.begin ();
+  if (it != candidates.end ())
+    return it->id ();
+
+  return std::nullopt;
 }
 
 // ========================================================================
@@ -426,27 +479,16 @@ TrackCollection::get_child_count (const Track::Uuid &parent_id) const
       return 0;
     }
 
-  size_t count = 0;
-  auto   parent_index = get_track_index (parent_id);
+  auto parent_index = get_track_index (parent_id);
 
-  // Count consecutive children after the parent
-  for (size_t i = parent_index + 1; i < tracks_.size (); ++i)
-    {
-      auto child_id = tracks_[i].id ();
-      if (
-        folder_parent_.contains (child_id)
-        && folder_parent_.at (child_id) == parent_id)
-        {
-          ++count;
-        }
-      else
-        {
-          // Stop when we find a track that's not a child of this parent
-          break;
-        }
-    }
-
-  return count;
+  // Count all descendants (direct children and nested) after the parent.
+  // Descendants are contiguous in the list, so take_while stops at the
+  // first non-descendant.
+  return std::ranges::distance (
+    tracks_ | std::views::drop (parent_index + 1)
+    | std::views::take_while ([&] (const auto &ref) {
+        return is_ancestor_of (parent_id, ref.id ());
+      }));
 }
 
 size_t
@@ -461,6 +503,19 @@ TrackCollection::get_last_child_index (const Track::Uuid &parent_id) const
   auto child_count = get_child_count (parent_id);
 
   return parent_index + child_count;
+}
+
+std::vector<Track::Uuid>
+TrackCollection::get_all_descendants (const Track::Uuid &parent_id) const
+{
+  auto parent_index = get_track_index (parent_id);
+
+  return tracks_ | std::views::drop (parent_index + 1)
+         | std::views::take_while ([&] (const auto &ref) {
+             return is_ancestor_of (parent_id, ref.id ());
+           })
+         | std::views::transform ([] (const auto &ref) { return ref.id (); })
+         | std::ranges::to<std::vector> ();
 }
 
 // ========================================================================

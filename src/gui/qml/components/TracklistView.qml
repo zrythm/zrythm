@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -12,14 +12,18 @@ ListView {
   id: root
 
   required property AudioEngine audioEngine
+
+  // Drag-and-drop state shared with delegates. Delegate properties are
+  // prefixed with "listView" (e.g., listViewDraggedTrack) to distinguish
+  // them from these ListView-level properties.
+  property var draggedTrack: null
+  property var dropTargetFolder: null
+  property int dropTargetIndex: -1
   required property bool pinned
+  required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
-  required property TrackCollectionOperator trackCollectionOperator
   required property UndoStack undoStack
-
-  property var draggedTrack: null
-  property int dropTargetIndex: -1
 
   Layout.fillWidth: true
   boundsBehavior: Flickable.StopAtBounds
@@ -35,6 +39,7 @@ ListView {
 
     audioEngine: root.audioEngine
     listViewDraggedTrack: root.draggedTrack
+    listViewDropTargetFolder: root.dropTargetFolder
     listViewDropTargetIndex: root.dropTargetIndex
     listViewIsLast: index === ListView.view.count - 1
     listViewPastEndIndex: root.pinned ? ListView.view.count : ListView.view.count + root.tracklist.pinnedTracksCutoff
@@ -49,6 +54,14 @@ ListView {
       when: !trackView.track.visible
     }
 
+    onDropTargetChanged: function (index) {
+      root.dropTargetIndex = index;
+      root.dropTargetFolder = null;
+    }
+    onDropTargetFolderChanged: function (track, index) {
+      root.dropTargetFolder = track;
+      root.dropTargetIndex = index;
+    }
     onTrackDragEnded: {
       if (root.dropTargetIndex >= 0 && root.draggedTrack !== null) {
         // Gather all selected tracks, sorted by current position
@@ -57,27 +70,26 @@ ListView {
         for (const idx of selectedIndexes) {
           const t = idx.data(TrackCollection.TrackPtrRole);
           if (t !== null)
-            tracksToMove.push({track: t, pos: idx.row});
+            tracksToMove.push({
+              track: t,
+              pos: idx.row
+            });
         }
         if (tracksToMove.length === 0)
-          tracksToMove.push({track: root.draggedTrack, pos: -1});
+          tracksToMove.push({
+            track: root.draggedTrack,
+            pos: -1
+          });
 
         // Sort by current position
         tracksToMove.sort((a, b) => a.pos - b.pos);
 
-        // Count how many moved tracks are above the drop target - removing
-        // them shifts the target position up by that many spots.
-        let targetPos = root.dropTargetIndex;
-        let aboveCount = 0;
-        for (const entry of tracksToMove) {
-          if (entry.pos < targetPos)
-            aboveCount++;
-        }
-        targetPos -= aboveCount;
-
+        // Pass the raw drop target index directly - the command handles
+        // index adjustment internally.
+        const targetPos = root.dropTargetIndex;
         if (targetPos >= 0) {
           const trackList = tracksToMove.map(e => e.track);
-          root.trackCollectionOperator.moveTracks(trackList, targetPos);
+          root.trackCollectionOperator.moveTracks(trackList, targetPos, root.dropTargetFolder);
 
           // Re-select the moved tracks at their new positions (remove+insert
           // invalidates model indexes).
@@ -102,12 +114,10 @@ ListView {
       }
       root.draggedTrack = null;
       root.dropTargetIndex = -1;
+      root.dropTargetFolder = null;
     }
     onTrackDragStarted: {
       root.draggedTrack = trackView.track;
-    }
-    onDropTargetChanged: function(index) {
-      root.dropTargetIndex = index;
     }
   }
   model: SortFilterProxyModel {

@@ -7,12 +7,10 @@ SPDX-License-Identifier: FSFAP
 
 This document describes how track reordering works end-to-end, from the QML
 drag-and-drop interaction through the undo/redo command layer to the
-`TrackCollection` model mutations.
+`TrackCollection` model mutations, including folder parent relationship
+management.
 
 ## Module Map
-
-The feature spans four layers following the project's
-[undo system](undo_system.md) architecture:
 
 ```mermaid
 graph LR
@@ -23,132 +21,127 @@ graph LR
 
 | Layer | Component | Responsibility |
 |---|---|---|
-| UI | `TrackView.qml`, `TracklistView.qml` | Drag detection, drop indicator, target position calculation |
-| Operator | `TrackCollectionOperator` | QML-callable facade; converts `Track*` to `TrackUuidReference`, pushes command |
-| Command | `MoveTracksCommand` | `QUndoCommand` subclass; two-phase detach/reattach with undo support |
-| Model | `TrackCollection` | `detach_track()` / `reattach_track()` — model mutations that preserve folder metadata |
+| UI | `TrackView.qml`, `TracklistView.qml` | Drag detection, drop indicator, target position |
+| Operator | `TrackCollectionOperator` | Expands descendants, infers folder target, converts `Track*` to refs, pushes command |
+| Command | `MoveTracksCommand` | `QUndoCommand` subclass; three-phase detach/reattach/reparent with undo |
+| Model | `TrackCollection` | `detach_track()` / `reattach_track()`, `set_folder_parent()` / `remove_folder_parent()` |
 
-## Drag-and-Drop Flow (QML)
+## Drag-and-Drop Flow
 
 ```mermaid
 sequenceDiagram
-    participant TV as TrackView (delegate)
+    participant TV as TrackView
     participant TLV as TracklistView
-    participant TCO as TrackCollectionOperator
-    participant Cmd as MoveTracksCommand
+    participant Op as Operator
+    participant Cmd as Command
     participant TC as TrackCollection
 
-    TV->>TV: DragHandler detects vertical drag
     TV->>TLV: trackDragStarted() → stores draggedTrack
     loop while dragging
-        TV->>TV: Calculate drop position from cursor
         TV->>TLV: dropTargetChanged(index) → updates dropIndicator
     end
     TV->>TLV: trackDragEnded() → drop fires
     TLV->>TLV: Gather selected tracks, sort by position
-    TLV->>TLV: Adjust target position (subtract tracks above target)
-    TLV->>TCO: moveTracks(trackList, adjustedTargetPos)
-    TCO->>Cmd: create MoveTracksCommand
-    TCO->>TC: push command → triggers redo()
-    Cmd->>TC: detach all tracks (reverse order)
-    Cmd->>TC: reattach at target position (forward order)
+    TLV->>Op: moveTracks(trackList, rawTargetPos)
+    Op->>Op: Expand descendants of foldable tracks
+    Op->>Op: Infer folder target (explicit or enclosing)
+    Op->>Cmd: new MoveTracksCommand(refs, pos, folderUuid)
+    Op->>TC: push command → triggers redo()
+    Cmd->>TC: Phase 1: detach all (reverse order)
+    Cmd->>TC: Phase 2: reattach at target (forward order)
+    Cmd->>TC: Phase 3: update folder parents
     TLV->>TLV: Re-select moved tracks at new positions
 ```
 
-### Target Position Calculation
+### Target Position
 
-The drop target index reported by each delegate is an index into the **full**
-`TrackCollection` (not the filtered ListView). When the user drops tracks, the
-QML layer adjusts the target position to account for selected tracks that sit
-above the drop point — removing those tracks shifts everything below them up:
+The drop target index is an index into the full `TrackCollection` (not the
+filtered ListView). The QML layer passes this raw pre-removal index directly to
+`moveTracks()`. The command adjusts internally during `redo()` by subtracting
+the number of moved tracks that sit above the target:
 
-```javascript
-let aboveCount = tracksToMove.filter(e => e.pos < targetPos).length;
-targetPos -= aboveCount;
+```cpp
+const auto above_count = std::ranges::count_if(
+    current_positions,
+    [this](int pos) { return pos < target_position_; });
+int insert_pos = target_position_ - static_cast<int>(above_count);
 ```
-
-For pinned/non-pinned boundary handling, `TracklistView` offsets indices:
-- **Pinned list**: delegate `trackIndex` = `ListView index` directly
-- **Non-pinned list**: delegate `trackIndex` = `ListView index + pinnedTracksCutoff`
 
 ### Drop Indicators
 
 Each `TrackView` delegate renders two indicator rectangles:
+- **Top indicator**: shown when `dropTargetIndex === trackIndex` (drop above)
+- **Bottom indicator**: shown on the last delegate when
+  `dropTargetIndex === trackIndex + 1` (drop past the end)
 
-- **Top indicator**: shown when `dropTargetIndex === trackIndex` (drop above this track)
-- **Bottom indicator**: shown on the **last** delegate when `dropTargetIndex === trackIndex + 1` (drop past the end)
+## TrackCollectionOperator
+
+### Descendant Expansion
+
+When the user selects a folder track, its descendants must move with it. The
+operator auto-expands the selection using `get_all_descendants()`, preserving
+list order and deduplicating.
+
+### Folder Target Inference
+
+The operator determines the target folder by priority:
+
+1. **Explicit** — QML passes a `targetFolder` argument (validated as foldable)
+2. **Inferred** — `get_enclosing_folder(targetPosition)` checks whether the
+   drop position falls inside an expanded folder's child range
+3. **None** — `nullopt`, meaning external folder parents are cleared
 
 ## MoveTracksCommand
 
 ### Construction
 
-Stores the track references (in their current order) and their original
-positions. The `target_position_` is the index where the **first** moved track
-should land after the remaining tracks are compacted.
+Stores original positions, original folder parents, and the target folder's
+expanded state for undo. A `moved_uuids_` set provides O(1) lookup to
+distinguish internal from external folder relationships.
 
-### redo() — Two-Phase Detach/Reattach
+### redo() — Three Phases
 
-The command uses a two-phase approach instead of sequential `move_track()` calls.
-Sequential moves cause index-shifting bugs when moving non-contiguous tracks
-(e.g., tracks at positions 1 and 3 to position 2 can interleave an unselected
-track between them).
+**Phase 1 — Detach** all tracks in reverse position order (indices stay stable).
 
-**Phase 1 — Detach all selected tracks** (in reverse position order):
+**Phase 2 — Reattach** at the target position in original relative order (tracks
+land contiguously, insert position increments for each).
 
-```mermaid
-graph TD
-    A["[T0, T1*, T2, T3*, T4, T5]"] -->|"detach T5 (pos 5)"| B["[T0, T1*, T2, T3*, T4]"]
-    B -->|"detach T3 (pos 3)"| C["[T0, T1*, T2, T4]"]
-    C -->|"detach T1 (pos 1)"| D["[T0, T2, T4]"]
-```
+**Phase 3 — Update folder parents.** The command distinguishes:
 
-Removing in reverse order ensures earlier indices remain stable.
+| Type | Description | Treatment |
+|---|---|---|
+| Internal | Parent is also in the moved set | Preserved — never modified |
+| External | Parent is outside the moved set (or nullopt) | Cleared, then optionally set to target folder |
 
-**Phase 2 — Reattach at target position** (in original relative order):
+Key behaviors in Phase 3:
+- **Circular nesting prevention**: if the target folder is a descendant of any
+  moved track, all folder updates are skipped
+- **Auto-expand**: moving into a collapsed folder auto-expands it
 
-```mermaid
-graph TD
-    D["[T0, T2, T4]"] -->|"reattach T1 at pos 1"| E["[T0, T1, T2, T4]"]
-    E -->|"reattach T3 at pos 2"| F["[T0, T1, T3, T2, T4]"]
-```
+### undo()
 
-Each reattach increments the insert position, so moved tracks land contiguously.
-
-### undo() — Reverse the Operation
-
-Same two-phase approach, but detaches from current positions and reattaches at
-the stored original positions. Original positions are sorted in forward order
-for reattachment.
+Same three-phase approach in reverse: detach from current positions, reattach
+at stored original positions, then restore original folder parents for
+externally-parented tracks and the target folder's expanded state.
 
 ## Folder Metadata Preservation
 
-### The Problem
+`TrackCollection` stores folder metadata in `expanded_tracks_` and
+`folder_parent_`. The standard `remove_track()` / `insert_track()` would
+destroy this during a move.
 
-`TrackCollection` stores two pieces of folder metadata:
+### detach/reattach
 
-| Data Structure | Type | Purpose |
-|---|---|---|
-| `expanded_tracks_` | `unordered_set<Uuid>` | Which foldable tracks are expanded |
-| `folder_parent_` | `unordered_map<Uuid, Uuid>` | Maps each child to its folder parent |
+`detach_track()` and `reattach_track()` are metadata-preserving alternatives
+that emit proper Qt model signals but do not touch `expanded_tracks_` or
+`folder_parent_`. A detach-reattach cycle preserves all folder metadata.
 
-The standard `remove_track()` clears both of these for the removed track (and
-all its children). The standard `insert_track()` auto-expands foldable tracks.
-Using these during a move would destroy folder metadata.
+### Folder Parent API
 
-### The Solution: detach/reattach
+`set_folder_parent()` and `remove_folder_parent()` accept an `auto_reposition`
+parameter (default `false`):
 
-`TrackCollection` provides two metadata-preserving alternatives:
-
-- **`detach_track(uuid)`** — Removes the track from the `tracks_` vector and
-  emits proper Qt model signals (`beginRemoveRows`/`endRemoveRows`), but
-  intentionally does **not** clear `expanded_tracks_` or `folder_parent_`.
-  Solo/mute/listen signal disconnections still happen via the
-  `rowsAboutToBeRemoved` handler.
-
-- **`reattach_track(ref, pos)`** — Inserts the track and emits
-  `beginInsertRows`/`endInsertRows`, but does **not** auto-expand foldable
-  tracks or modify `folder_parent_`. Solo/mute/listen signal reconnections
-  happen via the `rowsInserted` handler.
-
-This ensures that a detach-then-reattach cycle preserves all folder metadata
-while still maintaining correct Qt model signal semantics for the UI.
+- **`false`**: Only updates the `folder_parent_` map — the caller handles
+  positioning (used by the command, which positions via detach/reattach)
+- **`true`**: Updates the map *and* auto-moves the track within the folder's
+  child range (used by higher-level callers)

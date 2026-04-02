@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_collection_operator.h"
+#include "structure/tracks/folder_track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "undo/undo_stack.h"
@@ -52,6 +53,12 @@ protected:
   {
     return track_factory_
       ->create_empty_track<structure::tracks::AudioBusTrack> ();
+  }
+
+  // Helper to create a folder track
+  structure::tracks::TrackUuidReference create_folder_track ()
+  {
+    return track_factory_->create_empty_track<structure::tracks::FolderTrack> ();
   }
 
   // Create minimal dependencies for track creation
@@ -167,11 +174,11 @@ TEST_F (TrackCollectionOperatorTest, MoveSingleTrackForward)
   EXPECT_EQ (track_collection_->get_track_index (track2.id ()), 1);
   EXPECT_EQ (track_collection_->get_track_index (track3.id ()), 2);
 
-  // Move track1 to position 2
+  // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track1.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 3);
 
   // New order: track2, track3, track1
   EXPECT_EQ (track_collection_->get_track_index (track2.id ()), 0);
@@ -242,12 +249,12 @@ TEST_F (TrackCollectionOperatorTest, MoveMultipleAdjacentTracks)
   track_collection_->add_track (track3);
   track_collection_->add_track (track4);
 
-  // Move track2 and track3 so track2 ends at position 2
+  // Move track2 and track3 after track4 (pre-removal target 4)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track2.get_object_base ());
   tracks.append (track3.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 4);
 
   // New order: track1, track4, track2, track3
   EXPECT_EQ (track_collection_->get_track_index (track1.id ()), 0);
@@ -270,12 +277,12 @@ TEST_F (TrackCollectionOperatorTest, MoveNonAdjacentTracks)
   track_collection_->add_track (track4);
   track_collection_->add_track (track5);
 
-  // Move track2 and track4 so track2 ends at position 3
+  // Move track2 and track4 after track5 (pre-removal target 5)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track2.get_object_base ());
   tracks.append (track4.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 3);
+  track_collection_operator_->moveTracks (tracks, 5);
 
   // New order: track1, track3, track5, track2, track4
   EXPECT_EQ (track_collection_->get_track_index (track1.id ()), 0);
@@ -299,11 +306,11 @@ TEST_F (TrackCollectionOperatorTest, UndoAfterMove)
   track_collection_->add_track (track2);
   track_collection_->add_track (track3);
 
-  // Move track1 to position 2
+  // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track1.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 3);
 
   // Verify move happened
   EXPECT_EQ (track_collection_->get_track_index (track1.id ()), 2);
@@ -329,11 +336,11 @@ TEST_F (TrackCollectionOperatorTest, RedoAfterUndo)
   track_collection_->add_track (track2);
   track_collection_->add_track (track3);
 
-  // Move track1 to position 2
+  // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track1.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 3);
   undo_stack_->undo ();
   undo_stack_->redo ();
 
@@ -359,7 +366,7 @@ TEST_F (TrackCollectionOperatorTest, MultipleUndoRedoCycles)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track1.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 3);
 
   // First cycle
   undo_stack_->undo ();
@@ -404,12 +411,12 @@ TEST_F (TrackCollectionOperatorTest, UndoMultipleTracksMove)
   track_collection_->add_track (track3);
   track_collection_->add_track (track4);
 
-  // Move track2 and track3
+  // Move track2 and track3 (pre-removal target 4)
   QList<structure::tracks::Track *> tracks;
   tracks.append (track2.get_object_base ());
   tracks.append (track3.get_object_base ());
 
-  track_collection_operator_->moveTracks (tracks, 2);
+  track_collection_operator_->moveTracks (tracks, 4);
 
   // Verify move happened
   EXPECT_EQ (track_collection_->get_track_index (track2.id ()), 2);
@@ -423,6 +430,194 @@ TEST_F (TrackCollectionOperatorTest, UndoMultipleTracksMove)
   EXPECT_EQ (track_collection_->get_track_index (track2.id ()), 1);
   EXPECT_EQ (track_collection_->get_track_index (track3.id ()), 2);
   EXPECT_EQ (track_collection_->get_track_index (track4.id ()), 3);
+}
+
+// ============================================================================
+// Folder-Aware Move Tests
+// ============================================================================
+
+// Moving a folder track should automatically include all its descendants.
+TEST_F (TrackCollectionOperatorTest, MoveFolderAutoExpandsDescendants)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, other]
+  track_collection_->add_track (folder);
+  track_collection_->add_track (child1);
+  track_collection_->add_track (child2);
+  track_collection_->add_track (other);
+
+  track_collection_->set_folder_parent (child1.id (), folder.id ());
+  track_collection_->set_folder_parent (child2.id (), folder.id ());
+  track_collection_->set_track_expanded (folder.id (), true);
+
+  // Pass only the folder to moveTracks - operator should auto-expand to
+  // include child1 and child2.
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (folder.get_object_base ());
+
+  // Pre-removal target 4 = past-the-end of [folder, child1, child2, other]
+  track_collection_operator_->moveTracks (tracks, 4);
+
+  // Expected: [other, folder, child1, child2]
+  EXPECT_EQ (track_collection_->get_track_index (other.id ()), 0);
+  EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 1);
+  EXPECT_EQ (track_collection_->get_track_index (child1.id ()), 2);
+  EXPECT_EQ (track_collection_->get_track_index (child2.id ()), 3);
+
+  // Folder parent relationships preserved (internal to moved set)
+  ASSERT_TRUE (track_collection_->get_folder_parent (child1.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  ASSERT_TRUE (track_collection_->get_folder_parent (child2.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (child2.id ()).value (), folder.id ());
+}
+
+// Dropping a track inside an expanded folder (between its children) should
+// auto-detect the enclosing folder via get_enclosing_folder.
+TEST_F (TrackCollectionOperatorTest, MoveIntoFolderByEnclosingFolder)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto track = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, track]
+  track_collection_->add_track (folder);
+  track_collection_->add_track (child1);
+  track_collection_->add_track (child2);
+  track_collection_->add_track (track);
+
+  track_collection_->set_folder_parent (child1.id (), folder.id ());
+  track_collection_->set_folder_parent (child2.id (), folder.id ());
+  track_collection_->set_track_expanded (folder.id (), true);
+
+  // Move 'track' to pre-removal position 2 (inside folder's child range).
+  // get_enclosing_folder(2) should detect folder since its last_child_index
+  // (0+2=2) covers position 2.
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (track.get_object_base ());
+
+  track_collection_operator_->moveTracks (tracks, 2);
+
+  // Expected: [folder, child1, track, child2] (track inserted inside folder)
+  EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (track_collection_->get_track_index (child1.id ()), 1);
+  EXPECT_EQ (track_collection_->get_track_index (track.id ()), 2);
+  EXPECT_EQ (track_collection_->get_track_index (child2.id ()), 3);
+
+  // track should now be a child of folder
+  ASSERT_TRUE (track_collection_->get_folder_parent (track.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (track.id ()).value (), folder.id ());
+}
+
+// Passing an explicit folder as targetFolder should set folder parent.
+TEST_F (TrackCollectionOperatorTest, MoveIntoFolderExplicitTarget)
+{
+  auto folder = create_folder_track ();
+  auto other = create_audio_bus_track ();
+  auto track = create_audio_bus_track ();
+
+  // Layout: [folder, other, track]
+  track_collection_->add_track (folder);
+  track_collection_->add_track (other);
+  track_collection_->add_track (track);
+
+  track_collection_->set_track_expanded (folder.id (), true);
+
+  // Move 'track' right after folder, explicitly targeting the folder.
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (track.get_object_base ());
+
+  track_collection_operator_->moveTracks (tracks, 1, folder.get_object_base ());
+
+  // Expected: [folder, track, other]
+  EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (track_collection_->get_track_index (track.id ()), 1);
+  EXPECT_EQ (track_collection_->get_track_index (other.id ()), 2);
+
+  // track should be a child of folder
+  ASSERT_TRUE (track_collection_->get_folder_parent (track.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (track.id ()).value (), folder.id ());
+}
+
+// Moving a track out of a folder (past its child range) should clear the
+// folder parent.
+TEST_F (TrackCollectionOperatorTest, MoveOutOfFolder)
+{
+  auto folder = create_folder_track ();
+  auto child = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child, other]
+  track_collection_->add_track (folder);
+  track_collection_->add_track (child);
+  track_collection_->add_track (other);
+
+  track_collection_->set_folder_parent (child.id (), folder.id ());
+  track_collection_->set_track_expanded (folder.id (), true);
+
+  // Move child past-the-end (pre-removal target 3).
+  // get_enclosing_folder(3) returns nullopt because folder's last_child_index
+  // (1) < 3.
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (child.get_object_base ());
+
+  track_collection_operator_->moveTracks (tracks, 3);
+
+  // Expected: [folder, other, child]
+  EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (track_collection_->get_track_index (other.id ()), 1);
+  EXPECT_EQ (track_collection_->get_track_index (child.id ()), 2);
+
+  // child should no longer have a folder parent
+  EXPECT_FALSE (track_collection_->get_folder_parent (child.id ()).has_value ());
+}
+
+// Undo after moving a folder with auto-expanded descendants should restore
+// original positions and folder parent relationships.
+TEST_F (TrackCollectionOperatorTest, UndoFolderMoveWithDescendants)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, other]
+  track_collection_->add_track (folder);
+  track_collection_->add_track (child1);
+  track_collection_->add_track (child2);
+  track_collection_->add_track (other);
+
+  track_collection_->set_folder_parent (child1.id (), folder.id ());
+  track_collection_->set_folder_parent (child2.id (), folder.id ());
+  track_collection_->set_track_expanded (folder.id (), true);
+
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (folder.get_object_base ());
+
+  track_collection_operator_->moveTracks (tracks, 4);
+  undo_stack_->undo ();
+
+  // Should restore original layout
+  EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 0);
+  EXPECT_EQ (track_collection_->get_track_index (child1.id ()), 1);
+  EXPECT_EQ (track_collection_->get_track_index (child2.id ()), 2);
+  EXPECT_EQ (track_collection_->get_track_index (other.id ()), 3);
+
+  // Folder parents restored
+  ASSERT_TRUE (track_collection_->get_folder_parent (child1.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (child1.id ()).value (), folder.id ());
+  ASSERT_TRUE (track_collection_->get_folder_parent (child2.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection_->get_folder_parent (child2.id ()).value (), folder.id ());
 }
 
 } // namespace zrythm::actions

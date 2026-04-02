@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "structure/tracks/track_all.h"
+#include "structure/tracks/track_collection.h"
 #include "undo/undo_stack.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -64,10 +64,27 @@ public:
    *
    * @param tracks List of tracks to move (in their current order).
    * @param targetPosition The position where the first track should end up.
+   * @param targetFolder If non-null, the foldable track to make the moved
+   *   tracks children of. If null and the target position is inside an
+   *   expanded folder, the enclosing folder is inferred automatically.
    */
   Q_INVOKABLE void moveTracks (
     const QList<zrythm::structure::tracks::Track *> &tracks,
-    int                                              targetPosition);
+    int                                              targetPosition,
+    zrythm::structure::tracks::Track *               targetFolder);
+
+  /**
+   * @brief Convenience overload for QML - moves without specifying a folder.
+   *
+   * QML cannot resolve C++ default parameters on Q_INVOKABLE methods.
+   * Use this overload when no target folder is needed.
+   */
+  Q_INVOKABLE void moveTracks (
+    const QList<zrythm::structure::tracks::Track *> &tracks,
+    int                                              targetPosition)
+  {
+    moveTracks (tracks, targetPosition, nullptr);
+  }
 
 private:
   structure::tracks::TrackCollection * collection_{};

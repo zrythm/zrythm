@@ -181,9 +181,15 @@ public:
 
   /**
    * @brief Set the folder parent for a track.
+   *
+   * When @p auto_reposition is true, the child is automatically moved to be
+   * the last child of the parent. When false, only the folder_parent_ entry
+   * is updated (use when the caller handles positioning separately).
    */
-  void
-  set_folder_parent (const Track::Uuid &child_id, const Track::Uuid &parent_id);
+  void set_folder_parent (
+    const Track::Uuid &child_id,
+    const Track::Uuid &parent_id,
+    bool               auto_reposition = false);
 
   /**
    * @brief Get the folder parent for a track.
@@ -193,8 +199,14 @@ public:
 
   /**
    * @brief Remove the folder parent for a track.
+   *
+   * When @p auto_reposition is true, the child is automatically moved to
+   * after the folder's last child. When false, only the folder_parent_ entry
+   * is erased (use when the caller handles positioning separately).
    */
-  void remove_folder_parent (const Track::Uuid &child_id);
+  void remove_folder_parent (
+    const Track::Uuid &child_id,
+    bool               auto_reposition = false);
 
   /**
    * @brief Check if a track is foldable.
@@ -202,9 +214,38 @@ public:
   bool is_track_foldable (const Track::Uuid &track_id) const;
 
   /**
+   * @brief Check if @p possible_ancestor is an ancestor of @p track_id.
+   *
+   * Walks the folder_parent_ chain from @p track_id upward. Returns true if
+   * @p possible_ancestor is found in the chain.
+   */
+  bool is_ancestor_of (
+    const Track::Uuid &possible_ancestor,
+    const Track::Uuid &track_id) const;
+
+  /**
+   * @brief Get the innermost enclosing folder at the given track index.
+   *
+   * Walks backward from the given index to find the nearest expanded foldable
+   * track whose child range covers the index. Returns nullopt if the position
+   * is not inside any folder.
+   */
+  std::optional<Track::Uuid> get_enclosing_folder (size_t index) const;
+
+  /**
    * @brief Get the number of children for a foldable track.
    */
   size_t get_child_count (const Track::Uuid &parent_id) const;
+
+  /**
+   * @brief Get all descendant track UUIDs of a folder, in list order.
+   *
+   * Walks forward from the folder's position, collecting all tracks whose
+   * folder_parent chain leads back to @p parent_id (direct children and
+   * nested descendants).
+   */
+  std::vector<Track::Uuid>
+  get_all_descendants (const Track::Uuid &parent_id) const;
 
   /**
    * @brief Get the last child index for a foldable track.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -19,10 +19,12 @@ Control {
   readonly property real contentBottomMargins: 3
   readonly property real contentTopMargins: 1
   required property int depth
+  readonly property real depthIndentation: depth * 8
   required property bool expanded
   required property bool foldable
   property bool isResizing: false
   property var listViewDraggedTrack: null
+  property var listViewDropTargetFolder: null
   property int listViewDropTargetIndex: -1
   property bool listViewIsLast: false
   property int listViewPastEndIndex: -1
@@ -34,6 +36,7 @@ Control {
   required property UndoStack undoStack
 
   signal dropTargetChanged(int index)
+  signal dropTargetFolderChanged(var track, int index)
   signal trackDragEnded
   signal trackDragStarted
 
@@ -116,13 +119,25 @@ Control {
             return;
 
           const scenePos = centroid.scenePosition;
+          // mapFromItem(null, ...) gives viewport-relative coordinates, but
+          // itemAt() works in content coordinates. Add contentY to compensate
+          // for scroll offset.
           const lvPoint = lv.mapFromItem(null, scenePos.x, scenePos.y);
-          const targetItem = lv.itemAt(lvPoint.x, lvPoint.y) as TrackView;
+          const contentPoint = Qt.point(lvPoint.x, lvPoint.y + lv.contentY);
+          const targetItem = lv.itemAt(contentPoint.x, contentPoint.y) as TrackView;
 
           if (targetItem && targetItem !== root) {
             const targetLocalPoint = targetItem.mapFromItem(null, scenePos.x, scenePos.y);
-            const idx = targetLocalPoint.y < targetItem.height / 2 ? targetItem.trackIndex : targetItem.trackIndex + 1;
-            root.dropTargetChanged(idx);
+            const relativeY = targetLocalPoint.y / targetItem.height;
+
+            // Fixed-size edge zones (8px) for line-drop vs folder-drop
+            const edgeZone = 8;
+            if (targetItem.foldable && targetLocalPoint.y > edgeZone && targetLocalPoint.y < targetItem.height - edgeZone) {
+              root.dropTargetFolderChanged(targetItem.track, targetItem.trackIndex + 1);
+            } else {
+              const idx = relativeY < 0.5 ? targetItem.trackIndex : targetItem.trackIndex + 1;
+              root.dropTargetChanged(idx);
+            }
           } else if (!targetItem && lvPoint.x >= 0 && lvPoint.x <= lv.width) {
             // Cursor is within the ListView horizontally but not over any
             // delegate - check if we're past the end of the track content.
@@ -151,7 +166,7 @@ Control {
 
       Item {
         Layout.fillHeight: true
-        Layout.preferredWidth: root.depth * 8
+        Layout.preferredWidth: root.depthIndentation
       }
 
       Rectangle {
@@ -327,7 +342,7 @@ Control {
 
     color: palette.highlight
     height: 3
-    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetIndex === root.trackIndex && root.listViewDropTargetIndex >= 0
+    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetFolder === null && root.listViewDropTargetIndex === root.trackIndex && root.listViewDropTargetIndex >= 0
     z: 100
 
     anchors {
@@ -342,13 +357,31 @@ Control {
 
     color: palette.highlight
     height: 3
-    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewIsLast && root.listViewDropTargetIndex === root.trackIndex + 1
+    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetFolder === null && root.listViewIsLast && root.listViewDropTargetIndex === root.trackIndex + 1
     z: 100
 
     anchors {
       bottom: parent.bottom
       left: parent.left
       right: parent.right
+    }
+  }
+
+  Rectangle {
+    id: folderDropIndicator
+
+    color: Qt.alpha(palette.highlight, 0.25)
+    visible: root.listViewDraggedTrack !== null && root.foldable && root.listViewDropTargetFolder !== null && root.listViewDropTargetFolder === root.track
+    z: 99
+
+    anchors {
+      bottom: parent.bottom
+      bottomMargin: 1
+      left: parent.left
+      leftMargin: root.depthIndentation
+      right: parent.right
+      top: parent.top
+      topMargin: 1
     }
   }
 

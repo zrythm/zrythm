@@ -271,8 +271,9 @@ TEST_F (TrackCollectionTest, FolderParentManagement)
   EXPECT_EQ (
     track_collection->get_track_ref_at_index (2).id (), child_track2.id ());
 
-  // Remove parent from one child
-  track_collection->remove_folder_parent (child_track1.id ());
+  // Remove parent from one child (auto-reposition moves it after folder's last
+  // child)
+  track_collection->remove_folder_parent (child_track1.id (), true);
 
   // Verify parent removed
   EXPECT_FALSE (
@@ -535,6 +536,358 @@ TEST_F (TrackCollectionTest, SoloMuteListenSignals)
   EXPECT_GT (soloed_signals, 0);
   EXPECT_GT (muted_signals, 0);
   EXPECT_GT (listened_signals, 0);
+}
+
+// Test set_folder_parent without auto_reposition keeps the track in place.
+TEST_F (TrackCollectionTest, SetFolderParentWithoutReposition)
+{
+  auto folder = create_folder_track ();
+  auto child = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, other, child]
+  track_collection->add_track (folder);
+  track_collection->add_track (other);
+  track_collection->add_track (child);
+
+  // Set parent without repositioning - child stays at index 2
+  track_collection->set_folder_parent (child.id (), folder.id ());
+
+  ASSERT_TRUE (track_collection->get_folder_parent (child.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection->get_folder_parent (child.id ()).value (), folder.id ());
+
+  // Position should NOT have changed
+  EXPECT_EQ (track_collection->get_track_index (child.id ()), 2);
+}
+
+// Test remove_folder_parent without auto_reposition keeps the track in place.
+TEST_F (TrackCollectionTest, RemoveFolderParentWithoutReposition)
+{
+  auto folder = create_folder_track ();
+  auto child = create_audio_bus_track ();
+
+  // Layout: [folder, child]
+  track_collection->add_track (folder);
+  track_collection->add_track (child);
+  track_collection->set_folder_parent (child.id (), folder.id ());
+
+  // Remove parent without repositioning
+  track_collection->remove_folder_parent (child.id ());
+
+  EXPECT_FALSE (track_collection->get_folder_parent (child.id ()).has_value ());
+  // Position should not change
+  EXPECT_EQ (track_collection->get_track_index (child.id ()), 1);
+}
+
+// Test is_ancestor_of for direct and indirect ancestors.
+TEST_F (TrackCollectionTest, IsAncestorOf)
+{
+  auto folder1 = create_folder_track ();
+  auto folder2 = create_folder_track ();
+  auto child = create_audio_bus_track ();
+
+  // Layout: [folder1, folder2, child]
+  track_collection->add_track (folder1);
+  track_collection->add_track (folder2);
+  track_collection->add_track (child);
+
+  track_collection->set_folder_parent (folder2.id (), folder1.id ());
+  track_collection->set_folder_parent (child.id (), folder2.id ());
+
+  // Direct parent
+  EXPECT_TRUE (track_collection->is_ancestor_of (folder2.id (), child.id ()));
+  // Grandparent
+  EXPECT_TRUE (track_collection->is_ancestor_of (folder1.id (), child.id ()));
+  // Not an ancestor
+  EXPECT_FALSE (track_collection->is_ancestor_of (child.id (), folder1.id ()));
+  // Self is not ancestor
+  EXPECT_FALSE (track_collection->is_ancestor_of (folder1.id (), folder1.id ()));
+}
+
+// Test get_enclosing_folder with expanded folder.
+TEST_F (TrackCollectionTest, GetEnclosingFolderExpanded)
+{
+  auto folder = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child1, child2, other]
+  track_collection->add_track (folder);
+  track_collection->add_track (child1);
+  track_collection->add_track (child2);
+  track_collection->add_track (other);
+
+  track_collection->set_folder_parent (child1.id (), folder.id ());
+  track_collection->set_folder_parent (child2.id (), folder.id ());
+  track_collection->set_track_expanded (folder.id (), true);
+
+  // Indices inside folder's child range
+  auto enclosing1 = track_collection->get_enclosing_folder (1);
+  ASSERT_TRUE (enclosing1.has_value ());
+  EXPECT_EQ (enclosing1.value (), folder.id ());
+
+  auto enclosing2 = track_collection->get_enclosing_folder (2);
+  ASSERT_TRUE (enclosing2.has_value ());
+  EXPECT_EQ (enclosing2.value (), folder.id ());
+
+  // Index outside folder's child range
+  EXPECT_FALSE (track_collection->get_enclosing_folder (3).has_value ());
+}
+
+// Test get_enclosing_folder with collapsed folder returns nullopt.
+TEST_F (TrackCollectionTest, GetEnclosingFolderCollapsed)
+{
+  auto folder = create_folder_track ();
+  auto child = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folder, child, other]
+  track_collection->add_track (folder);
+  track_collection->add_track (child);
+  track_collection->add_track (other);
+
+  track_collection->set_folder_parent (child.id (), folder.id ());
+  track_collection->set_track_expanded (folder.id (), false);
+
+  // Collapsed folder should not enclose
+  EXPECT_FALSE (track_collection->get_enclosing_folder (1).has_value ());
+}
+
+// Test get_enclosing_folder with nested folders returns innermost.
+TEST_F (TrackCollectionTest, GetEnclosingFolderNested)
+{
+  auto outer = create_folder_track ();
+  auto inner = create_folder_track ();
+  auto child = create_audio_bus_track ();
+
+  // Layout: [outer, inner, child]
+  track_collection->add_track (outer);
+  track_collection->add_track (inner);
+  track_collection->add_track (child);
+
+  track_collection->set_folder_parent (inner.id (), outer.id ());
+  track_collection->set_folder_parent (child.id (), inner.id ());
+  track_collection->set_track_expanded (outer.id (), true);
+  track_collection->set_track_expanded (inner.id (), true);
+
+  // Child at index 2 should be enclosed by inner (not outer)
+  auto enclosing = track_collection->get_enclosing_folder (2);
+  ASSERT_TRUE (enclosing.has_value ());
+  EXPECT_EQ (enclosing.value (), inner.id ());
+}
+
+// Test get_enclosing_folder when no folder exists.
+TEST_F (TrackCollectionTest, GetEnclosingFolderNoFolder)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+
+  EXPECT_FALSE (track_collection->get_enclosing_folder (1).has_value ());
+  EXPECT_FALSE (track_collection->get_enclosing_folder (0).has_value ());
+}
+
+// Test get_enclosing_folder with a folder containing a direct child followed
+// by a subfolder with its own children. The outer folder's child range should
+// cover only its direct children; grandchildren are enclosed by the inner folder.
+TEST_F (TrackCollectionTest, GetEnclosingFolderWithNestedSubfolder)
+{
+  auto outer = create_folder_track ();
+  auto direct_child = create_audio_bus_track ();
+  auto inner = create_folder_track ();
+  auto grandchild1 = create_audio_bus_track ();
+  auto grandchild2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [outer, direct_child, inner, grandchild1, grandchild2, other]
+  track_collection->add_track (outer);
+  track_collection->add_track (direct_child);
+  track_collection->add_track (inner);
+  track_collection->add_track (grandchild1);
+  track_collection->add_track (grandchild2);
+  track_collection->add_track (other);
+
+  track_collection->set_folder_parent (direct_child.id (), outer.id ());
+  track_collection->set_folder_parent (inner.id (), outer.id ());
+  track_collection->set_folder_parent (grandchild1.id (), inner.id ());
+  track_collection->set_folder_parent (grandchild2.id (), inner.id ());
+  track_collection->set_track_expanded (outer.id (), true);
+  track_collection->set_track_expanded (inner.id (), true);
+
+  // grandchild1 at index 3 is inside inner.
+  auto enclosing3 = track_collection->get_enclosing_folder (3);
+  ASSERT_TRUE (enclosing3.has_value ()) << "index 3 should be enclosed by inner";
+  EXPECT_EQ (enclosing3.value (), inner.id ());
+
+  // grandchild2 at index 4 is inside inner.
+  auto enclosing4 = track_collection->get_enclosing_folder (4);
+  ASSERT_TRUE (enclosing4.has_value ()) << "index 4 should be enclosed by inner";
+  EXPECT_EQ (enclosing4.value (), inner.id ());
+
+  // inner itself at index 2 is enclosed by outer.
+  auto enclosing2 = track_collection->get_enclosing_folder (2);
+  ASSERT_TRUE (enclosing2.has_value ()) << "index 2 should be enclosed by outer";
+  EXPECT_EQ (enclosing2.value (), outer.id ());
+
+  // direct_child at index 1 is enclosed by outer.
+  auto enclosing1 = track_collection->get_enclosing_folder (1);
+  ASSERT_TRUE (enclosing1.has_value ());
+  EXPECT_EQ (enclosing1.value (), outer.id ());
+
+  // other at index 5 should NOT be enclosed by any folder.
+  EXPECT_FALSE (track_collection->get_enclosing_folder (5).has_value ());
+}
+
+// Test reattach_track at boundary positions (0, size, and beyond).
+TEST_F (TrackCollectionTest, ReattachTrackBoundaryPositions)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+
+  // Start with one track
+  track_collection->add_track (track1);
+  ASSERT_EQ (track_collection->rowCount (), 1);
+
+  // Detach and reattach at position 0
+  track_collection->detach_track (track1.id ());
+  EXPECT_EQ (track_collection->rowCount (), 0);
+  track_collection->reattach_track (track1, 0);
+  EXPECT_EQ (track_collection->rowCount (), 1);
+  EXPECT_EQ (track_collection->get_track_index (track1.id ()), 0u);
+
+  // Add second track, detach first, reattach at end (position == size)
+  track_collection->add_track (track2);
+  track_collection->detach_track (track1.id ());
+  EXPECT_EQ (track_collection->rowCount (), 1);
+  track_collection->reattach_track (
+    track1, 1); // position == size (valid append)
+  EXPECT_EQ (track_collection->get_track_index (track1.id ()), 1u);
+
+  // Detach and reattach at position beyond size - should clamp to end
+  track_collection->detach_track (track1.id ());
+  EXPECT_EQ (track_collection->rowCount (), 1);
+  track_collection->reattach_track (track1, 99); // way past end
+  EXPECT_EQ (track_collection->get_track_index (track1.id ()), 1u)
+    << "reattach_track should clamp out-of-range positions";
+
+  // Negative position should clamp to 0
+  track_collection->detach_track (track2.id ());
+  track_collection->reattach_track (track2, -5);
+  EXPECT_EQ (track_collection->get_track_index (track2.id ()), 0u)
+    << "reattach_track should clamp negative positions to 0";
+}
+
+// Test get_child_count and get_last_child_index include all descendants
+// (not just direct children) for nested folders.
+TEST_F (TrackCollectionTest, ChildCountIncludesNestedDescendants)
+{
+  auto folderA = create_folder_track ();
+  auto folderB = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folderA, folderB, child1, child2, other]
+  track_collection->add_track (folderA);
+  track_collection->add_track (folderB);
+  track_collection->add_track (child1);
+  track_collection->add_track (child2);
+  track_collection->add_track (other);
+
+  // folderB is child of folderA
+  track_collection->set_folder_parent (folderB.id (), folderA.id ());
+  // child1, child2 are children of folderB (grandchildren of folderA)
+  track_collection->set_folder_parent (child1.id (), folderB.id ());
+  track_collection->set_folder_parent (child2.id (), folderB.id ());
+
+  // folderA has 3 descendants: folderB, child1, child2
+  EXPECT_EQ (track_collection->get_child_count (folderA.id ()), 3)
+    << "get_child_count should count all descendants, not just direct children";
+
+  // get_last_child_index should point to child2 (index 3), not folderB (index 1)
+  EXPECT_EQ (track_collection->get_last_child_index (folderA.id ()), 3)
+    << "get_last_child_index should include all descendants";
+}
+
+// Test that set_folder_parent places a new child after all descendants when the
+// folder has nested subfolders.
+TEST_F (TrackCollectionTest, SetFolderParentPlacementWithNestedFolders)
+{
+  auto folderA = create_folder_track ();
+  auto folderB = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto newChild = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  // Layout: [folderA, folderB, child1, newChild, other]
+  track_collection->add_track (folderA);
+  track_collection->add_track (folderB);
+  track_collection->add_track (child1);
+  track_collection->add_track (newChild);
+  track_collection->add_track (other);
+
+  track_collection->set_folder_parent (folderB.id (), folderA.id ());
+  track_collection->set_folder_parent (child1.id (), folderB.id ());
+  track_collection->set_track_expanded (folderA.id (), true);
+  track_collection->set_track_expanded (folderB.id (), true);
+
+  // Add newChild to folderA. With the bug, get_last_child_index returns 1
+  // (just folderB), so newChild would move to index 2 (between folderB and
+  // child1). With the fix, get_last_child_index returns 2 (including child1),
+  // so newChild stays at index 3 (right after all descendants).
+  track_collection->set_folder_parent (newChild.id (), folderA.id (), true);
+
+  // newChild should be directly child of folderA
+  ASSERT_TRUE (
+    track_collection->get_folder_parent (newChild.id ()).has_value ());
+  EXPECT_EQ (
+    track_collection->get_folder_parent (newChild.id ()).value (),
+    folderA.id ());
+
+  // newChild should be at index 3 (after folderB and child1, before other)
+  EXPECT_EQ (track_collection->get_track_index (newChild.id ()), 3)
+    << "newChild should be placed after all of folderA's descendants";
+}
+
+// Test get_all_descendants returns direct and nested children in list order.
+TEST_F (TrackCollectionTest, GetAllDescendantsNested)
+{
+  auto folderA = create_folder_track ();
+  auto folderB = create_folder_track ();
+  auto child1 = create_audio_bus_track ();
+  auto child2 = create_audio_bus_track ();
+  auto other = create_audio_bus_track ();
+
+  track_collection->add_track (folderA);
+  track_collection->add_track (folderB);
+  track_collection->add_track (child1);
+  track_collection->add_track (child2);
+  track_collection->add_track (other);
+
+  track_collection->set_folder_parent (folderB.id (), folderA.id ());
+  track_collection->set_folder_parent (child1.id (), folderB.id ());
+  track_collection->set_folder_parent (child2.id (), folderB.id ());
+  track_collection->set_track_expanded (folderA.id (), true);
+  track_collection->set_track_expanded (folderB.id (), true);
+
+  auto descendants = track_collection->get_all_descendants (folderA.id ());
+  ASSERT_EQ (descendants.size (), 3u);
+  EXPECT_EQ (descendants[0], folderB.id ());
+  EXPECT_EQ (descendants[1], child1.id ());
+  EXPECT_EQ (descendants[2], child2.id ());
+
+  // folderB's descendants are just its direct children
+  auto b_descendants = track_collection->get_all_descendants (folderB.id ());
+  ASSERT_EQ (b_descendants.size (), 2u);
+  EXPECT_EQ (b_descendants[0], child1.id ());
+  EXPECT_EQ (b_descendants[1], child2.id ());
+
+  // Non-foldable track has no descendants
+  EXPECT_TRUE (track_collection->get_all_descendants (child1.id ()).empty ());
 }
 
 } // namespace zrythm::structure::tracks
