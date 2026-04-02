@@ -203,9 +203,8 @@ TEST_F (TrackCollectionTest, MoveTrackBeyondLastPosition)
 
   // Initial order: track1, track2, track3 (indices 0, 1, 2)
   // Try to move track1 to position 3 (beyond last valid index 2)
-  // This tests whether move_track handles out-of-bounds gracefully
-  // Current implementation will crash/assert - this test documents that
-  EXPECT_DEATH (track_collection->move_track (track1.id (), 3), "");
+  EXPECT_THROW (
+    track_collection->move_track (track1.id (), 3), std::out_of_range);
 }
 
 TEST_F (TrackCollectionTest, FoldableTrackDetection)

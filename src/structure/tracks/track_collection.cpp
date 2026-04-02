@@ -265,8 +265,8 @@ TrackCollection::reattach_track (const TrackUuidReference &track_id, int pos)
 void
 TrackCollection::move_track (const Track::Uuid &track_id, int pos)
 {
-  assert (pos >= 0);
-  assert (pos < static_cast<int> (tracks_.size ()));
+  if (pos < 0 || pos >= static_cast<int> (tracks_.size ()))
+    throw std::out_of_range ("move_track position out of range");
 
   auto track_it = std::ranges::find (tracks_, track_id, &TrackUuidReference::id);
   if (track_it == tracks_.end ())

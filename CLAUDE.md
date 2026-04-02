@@ -72,7 +72,9 @@ Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and us
 # CI/CD
 # Note: use 'trace' instead of 'view' - 'view' requires a TTY
 glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get job logs (use | tail -N for large outputs)
-glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List pipeline jobs
+glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List recent pipelines
+glab ci get -b <branch> -R https://gitlab.zrythm.org/zrythm/zrythm # Get pipeline details (SHA, jobs) for a branch
+glab ci get -p <pipeline-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get pipeline details by ID
 
 # Issues
 glab issue view <id> -R https://gitlab.zrythm.org/zrythm/zrythm    # View issue details
@@ -325,4 +327,4 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-01-23*
+*This document is maintained by the Zrythm development team. Last updated: 2026-04-02*
