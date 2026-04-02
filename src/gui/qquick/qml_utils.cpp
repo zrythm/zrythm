@@ -333,4 +333,35 @@ QmlUtils::rectanglesIntersect (QRect a, QRect b)
 {
   return a.intersects (b);
 }
+
+QItemSelection
+QmlUtils::createRowSelection (
+  QAbstractItemModel * model,
+  const QList<int>    &rows,
+  int                  column)
+{
+  QItemSelection selection;
+  for (int row : rows)
+    {
+      const auto index = model->index (row, column);
+      if (index.isValid ())
+        {
+          selection.select (index, index); // Selects a single item range
+        }
+    }
+  return selection;
+}
+
+QItemSelection
+QmlUtils::createRangeSelection (
+  QAbstractItemModel * model,
+  int                  startRow,
+  int                  endRow,
+  int                  startCol,
+  int                  endCol)
+{
+  const auto topLeft = model->index (startRow, startCol);
+  const auto bottomRight = model->index (endRow, endCol);
+  return { topLeft, bottomRight };
+}
 }

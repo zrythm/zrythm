@@ -5,6 +5,7 @@
 
 #include "gui/qquick/waveform_channel.h"
 
+#include <QItemSelectionModel>
 #include <QObject>
 #include <QVector>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -48,5 +49,23 @@ public:
 
   Q_INVOKABLE static bool rectanglesIntersect (QRectF a, QRectF b);
   Q_INVOKABLE static bool rectanglesIntersect (QRect a, QRect b);
+
+  /**
+   * @brief Helper to create a selection from a list of rows in a single column.
+   */
+  Q_INVOKABLE static QItemSelection createRowSelection (
+    QAbstractItemModel * model,
+    const QList<int>    &rows,
+    int                  column = 0);
+
+  /**
+   * @brief Helper to create a contiguous block/range selection.
+   */
+  Q_INVOKABLE static QItemSelection createRangeSelection (
+    QAbstractItemModel * model,
+    int                  startRow,
+    int                  endRow,
+    int                  startCol = 0,
+    int                  endCol = 0);
 };
 }

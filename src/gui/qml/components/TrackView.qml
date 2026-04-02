@@ -78,6 +78,7 @@ Control {
 
       onTapped: (eventPoint, button) => {
         root.trackSelectionModel.select(root.trackModelIndex, ItemSelectionModel.Toggle);
+        root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.NoUpdate);
       }
     }
 
@@ -85,11 +86,28 @@ Control {
       acceptedModifiers: Qt.ShiftModifier
 
       onTapped: (eventPoint, button) => {
-        if (root.trackSelectionModel.currentIndex.valid) {
-          // Range selection (TODO)
-          // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
-          // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
-          console.log("Range selection unimplemented");
+        const currentIdx = root.trackSelectionModel.currentIndex;
+        if (currentIdx && currentIdx.valid) {
+          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
+          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
+          root.trackSelectionModel.select(sel, ItemSelectionModel.ClearAndSelect);
+        } else {
+          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+        }
+      }
+    }
+
+    TapHandler {
+      acceptedModifiers: Qt.ControlModifier | Qt.ShiftModifier
+
+      onTapped: (eventPoint, button) => {
+        const currentIdx = root.trackSelectionModel.currentIndex;
+        if (currentIdx && currentIdx.valid) {
+          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
+          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
+          root.trackSelectionModel.select(sel, ItemSelectionModel.Select);
         } else {
           root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
         }
