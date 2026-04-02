@@ -804,4 +804,69 @@ TEST_F (MoveTracksCommandTest, MoveFolderWithChildrenOutOfNestedFolder)
     collection_->get_folder_parent (child2.id ()).value (), folderB.id ());
 }
 
+// Test that tracksMoved signal is emitted with correct row indices after
+// redo/undo.
+TEST_F (MoveTracksCommandTest, TracksMovedSignalEmitted)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  collection_->add_track (track1);
+  collection_->add_track (track2);
+  collection_->add_track (track3);
+
+  QList<int> received_rows;
+  QObject::connect (
+    collection_.get (), &structure::tracks::TrackCollection::tracksMoved,
+    collection_.get (), [&] (const QList<int> &rows) { received_rows = rows; });
+
+  // Move track3 from position 2 to position 0
+  std::vector<structure::tracks::TrackUuidReference> tracks{ track3 };
+  MoveTracksCommand cmd (*collection_, tracks, 0);
+  cmd.redo ();
+
+  // track3 is now at position 0
+  ASSERT_EQ (received_rows.size (), 1);
+  EXPECT_EQ (received_rows[0], 0);
+
+  cmd.undo ();
+  // track3 is back at position 2
+  ASSERT_EQ (received_rows.size (), 1);
+  EXPECT_EQ (received_rows[0], 2);
+}
+
+// Test that tracksMoved signal reports correct row indices for multiple tracks.
+TEST_F (MoveTracksCommandTest, TracksMovedSignalMultipleTracks)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+  auto track4 = create_audio_bus_track ();
+
+  collection_->add_track (track1);
+  collection_->add_track (track2);
+  collection_->add_track (track3);
+  collection_->add_track (track4);
+
+  QList<int> received_rows;
+  QObject::connect (
+    collection_.get (), &structure::tracks::TrackCollection::tracksMoved,
+    collection_.get (), [&] (const QList<int> &rows) { received_rows = rows; });
+
+  // Move track1(pos 0) and track3(pos 2) to position 3
+  std::vector<structure::tracks::TrackUuidReference> tracks{ track1, track3 };
+  MoveTracksCommand cmd (*collection_, tracks, 3);
+  cmd.redo ();
+
+  // Tracing redo():
+  //   current_positions = [0, 2], above_count = 2, insert_pos = 3-2 = 1
+  //   detach t3(pos 2): [t1, t2, t4] → detach t1(pos 0): [t2, t4]
+  //   reattach t1 at 1: [t2, t1, t4] → reattach t3 at 2: [t2, t1, t3, t4]
+  // Result: track2(0), track1(1), track3(2), track4(3)
+  ASSERT_EQ (received_rows.size (), 2);
+  EXPECT_EQ (received_rows[0], 1); // track1
+  EXPECT_EQ (received_rows[1], 2); // track3
+}
+
 } // namespace zrythm::commands

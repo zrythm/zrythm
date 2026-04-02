@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQml.Models
 import Zrythm
 import ZrythmStyle
 
@@ -28,6 +29,16 @@ ColumnLayout {
 
     collection: root.project.tracklist.collection
     undoStack: root.session.undoStack
+  }
+
+  Connections {
+    function onTracksMoved(rows) {
+      root.trackSelectionModel.clearSelection();
+      for (const row of rows)
+        root.trackSelectionModel.select(root.project.tracklist.collection.index(row, 0), ItemSelectionModel.Select);
+    }
+
+    target: root.project.tracklist.collection
   }
 
   StackLayout {

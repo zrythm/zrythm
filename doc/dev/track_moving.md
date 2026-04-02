@@ -50,7 +50,8 @@ sequenceDiagram
     Cmd->>TC: Phase 1: detach all (reverse order)
     Cmd->>TC: Phase 2: reattach at target (forward order)
     Cmd->>TC: Phase 3: update folder parents
-    TLV->>TLV: Re-select moved tracks at new positions
+    Cmd->>TC: notify_tracks_moved(uuids)
+    TC-->>QML: tracksMoved(rows) → update selection
 ```
 
 ### Target Position
@@ -145,3 +146,11 @@ parameter (default `false`):
   positioning (used by the command, which positions via detach/reattach)
 - **`true`**: Updates the map *and* auto-moves the track within the folder's
   child range (used by higher-level callers)
+
+## Move Notification
+
+`MoveTracksCommand` calls `collection.notify_tracks_moved(uuids)` at the end of
+both `redo()` and `undo()`. This looks up each UUID's current row index and
+emits `tracksMoved(QList<int>)` with ascending row indices. A handler in
+`CenterDock.qml` listens to this signal and updates the shared
+`TrackSelectionModel`.

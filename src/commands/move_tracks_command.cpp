@@ -107,6 +107,8 @@ MoveTracksCommand::undo ()
       collection_.set_track_expanded (
         target_folder_.value (), target_folder_was_expanded_);
     }
+
+  collection_.notify_tracks_moved (moved_uuids_);
 }
 
 void
@@ -184,6 +186,8 @@ MoveTracksCommand::redo ()
             }
         }
     }
+
+  collection_.notify_tracks_moved (moved_uuids_);
 }
 
 int

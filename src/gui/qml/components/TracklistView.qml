@@ -90,26 +90,6 @@ ListView {
         if (targetPos >= 0) {
           const trackList = tracksToMove.map(e => e.track);
           root.trackCollectionOperator.moveTracks(trackList, targetPos, root.dropTargetFolder);
-
-          // Re-select the moved tracks at their new positions (remove+insert
-          // invalidates model indexes).
-          const collection = root.tracklist.collection;
-          let first = true;
-          for (const track of trackList) {
-            for (let row = 0; row < collection.rowCount(); row++) {
-              const idx = collection.index(row, 0);
-              const t = idx.data(TrackCollection.TrackPtrRole);
-              if (t === track) {
-                if (first) {
-                  root.trackSelectionModel.selectSingleTrack(idx);
-                  first = false;
-                } else {
-                  root.trackSelectionModel.select(idx, ItemSelectionModel.Select);
-                }
-                break;
-              }
-            }
-          }
         }
       }
       root.draggedTrack = null;

@@ -889,4 +889,94 @@ TEST_F (TrackCollectionTest, GetAllDescendantsNested)
   EXPECT_TRUE (track_collection->get_all_descendants (child1.id ()).empty ());
 }
 
+TEST_F (TrackCollectionTest, NotifyTracksMoved)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  // Initial order: track1(0), track2(1), track3(2)
+  QList<int> received_rows;
+  QObject::connect (
+    track_collection.get (), &TrackCollection::tracksMoved,
+    track_collection.get (),
+    [&] (const QList<int> &rows) { received_rows = rows; });
+
+  std::unordered_set<Track::Uuid> moved{ track1.id (), track3.id () };
+  track_collection->notify_tracks_moved (moved);
+
+  ASSERT_EQ (received_rows.size (), 2);
+  EXPECT_EQ (received_rows[0], 0);
+  EXPECT_EQ (received_rows[1], 2);
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedAfterReorder)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  // Move track3 to position 0: track3(0), track1(1), track2(2)
+  track_collection->move_track (track3.id (), 0);
+
+  QList<int> received_rows;
+  QObject::connect (
+    track_collection.get (), &TrackCollection::tracksMoved,
+    track_collection.get (),
+    [&] (const QList<int> &rows) { received_rows = rows; });
+
+  std::unordered_set<Track::Uuid> moved{ track1.id (), track3.id () };
+  track_collection->notify_tracks_moved (moved);
+
+  // After reorder: track3 is at 0, track1 is at 1
+  ASSERT_EQ (received_rows.size (), 2);
+  // Order of rows follows collection order (ascending), not UUID set order
+  EXPECT_EQ (received_rows[0], 0); // track3
+  EXPECT_EQ (received_rows[1], 1); // track1
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedSkipsMissing)
+{
+  auto track1 = create_audio_bus_track ();
+  track_collection->add_track (track1);
+
+  QList<int> received_rows;
+  QObject::connect (
+    track_collection.get (), &TrackCollection::tracksMoved,
+    track_collection.get (),
+    [&] (const QList<int> &rows) { received_rows = rows; });
+
+  // Create a UUID that's not in the collection
+  auto                            unowned = create_audio_bus_track ();
+  std::unordered_set<Track::Uuid> moved{ track1.id (), unowned.id () };
+  track_collection->notify_tracks_moved (moved);
+
+  ASSERT_EQ (received_rows.size (), 1);
+  EXPECT_EQ (received_rows[0], 0);
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedEmptySetEmitsNoSignal)
+{
+  auto track1 = create_audio_bus_track ();
+  track_collection->add_track (track1);
+
+  bool signal_fired = false;
+  QObject::connect (
+    track_collection.get (), &TrackCollection::tracksMoved,
+    track_collection.get (), [&] (const QList<int> &) { signal_fired = true; });
+
+  std::unordered_set<Track::Uuid> empty;
+  track_collection->notify_tracks_moved (empty);
+
+  EXPECT_FALSE (signal_fired);
+}
+
 } // namespace zrythm::structure::tracks

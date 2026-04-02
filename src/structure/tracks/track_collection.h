@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <concepts>
+
 #include "structure/tracks/track_span.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -70,6 +72,14 @@ public:
   Q_SIGNAL void numMutedTracksChanged ();
   int           numListenedTracks () const;
   Q_SIGNAL void numListenedTracksChanged ();
+
+  /**
+   * @brief Emitted after tracks are moved within the collection.
+   *
+   * @param rows Source model row indices of the moved tracks, in ascending
+   * order.
+   */
+  Q_SIGNAL void tracksMoved (const QList<int> &rows);
 
   // ========================================================================
   // Track Management
@@ -143,6 +153,34 @@ public:
    * track while preserving its original folder state.
    */
   void reattach_track (const TrackUuidReference &track_id, int pos);
+
+  /**
+   * @brief Notify that the given tracks have been moved.
+   *
+   * Looks up current row indices for each UUID and emits tracksMoved().
+   * UUIDs not found in the collection are silently skipped.
+   *
+   * @tparam Container A container of Track::Uuid with a contains() method.
+   */
+  template <typename Container>
+    requires requires (const Container &c, const Track::Uuid &uuid) {
+      { c.contains (uuid) } -> std::convertible_to<bool>;
+    }
+  void notify_tracks_moved (const Container &uuids)
+  {
+    QList<int> rows;
+    for (const auto &ref : tracks_)
+      {
+        if (uuids.contains (ref.id ()))
+          {
+            rows.push_back (static_cast<int> (get_track_index (ref.id ())));
+          }
+      }
+    if (!rows.isEmpty ())
+      {
+        Q_EMIT tracksMoved (rows);
+      }
+  }
 
   /**
    * @brief Move a track from one position to another.
