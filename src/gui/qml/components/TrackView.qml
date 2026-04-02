@@ -53,7 +53,7 @@ Control {
         c = Style.getColorBlendedTowardsContrast(c);
 
       if (selectionTracker.isSelected || bgTapHandler.pressed)
-        c = Style.getColorBlendedTowardsContrast(c);
+        c = Qt.alpha(root.palette.highlight, 0.15);
 
       return c;
     }
