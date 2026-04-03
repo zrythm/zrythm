@@ -101,6 +101,15 @@ public:
     structure::project::Project        &project,
     structure::project::ProjectUiState &ui_state,
     undo::UndoStack                    &undo_stack);
+
+private:
+  /**
+   * @brief Waits for all pending plugins to finish instantiation.
+   *
+   * Spins the event loop until no plugins have InstantiationStatus::Pending.
+   */
+  static void
+  wait_for_plugin_instantiations (const structure::project::Project &project);
 };
 
 }

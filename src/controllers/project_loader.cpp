@@ -4,11 +4,13 @@
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
+#include "plugins/plugin.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
 #include "utils/io_utils.h"
 
+#include <QCoreApplication>
 #include <QtConcurrentRun>
 
 #include <nlohmann/json.hpp>
@@ -118,6 +120,31 @@ ProjectLoader::deserialize (
 
   // Load audio files for each FileAudioSource
   project.pool_->init_loaded ();
+
+  // Wait for all asynchronously-instantiating plugins to finish.
+  // JUCE (VST3/AU) plugins instantiate asynchronously — deserialization
+  // triggers the init but returns before it completes. If we don't wait,
+  // the engine can start processing before buffers are allocated.
+  wait_for_plugin_instantiations (project);
 }
 
+void
+ProjectLoader::wait_for_plugin_instantiations (
+  const structure::project::Project &project)
+{
+  const auto &registry = project.get_plugin_registry ();
+
+  while (std::ranges::any_of (
+    registry.get_hash_map () | std::views::values, [] (const auto &plugin_var) {
+      return std::visit (
+        [&] (auto &&plugin_ptr) {
+          return plugin_ptr->instantiationStatus ()
+                 == plugins::Plugin::InstantiationStatus::Pending;
+        },
+        plugin_var);
+    }))
+    {
+      QCoreApplication::processEvents ();
+    }
+}
 }
