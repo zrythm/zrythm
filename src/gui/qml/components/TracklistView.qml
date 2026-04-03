@@ -108,7 +108,7 @@ ListView {
     filters: [
       FunctionFilter {
         function filter(data: TrackRoleData): bool {
-          return root.tracklist.isTrackPinned(data.track) === root.pinned;
+          return root.tracklist.shouldBeVisible(data.track) && root.tracklist.isTrackPinned(data.track) === root.pinned;
         }
       }
     ]

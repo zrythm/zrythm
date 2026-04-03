@@ -325,15 +325,17 @@ Tracklist::should_be_visible (const Track::Uuid &track_id) const
   if (!track->visible ())
     return false;
 
+  // Walk the folder parent chain upward. If any ancestor folder is
+  // collapsed, this track should not be visible.
+  auto current_id = track_id;
+  while (auto parent_opt = collection ()->get_folder_parent (current_id))
+    {
+      if (!collection ()->get_track_expanded (*parent_opt))
+        return false;
+      current_id = *parent_opt;
+    }
+
   return true;
-// TODO
-#if 0
-  std::vector<FoldableTrack *> parents;
-  add_folder_parents (track_id, parents, false);
-  return std::ranges::all_of (parents, [] (const auto &parent) {
-    return parent->visible_ && !parent->folded_;
-  });
-#endif
 }
 
 // TODO

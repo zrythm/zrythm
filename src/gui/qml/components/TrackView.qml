@@ -190,20 +190,49 @@ Control {
       Rectangle {
         id: trackColor
 
+        readonly property int barWidth: 14
+        readonly property int cornerRadius: 2
+
         Layout.fillHeight: true
-        Layout.preferredWidth: 6
+        Layout.preferredWidth: barWidth
         color: root.track.color
+        topLeftRadius: cornerRadius
 
         Button {
-          checkable: true
-          checked: root.expanded
-          text: root.expanded ? "−" : "+"
-          visible: root.foldable
+          id: expandButton
 
-          onToggled: root.tracklist.collection.setTrackExpanded(root.track, !root.expanded)
+          height: trackColor.barWidth
+          padding: 0
+          visible: root.foldable && root.hovered
+          width: trackColor.barWidth
+
+          background: Rectangle {
+            color: expandButton.hovered ? Qt.alpha(palette.button, 0.25) : Qt.alpha(palette.button, 0.1)
+            radius: trackColor.cornerRadius
+          }
+          contentItem: IconImage {
+            id: expandArrow
+
+            readonly property int iconSize: trackColor.barWidth - 2
+
+            color: palette.brightText
+            height: iconSize
+            rotation: root.expanded ? 0 : -90
+            source: ResourceManager.getIconUrl("zrythm-dark", "adw-expander-arrow-symbolic.svg")
+            sourceSize.height: iconSize
+            sourceSize.width: iconSize
+            width: iconSize
+
+            Behavior on rotation {
+              animation: Style.propertyAnimation
+            }
+          }
+
+          onClicked: root.tracklist.collection.setTrackExpanded(root.track, !root.expanded)
 
           anchors {
             bottom: parent.bottom
+            horizontalCenter: parent.horizontalCenter
           }
         }
       }

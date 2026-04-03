@@ -335,6 +335,17 @@ TrackCollection::set_track_expanded (const Track::Uuid &track_id, bool expanded)
   QVector<int> roles;
   roles << TrackExpandedRole;
   Q_EMIT dataChanged (model_index, model_index, roles);
+
+  // Also emit dataChanged for all descendants so proxy filters re-evaluate.
+  // This ensures child tracks appear/disappear when a folder is
+  // expanded/collapsed.
+  const auto descendants = get_all_descendants (track_id);
+  for (const auto &desc_id : descendants)
+    {
+      const auto  desc_idx = static_cast<int> (get_track_index (desc_id));
+      QModelIndex desc_mi = createIndex (desc_idx, 0);
+      Q_EMIT dataChanged (desc_mi, desc_mi, roles);
+    }
 }
 
 bool
