@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/processor_base.h"
@@ -117,6 +117,8 @@ ProcessorBase::process_block (
   const dsp::ITransport &transport,
   const dsp::TempoMap   &tempo_map) noexcept
 {
+  assert (processing_caches_ != nullptr);
+
   // correct invalid time info
   if (
     time_nfo.local_offset_ + time_nfo.nframes_
