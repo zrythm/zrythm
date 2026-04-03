@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include <cassert>
+#include <atomic>
+#include <thread>
 
 #include <juce_wrapper.h>
 
@@ -12,11 +13,7 @@ namespace zrythm::test_helpers
 class MockAudioIODevice : public juce::AudioIODevice
 {
 public:
-  MockAudioIODevice ()
-      : AudioIODevice ("Mock Audio Device", "Mock Audio"),
-        sample_rate_ (44100.0), buffer_size_ (512), is_running_ (false)
-  {
-  }
+  MockAudioIODevice ();
 
   juce::StringArray getOutputChannelNames () override
   {
@@ -42,36 +39,15 @@ public:
     const juce::BigInteger &inputChannels,
     const juce::BigInteger &outputChannels,
     double                  requestedSampleRate,
-    int                     requestedBufferSize) override
-  {
-    sample_rate_ = requestedSampleRate;
-    buffer_size_ = requestedBufferSize;
-    return {};
-  }
+    int                     requestedBufferSize) override;
 
-  void close () override { is_running_ = false; }
+  void close () override { stop (); }
 
   bool isOpen () override { return true; }
 
-  void start (juce::AudioIODeviceCallback * callback) override
-  {
-    if (callback != nullptr)
-      {
-        is_running_ = true;
-        this->callback_ = callback;
-        callback->audioDeviceAboutToStart (this);
-      }
-  }
+  void start (juce::AudioIODeviceCallback * callback) override;
 
-  void stop () override
-  {
-    if (callback_ != nullptr)
-      {
-        callback_->audioDeviceStopped ();
-        callback_ = nullptr;
-      }
-    is_running_ = false;
-  }
+  void stop () override;
 
   bool isPlaying () override { return is_running_; }
 
@@ -81,30 +57,22 @@ public:
   double getCurrentSampleRate () override { return sample_rate_; }
   int    getCurrentBitDepth () override { return 16; }
 
-  juce::BigInteger getActiveOutputChannels () const override
-  {
-    juce::BigInteger channels;
-    channels.setRange (0, 2, true);
-    return channels;
-  }
-
-  juce::BigInteger getActiveInputChannels () const override
-  {
-    juce::BigInteger channels;
-    channels.setRange (0, 2, true);
-    return channels;
-  }
+  juce::BigInteger getActiveOutputChannels () const override;
+  juce::BigInteger getActiveInputChannels () const override;
 
   int getOutputLatencyInSamples () override { return 0; }
   int getInputLatencyInSamples () override { return 0; }
 
   int getDefaultBufferSize () override { return 256; }
 
+  ~MockAudioIODevice () override;
+
 private:
   double                        sample_rate_;
   int                           buffer_size_;
-  bool                          is_running_;
+  std::atomic<bool>             is_running_{ false };
   juce::AudioIODeviceCallback * callback_ = nullptr;
+  std::jthread                  callback_thread_;
 };
 
 class MockAudioIODeviceType : public juce::AudioIODeviceType
@@ -134,31 +102,9 @@ public:
 
   juce::AudioIODevice * createDevice (
     const juce::String &outputDeviceName,
-    const juce::String &inputDeviceName) override
-  {
-    return new MockAudioIODevice ();
-  }
+    const juce::String &inputDeviceName) override;
 };
 
-static inline std::unique_ptr<juce::AudioDeviceManager>
-create_audio_device_manager_with_dummy_device ()
-{
-  auto audio_device_manager = std::make_unique<juce::AudioDeviceManager> ();
-  audio_device_manager->addAudioDeviceType (
-    std::make_unique<MockAudioIODeviceType> ());
-
-  // Initialize with a dummy audio device setup for testing
-  juce::AudioDeviceManager::AudioDeviceSetup setup;
-  setup.sampleRate = 48000.0;
-  setup.bufferSize = 256;
-  setup.inputDeviceName = "Mock Audio Device";
-  setup.outputDeviceName = "Mock Audio Device";
-  const auto error = audio_device_manager->setAudioDeviceSetup (setup, true);
-  assert (error.isEmpty ());
-  audio_device_manager->initialise (0, 2, nullptr, true, {}, nullptr);
-  // Need to call this again for the setup to take effect...
-  // https://forum.juce.com/t/setaudiodevicesetup/3275
-  audio_device_manager->setAudioDeviceSetup (setup, true);
-  return audio_device_manager;
-}
+std::unique_ptr<juce::AudioDeviceManager>
+create_audio_device_manager_with_dummy_device ();
 }

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 if(NOT ZRYTHM_TESTS)
@@ -38,6 +38,8 @@ target_sources(zrythm_test_helpers_lib
       helpers/qt_helpers.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
+  PRIVATE
+    helpers/mock_audio_io_device.cpp
 )
 target_link_libraries(zrythm_test_helpers_lib
   PUBLIC
