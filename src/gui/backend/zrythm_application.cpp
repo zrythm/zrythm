@@ -26,8 +26,19 @@
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
 
+#ifdef __linux__
+// see the following:
+// - juce_audio_plugin_client/detail/juce_LinuxMessageThread.h
+// - juce_events/native/juce_Messaging_linux.cpp
+namespace juce::detail
+{
+bool
+dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
+}
+#endif
+
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
-    : QApplication (argc, argv), qt_thread_id_ (current_thread_id.get ()),
+    : QApplication (argc, argv),
       control_room_ (
         utils::make_qobject_unique<engine::session::ControlRoom> (
           [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
@@ -91,6 +102,19 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // Initialize JUCE
   juce_message_handler_initializer_ =
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
+
+#ifdef __linux__
+  // Dispatch JUCE messages on the main thread via a timer instead of from
+  // notify(). This avoids dispatching JUCE messages multiple times on the same
+  // frame which
+  // can cause crashes.
+  juce_dispatch_timer_ = utils::make_qobject_unique<QTimer> (this);
+  QObject::connect (juce_dispatch_timer_.get (), &QTimer::timeout, this, [] () {
+    // We need to do this on GNU/Linux otherwise plugin UIs appear blank.
+    juce::detail::dispatchNextMessageOnSystemQueue (true);
+  });
+  juce_dispatch_timer_->start (0);
+#endif
 
   alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
   theme_manager_ = utils::make_qobject_unique<ThemeManager> (this);
@@ -503,39 +527,6 @@ ZrythmApplication::launch_engine_process ()
       z_warning (
         "Failed to start engine process: {}", engine_process_->errorString ());
     }
-}
-
-#ifdef __linux__
-// see the following:
-// - juce_audio_plugin_client/detail/juce_LinuxMessageThread.h
-// - juce_events/native/juce_Messaging_linux.cpp
-namespace juce::detail
-{
-bool
-dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
-}
-#endif
-
-bool
-ZrythmApplication::notify (QObject * receiver, QEvent * event)
-{
-#ifdef __linux__
-  if (juce_message_handler_initializer_)
-    {
-      // Note: This notify() method may be called from the QML Debug server
-      // thread as well as the main thread (thread 0), which causes issues with
-      // the JUCE dispatcher, which expects to only be called in the main
-      // thread. Thus, we only dispatch JUCE messages if this is the main thread
-      if (current_thread_id.get () == qt_thread_id_)
-        {
-          // We need to do this on GNU/Linux otherwise plugin UIs appear blank
-          juce::detail::dispatchNextMessageOnSystemQueue (true);
-        }
-    }
-#endif
-
-  // Process Qt event
-  return QApplication::notify (receiver, event);
 }
 
 void

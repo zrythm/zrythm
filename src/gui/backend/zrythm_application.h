@@ -16,7 +16,6 @@
 #include "utils/app_settings.h"
 #include "utils/directory_manager.h"
 #include "utils/qt.h"
-#include "utils/rt_thread_id.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -114,8 +113,6 @@ public:
 
   QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
 
-  bool notify (QObject * receiver, QEvent * event) override;
-
   std::shared_ptr<gui::backend::DeviceManager> get_device_manager () const
   {
     return device_manager_;
@@ -140,7 +137,6 @@ private Q_SLOTS:
   void onAboutToQuit ();
 
 public:
-  RTThreadId::IdType qt_thread_id_;
   QCommandLineParser cmd_line_parser_;
 
 private:
@@ -173,6 +169,15 @@ private:
    * @brief Engine process handle.
    */
   QProcess * engine_process_ = nullptr;
+
+  /**
+   * @brief Timer for dispatching JUCE messages on the main thread.
+   *
+   * We use a QTimer with 0ms interval instead of dispatching from notify()
+   * to avoid dispatching JUCE messages multiple times on the same frame which
+   * can cause crashes.
+   */
+  utils::QObjectUniquePtr<QTimer> juce_dispatch_timer_;
 
   QQmlApplicationEngine * qml_engine_ = nullptr;
 
