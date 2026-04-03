@@ -149,51 +149,6 @@ ApplicationWindow {
     buttons: MessageDialog.Ok
   }
 
-  // A unified collection of selected plugins and plugin containers (which contain other plugins or plugin containers)
-  UnifiedProxyModel {
-    id: unifiedPluginsModel
-
-  }
-
-  ItemSelectionModel {
-    id: pluginSelectionModel
-
-    // Returns a PluginGroup or a Plugin
-    function getObjectFromUnifiedIndex(unifiedIndex: var): var {
-      const sourceIndex = unifiedPluginsModel.mapToSource(unifiedIndex);
-      return sourceIndex.data(PluginGroup.DeviceGroupPtrRole);
-    }
-
-    model: unifiedPluginsModel
-
-    onCurrentChanged: (current, previous) => {
-      if (current) {
-        const pluginOrGroup = getObjectFromUnifiedIndex(current);
-        if (pluginOrGroup instanceof Plugin) {
-          const plugin = pluginOrGroup as Plugin;
-          console.log("current plugin changed to", plugin.configuration.descriptor.name);
-        }
-      }
-    }
-    onSelectionChanged: (selected, deselected) => {
-      console.log("Selection changed:", selectedIndexes.length, "items selected");
-      if (selectedIndexes.length > 0) {
-        const firstPluginOrGroup = selectedIndexes[0].data(PluginGroup.DeviceGroupPtrRole);
-        console.log("first selected plugin/group:", firstPluginOrGroup);
-      }
-
-      if (deselected.length > 0) {
-        deselected.forEach(deselectedRange => {
-          const pluginOrGroup = getObjectFromUnifiedIndex(deselectedRange.topLeft);
-          if (pluginOrGroup instanceof Plugin) {
-            const plugin = pluginOrGroup as Plugin;
-            console.log("previous plugin changed");
-          }
-        });
-      }
-    }
-  }
-
   TrackSelectionModel {
     id: trackSelectionModel
 
@@ -399,6 +354,7 @@ ApplicationWindow {
           SplitView.minimumHeight: 40
           SplitView.preferredHeight: 240
           session: root.session
+          trackSelectionModel: trackSelectionModel
           visible: root.appSettings.bottomPanelVisible
         }
       }

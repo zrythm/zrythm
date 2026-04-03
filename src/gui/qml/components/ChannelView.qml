@@ -14,6 +14,7 @@ ColumnLayout {
   required property Channel channel
   required property PluginImporter pluginImporter
   required property Track track
+  required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
 
@@ -36,6 +37,7 @@ ColumnLayout {
     pluginGroup: root.channel.midiFx
     pluginImporter: root.pluginImporter
     track: root.track
+    trackSelectionModel: root.trackSelectionModel
 
     header: Label {
       text: "MIDI FX"
@@ -48,6 +50,7 @@ ColumnLayout {
     pluginGroup: root.channel.inserts
     pluginImporter: root.pluginImporter
     track: root.track
+    trackSelectionModel: root.trackSelectionModel
 
     header: Label {
       text: "Inserts"

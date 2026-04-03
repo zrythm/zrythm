@@ -249,6 +249,7 @@ set(rel_qml_file_paths
   components/MonitorSection.qml
   components/PlayheadTriangle.qml
   components/PluginBrowserPage.qml
+  components/PluginSelectionModel.qml
   components/PluginSlotList.qml
   components/PluginSlotView.qml
   components/RightDock.qml

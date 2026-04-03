@@ -14,6 +14,7 @@ ColumnLayout {
 
   readonly property Project project: session.project
   required property ProjectSession session
+  required property TrackSelectionModel trackSelectionModel
 
   spacing: 0
 
@@ -54,6 +55,7 @@ ColumnLayout {
     MixerView {
       audioEngine: root.project.engine
       pluginImporter: root.session.pluginImporter
+      trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
       undoStack: root.session.undoStack
     }

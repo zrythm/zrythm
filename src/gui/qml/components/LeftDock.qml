@@ -60,6 +60,7 @@ ColumnLayout {
         audioEngine: root.project.engine
         pluginImporter: root.pluginImporter
         track: trackInspectorLoader.track
+        trackSelectionModel: root.trackSelectionModel
         undoStack: root.undoStack
       }
 

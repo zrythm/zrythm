@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -9,21 +9,38 @@ import Zrythm
 Control {
   id: root
 
-  property bool down: false
-  property bool openPluginInspectorOnClick: false
   required property var deviceGroupOrPlugin
+  property bool down: false
+
+  // Drop handling
+  property bool dropHovered: false
+  readonly property bool isCurrentTrack: {
+    const currentIdx = root.trackSelectionModel.currentIndex;
+    return currentIdx && currentIdx.valid ? currentIdx.data(TrackCollection.TrackPtrRole) === root.track : false;
+  }
   readonly property Plugin plugin: deviceGroupOrPlugin as Plugin
   readonly property bool pluginEnabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
-  property bool selected: false
+  required property var pluginModelIndex
+  required property PluginSelectionModel pluginSelectionModel
   required property Track track
-
-  signal pluginDeselected(var plugin)
-  signal pluginDragStarted(var plugin)
-  signal pluginSelected(var plugin, bool ctrlPressed)
+  required property TrackSelectionModel trackSelectionModel
 
   implicitHeight: 20
   implicitWidth: 48
   width: parent ? parent.width : 200
+
+  function selectCurrentTrack() {
+    if (!root.isCurrentTrack) {
+      const trackModel = root.trackSelectionModel.model;
+      const count = trackModel.rowCount();
+      for (let i = 0; i < count; ++i) {
+        if (trackModel.index(i, 0).data(TrackCollection.TrackPtrRole) === root.track) {
+          root.trackSelectionModel.selectSingleTrack(trackModel.index(i, 0));
+          break;
+        }
+      }
+    }
+  }
 
   // Context menu
   ContextMenu.menu: Menu {
@@ -65,64 +82,107 @@ Control {
     }
   }
 
-  // Mouse handling
-  MouseArea {
-    id: mouseArea
+  SelectionTracker {
+    id: selectionTracker
 
-    anchors.fill: parent
-    hoverEnabled: true
+    modelIndex: root.pluginModelIndex
+    selectionModel: root.pluginSelectionModel
+  }
 
-    onClicked: function (mouse) {
-      if (mouse.button === Qt.LeftButton) {
-        if (root.plugin) {
-          if (mouse.modifiers & Qt.ControlModifier) {
-            if (root.selected) {
-              root.pluginDeselected(root.plugin);
-            } else {
-              root.pluginSelected(root.plugin, true);
-            }
-          } else {
-            root.pluginSelected(root.plugin, false);
-          }
-        }
-      } else if (mouse.button === Qt.RightButton) {
-        contextMenu.popup();
+  TapHandler {
+    acceptedButtons: Qt.LeftButton
+    acceptedModifiers: Qt.NoModifier
+
+    onTapped: (eventPoint, button) => {
+      if (root.plugin) {
+        root.selectCurrentTrack();
+        root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
       }
     }
-    onDoubleClicked: {
+  }
+
+  TapHandler {
+    acceptedButtons: Qt.LeftButton
+    acceptedModifiers: Qt.ControlModifier
+
+    onTapped: (eventPoint, button) => {
+      if (root.plugin) {
+        root.selectCurrentTrack();
+        root.pluginSelectionModel.select(root.pluginModelIndex, ItemSelectionModel.Toggle);
+        root.pluginSelectionModel.setCurrentIndex(root.pluginModelIndex, ItemSelectionModel.NoUpdate);
+      }
+    }
+  }
+
+  TapHandler {
+    acceptedButtons: Qt.LeftButton
+    acceptedModifiers: Qt.ShiftModifier
+
+    onTapped: (eventPoint, button) => {
+      if (root.plugin) {
+        root.selectCurrentTrack();
+        const currentIdx = root.pluginSelectionModel.currentIndex;
+        if (currentIdx && currentIdx.valid) {
+          const top = Math.min(currentIdx.row, root.pluginModelIndex.row);
+          const bottom = Math.max(currentIdx.row, root.pluginModelIndex.row);
+          const sel = QmlUtils.createRangeSelection(root.pluginSelectionModel.model, top, bottom);
+          root.pluginSelectionModel.select(sel, ItemSelectionModel.ClearAndSelect);
+        } else {
+          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+        }
+      }
+    }
+  }
+
+  TapHandler {
+    acceptedButtons: Qt.LeftButton
+    acceptedModifiers: Qt.ControlModifier | Qt.ShiftModifier
+
+    onTapped: (eventPoint, button) => {
+      if (root.plugin) {
+        root.selectCurrentTrack();
+        const currentIdx = root.pluginSelectionModel.currentIndex;
+        if (currentIdx && currentIdx.valid) {
+          const top = Math.min(currentIdx.row, root.pluginModelIndex.row);
+          const bottom = Math.max(currentIdx.row, root.pluginModelIndex.row);
+          const sel = QmlUtils.createRangeSelection(root.pluginSelectionModel.model, top, bottom);
+          root.pluginSelectionModel.select(sel, ItemSelectionModel.Select);
+        } else {
+          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+        }
+      }
+    }
+  }
+
+  TapHandler {
+    acceptedButtons: Qt.RightButton
+
+    onTapped: (eventPoint, button) => {
+      contextMenu.popup();
+    }
+  }
+
+  TapHandler {
+    onDoubleTapped: (eventPoint, button) => {
       if (root.plugin) {
         root.plugin.uiVisible = !root.plugin.uiVisible;
       }
     }
-    // onEntered: root.hovered = true
-    // onExited: root.hovered = false
-    onPressAndHold: {
-      if (root.plugin) {
-        root.pluginDragStarted(root.plugin);
-      }
-    }
-    onPressed: root.down = true
-    onReleased: root.down = false
   }
 
-  // Drop handling
   DropArea {
     id: dropArea
 
     anchors.fill: parent
 
-    onDropped: {
-      console.log("dropped");
+    onDropped: drop => {
+      root.dropHovered = false;
     }
-    onEntered: {
-      if (drag.source && drag.source.hasOwnProperty('pluginDescriptor')) {
-        bgRect.border.color = palette.highlight;
-        bgRect.border.width = 2;
-      }
+    onEntered: drag => {
+      root.dropHovered = drag.source && drag.source.hasOwnProperty('pluginDescriptor');
     }
     onExited: {
-      bgRect.border.color = root.selected ? palette.highlight : palette.dark;
-      bgRect.border.width = 1;
+      root.dropHovered = false;
     }
   }
 
@@ -131,15 +191,21 @@ Control {
 
     readonly property color baseColor: {
       let c = root.pluginEnabled ? palette.base : palette.window;
-      if (root.plugin.uiVisible) {
+      if (root.plugin && root.plugin.uiVisible) {
         c = Style.getColorBlendedTowardsContrast(c);
       }
       return c;
     }
 
     anchors.fill: parent
-    border.color: root.selected ? palette.highlight : palette.alternateBase
-    border.width: 1
+    border.color: {
+      if (root.dropHovered)
+        return palette.highlight;
+      if (root.isCurrentTrack && selectionTracker.isSelected)
+        return palette.highlight;
+      return palette.alternateBase;
+    }
+    border.width: root.dropHovered ? 2 : 1
     color: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, root.hovered, root.visualFocus, root.down)
     radius: 6
   }

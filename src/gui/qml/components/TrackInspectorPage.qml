@@ -15,6 +15,7 @@ ColumnLayout {
   required property AudioEngine audioEngine
   required property PluginImporter pluginImporter
   required property Track track
+  required property TrackSelectionModel trackSelectionModel
   required property UndoStack undoStack
 
   TrackOperator {
@@ -229,6 +230,7 @@ ColumnLayout {
       pluginGroup: pluginExpander.model
       pluginImporter: root.pluginImporter
       track: root.track
+      trackSelectionModel: root.trackSelectionModel
     }
   }
 }
