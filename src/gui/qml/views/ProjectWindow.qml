@@ -322,6 +322,7 @@ ApplicationWindow {
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
         pluginImporter: root.session.pluginImporter
+        pluginOperator: root.session.pluginOperator
         project: root.project
         trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist

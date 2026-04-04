@@ -7,6 +7,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "actions/file_importer.h"
 #include "actions/plugin_importer.h"
+#include "actions/plugin_operator.h"
 #include "actions/track_creator.h"
 #include "controllers/transport_controller.h"
 #include "gui/dsp/quantize_options.h"
@@ -51,6 +52,9 @@ class ProjectSession : public QObject
     zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
       CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::PluginOperator * pluginOperator READ pluginOperator
+      CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::FileImporter * fileImporter READ fileImporter CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::controllers::TransportController * transportController READ
@@ -76,6 +80,7 @@ public:
   zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
   zrythm::actions::TrackCreator *          trackCreator () const;
   actions::PluginImporter *                pluginImporter () const;
+  actions::PluginOperator *                pluginOperator () const;
   actions::FileImporter *                  fileImporter () const;
   controllers::TransportController *       transportController () const;
 
@@ -140,6 +145,7 @@ private:
                                                    arranger_object_creator_;
   utils::QObjectUniquePtr<actions::TrackCreator>   track_creator_;
   utils::QObjectUniquePtr<actions::PluginImporter> plugin_importer_;
+  utils::QObjectUniquePtr<actions::PluginOperator> plugin_operator_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
   utils::QObjectUniquePtr<controllers::TransportController> transport_controller_;
 };

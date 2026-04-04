@@ -13,6 +13,7 @@ ColumnLayout {
   required property AudioEngine audioEngine
   required property Channel channel
   required property PluginImporter pluginImporter
+  required property PluginOperator pluginOperator
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
@@ -36,6 +37,7 @@ ColumnLayout {
     Layout.minimumHeight: contentHeight
     pluginGroup: root.channel.midiFx
     pluginImporter: root.pluginImporter
+    pluginOperator: root.pluginOperator
     track: root.track
     trackSelectionModel: root.trackSelectionModel
 
@@ -49,6 +51,7 @@ ColumnLayout {
     Layout.minimumHeight: contentHeight
     pluginGroup: root.channel.inserts
     pluginImporter: root.pluginImporter
+    pluginOperator: root.pluginOperator
     track: root.track
     trackSelectionModel: root.trackSelectionModel
 

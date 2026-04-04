@@ -56,6 +56,11 @@ ProjectSession::ProjectSession (
               ->setUiVisible (true);
           },
           this)),
+      plugin_operator_ (
+        utils::make_qobject_unique<actions::PluginOperator> (
+          *undo_stack_,
+          project_->get_plugin_registry (),
+          this)),
       file_importer_ (
         utils::make_qobject_unique<actions::FileImporter> (
           *undo_stack_,
@@ -139,6 +144,12 @@ actions::PluginImporter *
 ProjectSession::pluginImporter () const
 {
   return plugin_importer_.get ();
+}
+
+actions::PluginOperator *
+ProjectSession::pluginOperator () const
+{
+  return plugin_operator_.get ();
 }
 
 actions::FileImporter *

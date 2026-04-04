@@ -38,7 +38,8 @@ public:
 
   Q_INVOKABLE void importPluginToGroup (
     const plugins::PluginDescriptor * descriptor,
-    plugins::PluginGroup *            group);
+    plugins::PluginGroup *            group,
+    int                               index = -1);
 
   Q_INVOKABLE void importPluginToTrack (
     const plugins::PluginDescriptor * descriptor,
@@ -50,16 +51,15 @@ private:
    * the given track based on the plugin type, or creates a new track based on
    * @p descriptor if @p track_or_group is empty.
    *
-   * This method creates a plugin instance from the given descriptor and
-   * adds it to the appropriate track's plugin group using the AddPluginCommand.
-   *
    * @param descriptor
    * @param track_or_group
+   * @param index Position to insert at in the target group (-1 = append).
    */
   void import (
     const plugins::PluginDescriptor * descriptor,
     std::optional<std::variant<plugins::PluginGroup *, structure::tracks::Track *>>
-      track_or_group);
+                       track_or_group,
+    std::optional<int> index = std::nullopt);
 
 private:
   undo::UndoStack        &undo_stack_;

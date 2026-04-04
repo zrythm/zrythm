@@ -10,6 +10,7 @@ add_executable(zrythm_actions_unit_tests
   qobject_property_operator_test.cpp
   parameter_operator_test.cpp
   plugin_importer_test.cpp
+  plugin_operator_test.cpp
   track_collection_operator_test.cpp
   track_creator_test.cpp
   track_operator_test.cpp

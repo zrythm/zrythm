@@ -194,6 +194,8 @@ set(rel_qml_file_paths
   components/basic/ZrythmResizablePanel.qml
   components/basic/SplitButton.qml
   components/basic/ZrythmToolBar.qml
+  components/dragndrop/DescriptorDragItem.qml
+  components/dragndrop/PluginDragItem.qml
   components/arranger/AudioRegionContent.qml
   components/arranger/AudioRegionView.qml
   components/arranger/AutomationArranger.qml

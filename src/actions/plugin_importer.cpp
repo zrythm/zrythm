@@ -24,15 +24,17 @@ void
 PluginImporter::importPluginToNewTrack (
   const plugins::PluginDescriptor * descriptor)
 {
-  import (descriptor, std::nullopt);
+  import (descriptor, std::nullopt, std::nullopt);
 }
 
 void
 PluginImporter::importPluginToGroup (
   const plugins::PluginDescriptor * descriptor,
-  plugins::PluginGroup *            group)
+  plugins::PluginGroup *            group,
+  int                               index)
 {
-  import (descriptor, group);
+  import (
+    descriptor, group, index >= 0 ? std::optional<int> (index) : std::nullopt);
 }
 
 void
@@ -40,14 +42,15 @@ PluginImporter::importPluginToTrack (
   const plugins::PluginDescriptor * descriptor,
   structure::tracks::Track *        track)
 {
-  import (descriptor, track);
+  import (descriptor, track, std::nullopt);
 }
 
 void
 PluginImporter::import (
   const plugins::PluginDescriptor * descriptor,
   std::optional<std::variant<plugins::PluginGroup *, structure::tracks::Track *>>
-    track_or_group)
+                     track_or_group,
+  std::optional<int> index)
 {
   if (descriptor == nullptr)
     {
@@ -68,7 +71,8 @@ PluginImporter::import (
     *config,
     plugins::PluginFactory::InstantiationFinishOptions{
       .handler_ =
-        [this, track_or_group] (plugins::PluginUuidReference inner_plugin_ref) {
+        [this, track_or_group,
+         index] (plugins::PluginUuidReference inner_plugin_ref) {
           const auto * descr =
             inner_plugin_ref.get_object_base ()->configuration ()->descriptor ();
           z_debug ("Plugin instance ready. Importing {}", descr->name ());
@@ -134,7 +138,7 @@ PluginImporter::import (
           if (plugin_group != nullptr)
             {
               undo_stack_.push (new commands::AddPluginCommand (
-                *plugin_group, inner_plugin_ref));
+                *plugin_group, inner_plugin_ref, index));
             }
 
           undo_stack_.endMacro ();

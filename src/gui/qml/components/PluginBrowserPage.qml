@@ -41,16 +41,8 @@ Item {
     ]
   }
 
-  Image {
+  DescriptorDragItem {
     id: draggable
-
-    property PluginDescriptor descriptor
-
-    Drag.dragType: Drag.Automatic
-    visible: Drag.active
-
-    Drag.onDragFinished: {}
-    Drag.onDragStarted: {}
   }
 
   ColumnLayout {
@@ -177,24 +169,15 @@ Item {
     DragHandler {
       id: dragHandler
 
-      target: draggable
+      target: null
 
       onActiveChanged: {
         if (active) {
           pluginListView.currentIndex = pluginDescriptorItemDelegate.index;
-          target.width = parent.width;
-          target.height = parent.height;
-          const size = Qt.size(parent.width, parent.height);
-          parent.grabToImage(function (result) {
-            target.source = result.url;
-            target.Drag.mimeData = {
-              "application/x-plugin-descriptor": pluginDescriptorItemDelegate.descriptor.serializeToString()
-            };
-            target.descriptor = parent.descriptor;
-            target.Drag.active = true;
-          }, size);
+          draggable.descriptor = pluginDescriptorItemDelegate.descriptor;
+          draggable.Drag.active = true;
         } else {
-          target.Drag.active = false;
+          draggable.Drag.active = false;
         }
       }
     }

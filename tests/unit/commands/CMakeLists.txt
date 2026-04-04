@@ -11,7 +11,7 @@ add_executable(zrythm_commands_unit_tests
   change_track_color_command_test.cpp
   change_track_comment_command_test.cpp
   move_arranger_objects_command_test.cpp
-  move_plugin_command_test.cpp
+  move_plugins_command_test.cpp
   move_tracks_command_test.cpp
   relocate_arranger_object_command_test.cpp
   remove_arranger_object_command_test.cpp

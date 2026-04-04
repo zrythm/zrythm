@@ -10,6 +10,7 @@ ListView {
 
   required property PluginGroup pluginGroup
   required property PluginImporter pluginImporter
+  required property PluginOperator pluginOperator
   readonly property PluginSelectionModel pluginSelectionModel: internalSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
@@ -19,9 +20,10 @@ ListView {
   model: pluginGroup
 
   delegate: PluginSlotView {
-    required property int index
-
+    pluginGroup: root.pluginGroup
+    pluginImporter: root.pluginImporter
     pluginModelIndex: pluginSelectionModel.getModelIndex(index)
+    pluginOperator: root.pluginOperator
     pluginSelectionModel: root.pluginSelectionModel
     track: root.track
     trackSelectionModel: root.trackSelectionModel
@@ -34,10 +36,21 @@ ListView {
     width: ListView.view.width
 
     onDataDropped: (drop, dragSource) => {
-      console.log("Drop on plugin list");
-
-      if (dragSource.descriptor as PluginDescriptor) {
-        root.pluginImporter.importPluginToGroup(dragSource.descriptor, root.pluginGroup);
+      const pluginSrc = dragSource as PluginDragItem;
+      if (pluginSrc && pluginSrc.selectedPlugins.length > 0) {
+        root.pluginOperator.movePlugins(
+          pluginSrc.selectedPlugins,
+          pluginSrc.sourceGroup,
+          pluginSrc.sourceTrack,
+          root.pluginGroup,
+          root.track,
+          -1,
+        );
+        return;
+      }
+      const descSrc = dragSource as DescriptorDragItem;
+      if (descSrc && descSrc.descriptor) {
+        root.pluginImporter.importPluginToGroup(descSrc.descriptor, root.pluginGroup);
       }
     }
   }

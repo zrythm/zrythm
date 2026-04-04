@@ -14,20 +14,20 @@ Control {
 
   // Drop handling
   property bool dropHovered: false
+  required property int index
   readonly property bool isCurrentTrack: {
     const currentIdx = root.trackSelectionModel.currentIndex;
     return currentIdx && currentIdx.valid ? currentIdx.data(TrackCollection.TrackPtrRole) === root.track : false;
   }
   readonly property Plugin plugin: deviceGroupOrPlugin as Plugin
   readonly property bool pluginEnabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
+  required property PluginGroup pluginGroup
+  required property PluginImporter pluginImporter
   required property var pluginModelIndex
+  required property PluginOperator pluginOperator
   required property PluginSelectionModel pluginSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
-
-  implicitHeight: 20
-  implicitWidth: 48
-  width: parent ? parent.width : 200
 
   function selectCurrentTrack() {
     if (!root.isCurrentTrack) {
@@ -41,6 +41,10 @@ Control {
       }
     }
   }
+
+  implicitHeight: 20
+  implicitWidth: 48
+  width: parent ? parent.width : 200
 
   // Context menu
   ContextMenu.menu: Menu {
@@ -170,6 +174,42 @@ Control {
     }
   }
 
+  // Drag support for reordering/moving plugins
+  DragHandler {
+    id: pluginDragHandler
+
+    target: null
+
+    onActiveChanged: {
+      if (active && root.plugin) {
+        // Capture selected plugins at drag start
+        const plugins = [];
+        const groupModel = root.pluginGroup;
+        for (let i = 0; i < groupModel.rowCount(); ++i) {
+          const idx = root.pluginSelectionModel.getModelIndex(i);
+          if (root.pluginSelectionModel.isSelected(idx)) {
+            const pl = root.pluginSelectionModel.getPluginFromModelIndex(idx);
+            if (pl)
+              plugins.push(pl);
+          }
+        }
+        if (plugins.length === 0)
+          plugins.push(root.plugin);
+
+        dragItem.selectedPlugins = plugins;
+        dragItem.sourceGroup = root.pluginGroup;
+        dragItem.sourceTrack = root.track;
+        dragItem.Drag.active = true;
+      } else {
+        dragItem.Drag.active = false;
+      }
+    }
+  }
+
+  PluginDragItem {
+    id: dragItem
+  }
+
   DropArea {
     id: dropArea
 
@@ -177,9 +217,18 @@ Control {
 
     onDropped: drop => {
       root.dropHovered = false;
+      const pluginSrc = drop.source as PluginDragItem;
+      if (pluginSrc && pluginSrc.selectedPlugins.length > 0) {
+        root.pluginOperator.movePlugins(pluginSrc.selectedPlugins, pluginSrc.sourceGroup, pluginSrc.sourceTrack, root.pluginGroup, root.track, root.index);
+      }
+      const descSrc = drop.source as DescriptorDragItem;
+      if (descSrc && descSrc.descriptor) {
+        root.pluginImporter.importPluginToGroup(descSrc.descriptor, root.pluginGroup, root.index);
+      }
     }
     onEntered: drag => {
-      root.dropHovered = drag.source && drag.source.hasOwnProperty('pluginDescriptor');
+      const src = drag.source;
+      root.dropHovered = (src as PluginDragItem) !== null || (src as DescriptorDragItem) !== null;
     }
     onExited: {
       root.dropHovered = false;
@@ -199,15 +248,23 @@ Control {
 
     anchors.fill: parent
     border.color: {
-      if (root.dropHovered)
-        return palette.highlight;
       if (root.isCurrentTrack && selectionTracker.isSelected)
         return palette.highlight;
       return palette.alternateBase;
     }
-    border.width: root.dropHovered ? 2 : 1
+    border.width: 1
     color: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, root.hovered, root.visualFocus, root.down)
     radius: 6
+
+    // Drop insert indicator: top border only
+    Rectangle {
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      color: palette.highlight
+      height: 2
+      visible: root.dropHovered
+    }
   }
 
   RowLayout {
@@ -270,4 +327,5 @@ Control {
   ToolTip {
     text: root.plugin ? root.plugin.configuration.descriptor.name : ""
   }
+
 }

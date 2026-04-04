@@ -16,6 +16,7 @@ ColumnLayout {
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property PluginImporter pluginImporter
+  required property PluginOperator pluginOperator
   required property UndoStack undoStack
 
   TabBar {
@@ -59,6 +60,7 @@ ColumnLayout {
         anchors.fill: parent
         audioEngine: root.project.engine
         pluginImporter: root.pluginImporter
+        pluginOperator: root.pluginOperator
         track: trackInspectorLoader.track
         trackSelectionModel: root.trackSelectionModel
         undoStack: root.undoStack

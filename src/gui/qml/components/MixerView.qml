@@ -13,6 +13,7 @@ RowLayout {
 
   required property AudioEngine audioEngine
   required property PluginImporter pluginImporter
+  required property PluginOperator pluginOperator
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -26,6 +27,7 @@ RowLayout {
       audioEngine: root.audioEngine
       channel: track.channel
       pluginImporter: root.pluginImporter
+      pluginOperator: root.pluginOperator
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.tracklist
       undoStack: root.undoStack

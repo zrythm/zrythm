@@ -6,7 +6,7 @@ qt_add_library(zrythm_commands_lib STATIC)
 target_sources(zrythm_commands_lib
   PRIVATE
     move_arranger_objects_command.cpp
-    move_plugin_command.cpp
+    move_plugins_command.cpp
     move_tracks_command.cpp
     resize_arranger_objects_command.cpp
   PUBLIC
@@ -23,7 +23,7 @@ target_sources(zrythm_commands_lib
       change_track_color_command.h
       change_track_comment_command.h
       move_arranger_objects_command.h
-      move_plugin_command.h
+      move_plugins_command.h
       move_tracks_command.h
       resize_arranger_objects_command.h
       relocate_arranger_object_command.h

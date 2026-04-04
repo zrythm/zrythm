@@ -11,6 +11,7 @@ target_sources(zrythm_actions_lib
     qobject_property_operator.cpp
     parameter_operator.cpp
     plugin_importer.cpp
+    plugin_operator.cpp
     track_collection_operator.cpp
     track_creator.cpp
     track_operator.cpp
@@ -24,6 +25,7 @@ target_sources(zrythm_actions_lib
       qobject_property_operator.h
       parameter_operator.h
       plugin_importer.h
+      plugin_operator.h
       track_collection_operator.h
       track_creator.h
       track_operator.h

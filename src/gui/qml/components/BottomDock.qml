@@ -55,6 +55,7 @@ ColumnLayout {
     MixerView {
       audioEngine: root.project.engine
       pluginImporter: root.session.pluginImporter
+      pluginOperator: root.session.pluginOperator
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
       undoStack: root.session.undoStack
