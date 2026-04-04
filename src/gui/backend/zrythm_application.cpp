@@ -38,25 +38,7 @@ dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
 #endif
 
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
-    : QApplication (argc, argv),
-      control_room_ (
-        utils::make_qobject_unique<engine::session::ControlRoom> (
-          [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
-            static boost::unordered_flat_map<
-              structure::tracks::TrackUuid, structure::tracks::TrackPtrVariant>
-              dummy_tracks;
-            if (!project_manager_)
-              {
-                return dummy_tracks;
-              }
-            auto * project_session = project_manager_->activeSession ();
-            if (project_session == nullptr)
-              {
-                return dummy_tracks;
-              }
-            return project_session->project ()->tracks_rt_;
-          },
-          this))
+    : QApplication (argc, argv)
 {
   // install signal handlers
   signal_handling_ = utils::Backtrace::init_signal_handlers ();
@@ -98,6 +80,26 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   /* setup command line parser */
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
+
+  // Create control room after command-line parsing to avoid leaking
+  // AudioBuffers when --help/--version calls std::exit()
+  control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
+    [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
+      static boost::unordered_flat_map<
+        structure::tracks::TrackUuid, structure::tracks::TrackPtrVariant>
+        dummy_tracks;
+      if (!project_manager_)
+        {
+          return dummy_tracks;
+        }
+      auto * project_session = project_manager_->activeSession ();
+      if (project_session == nullptr)
+        {
+          return dummy_tracks;
+        }
+      return project_session->project ()->tracks_rt_;
+    },
+    this);
 
   // Initialize JUCE
   juce_message_handler_initializer_ =
