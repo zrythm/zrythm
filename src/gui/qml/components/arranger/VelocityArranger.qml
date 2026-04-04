@@ -4,8 +4,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 Arranger {
   id: root

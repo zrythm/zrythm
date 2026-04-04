@@ -4,7 +4,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Zrythm
-import ZrythmStyle
 
 GridLayout {
   id: root

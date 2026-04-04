@@ -3,9 +3,8 @@
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
-import Zrythm 1.0
-import ZrythmStyle 1.0
+import Zrythm
+import ZrythmStyle
 
 Button {
   id: root

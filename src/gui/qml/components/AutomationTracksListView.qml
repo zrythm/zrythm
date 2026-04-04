@@ -216,13 +216,12 @@ ListView {
       }
     }
 
-    Loader {
-      property var resizeTarget: automationTrackItem.automationTrackHolder
+    ResizeHandle {
+      resizeTarget: automationTrackItem.automationTrackHolder
 
       anchors.bottom: parent.bottom
       anchors.left: parent.left
       anchors.right: parent.right
-      sourceComponent: resizeHandle
     }
 
     Connections {

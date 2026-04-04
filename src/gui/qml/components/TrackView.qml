@@ -321,13 +321,16 @@ Control {
                   }
                 }
 
-                Loader {
-                  property var resizeTarget: laneDelegate.trackLane
+                ResizeHandle {
+                  resizeTarget: laneDelegate.trackLane
 
                   anchors.bottom: parent.bottom
                   anchors.left: parent.left
                   anchors.right: parent.right
-                  sourceComponent: resizeHandle
+
+                  onResizingChanged: (active) => {
+                    root.isResizing = active;
+                  }
                 }
 
                 Connections {
@@ -624,69 +627,18 @@ Control {
         }
       }
 
-      Loader {
-        property var resizeTarget: root.track
+      ResizeHandle {
+        resizeTarget: root.track
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        sourceComponent: resizeHandle
-      }
-    }
-  }
 
-  Component {
-    id: resizeHandle
-
-    Rectangle {
-      id: resizeHandleRect
-
-      property var resizeTarget: parent.resizeTarget
-
-      color: "transparent"
-      height: 6
-
-      anchors {
-        bottom: parent.bottom
-        left: parent.left
-        right: parent.right
-      }
-
-      Rectangle {
-        anchors.centerIn: parent
-        color: Qt.alpha(Style.backgroundAppendColor, 0.2)
-        height: 2
-        radius: 2
-        width: 24
-      }
-
-      DragHandler {
-        id: resizer
-
-        property real startHeight: 0
-
-        grabPermissions: PointerHandler.CanTakeOverFromItems | PointerHandler.CanTakeOverFromHandlersOfSameType
-        xAxis.enabled: false
-        yAxis.enabled: true
-
-        onActiveChanged: {
+        onResizingChanged: (active) => {
           root.isResizing = active;
-          if (active)
-            resizer.startHeight = resizeHandleRect.resizeTarget.height;
         }
-        onTranslationChanged: {
-          if (active) {
-            let newHeight = Math.max(resizer.startHeight + translation.y, 24);
-            resizeHandleRect.resizeTarget.height = newHeight;
-          }
-        }
-      }
-
-      MouseArea {
-        acceptedButtons: Qt.NoButton // Pass through mouse events to the DragHandler
-        anchors.fill: parent
-        cursorShape: Qt.SizeVerCursor
       }
     }
   }
+
 }

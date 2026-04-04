@@ -186,6 +186,7 @@ set(rel_qml_file_paths
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
   components/basic/RecordButton.qml
+  components/basic/ResizeHandle.qml
   components/basic/RotatedLabel.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
