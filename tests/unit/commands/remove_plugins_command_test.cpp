@@ -215,7 +215,7 @@ TEST_F (RemovePluginsCommandTest, MultipleUndoRedoCycles)
                                              .source_atl = nullptr                                                    }
   });
 
-  for (const auto i : std::views::iota (0, 3))
+  for (const auto _ : std::views::iota (0, 3))
     {
       cmd.redo ();
       EXPECT_EQ (group_->rowCount (), 0);
@@ -403,7 +403,7 @@ TEST_F (
                                              .source_atl = atl_.get () }
   });
 
-  for (const auto i : std::views::iota (0, 3))
+  for (const auto _ : std::views::iota (0, 3))
     {
       cmd.redo ();
       EXPECT_EQ (group_->rowCount (), 0);
