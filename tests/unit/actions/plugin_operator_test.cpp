@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/plugin_operator.h"
+#include "dsp/parameter.h"
 #include "dsp/processor_base.h"
 #include "plugins/plugin_group.h"
+#include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/track.h"
 #include "undo/undo_stack.h"
 
 #include "unit/actions/mock_undo_stack.h"
+#include "unit/structure/tracks/mock_track.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::actions
@@ -72,6 +75,20 @@ protected:
 
   std::unique_ptr<plugins::PluginGroup> source_group_;
   std::unique_ptr<plugins::PluginGroup> target_group_;
+
+  // For cross-track automation tests
+  structure::tracks::MockTrackFactory track_factory_;
+  dsp::TempoMap                       tempo_map_{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
+  dsp::FileAudioSourceRegistry        file_audio_source_registry_;
+  structure::arrangement::ArrangerObjectRegistry         object_registry_;
+  structure::tracks::AutomationTrackHolder::Dependencies atl_deps_{
+    .tempo_map_ = tempo_map_wrapper_,
+    .file_audio_source_registry_ = file_audio_source_registry_,
+    .port_registry_ = port_registry_,
+    .param_registry_ = param_registry_,
+    .object_registry_ = object_registry_
+  };
 };
 
 // --- Basic move ---
@@ -280,6 +297,161 @@ TEST_F (PluginOperatorTest, SequentialMovesWithUndo)
   undo_stack_->undo ();
   ASSERT_EQ (source_group_->rowCount (), 2);
   EXPECT_EQ (target_group_->rowCount (), 0);
+}
+
+// ================================================
+// Remove tests
+// ================================================
+
+// --- Basic remove ---
+
+TEST_F (PluginOperatorTest, RemoveSinglePlugin)
+{
+  auto * pl = create_and_append_plugin (*source_group_);
+  ASSERT_EQ (source_group_->rowCount (), 1);
+
+  plugin_operator_->removePlugins ({ pl }, source_group_.get (), nullptr);
+
+  EXPECT_EQ (source_group_->rowCount (), 0);
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+TEST_F (PluginOperatorTest, RemoveMultiplePlugins)
+{
+  auto * pl0 = create_and_append_plugin (*source_group_);
+  auto * stay = create_and_append_plugin (*source_group_);
+  auto * pl2 = create_and_append_plugin (*source_group_);
+
+  plugin_operator_->removePlugins ({ pl0, pl2 }, source_group_.get (), nullptr);
+
+  ASSERT_EQ (source_group_->rowCount (), 1);
+  EXPECT_EQ (get_plugin_id_at_index (*source_group_, 0), stay->get_uuid ());
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+// --- Undo/Redo ---
+
+TEST_F (PluginOperatorTest, UndoRemovePlugin)
+{
+  auto * pl = create_and_append_plugin (*source_group_);
+
+  plugin_operator_->removePlugins ({ pl }, source_group_.get (), nullptr);
+  ASSERT_EQ (source_group_->rowCount (), 0);
+
+  undo_stack_->undo ();
+
+  ASSERT_EQ (source_group_->rowCount (), 1);
+  EXPECT_EQ (get_plugin_id_at_index (*source_group_, 0), pl->get_uuid ());
+}
+
+TEST_F (PluginOperatorTest, RedoRemovePlugin)
+{
+  auto * pl = create_and_append_plugin (*source_group_);
+
+  plugin_operator_->removePlugins ({ pl }, source_group_.get (), nullptr);
+  undo_stack_->undo ();
+  undo_stack_->redo ();
+
+  EXPECT_EQ (source_group_->rowCount (), 0);
+}
+
+// --- Empty/null handling ---
+
+TEST_F (PluginOperatorTest, RemoveEmptyPluginListDoesNothing)
+{
+  plugin_operator_->removePlugins ({}, source_group_.get (), nullptr);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (PluginOperatorTest, RemoveNullGroupDoesNothing)
+{
+  auto * pl = create_and_append_plugin (*source_group_);
+  plugin_operator_->removePlugins ({ pl }, nullptr, nullptr);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// --- Command text ---
+
+TEST_F (PluginOperatorTest, RemoveCommandTextSinglePlugin)
+{
+  auto * pl = create_and_append_plugin (*source_group_);
+
+  plugin_operator_->removePlugins ({ pl }, source_group_.get (), nullptr);
+
+  EXPECT_EQ (undo_stack_->text (0), QString ("Remove Plugin"));
+}
+
+TEST_F (PluginOperatorTest, RemoveCommandTextMultiplePlugins)
+{
+  auto * pl0 = create_and_append_plugin (*source_group_);
+  auto * pl1 = create_and_append_plugin (*source_group_);
+
+  plugin_operator_->removePlugins ({ pl0, pl1 }, source_group_.get (), nullptr);
+
+  EXPECT_EQ (undo_stack_->text (0), QString ("Remove 2 Plugin(s)"));
+}
+
+// ================================================
+// Cross-track automation tests
+// ================================================
+
+TEST_F (PluginOperatorTest, MovePluginWithAutomationBetweenTracks)
+{
+  using namespace structure::tracks;
+
+  auto   source_track = track_factory_.createMockTrack (Track::Type::Audio);
+  auto   target_track = track_factory_.createMockTrack (Track::Type::Audio);
+  auto * source_atl = source_track->automationTracklist ();
+  auto * target_atl = target_track->automationTracklist ();
+
+  // Create plugin with a parameter
+  auto * pl = create_and_append_plugin (*source_group_);
+
+  auto param_ref = param_registry_.create_object<dsp::ProcessorParameter> (
+    port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+    u8"Test Param");
+  pl->add_parameter (param_ref);
+
+  // Track auto-generates some ATL entries (e.g., Fader), so capture baseline
+  // counts
+  const auto source_atl_count_before = source_atl->rowCount ();
+  const auto target_atl_count_before = target_atl->rowCount ();
+
+  // Add automation track for the parameter on the source track
+  source_atl->add_automation_track (
+    utils::make_qobject_unique<AutomationTrack> (
+      tempo_map_wrapper_, file_audio_source_registry_, object_registry_,
+      param_ref));
+  ASSERT_EQ (source_atl->rowCount (), source_atl_count_before + 1);
+  ASSERT_EQ (target_atl->rowCount (), target_atl_count_before);
+
+  // Move plugin between tracks (with automation)
+  plugin_operator_->movePlugins (
+    { pl }, source_group_.get (), source_track.get (), target_group_.get (),
+    target_track.get (), -1);
+
+  // Plugin moved
+  EXPECT_EQ (source_group_->rowCount (), 0);
+  ASSERT_EQ (target_group_->rowCount (), 1);
+
+  // Automation moved
+  EXPECT_EQ (source_atl->rowCount (), source_atl_count_before);
+  EXPECT_EQ (target_atl->rowCount (), target_atl_count_before + 1);
+
+  // Undo
+  undo_stack_->undo ();
+  EXPECT_EQ (source_group_->rowCount (), 1);
+  EXPECT_EQ (target_group_->rowCount (), 0);
+  EXPECT_EQ (source_atl->rowCount (), source_atl_count_before + 1);
+  EXPECT_EQ (target_atl->rowCount (), target_atl_count_before);
+
+  // Redo
+  undo_stack_->redo ();
+  EXPECT_EQ (source_group_->rowCount (), 0);
+  ASSERT_EQ (target_group_->rowCount (), 1);
+  EXPECT_EQ (source_atl->rowCount (), source_atl_count_before);
+  EXPECT_EQ (target_atl->rowCount (), target_atl_count_before + 1);
 }
 
 } // namespace zrythm::actions

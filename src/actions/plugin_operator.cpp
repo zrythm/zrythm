@@ -3,6 +3,7 @@
 
 #include "actions/plugin_operator.h"
 #include "commands/move_plugins_command.h"
+#include "commands/remove_plugins_command.h"
 
 namespace zrythm::actions
 {
@@ -29,30 +30,49 @@ PluginOperator::movePlugins (
 
   using PluginLocation = commands::MovePluginsCommand::PluginLocation;
 
-  // Build per-plugin move info
-  std::vector<commands::MovePluginsCommand::PluginMoveInfo> infos;
-  infos.reserve (plugins.size ());
-  for (auto * plugin : plugins)
-    {
-      if (!plugin)
-        continue;
-
-      commands::MovePluginsCommand::PluginMoveInfo info{
+  auto cmd = std::make_unique<commands::MovePluginsCommand> (
+    plugins | std::views::filter ([] (auto * p) {
+      return p != nullptr;
+    }) | std::views::transform ([this, source_group, source_atl] (auto * plugin) {
+      return commands::MovePluginsCommand::PluginMoveInfo{
         .plugin_ref =
           plugins::PluginUuidReference (plugin->get_uuid (), plugin_registry_),
         .source_location = PluginLocation{ source_group, source_atl }
       };
-
-      infos.push_back (std::move (info));
-    }
-
-  auto target_idx =
+    }) | std::ranges::to<std::vector> (),
+    PluginLocation{ target_group, target_atl },
     (target_start_index >= 0)
       ? std::optional<int> (target_start_index)
-      : std::nullopt;
+      : std::nullopt);
 
-  auto cmd = std::make_unique<commands::MovePluginsCommand> (
-    std::move (infos), PluginLocation{ target_group, target_atl }, target_idx);
+  undo_stack_.push (cmd.release ());
+}
+
+void
+PluginOperator::removePlugins (
+  QList<plugins::Plugin *>   plugins,
+  plugins::PluginGroup *     group,
+  structure::tracks::Track * track)
+{
+  if (plugins.isEmpty () || !group)
+    {
+      z_warning ("removePlugins: invalid arguments");
+      return;
+    }
+
+  auto atl = track ? track->automationTracklist () : nullptr;
+
+  auto cmd = std::make_unique<commands::RemovePluginsCommand> (
+    plugins | std::views::filter ([] (auto * p) { return p != nullptr; })
+    | std::views::transform ([this, group, atl] (auto * plugin) {
+        return commands::RemovePluginsCommand::PluginRemoveInfo{
+          .plugin_ref = plugins::PluginUuidReference (
+            plugin->get_uuid (), plugin_registry_),
+          .source_group = group,
+          .source_atl = atl
+        };
+      })
+    | std::ranges::to<std::vector> ());
 
   undo_stack_.push (cmd.release ());
 }

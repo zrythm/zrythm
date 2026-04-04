@@ -148,15 +148,14 @@ MovePluginsCommand::move_plugin_automation (
   for (auto * at : from_atl.automation_tracks ())
     {
       auto * at_param = at->parameter ();
-      for (const auto &pl_param_ref : plugin->get_parameters ())
+      if (
+        std::ranges::any_of (
+          plugin->get_parameters (), [at_param] (const auto &pl_param_ref) {
+            return pl_param_ref.template get_object_as<dsp::ProcessorParameter> ()
+                   == at_param;
+          }))
         {
-          const auto * pl_param =
-            pl_param_ref.get_object_as<dsp::ProcessorParameter> ();
-          if (pl_param == at_param)
-            {
-              tracks_to_move.push_back (at);
-              break;
-            }
+          tracks_to_move.push_back (at);
         }
     }
 

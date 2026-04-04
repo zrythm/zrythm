@@ -8,6 +8,7 @@ target_sources(zrythm_commands_lib
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
+    remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -28,6 +29,7 @@ target_sources(zrythm_commands_lib
       resize_arranger_objects_command.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h
+      remove_plugins_command.h
       rename_track_command.h
 )
 

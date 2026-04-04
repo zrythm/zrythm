@@ -47,6 +47,18 @@ public:
     structure::tracks::Track * target_track,
     int                        target_start_index = -1);
 
+  /**
+   * @brief Removes one or more plugins from their PluginGroup.
+   *
+   * @param plugins Plugins to remove.
+   * @param group Group the plugins belong to.
+   * @param track Track owning the group (for automation track cleanup).
+   */
+  Q_INVOKABLE void removePlugins (
+    QList<plugins::Plugin *>   plugins,
+    plugins::PluginGroup *     group,
+    structure::tracks::Track * track);
+
 private:
   plugins::PluginRegistry &plugin_registry_;
   undo::UndoStack         &undo_stack_;

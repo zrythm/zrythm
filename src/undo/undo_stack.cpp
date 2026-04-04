@@ -9,6 +9,7 @@
 #include "commands/change_qobject_property_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/move_plugins_command.h"
+#include "commands/remove_plugins_command.h"
 #include "commands/route_track_command.h"
 #include "undo/undo_stack.h"
 
@@ -42,10 +43,11 @@ bool
 UndoStack::command_or_children_require_graph_recalculation (
   const QUndoCommand &cmd) const
 {
-  static constexpr std::array<int, 4> command_ids_with_graph_pause = {
+  static constexpr std::array<int, 5> command_ids_with_graph_pause = {
     commands::AddEmptyTrackCommand::CommandId,
     commands::AddPluginCommand::CommandId,
     commands::MovePluginsCommand::CommandId,
+    commands::RemovePluginsCommand::CommandId,
     commands::RouteTrackCommand::CommandId,
   };
 
@@ -64,8 +66,6 @@ UndoStack::command_or_children_require_graph_recalculation (
     [this] (const auto * child) {
       return command_or_children_require_graph_recalculation (*child);
     });
-
-  return false;
 }
 
 bool
@@ -94,8 +94,6 @@ UndoStack::command_or_children_require_engine_pause (
     [this] (const auto * child) {
       return command_or_children_require_engine_pause (*child);
     });
-
-  return false;
 }
 
 void

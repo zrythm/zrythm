@@ -29,6 +29,22 @@ Control {
   required property Track track
   required property TrackSelectionModel trackSelectionModel
 
+  function gatherSelectedPlugins() {
+    const plugins = [];
+    const groupModel = root.pluginGroup;
+    for (let i = 0; i < groupModel.rowCount(); ++i) {
+      const idx = root.pluginSelectionModel.getModelIndex(i);
+      if (root.pluginSelectionModel.isSelected(idx)) {
+        const pl = root.pluginSelectionModel.getPluginFromModelIndex(idx);
+        if (pl)
+          plugins.push(pl);
+      }
+    }
+    if (plugins.length === 0 && root.plugin)
+      plugins.push(root.plugin);
+    return plugins;
+  }
+
   function selectCurrentTrack() {
     if (!root.isCurrentTrack) {
       const trackModel = root.trackSelectionModel.model;
@@ -50,14 +66,25 @@ Control {
   ContextMenu.menu: Menu {
     id: contextMenu
 
+    onAboutToShow: {
+      if (root.plugin) {
+        removeMenuItem.visible = true;
+        const selCount = root.gatherSelectedPlugins().length;
+        removeMenuItem.text = selCount > 1 ? qsTr("Remove %1 Plugins").arg(selCount) : qsTr("Remove Plugin");
+      } else {
+        removeMenuItem.visible = false;
+      }
+    }
+
     MenuItem {
+      id: removeMenuItem
+
       enabled: root.plugin !== null
-      text: root.plugin ? qsTr("Remove Plugin") : qsTr("Add Plugin")
+      text: qsTr("Remove Plugin")
 
       onTriggered: {
-        if (root.plugin && root.track && root.track.channel) {
-          console.log("remove plugin");
-          // root.track.channel.removePlugin(root.slotIndex, root.slotType);
+        if (root.plugin) {
+          root.pluginOperator.removePlugins(root.gatherSelectedPlugins(), root.pluginGroup, root.track);
         }
       }
     }
@@ -162,6 +189,11 @@ Control {
     acceptedButtons: Qt.RightButton
 
     onTapped: (eventPoint, button) => {
+      if (root.plugin) {
+        root.selectCurrentTrack();
+        if (!root.pluginSelectionModel.isSelected(root.pluginModelIndex))
+          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+      }
       contextMenu.popup();
     }
   }
@@ -182,19 +214,7 @@ Control {
 
     onActiveChanged: {
       if (active && root.plugin) {
-        // Capture selected plugins at drag start
-        const plugins = [];
-        const groupModel = root.pluginGroup;
-        for (let i = 0; i < groupModel.rowCount(); ++i) {
-          const idx = root.pluginSelectionModel.getModelIndex(i);
-          if (root.pluginSelectionModel.isSelected(idx)) {
-            const pl = root.pluginSelectionModel.getPluginFromModelIndex(idx);
-            if (pl)
-              plugins.push(pl);
-          }
-        }
-        if (plugins.length === 0)
-          plugins.push(root.plugin);
+        const plugins = root.gatherSelectedPlugins();
 
         dragItem.selectedPlugins = plugins;
         dragItem.sourceGroup = root.pluginGroup;
@@ -208,6 +228,7 @@ Control {
 
   PluginDragItem {
     id: dragItem
+
   }
 
   DropArea {
@@ -327,5 +348,4 @@ Control {
   ToolTip {
     text: root.plugin ? root.plugin.configuration.descriptor.name : ""
   }
-
 }
