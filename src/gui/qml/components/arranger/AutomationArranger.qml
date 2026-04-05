@@ -90,7 +90,7 @@ Arranger {
       scrollX: root.scrollX
       unifiedObjectsModel: root.unifiedObjectsModel
       width: height
-      y: (1.0 - automationPoint.value) * root.height
+      y: (1.0 - automationPoint.value) * parent.height
 
       sourceComponent: Component {
         AutomationPointView {

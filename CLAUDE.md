@@ -205,6 +205,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
+- Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 
 ### Unit Safety
 

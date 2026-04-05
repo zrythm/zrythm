@@ -987,6 +987,7 @@ find_package(Qt6 6.11
     Concurrent
     LinguistTools
     Test
+    CanvasPainter
   REQUIRED
 )
 qt_standard_project_setup(

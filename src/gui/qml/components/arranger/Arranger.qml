@@ -61,6 +61,7 @@ Item {
   property bool ctrlHeld
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
+  readonly property alias currentMousePosition: arrangerMouseArea.currentCoordinates
   required property EditorSettings editorSettings
   property bool enableYScroll: false
   property ArrangerObjectBaseView hoveredObject: null
@@ -192,7 +193,11 @@ Item {
   }
 
   function updateCursor() {
-    switch (root.currentAction) {
+    updateCursorFromAction(root.currentAction);
+  }
+
+  function updateCursorFromAction(action: int) {
+    switch (action) {
     case Arranger.None:
       switch (root.tool.toolValue) {
       case ArrangerTool.Select:
@@ -415,8 +420,7 @@ Item {
       readonly property var appWindow: ApplicationWindow.window
       property bool arrangerIsActive: activeFocus
 
-      height: 600 // TODO: calculate height
-
+      height: root.enableYScroll ? 600 : scrollView.height
       width: root.ruler.contentWidth
 
       ContextMenu.menu: Menu {

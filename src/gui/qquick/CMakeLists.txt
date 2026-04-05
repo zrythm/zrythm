@@ -2,16 +2,27 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 target_sources(zrythm_gui_lib
+  PUBLIC
+    FILE_SET HEADERS
+    FILES
+      fade_overlay_canvas_item.h
+      fade_overlay_canvas_renderer.h
+      meter_processor.h
+      qfuture_qml_wrapper.h
+      qml_utils.h
+      spectrum_analyzer_processor.h
+      waveform_canvas_item.h
+      waveform_canvas_renderer.h
+      waveform_channel.h
+      waveform_viewer_processor.h
   PRIVATE
-    meter_processor.h
+    fade_overlay_canvas_item.cpp
+    fade_overlay_canvas_renderer.cpp
     meter_processor.cpp
-    qfuture_qml_wrapper.h
-    qml_utils.h
     qml_utils.cpp
-    spectrum_analyzer_processor.h
     spectrum_analyzer_processor.cpp
-    waveform_channel.h
+    waveform_canvas_item.cpp
+    waveform_canvas_renderer.cpp
     waveform_channel.cpp
-    waveform_viewer_processor.h
     waveform_viewer_processor.cpp
 )

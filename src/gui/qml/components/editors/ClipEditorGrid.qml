@@ -100,6 +100,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 1
 
       sourceComponent: AudioEditorPane {
+        clipEditor: root.clipEditor
         session: root.session
         region: root.region
       }

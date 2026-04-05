@@ -19,6 +19,9 @@ class ArrangerObjectFadeRange : public QObject
   Q_PROPERTY (
     zrythm::dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts
       CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::CurveOptionsQmlAdapter * fadeOutCurveOpts READ fadeOutCurveOpts
+      CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 

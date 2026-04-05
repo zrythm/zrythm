@@ -28,6 +28,7 @@ qt_add_qml_module(zrythm_gui_lib
   VERSION 1.0
   DEPENDENCIES
     QtCore # Needed for QAbstractItemModel-derived types
+    CanvasPainter # This has no effect at the moment
   IMPORTS
     TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
@@ -67,6 +68,7 @@ target_link_libraries(zrythm_gui_lib
     zrythm_controllers_lib
     zrythm::include_dirs
     zrythm::all_compile_options
+    Qt6::CanvasPainter
 )
 target_precompile_headers(zrythm_gui_lib PUBLIC
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/backend/zrythm.h>)

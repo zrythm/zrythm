@@ -204,6 +204,7 @@ set(rel_qml_file_paths
   components/arranger/AutomationRegionContent.qml
   components/arranger/AutomationRegionView.qml
   components/arranger/Arranger.qml
+  components/arranger/AudioArranger.qml
   components/arranger/ArrangerObjectBaseView.qml
   components/arranger/ArrangerObjectLoader.qml
   components/arranger/ArrangerObjectTemporaryView.qml
@@ -322,6 +323,7 @@ qt_add_qml_module(zrythm
   VERSION 1.0
   DEPENDENCIES
     QtCore # Needed for QAbstractItemModel-derived types
+    CanvasPainter # This has no effect at the moment
   IMPORTS
     TARGET zrythm_utils_lib
     TARGET zrythm_dsp_lib
