@@ -10,10 +10,9 @@
  * https://github.com/DISTRHO/DPF-Max-Gen/blob/master/plugins/common/gen_dsp/genlib_ops.h#L313
  */
 
-#ifndef __COMMON_UTILS_DSP_H__
-#define __COMMON_UTILS_DSP_H__
+#pragma once
 
-#include "zrythm-config.h"
+#include <algorithm>
 
 #include "utils/math_utils.h"
 
@@ -129,10 +128,7 @@ abs_max_with_existing_peak (
       for (size_t i = 0; i < size; i++)
         {
           float val = fabsf (buf[i]);
-          if (val > new_peak)
-            {
-              new_peak = val;
-            }
+          new_peak = std::max (val, new_peak);
         }
     }
 
@@ -318,5 +314,3 @@ make_mono (
   bool    optimize = true);
 
 }; // zrythm::dsp::float_ranges
-
-#endif
