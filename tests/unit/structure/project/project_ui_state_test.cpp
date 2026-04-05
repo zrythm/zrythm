@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/juce_hardware_audio_interface.h"
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "utils/io_utils.h"
 #include "utils/qt.h"
 
-#include "helpers/mock_audio_io_device.h"
+#include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_settings_backend.h"
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -27,10 +26,7 @@ protected:
     project_dir =
       utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path ();
 
-    audio_device_manager =
-      test_helpers::create_audio_device_manager_with_dummy_device ();
-    hw_interface =
-      dsp::JuceHardwareAudioInterface::create (audio_device_manager);
+    hw_interface = std::make_unique<test_helpers::MockHardwareAudioInterface> ();
 
     plugin_format_manager = std::make_shared<juce::AudioPluginFormatManager> ();
     juce::addDefaultFormatsToManager (*plugin_format_manager);
@@ -99,7 +95,6 @@ protected:
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
   fs::path                                         project_dir;
-  std::shared_ptr<juce::AudioDeviceManager>        audio_device_manager;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
   std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
   test_helpers::MockSettingsBackend *              mock_backend_ptr{};

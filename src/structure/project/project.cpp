@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "dsp/engine.h"
+#include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
 #include "structure/project/project.h"
@@ -168,7 +169,12 @@ Project::Project (
         },
         [context = this] (std::function<void ()> func) {
           QMetaObject::invokeMethod (context, func);
-        })
+        },
+        [&] () -> std::optional<juce::AudioWorkgroup> {
+          auto * juce_hw =
+            dynamic_cast<dsp::JuceHardwareAudioInterface *> (&hw_interface_);
+          return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
+        }())
 {
   // Keep up-to-date realtime cache of tracks
   // Note: this is thread-safe since tracks are only added/removed while the

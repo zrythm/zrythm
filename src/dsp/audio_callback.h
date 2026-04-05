@@ -1,15 +1,16 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <functional>
+#include <optional>
 
-#include <juce_wrapper.h>
+#include "dsp/iaudio_callback.h"
 
 namespace zrythm::dsp
 {
-class AudioCallback : public juce::AudioIODeviceCallback
+class AudioCallback : public IAudioCallback
 {
 public:
   using EngineProcessCallback = std::function<void (
@@ -18,7 +19,7 @@ public:
     float * const *       outputChannelData,
     int                   numOutputChannels,
     int                   numSamples)>;
-  using DeviceAboutToStartCallback = std::function<void (juce::AudioIODevice *)>;
+  using DeviceAboutToStartCallback = std::function<void ()>;
   using DeviceStoppedCallback = std::function<void ()>;
 
   AudioCallback (
@@ -27,20 +28,19 @@ public:
     DeviceStoppedCallback      device_stopped_cb);
 
 public:
-  void audioDeviceIOCallbackWithContext (
-    const float * const *                     inputChannelData,
-    int                                       numInputChannels,
-    float * const *                           outputChannelData,
-    int                                       numOutputChannels,
-    int                                       numSamples,
-    const juce::AudioIODeviceCallbackContext &context) override;
-  void audioDeviceAboutToStart (juce::AudioIODevice * device) override;
-  void audioDeviceStopped () override;
-  void audioDeviceError (const juce::String &errorMessage) override;
+  void process_audio (
+    const float * const * input_channel_data,
+    int                   num_input_channels,
+    float * const *       output_channel_data,
+    int                   num_output_channels,
+    int                   num_samples) noexcept override;
+  void about_to_start () override;
+  void stopped () override;
+  void error (std::string_view error_message) override;
 
 private:
   EngineProcessCallback                     process_cb_;
   std::optional<DeviceAboutToStartCallback> device_about_to_start_cb_;
   std::optional<DeviceStoppedCallback>      device_stopped_cb_;
 };
-} // namespace zrythm::engine::device_io
+} // namespace zrythm::dsp

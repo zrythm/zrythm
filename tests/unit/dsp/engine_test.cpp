@@ -3,11 +3,10 @@
 
 #include "dsp/engine.h"
 #include "dsp/graph_builder.h"
-#include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/tempo_map.h"
 #include "dsp/transport.h"
 
-#include "helpers/mock_audio_io_device.h"
+#include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/scoped_juce_qapplication.h"
 
 #include "./graph_helpers.h"
@@ -58,13 +57,8 @@ protected:
       func ();
     };
 
-    // Create audio device manager with dummy device
-    audio_device_manager_ =
-      test_helpers::create_audio_device_manager_with_dummy_device ();
-
-    // Create hardware audio interface wrapper
     hw_interface_ =
-      dsp::JuceHardwareAudioInterface::create (audio_device_manager_);
+      std::make_unique<test_helpers::MockHardwareAudioInterface> ();
 
     graph_dispatcher_ = std::make_unique<DspGraphDispatcher> (
       std::move (graph_builder_), terminal_processables, *hw_interface_,
@@ -78,14 +72,13 @@ protected:
     MOCK_METHOD (void, build_graph_impl, (graph::Graph &), (override));
   };
 
-  std::unique_ptr<TempoMap>                     tempo_map_;
-  std::unique_ptr<Transport>                    transport_;
-  std::unique_ptr<MockProcessable>              processable_;
-  std::unique_ptr<MockGraphBuilder>             graph_builder_;
-  std::unique_ptr<DspGraphDispatcher>           graph_dispatcher_;
-  std::shared_ptr<juce::AudioDeviceManager>     audio_device_manager_;
-  std::unique_ptr<dsp::IHardwareAudioInterface> hw_interface_;
-  Transport::ConfigProvider                     config_provider_;
+  std::unique_ptr<TempoMap>                                 tempo_map_;
+  std::unique_ptr<Transport>                                transport_;
+  std::unique_ptr<MockProcessable>                          processable_;
+  std::unique_ptr<MockGraphBuilder>                         graph_builder_;
+  std::unique_ptr<DspGraphDispatcher>                       graph_dispatcher_;
+  std::unique_ptr<test_helpers::MockHardwareAudioInterface> hw_interface_;
+  Transport::ConfigProvider                                 config_provider_;
 };
 
 TEST_F (AudioEngineTest, ConstructorInitializesCorrectly)

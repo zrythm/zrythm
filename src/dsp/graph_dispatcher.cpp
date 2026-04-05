@@ -14,8 +14,10 @@ DspGraphDispatcher::DspGraphDispatcher (
   std::vector<graph::IProcessable *>         terminal_processables,
   const IHardwareAudioInterface             &hw_interface,
   RunFunctionWithEngineLock                  run_function_with_engine_lock,
-  graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread)
+  graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread,
+  std::optional<juce::AudioWorkgroup>        workgroup)
     : graph_builder_ (std::move (graph_builder)), hw_interface_ (hw_interface),
+      workgroup_ (std::move (workgroup)),
       run_function_with_engine_lock_ (std::move (run_function_with_engine_lock)),
       terminal_processables_ (std::move (terminal_processables)),
       run_on_main_thread_ (std::move (run_on_main_thread))
@@ -147,8 +149,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
   if (!scheduler_ && !soft)
     {
       scheduler_ = std::make_unique<graph::GraphScheduler> (
-        run_on_main_thread_, sample_rate, buffer_size, true,
-        hw_interface_.get_device_audio_workgroup ());
+        run_on_main_thread_, sample_rate, buffer_size, true, workgroup_);
       rebuild_graph ();
       scheduler_->start_threads ();
       return;

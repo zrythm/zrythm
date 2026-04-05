@@ -3,9 +3,8 @@
 
 #include "dsp/graph_builder.h"
 #include "dsp/graph_dispatcher.h"
-#include "dsp/juce_hardware_audio_interface.h"
 
-#include "helpers/mock_audio_io_device.h"
+#include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/scoped_juce_qapplication.h"
 
 #include "./graph_helpers.h"
@@ -83,13 +82,8 @@ protected:
       func ();
     };
 
-    // Create audio device manager with dummy device
-    audio_device_manager_ =
-      test_helpers::create_audio_device_manager_with_dummy_device ();
-
-    // Create hardware audio interface wrapper
     hw_interface_ =
-      dsp::JuceHardwareAudioInterface::create (audio_device_manager_);
+      std::make_unique<test_helpers::MockHardwareAudioInterface> ();
 
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000));
   }
@@ -107,7 +101,6 @@ protected:
   std::unique_ptr<MockGraphBuilder>             mock_graph_builder_;
   std::vector<graph::IProcessable *>            terminal_processables_;
   DspGraphDispatcher::RunFunctionWithEngineLock run_function_with_engine_lock_;
-  std::shared_ptr<juce::AudioDeviceManager>     audio_device_manager_;
   std::unique_ptr<dsp::IHardwareAudioInterface> hw_interface_;
   std::unique_ptr<DspGraphDispatcher>           dispatcher_;
   std::unique_ptr<dsp::TempoMap>                tempo_map_;

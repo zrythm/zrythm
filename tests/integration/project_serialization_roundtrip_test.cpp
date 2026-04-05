@@ -12,7 +12,6 @@
 #include "actions/track_creator.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
-#include "dsp/juce_hardware_audio_interface.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
@@ -25,7 +24,7 @@
 
 #include <QSignalSpy>
 
-#include "helpers/mock_audio_io_device.h"
+#include "helpers/mock_hardware_audio_interface_threaded.h"
 #include "helpers/mock_settings_backend.h"
 #include "helpers/qt_helpers.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -68,13 +67,8 @@ protected:
     project_dir_ =
       utils::Utf8String::from_qstring (temp_dir_obj_->path ()).to_path ();
 
-    // Create audio device manager with dummy device
-    audio_device_manager_ =
-      test_helpers::create_audio_device_manager_with_dummy_device ();
-
-    // Create hardware audio interface wrapper
     hw_interface_ =
-      dsp::JuceHardwareAudioInterface::create (audio_device_manager_);
+      std::make_unique<test_helpers::ThreadedMockHardwareAudioInterface> ();
 
     plugin_format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
     juce::addDefaultFormatsToManager (*plugin_format_manager_);
@@ -286,9 +280,13 @@ protected:
           false);
         loaded_bundle->project->engine ()->set_running (true);
 
-        // Let the mock audio device process a few cycles so the engine attempts
-        // processing the plugin
-        for (const auto _ : std::views::iota (0, 20))
+        // Wait for the mock audio device to process a few cycles so the engine
+        // processes the plugin
+        auto * mock_hw =
+          dynamic_cast<test_helpers::ThreadedMockHardwareAudioInterface *> (
+            hw_interface_.get ());
+        const auto initial_count = mock_hw->process_call_count ();
+        while (mock_hw->process_call_count () - initial_count < 3)
           QCoreApplication::processEvents ();
 
         loaded_bundle->project->engine ()->set_running (false);

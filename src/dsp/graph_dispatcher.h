@@ -9,6 +9,8 @@
 #include "utils/rt_thread_id.h"
 #include "utils/types.h"
 
+#include <juce_wrapper.h>
+
 namespace zrythm::dsp
 {
 
@@ -32,7 +34,8 @@ public:
     std::vector<graph::IProcessable *>         terminal_processables,
     const IHardwareAudioInterface             &hw_interface,
     RunFunctionWithEngineLock                  run_function_with_engine_lock,
-    graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread);
+    graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread,
+    std::optional<juce::AudioWorkgroup>        workgroup = std::nullopt);
 
   /**
    * Recalculates the process acyclic directed graph.
@@ -140,6 +143,7 @@ private:
 private:
   std::unique_ptr<graph::IGraphBuilder> graph_builder_;
   const IHardwareAudioInterface        &hw_interface_;
+  std::optional<juce::AudioWorkgroup>   workgroup_;
 
   /**
    * @brief Callable to call in a context where the audio processing engine is

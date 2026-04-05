@@ -89,7 +89,7 @@ AudioEngine::AudioEngine (
                   }
               }
           },
-          [this] (juce::AudioIODevice * dev) {
+          [this] () {
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
               nullptr, hw_interface_.get_sample_rate (),

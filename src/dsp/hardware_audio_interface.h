@@ -6,10 +6,10 @@
 #include "utils/types.h"
 #include "utils/units.h"
 
-#include <juce_wrapper.h>
-
 namespace zrythm::dsp
 {
+
+class IAudioCallback;
 
 /**
  * @brief Abstraction for hardware audio interface.
@@ -34,19 +34,18 @@ public:
 
   /**
    * @brief Adds an audio callback to receive audio I/O events.
+   *
+   * The caller must ensure @p callback remains alive until after
+   * remove_audio_callback() is called with the same pointer.
    */
-  virtual void add_audio_callback (juce::AudioIODeviceCallback * callback) = 0;
+  virtual void add_audio_callback (IAudioCallback * callback) = 0;
 
   /**
-   * @brief Removes an audio callback.
+   * @brief Removes a previously added audio callback.
+   *
+   * @p callback must be the same pointer passed to add_audio_callback().
    */
-  virtual void
-  remove_audio_callback (juce::AudioIODeviceCallback * callback) = 0;
-
-  /**
-   * @brief Returns the audio workgroup for the current device (if available).
-   */
-  virtual juce::AudioWorkgroup get_device_audio_workgroup () const = 0;
+  virtual void remove_audio_callback (IAudioCallback * callback) = 0;
 };
 
 } // namespace zrythm::dsp

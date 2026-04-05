@@ -1,8 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_GRAPH_THREAD_H
-#define ZRYTHM_DSP_GRAPH_THREAD_H
+#pragma once
 
 #include "zrythm-config.h"
 
@@ -88,5 +87,3 @@ private:
 };
 
 } // namespace zrythm::dsp::graph
-
-#endif
