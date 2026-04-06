@@ -12,12 +12,18 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
-  required property Project project
-  required property TrackSelectionModel trackSelectionModel
-  required property Tracklist tracklist
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
+  required property Project project
+  property Plugin selectedPlugin: null
+  required property TrackSelectionModel trackSelectionModel
+  required property Tracklist tracklist
   required property UndoStack undoStack
+
+  function showPluginInspector(plugin: Plugin) {
+    root.selectedPlugin = plugin;
+    tabBar.currentIndex = 1;
+  }
 
   TabBar {
     id: tabBar
@@ -54,7 +60,7 @@ ColumnLayout {
       Layout.fillHeight: false
       Layout.fillWidth: true
       active: track !== null
-      visible: active
+      visible: tabBar.currentIndex === 0 && active
 
       sourceComponent: TrackInspectorPage {
         anchors.fill: parent
@@ -80,17 +86,16 @@ ColumnLayout {
       }
     }
 
-    Rectangle {
-      Layout.fillHeight: true
-      Layout.fillWidth: true
-      border.color: "black"
-      border.width: 2
-      color: Qt.rgba(Math.random(), Math.random(), Math.random(), 1)
+    Loader {
+      id: pluginInspectorLoader
 
-      Text {
-        anchors.centerIn: parent
-        font.pixelSize: 16
-        text: "Item "
+      Layout.fillHeight: false
+      Layout.fillWidth: true
+      active: root.selectedPlugin !== null
+      visible: tabBar.currentIndex === 1 && active
+
+      sourceComponent: PluginInspectorPage {
+        plugin: root.selectedPlugin
       }
     }
   }

@@ -100,17 +100,6 @@ Control {
       }
     }
 
-    MenuSeparator {
-      visible: root.plugin !== null
-    }
-
-    MenuItem {
-      text: qsTr("Properties")
-
-      onTriggered:
-      // Open plugin properties dialog
-      {}
-    }
   }
 
   SelectionTracker {
@@ -120,6 +109,8 @@ Control {
     selectionModel: root.pluginSelectionModel
   }
 
+  signal pluginClicked(Plugin plugin)
+
   TapHandler {
     acceptedButtons: Qt.LeftButton
     acceptedModifiers: Qt.NoModifier
@@ -128,6 +119,7 @@ Control {
       if (root.plugin) {
         root.selectCurrentTrack();
         root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+        root.pluginClicked(root.plugin);
       }
     }
   }

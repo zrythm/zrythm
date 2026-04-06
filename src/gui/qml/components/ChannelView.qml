@@ -22,6 +22,8 @@ ColumnLayout {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
+  signal pluginClicked(Plugin plugin)
+
   implicitWidth: 48
 
   SelectionTracker {
@@ -134,6 +136,10 @@ ColumnLayout {
         header: Label {
           text: "MIDI FX"
         }
+
+        onPluginClicked: function(plugin: Plugin) {
+          root.pluginClicked(plugin);
+        }
       }
 
       PluginSlotList {
@@ -147,6 +153,10 @@ ColumnLayout {
 
         header: Label {
           text: "Inserts"
+        }
+
+        onPluginClicked: function(plugin: Plugin) {
+          root.pluginClicked(plugin);
         }
       }
 

@@ -12,6 +12,8 @@
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
+#include <QtQmlIntegration/qqmlintegration.h>
+
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
@@ -20,6 +22,7 @@ namespace zrythm::dsp
 class ParameterRange
 {
   Q_GADGET
+  QML_VALUE_TYPE (parameterRange)
 
 public:
   enum class Type : std::uint8_t
@@ -61,6 +64,7 @@ public:
      */
     Trigger,
   };
+  Q_ENUM (Type)
 
   /**
    * Unit to be displayed in the UI.
@@ -223,7 +227,7 @@ class ProcessorParameter
     float baseValue READ baseValue WRITE setBaseValue NOTIFY baseValueChanged)
   Q_PROPERTY (QString label READ label CONSTANT)
   Q_PROPERTY (QString description READ description CONSTANT)
-  Q_PROPERTY (ParameterRange range READ range CONSTANT)
+  Q_PROPERTY (zrythm::dsp::ParameterRange range READ range CONSTANT)
   Q_PROPERTY (bool automatable READ automatable CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
@@ -369,6 +373,8 @@ public:
   }
 
   void set_automatable (bool automatable) { automatable_ = automatable; }
+
+  bool hidden () const { return hidden_; }
 
   const auto &get_unique_id () const { return unique_id_; }
 

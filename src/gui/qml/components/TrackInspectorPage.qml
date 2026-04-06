@@ -19,6 +19,8 @@ ColumnLayout {
   required property TrackSelectionModel trackSelectionModel
   required property UndoStack undoStack
 
+  signal pluginClicked(Plugin plugin)
+
   TrackOperator {
     id: trackOperator
 
@@ -233,6 +235,10 @@ ColumnLayout {
       pluginOperator: root.pluginOperator
       track: root.track
       trackSelectionModel: root.trackSelectionModel
+
+      onPluginClicked: function (plugin: Plugin) {
+        root.pluginClicked(plugin);
+      }
     }
   }
 }

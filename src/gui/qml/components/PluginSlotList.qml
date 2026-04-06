@@ -15,6 +15,8 @@ ListView {
   required property Track track
   required property TrackSelectionModel trackSelectionModel
 
+  signal pluginClicked(Plugin plugin)
+
   implicitHeight: contentHeight
   interactive: false
   model: pluginGroup
@@ -27,6 +29,10 @@ ListView {
     pluginSelectionModel: root.pluginSelectionModel
     track: root.track
     trackSelectionModel: root.trackSelectionModel
+
+    onPluginClicked: function(plugin: Plugin) {
+      root.pluginClicked(plugin);
+    }
   }
   footer: DropAreaBase {
     id: dropArea

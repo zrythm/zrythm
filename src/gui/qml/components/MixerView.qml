@@ -18,6 +18,8 @@ RowLayout {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
+  signal pluginClicked(Plugin plugin)
+
   Repeater {
     id: allChannels
 
@@ -34,6 +36,10 @@ RowLayout {
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.tracklist
       undoStack: root.undoStack
+
+      onPluginClicked: function(plugin: Plugin) {
+        root.pluginClicked(plugin);
+      }
     }
     model: SortFilterProxyModel {
       id: mixerProxyModel

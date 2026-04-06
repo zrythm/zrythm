@@ -15,11 +15,12 @@ target_sources(zrythm_plugins_lib
     plugin.cpp
     plugin_configuration.cpp
     plugin_descriptor.cpp
-    plugin_group.cpp
-    plugin_protocol.cpp
-    plugin_slot.cpp
     plugin_descriptor_list.cpp
+    plugin_group.cpp
+    plugin_parameter_list_model.cpp
+    plugin_protocol.cpp
     plugin_scan_manager.cpp
+    plugin_slot.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -38,10 +39,11 @@ target_sources(zrythm_plugins_lib
       plugin_descriptor.h
       plugin_factory.h
       plugin_group.h
+      plugin_parameter_list_model.h
       plugin_protocol.h
-      plugin_slot.h
       plugin_descriptor_list.h
       plugin_scan_manager.h
+      plugin_slot.h
 )
 
 set_target_properties(zrythm_plugins_lib PROPERTIES

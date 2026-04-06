@@ -318,6 +318,8 @@ ApplicationWindow {
       orientation: Qt.Horizontal
 
       LeftDock {
+        id: leftDock
+
         SplitView.fillHeight: true
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
@@ -357,6 +359,10 @@ ApplicationWindow {
           session: root.session
           trackSelectionModel: trackSelectionModel
           visible: root.appSettings.bottomPanelVisible
+
+          onPluginClicked: function (plugin: Plugin) {
+            leftDock.showPluginInspector(plugin);
+          }
         }
       }
 

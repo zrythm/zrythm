@@ -16,6 +16,8 @@ ColumnLayout {
   required property ProjectSession session
   required property TrackSelectionModel trackSelectionModel
 
+  signal pluginClicked(Plugin plugin)
+
   spacing: 0
 
   StackLayout {
@@ -59,6 +61,10 @@ ColumnLayout {
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
       undoStack: root.session.undoStack
+
+      onPluginClicked: function(plugin: Plugin) {
+        root.pluginClicked(plugin);
+      }
     }
 
     Repeater {
