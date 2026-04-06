@@ -50,7 +50,7 @@ Arranger {
 
     anchors.fill: parent
 
-    WaveformCanvas {
+    AudioRegionWaveformCanvas {
       id: waveformCanvas
 
       height: contentItem.height
@@ -58,7 +58,6 @@ Arranger {
         const lighter = Qt.lighter(root.track.color, 1.4);
         return Qt.rgba(lighter.r, lighter.g, lighter.b, 200 / 255);
       }
-      pxPerTick: root.ruler.pxPerTick
       region: root.region
       waveformColor: Qt.rgba(root.track.color.r, root.track.color.g, root.track.color.b, 80 / 255)
       width: root.regionWidth

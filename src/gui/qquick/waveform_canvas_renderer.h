@@ -8,7 +8,6 @@
 #include <QColor>
 #include <QtCanvasPainter/qcanvaspainter.h>
 #include <QtCanvasPainter/qcanvaspainteritemrenderer.h>
-#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "juce_wrapper.h"
 
@@ -26,8 +25,8 @@ class WaveformCanvasItem;
 class WaveformCanvasRenderer : public QCanvasPainterItemRenderer
 {
 public:
-  explicit WaveformCanvasRenderer ();
-  ~WaveformCanvasRenderer () override;
+  WaveformCanvasRenderer () = default;
+  ~WaveformCanvasRenderer () override = default;
 
   void initializeResources (QCanvasPainter * painter) override;
   void synchronize (QCanvasPainterItem * item) override;
@@ -44,13 +43,11 @@ private:
 
   void compute_peaks ();
 
-  // Cached state from QML item
-  QObject * region_ = nullptr;
-  qreal     px_per_tick_ = 1.0;
-  QColor    waveform_color_;
-  QColor    outline_color_;
-  float     canvas_width_ = 0.0f;
-  float     canvas_height_ = 0.0f;
+  // Cached visual state from the item
+  QColor waveform_color_;
+  QColor outline_color_;
+  float  canvas_width_ = 0.0f;
+  float  canvas_height_ = 0.0f;
 
   // Cached pointer to the item's serialized audio buffer (owned by the item)
   const juce::AudioSampleBuffer * audio_buffer_ = nullptr;
@@ -59,8 +56,10 @@ private:
   std::vector<ChannelPeaks> peaks_;
   int                       num_channels_ = 0;
 
-  // Cache invalidation
-  bool needs_recompute_ = true;
+  // Change detection
+  uint64_t prev_generation_ = 0;
+  float    prev_width_ = 0.0f;
+  float    prev_height_ = 0.0f;
 };
 
 } // namespace zrythm::gui::qquick

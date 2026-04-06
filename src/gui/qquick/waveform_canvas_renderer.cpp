@@ -10,9 +10,6 @@
 namespace zrythm::gui::qquick
 {
 
-WaveformCanvasRenderer::WaveformCanvasRenderer () = default;
-WaveformCanvasRenderer::~WaveformCanvasRenderer () = default;
-
 void
 WaveformCanvasRenderer::initializeResources (QCanvasPainter * painter)
 {
@@ -24,32 +21,31 @@ WaveformCanvasRenderer::synchronize (QCanvasPainterItem * item)
 {
   auto * waveform_item = static_cast<WaveformCanvasItem *> (item);
 
-  canvas_width_ = static_cast<float> (waveform_item->width ());
-  canvas_height_ = static_cast<float> (waveform_item->height ());
+  const float new_width = static_cast<float> (waveform_item->width ());
+  const float new_height = static_cast<float> (waveform_item->height ());
 
-  const bool region_changed = (region_ != waveform_item->region ());
-  const bool zoom_changed =
-    !qFuzzyCompare (px_per_tick_, waveform_item->pxPerTick ());
   const bool size_changed =
-    !qFuzzyCompare (static_cast<qreal> (canvas_width_), waveform_item->width ())
-    || !qFuzzyCompare (
-      static_cast<qreal> (canvas_height_), waveform_item->height ());
+    !qFuzzyCompare (prev_width_, new_width)
+    || !qFuzzyCompare (prev_height_, new_height);
+  const uint64_t new_generation = waveform_item->bufferGeneration ();
+  const bool     buffer_changed = (new_generation != prev_generation_);
 
-  region_ = waveform_item->region ();
-  px_per_tick_ = waveform_item->pxPerTick ();
+  // Qt Scene Graph blocks the GUI thread during synchronize(), so the raw
+  // pointer into the item's audio_buffer_ cannot be invalidated between
+  // here and paint().
   waveform_color_ = waveform_item->waveformColor ();
   outline_color_ = waveform_item->outlineColor ();
   audio_buffer_ = waveform_item->audioBuffer ();
 
-  if (region_changed || zoom_changed || size_changed)
-    {
-      needs_recompute_ = true;
-    }
+  prev_generation_ = new_generation;
+  prev_width_ = new_width;
+  prev_height_ = new_height;
+  canvas_width_ = new_width;
+  canvas_height_ = new_height;
 
-  if (needs_recompute_ && region_ != nullptr && px_per_tick_ > 0)
+  if (buffer_changed || size_changed)
     {
       compute_peaks ();
-      needs_recompute_ = false;
     }
 }
 
@@ -57,14 +53,22 @@ void
 WaveformCanvasRenderer::compute_peaks ()
 {
   if (audio_buffer_ == nullptr)
-    return;
+    {
+      peaks_.clear ();
+      num_channels_ = 0;
+      return;
+    }
 
   const auto *  buffer = audio_buffer_;
   const int     num_channels = buffer->getNumChannels ();
   const int64_t total_frames = buffer->getNumSamples ();
 
   if (num_channels == 0 || total_frames == 0)
-    return;
+    {
+      peaks_.clear ();
+      num_channels_ = 0;
+      return;
+    }
 
   num_channels_ = num_channels;
 

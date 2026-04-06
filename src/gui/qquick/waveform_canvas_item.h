@@ -3,20 +3,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include <QColor>
-#include <QPointer>
 #include <QtCanvasPainter/qcanvaspainteritem.h>
-#include <QtCanvasPainter/qcanvaspainteritemrenderer.h>
-#include <QtQmlIntegration/qqmlintegration.h>
 
 #include "juce_wrapper.h"
-
-namespace zrythm::structure::arrangement
-{
-class AudioRegion;
-}
 
 namespace zrythm::gui::qquick
 {
@@ -24,19 +14,16 @@ namespace zrythm::gui::qquick
 class WaveformCanvasRenderer;
 
 /**
- * @brief QML-visible canvas item that renders an audio waveform.
+ * @brief Generic base for hardware-accelerated waveform rendering.
  *
- * Exposes properties for the audio region and scroll/zoom state.
- * The actual painting is done by WaveformCanvasRenderer.
+ * Owns the audio buffer storage and visual properties.
+ * Subclasses provide the buffer data by calling setAudioBuffer().
+ * Not registered to QML — use a derived class for QML usage.
  */
 class WaveformCanvasItem : public QCanvasPainterItem
 {
   Q_OBJECT
-  QML_NAMED_ELEMENT (WaveformCanvas)
 
-  Q_PROPERTY (QObject * region READ region WRITE setRegion NOTIFY regionChanged)
-  Q_PROPERTY (
-    qreal pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
   Q_PROPERTY (
     QColor waveformColor READ waveformColor WRITE setWaveformColor NOTIFY
       waveformColorChanged)
@@ -49,38 +36,42 @@ public:
 
   QCanvasPainterItemRenderer * createItemRenderer () const override;
 
-  QObject * region () const { return region_; }
-  void      setRegion (QObject * region);
-  qreal     pxPerTick () const { return px_per_tick_; }
-  void      setPxPerTick (qreal px);
-  QColor    waveformColor () const { return waveform_color_; }
-  void      setWaveformColor (const QColor &color);
-  QColor    outlineColor () const { return outline_color_; }
-  void      setOutlineColor (const QColor &color);
+  QColor waveformColor () const { return waveform_color_; }
+  void   setWaveformColor (const QColor &color);
+  QColor outlineColor () const { return outline_color_; }
+  void   setOutlineColor (const QColor &color);
 
   const juce::AudioSampleBuffer * audioBuffer () const
   {
-    return audio_buffer_ ? &*audio_buffer_ : nullptr;
+    return (audio_buffer_.getNumSamples () > 0) ? &audio_buffer_ : nullptr;
   }
 
-private:
-  void re_serialize_buffer ();
+  /**
+   * @brief Monotonically increasing counter bumped on each buffer change.
+   *
+   * The renderer compares this against its own stored value to decide
+   * whether peak recomputation is needed — pure read-only access.
+   */
+  uint64_t bufferGeneration () const { return buffer_generation_; }
+
+protected:
+  /**
+   * @brief Bumps the generation counter and schedules a repaint.
+   *
+   * Call after writing directly into audio_buffer_.
+   */
+  void notifyBufferChanged ();
+
+  juce::AudioSampleBuffer audio_buffer_;
 
 Q_SIGNALS:
-  void regionChanged ();
-  void pxPerTickChanged ();
   void waveformColorChanged ();
   void outlineColorChanged ();
 
 private:
-  QObject *                                     region_ = nullptr;
-  QPointer<structure::arrangement::AudioRegion> audio_region_;
-  qreal                                         px_per_tick_ = 1.0;
-  QColor                                        waveform_color_;
-  QColor                                        outline_color_;
-
-  std::optional<juce::AudioSampleBuffer> audio_buffer_;
-  std::vector<QMetaObject::Connection>   region_connections_;
+  QColor   waveform_color_;
+  QColor   outline_color_;
+  uint64_t buffer_generation_ = 0;
 };
 
 } // namespace zrythm::gui::qquick

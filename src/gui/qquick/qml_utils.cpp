@@ -13,7 +13,6 @@
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
-#include <QQmlEngine>
 #include <QRectF>
 #include <QRegularExpression>
 
@@ -123,114 +122,6 @@ QmlUtils::adjustOpacity (const QColor &color, float newOpacity)
 {
   return QColor::fromRgbF (
     color.redF (), color.greenF (), color.blueF (), newOpacity);
-}
-
-QVector<gui::qquick::WaveformChannel *>
-QmlUtils::getAudioRegionWaveform (QObject * audioRegion, int pixelWidth)
-{
-  QVector<gui::qquick::WaveformChannel *> result;
-
-  if (audioRegion == nullptr || pixelWidth <= 0)
-    {
-      return result;
-    }
-
-  // Cast to AudioRegion
-  auto * region =
-    qobject_cast<structure::arrangement::AudioRegion *> (audioRegion);
-  if (region == nullptr)
-    {
-      return result;
-    }
-
-  // Get the audio source from the region
-  try
-    {
-      // Calculate total length in samples
-      auto totalLengthSamples = static_cast<unsigned_frame_t> (
-        region->bounds ()->length ()->samples ());
-
-      if (totalLengthSamples == 0)
-        {
-          return result;
-        }
-
-      // Serialize the entire region to a buffer
-      juce::AudioSampleBuffer buffer;
-      structure::arrangement::RegionRenderer::serialize_to_buffer (
-        *region, buffer);
-
-      const int numChannels = buffer.getNumChannels ();
-      const int numSamples = buffer.getNumSamples ();
-
-      if (numSamples == 0)
-        {
-          return result;
-        }
-
-      // Generate waveform data for each channel
-      for (int ch = 0; ch < numChannels; ++ch)
-        {
-          QVector<float> minValues (pixelWidth);
-          QVector<float> maxValues (pixelWidth);
-
-          // Initialize with opposite values
-          std::fill (minValues.begin (), minValues.end (), 1.0f);
-          std::fill (maxValues.begin (), maxValues.end (), -1.0f);
-
-          const float * channelData = buffer.getReadPointer (ch);
-
-          // Calculate samples per pixel
-          const float samplesPerPixel =
-            static_cast<float> (numSamples) / static_cast<float> (pixelWidth);
-
-          // For each pixel, find min/max values
-          for (int px = 0; px < pixelWidth; ++px)
-            {
-              const int startSample =
-                static_cast<int> (static_cast<float> (px) * samplesPerPixel);
-              const int endSample = std::min (
-                static_cast<int> (static_cast<float> (px + 1) * samplesPerPixel),
-                numSamples);
-
-              if (startSample >= numSamples)
-                break;
-
-              float minVal = 1.0f;
-              float maxVal = -1.0f;
-
-              // Find min/max in this pixel range
-              for (int sample = startSample; sample < endSample; ++sample)
-                {
-                  const float val = channelData[sample];
-                  // Clamp to -1.0 to 1.0 range
-                  const float clampedVal = std::clamp (val, -1.0f, 1.0f);
-                  minVal = std::min (minVal, clampedVal);
-                  maxVal = std::max (maxVal, clampedVal);
-                }
-
-              minValues[px] = minVal;
-              maxValues[px] = maxVal;
-            }
-
-          // Create WaveformChannel and add to result
-          auto * channel =
-            new gui::qquick::WaveformChannel (minValues, maxValues, pixelWidth);
-
-          // Transfer ownership to QML JavaScript engine for proper cleanup
-          QQmlEngine::setObjectOwnership (
-            channel, QQmlEngine::JavaScriptOwnership);
-
-          result.append (channel);
-        }
-
-      return result;
-    }
-  catch (...)
-    {
-      // Return empty result on any error
-      return result;
-    }
 }
 
 QVector<float>
