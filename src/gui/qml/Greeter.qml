@@ -17,6 +17,7 @@ ApplicationWindow {
   readonly property AlertManager alertManager: app?.alertManager ?? null
   readonly property ZrythmApplication app: GlobalState.application
   readonly property AppSettings appSettings: app?.appSettings ?? null
+  property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
@@ -34,6 +35,7 @@ ApplicationWindow {
       root.show();
     });
     newWindow.show();
+    currentProjectWindow = newWindow;
     stack.push(projectSelectorPage);
     root.hide();
   }
@@ -45,6 +47,15 @@ ApplicationWindow {
   title: "Zrythm"
   visible: true
   width: 640
+
+  onCurrentProjectWindowChanged: {
+    // Trigger project cleanup when the project window closes
+    if (currentProjectWindow === null) {
+      Qt.callLater(function () {
+        projectManager.activeSession = null;
+      });
+    }
+  }
 
   AboutDialog {
     id: aboutDialog
