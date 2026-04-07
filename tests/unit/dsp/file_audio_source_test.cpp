@@ -8,6 +8,10 @@
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
+#include <QSignalSpy>
+
+#include "helpers/scoped_qcoreapplication.h"
+
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -204,6 +208,22 @@ TEST_F (FileAudioSourceTest, Serialization)
 
   // Verify properties
   EXPECT_EQ (deserialized.get_name ().str (), "serial_test");
+}
+
+// init_from_file() modifies the sample buffer and must emit samplesChanged
+TEST_F (FileAudioSourceTest, InitFromFileEmitsSamplesChanged)
+{
+  test_helpers::ScopedQCoreApplication app;
+
+  FileAudioSource src (test_wav, project_sample_rate, current_bpm, nullptr);
+  ASSERT_GT (src.get_num_frames (), 0);
+
+  QSignalSpy spy (&src, &FileAudioSource::samplesChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  src.init_from_file (test_wav, project_sample_rate, std::nullopt);
+
+  EXPECT_GT (spy.count (), 0);
 }
 
 } // namespace zrythm::dsp

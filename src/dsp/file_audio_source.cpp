@@ -104,6 +104,8 @@ FileAudioSource::init_from_file (
     {
       bpm_ = bpm_to_set.value ();
     }
+
+  Q_EMIT samplesChanged ();
 }
 
 void

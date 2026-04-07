@@ -6,6 +6,10 @@
 #include "structure/arrangement/audio_source_object.h"
 #include "utils/audio.h"
 
+#include <QSignalSpy>
+
+#include "helpers/scoped_qcoreapplication.h"
+
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::arrangement
@@ -81,6 +85,47 @@ TEST_F (AudioSourceObjectTest, ObjectCloning)
   EXPECT_NE (cloned_object->get_uuid (), source_object->get_uuid ());
   auto &cloned_audio_source = cloned_object->get_audio_source ();
   EXPECT_EQ (cloned_audio_source.getTotalLength (), 512);
+}
+
+// When the buffer is cleared and repopulated, the internal audio source must be
+// rebuilt to reflect the new buffer state.
+TEST_F (AudioSourceObjectTest, AudioSourceReflectsRepopulatedBuffer)
+{
+  auto * file_source = std::get<dsp::FileAudioSource *> (
+    registry.find_by_id_or_throw (source_ref->id ()));
+  ASSERT_EQ (file_source->get_num_frames (), 512);
+  ASSERT_EQ (source_object->get_audio_source ().getTotalLength (), 512);
+
+  // Clear and repopulate the buffer with a different size, as happens when
+  // the underlying audio data is reloaded from disk
+  file_source->clear_frames ();
+  ASSERT_EQ (file_source->get_num_frames (), 0);
+
+  utils::audio::AudioBuffer new_buffer (2, 1024);
+  file_source->expand_with_frames (new_buffer);
+  ASSERT_EQ (file_source->get_num_frames (), 1024);
+
+  EXPECT_EQ (source_object->get_audio_source ().getTotalLength (), 1024);
+}
+
+// When the underlying audio buffer changes, AudioSourceObject must emit
+// propertiesChanged.
+TEST_F (AudioSourceObjectTest, BufferChangeEmitsPropertiesChanged)
+{
+  test_helpers::ScopedQCoreApplication app;
+
+  QSignalSpy spy (source_object.get (), &ArrangerObject::propertiesChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto * file_source = std::get<dsp::FileAudioSource *> (
+    registry.find_by_id_or_throw (source_ref->id ()));
+
+  // Simulate buffer change as happens during init_loaded()
+  file_source->clear_frames ();
+  utils::audio::AudioBuffer new_buffer (2, 256);
+  file_source->expand_with_frames (new_buffer);
+
+  EXPECT_GT (spy.count (), 0);
 }
 
 } // namespace zrythm::structure::arrangement

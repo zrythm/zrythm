@@ -279,9 +279,8 @@ from_json (const nlohmann::json &j, TrackLaneList &p)
   p.lanes_.clear ();
   for (const auto &lane_json : j.at (TrackLaneList::kLanesKey))
     {
-      p.lanes_.emplace_back (
-        utils::make_qobject_unique<TrackLane> (p.dependencies_, &p));
-      lane_json.get_to (*p.lanes_.back ());
+      auto * lane = p.insertLane (p.lanes_.size ());
+      lane_json.get_to (*lane);
     }
   j.at (TrackLaneList::kLanesVisibleKey).get_to (p.lanes_visible_);
 }

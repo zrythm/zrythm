@@ -66,7 +66,8 @@ private:
   }
   friend void from_json (const nlohmann::json &j, AudioSourceObject &obj);
 
-  void generate_audio_source ();
+  Q_SLOT void generate_audio_source ();
+  void        connect_file_audio_source_signals ();
 
 private:
   dsp::FileAudioSourceRegistry                  &registry_;

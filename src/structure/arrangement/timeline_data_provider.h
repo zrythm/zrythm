@@ -304,21 +304,7 @@ private:
   /**
    * Caches an AudioRegion to the audio cache.
    */
-  void cache_audio_region (const arrangement::AudioRegion &region)
-  {
-    // Audio region processing
-    auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
-
-    // Serialize the audio region
-    arrangement::RegionRenderer::serialize_to_buffer (region, *audio_buffer);
-
-    // Add to cache with proper timing
-    audio_cache_.add_audio_region (
-      std::make_pair (
-        units::samples (region.position ()->samples ()),
-        region.bounds ()->get_end_position_samples (true)),
-      *audio_buffer);
-  }
+  void cache_audio_region (const arrangement::AudioRegion &region);
 
   /**
    * @brief Set the audio regions for realtime access.

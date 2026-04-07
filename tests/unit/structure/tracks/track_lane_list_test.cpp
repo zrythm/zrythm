@@ -632,4 +632,52 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   EXPECT_EQ (recacheSpy.count (), 1);
 }
 
+TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
+{
+  // 1. Build a TrackLaneList with a lane and a MIDI region
+  auto * lane = lane_list_->addLane ();
+  auto   tempo_map =
+    std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
+    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
+  region->position ()->setTicks (100.0);
+  region->bounds ()->setLengthTicks (50.0);
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+    region_ref);
+  lane_list_->setLanesVisible (true);
+
+  // 2. Serialize to JSON
+  nlohmann::json j = *lane_list_;
+
+  // 3. Deserialize into a fresh TrackLaneList
+  TrackLane::TrackLaneDependencies deps{
+    .obj_registry_ = *obj_registry_,
+    .file_audio_source_registry_ = *file_audio_source_registry_,
+  };
+  auto deserialized = std::make_unique<TrackLaneList> (
+    deps.obj_registry_, deps.file_audio_source_registry_);
+  from_json (j, *deserialized);
+
+  ASSERT_EQ (deserialized->size (), 1);
+
+  // 4. Verify signal connections work after deserialization:
+  // changing a region's position should trigger laneObjectsNeedRecache.
+  QSignalSpy recacheSpy (
+    deserialized.get (), &TrackLaneList::laneObjectsNeedRecache);
+  ASSERT_TRUE (recacheSpy.isValid ());
+
+  // Get the deserialized region and modify it
+  auto * deser_lane = deserialized->at (0);
+  auto   deser_regions = deser_lane->arrangement::ArrangerObjectOwner<
+    arrangement::MidiRegion>::get_children_view ();
+  ASSERT_EQ (deser_regions.size (), 1);
+  auto * deser_region = deser_regions.front ();
+  deser_region->position ()->setTicks (200.0);
+
+  QCoreApplication::processEvents ();
+
+  EXPECT_GT (recacheSpy.count (), 0);
+}
+
 } // namespace zrythm::structure::tracks
