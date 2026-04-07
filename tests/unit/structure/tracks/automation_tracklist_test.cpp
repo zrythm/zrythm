@@ -386,4 +386,45 @@ TEST_F (AutomationTracklistTest, Serialization)
     "Test Parameter 2");
 }
 
+TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
+{
+  // Create an automation track with a region containing a point
+  auto   at1 = create_automation_track (param_id1);
+  auto * track_ptr = at1.get ();
+  automation_tracklist->add_automation_track (std::move (at1));
+
+  auto region_ref = obj_registry.create_object<arrangement::AutomationRegion> (
+    *tempo_map, obj_registry, file_audio_source_registry);
+  auto * region = region_ref.get_object_as<arrangement::AutomationRegion> ();
+  track_ptr->add_object (region_ref);
+
+  auto point_ref =
+    obj_registry.create_object<arrangement::AutomationPoint> (*tempo_map);
+  auto * point = point_ref.get_object_as<arrangement::AutomationPoint> ();
+  point->setValue (0.75f);
+  region->add_object (point_ref);
+
+  ASSERT_EQ (track_ptr->get_children_vector ().size (), 1);
+
+  // Serialize
+  nlohmann::json j;
+  to_json (j, *automation_tracklist);
+
+  // Deserialize into new tracklist
+  auto tracklist2 = std::make_unique<
+    AutomationTracklist> (AutomationTrackHolder::Dependencies{
+    .tempo_map_ = *tempo_map_wrapper,
+    .file_audio_source_registry_ = file_audio_source_registry,
+    .port_registry_ = port_registry,
+    .param_registry_ = processor_param_registry,
+    .object_registry_ = obj_registry });
+  from_json (j, *tracklist2);
+
+  // Verify the automation track retained its region
+  auto * deserialized_at = tracklist2->automation_track_at (0);
+  ASSERT_NE (deserialized_at, nullptr);
+  EXPECT_EQ (deserialized_at->get_children_vector ().size (), 1)
+    << "Automation track lost its regions during serialization round-trip";
+}
+
 } // namespace zrythm::structure::tracks

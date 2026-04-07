@@ -377,6 +377,7 @@ from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
   nfo.automation_track_ = utils::make_qobject_unique<AutomationTrack> (
     nfo.dependencies_.tempo_map_, nfo.dependencies_.file_audio_source_registry_,
     nfo.dependencies_.object_registry_, param_ref);
+  from_json (j, *nfo.automation_track_);
 
   j.at (AutomationTrackHolder::kCreatedByUserKey).get_to (nfo.created_by_user_);
   j.at (AutomationTrackHolder::kVisible).get_to (nfo.visible_);
