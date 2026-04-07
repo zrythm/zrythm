@@ -11,14 +11,14 @@ Item {
 
   readonly property Action loadAction: Action {
     shortcut: StandardKey.Open
-    text: qsTr("Load…")
+    text: qsTr("Open…")
 
     onTriggered: {
       root.loadFolderDialog.open();
     }
   }
   property FolderDialog loadFolderDialog: FolderDialog {
-    title: qsTr("Load Project")
+    title: qsTr("Open Project")
     options: FolderDialog.ShowDirsOnly
     selectedFolder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
 
