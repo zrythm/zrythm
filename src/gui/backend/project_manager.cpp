@@ -447,7 +447,12 @@ ProjectManager::setActiveSession (ProjectSession * project)
 
   if (active_session_)
     {
-      active_session_->project ()->aboutToBeDeleted ();
+      if (
+        active_session_->project () != nullptr
+        && active_session_->project ()->engine () != nullptr)
+        {
+          active_session_->project ()->engine ()->deactivate ();
+        }
       active_session_.reset ();
     }
 

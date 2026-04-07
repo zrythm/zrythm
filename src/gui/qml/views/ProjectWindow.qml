@@ -77,7 +77,6 @@ ApplicationWindow {
 
   Component.onCompleted: {
     console.log("ApplicationWindow created on platform", Qt.platform.os);
-    project.aboutToBeDeleted.connect(closeAndDestroy);
     project.engine.activate();
   }
   onClosing: {

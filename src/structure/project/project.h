@@ -100,8 +100,6 @@ public:
   dsp::TempoMapWrapper *                       getTempoMap () const;
   structure::arrangement::TempoObjectManager * tempoObjectManager () const;
 
-  Q_SIGNAL void aboutToBeDeleted ();
-
   // =========================================================
   // TODO: Remove these accessors - QML should access via ControlRoom instead
 
