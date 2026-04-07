@@ -322,7 +322,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 **Copyright Notice Format:**
 ```cpp
-// SPDX-FileCopyrightText: © 2025 Your Name <your@email.org>
+// SPDX-FileCopyrightText: © 2026 Your Name <your@email.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 ```
 
