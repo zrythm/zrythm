@@ -195,6 +195,8 @@ public:
   CarlaHostHandle host_handle_ = nullptr;
 
   NativeTimeInfo time_info_ = {};
+
+  std::string resource_dir_str_;
 #endif
 
   /** Plugin ID inside carla engine. */

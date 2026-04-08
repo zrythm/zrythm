@@ -1244,8 +1244,8 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   auto         dir =
     fs::path (carla_filename).parent_path ().parent_path ().parent_path ();
   auto res_dir = dir / "share" / "carla" / "resources";
-  // FIXME leak
-  native_host_descriptor_.resourceDir = g_strdup (res_dir);
+  resource_dir_str_ = res_dir.string ();
+  native_host_descriptor_.resourceDir = resource_dir_str_.c_str ();
 
   native_host_descriptor_.get_buffer_size = host_get_buffer_size;
   native_host_descriptor_.get_sample_rate = host_get_sample_rate;
