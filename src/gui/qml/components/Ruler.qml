@@ -103,16 +103,13 @@ Item {
 
     // Grid lines and labels
     RulerGridCanvas {
-      height: scrollView.height
-      width: scrollView.width
-      x: root.editorSettings?.x ?? 0
-
       barLabelFont: Style.smallTextFont
       barLineOpacity: root.barLineOpacity
       beatLabelFont: Style.xSmallTextFont
       beatLineOpacity: root.beatLineOpacity
       detailMeasureLabelPxThreshold: root.detailMeasureLabelPxThreshold
       detailMeasurePxThreshold: root.detailMeasurePxThreshold
+      height: scrollView.height
       pxPerTick: root.pxPerTick
       scrollX: root.editorSettings?.x ?? 0
       scrollXPlusWidth: (root.editorSettings?.x ?? 0) + scrollView.width
@@ -120,6 +117,8 @@ Item {
       sixteenthLineOpacity: root.sixteenthLineOpacity
       tempoMap: root.tempoMap
       textColor: root.palette.text
+      width: scrollView.width
+      x: root.editorSettings?.x ?? 0
     }
 
     Item {
@@ -354,7 +353,14 @@ Item {
       onWheel: wheel => {
         if (wheel.modifiers & Qt.ControlModifier) {
           const multiplier = wheel.angleDelta.y > 0 ? 1.3 : 1 / 1.3;
-          root.editorSettings.horizontalZoomLevel = Math.min(Math.max(root.editorSettings.horizontalZoomLevel * multiplier, root.minZoomLevel), root.maxZoomLevel);
+          const newZoomLevel = Math.min(Math.max(root.editorSettings.horizontalZoomLevel * multiplier, root.minZoomLevel), root.maxZoomLevel);
+
+          // wheel.x is in content coordinates (Flickable space)
+          const tickUnderCursor = wheel.x / root.pxPerTick;
+          const cursorViewportOffset = wheel.x - root.editorSettings.x;
+          const newPxPerTick = root.defaultPxPerTick * newZoomLevel;
+          root.editorSettings.horizontalZoomLevel = newZoomLevel;
+          root.editorSettings.x = tickUnderCursor * newPxPerTick - cursorViewportOffset;
         }
       }
     }
