@@ -4,6 +4,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import ZrythmStyle
 import Zrythm
 
 ArrangerObjectBaseView {
@@ -80,5 +83,60 @@ ArrangerObjectBaseView {
 
     font: nameText.font
     text: nameText.text
+  }
+
+  onObjectDoubleClicked: timeSigEditDialog.open()
+
+  Dialog {
+    id: timeSigEditDialog
+
+    modal: true
+    popupType: Popup.Window
+    standardButtons: Dialog.Ok | Dialog.Cancel
+    title: qsTr("Edit Time Signature")
+
+    contentItem: ColumnLayout {
+      spacing: Style.buttonPadding
+
+      Label {
+        text: qsTr("Beats per bar:")
+      }
+
+      SpinBox {
+        id: numeratorSpinBox
+
+        Layout.fillWidth: true
+        editable: true
+        from: 1
+        to: 16
+        value: root.timeSignatureObject.numerator
+      }
+
+      Label {
+        text: qsTr("Beat unit:")
+      }
+
+      ComboBox {
+        id: denominatorComboBox
+
+        Layout.fillWidth: true
+        model: [2, 4, 8, 16]
+        Component.onCompleted: {
+          const idx = denominatorComboBox.model.indexOf(root.timeSignatureObject.denominator);
+          denominatorComboBox.currentIndex = idx >= 0 ? idx : 1;
+        }
+      }
+    }
+
+    onAboutToShow: {
+      numeratorSpinBox.value = root.timeSignatureObject.numerator;
+      const idx = denominatorComboBox.model.indexOf(root.timeSignatureObject.denominator);
+      denominatorComboBox.currentIndex = idx >= 0 ? idx : 1;
+    }
+
+    onAccepted: {
+      propertyOperator.setValueAffectingTempoMap("numerator", numeratorSpinBox.value);
+      propertyOperator.setValueAffectingTempoMap("denominator", denominatorComboBox.currentValue);
+    }
   }
 }

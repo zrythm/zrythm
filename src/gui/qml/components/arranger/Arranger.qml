@@ -621,11 +621,18 @@ Item {
 
         onDoubleClicked: mouse => {
           console.log("doubleClicked", action);
-          // create an object at the mouse position
           if (mouse.button === Qt.LeftButton) {
-            let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
-            if (obj) {
-              snapNewlyCreatedObjects();
+            if (root.hoveredObject !== null) {
+              action = Arranger.None;
+              root.clearTempQmlArrangerObjects();
+              CursorManager.unsetCursor();
+              root.hoveredObject.objectDoubleClicked();
+            } else {
+              // create an object at the mouse position
+              let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
+              if (obj) {
+                snapNewlyCreatedObjects();
+              }
             }
           }
         }

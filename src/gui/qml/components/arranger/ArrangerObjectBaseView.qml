@@ -31,6 +31,7 @@ Control {
   required property UndoStack undoStack
 
   signal selectionRequested(var mouse)
+  signal objectDoubleClicked
 
   function requestSelection(mouse: var) {
     selectionRequested(mouse);
