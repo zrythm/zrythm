@@ -5,6 +5,8 @@ target_sources(zrythm_gui_lib
   PUBLIC
     FILE_SET HEADERS
     FILES
+      arranger_grid_canvas_item.h
+      arranger_grid_canvas_renderer.h
       fade_overlay_canvas_item.h
       fade_overlay_canvas_renderer.h
       audio_region_waveform_canvas_item.h
@@ -16,6 +18,8 @@ target_sources(zrythm_gui_lib
       waveform_canvas_renderer.h
       waveform_viewer_processor.h
   PRIVATE
+    arranger_grid_canvas_item.cpp
+    arranger_grid_canvas_renderer.cpp
     fade_overlay_canvas_item.cpp
     fade_overlay_canvas_renderer.cpp
     audio_region_waveform_canvas_item.cpp

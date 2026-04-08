@@ -13,12 +13,6 @@ namespace zrythm::gui::qquick
 {
 
 void
-FadeOverlayCanvasRenderer::initializeResources (QCanvasPainter * painter)
-{
-  Q_UNUSED (painter)
-}
-
-void
 FadeOverlayCanvasRenderer::synchronize (QCanvasPainterItem * item)
 {
   auto * fade_item = static_cast<FadeOverlayCanvasItem *> (item);

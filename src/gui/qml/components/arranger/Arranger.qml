@@ -503,79 +503,20 @@ Item {
       }
 
       // Vertical grid lines
-      // FIXME: logic is copy-pasted from Ruler. find a way to have a common base
-      Item {
-        id: timeGrid
+      ArrangerGridCanvas {
+        height: arrangerContent.height
+        width: root.scrollViewWidth
+        x: root.scrollX
 
-        // Bar lines
-        Repeater {
-          model: root.ruler.visibleBarCount
-
-          delegate: Item {
-            id: barItem
-
-            readonly property int bar: root.ruler.startBar + index
-            required property int index
-
-            Rectangle {
-              readonly property int barTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0)
-
-              color: root.palette.button
-              height: arrangerContent.height
-              opacity: root.ruler.barLineOpacity
-              width: 1
-              x: barTick * root.ruler.pxPerTick
-            }
-
-            Loader {
-              active: root.ruler.pxPerBeat > root.ruler.detailMeasurePxThreshold
-              visible: active
-
-              sourceComponent: Repeater {
-                model: root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0))
-
-                delegate: Item {
-                  id: beatItem
-
-                  readonly property int beat: index + 1
-                  readonly property int beatTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0)
-                  required property int index
-
-                  Rectangle {
-                    color: root.palette.button
-                    height: arrangerContent.height
-                    opacity: root.ruler.beatLineOpacity
-                    visible: beatItem.beat !== 1
-                    width: 1
-                    x: beatItem.beatTick * root.ruler.pxPerTick
-                  }
-
-                  Loader {
-                    active: root.ruler.pxPerSixteenth > root.ruler.detailMeasurePxThreshold
-                    visible: active
-
-                    sourceComponent: Repeater {
-                      model: 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0))
-
-                      Rectangle {
-                        required property int index
-                        readonly property int sixteenth: index + 1
-                        readonly property int sixteenthTick: root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0)
-
-                        color: root.palette.button
-                        height: arrangerContent.height
-                        opacity: root.ruler.sixteenthLineOpacity
-                        visible: sixteenth !== 1
-                        width: 1
-                        x: sixteenthTick * root.ruler.pxPerTick
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+        barLineOpacity: root.ruler.barLineOpacity
+        beatLineOpacity: root.ruler.beatLineOpacity
+        detailMeasurePxThreshold: root.ruler.detailMeasurePxThreshold
+        lineColor: root.palette.button
+        pxPerTick: root.ruler.pxPerTick
+        scrollX: root.scrollX
+        scrollXPlusWidth: root.scrollXPlusWidth
+        sixteenthLineOpacity: root.ruler.sixteenthLineOpacity
+        tempoMap: root.tempoMap
       }
 
       Item {

@@ -26,9 +26,8 @@ class WaveformCanvasRenderer : public QCanvasPainterItemRenderer
 {
 public:
   WaveformCanvasRenderer () = default;
-  ~WaveformCanvasRenderer () override = default;
+  Q_DISABLE_COPY_MOVE (WaveformCanvasRenderer)
 
-  void initializeResources (QCanvasPainter * painter) override;
   void synchronize (QCanvasPainterItem * item) override;
   void paint (QCanvasPainter * painter) override;
 

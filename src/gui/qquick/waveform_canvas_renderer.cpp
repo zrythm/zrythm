@@ -11,12 +11,6 @@ namespace zrythm::gui::qquick
 {
 
 void
-WaveformCanvasRenderer::initializeResources (QCanvasPainter * painter)
-{
-  Q_UNUSED (painter)
-}
-
-void
 WaveformCanvasRenderer::synchronize (QCanvasPainterItem * item)
 {
   auto * waveform_item = static_cast<WaveformCanvasItem *> (item);
