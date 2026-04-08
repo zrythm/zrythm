@@ -2,11 +2,42 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/editor_settings.h"
+#include "utils/math_utils.h"
 
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {
+void
+EditorSettings::setX (double x)
+{
+  auto clamped_x = clamp_scroll_start_x (x);
+  if (utils::math::floats_equal (scroll_start_x_, clamped_x))
+    return;
+
+  scroll_start_x_ = clamped_x;
+  Q_EMIT xChanged (scroll_start_x_);
+}
+
+void
+EditorSettings::setY (double y)
+{
+  auto clamped_y = clamp_scroll_start_y (y);
+  if (utils::math::floats_equal (scroll_start_y_, clamped_y))
+    return;
+  scroll_start_y_ = clamped_y;
+  Q_EMIT yChanged (scroll_start_y_);
+}
+
+void
+EditorSettings::setHorizontalZoomLevel (double hzoom_level)
+{
+  if (utils::math::floats_equal (hzoom_level_, hzoom_level))
+    return;
+  hzoom_level_ = hzoom_level;
+  Q_EMIT horizontalZoomLevelChanged (hzoom_level);
+}
+
 double
 EditorSettings::clamp_scroll_start_x (double x)
 {

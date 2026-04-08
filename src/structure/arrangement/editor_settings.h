@@ -4,7 +4,6 @@
 #pragma once
 
 #include "utils/icloneable.h"
-#include "utils/math_utils.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -33,37 +32,16 @@ public:
   // QML interface
   // =========================================================
 
-  double getX () const { return scroll_start_x_; }
-  void   setX (double x)
-  {
-    auto clamped_x = clamp_scroll_start_x (x);
-    if (utils::math::floats_equal (scroll_start_x_, clamped_x))
-      return;
-
-    scroll_start_x_ = clamped_x;
-    Q_EMIT xChanged (scroll_start_x_);
-  }
+  double        getX () const { return scroll_start_x_; }
+  void          setX (double x);
   Q_SIGNAL void xChanged (double x);
 
-  double getY () const { return scroll_start_y_; }
-  void   setY (double y)
-  {
-    auto clamped_y = clamp_scroll_start_y (y);
-    if (utils::math::floats_equal (scroll_start_y_, clamped_y))
-      return;
-    scroll_start_y_ = clamped_y;
-    Q_EMIT yChanged (scroll_start_y_);
-  }
+  double        getY () const { return scroll_start_y_; }
+  void          setY (double y);
   Q_SIGNAL void yChanged (double y);
 
-  double getHorizontalZoomLevel () const { return hzoom_level_; }
-  void   setHorizontalZoomLevel (double hzoom_level)
-  {
-    if (utils::math::floats_equal (hzoom_level_, hzoom_level))
-      return;
-    hzoom_level_ = hzoom_level;
-    Q_EMIT horizontalZoomLevelChanged (hzoom_level);
-  }
+  double        getHorizontalZoomLevel () const { return hzoom_level_; }
+  void          setHorizontalZoomLevel (double hzoom_level);
   Q_SIGNAL void horizontalZoomLevelChanged (double hzoom_level);
 
   // =========================================================
