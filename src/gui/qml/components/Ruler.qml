@@ -32,16 +32,11 @@ Item {
   property real dragStartLoopStartTicks: 0
   property real dragStartX: 0
   required property EditorSettings editorSettings
-  readonly property int endBar: {
-    root.tempoMapChangedFlag; // binding
-    return tempoMap.getMusicalPosition(visibleEndTick).bar + 1; // +1 for padding
-  }
   readonly property int markerSize: 8
   readonly property int maxBars: 256
   readonly property real maxZoomLevel: 1800
   readonly property real minZoomLevel: 0.04
   readonly property real pxPerBar: pxPerSixteenth * 16
-  readonly property real pxPerBeat: pxPerSixteenth * 4
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * (editorSettings?.horizontalZoomLevel ?? 1)
   property ArrangerObject region: null
@@ -49,18 +44,10 @@ Item {
   readonly property bool shouldSnap: !root.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
   readonly property real sixteenthLineOpacity: 0.4
   required property SnapGrid snapGrid
-  readonly property int startBar: {
-    tempoMapChangedFlag; // binding
-    return tempoMap.getMusicalPosition(visibleStartTick).bar;
-  }
   required property TempoMap tempoMap
-  property bool tempoMapChangedFlag: false
   readonly property real ticksPerSixteenth: tempoMap.getPpq() / 4
   property Track track: null
   required property Transport transport
-  readonly property int visibleBarCount: endBar - startBar + 1
-  readonly property real visibleEndTick: visibleStartTick + (parent.width / pxPerTick)
-  readonly property real visibleStartTick: (editorSettings?.x ?? 1) / pxPerTick
 
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
@@ -97,14 +84,6 @@ Item {
   implicitHeight: 24
   implicitWidth: 64
 
-  Connections {
-    function onTimeSignatureEventsChanged() {
-      root.tempoMapChangedFlag = !root.tempoMapChangedFlag;
-    }
-
-    target: root.tempoMap
-  }
-
   ScrollView {
     id: scrollView
 
@@ -122,130 +101,25 @@ Item {
       targetProperty: "contentX"
     }
 
-    // Grid lines and time markers
-    Item {
-      id: timeGrid
-
+    // Grid lines and labels
+    RulerGridCanvas {
       height: scrollView.height
+      width: scrollView.width
+      x: root.editorSettings?.x ?? 0
 
-      // Generate bars, beats, sixteenths based on zoom level
-      Repeater {
-        model: root.visibleBarCount
-
-        delegate: Item {
-          id: barItem
-
-          readonly property int bar: root.startBar + index
-          required property int index
-
-          Rectangle {
-            readonly property int barTick: {
-              root.tempoMapChangedFlag; // binding
-              return root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0);
-            }
-
-            color: root.palette.text
-            height: 14 // parent.height / 3
-            opacity: root.barLineOpacity
-            width: 2
-            x: barTick * root.pxPerTick
-
-            Text {
-              anchors.bottom: parent.bottom
-              anchors.left: parent.right
-              anchors.leftMargin: 2
-              color: root.palette.text
-              font.family: Style.smallTextFont.family
-              font.pixelSize: Style.smallTextFont.pixelSize
-              font.weight: Font.Medium
-              text: barItem.bar
-            }
-          }
-
-          Loader {
-            active: root.pxPerBeat > root.detailMeasurePxThreshold
-            visible: active
-
-            sourceComponent: Repeater {
-              model: {
-                root.tempoMapChangedFlag; // binding
-                return root.tempoMap.timeSignatureNumeratorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, 1, 1, 0));
-              }
-
-              delegate: Item {
-                id: beatItem
-
-                readonly property int beat: index + 1
-                readonly property int beatTick: {
-                  root.tempoMapChangedFlag; // binding
-                  return root.tempoMap.getTickFromMusicalPosition(barItem.bar, beat, 1, 0);
-                }
-                required property int index
-
-                Rectangle {
-                  color: root.palette.text
-                  height: 10
-                  opacity: root.beatLineOpacity
-                  visible: beatItem.beat !== 1
-                  width: 1
-                  x: beatItem.beatTick * root.pxPerTick
-
-                  Text {
-                    anchors.left: parent.right
-                    anchors.leftMargin: 2
-                    anchors.top: parent.top
-                    color: root.palette.text
-                    font: Style.xSmallTextFont
-                    text: `${barItem.bar}.${beatItem.beat}`
-                    visible: root.pxPerBeat > root.detailMeasureLabelPxThreshold
-                  }
-                }
-
-                Loader {
-                  active: root.pxPerSixteenth > root.detailMeasurePxThreshold
-                  visible: active
-
-                  sourceComponent: Repeater {
-                    model: {
-                      root.tempoMapChangedFlag; // binding
-                      return 16 / root.tempoMap.timeSignatureDenominatorAtTick(root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, 1, 0));
-                    }
-
-                    Rectangle {
-                      id: sixteenthRect
-
-                      required property int index
-                      readonly property int sixteenth: index + 1
-                      readonly property int sixteenthTick: {
-                        root.tempoMapChangedFlag; // binding
-                        return root.tempoMap.getTickFromMusicalPosition(barItem.bar, beatItem.beat, sixteenth, 0);
-                      }
-
-                      color: root.palette.text
-                      height: 8
-                      opacity: root.sixteenthLineOpacity
-                      visible: sixteenth !== 1
-                      width: 1
-                      x: sixteenthTick * root.pxPerTick
-
-                      Text {
-                        anchors.left: parent.right
-                        anchors.leftMargin: 2
-                        anchors.top: parent.top
-                        color: root.palette.text
-                        font: Style.xxSmallTextFont
-                        text: `${barItem.bar}.${beatItem.beat}.
-${sixteenthRect.sixteenth}`
-                        visible: root.pxPerSixteenth > root.detailMeasureLabelPxThreshold
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      barLabelFont: Style.smallTextFont
+      barLineOpacity: root.barLineOpacity
+      beatLabelFont: Style.xSmallTextFont
+      beatLineOpacity: root.beatLineOpacity
+      detailMeasureLabelPxThreshold: root.detailMeasureLabelPxThreshold
+      detailMeasurePxThreshold: root.detailMeasurePxThreshold
+      pxPerTick: root.pxPerTick
+      scrollX: root.editorSettings?.x ?? 0
+      scrollXPlusWidth: (root.editorSettings?.x ?? 0) + scrollView.width
+      sixteenthLabelFont: Style.xxSmallTextFont
+      sixteenthLineOpacity: root.sixteenthLineOpacity
+      tempoMap: root.tempoMap
+      textColor: root.palette.text
     }
 
     Item {

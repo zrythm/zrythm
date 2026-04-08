@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map_qml_adapter.h"
-#include "gui/qquick/arranger_grid_canvas_item.h"
-#include "gui/qquick/arranger_grid_canvas_renderer.h"
+#include "gui/qquick/ruler_grid_canvas_item.h"
+#include "gui/qquick/ruler_grid_canvas_renderer.h"
 
 namespace zrythm::gui::qquick
 {
 
-ArrangerGridCanvasItem::ArrangerGridCanvasItem (QQuickItem * parent)
+RulerGridCanvasItem::RulerGridCanvasItem (QQuickItem * parent)
     : QCanvasPainterItem (parent)
 {
   setFillColor (Qt::transparent);
@@ -16,13 +16,13 @@ ArrangerGridCanvasItem::ArrangerGridCanvasItem (QQuickItem * parent)
 }
 
 QCanvasPainterItemRenderer *
-ArrangerGridCanvasItem::createItemRenderer () const
+RulerGridCanvasItem::createItemRenderer () const
 {
-  return new ArrangerGridCanvasRenderer ();
+  return new RulerGridCanvasRenderer ();
 }
 
 void
-ArrangerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
+RulerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
 {
   if (tempo_map_ == map)
     return;
@@ -36,7 +36,7 @@ ArrangerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
     {
       QObject::connect (
         tempo_map_, &dsp::TempoMapWrapper::timeSignatureEventsChanged, this,
-        &ArrangerGridCanvasItem::update, Qt::UniqueConnection);
+        &RulerGridCanvasItem::update, Qt::UniqueConnection);
     }
 
   Q_EMIT tempoMapChanged ();
@@ -44,7 +44,7 @@ ArrangerGridCanvasItem::setTempoMap (dsp::TempoMapWrapper * map)
 }
 
 void
-ArrangerGridCanvasItem::setPxPerTick (qreal px)
+RulerGridCanvasItem::setPxPerTick (qreal px)
 {
   if (qFuzzyCompare (px_per_tick_, px))
     return;
@@ -54,7 +54,7 @@ ArrangerGridCanvasItem::setPxPerTick (qreal px)
 }
 
 void
-ArrangerGridCanvasItem::setScrollX (qreal x)
+RulerGridCanvasItem::setScrollX (qreal x)
 {
   if (qFuzzyCompare (scroll_x_, x))
     return;
@@ -64,7 +64,7 @@ ArrangerGridCanvasItem::setScrollX (qreal x)
 }
 
 void
-ArrangerGridCanvasItem::setScrollXPlusWidth (qreal w)
+RulerGridCanvasItem::setScrollXPlusWidth (qreal w)
 {
   if (qFuzzyCompare (scroll_x_plus_width_, w))
     return;
@@ -74,17 +74,17 @@ ArrangerGridCanvasItem::setScrollXPlusWidth (qreal w)
 }
 
 void
-ArrangerGridCanvasItem::setLineColor (const QColor &color)
+RulerGridCanvasItem::setTextColor (const QColor &color)
 {
-  if (line_color_ == color)
+  if (text_color_ == color)
     return;
-  line_color_ = color;
-  Q_EMIT lineColorChanged ();
+  text_color_ = color;
+  Q_EMIT textColorChanged ();
   update ();
 }
 
 void
-ArrangerGridCanvasItem::setBarLineOpacity (qreal opacity)
+RulerGridCanvasItem::setBarLineOpacity (qreal opacity)
 {
   if (qFuzzyCompare (bar_line_opacity_, opacity))
     return;
@@ -94,7 +94,7 @@ ArrangerGridCanvasItem::setBarLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setBeatLineOpacity (qreal opacity)
+RulerGridCanvasItem::setBeatLineOpacity (qreal opacity)
 {
   if (qFuzzyCompare (beat_line_opacity_, opacity))
     return;
@@ -104,7 +104,7 @@ ArrangerGridCanvasItem::setBeatLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
+RulerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
 {
   if (qFuzzyCompare (sixteenth_line_opacity_, opacity))
     return;
@@ -114,12 +114,52 @@ ArrangerGridCanvasItem::setSixteenthLineOpacity (qreal opacity)
 }
 
 void
-ArrangerGridCanvasItem::setDetailMeasurePxThreshold (qreal threshold)
+RulerGridCanvasItem::setDetailMeasurePxThreshold (qreal threshold)
 {
   if (qFuzzyCompare (detail_measure_px_threshold_, threshold))
     return;
   detail_measure_px_threshold_ = threshold;
   Q_EMIT detailMeasurePxThresholdChanged ();
+  update ();
+}
+
+void
+RulerGridCanvasItem::setDetailMeasureLabelPxThreshold (qreal threshold)
+{
+  if (qFuzzyCompare (detail_measure_label_px_threshold_, threshold))
+    return;
+  detail_measure_label_px_threshold_ = threshold;
+  Q_EMIT detailMeasureLabelPxThresholdChanged ();
+  update ();
+}
+
+void
+RulerGridCanvasItem::setBarLabelFont (const QFont &font)
+{
+  if (bar_label_font_ == font)
+    return;
+  bar_label_font_ = font;
+  Q_EMIT barLabelFontChanged ();
+  update ();
+}
+
+void
+RulerGridCanvasItem::setBeatLabelFont (const QFont &font)
+{
+  if (beat_label_font_ == font)
+    return;
+  beat_label_font_ = font;
+  Q_EMIT beatLabelFontChanged ();
+  update ();
+}
+
+void
+RulerGridCanvasItem::setSixteenthLabelFont (const QFont &font)
+{
+  if (sixteenth_label_font_ == font)
+    return;
+  sixteenth_label_font_ = font;
+  Q_EMIT sixteenthLabelFontChanged ();
   update ();
 }
 

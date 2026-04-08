@@ -141,7 +141,7 @@ public:
   Q_INVOKABLE double tempoAtTick (int64_t tick) const;
 
   // this should be static but i don't know how to use it from QML then
-  Q_INVOKABLE int getPpq () { return TempoMap::get_ppq (); }
+  Q_INVOKABLE int getPpq () const { return TempoMap::get_ppq (); }
 
   double sampleRate () const { return tempo_map_.get_sample_rate (); }
   void   setSampleRate (double sampleRate)
