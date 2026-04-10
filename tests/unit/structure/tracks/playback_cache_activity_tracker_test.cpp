@@ -24,13 +24,18 @@ protected:
   {
     app_ = std::make_unique<ScopedQCoreApplication> ();
     scheduler_ = new utils::PlaybackCacheScheduler ();
-    scheduler_->setDelay (50ms);
+    scheduler_->setDelay (kDelay);
   }
 
   void TearDown () override { delete scheduler_; }
 
+// On Mac there are some issues with timing...
+#ifdef Q_OS_MACOS
+  static constexpr auto kDelay = 500ms;
+#else
   static constexpr auto kDelay = 50ms;
-  static auto           kWaitTime () { return (kDelay * 3) / 2; }
+#endif
+  static constexpr auto kWaitTime = (kDelay * 3) / 2;
 
   utils::PlaybackCacheScheduler * scheduler_{};
 
@@ -73,7 +78,7 @@ TEST_F (PlaybackCacheActivityTrackerTest, PendingFollowsScheduler)
   EXPECT_TRUE (tracker.isPending ());
   EXPECT_GE (pending_spy.count (), 1);
 
-  QTest::qWait (kWaitTime ());
+  QTest::qWait (kWaitTime);
   EXPECT_FALSE (tracker.isPending ());
   EXPECT_GE (pending_spy.count (), 2);
 }
