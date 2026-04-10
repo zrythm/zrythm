@@ -200,7 +200,8 @@ Zrythm makes extensive use of modern C++ features:
 - Prefer `std::jthread` over `std::thread`
 - Use `ptr == nullptr` instead of `!ptr` when doing null checks
 - Use `std::numbers` instead of macros for number constants like `M_PI`
-- Use ranges (including `std::views::iota`) instead of C-style for-loops
+- Use ranges and range-based for-loops instead of C-style for-loops
+- Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
