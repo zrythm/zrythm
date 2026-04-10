@@ -680,6 +680,7 @@ if(ZRYTHM_STRICT)
       -Werror=nonnull
       -Werror=tautological-compare
       -Werror=unused-result
+      -Werror=range-loop-construct
 
       # this gets triggered on asserts on gcc...
       # -Werror=unused-variable
