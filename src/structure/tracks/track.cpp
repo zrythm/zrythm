@@ -199,6 +199,11 @@ Track::make_lanes ()
   playable_content_cache_request_debouncer_ =
     utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this);
 
+  // cache activity tracking
+  playback_cache_activity_tracker_ =
+    utils::make_qobject_unique<PlaybackCacheActivityTracker> (
+      playable_content_cache_request_debouncer_.get (), this);
+
   QObject::connect (
     ret.get (), &TrackLaneList::laneObjectsNeedRecache,
     playable_content_cache_request_debouncer_.get (),
@@ -467,6 +472,9 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
     };
   generate_events_for_region_type.operator()<arrangement::MidiRegion> ();
   generate_events_for_region_type.operator()<arrangement::AudioRegion> ();
+
+  if (playback_cache_activity_tracker_)
+    playback_cache_activity_tracker_->onRegenerationComplete (affectedRange);
 }
 
 void

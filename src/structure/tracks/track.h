@@ -7,6 +7,7 @@
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/piano_roll_track.h"
+#include "structure/tracks/playback_cache_activity_tracker.h"
 #include "structure/tracks/recordable_track.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane_list.h"
@@ -81,6 +82,9 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (
     bool clipLauncherMode READ clipLauncherMode WRITE setClipLauncherMode NOTIFY
       clipLauncherModeChanged)
+  Q_PROPERTY (
+    zrythm::structure::tracks::PlaybackCacheActivityTracker *
+      playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
@@ -452,6 +456,13 @@ public:
   void          setClipLauncherMode (bool mode);
   Q_SIGNAL void clipLauncherModeChanged (bool mode);
 
+  // cache activity tracking
+  [[nodiscard]] PlaybackCacheActivityTracker *
+  playbackCacheActivityTracker () const
+  {
+    return playback_cache_activity_tracker_.get ();
+  }
+
   /**
    * @brief To be connected to to notify of any changes to the playable content,
    * like MIDI or audio events.
@@ -740,6 +751,8 @@ protected:
     playable_content_cache_request_debouncer_;
 
   bool clip_launcher_mode_{};
+  utils::QObjectUniquePtr<PlaybackCacheActivityTracker>
+    playback_cache_activity_tracker_;
 
   BOOST_DESCRIBE_CLASS (
     Track,

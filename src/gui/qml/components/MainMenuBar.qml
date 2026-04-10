@@ -177,6 +177,20 @@ MenuBar {
     MenuItem {
       action: ApplicationWindow.window?.fullScreenAction ?? null
     }
+
+    Menu {
+      title: qsTr("Debug")
+
+      MenuItem {
+        checkable: true
+        checked: GlobalState.application.appSettings.showCacheActivity
+        text: qsTr("Show Cache Activity")
+
+        onToggled: {
+          GlobalState.application.appSettings.showCacheActivity = checked;
+        }
+      }
+    }
   }
 
   Menu {

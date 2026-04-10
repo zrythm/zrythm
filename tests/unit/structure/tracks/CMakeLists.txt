@@ -10,6 +10,8 @@ add_executable(zrythm_structure_tracks_unit_tests
   clip_playback_data_provider_test.cpp
   mock_track.h
   piano_roll_track_test.cpp
+  playback_cache_activity_aggregator_test.cpp
+  playback_cache_activity_tracker_test.cpp
   recordable_track_test.cpp
   singleton_tracks_test.cpp
   track_collection_test.cpp

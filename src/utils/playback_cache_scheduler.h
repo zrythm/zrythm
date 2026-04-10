@@ -9,8 +9,6 @@
 #include "utils/expandable_tick_range.h"
 #include "utils/qt.h"
 
-using namespace std::chrono_literals;
-
 namespace zrythm::utils
 {
 /**
@@ -26,6 +24,7 @@ namespace zrythm::utils
 class PlaybackCacheScheduler : public QObject
 {
   Q_OBJECT
+  Q_PROPERTY (bool isPending READ isPending NOTIFY isPendingChanged)
 
 public:
   PlaybackCacheScheduler (QObject * parent = nullptr);
@@ -42,8 +41,11 @@ public:
    */
   void setDelay (std::chrono::milliseconds delay);
 
+  [[nodiscard]] bool isPending () const { return debouncer_->is_pending (); }
+
 Q_SIGNALS:
   void cacheRequested (utils::ExpandableTickRange affectedRange);
+  void isPendingChanged ();
 
 private:
   void execute_pending_request ();

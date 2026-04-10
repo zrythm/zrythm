@@ -56,6 +56,7 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (bool, first_run, true)
   // DEFINE_SETTING_PROPERTY (bool, transportLoop, true)
   DEFINE_SETTING_PROPERTY (bool, transportReturnToCue, true)
+  DEFINE_SETTING_PROPERTY (bool, showCacheActivity, false)
   // note: in amplitude (0 to 2)
   DEFINE_SETTING_PROPERTY (double, metronomeVolume, 1.0)
   DEFINE_SETTING_PROPERTY (bool, metronomeEnabled, -1)

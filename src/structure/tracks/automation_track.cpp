@@ -19,7 +19,7 @@ AutomationTrack::AutomationTrack (
       tempo_map_ (tempo_map), object_registry_ (obj_registry),
       param_id_ (std::move (param_id)),
       automation_cache_request_debouncer_ (
-        utils::make_qobject_unique<utils::PlaybackCacheScheduler> ())
+        utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this))
 {
   parameter ()->set_automation_provider ([this] (auto sample_position) {
     return automation_mode_.load () == AutomationMode::Read
@@ -47,6 +47,11 @@ AutomationTrack::AutomationTrack (
     automation_cache_request_debouncer_.get (),
     &utils::PlaybackCacheScheduler::cacheRequested, this,
     &AutomationTrack::regeneratePlaybackCaches);
+
+  // cache activity tracking
+  playback_cache_activity_tracker_ =
+    utils::make_qobject_unique<PlaybackCacheActivityTracker> (
+      automation_cache_request_debouncer_.get (), this);
 }
 
 // ========================================================================
@@ -80,6 +85,8 @@ AutomationTrack::regeneratePlaybackCaches (
   auto children = get_children_view ();
   automation_data_provider_.generate_automation_events (
     tempo_map_.get_tempo_map (), children, affectedRange);
+
+  playback_cache_activity_tracker_->onRegenerationComplete (affectedRange);
 }
 
 // ========================================================================

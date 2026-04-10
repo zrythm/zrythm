@@ -36,6 +36,8 @@ Item {
   readonly property int maxBars: 256
   readonly property real maxZoomLevel: 1800
   readonly property real minZoomLevel: 0.04
+  property int playbackCacheCompleteCount: 0
+  property int playbackCachePendingCount: 0
   readonly property real pxPerBar: pxPerSixteenth * 16
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * (editorSettings?.horizontalZoomLevel ?? 1)
@@ -363,6 +365,21 @@ Item {
           root.editorSettings.x = tickUnderCursor * newPxPerTick - cursorViewportOffset;
         }
       }
+    }
+  }
+
+  // Cache activity summary bar (debug only, overlay at bottom of ruler)
+  Loader {
+    active: GlobalState.application.appSettings.showCacheActivity && (root.playbackCachePendingCount > 0 || root.playbackCacheCompleteCount > 0)
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 3
+    visible: active
+    z: 100
+
+    sourceComponent: Rectangle {
+      color: root.playbackCachePendingCount > 0 ? Qt.rgba(1, 0.647, 0, 0.6) : Qt.rgba(0.392, 0.784, 0.392, 0.6)
     }
   }
 }

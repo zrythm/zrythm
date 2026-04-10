@@ -544,6 +544,20 @@ Arranger {
               }
             }
           }
+
+          // Cache activity overlay (debug only)
+          Loader {
+            active: GlobalState.application.appSettings.showCacheActivity && trackDelegate.track.playbackCacheActivityTracker !== null
+            anchors.fill: parent
+            visible: active
+            z: 5
+
+            sourceComponent: PlaybackCacheActivityOverlay {
+              activityEntries: trackDelegate.track.playbackCacheActivityTracker.entries
+              pending: trackDelegate.track.playbackCacheActivityTracker.pending
+              pxPerTick: root.ruler.pxPerTick
+            }
+          }
         }
 
         Loader {
@@ -552,7 +566,7 @@ Arranger {
           Layout.fillWidth: true
           Layout.maximumHeight: Layout.preferredHeight
           Layout.minimumHeight: Layout.preferredHeight
-          Layout.preferredHeight: item ? item.contentHeight : 0
+          Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
           active: trackDelegate.track.lanes && trackDelegate.track.lanes.lanesVisible
           visible: active
 
@@ -572,7 +586,7 @@ Arranger {
               required property TrackLane trackLane
 
               height: trackLane.height
-              width: ListView.view.width
+              width: lanesListView.width
 
               Component {
                 id: laneRegionLoaderComponent
@@ -662,7 +676,7 @@ Arranger {
           Layout.fillWidth: true
           Layout.maximumHeight: Layout.preferredHeight
           Layout.minimumHeight: Layout.preferredHeight
-          Layout.preferredHeight: item ? item.contentHeight : 0
+          Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
           active: trackDelegate.track.automationTracklist !== null && automationTracklist.automationVisible
           visible: active
 
@@ -682,7 +696,7 @@ Arranger {
               required property var automationTrackHolder
 
               height: automationTrackHolder.height
-              width: ListView.view.width
+              width: automationTracksListView.width
 
               Repeater {
                 id: automationRegionsRepeater
@@ -720,6 +734,20 @@ Arranger {
                       }
                     }
                   }
+                }
+              }
+
+              // Cache activity overlay for automation tracks (debug only)
+              Loader {
+                active: GlobalState.application.appSettings.showCacheActivity && automationTrackItem.automationTrack.playbackCacheActivityTracker !== null
+                anchors.fill: parent
+                visible: active
+                z: 5
+
+                sourceComponent: PlaybackCacheActivityOverlay {
+                  activityEntries: automationTrackItem.automationTrack.playbackCacheActivityTracker.entries
+                  pending: automationTrackItem.automationTrack.playbackCacheActivityTracker.pending
+                  pxPerTick: root.ruler.pxPerTick
                 }
               }
             }
@@ -762,6 +790,63 @@ Arranger {
     text: "Some text"
   }
 
+  component PlaybackCacheActivityOverlay: Item {
+    id: overlay
+
+    readonly property color _completeBorderColor: Qt.rgba(0.392, 0.784, 0.392, 0.35)
+    readonly property color _completeFillColor: Qt.rgba(0.392, 0.784, 0.392, 0.12)
+    readonly property color _pendingBorderColor: Qt.rgba(1, 0.647, 0, 0.4)
+    readonly property color _pendingFillColor: Qt.rgba(1, 0.647, 0, 0.12)
+    required property var activityEntries
+    required property bool pending
+    required property real pxPerTick
+
+    clip: true
+
+    Rectangle {
+      anchors.fill: parent
+      border.color: overlay._pendingBorderColor
+      border.width: 1
+      color: overlay._pendingFillColor
+      opacity: overlay.pending ? 0.7 : 0
+      visible: opacity > 0
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 500
+        }
+      }
+    }
+
+    Repeater {
+      model: overlay.activityEntries
+
+      delegate: Rectangle {
+        required property PlaybackCacheActivityEntry modelData
+        readonly property real tickWidth: modelData.isFullContent ? parent.width : (modelData.endTick - modelData.startTick) * overlay.pxPerTick
+        readonly property real tickX: modelData.isFullContent ? 0 : modelData.startTick * overlay.pxPerTick
+
+        border.color: overlay._completeBorderColor
+        border.width: 1
+        color: overlay._completeFillColor
+        height: parent.height
+        width: Math.max(tickWidth, 2)
+        x: tickX
+
+        SequentialAnimation on opacity {
+          id: entryFadeout
+
+          NumberAnimation {
+            duration: 300
+            from: 0.7
+            to: 0
+          }
+        }
+
+        Component.onCompleted: entryFadeout.start()
+      }
+    }
+  }
   component TrackRoleData: QtObject {
     required property Track track
   }

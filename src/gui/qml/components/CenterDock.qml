@@ -15,6 +15,7 @@ import Qt.labs.synchronizer
 ColumnLayout {
   id: root
 
+  required property PlaybackCacheActivityAggregator cacheActivityAggregator
   readonly property Project project: session.project
   readonly property int rulerHeight: 24
   required property ProjectSession session
@@ -74,7 +75,7 @@ ColumnLayout {
           id: tempoMapLegendLoader
 
           Layout.fillWidth: true
-          Layout.preferredHeight: active ? item.implicitHeight : 0
+          Layout.preferredHeight: active ? (item as TempoMapLegend).implicitHeight : 0
           active: tracklistHeader.tempoMapVisible
           clip: true
 
@@ -180,6 +181,8 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: root.rulerHeight
+            playbackCacheCompleteCount: root.cacheActivityAggregator.cacheCompleteCount
+            playbackCachePendingCount: root.cacheActivityAggregator.cachePendingCount
             editorSettings: root.session.uiState.timeline.editorSettings
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap

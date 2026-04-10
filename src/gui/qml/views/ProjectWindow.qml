@@ -340,11 +340,14 @@ ApplicationWindow {
         orientation: Qt.Vertical
 
         CenterDock {
+          id: centerDock
+
           Layout.verticalStretchFactor: 2
           SplitView.fillHeight: true
           SplitView.fillWidth: true
           SplitView.minimumHeight: implicitHeight
           SplitView.preferredHeight: 200
+          cacheActivityAggregator: cacheActivityAggregator
           session: root.session
           trackSelectionModel: trackSelectionModel
         }
@@ -377,16 +380,32 @@ ApplicationWindow {
       }
     }
 
-    Item {
+    Rectangle {
       id: botBar
 
       Layout.fillWidth: true
+      color: root.palette.window
       implicitHeight: 24
 
-      Text {
-        anchors.right: parent.right
-        font: root.font
-        text: "Status Bar"
+      PlaybackCacheActivityAggregator {
+        id: cacheActivityAggregator
+        collection: root.project.tracklist.collection
+      }
+
+      RowLayout {
+        anchors.fill: parent
+        anchors.rightMargin: Style.buttonPadding * 2
+        spacing: Style.buttonPadding * 2
+
+        Item {
+          Layout.fillWidth: true
+        }
+
+        Label {
+          font: root.font
+          text: qsTr("Cache: %1 pending · %2 complete").arg(cacheActivityAggregator.cachePendingCount).arg(cacheActivityAggregator.cacheCompleteCount)
+          visible: root.appSettings.showCacheActivity
+        }
       }
     }
   }

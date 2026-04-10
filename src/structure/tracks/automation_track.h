@@ -11,6 +11,7 @@
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/timeline_data_provider.h"
+#include "structure/tracks/playback_cache_activity_tracker.h"
 #include "utils/playback_cache_scheduler.h"
 #include "utils/units.h"
 
@@ -35,6 +36,9 @@ class AutomationTrack
     AutomationTrack,
     regions,
     arrangement::AutomationRegion)
+  Q_PROPERTY (
+    zrythm::structure::tracks::PlaybackCacheActivityTracker *
+      playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
@@ -108,6 +112,13 @@ public:
    */
   Q_SIGNAL void
   automationObjectsNeedRecache (utils::ExpandableTickRange affectedRange);
+
+  // cache activity tracking
+  [[nodiscard]] PlaybackCacheActivityTracker *
+  playbackCacheActivityTracker () const
+  {
+    return playback_cache_activity_tracker_.get ();
+  }
 
   // ========================================================================
 
@@ -229,6 +240,9 @@ private:
    */
   utils::QObjectUniquePtr<utils::PlaybackCacheScheduler>
     automation_cache_request_debouncer_;
+
+  utils::QObjectUniquePtr<PlaybackCacheActivityTracker>
+    playback_cache_activity_tracker_;
 };
 
 /**

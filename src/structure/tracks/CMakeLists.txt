@@ -11,65 +11,73 @@ target_link_libraries(zrythm_structure_tracks_lib
 )
 target_sources(zrythm_structure_tracks_lib
   PRIVATE
-    audio_bus_track.h
     audio_bus_track.cpp
-    audio_group_track.h
     audio_group_track.cpp
-    audio_track.h
     audio_track.cpp
-    automation_track.h
     automation_track.cpp
-    automation_tracklist.h
     automation_tracklist.cpp
-    channel.h
     channel.cpp
-    channel_send.h
     channel_send.cpp
-    channel_subgraph_builder.h
     channel_subgraph_builder.cpp
-    chord_track.h
     chord_track.cpp
-    clip_playback_data_provider.h
     clip_playback_data_provider.cpp
-    folder_track.h
     folder_track.cpp
-    instrument_track.h
     instrument_track.cpp
-    marker_track.h
     marker_track.cpp
-    master_track.h
     master_track.cpp
-    midi_bus_track.h
     midi_bus_track.cpp
-    midi_group_track.h
     midi_group_track.cpp
-    midi_track.h
     midi_track.cpp
-    modulator_track.h
     modulator_track.cpp
-    piano_roll_track.h
     piano_roll_track.cpp
-    recordable_track.h
+    playback_cache_activity_aggregator.cpp
+    playback_cache_activity_tracker.cpp
     recordable_track.cpp
-    singleton_tracks.h
-    track.h
     track.cpp
-    track_all.h
-    track_collection.h
     track_collection.cpp
-    track_factory.h
-    track_lane.h
     track_lane.cpp
-    track_lane_list.h
     track_lane_list.cpp
-    track_fwd.h
-    track_processor.h
     track_processor.cpp
-    track_routing.h
     track_routing.cpp
-    track_span.h
-    tracklist.h
     tracklist.cpp
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ".."
+    FILES
+      audio_bus_track.h
+      audio_group_track.h
+      audio_track.h
+      automation_track.h
+      automation_tracklist.h
+      channel.h
+      channel_send.h
+      channel_subgraph_builder.h
+      chord_track.h
+      clip_playback_data_provider.h
+      folder_track.h
+      instrument_track.h
+      marker_track.h
+      master_track.h
+      midi_bus_track.h
+      midi_group_track.h
+      midi_track.h
+      modulator_track.h
+      piano_roll_track.h
+      playback_cache_activity_aggregator.h
+      playback_cache_activity_tracker.h
+      recordable_track.h
+      singleton_tracks.h
+      track.h
+      track_all.h
+      track_collection.h
+      track_factory.h
+      track_fwd.h
+      track_lane.h
+      track_lane_list.h
+      track_processor.h
+      track_routing.h
+      track_span.h
+      tracklist.h
 )
 set_target_properties(zrythm_structure_tracks_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}

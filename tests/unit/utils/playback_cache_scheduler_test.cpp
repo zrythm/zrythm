@@ -176,4 +176,115 @@ TEST_F (PlaybackCacheSchedulerTest, EdgeCaseZeroRange)
   EXPECT_EQ (result_range->first, 0.0);
   EXPECT_EQ (result_range->second, 0.0);
 }
+
+// ========================================================================
+// isPending tests
+// ========================================================================
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingInitiallyFalse)
+{
+  EXPECT_FALSE (scheduler->isPending ());
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingTrueAfterQueueRequest)
+{
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+  EXPECT_TRUE (scheduler->isPending ());
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingFalseAfterDebounce)
+{
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+  EXPECT_TRUE (scheduler->isPending ());
+
+  QTest::qWait (get_reasonable_time_after_default_delay ());
+  EXPECT_FALSE (scheduler->isPending ());
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingChangedSignalOnFirstRequest)
+{
+  QSignalSpy spy (scheduler, &PlaybackCacheScheduler::isPendingChanged);
+
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+
+  // Signal should be emitted once when going from not-pending to pending
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_TRUE (scheduler->isPending ());
+}
+
+TEST_F (
+  PlaybackCacheSchedulerTest,
+  IsPendingChangedNotReEmittedOnSubsequentRequests)
+{
+  QSignalSpy spy (scheduler, &PlaybackCacheScheduler::isPendingChanged);
+
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+  EXPECT_EQ (spy.count (), 1); // first transition
+
+  // Subsequent requests should not re-emit since already pending
+  scheduler->queueCacheRequestForRange (15.0, 25.0);
+  scheduler->queueCacheRequestForRange (5.0, 30.0);
+  EXPECT_EQ (spy.count (), 1); // still only 1 emission
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingChangedSignalOnCompletion)
+{
+  QSignalSpy spy (scheduler, &PlaybackCacheScheduler::isPendingChanged);
+
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+  EXPECT_EQ (spy.count (), 1); // pending=true
+
+  QTest::qWait (get_reasonable_time_after_default_delay ());
+  // Should have emitted again when going from pending to not-pending
+  EXPECT_GE (spy.count (), 2);
+  EXPECT_FALSE (scheduler->isPending ());
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingFullCycle)
+{
+  EXPECT_FALSE (scheduler->isPending ());
+
+  // First request: pending
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+  EXPECT_TRUE (scheduler->isPending ());
+
+  // After debounce: not pending
+  QTest::qWait (get_reasonable_time_after_default_delay ());
+  EXPECT_FALSE (scheduler->isPending ());
+
+  // New request: pending again
+  scheduler->queueCacheRequestForRange (30.0, 40.0);
+  EXPECT_TRUE (scheduler->isPending ());
+
+  // After debounce: not pending again
+  QTest::qWait (get_reasonable_time_after_default_delay ());
+  EXPECT_FALSE (scheduler->isPending ());
+}
+
+TEST_F (PlaybackCacheSchedulerTest, IsPendingTrueAfterFullCacheRequest)
+{
+  scheduler->queueFullCacheRequest ();
+  EXPECT_TRUE (scheduler->isPending ());
+
+  QTest::qWait (get_reasonable_time_after_default_delay ());
+  EXPECT_FALSE (scheduler->isPending ());
+}
+
+TEST_F (
+  PlaybackCacheSchedulerTest,
+  IsPendingReadableFromIsPendingChangedSignalHandler)
+{
+  // This test catches the bug where isPendingChanged is emitted BEFORE
+  // debouncer_->debounce() is called, meaning isPending() returns false
+  // inside the signal handler.
+  bool pending_from_signal = true; // will be set by handler
+  QObject::connect (
+    scheduler, &PlaybackCacheScheduler::isPendingChanged, scheduler,
+    [&] () { pending_from_signal = scheduler->isPending (); });
+
+  scheduler->queueCacheRequestForRange (10.0, 20.0);
+
+  // The signal handler should have seen isPending() == true
+  EXPECT_TRUE (pending_from_signal);
+}
 }

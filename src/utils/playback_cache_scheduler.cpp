@@ -34,6 +34,8 @@ void
 PlaybackCacheScheduler::queueCacheRequest (
   utils::ExpandableTickRange affectedRange)
 {
+  bool was_pending = affected_range_.has_value ();
+
   if (affected_range_.has_value ())
     {
       affected_range_->expand (affectedRange);
@@ -43,8 +45,13 @@ PlaybackCacheScheduler::queueCacheRequest (
       affected_range_.emplace (affectedRange);
     }
 
-  // Trigger the debouncer
+  // Trigger the debouncer first so isPending() returns true
   debouncer_->debounce ();
+
+  if (!was_pending)
+    {
+      Q_EMIT isPendingChanged ();
+    }
 }
 
 void
@@ -60,6 +67,7 @@ PlaybackCacheScheduler::execute_pending_request ()
     {
       Q_EMIT cacheRequested (*affected_range_);
       affected_range_.reset ();
+      Q_EMIT isPendingChanged ();
     }
 }
 
