@@ -1,5 +1,5 @@
 <!---
-SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
@@ -64,7 +64,7 @@ Located in [`src/utils/expandable_tick_range.h`](src/utils/expandable_tick_range
 
 Located in [`src/dsp/timeline_data_cache.h`](src/dsp/timeline_data_cache.h)
 
-**Purpose**: Cache holder that manages event sequences for playback.
+**Purpose**: Cache holder that manages event sequences for playback. A `QObject` that emits `cachedRangesChanged` when cache content changes, enabling debug visualization of cache coverage.
 
 **Key Features:**
 - Stores MIDI, audio and automation sequences by interval for efficient updates
@@ -72,20 +72,19 @@ Located in [`src/dsp/timeline_data_cache.h`](src/dsp/timeline_data_cache.h)
 - Merges sequences for final playback
 - Creates independent copies of audio data for thread safety
 - Removes data that overlaps with specified intervals
+- Uses Non-Virtual Interface (NVI) pattern for `clear()` and `finalize_changes()` — these are non-virtual public methods that call private virtual `_impl()` methods, then emit `cachedRangesChanged` with the current sample ranges
 
 ```mermaid
 classDiagram
     class TimelineDataCache {
         +clear()
         +remove_sequences_matching_interval(interval)
-        +add_midi_sequence(interval, sequence)
-        +add_audio_region(interval, audio_buffer)
         +finalize_changes()
-        +get_midi_events() const
-        +get_audio_regions() const
-        -std::map~IntervalType, juce::MidiMessageSequence~ midi_sequences_
-        -std::vector~AudioRegionEntry~ audio_regions_
-        -juce::MidiMessageSequence merged_midi_events_
+        +has_content() const
+        +cachedRangesChanged(ranges) signal
+        -clear_impl() virtual
+        -finalize_changes_impl() virtual
+        -compute_cached_sample_ranges() virtual
     }
 ```
 
@@ -93,7 +92,7 @@ classDiagram
 
 Located in [`src/structure/arrangement/timeline_data_provider.h`](src/structure/arrangement/timeline_data_provider.h)
 
-**Purpose**: Bridge between the playback cache system and track processors (or automation tracks), providing events for real-time playback.
+**Purpose**: Bridge between the playback cache system and track processors (or automation tracks), providing events for real-time playback. Each provider is a `QObject` that owns a heap-allocated `TimelineDataCache` via `QObjectUniquePtr`.
 
 **Key Features:**
 - Generates MIDI event sequences from timeline regions
@@ -103,6 +102,7 @@ Located in [`src/structure/arrangement/timeline_data_provider.h`](src/structure/
 - Processes events for specific time ranges during audio processing
 - Handles range-based cache updates for efficiency
 - Provides consistent interface for event processing
+- Exposes cache via `get_base_cache()` for cache activity tracking
 
 ```mermaid
 classDiagram
@@ -111,30 +111,74 @@ classDiagram
         +generate_audio_events(tempo_map, audio_regions, affected_range)
         +process_midi_events(time_info, output_buffer)
         +process_audio_events(time_info, output_left, output_right)
+        +get_base_cache() const
         -set_midi_events(events)
         -set_audio_regions(regions)
         -farbot::RealtimeObject active_midi_playback_sequence_
         -farbot::RealtimeObject active_audio_regions_
-        -TimelineDataCache unified_playback_cache_
+        -QObjectUniquePtr~TimelineDataCache~ cache_
     }
 ```
 
-### 5. Track, TrackProcessor, and AutomationTrack Integration
+### 5. PlaybackCacheActivityTracker
+
+Located in [`src/structure/tracks/playback_cache_activity_tracker.h`](src/structure/tracks/playback_cache_activity_tracker.h)
+
+**Purpose**: Tracks cache regeneration activity for debug visualization in the QML timeline. Provides two kinds of observable state: pending/scheduled requests and completed cache coverage ranges.
+
+**Key Features:**
+- Tracks pending state driven by the scheduler's `isPendingChanged` signal
+- Records completed regeneration entries with tick ranges and timestamps
+- Observes `TimelineDataCache::cachedRangesChanged` to expose current cache coverage
+- Converts sample-based cache ranges to tick ranges via an injected `SampleToTickConverter`
+- Auto-expires old entries after 300ms via a periodic sweep timer
+- Caps entries at 100 to prevent unbounded memory growth
+
+```mermaid
+classDiagram
+    class PlaybackCacheActivityTracker {
+        +isPending() const
+        +entries() QVariantList
+        +cachedRanges() QVariantList
+        +onRegenerationComplete(affectedRange)
+        -pending_ bool
+        -entries_ vector~PlaybackCacheActivityEntry~
+        -cached_ranges_ vector~CachedTickRange~
+        -sweep_timer_ QTimer
+    }
+    class PlaybackCacheActivityEntry {
+        +id qint64
+        +startTick double
+        +endTick double
+        +isFullContent bool
+        +createdAtMs milliseconds
+    }
+    class CachedTickRange {
+        +startTick double
+        +endTick double
+    }
+    PlaybackCacheActivityTracker --> PlaybackCacheActivityEntry : contains
+    PlaybackCacheActivityTracker --> CachedTickRange : contains
+```
+
+### 6. Track, TrackProcessor, and AutomationTrack Integration
 
 **Track** ([`src/structure/tracks/track.h`](src/structure/tracks/track.h)):
 - Owns the `TimelineDataProvider` instance
-- Contains `PlaybackCacheScheduler` for managing requests
+- Creates `PlaybackCacheScheduler` in `init_cache_scheduler()`, called from `make_track_processor()`
+- Creates `PlaybackCacheActivityTracker` in `init_playback_cache_activity_tracker()`, observing cache range changes
 - Connects to arrangement object changes
 
 **TrackProcessor** ([`src/structure/tracks/track_processor.h`](src/structure/tracks/track_processor.h)):
-- Uses `TimelineDataProvider` for MIDI and audio event access
+- Uses `TimelineDataProvider` for MIDI and audio event access (owned via `QObjectUniquePtr`)
 - Implements the playback interface using cached events
 - Integrates with the track's event provider system
 - Provides unified processing for both MIDI and audio events
 
 **AutomationTrack** ([`src/structure/tracks/automation_track.h`](src/structure/tracks/automation_track.h)):
-- Owns an `AutomationTimelineDataProvider` instance for automation-specific caching
+- Owns an `AutomationTimelineDataProvider` instance (via `QObjectUniquePtr`) for automation-specific caching
 - Contains its own `PlaybackCacheScheduler` for debouncing automation cache requests
+- Owns a `PlaybackCacheActivityTracker` observing cache range changes for debug visualization
 - Connects to automation region changes via `ArrangerObjectOwner` signals
 - Provides real-time automation value access through the parameter's automation provider
 - Handles automation mode (Read/Record/Off) and recording mode (Touch/Latch) logic
@@ -148,8 +192,9 @@ classDiagram
         +should_read_automation()
         +should_be_recording(record_aps)
         +get_normalized_value(position, search_only_enclosing)
-        -AutomationTimelineDataProvider automation_data_provider_
+        -QObjectUniquePtr~AutomationTimelineDataProvider~ automation_data_provider_
         -PlaybackCacheScheduler automation_cache_request_debouncer_
+        -QObjectUniquePtr~PlaybackCacheActivityTracker~ playback_cache_activity_tracker_
         -ProcessorParameterUuidReference param_id_
         -AutomationMode automation_mode_
         -AutomationRecordMode record_mode_
@@ -159,12 +204,16 @@ classDiagram
         +generate_automation_events(tempo_map, regions, range)
         +process_automation_events(time_info, transport_state, output)
         +get_automation_value_rt(sample_position)
-        -AutomationTimelineDataCache automation_cache_
+        +get_base_cache() const
+        -QObjectUniquePtr~AutomationTimelineDataCache~ automation_cache_
         -RealtimeObject active_automation_sequences_
     }
 
     AutomationTrack --> AutomationTimelineDataProvider : owns
     AutomationTrack --> PlaybackCacheScheduler : owns
+    AutomationTrack --> PlaybackCacheActivityTracker : owns
+    AutomationTimelineDataProvider --> AutomationTimelineDataCache : owns
+    AutomationTimelineDataCache --> PlaybackCacheActivityTracker : cachedRangesChanged
     ProcessorParameter --> AutomationTrack : provides automation values
 ```
 
@@ -316,7 +365,7 @@ timeline_data_provider_->generate_audio_events(
 ```cpp
 // In AutomationTrack::regeneratePlaybackCaches
 auto children = get_children_view();
-automation_data_provider_.generate_automation_events(
+automation_data_provider_->generate_automation_events(
     tempo_map_.get_tempo_map(),
     children,
     affectedRange
@@ -347,7 +396,7 @@ timeline_data_provider_->process_audio_events(
 // In AutomationTrack constructor - setting up automation provider
 parameter()->set_automation_provider([this](auto sample_position) {
     return automation_mode_.load() == AutomationMode::Read
-        ? automation_data_provider_.get_automation_value_rt(sample_position)
+        ? automation_data_provider_->get_automation_value_rt(sample_position)
         : std::nullopt;
 });
 ```
