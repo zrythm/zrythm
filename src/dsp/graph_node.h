@@ -139,8 +139,6 @@ public:
   /** For general debugging. */
   std::string print_node_to_str () const;
 
-  void print_node () const;
-
   // For debugging purposes.
   NodeId get_id () const { return node_id_; }
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "utils/format.h"
 #include "utils/isettings_backend.h"
 #include "utils/logger.h"
 #include "utils/qt.h"

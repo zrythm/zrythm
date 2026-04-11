@@ -1,15 +1,13 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_LOGGER_H__
-#define __UTILS_LOGGER_H__
+#pragma once
 
-#include "zrythm-config.h"
+#include <source_location>
 
-#include "utils/format.h"
-#include "utils/types.h"
+#include "utils/utf8_string.h"
 
-#include "juce_wrapper.h"
+#include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
 namespace zrythm::utils
@@ -127,13 +125,101 @@ private:
   std::shared_ptr<ILogger> logger_;
 };
 
-#define LOGGER_INSTANCE zrythm::utils::LoggerProvider::logger ().get_logger ()
-#define z_warning(...) SPDLOG_LOGGER_WARN (LOGGER_INSTANCE, __VA_ARGS__)
-#define z_error(...) SPDLOG_LOGGER_ERROR (LOGGER_INSTANCE, __VA_ARGS__)
-#define z_critical(...) SPDLOG_LOGGER_CRITICAL (LOGGER_INSTANCE, __VA_ARGS__)
-#define z_trace(...) SPDLOG_LOGGER_TRACE (LOGGER_INSTANCE, __VA_ARGS__)
-#define z_debug(...) SPDLOG_LOGGER_DEBUG (LOGGER_INSTANCE, __VA_ARGS__)
-#define z_info(...) SPDLOG_LOGGER_INFO (LOGGER_INSTANCE, __VA_ARGS__)
+namespace detail
+{
+inline spdlog::source_loc
+to_source_loc (const std::source_location &loc)
+{
+  return {
+    loc.file_name (), static_cast<int> (loc.line ()), loc.function_name ()
+  };
+}
+} // namespace detail
+
+template <typename... Args>
+void
+log_trace (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::trace, fmt,
+    std::forward<Args> (args)...);
+}
+
+template <typename... Args>
+void
+log_debug (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::debug, fmt,
+    std::forward<Args> (args)...);
+}
+
+template <typename... Args>
+void
+log_info (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::info, fmt,
+    std::forward<Args> (args)...);
+}
+
+template <typename... Args>
+void
+log_warning (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::warn, fmt,
+    std::forward<Args> (args)...);
+}
+
+template <typename... Args>
+void
+log_error (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::err, fmt,
+    std::forward<Args> (args)...);
+}
+
+template <typename... Args>
+void
+log_critical (
+  std::source_location        loc,
+  fmt::format_string<Args...> fmt,
+  Args &&... args)
+{
+  LoggerProvider::logger ().get_logger ()->log (
+    detail::to_source_loc (loc), spdlog::level::critical, fmt,
+    std::forward<Args> (args)...);
+}
+
+#define z_trace(...) \
+  ::zrythm::utils::log_trace (std::source_location::current (), __VA_ARGS__)
+#define z_debug(...) \
+  ::zrythm::utils::log_debug (std::source_location::current (), __VA_ARGS__)
+#define z_info(...) \
+  ::zrythm::utils::log_info (std::source_location::current (), __VA_ARGS__)
+#define z_warning(...) \
+  ::zrythm::utils::log_warning (std::source_location::current (), __VA_ARGS__)
+#define z_error(...) \
+  ::zrythm::utils::log_error (std::source_location::current (), __VA_ARGS__)
+#define z_critical(...) \
+  ::zrythm::utils::log_critical (std::source_location::current (), __VA_ARGS__)
 
 /**
  * @brief Safe assertion macro that returns a value if the assertion fails.
@@ -141,7 +227,7 @@ private:
 #define z_return_val_if_fail(cond, val) \
   if (!(cond)) [[unlikely]] \
     { \
-      z_error (format_str ("Assertion failed: {}", #cond)); \
+      z_error ("Assertion failed: {}", #cond); \
       return val; \
     }
 
@@ -167,11 +253,9 @@ private:
 #define z_warn_if_fail(cond) \
   if (!(cond)) [[unlikely]] \
     { \
-      z_warning (format_str ("Assertion failed: {}", #cond)); \
+      z_warning ("Assertion failed: {}", #cond); \
     }
 
 #define z_warn_if_reached() z_warning ("This code should not be reached")
 
 }; // namespace zrythm::utils
-
-#endif

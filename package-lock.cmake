@@ -152,8 +152,8 @@ CPMDeclarePackage(magic_enum
 # fmt
 CPMDeclarePackage(fmt
   NAME fmt
-  VERSION 11.2.0
-  GIT_TAG 40626af88bd7df9a5fb80be7b25ac85b122d6c21
+  VERSION 12.1.0
+  GIT_TAG 407c905e45ad75fc29bf0f9bb7c5c2fd3475976f
   GITHUB_REPOSITORY fmtlib/fmt
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
@@ -191,8 +191,8 @@ CPMDeclarePackage(scnlib
 # spdlog
 CPMDeclarePackage(spdlog
   NAME spdlog
-  VERSION 1.15.3
-  GIT_TAG 6fa36017cfd5731d617e1a934f0e5ea9c4445b13
+  VERSION 1.17.0
+  GIT_TAG 79524ddd08a4ec981b7fea76afd08ee05f83755d
   GITHUB_REPOSITORY gabime/spdlog
   SYSTEM YES
   EXCLUDE_FROM_ALL YES

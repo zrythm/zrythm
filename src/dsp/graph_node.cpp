@@ -60,12 +60,6 @@ GraphNode::print_node_to_str () const
 }
 
 void
-GraphNode::print_node () const
-{
-  z_info (print_node_to_str ());
-}
-
-void
 GraphNode::compensate_latency (
   EngineProcessTimeInfo &time_nfo,
   const nframes_t        remaining_preroll_frames,

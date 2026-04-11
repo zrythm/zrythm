@@ -118,7 +118,7 @@ public:
       }
     catch (const ZrythmException &e)
       {
-        z_warning (e.what ());
+        z_warning ("{}", e.what ());
       }
   }
 

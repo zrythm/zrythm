@@ -89,5 +89,5 @@ FilePathList::print (const utils::Utf8String &title) const
     {
       str += utils::Utf8String::from_path (path) + u8"\n";
     }
-  z_debug (str);
+  z_debug ("{}", str);
 }

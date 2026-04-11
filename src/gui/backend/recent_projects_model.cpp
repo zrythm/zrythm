@@ -120,7 +120,7 @@ RecentProjectsModel::clearNonExistingProjects ()
   });
   if (removed_count > 0)
     {
-      z_info ("Cleared {} non-existing projects");
+      z_info ("Cleared {} non-existing projects", removed_count);
     }
   store_recent_projects (recent_projects);
   endResetModel ();

@@ -44,7 +44,7 @@ Graph::print () const
 
   for (const auto &node : setup_nodes_.graph_nodes_)
     {
-      node->print_node ();
+      z_info ("{}", node->print_node_to_str ());
     }
 
   z_info (

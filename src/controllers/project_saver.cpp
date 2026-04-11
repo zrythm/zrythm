@@ -543,7 +543,7 @@ ProjectSaver::save (
         return QString{};
       })
     .onFailed (engine, [resume_engine] () {
-      const auto msg = "Project save failed"sv;
+      constexpr auto msg = "Project save failed"sv;
       z_warning (msg);
       resume_engine ();
       throw ZrythmException (msg);

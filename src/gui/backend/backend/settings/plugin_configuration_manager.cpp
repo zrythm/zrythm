@@ -109,7 +109,7 @@ PluginConfigurationManager::read_or_new ()
         }
       catch (const ZrythmException &e2)
         {
-          z_warning (e2.what ());
+          z_warning ("{}", e2.what ());
         }
 
       return {};
