@@ -656,6 +656,22 @@ private:
   [[nodiscard]] utils::QObjectUniquePtr<PianoRollTrackMixin>
   make_piano_roll_track_mixin ();
 
+  /**
+   * @brief Creates the cache request scheduler and connects its signals.
+   *
+   * Called automatically by make_track_processor(). Must be called exactly once.
+   */
+  void init_cache_scheduler ();
+
+  /**
+   * @brief Initializes the playback cache activity tracker.
+   *
+   * Called automatically by make_track_processor() after the scheduler is
+   * created. The processor is passed directly since it hasn't been assigned
+   * to processor_ yet at this point.
+   */
+  void init_playback_cache_activity_tracker (TrackProcessor &proc);
+
 protected:
   BaseTrackDependencies base_dependencies_;
 

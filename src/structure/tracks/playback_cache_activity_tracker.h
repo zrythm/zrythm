@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include <functional>
 #include <vector>
 
+#include "dsp/timeline_data_cache.h"
 #include "utils/playback_cache_scheduler.h"
 
 #include <QTimer>
@@ -35,6 +37,22 @@ public:
 };
 
 /**
+ * @brief A tick range representing currently valid cached content.
+ */
+struct CachedTickRange
+{
+  Q_GADGET
+  Q_PROPERTY (double startTick MEMBER startTick)
+  Q_PROPERTY (double endTick MEMBER endTick)
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
+public:
+  double startTick{};
+  double endTick{};
+};
+
+/**
  * @brief Helper that manages cache activity state for a cache-holding object.
  *
  * Encapsulates the shared logic used by both Track and AutomationTrack
@@ -50,6 +68,8 @@ class PlaybackCacheActivityTracker : public QObject
   Q_OBJECT
   Q_PROPERTY (bool pending READ isPending NOTIFY pendingChanged)
   Q_PROPERTY (QVariantList entries READ entries NOTIFY entriesChanged)
+  Q_PROPERTY (
+    QVariantList cachedRanges READ cachedRanges NOTIFY cachedRangesChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -58,10 +78,21 @@ public:
   static constexpr auto kEntryLifetimeMs = std::chrono::milliseconds (300);
 
   /**
+   * @brief Function type for converting sample position to tick position.
+   */
+  using SampleToTickConverter = std::function<double (units::sample_t)>;
+
+  /**
    * @param scheduler The playback cache scheduler to track.
+   * @param cache The timeline data cache to observe for range changes.
+   * @param sample_to_tick Function that converts sample positions to tick
+   * positions.
+   * @param parent Parent QObject.
    */
   explicit PlaybackCacheActivityTracker (
     utils::PlaybackCacheScheduler * scheduler,
+    const dsp::TimelineDataCache   &cache,
+    SampleToTickConverter           sample_to_tick,
     QObject *                       parent = nullptr);
 
   /**
@@ -75,16 +106,19 @@ public:
   [[nodiscard]] bool         isPending () const { return pending_; }
   [[nodiscard]] QVariantList entries () const;
   [[nodiscard]] size_t       entryCount () const { return entries_.size (); }
+  [[nodiscard]] QVariantList cachedRanges () const;
 
 Q_SIGNALS:
   void pendingChanged ();
   void entriesChanged ();
+  void cachedRangesChanged ();
 
 private:
   void sweepExpiredEntries ();
 
   bool                                    pending_ = false;
   std::vector<PlaybackCacheActivityEntry> entries_;
+  std::vector<CachedTickRange>            cached_ranges_;
   qint64                                  next_id_ = 0;
 
   QTimer sweep_timer_;
@@ -93,3 +127,4 @@ private:
 } // namespace zrythm::structure::tracks
 
 Q_DECLARE_METATYPE (zrythm::structure::tracks::PlaybackCacheActivityEntry)
+Q_DECLARE_METATYPE (zrythm::structure::tracks::CachedTickRange)

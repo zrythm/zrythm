@@ -127,7 +127,7 @@ Track::make_track_processor (
   std::optional<TrackProcessor::AppendMidiInputsToOutputsFunc>
     append_midi_inputs_to_outputs_func)
 {
-  return utils::make_qobject_unique<TrackProcessor> (
+  auto tp = utils::make_qobject_unique<TrackProcessor> (
     base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_.value (),
     [this] () { return get_name (); }, [this] () { return enabled (); },
     has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),
@@ -136,6 +136,11 @@ Track::make_track_processor (
       .param_registry_ = base_dependencies_.param_registry_ },
     fill_events_cb, transform_midi_inputs_func,
     append_midi_inputs_to_outputs_func, this);
+
+  init_cache_scheduler ();
+  init_playback_cache_activity_tracker (*tp);
+
+  return tp;
 }
 
 utils::QObjectUniquePtr<AutomationTracklist>
@@ -196,18 +201,30 @@ Track::make_lanes ()
     base_dependencies_.file_audio_source_registry_, this);
   ret->create_missing_lanes (0);
 
+  // Listen to height changes
+  QObject::connect (
+    ret.get (), &TrackLaneList::lanesVisibleChanged, this,
+    &Track::fullVisibleHeightChanged);
+
+  return ret;
+}
+
+void
+Track::init_cache_scheduler ()
+{
+  assert (playable_content_cache_request_debouncer_ == nullptr);
+
   playable_content_cache_request_debouncer_ =
     utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this);
 
-  // cache activity tracking
-  playback_cache_activity_tracker_ =
-    utils::make_qobject_unique<PlaybackCacheActivityTracker> (
-      playable_content_cache_request_debouncer_.get (), this);
+  if (lanes_)
+    {
+      QObject::connect (
+        lanes_.get (), &TrackLaneList::laneObjectsNeedRecache,
+        playable_content_cache_request_debouncer_.get (),
+        &utils::PlaybackCacheScheduler::queueCacheRequest);
+    }
 
-  QObject::connect (
-    ret.get (), &TrackLaneList::laneObjectsNeedRecache,
-    playable_content_cache_request_debouncer_.get (),
-    &utils::PlaybackCacheScheduler::queueCacheRequest);
   QObject::connect (
     &base_dependencies_.tempo_map_, &dsp::TempoMapWrapper::tempoEventsChanged,
     playable_content_cache_request_debouncer_.get (), [this] () {
@@ -218,13 +235,38 @@ Track::make_lanes ()
     playable_content_cache_request_debouncer_.get (),
     &utils::PlaybackCacheScheduler::cacheRequested, this,
     &Track::regeneratePlaybackCaches);
+}
 
-  // Listen to height changes
-  QObject::connect (
-    ret.get (), &TrackLaneList::lanesVisibleChanged, this,
-    &Track::fullVisibleHeightChanged);
+void
+Track::init_playback_cache_activity_tracker (TrackProcessor &proc)
+{
+  assert (playable_content_cache_request_debouncer_ != nullptr);
 
-  return ret;
+  const auto * cache = [&proc] () -> const dsp::TimelineDataCache * {
+    if (proc.is_midi ())
+      {
+        const auto &provider = proc.timeline_midi_data_provider ();
+        return provider.get_base_cache ();
+      }
+    if (proc.is_audio ())
+      {
+        const auto &provider = proc.timeline_audio_data_provider ();
+        return provider.get_base_cache ();
+      }
+    return nullptr;
+  }();
+
+  if (cache != nullptr)
+    {
+      const auto &tm = base_dependencies_.tempo_map_.get_tempo_map ();
+      playback_cache_activity_tracker_ = utils::make_qobject_unique<
+        PlaybackCacheActivityTracker> (
+        playable_content_cache_request_debouncer_.get (), *cache,
+        [&tm] (units::sample_t sample) {
+          return tm.samples_to_tick (sample).in (units::ticks);
+        },
+        this);
+    }
 }
 
 utils::QObjectUniquePtr<RecordableTrackMixin>

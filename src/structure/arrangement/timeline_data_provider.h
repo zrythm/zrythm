@@ -7,6 +7,7 @@
 #include "dsp/timeline_data_cache.h"
 #include "structure/arrangement/region_renderer.h"
 #include "utils/expandable_tick_range.h"
+#include "utils/qt.h"
 #include "utils/types.h"
 
 #include <farbot/RealtimeObject.hpp>
@@ -21,12 +22,18 @@ namespace zrythm::structure::arrangement
  * This is an abstract base class that defines the interface that
  * all derived provider classes must implement.
  */
-class TimelineDataProvider
+class TimelineDataProvider : public QObject
 {
+  Q_OBJECT
+
 public:
   using IntervalType = std::pair<units::sample_t, units::sample_t>;
 
-  virtual ~TimelineDataProvider ();
+  explicit TimelineDataProvider (QObject * parent = nullptr) : QObject (parent)
+  {
+  }
+
+  ~TimelineDataProvider () override;
 
   /**
    * @brief Generate the event sequence to be used during realtime processing.
@@ -118,10 +125,10 @@ public:
   virtual void
   remove_sequences_matching_interval_from_all_caches (IntervalType interval) = 0;
 
-protected:
-  virtual dsp::TimelineDataCache * get_base_cache () = 0;
+  virtual const dsp::TimelineDataCache * get_base_cache () const = 0;
 
 protected:
+  virtual dsp::TimelineDataCache * get_base_cache () = 0;
   /** Last transport state we've seen */
   dsp::ITransport::PlayState last_seen_transport_state_{
     dsp::ITransport::PlayState::Paused
@@ -142,6 +149,13 @@ class MidiTimelineDataProvider : public TimelineDataProvider
   friend class TimelineDataProvider;
 
 public:
+  explicit MidiTimelineDataProvider (QObject * parent = nullptr);
+
+  const dsp::TimelineDataCache * get_base_cache () const override
+  {
+    return midi_cache_.get ();
+  }
+
   /**
    * Process MIDI events for the given time range.
    */
@@ -150,7 +164,6 @@ public:
     dsp::ITransport::PlayState   transport_state,
     dsp::MidiEventVector        &output_buffer) noexcept [[clang::nonblocking]];
 
-  // Implementation of base class methods
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
@@ -174,7 +187,7 @@ public:
   {
     generate_events<arrangement::MidiRegion> (
       tempo_map, midi_regions, affected_range);
-    set_midi_events (midi_cache_.get_midi_events ());
+    set_midi_events (midi_cache_->get_midi_events ());
   }
 
   /**
@@ -194,11 +207,14 @@ public:
   {
     generate_events<arrangement::ChordRegion> (
       tempo_map, chord_regions, affected_range);
-    set_midi_events (midi_cache_.get_midi_events ());
+    set_midi_events (midi_cache_->get_midi_events ());
   }
 
 protected:
-  dsp::TimelineDataCache * get_base_cache () override { return &midi_cache_; }
+  dsp::TimelineDataCache * get_base_cache () override
+  {
+    return midi_cache_.get ();
+  }
 
 private:
   /**
@@ -227,7 +243,7 @@ private:
       }
 
     // Add to cache
-    midi_cache_.add_midi_sequence (
+    midi_cache_->add_midi_sequence (
       std::make_pair (
         units::samples (region.position ()->samples ()),
         region.bounds ()->get_end_position_samples (true)),
@@ -241,7 +257,7 @@ private:
    */
   void set_midi_events (const juce::MidiMessageSequence &events);
 
-  dsp::MidiTimelineDataCache midi_cache_;
+  utils::QObjectUniquePtr<dsp::MidiTimelineDataCache> midi_cache_;
 
   farbot::RealtimeObject<
     juce::MidiMessageSequence,
@@ -260,6 +276,13 @@ class AudioTimelineDataProvider : public TimelineDataProvider
   friend class TimelineDataProvider;
 
 public:
+  explicit AudioTimelineDataProvider (QObject * parent = nullptr);
+
+  const dsp::TimelineDataCache * get_base_cache () const override
+  {
+    return audio_cache_.get ();
+  }
+
   /**
    * Process audio events for the given time range.
    */
@@ -269,7 +292,6 @@ public:
     std::span<float>             output_left,
     std::span<float>             output_right) noexcept [[clang::nonblocking]];
 
-  // Implementation of base class methods
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
@@ -294,11 +316,14 @@ public:
   {
     generate_events<arrangement::AudioRegion> (
       tempo_map, audio_regions, affected_range);
-    set_audio_regions (audio_cache_.get_audio_regions ());
+    set_audio_regions (audio_cache_->get_audio_regions ());
   }
 
 protected:
-  dsp::TimelineDataCache * get_base_cache () override { return &audio_cache_; }
+  dsp::TimelineDataCache * get_base_cache () override
+  {
+    return audio_cache_.get ();
+  }
 
 private:
   /**
@@ -314,7 +339,7 @@ private:
   void set_audio_regions (
     const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &regions);
 
-  dsp::AudioTimelineDataCache audio_cache_;
+  utils::QObjectUniquePtr<dsp::AudioTimelineDataCache> audio_cache_;
 
   farbot::RealtimeObject<
     std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry>,
@@ -333,6 +358,13 @@ class AutomationTimelineDataProvider : public TimelineDataProvider
   friend class TimelineDataProvider;
 
 public:
+  explicit AutomationTimelineDataProvider (QObject * parent = nullptr);
+
+  const dsp::TimelineDataCache * get_base_cache () const override
+  {
+    return automation_cache_.get ();
+  }
+
   /**
    * Process automation events for the given time range.
    */
@@ -351,7 +383,6 @@ public:
   get_automation_value_rt (units::sample_t sample_position) noexcept
     [[clang::nonblocking]];
 
-  // Implementation of base class methods
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
@@ -376,13 +407,13 @@ public:
   {
     generate_events<arrangement::AutomationRegion> (
       tempo_map, automation_regions, affected_range);
-    set_automation_sequences (automation_cache_.get_automation_sequences ());
+    set_automation_sequences (automation_cache_->get_automation_sequences ());
   }
 
 protected:
   dsp::TimelineDataCache * get_base_cache () override
   {
-    return &automation_cache_;
+    return automation_cache_.get ();
   }
 
 private:
@@ -391,22 +422,7 @@ private:
    */
   void cache_automation_region (
     const arrangement::AutomationRegion &region,
-    const dsp::TempoMap                 &tempo_map)
-  {
-    // Calculate number of samples needed
-    const auto start_sample = units::samples (region.position ()->samples ());
-    const auto end_sample = region.bounds ()->get_end_position_samples (true);
-    const auto num_samples = end_sample - start_sample;
-
-    std::vector<float> automation_values (num_samples.in (units::samples));
-
-    // Serialize automation region to sample-accurate values
-    arrangement::RegionRenderer::serialize_to_automation_values (
-      region, automation_values);
-
-    automation_cache_.add_automation_sequence (
-      std::make_pair (start_sample, end_sample), automation_values);
-  }
+    const dsp::TempoMap                 &tempo_map);
 
   /**
    * @brief Set the automation sequences for realtime access.
@@ -417,7 +433,7 @@ private:
     const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry>
       &sequences);
 
-  dsp::AutomationTimelineDataCache automation_cache_;
+  utils::QObjectUniquePtr<dsp::AutomationTimelineDataCache> automation_cache_;
 
   farbot::RealtimeObject<
     std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry>,

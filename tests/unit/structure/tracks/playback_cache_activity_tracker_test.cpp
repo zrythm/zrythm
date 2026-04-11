@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/tempo_map.h"
+#include "dsp/timeline_data_cache.h"
 #include "structure/tracks/playback_cache_activity_tracker.h"
 #include "utils/playback_cache_scheduler.h"
+#include "utils/qt.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -25,11 +28,13 @@ protected:
     app_ = std::make_unique<ScopedQCoreApplication> ();
     scheduler_ = new utils::PlaybackCacheScheduler ();
     scheduler_->setDelay (kDelay);
+    cache_ = utils::make_qobject_unique<dsp::MidiTimelineDataCache> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
   }
 
   void TearDown () override { delete scheduler_; }
 
-// On Mac there are some issues with timing...
+  // On Mac there are some issues with timing...
 #ifdef Q_OS_MACOS
   static constexpr auto kDelay = 500ms;
 #else
@@ -37,7 +42,17 @@ protected:
 #endif
   static constexpr auto kWaitTime = (kDelay * 3) / 2;
 
-  utils::PlaybackCacheScheduler * scheduler_{};
+  PlaybackCacheActivityTracker make_tracker ()
+  {
+    return PlaybackCacheActivityTracker (
+      scheduler_, *cache_, [this] (units::sample_t sample) {
+        return tempo_map_->samples_to_tick (sample).in (units::ticks);
+      });
+  }
+
+  utils::PlaybackCacheScheduler *                     scheduler_{};
+  utils::QObjectUniquePtr<dsp::MidiTimelineDataCache> cache_;
+  std::unique_ptr<dsp::TempoMap>                      tempo_map_;
 
 private:
   std::unique_ptr<ScopedQCoreApplication> app_;
@@ -49,8 +64,8 @@ private:
 
 TEST_F (PlaybackCacheActivityTrackerTest, InitiallyNotPending)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
-  QSignalSpy                   pending_spy (
+  auto       tracker = make_tracker ();
+  QSignalSpy pending_spy (
     &tracker, &PlaybackCacheActivityTracker::pendingChanged);
 
   EXPECT_FALSE (tracker.isPending ());
@@ -64,14 +79,14 @@ TEST_F (PlaybackCacheActivityTrackerTest, SyncsInitialPendingStateFromScheduler)
   EXPECT_TRUE (scheduler_->isPending ());
 
   // Tracker should immediately see the scheduler's pending state
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
   EXPECT_TRUE (tracker.isPending ());
 }
 
 TEST_F (PlaybackCacheActivityTrackerTest, PendingFollowsScheduler)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
-  QSignalSpy                   pending_spy (
+  auto       tracker = make_tracker ();
+  QSignalSpy pending_spy (
     &tracker, &PlaybackCacheActivityTracker::pendingChanged);
 
   scheduler_->queueCacheRequestForRange (10.0, 20.0);
@@ -89,8 +104,8 @@ TEST_F (PlaybackCacheActivityTrackerTest, PendingFollowsScheduler)
 
 TEST_F (PlaybackCacheActivityTrackerTest, EntryCreatedOnRegenerationComplete)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
-  QSignalSpy                   entries_spy (
+  auto       tracker = make_tracker ();
+  QSignalSpy entries_spy (
     &tracker, &PlaybackCacheActivityTracker::entriesChanged);
 
   tracker.onRegenerationComplete (
@@ -108,7 +123,7 @@ TEST_F (PlaybackCacheActivityTrackerTest, EntryCreatedOnRegenerationComplete)
 
 TEST_F (PlaybackCacheActivityTrackerTest, FullContentEntry)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
 
   tracker.onRegenerationComplete (utils::ExpandableTickRange{});
 
@@ -121,7 +136,7 @@ TEST_F (PlaybackCacheActivityTrackerTest, FullContentEntry)
 
 TEST_F (PlaybackCacheActivityTrackerTest, MultipleEntries)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
 
   tracker.onRegenerationComplete (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
@@ -138,7 +153,7 @@ TEST_F (PlaybackCacheActivityTrackerTest, MultipleEntries)
 
 TEST_F (PlaybackCacheActivityTrackerTest, EntriesCappedAtMax)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
 
   // Add more entries than the cap
   for (
@@ -164,7 +179,7 @@ TEST_F (PlaybackCacheActivityTrackerTest, EntriesCappedAtMax)
 
 TEST_F (PlaybackCacheActivityTrackerTest, EntryAutoRemovedAfterTimeout)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
 
   tracker.onRegenerationComplete (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
@@ -184,7 +199,7 @@ TEST_F (
   PlaybackCacheActivityTrackerTest,
   PendingNotModifiedByRegenerationComplete)
 {
-  PlaybackCacheActivityTracker tracker (scheduler_);
+  auto tracker = make_tracker ();
 
   // Queue a request — pending should become true
   scheduler_->queueCacheRequestForRange (0.0, 10.0);
@@ -195,6 +210,54 @@ TEST_F (
   tracker.onRegenerationComplete (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
   EXPECT_TRUE (tracker.isPending ());
+}
+
+// ========================================================================
+// Cached ranges from signal
+// ========================================================================
+
+TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesUpdatedOnFinalize)
+{
+  auto       tracker = make_tracker ();
+  QSignalSpy ranges_spy (
+    &tracker, &PlaybackCacheActivityTracker::cachedRangesChanged);
+
+  juce::MidiMessageSequence seq;
+  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
+  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  seq.updateMatchedPairs ();
+
+  cache_->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
+  cache_->finalize_changes ();
+
+  ASSERT_EQ (ranges_spy.count (), 1);
+  auto ranges = tracker.cachedRanges ();
+  ASSERT_EQ (ranges.size (), 1);
+
+  const auto expected_start_tick =
+    tempo_map_->samples_to_tick (units::samples (0)).in (units::ticks);
+  const auto expected_end_tick =
+    tempo_map_->samples_to_tick (units::samples (100)).in (units::ticks);
+  auto range = ranges.first ().value<CachedTickRange> ();
+  EXPECT_DOUBLE_EQ (range.startTick, expected_start_tick);
+  EXPECT_DOUBLE_EQ (range.endTick, expected_end_tick);
+}
+
+TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesClearedOnCacheClear)
+{
+  auto tracker = make_tracker ();
+
+  juce::MidiMessageSequence seq;
+  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
+  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  seq.updateMatchedPairs ();
+  cache_->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
+  cache_->finalize_changes ();
+
+  ASSERT_EQ (tracker.cachedRanges ().size (), 1);
+
+  cache_->clear ();
+  EXPECT_EQ (tracker.cachedRanges ().size (), 0);
 }
 
 } // namespace zrythm::structure::tracks

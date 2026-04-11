@@ -10,6 +10,8 @@ namespace zrythm::structure::tracks
 
 PlaybackCacheActivityTracker::PlaybackCacheActivityTracker (
   utils::PlaybackCacheScheduler * scheduler,
+  const dsp::TimelineDataCache   &cache,
+  SampleToTickConverter           sample_to_tick,
   QObject *                       parent)
     : QObject (parent)
 {
@@ -32,6 +34,23 @@ PlaybackCacheActivityTracker::PlaybackCacheActivityTracker (
 
   // Sync initial state in case the scheduler is already pending
   pending_ = scheduler->isPending ();
+
+  // Connect to cache's cachedRangesChanged signal
+  QObject::connect (
+    &cache, &dsp::TimelineDataCache::cachedRangesChanged, this,
+    [sample_to_tick,
+     this] (std::vector<dsp::TimelineDataCache::IntervalType> sample_ranges) {
+      cached_ranges_ =
+        sample_ranges
+        | std::views::transform ([&sample_to_tick] (const auto &interval) {
+            return CachedTickRange{
+              sample_to_tick (interval.first),
+              sample_to_tick (interval.second),
+            };
+          })
+        | std::ranges::to<std::vector<CachedTickRange>> ();
+      Q_EMIT cachedRangesChanged ();
+    });
 }
 
 QVariantList
@@ -92,6 +111,16 @@ PlaybackCacheActivityTracker::sweepExpiredEntries ()
   // Stop the timer when no entries remain
   if (entries_.empty ())
     sweep_timer_.stop ();
+}
+
+QVariantList
+PlaybackCacheActivityTracker::cachedRanges () const
+{
+  QVariantList result;
+  result.reserve (static_cast<int> (cached_ranges_.size ()));
+  for (const auto &r : cached_ranges_)
+    result.append (QVariant::fromValue (r));
+  return result;
 }
 
 } // namespace zrythm::structure::tracks

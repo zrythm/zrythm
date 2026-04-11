@@ -554,6 +554,7 @@ Arranger {
 
             sourceComponent: PlaybackCacheActivityOverlay {
               activityEntries: trackDelegate.track.playbackCacheActivityTracker.entries
+              cachedRanges: trackDelegate.track.playbackCacheActivityTracker.cachedRanges
               pending: trackDelegate.track.playbackCacheActivityTracker.pending
               pxPerTick: root.ruler.pxPerTick
             }
@@ -746,6 +747,7 @@ Arranger {
 
                 sourceComponent: PlaybackCacheActivityOverlay {
                   activityEntries: automationTrackItem.automationTrack.playbackCacheActivityTracker.entries
+                  cachedRanges: automationTrackItem.automationTrack.playbackCacheActivityTracker.cachedRanges
                   pending: automationTrackItem.automationTrack.playbackCacheActivityTracker.pending
                   pxPerTick: root.ruler.pxPerTick
                 }
@@ -793,15 +795,37 @@ Arranger {
   component PlaybackCacheActivityOverlay: Item {
     id: overlay
 
+    readonly property color _cachedBorderColor: Qt.rgba(0.2, 0.6, 0.9, 0.7)
+    readonly property color _cachedFillColor: Qt.rgba(0.2, 0.6, 0.9, 0.15)
     readonly property color _completeBorderColor: Qt.rgba(0.392, 0.784, 0.392, 0.35)
     readonly property color _completeFillColor: Qt.rgba(0.392, 0.784, 0.392, 0.12)
     readonly property color _pendingBorderColor: Qt.rgba(1, 0.647, 0, 0.4)
     readonly property color _pendingFillColor: Qt.rgba(1, 0.647, 0, 0.12)
     required property var activityEntries
+    required property var cachedRanges
     required property bool pending
     required property real pxPerTick
 
     clip: true
+
+    // Cached ranges (persistent, non-fading)
+    Repeater {
+      model: overlay.cachedRanges
+
+      delegate: Rectangle {
+        required property CachedTickRange modelData
+        readonly property real tickWidth: (modelData.endTick - modelData.startTick) * overlay.pxPerTick
+        readonly property real tickX: modelData.startTick * overlay.pxPerTick
+
+        border.color: overlay._cachedBorderColor
+        border.width: 1
+        color: overlay._cachedFillColor
+        height: parent.height
+        opacity: 0.8
+        width: Math.max(tickWidth, 2)
+        x: tickX
+      }
+    }
 
     Rectangle {
       anchors.fill: parent

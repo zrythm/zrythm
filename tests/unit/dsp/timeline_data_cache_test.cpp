@@ -2,9 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/timeline_data_cache.h"
+#include "utils/qt.h"
+
+#include <QSignalSpy>
+
+#include "helpers/scoped_qcoreapplication.h"
 
 #include <gtest/gtest.h>
 #include <juce_audio_formats/juce_audio_formats.h>
+
+using namespace zrythm::test_helpers;
 
 namespace zrythm::dsp
 {
@@ -14,7 +21,8 @@ class MidiTimelineDataCacheTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    cache = std::make_unique<MidiTimelineDataCache> ();
+    app_ = std::make_unique<ScopedQCoreApplication> ();
+    cache = utils::make_qobject_unique<dsp::MidiTimelineDataCache> ();
 
     // Create a simple MIDI sequence with note on/off events
     sequence.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
@@ -24,8 +32,11 @@ protected:
     sequence.updateMatchedPairs ();
   }
 
-  std::unique_ptr<MidiTimelineDataCache> cache;
-  juce::MidiMessageSequence              sequence;
+  utils::QObjectUniquePtr<dsp::MidiTimelineDataCache> cache;
+  juce::MidiMessageSequence                           sequence;
+
+private:
+  std::unique_ptr<ScopedQCoreApplication> app_;
 };
 
 TEST_F (MidiTimelineDataCacheTest, InitialState)
@@ -256,6 +267,60 @@ TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
   EXPECT_EQ (note_off_count, 2);
 }
 
+TEST_F (MidiTimelineDataCacheTest, CachedRangesSignalOnFinalize)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  juce::MidiMessageSequence seq1;
+  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
+  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 25.0);
+
+  juce::MidiMessageSequence seq2;
+  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
+  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 150.0);
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (50) }, seq1);
+  cache->add_midi_sequence (
+    { units::samples (100), units::samples (200) }, seq2);
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  ASSERT_EQ (ranges.size (), 2);
+  EXPECT_EQ (ranges[0].first, units::samples (0));
+  EXPECT_EQ (ranges[0].second, units::samples (50));
+  EXPECT_EQ (ranges[1].first, units::samples (100));
+  EXPECT_EQ (ranges[1].second, units::samples (200));
+}
+
+TEST_F (MidiTimelineDataCacheTest, CachedRangesEmptyWhenNoContent)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
+}
+
+TEST_F (MidiTimelineDataCacheTest, CachedRangesClearedOnClear)
+{
+  cache->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, sequence);
+  cache->finalize_changes ();
+
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+  cache->clear ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
+}
+
 TEST_F (MidiTimelineDataCacheTest, EmptyCacheOperations)
 {
   // Operations on empty cache should not crash
@@ -292,7 +357,8 @@ class AudioTimelineDataCacheTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    cache = std::make_unique<AudioTimelineDataCache> ();
+    app_ = std::make_unique<ScopedQCoreApplication> ();
+    cache = utils::make_qobject_unique<dsp::AudioTimelineDataCache> ();
 
     // Create a simple audio buffer for testing
     audio_buffer.setSize (2, 256); // stereo, 256 samples
@@ -313,8 +379,11 @@ protected:
       }
   }
 
-  std::unique_ptr<AudioTimelineDataCache> cache;
-  juce::AudioSampleBuffer                 audio_buffer;
+  utils::QObjectUniquePtr<dsp::AudioTimelineDataCache> cache;
+  juce::AudioSampleBuffer                              audio_buffer;
+
+private:
+  std::unique_ptr<ScopedQCoreApplication> app_;
 };
 
 TEST_F (AudioTimelineDataCacheTest, InitialState)
@@ -475,6 +544,60 @@ TEST_F (AudioTimelineDataCacheTest, AudioRegionSorting)
   EXPECT_EQ (regions[2].start_sample, units::samples (300));
 }
 
+TEST_F (AudioTimelineDataCacheTest, CachedRangesSignalOnFinalize)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  juce::AudioSampleBuffer buffer1 (1, 64);
+  juce::AudioSampleBuffer buffer2 (1, 64);
+  buffer1.clear ();
+  buffer2.clear ();
+
+  cache->add_audio_region (
+    { units::samples (100), units::samples (200) }, buffer1);
+  cache->add_audio_region (
+    { units::samples (300), units::samples (400) }, buffer2);
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  ASSERT_EQ (ranges.size (), 2);
+  EXPECT_EQ (ranges[0].first, units::samples (100));
+  EXPECT_EQ (ranges[0].second, units::samples (200));
+  EXPECT_EQ (ranges[1].first, units::samples (300));
+  EXPECT_EQ (ranges[1].second, units::samples (400));
+}
+
+TEST_F (AudioTimelineDataCacheTest, CachedRangesEmptyWhenNoContent)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
+}
+
+TEST_F (AudioTimelineDataCacheTest, CachedRangesClearedOnClear)
+{
+  juce::AudioSampleBuffer buffer (1, 64);
+  buffer.clear ();
+
+  cache->add_audio_region ({ units::samples (0), units::samples (64) }, buffer);
+  cache->finalize_changes ();
+
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+  cache->clear ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
+}
+
 TEST_F (AudioTimelineDataCacheTest, EmptyAudioOperations)
 {
   // Operations on empty audio cache should not crash
@@ -495,7 +618,8 @@ class AutomationTimelineDataCacheTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    cache = std::make_unique<AutomationTimelineDataCache> ();
+    app_ = std::make_unique<ScopedQCoreApplication> ();
+    cache = utils::make_qobject_unique<dsp::AutomationTimelineDataCache> ();
 
     // Create a simple automation values vector for testing
     automation_values = {
@@ -503,8 +627,11 @@ protected:
     };
   }
 
-  std::unique_ptr<AutomationTimelineDataCache> cache;
-  std::vector<float>                           automation_values;
+  utils::QObjectUniquePtr<dsp::AutomationTimelineDataCache> cache;
+  std::vector<float>                                        automation_values;
+
+private:
+  std::unique_ptr<ScopedQCoreApplication> app_;
 };
 
 TEST_F (AutomationTimelineDataCacheTest, InitialState)
@@ -618,6 +745,53 @@ TEST_F (AutomationTimelineDataCacheTest, AutomationSequenceSorting)
   EXPECT_EQ (sequences[0].start_sample, units::samples (100));
   EXPECT_EQ (sequences[1].start_sample, units::samples (200));
   EXPECT_EQ (sequences[2].start_sample, units::samples (300));
+}
+
+TEST_F (AutomationTimelineDataCacheTest, CachedRangesSignalOnFinalize)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  cache->add_automation_sequence (
+    { units::samples (100), units::samples (200) }, automation_values);
+  cache->add_automation_sequence (
+    { units::samples (300), units::samples (400) }, automation_values);
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  ASSERT_EQ (ranges.size (), 2);
+  EXPECT_EQ (ranges[0].first, units::samples (100));
+  EXPECT_EQ (ranges[0].second, units::samples (200));
+  EXPECT_EQ (ranges[1].first, units::samples (300));
+  EXPECT_EQ (ranges[1].second, units::samples (400));
+}
+
+TEST_F (AutomationTimelineDataCacheTest, CachedRangesEmptyWhenNoContent)
+{
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+
+  cache->finalize_changes ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
+}
+
+TEST_F (AutomationTimelineDataCacheTest, CachedRangesClearedOnClear)
+{
+  cache->add_automation_sequence (
+    { units::samples (0), units::samples (256) }, automation_values);
+  cache->finalize_changes ();
+
+  QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
+  cache->clear ();
+
+  ASSERT_EQ (spy.count (), 1);
+  auto ranges =
+    spy.at (0).at (0).value<std::vector<TimelineDataCache::IntervalType>> ();
+  EXPECT_TRUE (ranges.empty ());
 }
 
 TEST_F (AutomationTimelineDataCacheTest, EmptyAutomationOperations)

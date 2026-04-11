@@ -70,7 +70,7 @@ TrackProcessor::TrackProcessor (
   if (is_midi ())
     {
       timeline_midi_data_provider_ =
-        std::make_unique<arrangement::MidiTimelineDataProvider> ();
+        utils::make_qobject_unique<arrangement::MidiTimelineDataProvider> (this);
       set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
 
       {
@@ -158,8 +158,8 @@ TrackProcessor::TrackProcessor (
     }
   else if (is_audio ())
     {
-      timeline_audio_data_provider_ =
-        std::make_unique<arrangement::AudioTimelineDataProvider> ();
+      timeline_audio_data_provider_ = utils::make_qobject_unique<
+        arrangement::AudioTimelineDataProvider> (this);
       const auto init_stereo_out_ports = [&] (bool in) {
         auto port_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
           in ? u8"TP Stereo in" : u8"TP Stereo out",

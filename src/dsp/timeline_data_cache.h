@@ -6,6 +6,8 @@
 #include "utils/types.h"
 #include "utils/units.h"
 
+#include <QObject>
+
 #include "juce_wrapper.h"
 
 namespace zrythm::dsp
@@ -18,32 +20,47 @@ namespace zrythm::dsp
  * This is an abstract base class that defines the interface that
  * all derived cache classes must implement.
  */
-class TimelineDataCache
+class TimelineDataCache : public QObject
 {
+  Q_OBJECT
+
 public:
   using IntervalType = std::pair<units::sample_t, units::sample_t>;
 
-  virtual ~TimelineDataCache ();
+  explicit TimelineDataCache (QObject * parent = nullptr) : QObject (parent) { }
+
+  ~TimelineDataCache () override;
 
   /**
-   * @brief Clears all cached data.
+   * @brief Clears all cached data and emits cachedRangesChanged.
    */
-  virtual void clear () = 0;
+  void clear ()
+  {
+    clear_impl ();
+    Q_EMIT cachedRangesChanged (compute_cached_sample_ranges ());
+  }
 
   /**
    * @brief Removes cached data matching the given interval.
    *
    * @param interval The time interval to remove (in samples).
+   *
+   * Call finalize_changes() after one or more calls to this method.
    */
   virtual void remove_sequences_matching_interval (IntervalType interval) = 0;
 
   /**
-   * @brief Finalizes changes and prepares cached data for access.
+   * @brief Finalizes changes, prepares cached data for access, and emits
+   * cachedRangesChanged.
    *
    * This should be called after all modifications are complete to prepare the
    * cached data for real-time access.
    */
-  virtual void finalize_changes () = 0;
+  void finalize_changes ()
+  {
+    finalize_changes_impl ();
+    Q_EMIT cachedRangesChanged (compute_cached_sample_ranges ());
+  }
 
   /**
    * @brief Checks if the cache has any content.
@@ -51,6 +68,24 @@ public:
    * @return True if the cache contains any data, false otherwise.
    */
   virtual bool has_content () const = 0;
+
+  /**
+   * @brief Emitted when the cache content changes (after finalize_changes or
+   * clear).
+   *
+   * Carries the current list of sample intervals that are cached.
+   * Used for debug visualization of cache coverage.
+   */
+  Q_SIGNAL void cachedRangesChanged (std::vector<IntervalType> ranges) const;
+
+private:
+  virtual void clear_impl () = 0;
+  virtual void finalize_changes_impl () = 0;
+
+  /**
+   * @brief Computes the sample ranges currently cached.
+   */
+  virtual std::vector<IntervalType> compute_cached_sample_ranges () const = 0;
 };
 
 /**
@@ -62,6 +97,11 @@ public:
 class MidiTimelineDataCache : public TimelineDataCache
 {
 public:
+  explicit MidiTimelineDataCache (QObject * parent = nullptr)
+      : TimelineDataCache (parent)
+  {
+  }
+
   /**
    * @brief Adds a MIDI sequence for the given interval.
    *
@@ -82,13 +122,13 @@ public:
     return merged_midi_events_;
   }
 
-  // Implementation of base class methods
-  void clear () override;
   void remove_sequences_matching_interval (IntervalType interval) override;
-  void finalize_changes () override;
   bool has_content () const override;
 
 private:
+  void                      clear_impl () override;
+  void                      finalize_changes_impl () override;
+  std::vector<IntervalType> compute_cached_sample_ranges () const override;
   /**
    * @brief MIDI sequences organized by time interval.
    *
@@ -115,6 +155,11 @@ private:
 class AudioTimelineDataCache : public TimelineDataCache
 {
 public:
+  explicit AudioTimelineDataCache (QObject * parent = nullptr)
+      : TimelineDataCache (parent)
+  {
+  }
+
   /**
    * @brief Audio region entry for caching.
    *
@@ -154,13 +199,13 @@ public:
     return audio_regions_;
   }
 
-  // Implementation of base class methods
-  void clear () override;
   void remove_sequences_matching_interval (IntervalType interval) override;
-  void finalize_changes () override;
   bool has_content () const override;
 
 private:
+  void                      clear_impl () override;
+  void                      finalize_changes_impl () override;
+  std::vector<IntervalType> compute_cached_sample_ranges () const override;
   /**
    * @brief Audio region entries for playback.
    *
@@ -179,6 +224,11 @@ private:
 class AutomationTimelineDataCache : public TimelineDataCache
 {
 public:
+  explicit AutomationTimelineDataCache (QObject * parent = nullptr)
+      : TimelineDataCache (parent)
+  {
+  }
+
   /**
    * @brief Automation cache entry for caching.
    *
@@ -218,13 +268,13 @@ public:
     return automation_sequences_;
   }
 
-  // Implementation of base class methods
-  void clear () override;
   void remove_sequences_matching_interval (IntervalType interval) override;
-  void finalize_changes () override;
   bool has_content () const override;
 
 private:
+  void                      clear_impl () override;
+  void                      finalize_changes_impl () override;
+  std::vector<IntervalType> compute_cached_sample_ranges () const override;
   /**
    * @brief Automation sequences for playback.
    *
@@ -235,3 +285,5 @@ private:
 };
 
 } // namespace zrythm::dsp
+
+Q_DECLARE_METATYPE (std::vector<zrythm::dsp::TimelineDataCache::IntervalType>)

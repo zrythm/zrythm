@@ -18,12 +18,15 @@ AutomationTrack::AutomationTrack (
         *this),
       tempo_map_ (tempo_map), object_registry_ (obj_registry),
       param_id_ (std::move (param_id)),
+      automation_data_provider_ (
+        utils::make_qobject_unique<arrangement::AutomationTimelineDataProvider> (
+          this)),
       automation_cache_request_debouncer_ (
         utils::make_qobject_unique<utils::PlaybackCacheScheduler> (this))
 {
   parameter ()->set_automation_provider ([this] (auto sample_position) {
     return automation_mode_.load () == AutomationMode::Read
-             ? automation_data_provider_.get_automation_value_rt (sample_position)
+             ? automation_data_provider_->get_automation_value_rt (sample_position)
              : std::nullopt;
   });
 
@@ -49,9 +52,15 @@ AutomationTrack::AutomationTrack (
     &AutomationTrack::regeneratePlaybackCaches);
 
   // cache activity tracking
-  playback_cache_activity_tracker_ =
-    utils::make_qobject_unique<PlaybackCacheActivityTracker> (
-      automation_cache_request_debouncer_.get (), this);
+  const auto &tm = tempo_map_.get_tempo_map ();
+  playback_cache_activity_tracker_ = utils::make_qobject_unique<
+    PlaybackCacheActivityTracker> (
+    automation_cache_request_debouncer_.get (),
+    *std::as_const (*automation_data_provider_).get_base_cache (),
+    [&tm] (units::sample_t sample) {
+      return tm.samples_to_tick (sample).in (units::ticks);
+    },
+    this);
 }
 
 // ========================================================================
@@ -83,7 +92,7 @@ AutomationTrack::regeneratePlaybackCaches (
   utils::ExpandableTickRange affectedRange)
 {
   auto children = get_children_view ();
-  automation_data_provider_.generate_automation_events (
+  automation_data_provider_->generate_automation_events (
     tempo_map_.get_tempo_map (), children, affectedRange);
 
   playback_cache_activity_tracker_->onRegenerationComplete (affectedRange);

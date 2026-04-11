@@ -21,7 +21,7 @@ MidiTimelineDataProvider::set_midi_events (
 void
 MidiTimelineDataProvider::clear_all_caches ()
 {
-  midi_cache_.clear ();
+  midi_cache_->clear ();
   decltype (active_midi_playback_sequence_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_events{ active_midi_playback_sequence_ };
@@ -32,13 +32,13 @@ void
 MidiTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
   IntervalType interval)
 {
-  midi_cache_.remove_sequences_matching_interval (interval);
+  midi_cache_->remove_sequences_matching_interval (interval);
 }
 
 const juce::MidiMessageSequence &
 MidiTimelineDataProvider::get_midi_events () const
 {
-  return midi_cache_.get_midi_events ();
+  return midi_cache_->get_midi_events ();
 }
 
 void
@@ -123,7 +123,7 @@ AudioTimelineDataProvider::set_audio_regions (
 void
 AudioTimelineDataProvider::clear_all_caches ()
 {
-  audio_cache_.clear ();
+  audio_cache_->clear ();
   decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
     rt_regions{ active_audio_regions_ };
   rt_regions->clear ();
@@ -140,7 +140,7 @@ AudioTimelineDataProvider::cache_audio_region (
   arrangement::RegionRenderer::serialize_to_buffer (region, *audio_buffer);
 
   // Add to cache with proper timing
-  audio_cache_.add_audio_region (
+  audio_cache_->add_audio_region (
     std::make_pair (
       units::samples (region.position ()->samples ()),
       region.bounds ()->get_end_position_samples (true)),
@@ -151,13 +151,13 @@ void
 AudioTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
   IntervalType interval)
 {
-  audio_cache_.remove_sequences_matching_interval (interval);
+  audio_cache_->remove_sequences_matching_interval (interval);
 }
 
 const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &
 AudioTimelineDataProvider::get_audio_regions () const
 {
-  return audio_cache_.get_audio_regions ();
+  return audio_cache_->get_audio_regions ();
 }
 
 void
@@ -395,7 +395,7 @@ AutomationTimelineDataProvider::set_automation_sequences (
 void
 AutomationTimelineDataProvider::clear_all_caches ()
 {
-  automation_cache_.clear ();
+  automation_cache_->clear ();
   decltype (active_automation_sequences_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_sequences{ active_automation_sequences_ };
@@ -406,13 +406,13 @@ void
 AutomationTimelineDataProvider::
   remove_sequences_matching_interval_from_all_caches (IntervalType interval)
 {
-  automation_cache_.remove_sequences_matching_interval (interval);
+  automation_cache_->remove_sequences_matching_interval (interval);
 }
 
 const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry> &
 AutomationTimelineDataProvider::get_automation_sequences () const
 {
-  return automation_cache_.get_automation_sequences ();
+  return automation_cache_->get_automation_sequences ();
 }
 
 std::optional<float>
@@ -489,5 +489,48 @@ AutomationTimelineDataProvider::process_automation_events (
 }
 
 TimelineDataProvider::~TimelineDataProvider () = default;
+
+// ========== Constructor Definitions ==========
+
+MidiTimelineDataProvider::MidiTimelineDataProvider (QObject * parent)
+    : TimelineDataProvider (parent),
+      midi_cache_ (utils::make_qobject_unique<dsp::MidiTimelineDataCache> (this))
+{
+}
+
+AudioTimelineDataProvider::AudioTimelineDataProvider (QObject * parent)
+    : TimelineDataProvider (parent),
+      audio_cache_ (utils::make_qobject_unique<dsp::AudioTimelineDataCache> (this))
+{
+}
+
+AutomationTimelineDataProvider::AutomationTimelineDataProvider (QObject * parent)
+    : TimelineDataProvider (parent),
+      automation_cache_ (
+        utils::make_qobject_unique<dsp::AutomationTimelineDataCache> (this))
+{
+}
+
+// ========== AutomationTimelineDataProvider Private Methods ==========
+
+void
+AutomationTimelineDataProvider::cache_automation_region (
+  const arrangement::AutomationRegion &region,
+  const dsp::TempoMap                 &tempo_map)
+{
+  // Calculate number of samples needed
+  const auto start_sample = units::samples (region.position ()->samples ());
+  const auto end_sample = region.bounds ()->get_end_position_samples (true);
+  const auto num_samples = end_sample - start_sample;
+
+  std::vector<float> automation_values (num_samples.in (units::samples));
+
+  // Serialize automation region to sample-accurate values
+  arrangement::RegionRenderer::serialize_to_automation_values (
+    region, automation_values);
+
+  automation_cache_->add_automation_sequence (
+    std::make_pair (start_sample, end_sample), automation_values);
+}
 
 } // namespace zrythm::structure::arrangement

@@ -11,7 +11,7 @@ namespace zrythm::dsp
 // ========== MidiTimelineDataCache Implementation ==========
 
 void
-MidiTimelineDataCache::clear ()
+MidiTimelineDataCache::clear_impl ()
 {
   midi_sequences_.clear ();
   merged_midi_events_.clear ();
@@ -73,7 +73,7 @@ MidiTimelineDataCache::add_midi_sequence (
 }
 
 void
-MidiTimelineDataCache::finalize_changes ()
+MidiTimelineDataCache::finalize_changes_impl ()
 {
   // Finalize MIDI events
   merged_midi_events_.clear ();
@@ -90,10 +90,17 @@ MidiTimelineDataCache::has_content () const
   return merged_midi_events_.getNumEvents () > 0;
 }
 
+std::vector<MidiTimelineDataCache::IntervalType>
+MidiTimelineDataCache::compute_cached_sample_ranges () const
+{
+  return midi_sequences_ | std::views::keys
+         | std::ranges::to<std::vector<IntervalType>> ();
+}
+
 // ========== AudioTimelineDataCache Implementation ==========
 
 void
-AudioTimelineDataCache::clear ()
+AudioTimelineDataCache::clear_impl ()
 {
   audio_regions_.clear ();
 }
@@ -128,7 +135,7 @@ AudioTimelineDataCache::add_audio_region (
 }
 
 void
-AudioTimelineDataCache::finalize_changes ()
+AudioTimelineDataCache::finalize_changes_impl ()
 {
   // Sort audio regions by start position for efficient processing
   std::ranges::sort (audio_regions_, {}, [] (const AudioRegionEntry &entry) {
@@ -142,10 +149,19 @@ AudioTimelineDataCache::has_content () const
   return !audio_regions_.empty ();
 }
 
+std::vector<AudioTimelineDataCache::IntervalType>
+AudioTimelineDataCache::compute_cached_sample_ranges () const
+{
+  return audio_regions_ | std::views::transform ([] (const AudioRegionEntry &e) {
+           return std::make_pair (e.start_sample, e.end_sample);
+         })
+         | std::ranges::to<std::vector<IntervalType>> ();
+}
+
 // ========== AutomationTimelineDataCache Implementation ==========
 
 void
-AutomationTimelineDataCache::clear ()
+AutomationTimelineDataCache::clear_impl ()
 {
   automation_sequences_.clear ();
 }
@@ -179,7 +195,7 @@ AutomationTimelineDataCache::add_automation_sequence (
 }
 
 void
-AutomationTimelineDataCache::finalize_changes ()
+AutomationTimelineDataCache::finalize_changes_impl ()
 {
   // Sort automation sequences by start position for efficient processing
   std::ranges::sort (
@@ -191,6 +207,16 @@ bool
 AutomationTimelineDataCache::has_content () const
 {
   return !automation_sequences_.empty ();
+}
+
+std::vector<AutomationTimelineDataCache::IntervalType>
+AutomationTimelineDataCache::compute_cached_sample_ranges () const
+{
+  return automation_sequences_
+         | std::views::transform ([] (const AutomationCacheEntry &e) {
+             return std::make_pair (e.start_sample, e.end_sample);
+           })
+         | std::ranges::to<std::vector<IntervalType>> ();
 }
 
 TimelineDataCache::~TimelineDataCache () = default;

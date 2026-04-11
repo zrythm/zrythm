@@ -10,6 +10,7 @@
 #include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/icloneable.h"
 #include "utils/mpmc_queue.h"
+#include "utils/qt.h"
 #include "utils/types.h"
 
 #include <farbot/RealtimeObject.hpp>
@@ -461,13 +462,13 @@ private:
   /**
    * @brief MIDI data provider from the timeline.
    */
-  std::unique_ptr<arrangement::MidiTimelineDataProvider>
+  utils::QObjectUniquePtr<arrangement::MidiTimelineDataProvider>
     timeline_midi_data_provider_;
 
   /**
    * @brief MIDI data provider from the timeline.
    */
-  std::unique_ptr<arrangement::AudioTimelineDataProvider>
+  utils::QObjectUniquePtr<arrangement::AudioTimelineDataProvider>
     timeline_audio_data_provider_;
 
   std::unique_ptr<ClipPlaybackDataProvider> clip_playback_data_provider_;

@@ -233,7 +233,8 @@ private:
   /**
    * @brief Cached automation data provider.
    */
-  arrangement::AutomationTimelineDataProvider automation_data_provider_;
+  utils::QObjectUniquePtr<arrangement::AutomationTimelineDataProvider>
+    automation_data_provider_;
 
   /**
    * @brief Debouncer/scheduler of automation cache requests.

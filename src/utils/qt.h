@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -90,6 +90,8 @@ public:
   T *      operator->() const { return ptr_; }
   T       &operator* () const { return *ptr_; }
   explicit operator bool () const { return !ptr_.isNull (); }
+
+  bool operator== (std::nullptr_t) const { return ptr_.isNull (); }
 
   // Conversion to QPointer
   explicit operator QPointer<T> () const { return ptr_; }
