@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_utils_lib STATIC)
@@ -13,7 +13,6 @@ target_sources(zrythm_utils_lib
     chromaprint.cpp
     color.cpp
     compression.cpp
-    cpu_windows.cpp
     datetime.cpp
     debouncer.cpp
     directory_manager.cpp
@@ -33,7 +32,6 @@ target_sources(zrythm_utils_lib
     note_type.cpp
     pcg_rand.cpp
     playback_cache_scheduler.cpp
-    progress_info.cpp
     resampler.cpp
     rt_thread_id.cpp
     utf8_string.cpp
@@ -56,7 +54,6 @@ target_sources(zrythm_utils_lib
       color.h
       compression.h
       concurrency.h
-      cpu_windows.h
       datetime.h
       debouncer.h
       directory_manager.h
@@ -83,7 +80,6 @@ target_sources(zrythm_utils_lib
       object_pool.h
       pcg_rand.h
       playback_cache_scheduler.h
-      progress_info.h
       qsettings_backend.h
       qt.h
       ranges.h
