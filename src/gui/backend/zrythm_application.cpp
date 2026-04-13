@@ -76,8 +76,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     [&] () {
       return utils::Utf8String::from_qstring (applicationDirPath ()).to_path ();
     });
-  utils::LoggerProvider::set_logger (
-    std::make_shared<utils::Logger> (utils::Logger::LoggerType::GUI));
+  utils::init_logging (utils::LoggerType::GUI);
 
   /* setup command line parser */
   setup_command_line_options ();

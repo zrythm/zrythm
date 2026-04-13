@@ -9,15 +9,30 @@
 
 #include <QStandardPaths>
 
-#include <gtest/gtest.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
 namespace zrythm::utils
 {
 
+// Opaque definition of SpdlogApi::Logger -- fully hidden from the header.
+struct detail::SpdlogApi::Logger
+{
+  std::shared_ptr<spdlog::logger> spd_logger;
+  std::filesystem::path           log_file_path;
+  bool                            for_testing = false;
+};
+
+detail::SpdlogApi::~SpdlogApi ()
+{
+  auto * p = logger_.exchange (nullptr, std::memory_order_acq_rel);
+  delete p;
+}
+
+// Prints backtraces on errors, breaks into debugger or aborts on criticals.
 class ErrorHandlingSink : public spdlog::sinks::base_sink<std::mutex>
 {
 public:
@@ -60,12 +75,30 @@ private:
   bool break_on_error_ = false;
 };
 
-void
-ILogger::init_sinks (bool for_testing)
+static spdlog::level::level_enum
+to_spdlog_level (LogLevel level)
 {
-  auto set_pattern = [] (auto &sink, bool with_date) {
+  switch (level)
+    {
+    case LogLevel::Trace:
+      return spdlog::level::trace;
+    case LogLevel::Debug:
+      return spdlog::level::debug;
+    case LogLevel::Info:
+      return spdlog::level::info;
+    case LogLevel::Warning:
+      return spdlog::level::warn;
+    case LogLevel::Error:
+      return spdlog::level::err;
+    case LogLevel::Critical:
+      return spdlog::level::critical;
+    }
+  std::unreachable ();
+}
 
-  // only function name is shown on windows, so show filename too
+static void
+set_sink_pattern (auto &sink, bool with_date)
+{
 #ifdef _WIN32
 #  define FUNCTION_AND_LINE_NO_PART "%s:%!():%#"
 #else
@@ -73,212 +106,144 @@ ILogger::init_sinks (bool for_testing)
 #endif
 
 #define TIMESTAMP_PART "%H:%M:%S.%f"
-  // [time] [thread id] [level] [source file:line] message
 #define FINAL_PART "[%t] [%^%l%$] [" FUNCTION_AND_LINE_NO_PART "] %v"
-    if (with_date)
-      {
-        sink->set_pattern ("[%Y-%m-%d " TIMESTAMP_PART "] " FINAL_PART);
-      }
-    else
-      {
-        sink->set_pattern ("[" TIMESTAMP_PART "] " FINAL_PART);
-      }
+  if (with_date)
+    {
+      sink->set_pattern ("[%Y-%m-%d " TIMESTAMP_PART "] " FINAL_PART);
+    }
+  else
+    {
+      sink->set_pattern ("[" TIMESTAMP_PART "] " FINAL_PART);
+    }
 
 #undef FUNCTION_AND_LINE_NO_PART
 #undef TIMESTAMP_PART
 #undef FINAL_PART
-  };
-
-  // Create a rotating file sink with a maximum size of 10 MB and 5 rotated
-  // files
-  auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt> (
-    utils::Utf8String::from_path (get_log_file_path ()).str (),
-    1024 * 1024 * 10, 5);
-  set_pattern (file_sink, true);
-
-#if 0
-    /* also log to /tmp */
-    if (!tmp_log_file)
-      {
-        char *       datetime = datetime_get_for_filename ();
-        char *       filename = g_strdup_printf ("zrythm_%s.log", datetime);
-        const char * tmpdir = g_get_tmp_dir ();
-        tmp_log_file = g_build_filename (tmpdir, filename, nullptr);
-        g_free (filename);
-        g_free (datetime);
-      }
-    FILE * file = fopen (tmp_log_file, "a");
-    z_return_val_if_fail (file, G_LOG_WRITER_UNHANDLED);
-    fprintf (file, "%s\n", str);
-    fclose (file);
-#endif
-
-  // Create a stdout color sink
-  auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt> ();
-  console_sink->set_color_mode (spdlog::color_mode::always);
-  set_pattern (console_sink, false);
-
-// MSVC debug sink
-#ifdef _MSC_VER
-  auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt> ();
-  set_pattern (msvc_sink, false);
-#endif
-
-  // Create a ring buffer sink with a maximum capacity
-  auto ringbuffer_sink =
-    std::make_shared<spdlog::sinks::ringbuffer_sink_mt> (1000);
-  set_pattern (ringbuffer_sink, false);
-
-  auto error_handling_sink = std::make_shared<ErrorHandlingSink> (!for_testing);
-  set_pattern (error_handling_sink, false);
-
-  // Create a logger with all the sinks
-  logger_ = std::make_shared<spdlog::logger> (
-    "zrythm",
-    spdlog::sinks_init_list{
-      file_sink, console_sink,
-#ifdef _MSC_VER
-      msvc_sink,
-#endif
-      ringbuffer_sink, error_handling_sink });
-
-  // Set the log level
-  logger_->set_level (spdlog::level::debug);
-
-  // Set the error handler for critical logs
-  logger_->set_error_handler ([&] (const std::string &msg) {
-    // Default error handler
-    std::cerr << "Critical log: " << msg << std::endl;
-
-#if 0
-      // Show a backtrace if needed
-      if (need_backtrace () && !RUNNING_ON_VALGRIND)
-        {
-        if (!gZrythm || ZRYTHM_TESTING || ZRYTHM_BENCHMARKING)
-          {
-            z_info ("Backtrace: {}", ev->backtrace);
-          }
-
-          auto backtrace = backtrace_get_with_lines ("", 100, true);
-
-        if (
-          ev->log_level == G_LOG_LEVEL_CRITICAL && ZRYTHM_HAVE_UI
-          && !zrythm_app->bug_report_dialog)
-          {
-            char msg[500];
-            sprintf (msg, QObject::tr ("%s has encountered an error\n"), PROGRAM_NAME);
-            GtkWindow * win =
-              gtk_application_get_active_window (GTK_APPLICATION (zrythm_app));
-            zrythm_app->bug_report_dialog = bug_report_dialog_new (
-              win ? GTK_WIDGET (win) : nullptr, msg, ev->backtrace, false);
-            adw_dialog_present (
-              ADW_DIALOG (zrythm_app->bug_report_dialog),
-              win ? GTK_WIDGET (win) : nullptr);
-          }
-
-        /* write the backtrace to the log after
-         * showing the popup (if any) */
-        if (self->logfile)
-          {
-            g_fprintf (self->logfile, "%s\n", ev->backtrace);
-            fflush (self->logfile);
-          }
-      }
-#endif
-    if (for_testing)
-      abort ();
-  });
 }
 
-Logger::Logger (LoggerType type) : type_ (type)
-{
-  init_sinks (false);
-}
-
-std::filesystem::path
-Logger::get_log_file_path () const
+static std::filesystem::path
+make_log_file_path (LoggerType type)
 {
   auto str_datetime = utils::datetime::get_for_filename ();
+
+  if (type == LoggerType::Test)
+    {
+      auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";
+      utils::io::mkdir (tmp_log_dir);
+      return tmp_log_dir / str_datetime.to_path ();
+    }
+
   auto user_log_dir =
     QStandardPaths::writableLocation (QStandardPaths::CacheLocation);
   auto log_filepath =
     Utf8String::from_qstring (user_log_dir).to_path ()
-    / (std::u8string (u8"log_") + (type_ == LoggerType::Engine ? std::u8string (u8"engine_") : std::u8string ()) + str_datetime.to_u8_string());
-  utils::io::mkdir (
-    Utf8String::from_qstring (user_log_dir).to_path ()); // note: throws
+    / (std::u8string (u8"log_") + str_datetime.to_u8_string ());
+  utils::io::mkdir (Utf8String::from_qstring (user_log_dir).to_path ());
   return log_filepath;
 }
 
-bool
-Logger::need_backtrace () const
+void
+detail::SpdlogApi::init (LoggerType type)
 {
-  constexpr int backtrace_cooldown_time = 16 * 1000 * 1000;
-  auto          now = juce::Time::getMillisecondCounterHiRes ();
-  return now - last_bt_time_ > backtrace_cooldown_time;
+  if (logger_.load (std::memory_order_acquire)) [[unlikely]]
+    return;
+
+  std::call_once (init_flag_, [this, type] {
+    const bool for_testing = (type == LoggerType::Test);
+
+    auto * impl = new Logger ();
+    impl->for_testing = for_testing;
+    impl->log_file_path = make_log_file_path (type);
+
+    // 10 MB rotating file, 5 files max
+    auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt> (
+      utils::Utf8String::from_path (impl->log_file_path).str (),
+      1024 * 1024 * 10, 5);
+    set_sink_pattern (file_sink, true);
+
+    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt> ();
+    console_sink->set_color_mode (spdlog::color_mode::always);
+    set_sink_pattern (console_sink, false);
+
+#ifdef _MSC_VER
+    auto msvc_sink = std::make_shared<spdlog::sinks::msvc_sink_mt> ();
+    set_sink_pattern (msvc_sink, false);
+#endif
+
+    // Ringbuffer for get_last_log_entries()
+    auto ringbuffer_sink =
+      std::make_shared<spdlog::sinks::ringbuffer_sink_mt> (1000);
+    set_sink_pattern (ringbuffer_sink, false);
+
+    auto error_handling_sink =
+      std::make_shared<ErrorHandlingSink> (!for_testing);
+    set_sink_pattern (error_handling_sink, false);
+
+    impl->spd_logger = std::make_shared<spdlog::logger> (
+      "zrythm",
+      spdlog::sinks_init_list{
+        file_sink, console_sink,
+#ifdef _MSC_VER
+        msvc_sink,
+#endif
+        ringbuffer_sink, error_handling_sink });
+
+    impl->spd_logger->set_level (spdlog::level::debug);
+
+    impl->spd_logger->set_error_handler ([for_testing] (const std::string &msg) {
+      std::cerr << "Critical log: " << msg << std::endl;
+      if (for_testing)
+        abort ();
+    });
+
+    logger_.store (impl, std::memory_order_release);
+  });
 }
 
-std::pair<std::filesystem::path, std::filesystem::path>
-Logger::generate_compresed_file (
-  std::filesystem::path &dir,
-  std::filesystem::path &path) const
+void
+detail::SpdlogApi::
+  submit (std::source_location loc, LogLevel level, std::string msg) const
 {
-#if 0
-    Error * err = NULL;
-    char *  log_file_tmpdir = g_dir_make_tmp ("zrythm-log-file-XXXXXX", &err);
-    if (!log_file_tmpdir)
-      {
-        g_set_error_literal (
-          error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-          "Failed to create temporary dir");
-        return false;
-      }
+  auto * l = logger_.load (std::memory_order_acquire);
+  if ((l == nullptr) || !l->spd_logger)
+    return;
 
-    /* get zstd-compressed text */
-    char * log_txt = log_get_last_n_lines (LOG, 40000);
-    z_return_val_if_fail (log_txt, false);
-    size_t log_txt_sz = strlen (log_txt);
-    size_t compress_bound = ZSTD_compressBound (log_txt_sz);
-    char * dest = static_cast<char *> (malloc (compress_bound));
-    size_t dest_size =
-      ZSTD_compress (dest, compress_bound, log_txt, log_txt_sz, 1);
-    if (ZSTD_isError (dest_size))
-      {
-        free (dest);
+  spdlog::source_loc src{
+    loc.file_name (), static_cast<int> (loc.line ()), loc.function_name ()
+  };
+  l->spd_logger->log (src, to_spdlog_level (level), msg);
+}
 
-        g_set_error (
-          error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-          "Failed to compress log text: %s", ZSTD_getErrorName (dest_size));
+void
+init_logging (LoggerType type)
+{
+  detail::log_api<>.init (type);
+}
 
-        g_free (log_file_tmpdir);
-        return false;
-      }
-
-    /* write to dest file */
-    char * dest_filepath =
-      g_build_filename (log_file_tmpdir, "log.txt.zst", nullptr);
-    bool ret =
-      g_file_set_contents (dest_filepath, dest, (gssize) dest_size, error);
-    g_free (dest);
-    if (!ret)
-      {
-        g_free (log_file_tmpdir);
-        g_free (dest_filepath);
-        return false;
-      }
-
-    *ret_dir = log_file_tmpdir;
-    *ret_path = dest_filepath;
-#endif
-  return std::make_pair ("dir", "path");
+bool
+is_logging_initialized ()
+{
+  return detail::log_api<>.logger_.load (std::memory_order_acquire) != nullptr;
 }
 
 std::vector<Utf8String>
-ILogger::get_last_log_entries (size_t count, bool formatted) const
+get_last_log_entries (size_t count)
 {
-  // Get the circular buffer sink from the logger
-  auto buffer_sink = std::dynamic_pointer_cast<
-    spdlog::sinks::ringbuffer_sink_mt> (logger_->sinks ().back ());
-  assert (buffer_sink);
+  auto * l = detail::log_api<>.logger_.load (std::memory_order_acquire);
+  if ((l == nullptr) || !l->spd_logger)
+    return {};
+
+  auto &sinks = l->spd_logger->sinks ();
+  auto  it = std::ranges::find_if (sinks, [] (const auto &sink) {
+    return nullptr
+           != dynamic_cast<spdlog::sinks::ringbuffer_sink_mt *> (sink.get ());
+  });
+  if (it == sinks.end ())
+    return {};
+  auto buffer_sink =
+    std::dynamic_pointer_cast<spdlog::sinks::ringbuffer_sink_mt> (*it);
+  if (!buffer_sink)
+    return {};
   return buffer_sink->last_formatted (count)
          | std::views::transform ([&] (const auto &entry) {
              return Utf8String::from_utf8_encoded_string (entry);
@@ -286,33 +251,13 @@ ILogger::get_last_log_entries (size_t count, bool formatted) const
          | std::ranges::to<std::vector> ();
 }
 
-TestLogger::TestLogger ()
-{
-  init_sinks (true);
-}
-
-std::pair<std::filesystem::path, std::filesystem::path>
-TestLogger::generate_compresed_file (
-  std::filesystem::path &dir,
-  std::filesystem::path &path) const
-{
-  return std::make_pair (
-    std::filesystem::path{ u8"dir" }, std::filesystem::path{ u8"path" });
-}
-
-bool
-TestLogger::need_backtrace () const
-{
-  return true;
-}
-
 std::filesystem::path
-TestLogger::get_log_file_path () const
+get_log_file_path ()
 {
-  auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";
-  EXPECT_NO_THROW ({ utils::io::mkdir (tmp_log_dir); });
-  auto str_datetime = utils::datetime::get_for_filename ();
-  return tmp_log_dir / str_datetime.to_path ();
+  auto * l = detail::log_api<>.logger_.load (std::memory_order_acquire);
+  if (l == nullptr)
+    return {};
+  return l->log_file_path;
 }
 
 } // namespace zrythm::utils

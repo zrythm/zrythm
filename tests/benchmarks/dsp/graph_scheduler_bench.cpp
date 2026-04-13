@@ -23,9 +23,6 @@ protected:
 
   void SetUp (benchmark::State &) override
   {
-    zrythm::utils::LoggerProvider::logger ().get_logger ()->set_level (
-      spdlog::level::off);
-
     // old processable is still used during release_node_resources() so destruct
     // here before assigning processable_ to a new processable
     scheduler_.reset ();
@@ -209,12 +206,8 @@ protected:
   std::unique_ptr<MockTransport>  transport_;
   std::unique_ptr<dsp::TempoMap>  tempo_map_;
   std::unique_ptr<GraphScheduler> scheduler_;
-  std::vector<std::unique_ptr<MockProcessable>>     processables_;
-  static std::shared_ptr<zrythm::utils::TestLogger> logger_;
+  std::vector<std::unique_ptr<MockProcessable>> processables_;
 };
-
-std::shared_ptr<zrythm::utils::TestLogger> GraphSchedulerBenchmark::logger_ =
-  std::make_shared<zrythm::utils::TestLogger> ();
 
 BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
 (benchmark::State &state)

@@ -113,7 +113,7 @@ void
 mkdir (const std::filesystem::path &dir)
 {
   // this is called during logger instantiation so check if logger exists
-  if (LoggerProvider::has_logger ())
+  if (is_logging_initialized ())
     {
       z_debug ("Creating directory: {}", dir);
     }
