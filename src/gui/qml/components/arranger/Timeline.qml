@@ -75,7 +75,7 @@ Arranger {
 
   function getAutomationTrackAtY(y: real): AutomationTrack {
     y += tracksListView.contentY;
-    const trackItem = tracksListView.itemAt(0, y);
+    const trackItem = tracksListView.itemAt(0, y) as TrackDelegateItem;
     if (!trackItem) {
       return null;
     }
@@ -184,17 +184,17 @@ Arranger {
     return tracklist.getTrackForTimelineObject(obj);
   }
 
-  function getTrackItem(track: Track): Item {
+  function getTrackItem(track: Track): TrackDelegateItem {
     for (let i = 0; i < tracksListView.count; i++) {
-      const trackDelegate = tracksListView.itemAtIndex(i);
+      const trackDelegate = tracksListView.itemAtIndex(i) as TrackDelegateItem;
       if (trackDelegate?.track === track) {
         return trackDelegate;
       }
     }
   }
 
-  function getTrackItemAtY(y: real): Item {
-    return tracksListView.itemAt(0, y + tracksListView.contentY);
+  function getTrackItemAtY(y: real): TrackDelegateItem {
+    return tracksListView.itemAt(0, y + tracksListView.contentY) as TrackDelegateItem;
   }
 
   function getTrackLaneAtY(y: real): TrackLane {
@@ -239,7 +239,7 @@ Arranger {
     return null;
   }
 
-  function getTrackLaneItem(trackLane: TrackLane, trackItem: Item): Item {
+  function getTrackLaneItem(trackLane: TrackLane, trackItem: TrackDelegateItem): Item {
     const track = trackItem.track as Track;
     if (track.lanes === null || !track.lanes.lanesVisible) {
       return null;
@@ -251,7 +251,7 @@ Arranger {
     }
 
     for (let i = 0; i < lanesListView.count; ++i) {
-      const laneItem = lanesListView.itemAtIndex(i);
+      const laneItem = lanesListView.itemAtIndex(i) as TrackLaneDelegateItem;
       const currentLane = laneItem?.trackLane;
       if (currentLane === trackLane) {
         return laneItem;
@@ -275,7 +275,7 @@ Arranger {
   function getTrackY(track: Track): real {
     let totalHeight = 0;
     for (let i = 0; i < tracksListView.count; i++) {
-      const trackDelegate = tracksListView.itemAtIndex(i);
+      const trackDelegate = tracksListView.itemAtIndex(i) as TrackDelegateItem;
       if (trackDelegate && trackDelegate.track === track) {
         return totalHeight;
       }
@@ -301,466 +301,7 @@ Arranger {
     anchors.fill: parent
     interactive: false
 
-    delegate: Item {
-      id: trackDelegate
-
-      required property Track track
-
-      height: track.fullVisibleHeight
-      width: tracksListView.width
-
-      ColumnLayout {
-        id: trackSectionRows
-
-        anchors.fill: parent
-        spacing: 0
-
-        Item {
-          id: mainTrackObjectsContainer
-
-          Layout.fillWidth: true
-          Layout.maximumHeight: trackDelegate.track.height
-          Layout.minimumHeight: trackDelegate.track.height
-
-          Loader {
-            id: scalesLoader
-
-            active: trackDelegate.track.type === Track.Chord
-            height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-            visible: active
-            width: parent.width
-            y: trackDelegate.track.height - height
-
-            sourceComponent: Repeater {
-              id: scalesRepeater
-
-              readonly property ChordTrack track: trackDelegate.track as ChordTrack
-
-              model: track.scaleObjects
-
-              delegate: ArrangerObjectLoader {
-                id: scaleLoader
-
-                arrangerSelectionModel: root.arrangerSelectionModel
-                model: scalesRepeater.model
-                pxPerTick: root.ruler.pxPerTick
-                scrollViewWidth: root.scrollViewWidth
-                scrollX: root.scrollX
-                unifiedObjectsModel: root.unifiedObjectsModel
-
-                sourceComponent: Component {
-                  ScaleObjectView {
-                    id: scaleItem
-
-                    arrangerObject: scaleLoader.arrangerObject
-                    isSelected: scaleLoader.selectionTracker.isSelected
-                    track: trackDelegate.track
-                    undoStack: root.undoStack
-
-                    onHoveredChanged: {
-                      root.handleObjectHover(scaleItem.hovered, scaleItem);
-                    }
-                    onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(scalesRepeater.model, scaleLoader.index, mouse);
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          Loader {
-            id: markersLoader
-
-            active: trackDelegate.track.type === Track.Marker
-            height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
-            visible: active
-            width: parent.width
-            y: trackDelegate.track.height - height
-
-            sourceComponent: Repeater {
-              id: markersRepeater
-
-              readonly property MarkerTrack track: trackDelegate.track as MarkerTrack
-
-              model: track.markers
-
-              delegate: ArrangerObjectLoader {
-                id: markerLoader
-
-                arrangerSelectionModel: root.arrangerSelectionModel
-                model: markersRepeater.model
-                pxPerTick: root.ruler.pxPerTick
-                scrollViewWidth: root.scrollViewWidth
-                scrollX: root.scrollX
-                unifiedObjectsModel: root.unifiedObjectsModel
-
-                sourceComponent: Component {
-                  MarkerView {
-                    id: markerItem
-
-                    arrangerObject: markerLoader.arrangerObject
-                    isSelected: markerLoader.selectionTracker.isSelected
-                    track: trackDelegate.track
-                    undoStack: root.undoStack
-
-                    onHoveredChanged: {
-                      root.handleObjectHover(markerItem.hovered, markerItem);
-                    }
-                    onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(markersRepeater.model, markerLoader.index, mouse);
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          Loader {
-            id: chordRegionsLoader
-
-            active: trackDelegate.track.type === Track.Chord
-            height: trackDelegate.track.height - scalesLoader.height
-            visible: active
-            width: parent.width
-            y: 0
-
-            sourceComponent: Repeater {
-              id: chordRegionsRepeater
-
-              readonly property ChordTrack track: trackDelegate.track as ChordTrack
-
-              model: track.chordRegions
-
-              delegate: ArrangerObjectLoader {
-                id: chordRegionLoader
-
-                arrangerSelectionModel: root.arrangerSelectionModel
-                model: chordRegionsRepeater.model
-                pxPerTick: root.ruler.pxPerTick
-                scrollViewWidth: root.scrollViewWidth
-                scrollX: root.scrollX
-                unifiedObjectsModel: root.unifiedObjectsModel
-
-                sourceComponent: Component {
-                  ChordRegionView {
-                    id: chordRegionItem
-
-                    arrangerObject: chordRegionLoader.arrangerObject
-                    clipEditor: root.clipEditor
-                    height: chordRegionsRepeater.height
-                    isSelected: chordRegionLoader.selectionTracker.isSelected
-                    track: trackDelegate.track
-                    undoStack: root.undoStack
-
-                    onHoveredChanged: {
-                      root.handleObjectHover(hovered, chordRegionItem);
-                    }
-                    onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(chordRegionsRepeater.model, chordRegionLoader.index, mouse);
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          Loader {
-            id: mainTrackLanedRegionsLoader
-
-            active: trackDelegate.track.lanes !== null
-            anchors.fill: parent
-            visible: active
-
-            sourceComponent: Repeater {
-              id: mainTrackLanesRepeater
-
-              model: trackDelegate.track.lanes
-
-              delegate: Repeater {
-                id: mainTrackLaneRegionsRepeater
-
-                required property TrackLane trackLane
-
-                model: trackDelegate.track.type === Track.Audio ? trackLane.audioRegions : trackLane.midiRegions
-
-                delegate: ArrangerObjectLoader {
-                  id: mainTrackRegionLoader
-
-                  arrangerSelectionModel: root.arrangerSelectionModel
-                  height: mainTrackLanedRegionsLoader.height
-                  model: mainTrackLaneRegionsRepeater.model
-                  pxPerTick: root.ruler.pxPerTick
-                  scrollViewWidth: root.scrollViewWidth
-                  scrollX: root.scrollX
-                  sourceComponent: mainTrackRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
-                  unifiedObjectsModel: root.unifiedObjectsModel
-
-                  Component {
-                    id: midiRegionComponent
-
-                    MidiRegionView {
-                      id: mainMidiRegionItem
-
-                      arrangerObject: mainTrackRegionLoader.arrangerObject
-                      clipEditor: root.clipEditor
-                      isSelected: mainTrackRegionLoader.selectionTracker.isSelected
-                      lane: mainTrackLaneRegionsRepeater.trackLane
-                      track: trackDelegate.track
-                      undoStack: root.undoStack
-
-                      onHoveredChanged: {
-                        root.handleObjectHover(hovered, mainMidiRegionItem);
-                      }
-                      onSelectionRequested: function (mouse) {
-                        root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
-                      }
-                    }
-                  }
-
-                  Component {
-                    id: audioRegionComponent
-
-                    AudioRegionView {
-                      id: mainAudioRegionItem
-
-                      arrangerObject: mainTrackRegionLoader.arrangerObject
-                      clipEditor: root.clipEditor
-                      height: mainTrackRegionLoader.height
-                      isSelected: mainTrackRegionLoader.selectionTracker.isSelected
-                      lane: mainTrackLaneRegionsRepeater.trackLane
-                      track: trackDelegate.track
-                      undoStack: root.undoStack
-
-                      onHoveredChanged: {
-                        root.handleObjectHover(hovered, mainAudioRegionItem);
-                      }
-                      onSelectionRequested: function (mouse) {
-                        root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          // Cache activity overlay (debug only)
-          Loader {
-            active: GlobalState.application.appSettings.showCacheActivity && trackDelegate.track.playbackCacheActivityTracker !== null
-            anchors.fill: parent
-            visible: active
-            z: 5
-
-            sourceComponent: PlaybackCacheActivityOverlay {
-              activityEntries: trackDelegate.track.playbackCacheActivityTracker.entries
-              cachedRanges: trackDelegate.track.playbackCacheActivityTracker.cachedRanges
-              pending: trackDelegate.track.playbackCacheActivityTracker.pending
-              pxPerTick: root.ruler.pxPerTick
-            }
-          }
-        }
-
-        Loader {
-          id: laneRegionsLoader
-
-          Layout.fillWidth: true
-          Layout.maximumHeight: Layout.preferredHeight
-          Layout.minimumHeight: Layout.preferredHeight
-          Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
-          active: trackDelegate.track.lanes && trackDelegate.track.lanes.lanesVisible
-          visible: active
-
-          sourceComponent: ListView {
-            id: lanesListView
-
-            anchors.fill: parent
-            clip: true
-            interactive: false
-            model: trackDelegate.track.lanes
-            orientation: Qt.Vertical
-            spacing: 0
-
-            delegate: Item {
-              id: laneItem
-
-              required property TrackLane trackLane
-
-              height: trackLane.height
-              width: lanesListView.width
-
-              Component {
-                id: laneRegionLoaderComponent
-
-                ArrangerObjectLoader {
-                  id: laneRegionLoader
-
-                  arrangerSelectionModel: root.arrangerSelectionModel
-                  height: laneItem.trackLane.height
-                  model: arrangerObject.type === ArrangerObject.MidiRegion ? laneItem.trackLane.midiRegions : laneItem.trackLane.audioRegions
-                  pxPerTick: root.ruler.pxPerTick
-                  scrollViewWidth: root.scrollViewWidth
-                  scrollX: root.scrollX
-                  sourceComponent: laneRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
-                  unifiedObjectsModel: root.unifiedObjectsModel
-
-                  Component {
-                    id: laneMidiRegionComponent
-
-                    MidiRegionView {
-                      id: laneMidiRegionItem
-
-                      arrangerObject: laneRegionLoader.arrangerObject
-                      clipEditor: root.clipEditor
-                      isSelected: laneRegionLoader.selectionTracker.isSelected
-                      lane: laneItem.trackLane
-                      track: trackDelegate.track
-                      undoStack: root.undoStack
-
-                      onHoveredChanged: {
-                        root.handleObjectHover(hovered, laneMidiRegionItem);
-                      }
-                      onSelectionRequested: function (mouse) {
-                        root.handleObjectSelection(laneMidiRegionsRepeater.model, laneRegionLoader.index, mouse);
-                      }
-                    }
-                  }
-
-                  Component {
-                    id: laneAudioRegionComponent
-
-                    AudioRegionView {
-                      id: laneAudioRegionItem
-
-                      arrangerObject: laneRegionLoader.arrangerObject
-                      clipEditor: root.clipEditor
-                      isSelected: laneRegionLoader.selectionTracker.isSelected
-                      lane: laneItem.trackLane
-                      track: trackDelegate.track
-                      undoStack: root.undoStack
-
-                      onHoveredChanged: {
-                        root.handleObjectHover(hovered, laneAudioRegionItem);
-                      }
-                      onSelectionRequested: function (mouse) {
-                        root.handleObjectSelection(laneAudioRegionsRepeater.model, laneRegionLoader.index, mouse);
-                      }
-                    }
-                  }
-                }
-              }
-
-              Repeater {
-                id: laneMidiRegionsRepeater
-
-                anchors.fill: parent
-                delegate: laneRegionLoaderComponent
-                model: laneItem.trackLane.midiRegions
-              }
-
-              Repeater {
-                id: laneAudioRegionsRepeater
-
-                anchors.fill: parent
-                delegate: laneRegionLoaderComponent
-                model: laneItem.trackLane.audioRegions
-              }
-            }
-          }
-        }
-
-        Loader {
-          id: automationLoader
-
-          readonly property AutomationTracklist automationTracklist: trackDelegate.track.automationTracklist
-
-          Layout.fillWidth: true
-          Layout.maximumHeight: Layout.preferredHeight
-          Layout.minimumHeight: Layout.preferredHeight
-          Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
-          active: trackDelegate.track.automationTracklist !== null && automationTracklist.automationVisible
-          visible: active
-
-          sourceComponent: ListView {
-            id: automationTracksListView
-
-            anchors.fill: parent
-            clip: true
-            interactive: false
-            orientation: Qt.Vertical
-            spacing: 0
-
-            delegate: Item {
-              id: automationTrackItem
-
-              readonly property var automationTrack: automationTrackHolder.automationTrack
-              required property var automationTrackHolder
-
-              height: automationTrackHolder.height
-              width: automationTracksListView.width
-
-              Repeater {
-                id: automationRegionsRepeater
-
-                anchors.fill: parent
-                model: automationTrackItem.automationTrack.regions
-
-                delegate: ArrangerObjectLoader {
-                  id: automationRegionLoader
-
-                  arrangerSelectionModel: root.arrangerSelectionModel
-                  height: automationTrackItem.height
-                  model: automationRegionsRepeater.model
-                  pxPerTick: root.ruler.pxPerTick
-                  scrollViewWidth: root.scrollViewWidth
-                  scrollX: root.scrollX
-                  unifiedObjectsModel: root.unifiedObjectsModel
-
-                  sourceComponent: Component {
-                    AutomationRegionView {
-                      id: automationRegionItem
-
-                      arrangerObject: automationRegionLoader.arrangerObject
-                      automationTrack: automationTrackItem.automationTrack
-                      clipEditor: root.clipEditor
-                      isSelected: automationRegionLoader.selectionTracker.isSelected
-                      track: trackDelegate.track
-                      undoStack: root.undoStack
-
-                      onHoveredChanged: {
-                        root.handleObjectHover(hovered, automationRegionItem);
-                      }
-                      onSelectionRequested: function (mouse) {
-                        root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
-                      }
-                    }
-                  }
-                }
-              }
-
-              // Cache activity overlay for automation tracks (debug only)
-              Loader {
-                active: GlobalState.application.appSettings.showCacheActivity && automationTrackItem.automationTrack.playbackCacheActivityTracker !== null
-                anchors.fill: parent
-                visible: active
-                z: 5
-
-                sourceComponent: PlaybackCacheActivityOverlay {
-                  activityEntries: automationTrackItem.automationTrack.playbackCacheActivityTracker.entries
-                  cachedRanges: automationTrackItem.automationTrack.playbackCacheActivityTracker.cachedRanges
-                  pending: automationTrackItem.automationTrack.playbackCacheActivityTracker.pending
-                  pxPerTick: root.ruler.pxPerTick
-                }
-              }
-            }
-            model: AutomationTracklistProxyModel {
-              showOnlyCreated: true
-              showOnlyVisible: true
-              sourceModel: automationLoader.automationTracklist
-            }
-          }
-        }
-      }
+    delegate: TrackDelegateItem {
     }
     model: SortFilterProxyModel {
       id: timelineProxyModel
@@ -869,6 +410,473 @@ Arranger {
 
         Component.onCompleted: entryFadeout.start()
       }
+    }
+  }
+  component TrackDelegateItem: Item {
+    id: trackDelegate
+
+    required property Track track
+
+    height: track.fullVisibleHeight
+    width: tracksListView.width
+
+    ColumnLayout {
+      id: trackSectionRows
+
+      anchors.fill: parent
+      spacing: 0
+
+      Item {
+        id: mainTrackObjectsContainer
+
+        Layout.fillWidth: true
+        Layout.maximumHeight: trackDelegate.track.height
+        Layout.minimumHeight: trackDelegate.track.height
+
+        Loader {
+          id: scalesLoader
+
+          active: trackDelegate.track.type === Track.Chord
+          height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+          visible: active
+          width: parent.width
+          y: trackDelegate.track.height - height
+
+          sourceComponent: Repeater {
+            id: scalesRepeater
+
+            readonly property ChordTrack track: trackDelegate.track as ChordTrack
+
+            model: track.scaleObjects
+
+            delegate: ArrangerObjectLoader {
+              id: scaleLoader
+
+              arrangerSelectionModel: root.arrangerSelectionModel
+              model: scalesRepeater.model
+              pxPerTick: root.ruler.pxPerTick
+              scrollViewWidth: root.scrollViewWidth
+              scrollX: root.scrollX
+              unifiedObjectsModel: root.unifiedObjectsModel
+
+              sourceComponent: Component {
+                ScaleObjectView {
+                  id: scaleItem
+
+                  arrangerObject: scaleLoader.arrangerObject
+                  isSelected: scaleLoader.selectionTracker.isSelected
+                  track: trackDelegate.track
+                  undoStack: root.undoStack
+
+                  onHoveredChanged: {
+                    root.handleObjectHover(scaleItem.hovered, scaleItem);
+                  }
+                  onSelectionRequested: function (mouse) {
+                    root.handleObjectSelection(scalesRepeater.model, scaleLoader.index, mouse);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        Loader {
+          id: markersLoader
+
+          active: trackDelegate.track.type === Track.Marker
+          height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+          visible: active
+          width: parent.width
+          y: trackDelegate.track.height - height
+
+          sourceComponent: Repeater {
+            id: markersRepeater
+
+            readonly property MarkerTrack track: trackDelegate.track as MarkerTrack
+
+            model: track.markers
+
+            delegate: ArrangerObjectLoader {
+              id: markerLoader
+
+              arrangerSelectionModel: root.arrangerSelectionModel
+              model: markersRepeater.model
+              pxPerTick: root.ruler.pxPerTick
+              scrollViewWidth: root.scrollViewWidth
+              scrollX: root.scrollX
+              unifiedObjectsModel: root.unifiedObjectsModel
+
+              sourceComponent: Component {
+                MarkerView {
+                  id: markerItem
+
+                  arrangerObject: markerLoader.arrangerObject
+                  isSelected: markerLoader.selectionTracker.isSelected
+                  track: trackDelegate.track
+                  undoStack: root.undoStack
+
+                  onHoveredChanged: {
+                    root.handleObjectHover(markerItem.hovered, markerItem);
+                  }
+                  onSelectionRequested: function (mouse) {
+                    root.handleObjectSelection(markersRepeater.model, markerLoader.index, mouse);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        Loader {
+          id: chordRegionsLoader
+
+          active: trackDelegate.track.type === Track.Chord
+          height: trackDelegate.track.height - scalesLoader.height
+          visible: active
+          width: parent.width
+          y: 0
+
+          sourceComponent: Repeater {
+            id: chordRegionsRepeater
+
+            readonly property ChordTrack track: trackDelegate.track as ChordTrack
+
+            model: track.chordRegions
+
+            delegate: ArrangerObjectLoader {
+              id: chordRegionLoader
+
+              arrangerSelectionModel: root.arrangerSelectionModel
+              model: chordRegionsRepeater.model
+              pxPerTick: root.ruler.pxPerTick
+              scrollViewWidth: root.scrollViewWidth
+              scrollX: root.scrollX
+              unifiedObjectsModel: root.unifiedObjectsModel
+
+              sourceComponent: Component {
+                ChordRegionView {
+                  id: chordRegionItem
+
+                  arrangerObject: chordRegionLoader.arrangerObject
+                  clipEditor: root.clipEditor
+                  height: chordRegionsRepeater.height
+                  isSelected: chordRegionLoader.selectionTracker.isSelected
+                  track: trackDelegate.track
+                  undoStack: root.undoStack
+
+                  onHoveredChanged: {
+                    root.handleObjectHover(hovered, chordRegionItem);
+                  }
+                  onSelectionRequested: function (mouse) {
+                    root.handleObjectSelection(chordRegionsRepeater.model, chordRegionLoader.index, mouse);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        Loader {
+          id: mainTrackLanedRegionsLoader
+
+          active: trackDelegate.track.lanes !== null
+          anchors.fill: parent
+          visible: active
+
+          sourceComponent: Repeater {
+            id: mainTrackLanesRepeater
+
+            model: trackDelegate.track.lanes
+
+            delegate: Repeater {
+              id: mainTrackLaneRegionsRepeater
+
+              required property TrackLane trackLane
+
+              model: trackDelegate.track.type === Track.Audio ? trackLane.audioRegions : trackLane.midiRegions
+
+              delegate: ArrangerObjectLoader {
+                id: mainTrackRegionLoader
+
+                arrangerSelectionModel: root.arrangerSelectionModel
+                height: mainTrackLanedRegionsLoader.height
+                model: mainTrackLaneRegionsRepeater.model
+                pxPerTick: root.ruler.pxPerTick
+                scrollViewWidth: root.scrollViewWidth
+                scrollX: root.scrollX
+                sourceComponent: mainTrackRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
+                unifiedObjectsModel: root.unifiedObjectsModel
+
+                Component {
+                  id: midiRegionComponent
+
+                  MidiRegionView {
+                    id: mainMidiRegionItem
+
+                    arrangerObject: mainTrackRegionLoader.arrangerObject
+                    clipEditor: root.clipEditor
+                    isSelected: mainTrackRegionLoader.selectionTracker.isSelected
+                    lane: mainTrackLaneRegionsRepeater.trackLane
+                    track: trackDelegate.track
+                    undoStack: root.undoStack
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(hovered, mainMidiRegionItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                    }
+                  }
+                }
+
+                Component {
+                  id: audioRegionComponent
+
+                  AudioRegionView {
+                    id: mainAudioRegionItem
+
+                    arrangerObject: mainTrackRegionLoader.arrangerObject
+                    clipEditor: root.clipEditor
+                    height: mainTrackRegionLoader.height
+                    isSelected: mainTrackRegionLoader.selectionTracker.isSelected
+                    lane: mainTrackLaneRegionsRepeater.trackLane
+                    track: trackDelegate.track
+                    undoStack: root.undoStack
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(hovered, mainAudioRegionItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Cache activity overlay (debug only)
+        Loader {
+          active: GlobalState.application.appSettings.showCacheActivity && trackDelegate.track.playbackCacheActivityTracker !== null
+          anchors.fill: parent
+          visible: active
+          z: 5
+
+          sourceComponent: PlaybackCacheActivityOverlay {
+            activityEntries: trackDelegate.track.playbackCacheActivityTracker.entries
+            cachedRanges: trackDelegate.track.playbackCacheActivityTracker.cachedRanges
+            pending: trackDelegate.track.playbackCacheActivityTracker.pending
+            pxPerTick: root.ruler.pxPerTick
+          }
+        }
+      }
+
+      Loader {
+        id: laneRegionsLoader
+
+        Layout.fillWidth: true
+        Layout.maximumHeight: Layout.preferredHeight
+        Layout.minimumHeight: Layout.preferredHeight
+        Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
+        active: trackDelegate.track.lanes && trackDelegate.track.lanes.lanesVisible
+        visible: active
+
+        sourceComponent: ListView {
+          id: lanesListView
+
+          anchors.fill: parent
+          clip: true
+          interactive: false
+          model: trackDelegate.track.lanes
+          orientation: Qt.Vertical
+          spacing: 0
+
+          delegate: TrackLaneDelegateItem {
+            lanesListView: lanesListView
+            track: trackDelegate.track
+          }
+        }
+      }
+
+      Loader {
+        id: automationLoader
+
+        readonly property AutomationTracklist automationTracklist: trackDelegate.track.automationTracklist
+
+        Layout.fillWidth: true
+        Layout.maximumHeight: Layout.preferredHeight
+        Layout.minimumHeight: Layout.preferredHeight
+        Layout.preferredHeight: (item as ListView)?.contentHeight ?? 0
+        active: trackDelegate.track.automationTracklist !== null && automationTracklist.automationVisible
+        visible: active
+
+        sourceComponent: ListView {
+          id: automationTracksListView
+
+          anchors.fill: parent
+          clip: true
+          interactive: false
+          orientation: Qt.Vertical
+          spacing: 0
+
+          delegate: Item {
+            id: automationTrackItem
+
+            readonly property var automationTrack: automationTrackHolder.automationTrack
+            required property var automationTrackHolder
+
+            height: automationTrackHolder.height
+            width: automationTracksListView.width
+
+            Repeater {
+              id: automationRegionsRepeater
+
+              anchors.fill: parent
+              model: automationTrackItem.automationTrack.regions
+
+              delegate: ArrangerObjectLoader {
+                id: automationRegionLoader
+
+                arrangerSelectionModel: root.arrangerSelectionModel
+                height: automationTrackItem.height
+                model: automationRegionsRepeater.model
+                pxPerTick: root.ruler.pxPerTick
+                scrollViewWidth: root.scrollViewWidth
+                scrollX: root.scrollX
+                unifiedObjectsModel: root.unifiedObjectsModel
+
+                sourceComponent: Component {
+                  AutomationRegionView {
+                    id: automationRegionItem
+
+                    arrangerObject: automationRegionLoader.arrangerObject
+                    automationTrack: automationTrackItem.automationTrack
+                    clipEditor: root.clipEditor
+                    isSelected: automationRegionLoader.selectionTracker.isSelected
+                    track: trackDelegate.track
+                    undoStack: root.undoStack
+
+                    onHoveredChanged: {
+                      root.handleObjectHover(hovered, automationRegionItem);
+                    }
+                    onSelectionRequested: function (mouse) {
+                      root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
+                    }
+                  }
+                }
+              }
+            }
+
+            // Cache activity overlay for automation tracks (debug only)
+            Loader {
+              active: GlobalState.application.appSettings.showCacheActivity && automationTrackItem.automationTrack.playbackCacheActivityTracker !== null
+              anchors.fill: parent
+              visible: active
+              z: 5
+
+              sourceComponent: PlaybackCacheActivityOverlay {
+                activityEntries: automationTrackItem.automationTrack.playbackCacheActivityTracker.entries
+                cachedRanges: automationTrackItem.automationTrack.playbackCacheActivityTracker.cachedRanges
+                pending: automationTrackItem.automationTrack.playbackCacheActivityTracker.pending
+                pxPerTick: root.ruler.pxPerTick
+              }
+            }
+          }
+          model: AutomationTracklistProxyModel {
+            showOnlyCreated: true
+            showOnlyVisible: true
+            sourceModel: automationLoader.automationTracklist
+          }
+        }
+      }
+    }
+  }
+  component TrackLaneDelegateItem: Item {
+    id: laneItem
+
+    required property ListView lanesListView
+    required property Track track
+    required property TrackLane trackLane
+
+    height: trackLane.height
+    width: lanesListView.width
+
+    Component {
+      id: laneRegionLoaderComponent
+
+      ArrangerObjectLoader {
+        id: laneRegionLoader
+
+        arrangerSelectionModel: root.arrangerSelectionModel
+        height: laneItem.trackLane.height
+        model: arrangerObject.type === ArrangerObject.MidiRegion ? laneItem.trackLane.midiRegions : laneItem.trackLane.audioRegions
+        pxPerTick: root.ruler.pxPerTick
+        scrollViewWidth: root.scrollViewWidth
+        scrollX: root.scrollX
+        sourceComponent: laneRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
+        unifiedObjectsModel: root.unifiedObjectsModel
+
+        Component {
+          id: laneMidiRegionComponent
+
+          MidiRegionView {
+            id: laneMidiRegionItem
+
+            arrangerObject: laneRegionLoader.arrangerObject
+            clipEditor: root.clipEditor
+            isSelected: laneRegionLoader.selectionTracker.isSelected
+            lane: laneItem.trackLane
+            track: laneItem.track
+            undoStack: root.undoStack
+
+            onHoveredChanged: {
+              root.handleObjectHover(hovered, laneMidiRegionItem);
+            }
+            onSelectionRequested: function (mouse) {
+              root.handleObjectSelection(laneMidiRegionsRepeater.model, laneRegionLoader.index, mouse);
+            }
+          }
+        }
+
+        Component {
+          id: laneAudioRegionComponent
+
+          AudioRegionView {
+            id: laneAudioRegionItem
+
+            arrangerObject: laneRegionLoader.arrangerObject
+            clipEditor: root.clipEditor
+            isSelected: laneRegionLoader.selectionTracker.isSelected
+            lane: laneItem.trackLane
+            track: laneItem.track
+            undoStack: root.undoStack
+
+            onHoveredChanged: {
+              root.handleObjectHover(hovered, laneAudioRegionItem);
+            }
+            onSelectionRequested: function (mouse) {
+              root.handleObjectSelection(laneAudioRegionsRepeater.model, laneRegionLoader.index, mouse);
+            }
+          }
+        }
+      }
+    }
+
+    Repeater {
+      id: laneMidiRegionsRepeater
+
+      anchors.fill: parent
+      delegate: laneRegionLoaderComponent
+      model: laneItem.trackLane.midiRegions
+    }
+
+    Repeater {
+      id: laneAudioRegionsRepeater
+
+      anchors.fill: parent
+      delegate: laneRegionLoaderComponent
+      model: laneItem.trackLane.audioRegions
     }
   }
   component TrackRoleData: QtObject {
