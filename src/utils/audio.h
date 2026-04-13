@@ -7,6 +7,7 @@
 #include <array>
 #include <cassert>
 #include <filesystem>
+#include <span>
 
 #include "juce_wrapper.h"
 
