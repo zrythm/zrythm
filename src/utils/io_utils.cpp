@@ -52,6 +52,7 @@
 #endif
 
 #include "utils/datetime.h"
+#include "utils/format_juce.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
