@@ -7,7 +7,7 @@ using namespace zrythm::gui;
 
 ProjectInfo::ProjectInfo (QObject * parent) : QObject (parent) { }
 
-ProjectInfo::ProjectInfo (const fs::path &path, QObject * parent)
+ProjectInfo::ProjectInfo (const std::filesystem::path &path, QObject * parent)
     : QObject (parent), path_ (path)
 {
   if (exists ())

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work (namely, the preroll-related cycle splitting
@@ -27,7 +27,6 @@
  */
 
 #include <algorithm>
-#include <utility>
 
 #include "dsp/engine.h"
 
@@ -69,7 +68,8 @@ AudioEngine::AudioEngine (
               this->transport_.playhead ()->playhead ()
             };
 
-            const auto process_status = this->process (guard, numSamples);
+            const auto process_status =
+              this->process (guard, units::samples (numSamples));
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
                 // Note: the monitor output ports below require the processing
@@ -183,22 +183,22 @@ AudioEngine::
         transport_.playhead ()->playhead ()
       };
       auto current_transport_state = transport_.get_snapshot ();
-      process_prepare (current_transport_state, 1, lock);
+      process_prepare (current_transport_state, units::samples (1), lock);
 
-      EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = static_cast<unsigned_frame_t> (
-          transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
-        .g_start_frame_w_offset_ = static_cast<unsigned_frame_t> (
-          transport_.get_playhead_position_in_audio_thread ().in (units::samples)),
-        .local_offset_ = 0,
-        .nframes_ = 1,
+      dsp::graph::EngineProcessTimeInfo time_nfo = {
+        .g_start_frame_ = transport_.get_playhead_position_in_audio_thread (),
+        .g_start_frame_w_offset_ =
+          transport_.get_playhead_position_in_audio_thread (),
+        .local_offset_ = units::samples (0),
+        .nframes_ = units::samples (1),
       };
 
       graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false,
         tempo_map_);
       advance_playhead_after_processing (
-        current_transport_state, playhead_processing_guard, 0, 1);
+        current_transport_state, playhead_processing_guard, units::samples (0),
+        units::samples (1));
     }
 }
 
@@ -259,7 +259,7 @@ AudioEngine::activate_impl (const bool activate)
     {
       load_measurer_.reset (
         get_sample_rate ().in (units::sample_rate),
-        static_cast<int> (get_block_length ()));
+        get_block_length ().in<int> (units::samples));
 
       hw_interface_.add_audio_callback (audio_callback_.get ());
     }
@@ -279,7 +279,7 @@ AudioEngine::activate_impl (const bool activate)
 bool
 AudioEngine::process_prepare (
   dsp::Transport::TransportSnapshot               &transport_snapshot,
-  nframes_t                                        nframes,
+  units::sample_u32_t                              nframes,
   SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
 {
   const auto block_length = get_block_length ();
@@ -313,8 +313,8 @@ AudioEngine::process_prepare (
     }
 
   // Clear all buffers
-  monitor_out_.clear_buffer (0, block_length);
-  midi_in_->clear_buffer (0, block_length);
+  monitor_out_.clear_buffer (0, block_length.in (units::samples));
+  midi_in_->clear_buffer (0, block_length.in (units::samples));
 
   return false;
 }
@@ -322,9 +322,10 @@ AudioEngine::process_prepare (
 auto
 AudioEngine::process (
   const dsp::PlayheadProcessingGuard &playhead_guard,
-  const nframes_t total_frames_to_process) noexcept -> ProcessReturnStatus
+  const units::sample_u32_t           total_frames_to_process) noexcept
+  -> ProcessReturnStatus
 {
-  if (total_frames_to_process == 0)
+  if (total_frames_to_process == units::samples (0))
     {
       return ProcessReturnStatus::ProcessFailed;
     }
@@ -371,26 +372,22 @@ AudioEngine::process (
   /* process HW processor to get audio/MIDI data from hardware */
   // hw_in_processor_->process (total_frames_to_process);
 
-  nframes_t total_frames_remaining = total_frames_to_process;
+  auto total_frames_remaining = total_frames_to_process;
 
   /* --- handle preroll --- */
 
-  EngineProcessTimeInfo split_time_nfo = {
+  dsp::graph::EngineProcessTimeInfo split_time_nfo = {
     .g_start_frame_ =
-      (unsigned_frame_t) current_transport_state
-        .get_playhead_position_in_audio_thread ()
-        .in (units::samples),
+      current_transport_state.get_playhead_position_in_audio_thread (),
     .g_start_frame_w_offset_ =
-      (unsigned_frame_t) current_transport_state
-        .get_playhead_position_in_audio_thread ()
-        .in (units::samples),
-    .local_offset_ = 0,
-    .nframes_ = 0,
+      current_transport_state.get_playhead_position_in_audio_thread (),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0),
   };
 
-  while (remaining_latency_preroll_ > 0)
+  while (remaining_latency_preroll_ > units::samples (0))
     {
-      nframes_t num_preroll_frames =
+      auto num_preroll_frames =
         std::min (total_frames_remaining, remaining_latency_preroll_);
 
       /* loop through each route */
@@ -421,8 +418,7 @@ AudioEngine::process (
         }
 
       /* offset to start processing at in this cycle */
-      nframes_t preroll_offset =
-        total_frames_to_process - total_frames_remaining;
+      auto preroll_offset = total_frames_to_process - total_frames_remaining;
       assert (preroll_offset + num_preroll_frames <= total_frames_to_process);
 
       split_time_nfo.g_start_frame_w_offset_ =
@@ -436,17 +432,17 @@ AudioEngine::process (
       remaining_latency_preroll_ -= num_preroll_frames;
       total_frames_remaining -= num_preroll_frames;
 
-      if (total_frames_remaining == 0)
+      if (total_frames_remaining == units::samples (0))
         break;
 
     } /* while latency preroll frames remaining */
 
   /* if we still have frames to process (i.e., if preroll finished completely
    * and can start processing normally) */
-  if (total_frames_remaining > 0)
+  if (total_frames_remaining > units::samples (0))
     {
       [&] () {
-        nframes_t cur_offset = total_frames_to_process - total_frames_remaining;
+        auto cur_offset = total_frames_to_process - total_frames_remaining;
 
         /* split at countin */
         if (
@@ -455,9 +451,8 @@ AudioEngine::process (
           {
             const auto countin_frames = std::min (
               total_frames_remaining,
-              static_cast<nframes_t> (
-                current_transport_state.metronome_countin_frames_remaining ()
-                  .in (units::samples)));
+              current_transport_state.metronome_countin_frames_remaining ()
+                .as<uint32_t> (units::samples));
 
             /* process for countin frames */
             split_time_nfo.g_start_frame_w_offset_ =
@@ -467,11 +462,11 @@ AudioEngine::process (
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true, tempo_map_);
-            consume_metronome_countin_samples (units::samples (countin_frames));
+            consume_metronome_countin_samples (countin_frames);
 
             /* adjust total frames remaining to process and current offset */
             total_frames_remaining -= countin_frames;
-            if (total_frames_remaining == 0)
+            if (total_frames_remaining == units::samples (0))
               return;
             cur_offset += countin_frames;
           }
@@ -482,11 +477,10 @@ AudioEngine::process (
             == units::samples (0)
           && current_transport_state.has_recording_preroll_frames_remaining ())
           {
-            nframes_t preroll_frames = std::min (
+            auto preroll_frames = std::min (
               total_frames_remaining,
-              static_cast<nframes_t> (
-                current_transport_state.recording_preroll_frames_remaining ()
-                  .in (units::samples)));
+              current_transport_state.recording_preroll_frames_remaining ()
+                .as<uint32_t> (units::samples));
 
             /* process for preroll frames */
             split_time_nfo.g_start_frame_w_offset_ =
@@ -496,13 +490,13 @@ AudioEngine::process (
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
               remaining_latency_preroll_, true, tempo_map_);
-            consume_recording_preroll_samples (units::samples (preroll_frames));
+            consume_recording_preroll_samples (preroll_frames);
 
             /* process for remaining frames */
             cur_offset += preroll_frames;
             const auto remaining_frames =
               total_frames_remaining - preroll_frames;
-            if (remaining_frames > 0)
+            if (remaining_frames > units::samples (0))
               {
                 split_time_nfo.g_start_frame_w_offset_ =
                   split_time_nfo.g_start_frame_ + cur_offset;
@@ -543,15 +537,15 @@ void
 AudioEngine::advance_playhead_after_processing (
   dsp::Transport::TransportSnapshot  &transport_snapshot,
   const dsp::PlayheadProcessingGuard &playhead_guard,
-  const nframes_t                     roll_nframes,
-  const nframes_t                     nframes) noexcept
+  const units::sample_u32_t           roll_nframes,
+  const units::sample_u32_t           nframes) noexcept
 {
   /* move the playhead if rolling and not pre-rolling */
   if (
     transport_snapshot.get_play_state () == dsp::ITransport::PlayState::Rolling
-    && remaining_latency_preroll_ == 0)
+    && remaining_latency_preroll_ == units::samples (0))
     {
-      transport_.add_to_playhead_in_audio_thread (units::samples (roll_nframes));
+      transport_.add_to_playhead_in_audio_thread (roll_nframes);
       transport_snapshot.set_position (
         transport_.get_playhead_position_in_audio_thread ());
     }
@@ -590,12 +584,4 @@ AudioEngine::~AudioEngine ()
 
   z_debug ("Audio engine destroyed");
 }
-}
-
-void
-EngineProcessTimeInfo::print () const
-{
-  z_info (
-    "Global start frame: {} (with offset {}) | local offset: {} | num frames: {}",
-    g_start_frame_, g_start_frame_w_offset_, local_offset_, nframes_);
 }

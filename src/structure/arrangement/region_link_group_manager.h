@@ -4,7 +4,6 @@
 #pragma once
 
 #include "structure/arrangement/region_link_group.h"
-#include "utils/format.h"
 
 #define REGION_LINK_GROUP_MANAGER (PROJECT->region_link_group_manager_)
 

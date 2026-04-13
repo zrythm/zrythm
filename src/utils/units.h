@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <au/au.hh>
+#include <fmt/format.h>
 
 namespace zrythm::units
 {
@@ -27,6 +28,8 @@ constexpr auto samples = au::QuantityMaker<Sample>{};
 
 // Define sample quantity types
 using sample_t = au::QuantityI64<Sample>;
+using sample_u32_t = au::QuantityU32<Sample>;
+using sample_u64_t = au::QuantityU64<Sample>;
 using precise_sample_t = au::QuantityD<Sample>;
 
 // Define tick unit with its own dimension
@@ -61,4 +64,11 @@ using precise_sample_rate_t = au::QuantityD<SampleRate>;
 // Define precise second using Au's built-in seconds
 constexpr auto seconds = au::seconds;
 using precise_second_t = au::QuantityD<au::Seconds>;
-}
+} // namespace zrythm::units
+
+// Formatter for Au quantities
+template <typename U, typename R>
+struct fmt::formatter<::au::Quantity<U, R>>
+    : ::au::QuantityFormatter<U, R, ::fmt::formatter>
+{
+};

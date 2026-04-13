@@ -24,7 +24,7 @@ public:
   {
   }
   ~ArrangerObjectColor () noexcept override = default;
-  Z_DISABLE_COPY_MOVE (ArrangerObjectColor)
+  Q_DISABLE_COPY_MOVE (ArrangerObjectColor)
 
   using Color = zrythm::utils::Color;
 

@@ -48,9 +48,9 @@ public:
 
 public:
   void init (
-    const Type                      type,
-    const structure::tracks::Track &track,
-    const EngineProcessTimeInfo    &time_nfo,
+    const Type                               type,
+    const structure::tracks::Track          &track,
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
     std::source_location source_location = std::source_location::current ())
   {
     type_ = type;
@@ -73,13 +73,13 @@ public:
   structure::tracks::TrackUuid track_uuid_;
 
   /** Global start frames of the event (including offset). */
-  unsigned_frame_t g_start_frame_w_offset_ = 0;
+  units::sample_u64_t g_start_frame_w_offset_;
 
   /** Offset in current cycle that this event starts from. */
-  nframes_t local_offset_ = 0;
+  units::sample_u32_t local_offset_;
 
   /** Number of frames processed in this event. */
-  nframes_t nframes_ = 0;
+  units::sample_u32_t nframes_;
 
   /** Index of automation track, if automation. */
   int automation_track_idx_ = 0;

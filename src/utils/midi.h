@@ -28,23 +28,25 @@
  * MIDI utils.
  */
 
-#ifndef __AUDIO_MIDI_H__
-#define __AUDIO_MIDI_H__
+#pragma once
 
-#include "zrythm-config.h"
+#include <cassert>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <optional>
+#include <span>
+#include <string>
 
-#include "utils/logger.h"
-#include "utils/types.h"
+/** MIDI byte. */
+using midi_byte_t = std::uint8_t;
 
-/**
- * @addtogroup dsp
- *
- * @{
- */
+/** MIDI time in global frames. */
+using midi_time_t = std::uint32_t;
 
 namespace zrythm::utils::midi
 {
-
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */
 static constexpr uint8_t MIDI_CH1_NOTE_ON = 0x90;
 static constexpr uint8_t MIDI_CH1_NOTE_OFF = 0x80;
@@ -459,9 +461,3 @@ midi_get_meta_event_data (
 }
 
 } // namespace zrythm::utils::midi
-
-/**
- * @}
- */
-
-#endif

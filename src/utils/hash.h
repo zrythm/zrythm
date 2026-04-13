@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "utils/types.h"
-
 #include <QFile>
 
 #include <xxhash.h>

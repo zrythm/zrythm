@@ -1,11 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2020, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef ZRYTHM_DSP_PAN_H
-#define ZRYTHM_DSP_PAN_H
+#pragma once
 
-#include "utils/format.h"
-#include "utils/logger.h"
+#include "utils/enum_utils.h"
 
 #include <QtTranslation>
 
@@ -109,5 +107,3 @@ DEFINE_ENUM_FORMATTER (
   zrythm::dsp::BalanceControlAlgorithm,
   BalanceControlAlgorithm,
   QT_TR_NOOP_UTF8 ("Linear"));
-
-#endif

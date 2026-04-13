@@ -32,7 +32,7 @@ class ProjectManager : public QObject
 public:
   ProjectManager (utils::AppSettings &app_settings, QObject * parent = nullptr);
 
-  using Template = fs::path;
+  using Template = std::filesystem::path;
   using TemplateList = std::vector<Template>;
   using ProjectLoadResult =
     std::variant<utils::QObjectUniquePtr<ProjectSession>, QString>;
@@ -102,9 +102,9 @@ private:
    * @throw ZrythmException if an error occurred.
    */
   utils::QObjectUniquePtr<ProjectSession> create_default (
-    const fs::path          &prj_dir,
-    const utils::Utf8String &name,
-    bool                     with_engine);
+    const std::filesystem::path &prj_dir,
+    const utils::Utf8String     &name,
+    bool                         with_engine);
 
   /**
    * @brief Creates a toplevel window for the given plugin

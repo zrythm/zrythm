@@ -19,7 +19,8 @@ namespace zrythm::controllers
 {
 
 std::string
-ProjectLoader::get_uncompressed_project_text (const fs::path &project_dir)
+ProjectLoader::get_uncompressed_project_text (
+  const std::filesystem::path &project_dir)
 {
   return ProjectSaver::get_existing_uncompressed_text (project_dir);
 }
@@ -56,7 +57,7 @@ ProjectLoader::extract_title (const nlohmann::json &j)
 }
 
 QFuture<ProjectLoader::LoadResult>
-ProjectLoader::load_from_directory (const fs::path &project_dir)
+ProjectLoader::load_from_directory (const std::filesystem::path &project_dir)
 {
   z_info ("Loading project from {}", project_dir);
 
@@ -69,7 +70,7 @@ ProjectLoader::load_from_directory (const fs::path &project_dir)
     if (promise.isCanceled ())
       return;
 
-    if (!fs::is_directory (project_dir))
+    if (!std::filesystem::is_directory (project_dir))
       {
         throw ZrythmException (
           fmt::format ("Project directory does not exist: {}", project_dir));

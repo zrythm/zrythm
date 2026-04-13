@@ -5,7 +5,6 @@
 
 #include <utility>
 
-#include "dsp/parameter.h"
 #include "dsp/processor_base.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -49,7 +48,7 @@ public:
   /** Release time in ms when in touch record mode. */
   static constexpr int AUTOMATION_RECORDING_TOUCH_REL_MS = 800;
 
-  enum class AutomationMode : basic_enum_base_type_t
+  enum class AutomationMode : uint8_t
   {
     Read,
     Record,
@@ -57,7 +56,7 @@ public:
   };
   Q_ENUM (AutomationMode)
 
-  enum class AutomationRecordMode : basic_enum_base_type_t
+  enum class AutomationRecordMode : uint8_t
   {
     Touch,
     Latch,
@@ -89,14 +88,8 @@ public:
 
   AutomationRecordMode getRecordMode () const { return record_mode_; }
   void                 setRecordMode (AutomationRecordMode record_mode);
-  Q_INVOKABLE void     swapRecordMode ()
-  {
-    record_mode_ = static_cast<AutomationRecordMode> (
-      (std::to_underlying (record_mode_) + 1)
-      % magic_enum::enum_count<AutomationRecordMode> ());
-    Q_EMIT recordModeChanged (record_mode_);
-  }
-  Q_SIGNAL void recordModeChanged (AutomationRecordMode record_mode);
+  Q_INVOKABLE void     swapRecordMode ();
+  Q_SIGNAL void        recordModeChanged (AutomationRecordMode record_mode);
 
   /**
    * @brief To be connected to to notify of any changes to the automation

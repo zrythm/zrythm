@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/musical_scale.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::dsp
 {
@@ -467,6 +468,12 @@ MusicalScale::to_string () const
 {
   return ChordDescriptor::note_to_string (root_key_)
          + utils::Utf8String{ u8" " } + type_to_string (type_);
+}
+
+QString
+MusicalScale::toString () const
+{
+  return to_string ().to_qstring ();
 }
 
 void

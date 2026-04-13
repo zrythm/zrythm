@@ -27,30 +27,30 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
   // 2, 1.0, 1.0, true);
 }
 
+// TODO
+#if 0
 void
 AudioTrack::timestretch_buf (
   const AudioRegion *    r,
   dsp::FileAudioSource * clip,
-  unsigned_frame_t       in_frame_offset,
+  uint64_t       in_frame_offset,
   double                 timestretch_ratio,
   float *                lbuf_after_ts,
   float *                rbuf_after_ts,
-  unsigned_frame_t       out_frame_offset,
-  unsigned_frame_t       frames_to_process)
+  uint64_t       out_frame_offset,
+  uint64_t       frames_to_process)
 {
-// TODO
-#if 0
   z_return_if_fail (r && rt_stretcher_);
   rt_stretcher_->set_time_ratio (1.0 / timestretch_ratio);
   auto in_frames_to_process =
-    (unsigned_frame_t) (frames_to_process * timestretch_ratio);
+    (uint64_t) (frames_to_process * timestretch_ratio);
   z_debug (
     "in frame offset {}, out frame offset {}, "
     "in frames to process {}, out frames to process {}",
     in_frame_offset, out_frame_offset, in_frames_to_process, frames_to_process);
   z_return_if_fail (
     (in_frame_offset + in_frames_to_process)
-    <= (unsigned_frame_t) clip->get_num_frames ());
+    <= (uint64_t) clip->get_num_frames ());
   auto retrieved = rt_stretcher_->stretch (
     &clip->get_samples ().getReadPointer (0)[in_frame_offset],
     clip->get_num_channels () == 1
@@ -58,9 +58,9 @@ AudioTrack::timestretch_buf (
       : &clip->get_samples ().getReadPointer (1)[in_frame_offset],
     in_frames_to_process, &lbuf_after_ts[out_frame_offset],
     &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
-  z_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
-#endif
+  z_return_if_fail ((uint64_t) retrieved == frames_to_process);
 }
+#endif
 
 void
 init_from (

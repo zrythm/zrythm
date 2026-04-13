@@ -244,6 +244,7 @@ RegionRenderer::handle_automation_region_range (
 
       const auto distance_between_points = units::ticks (
         next_point.position ()->ticks () - prev_point.position ()->ticks ());
+      assert (distance_between_points > units::ticks (0.0));
       const auto next_point_absolute_start =
         prev_point_absolute_start + distance_between_points;
       const auto distance_between_points_in_segment =

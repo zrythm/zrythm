@@ -22,7 +22,7 @@ void
 MidiPort::prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   if (node != nullptr)
     {
@@ -56,9 +56,9 @@ MidiPort::clear_buffer (std::size_t offset, std::size_t nframes)
 
 void
 MidiPort::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   midi_events_.active_events_.clear ();
   midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
@@ -186,7 +186,7 @@ MidiPort::process_block (
 
       /* song position */
       dsp::Position playhead_pos{
-        static_cast<signed_frame_t> (playhead_frames),
+        static_cast<int64_t> (playhead_frames),
         AUDIO_ENGINE->ticks_per_frame_
       };
       int32_t sixteenth_within_song = playhead_pos.get_total_sixteenths (

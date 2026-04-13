@@ -21,7 +21,7 @@ void
 CVPort::prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   if (node != nullptr)
     {
@@ -33,7 +33,7 @@ CVPort::prepare_for_processing (
       set_port_sources (source_ports);
     }
 
-  size_t max = std::max (max_block_length, 1u);
+  size_t max = std::max (max_block_length.in (units::samples), 1u);
   buf_.resize (max);
 
   // 8 cycles
@@ -49,9 +49,9 @@ CVPort::release_resources ()
 
 void
 CVPort::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   for (const auto &[src_port, conn] : port_sources ())
     {
@@ -64,22 +64,24 @@ CVPort::process_block (
       if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           utils::float_ranges::add2 (
-            &buf_[time_nfo.local_offset_],
-            &src_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+            &buf_[time_nfo.local_offset_.in (units::samples)],
+            &src_port->buf_[time_nfo.local_offset_.in (units::samples)],
+            time_nfo.nframes_.in (units::samples));
         }
       else
         {
           utils::float_ranges::mix_product (
-            &buf_[time_nfo.local_offset_],
-            &src_port->buf_[time_nfo.local_offset_], multiplier,
-            time_nfo.nframes_);
+            &buf_[time_nfo.local_offset_.in (units::samples)],
+            &src_port->buf_[time_nfo.local_offset_.in (units::samples)],
+            multiplier, time_nfo.nframes_.in (units::samples));
         }
     } /* foreach source */
 
   if (num_ring_buffer_readers_ > 0)
     {
       cv_ring_->force_write_multiple (
-        &buf_[time_nfo.local_offset_], time_nfo.nframes_);
+        &buf_[time_nfo.local_offset_.in (units::samples)],
+        time_nfo.nframes_.in (units::samples));
     }
 }
 

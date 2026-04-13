@@ -27,8 +27,9 @@ TEST_F (ZrythmFixture, FillWhenRegionStartsOnLoopEnd)
   TRANSPORT->loop_start_pos_.add_frames (-31);
 
   /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
 
   TRANSPORT->requestPause (true);
   Track::create_with_action (
@@ -50,7 +51,7 @@ TEST_F (ZrythmFixture, FillWhenRegionStartsOnLoopEnd)
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) pos.frames_,
     .g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_,
-    .local_offset_ = 0,
+    .local_offset_ = units::samples (0),
     .nframes_ = (nframes_t) nframes,
   };
   track->fill_events (time_nfo, ports);
@@ -64,7 +65,7 @@ TEST_F (ZrythmFixture, FillWhenRegionStartsOnLoopEnd)
   pos.set_to_bar (LOOP_BAR);
   time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
   time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-  time_nfo.local_offset_ = 0;
+  time_nf.local_offset_ = units::samples (0);
   time_nfo.nframes_ = (nframes_t) nframes;
   track->fill_events (time_nfo, ports);
   for (int j = 0; j < nframes; j++)

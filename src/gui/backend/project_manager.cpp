@@ -156,9 +156,9 @@ ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
 
 utils::QObjectUniquePtr<ProjectSession>
 ProjectManager::create_default (
-  const fs::path          &prj_dir,
-  const utils::Utf8String &name,
-  bool                     with_engine)
+  const std::filesystem::path &prj_dir,
+  const utils::Utf8String     &name,
+  bool                         with_engine)
 {
   z_info ("Creating default project '{}' in {}", name, prj_dir);
 

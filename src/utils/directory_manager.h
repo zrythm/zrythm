@@ -3,11 +3,9 @@
 
 #pragma once
 
+#include <filesystem>
+#include <functional>
 #include <utility>
-
-#include "utils/types.h"
-
-#include "juce_wrapper.h"
 
 class IDirectoryManager
 {
@@ -123,7 +121,7 @@ public:
    *
    * @return A newly allocated string.
    */
-  virtual fs::path get_prefix () const = 0;
+  virtual std::filesystem::path get_prefix () const = 0;
 
   /**
    * Gets the zrythm directory, either from the settings if non-empty, or the
@@ -131,7 +129,7 @@ public:
    *
    * @param force_default Ignore the settings and get the default dir.
    */
-  virtual fs::path get_user_dir (bool force_default) = 0;
+  virtual std::filesystem::path get_user_dir (bool force_default) = 0;
 
   /**
    * Returns the default user "zrythm" dir.
@@ -139,14 +137,14 @@ public:
    * This is used when resetting or when the dir is not selected by the user
    * yet.
    */
-  virtual fs::path get_default_user_dir () = 0;
+  virtual std::filesystem::path get_default_user_dir () = 0;
 
   /**
    * Returns a Zrythm directory specified by @ref type.
    *
    * @return A newly allocated string.
    */
-  virtual fs::path get_dir (DirectoryType type);
+  virtual std::filesystem::path get_dir (DirectoryType type);
 
   virtual ~IDirectoryManager () = default;
 };
@@ -158,9 +156,9 @@ public:
 class DirectoryManager : public IDirectoryManager
 {
 public:
-  using UserDirProvider = std::function<fs::path ()>;
-  using DefaultUserDirProvider = std::function<fs::path ()>;
-  using ApplicationDirPathProvider = std::function<fs::path ()>;
+  using UserDirProvider = std::function<std::filesystem::path ()>;
+  using DefaultUserDirProvider = std::function<std::filesystem::path ()>;
+  using ApplicationDirPathProvider = std::function<std::filesystem::path ()>;
 
 public:
   DirectoryManager (
@@ -174,9 +172,9 @@ public:
   }
   ~DirectoryManager () override = default;
 
-  fs::path get_prefix () const override;
-  fs::path get_user_dir (bool force_default) override;
-  fs::path get_default_user_dir () override;
+  std::filesystem::path get_prefix () const override;
+  std::filesystem::path get_user_dir (bool force_default) override;
+  std::filesystem::path get_default_user_dir () override;
 
 private:
   UserDirProvider            user_dir_provider_;
@@ -187,24 +185,27 @@ private:
 struct TestingDirectoryManager : public IDirectoryManager
 {
   TestingDirectoryManager () = default;
-  Q_DISABLE_COPY_MOVE (TestingDirectoryManager)
+  TestingDirectoryManager (const TestingDirectoryManager &) = delete;
+  TestingDirectoryManager &operator= (const TestingDirectoryManager &) = delete;
+  TestingDirectoryManager (TestingDirectoryManager &&) = delete;
+  TestingDirectoryManager &operator= (TestingDirectoryManager &&) = delete;
   ~TestingDirectoryManager () override { remove_testing_dir (); }
 
-  fs::path get_user_dir (bool force_default) override;
+  std::filesystem::path get_user_dir (bool force_default) override;
 
   /**
    * @brief Returns the current testing dir.
    *
    * If empty, this creates a new testing dir on the disk.
    */
-  const fs::path &get_testing_dir ();
+  const std::filesystem::path &get_testing_dir ();
 
   /** Clears @ref "testing_dir" and removes the testing dir from the disk. */
   void remove_testing_dir ();
 
-  fs::path get_prefix () const override;
-  fs::path get_default_user_dir () override;
+  std::filesystem::path get_prefix () const override;
+  std::filesystem::path get_default_user_dir () override;
 
   /** Zrythm directory used during unit tests. */
-  fs::path testing_dir_;
+  std::filesystem::path testing_dir_;
 };

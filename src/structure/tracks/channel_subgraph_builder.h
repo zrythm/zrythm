@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/graph.h"
-#include "dsp/port_all.h"
 #include "structure/tracks/channel.h"
 
 namespace zrythm::structure::tracks

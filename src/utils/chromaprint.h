@@ -46,7 +46,7 @@ struct ChromaprintFingerprint
 };
 
 std::unique_ptr<ChromaprintFingerprint>
-z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames);
+z_chromaprint_get_fingerprint (const char * file1, uint64_t max_frames);
 
 /**
  * @param perc Minimum percentage of equal

@@ -122,7 +122,7 @@ BootstrapTimelineFixture::SetUp ()
         AUDIO_TRACK_NAME, TRACKLIST->tracks_.size (), AUDIO_ENGINE->sample_rate_),
       false, false);
     ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, 1);
-    auto       audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
+    auto audio_file_path = std::filesystem::path (TESTS_SRCDIR) / "test.wav";
     const auto track_name_hash = audio_track->get_name_hash ();
     std::shared_ptr<AudioRegion> r;
     ASSERT_NO_THROW (
@@ -273,12 +273,12 @@ BootstrapTimelineFixture::TearDown ()
   ZrythmFixture::TearDown ();
 }
 
-fs::path
+std::filesystem::path
 test_project_save ()
 {
   /* save the project */
   EXPECT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
-  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
+  auto prj_file = std::filesystem::path (PROJECT->dir_) / PROJECT_FILE;
 
   AUDIO_ENGINE->activate (false);
   PROJECT.reset ();
@@ -287,7 +287,7 @@ test_project_save ()
 }
 
 void
-test_project_reload (const fs::path &prj_file)
+test_project_reload (const std::filesystem::path &prj_file)
 {
   std::make_unique<ProjectInitFlowManager> (
     prj_file.string (), false, test_helper_project_init_done_cb, nullptr);

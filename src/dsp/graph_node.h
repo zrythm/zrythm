@@ -30,13 +30,45 @@
 
 #include "dsp/itransport.h"
 #include "dsp/tempo_map.h"
-#include "utils/utf8_string.h"
+#include "utils/units.h"
 
 #include <QObject>
+
+namespace zrythm::utils
+{
+class Utf8String;
+}
 
 namespace zrythm::dsp::graph
 {
 class GraphNode;
+
+/**
+ * Common struct to pass around during processing to avoid repeating the data in
+ * function arguments.
+ */
+struct EngineProcessTimeInfo
+{
+public:
+  void print () const;
+
+public:
+  /** Global position at the start of the processing cycle (no offset added). */
+  units::sample_u64_t g_start_frame_;
+
+  /** Global position with dsp::graph::EngineProcessTimeInfo.local_offset added,
+   * for convenience. */
+  units::sample_u64_t g_start_frame_w_offset_;
+
+  /** Offset in the current processing cycle, between 0 and the number of
+   * frames in AudioEngine.block_length. */
+  units::sample_u32_t local_offset_;
+
+  /**
+   * Number of frames to process in this call, starting from the offset.
+   */
+  units::sample_u32_t nframes_;
+};
 
 /**
  * @brief Interface for objects that can be processed in the DSP graph.
@@ -61,12 +93,12 @@ public:
   virtual utils::Utf8String get_node_name () const = 0;
 
   /**
-   * Returns the latency of only the given processable, without adding the
-   * previous/next latencies.
+   * @brief Returns the latency of only the given processable, without adding
+   * the previous/next latencies (zero latency by default).
    */
-  [[gnu::hot]] virtual nframes_t get_single_playback_latency () const
+  [[gnu::hot]] virtual units::sample_u32_t get_single_playback_latency () const
   {
-    return 0;
+    return units::samples (0);
   }
 
   /**
@@ -80,14 +112,14 @@ public:
   virtual void prepare_for_processing (
     const GraphNode *    node,
     units::sample_rate_t sample_rate,
-    nframes_t            max_block_length)
+    units::sample_u32_t  max_block_length)
   {
   }
 
   [[gnu::hot]] virtual void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]] { };
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]] { };
 
   /**
    * @brief Called to release resources allocated by @ref
@@ -103,10 +135,7 @@ class InitialProcessor final : public QObject, public IProcessable
   Q_OBJECT
 
 public:
-  utils::Utf8String get_node_name () const override
-  {
-    return u8"Initial Processor";
-  }
+  utils::Utf8String get_node_name () const override;
 };
 
 /**
@@ -133,7 +162,10 @@ public:
   using NodeId = int;
 
   GraphNode (NodeId id, IProcessable &processable);
-  Z_DISABLE_COPY_MOVE (GraphNode)
+  GraphNode (const GraphNode &) = delete;
+  GraphNode &operator= (const GraphNode &) = delete;
+  GraphNode (GraphNode &&) = delete;
+  GraphNode &operator= (GraphNode &&) = delete;
   ~GraphNode () noexcept = default;
 
   /** For general debugging. */
@@ -153,12 +185,12 @@ public:
    * special nodes that are processed before/after the actual processing).
    */
   [[gnu::hot]] void process (
-    EngineProcessTimeInfo  time_nfo,
-    nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) const;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    units::sample_u64_t               remaining_preroll_frames,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) const;
 
-  nframes_t get_single_playback_latency () const
+  units::sample_u32_t get_single_playback_latency () const
   {
     return processable_.get_single_playback_latency ();
   }
@@ -170,7 +202,7 @@ public:
    *
    * @param dest_latency The total destination latency so far.
    */
-  void set_route_playback_latency (nframes_t dest_latency);
+  void set_route_playback_latency (units::sample_u32_t dest_latency);
 
   void connect_to (GraphNode &target);
 
@@ -214,10 +246,10 @@ private:
    * @param remaining_preroll_frames Frames remaining in preroll period
    */
   [[gnu::hot]] void compensate_latency (
-    EngineProcessTimeInfo &time_nfo,
-    nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) const;
+    dsp::graph::EngineProcessTimeInfo &time_nfo,
+    units::sample_u32_t                remaining_preroll_frames,
+    const dsp::ITransport             &transport,
+    const dsp::TempoMap               &tempo_map) const;
 
   /**
    * Processes audio in chunks when loop points are encountered.
@@ -229,9 +261,9 @@ private:
    * @param time_nfo Time info containing frame counts and offsets
    */
   [[gnu::hot]] void process_chunks_after_splitting_at_loop_points (
-    EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) const;
+    dsp::graph::EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport             &transport,
+    const dsp::TempoMap               &tempo_map) const;
 
 public:
   /** Incoming node count. */
@@ -243,7 +275,7 @@ public:
    * @see Page 116 of "The Ardour DAW - Latency Compensation and
    * Anywhere-to-Anywhere Signal Routing Systems".
    */
-  nframes_t playback_latency_ = 0;
+  units::sample_u32_t playback_latency_;
 
   // TODO
   /**
@@ -252,18 +284,18 @@ public:
    * @see Page 116 of "The Ardour DAW - Latency Compensation and
    * Anywhere-to-Anywhere Signal Routing Systems".
    */
-  nframes_t capture_latency_ = 0;
+  units::sample_u32_t capture_latency_;
 
   /** Initial incoming node count. */
-  int init_refcount_ = 0;
+  int init_refcount_{};
 
   /** The route's playback latency so far. */
-  nframes_t route_playback_latency_ = 0;
+  units::sample_u32_t route_playback_latency_;
 
   /* For debugging. These are set by
    * GraphNodeCollection.set_initial_and_terminal_nodes(). */
-  bool terminal_ = false;
-  bool initial_ = false;
+  bool terminal_{ false };
+  bool initial_{ false };
 
 private:
   NodeId node_id_ = 0;
@@ -305,7 +337,7 @@ public:
    *
    * @note Requires calling update_latencies() first.
    */
-  nframes_t get_max_route_playback_latency () const;
+  units::sample_u32_t get_max_route_playback_latency () const;
 
   /**
    * @brief Updates the latencies of all nodes.

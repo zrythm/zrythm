@@ -6,7 +6,6 @@
 #include <atomic>
 
 #include "structure/tracks/track_fwd.h"
-#include "utils/types.h"
 
 #include <farbot/RealtimeObject.hpp>
 #include <juce_wrapper.h>
@@ -90,16 +89,16 @@ public:
 
   // TrackEventProvider interface
   void process_midi_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector        &output_buffer) noexcept [[clang::nonblocking]];
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
 
   /**
    * @brief Process audio events for clip launcher playback.
    */
   void process_audio_events (
-    const EngineProcessTimeInfo &time_nfo,
-    std::span<float>             left_buffer,
-    std::span<float>             right_buffer) noexcept [[clang::nonblocking]];
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    std::span<float>                         left_buffer,
+    std::span<float> right_buffer) noexcept [[clang::nonblocking]];
 
   /**
    * @brief Whether currently playing any part of the clip.
@@ -117,16 +116,16 @@ private:
    * changes.
    */
   void update_playback_position (
-    const EngineProcessTimeInfo &time_nfo,
-    units::sample_t              clip_loop_end_samples);
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    units::sample_t                          clip_loop_end_samples);
 
   /**
    * @brief Common logic for handling quantization and playback start.
    */
   std::pair<units::sample_t, units::sample_t> handle_quantization_and_start (
-    const EngineProcessTimeInfo          &time_nfo,
-    units::sample_t                       clip_loop_end_samples,
-    structure::tracks::ClipQuantizeOption quantize_opt);
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    units::sample_t                          clip_loop_end_samples,
+    structure::tracks::ClipQuantizeOption    quantize_opt);
 
   /**
    * @brief Template method for processing chunks with looping.

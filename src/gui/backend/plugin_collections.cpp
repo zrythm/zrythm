@@ -73,7 +73,7 @@ init_from (
 
 /* ============================================================================ */
 
-fs::path
+std::filesystem::path
 PluginCollections::get_file_path ()
 {
   auto zrythm_dir =
@@ -81,7 +81,7 @@ PluginCollections::get_file_path ()
       IDirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
-  return fs::path (zrythm_dir) / PLUGIN_COLLECTIONS_JSON_FILENAME;
+  return std::filesystem::path (zrythm_dir) / PLUGIN_COLLECTIONS_JSON_FILENAME;
 }
 
 void

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -52,7 +52,7 @@ public:
     plugins::JucePlugin::CreatePluginInstanceAsyncFunc
                                            create_plugin_instance_async_func_;
     std::function<units::sample_rate_t ()> sample_rate_provider_;
-    std::function<nframes_t ()>            buffer_size_provider_;
+    std::function<units::sample_u32_t ()>  buffer_size_provider_;
     plugins::PluginHostWindowFactory       top_level_window_provider_;
     AudioThreadChecker                     audio_thread_checker_;
   };
@@ -153,9 +153,9 @@ private:
     }
 
   private:
-    CommonFactoryDependencies                 dependencies_;
-    OptionalRef<const PluginConfiguration>    setting_;
-    std::optional<InstantiationFinishOptions> instantiation_finish_options_;
+    CommonFactoryDependencies                     dependencies_;
+    utils::OptionalRef<const PluginConfiguration> setting_;
+    std::optional<InstantiationFinishOptions>     instantiation_finish_options_;
   };
 
   template <typename PluginT> auto get_builder () const

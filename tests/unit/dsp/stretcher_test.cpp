@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/stretcher.h"
-#include "utils/gtest_wrapper.h"
 
-using namespace zrythm::dsp;
+#include <gtest/gtest.h>
+
+namespace zrythm::dsp
+{
 
 class StretcherTest : public ::testing::Test
 {
@@ -68,7 +70,7 @@ TEST_F (StretcherTest, BasicStretching)
     in_samples_l.data (), in_samples_r.data (), num_samples,
     out_samples_l.data (), out_samples_r.data (), num_samples);
 
-  EXPECT_GT (frames_processed, 0);
+  EXPECT_GT (frames_processed, units::samples (0));
 }
 
 TEST_F (StretcherTest, TimeRatioChange)
@@ -105,7 +107,7 @@ TEST_F (StretcherTest, MonoProcessing)
     in_samples.data (), nullptr, num_samples, out_samples.data (), nullptr,
     num_samples);
 
-  EXPECT_GT (frames_processed, 0);
+  EXPECT_GT (frames_processed, units::samples (0));
 }
 
 TEST_F (StretcherTest, RealtimeProcessing)
@@ -125,5 +127,6 @@ TEST_F (StretcherTest, RealtimeProcessing)
     in_l.data (), in_r.data (), block_size, out_l.data (), out_r.data (),
     block_size);
 
-  EXPECT_GT (frames_processed, 0);
+  EXPECT_GT (frames_processed, units::samples (0));
+}
 }

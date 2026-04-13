@@ -30,7 +30,7 @@ public:
     const dsp::AtomicPositionQmlAdapter &start_position,
     QObject *                            parent = nullptr);
   ~ArrangerObjectBounds () override = default;
-  Z_DISABLE_COPY_MOVE (ArrangerObjectBounds)
+  Q_DISABLE_COPY_MOVE (ArrangerObjectBounds)
 
   // ========================================================================
   // QML Interface

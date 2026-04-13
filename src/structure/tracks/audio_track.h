@@ -33,15 +33,17 @@ public:
 
   // ========================================================================
 
+#if 0
   void timestretch_buf (
     const AudioRegion *    r,
     dsp::FileAudioSource * clip,
-    unsigned_frame_t       in_frame_offset,
+    uint64_t       in_frame_offset,
     double                 timestretch_ratio,
     float *                lbuf_after_ts,
     float *                rbuf_after_ts,
-    unsigned_frame_t       out_frame_offset,
-    unsigned_frame_t       frames_to_process);
+    uint64_t       out_frame_offset,
+    uint64_t       frames_to_process);
+#endif
 
 private:
   friend void to_json (nlohmann::json &j, const AudioTrack &track)

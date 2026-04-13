@@ -14,8 +14,8 @@ namespace zrythm::dsp
 class ModulatorMacroProcessorTest : public ::testing::Test
 {
 protected:
-  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
-  static constexpr nframes_t BLOCK_LENGTH = 256;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (256);
 
   void SetUp () override
   {
@@ -41,7 +41,9 @@ protected:
     macro_param->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Set up test signal
-    for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+    for (
+      const auto i :
+      std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
       {
         mod_source->buf_[i] = 0.5f;
       }
@@ -81,16 +83,18 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
   macro_param->setBaseValue (0.8f);
 
   // Process block
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is macro value (0.8f) since no input
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       EXPECT_FLOAT_EQ (cv_out->buf_[i], 0.8f);
     }
@@ -106,17 +110,19 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
   macro_param->setBaseValue (0.5f);
 
   // Process block
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is input * macro (0.5 * 0.5 = 0.25)
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       EXPECT_FLOAT_EQ (cv_out->buf_[i], 0.25f);
     }
@@ -133,7 +139,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
     utils::Utf8String::from_utf8_encoded_string ("LFO2"), PortFlow::Output);
   auto mod_source2 = mod_source2_ref.get_object_as<CVPort> ();
   mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       mod_source2->buf_[i] = 0.25f;
     }
@@ -146,10 +154,10 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
   macro_param->setBaseValue (0.5f);
 
   // Process block
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -157,7 +165,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
 
   // Verify output is (input1 + input2) * macro
   // (0.5 + 0.25) * 0.5 = 0.375
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       EXPECT_FLOAT_EQ (cv_out->buf_[i], 0.375f);
     }
@@ -173,16 +183,18 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
   macro_param->setBaseValue (0.0f);
 
   // Process block
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is zero
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       EXPECT_FLOAT_EQ (cv_out->buf_[i], 0.0f);
     }

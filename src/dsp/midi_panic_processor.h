@@ -40,9 +40,9 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override
   {
     const auto panic = panic_.exchange (false);
     if (!panic)
@@ -50,13 +50,13 @@ public:
 
     // queue panic event
     midi_out_->midi_events_.queued_events_.panic_without_lock (
-      time_nfo.local_offset_);
+      time_nfo.local_offset_.in (units::samples));
   }
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override
+    units::sample_u32_t      max_block_length) override
   {
     midi_out_ = get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }

@@ -90,7 +90,7 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   for (const auto &processable : processables_)
     {
       EXPECT_CALL (*processable, get_single_playback_latency ())
-        .WillRepeatedly (Return (128));
+        .WillRepeatedly (Return (units::samples (128)));
     }
 
   TestGraphBuilder builder (std::span{ processables_ });
@@ -99,6 +99,7 @@ TEST_F (GraphBuilderTest, LatenciesUpdated)
   builder.build_graph (graph);
   graph.get_nodes ().update_latencies ();
 
-  EXPECT_EQ (graph.get_nodes ().get_max_route_playback_latency (), 128);
+  EXPECT_EQ (
+    graph.get_nodes ().get_max_route_playback_latency (), units::samples (128));
 }
 }

@@ -41,11 +41,12 @@ protected:
         ON_CALL (*processables_.back (), get_node_name ())
           .WillByDefault (Return (u8"test_node"));
         ON_CALL (*processables_.back (), get_single_playback_latency ())
-          .WillByDefault (Return (0));
+          .WillByDefault (Return (units::samples (0)));
         ON_CALL (
           *processables_.back (),
           prepare_for_processing (
-            An<const graph::GraphNode *> (), An<units::sample_rate_t> (), _))
+            An<const graph::GraphNode *> (), An<units::sample_rate_t> (),
+            An<units::sample_u32_t> ()))
           .WillByDefault (Return ());
         ON_CALL (*processables_.back (), release_resources ())
           .WillByDefault (Return ());
@@ -119,7 +120,7 @@ TEST_F (
   GetMaxRoutePlaybackLatencyReturnsZeroWhenNoScheduler)
 {
   create_dispatcher ();
-  EXPECT_EQ (dispatcher_->get_max_route_playback_latency (), 0);
+  EXPECT_EQ (dispatcher_->get_max_route_playback_latency (), units::samples (0));
 }
 
 TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftFalse)
@@ -141,25 +142,25 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftFalse)
   // Expect prepare_for_processing to be called for each node
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   // Adjust playback latency for a node
   ON_CALL (*processables_[0], get_single_playback_latency ())
-    .WillByDefault (Return (128));
+    .WillByDefault (Return (units::samples (128)));
 
   dispatcher_->recalc_graph (false);
 
   // Should have non-zero latency after graph is built
-  EXPECT_GT (dispatcher_->get_max_route_playback_latency (), 0);
+  EXPECT_GT (dispatcher_->get_max_route_playback_latency (), units::samples (0));
 }
 
 TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftTrue)
@@ -204,13 +205,14 @@ TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = 0;
-  time_info.g_start_frame_w_offset_ = 0;
-  time_info.local_offset_ = 0;
-  time_info.nframes_ = 256;
+  dsp::graph::EngineProcessTimeInfo time_info{};
+  time_info.g_start_frame_ = units::samples (0);
+  time_info.g_start_frame_w_offset_ = units::samples (0);
+  time_info.local_offset_ = units::samples (0);
+  time_info.nframes_ = units::samples (256);
 
-  dispatcher_->start_cycle (*transport_, time_info, 0, true, *tempo_map_);
+  dispatcher_->start_cycle (
+    *transport_, time_info, units::samples (0), true, *tempo_map_);
 
   // Should be marked as processing kickoff thread
   EXPECT_TRUE (dispatcher_->is_processing_kickoff_thread ());
@@ -237,13 +239,14 @@ TEST_F (DspGraphDispatcherTest, StartCycleInNonRealtimeContext)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = 0;
-  time_info.g_start_frame_w_offset_ = 0;
-  time_info.local_offset_ = 0;
-  time_info.nframes_ = 256;
+  dsp::graph::EngineProcessTimeInfo time_info{};
+  time_info.g_start_frame_ = units::samples (0);
+  time_info.g_start_frame_w_offset_ = units::samples (0);
+  time_info.local_offset_ = units::samples (0);
+  time_info.nframes_ = units::samples (256);
 
-  dispatcher_->start_cycle (*transport_, time_info, 0, false, *tempo_map_);
+  dispatcher_->start_cycle (
+    *transport_, time_info, units::samples (0), false, *tempo_map_);
 
   // Should NOT be marked as processing kickoff thread
   EXPECT_FALSE (dispatcher_->is_processing_kickoff_thread ());
@@ -264,11 +267,11 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
 
   // Set up latency expectations
   ON_CALL (*processables_[0], get_single_playback_latency ())
-    .WillByDefault (Return (128));
+    .WillByDefault (Return (units::samples (128)));
   ON_CALL (*processables_[1], get_single_playback_latency ())
-    .WillByDefault (Return (64));
+    .WillByDefault (Return (units::samples (64)));
   ON_CALL (*processables_[2], get_single_playback_latency ())
-    .WillByDefault (Return (32));
+    .WillByDefault (Return (units::samples (32)));
 
   create_dispatcher ();
   dispatcher_->recalc_graph (false);
@@ -279,13 +282,13 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
   // TODO: I haven't done the calculations yet to see if this is correct
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (0);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = 0;
-  time_info.g_start_frame_w_offset_ = 0;
-  time_info.local_offset_ = 0;
-  time_info.nframes_ = 256;
+  dsp::graph::EngineProcessTimeInfo time_info{};
+  time_info.g_start_frame_ = units::samples (0);
+  time_info.g_start_frame_w_offset_ = units::samples (0);
+  time_info.local_offset_ = units::samples (0);
+  time_info.nframes_ = units::samples (256);
 
-  const nframes_t remaining_latency_preroll = 64;
+  constexpr auto remaining_latency_preroll = units::samples (64);
   dispatcher_->start_cycle (
     *transport_, time_info, remaining_latency_preroll, true, *tempo_map_);
 }
@@ -334,15 +337,16 @@ TEST_F (DspGraphDispatcherTest, ProcessingThreadDetection)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = 0;
-  time_info.g_start_frame_w_offset_ = 0;
-  time_info.local_offset_ = 0;
-  time_info.nframes_ = 256;
+  dsp::graph::EngineProcessTimeInfo time_info{};
+  time_info.g_start_frame_ = units::samples (0);
+  time_info.g_start_frame_w_offset_ = units::samples (0);
+  time_info.local_offset_ = units::samples (0);
+  time_info.nframes_ = units::samples (256);
 
   // After starting a cycle, main thread might be detected as processing thread
   // depending on implementation, but this test ensures the method doesn't crash
-  dispatcher_->start_cycle (*transport_, time_info, 0, true, *tempo_map_);
+  dispatcher_->start_cycle (
+    *transport_, time_info, units::samples (0), true, *tempo_map_);
 
   // Just ensure the method can be called without issues
   [[maybe_unused]] bool is_processing = dispatcher_->is_processing_thread ();
@@ -366,15 +370,15 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
   // First recalculation
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   dispatcher_->recalc_graph (false);
@@ -386,15 +390,15 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
 
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), 256))
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   dispatcher_->recalc_graph (false);
@@ -409,18 +413,19 @@ TEST_F (DspGraphDispatcherTest, PreprocessAtStartOfCycleNoThrow)
 {
   create_dispatcher ();
 
-  EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = 0;
-  time_info.g_start_frame_w_offset_ = 0;
-  time_info.local_offset_ = 0;
-  time_info.nframes_ = 256;
+  dsp::graph::EngineProcessTimeInfo time_info{};
+  time_info.g_start_frame_ = units::samples (0);
+  time_info.g_start_frame_w_offset_ = units::samples (0);
+  time_info.local_offset_ = units::samples (0);
+  time_info.nframes_ = units::samples (256);
 
   // This should not throw even without a scheduler
   EXPECT_NO_THROW ({
     // Access private method through a test-specific approach
     // Since preprocess_at_start_of_cycle is private, we test it indirectly
     // through start_cycle which calls it
-    dispatcher_->start_cycle (*transport_, time_info, 0, false, *tempo_map_);
+    dispatcher_->start_cycle (
+      *transport_, time_info, units::samples (0), false, *tempo_map_);
   });
 }
 

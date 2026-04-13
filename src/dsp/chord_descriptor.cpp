@@ -7,6 +7,8 @@
 #include "dsp/chord_descriptor.h"
 #include "utils/midi.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 
@@ -37,7 +39,9 @@ invert_chord (auto &notes, int inversion)
         {
           for (
             const auto j :
-            std::views::iota (12_zu, ChordDescriptor::MAX_NOTES)
+            std::views::iota (
+              static_cast<decltype (ChordDescriptor::MAX_NOTES)> (12),
+              ChordDescriptor::MAX_NOTES)
               | std::views::reverse)
             {
               if (notes[j])
@@ -250,6 +254,31 @@ ChordDescriptor::to_string () const
     }
 
   return str;
+}
+
+void
+to_json (nlohmann::json &j, const ChordDescriptor &c)
+{
+  j = {
+    { "hasBass",   c.has_bass_  },
+    { "rootNote",  c.root_note_ },
+    { "bassNote",  c.bass_note_ },
+    { "type",      c.type_      },
+    { "accent",    c.accent_    },
+    { "notes",     c.notes_     },
+    { "inversion", c.inversion_ },
+  };
+}
+void
+from_json (const nlohmann::json &j, ChordDescriptor &c)
+{
+  j.at ("hasBass").get_to (c.has_bass_);
+  j.at ("rootNote").get_to (c.root_note_);
+  j.at ("bassNote").get_to (c.bass_note_);
+  j.at ("type").get_to (c.type_);
+  j.at ("accent").get_to (c.accent_);
+  j.at ("notes").get_to (c.notes_);
+  j.at ("inversion").get_to (c.inversion_);
 }
 
 } // namespace zrythm::dsp

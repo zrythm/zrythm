@@ -6,7 +6,6 @@
 #include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/midi_event.h"
-#include "gui/dsp/sample_playback.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/types.h"
 
@@ -39,7 +38,7 @@ public:
 public:
   SampleProcessor () = default;
   SampleProcessor (engine::device_io::AudioEngine * engine);
-  Z_DISABLE_COPY_MOVE (SampleProcessor)
+  Q_DISABLE_COPY_MOVE (SampleProcessor)
   ~SampleProcessor () override;
 
   friend void init_from (
@@ -60,21 +59,14 @@ public:
    * Process the samples for the given number of frames.
    */
   void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   utils::Utf8String get_node_name () const override
   {
     return u8"Sample Processor";
   }
-
-  nframes_t get_single_playback_latency () const override { return 0; }
-
-  /**
-   * Removes a SamplePlayback from the array.
-   */
-  void remove_sample_playback (SamplePlayback &sp);
 
   /**
    * Adds a sample to play to the queue from a file path.
@@ -115,9 +107,6 @@ private:
     const ChordPreset *    chord_pset);
 
 public:
-  /** An array of samples currently being played. */
-  std::vector<SamplePlayback> current_samples_;
-
   /** Tracklist for file auditioning. */
   std::unique_ptr<structure::tracks::Tracklist> tracklist_;
 

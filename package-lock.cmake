@@ -159,6 +159,7 @@ CPMDeclarePackage(fmt
   EXCLUDE_FROM_ALL YES
   OPTIONS
     "FMT_INSTALL OFF"
+    "FMT_SYSTEM_HEADERS ON"
 )
 # fast_float
 CPMDeclarePackage(fast_float

@@ -47,14 +47,14 @@ public:
   /**
    * Gets informational text.
    */
-  utils::Utf8String get_info_text () const;
+  zrythm::utils::Utf8String get_info_text () const;
 
   // GMenuModel * generate_context_menu () const;
 
   friend void init_from (
-    ChordPreset           &obj,
-    const ChordPreset     &other,
-    utils::ObjectCloneType clone_type);
+    ChordPreset                   &obj,
+    const ChordPreset             &other,
+    zrythm::utils::ObjectCloneType clone_type);
 
 private:
   static constexpr std::string_view kNameKey = "name";
@@ -75,7 +75,7 @@ public:
   NameT name_;
 
   /** Chord descriptors. */
-  std::vector<dsp::ChordDescriptor> descr_;
+  std::vector<zrythm::dsp::ChordDescriptor> descr_;
 
   /** Pointer to owner pack. */
   ChordPresetPack * pack_ = nullptr;

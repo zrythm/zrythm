@@ -180,7 +180,8 @@ protected:
       .plugin_registry_ = plugin_registry_,
       .processor_base_dependencies_{
                                     .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      .state_dir_path_provider_ = [] () { return fs::path{ "/tmp/test_state" }; },
+      .state_dir_path_provider_ =
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; },
       .create_plugin_instance_async_func_ = create_mock_async_func (),
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
@@ -221,7 +222,7 @@ protected:
     instantiation_finished_handler_;
 
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
-  nframes_t            buffer_size_{ 1024 };
+  units::sample_u32_t  buffer_size_{ units::samples (1024u) };
 };
 
 // Test basic construction

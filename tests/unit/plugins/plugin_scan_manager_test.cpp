@@ -31,10 +31,10 @@ public:
     switch (prot)
       {
       case Protocol::ProtocolType::LV2:
-        list->add_path (fs::path ("test/path/lv2"));
+        list->add_path (std::filesystem::path ("test/path/lv2"));
         break;
       case Protocol::ProtocolType::VST:
-        list->add_path (fs::path ("test/path/vst"));
+        list->add_path (std::filesystem::path ("test/path/vst"));
         break;
       default:
         break;

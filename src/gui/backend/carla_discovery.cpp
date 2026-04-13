@@ -25,7 +25,7 @@ ZCarlaDiscovery::ZCarlaDiscovery (PluginManager &owner)
   owner_ = &owner;
 }
 
-fs::path
+std::filesystem::path
 ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
 {
   std::string carla_discovery_filename;
@@ -38,10 +38,10 @@ ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
     "carla-discovery-native";
 #  endif
   carla_discovery_filename += BIN_SUFFIX;
-  fs::path carla_discovery_parent_dir;
+  std::filesystem::path carla_discovery_parent_dir;
   if (ZRYTHM_TESTING || !ZRYTHM_BENCHMARKING)
     {
-      carla_discovery_parent_dir = fs::path (CARLA_BINARIES_DIR);
+      carla_discovery_parent_dir = std::filesystem::path (CARLA_BINARIES_DIR);
     }
   else
     {
@@ -49,10 +49,11 @@ ZCarlaDiscovery::get_discovery_path (PluginArchitecture arch)
       std::string zrythm_libdir = dir_mgr->get_dir (
         DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
       z_debug ("using zrythm_libdir: {}", zrythm_libdir);
-      carla_discovery_parent_dir = fs::path (zrythm_libdir) / "carla";
+      carla_discovery_parent_dir =
+        std::filesystem::path (zrythm_libdir) / "carla";
     }
 
-  fs::path carla_discovery_abs_path =
+  std::filesystem::path carla_discovery_abs_path =
     carla_discovery_parent_dir / carla_discovery_filename;
   z_return_val_if_fail (
     carla_discovery_abs_path.is_absolute ()

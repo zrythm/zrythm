@@ -6,7 +6,7 @@
 namespace zrythm::structure::project
 {
 
-fs::path
+std::filesystem::path
 ProjectPathProvider::get_path (ProjectPath path)
 {
   switch (path)

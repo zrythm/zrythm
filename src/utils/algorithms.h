@@ -4,9 +4,9 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
+#include <optional>
 #include <span>
-
-#include "utils/types.h"
 
 namespace zrythm::utils::algorithms
 {

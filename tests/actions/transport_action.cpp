@@ -15,7 +15,7 @@
 TEST_F (ZrythmFixture, ChangeBPMAndTimeSignature)
 {
   /* import audio */
-  FileDescriptor file_descr (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file_descr (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   Position       pos;
   pos.set_to_bar (4);
   Track::create_with_action (

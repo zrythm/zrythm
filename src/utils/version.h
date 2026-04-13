@@ -6,7 +6,7 @@
 #include <optional>
 #include <string_view>
 
-#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::utils
 {
@@ -69,33 +69,9 @@ struct Version
   }
 };
 
-inline void
-to_json (nlohmann::json &j, const Version &v)
-{
-  using namespace version_keys;
-  j = nlohmann::json::object ();
-  j[kMajor] = v.major;
-  j[kMinor] = v.minor;
-  if (v.patch.has_value ())
-    {
-      j[kPatch] = *v.patch;
-    }
-}
-
-inline void
-from_json (const nlohmann::json &j, Version &v)
-{
-  using namespace version_keys;
-  v.major = j.at (kMajor).get<int> ();
-  v.minor = j.at (kMinor).get<int> ();
-  if (j.contains (kPatch))
-    {
-      v.patch = j[kPatch].get<int> ();
-    }
-  else
-    {
-      v.patch = std::nullopt;
-    }
-}
+void
+to_json (nlohmann::json &j, const Version &v);
+void
+from_json (const nlohmann::json &j, Version &v);
 
 } // namespace zrythm::utils

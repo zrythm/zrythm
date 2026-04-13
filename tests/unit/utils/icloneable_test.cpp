@@ -1,11 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/gtest_wrapper.h"
 #include "utils/icloneable.h"
 
 #include <QObject>
 
+#include <gtest/gtest.h>
+
+namespace zrythm::utils
+{
 // Test class implementing ICloneable
 class SimpleCloneable final
 {
@@ -118,4 +121,5 @@ TEST (ICloneableTest, QObjectCloning)
     utils::clone_unique_qobject (original, &parent);
   EXPECT_EQ (qobject_unique_ptr_clone->parent (), &parent);
   EXPECT_EQ (qobject_unique_ptr_clone->value, 100);
+}
 }

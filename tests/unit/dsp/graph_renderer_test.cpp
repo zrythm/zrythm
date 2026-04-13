@@ -23,11 +23,11 @@ protected:
   {
   public:
     SineWaveGenerator (
-      AudioPort &audio_port,
-      float      amplitude = 0.1f,
-      float      frequency = 440.0f,
-      float      sample_rate = 48000.0f,
-      nframes_t  latency_frames = 0)
+      AudioPort          &audio_port,
+      float               amplitude = 0.1f,
+      float               frequency = 440.0f,
+      float               sample_rate = 48000.0f,
+      units::sample_u32_t latency_frames = units::samples (0))
         : audio_port_ (audio_port), amplitude_ (amplitude),
           frequency_ (frequency), sample_rate_ (sample_rate),
           original_latency_ (latency_frames), prefilled_samples_ (2, 48000)
@@ -35,8 +35,8 @@ protected:
       // Prepare the samples to output (with enough samples for any test)
       for (
         int i = 0;
-        i
-        < prefilled_samples_.getNumSamples () - static_cast<int> (latency_frames);
+        i < prefilled_samples_.getNumSamples ()
+              - latency_frames.in<int> (units::samples);
         ++i)
         {
           for (int ch = 0; ch < prefilled_samples_.getNumChannels (); ++ch)
@@ -50,21 +50,21 @@ protected:
               // Account for latency: only generate samples after
               // latency frames
               prefilled_samples_.setSample (
-                ch, static_cast<int> (latency_frames) + i,
+                ch, latency_frames.in<int> (units::samples) + i,
                 sample * static_cast<float> (ch + 1));
             }
         }
 
       // Fill the latency samples with silence
-      if (latency_frames > 0)
+      if (latency_frames > units::samples (0))
         {
-          prefilled_samples_.clear (0, static_cast<int> (latency_frames));
+          prefilled_samples_.clear (0, latency_frames.in<int> (units::samples));
         }
     }
 
     void process_block (
-      const EngineProcessTimeInfo &time_nfo,
-      const ITransport            &transport)
+      const dsp::graph::EngineProcessTimeInfo &time_nfo,
+      const ITransport                        &transport)
     {
       const auto &buffers = audio_port_.buffers ();
       if (buffers && buffers->getNumChannels () > 0)
@@ -73,21 +73,21 @@ protected:
           for (int ch = 0; ch < buffers->getNumChannels (); ++ch)
             {
               buffers->copyFrom (
-                ch, static_cast<int> (time_nfo.local_offset_),
+                ch, time_nfo.local_offset_.in<int> (units::samples),
                 prefilled_samples_, ch,
-                static_cast<int> (time_nfo.g_start_frame_w_offset_),
-                static_cast<int> (time_nfo.nframes_));
+                time_nfo.g_start_frame_w_offset_.in<int> (units::samples),
+                time_nfo.nframes_.in<int> (units::samples));
             }
         }
     }
 
   private:
-    AudioPort                       &audio_port_;
-    float                            amplitude_ = 0.1f;
-    float                            frequency_ = 440.0f;
-    float                            sample_rate_ = 48000.0f;
-    [[maybe_unused]] const nframes_t original_latency_;
-    juce::AudioSampleBuffer          prefilled_samples_;
+    AudioPort                                 &audio_port_;
+    float                                      amplitude_ = 0.1f;
+    float                                      frequency_ = 440.0f;
+    float                                      sample_rate_ = 48000.0f;
+    [[maybe_unused]] const units::sample_u32_t original_latency_;
+    juce::AudioSampleBuffer                    prefilled_samples_;
   };
 
   using MockProcessable = zrythm::dsp::graph_test::MockProcessable;
@@ -119,7 +119,7 @@ protected:
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
-      .WillByDefault (Return (0));
+      .WillByDefault (Return (units::samples (0)));
     ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
@@ -161,13 +161,13 @@ protected:
     ON_CALL (*processable_no_latency, get_node_name ())
       .WillByDefault (Return (u8"no_latency_node"));
     ON_CALL (*processable_no_latency, get_single_playback_latency ())
-      .WillByDefault (Return (0));
+      .WillByDefault (Return (units::samples (0)));
     ON_CALL (*processable_no_latency, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_no_latency, release_resources ())
       .WillByDefault (Return ());
     auto no_latency_generator = std::make_unique<SineWaveGenerator> (
-      *audio_port_, 0.05f, 440.0f, 48000.0f, 0);
+      *audio_port_, 0.05f, 440.0f, 48000.0f, units::samples (0));
     auto * no_latency_generator_ptr = no_latency_generator.get ();
     ON_CALL (*processable_no_latency, process_block (_, _, _))
       .WillByDefault (
@@ -367,13 +367,15 @@ TEST_F (GraphRendererTest, RenderWithLatency)
 {
   // Setup processable with latency
   ON_CALL (*processable_, get_single_playback_latency ())
-    .WillByDefault (Return (128));
+    .WillByDefault (Return (units::samples (128)));
 
   auto collection = create_simple_test_collection ();
   auto range = create_test_range (0, 256);
 
   // Expect processing with latency compensation
-  SineWaveGenerator generator{ *audio_port_, 0.1f, 440.0f, 48000.0f, 128 };
+  SineWaveGenerator generator{
+    *audio_port_, 0.1f, 440.0f, 48000.0f, units::samples (128)
+  };
   ON_CALL (*processable_, process_block (_, _, _))
     .WillByDefault (
       [&generator] (auto time_nfo, const auto &transport, const auto &) {
@@ -405,7 +407,7 @@ TEST_F (GraphRendererTest, RenderWithLatency)
 
 TEST_F (GraphRendererTest, RenderWithMixedLatency)
 {
-  constexpr auto latency = 64;
+  constexpr auto latency = units::samples (64);
   auto [collection, no_latency_generator, latency_generator] =
     create_mixed_latency_test_collection (latency);
   auto range = create_test_range (0, 256);
@@ -430,7 +432,7 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
 
   // With mixed latency, max latency (64) should be compensated for
   // First 64 samples should be silent (latency preroll)
-  verify_samples_are_zero (result, 0, latency);
+  verify_samples_are_zero (result, 0, latency.in<int> (units::samples));
 
   // After latency compensation, both signals should be present
   // The no-latency signal should start at sample 64 with 660Hz frequency
@@ -440,19 +442,20 @@ TEST_F (GraphRendererTest, RenderWithMixedLatency)
     {
       const auto channel_multiplier = static_cast<float> (ch + 1);
 
-      for (int i = latency; i < result.getNumSamples (); ++i)
+      const auto latency_int = latency.in<int> (units::samples);
+      for (int i = latency_int; i < result.getNumSamples (); ++i)
         {
           // Expected combined signal: both sine waves at half amplitude each
           const auto sample_440 =
             0.05f * channel_multiplier
             * std::sin (
               2.0f * std::numbers::pi_v<float>
-              * 440.0f * static_cast<float> (i - latency) / 48000.0f);
+              * 440.0f * static_cast<float> (i - latency_int) / 48000.0f);
           const auto sample_660 =
             0.05f * channel_multiplier
             * std::sin (
               2.0f * std::numbers::pi_v<float>
-              * 660.0f * static_cast<float> (i - latency) / 48000.0f);
+              * 660.0f * static_cast<float> (i - latency_int) / 48000.0f);
           const auto expected_sample = sample_440 + sample_660;
 
           const auto actual_sample = result.getSample (ch, i);
@@ -496,7 +499,8 @@ TEST_F (GraphRendererTest, ResourceManagement)
 
   // Expect resource management calls
   EXPECT_CALL (
-    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    *processable_,
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (*processable_, release_resources ()).Times (1);
 

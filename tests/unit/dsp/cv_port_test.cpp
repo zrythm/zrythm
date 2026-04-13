@@ -12,8 +12,8 @@ namespace zrythm::dsp
 class CVPortTest : public ::testing::Test
 {
 protected:
-  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
-  static constexpr nframes_t BLOCK_LENGTH = 256;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (256);
 
   void SetUp () override
   {
@@ -30,13 +30,15 @@ protected:
     output_port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Fill output buffer with test signal
-    for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+    for (
+      const auto i :
+      std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
       {
         output_port->buf_[i] =
           0.5f
           * std::cos (
-            2.0f * std::numbers::pi_v<float>
-            * 1.0f * static_cast<float> (i) / BLOCK_LENGTH);
+            2.0f * std::numbers::pi_v<float> * 1.0f * static_cast<float> (i)
+            / BLOCK_LENGTH.in<float> (units::samples));
       }
   }
 
@@ -60,9 +62,11 @@ TEST_F (CVPortTest, BufferClearing)
 {
   // Add some data to input buffer
   std::fill (input_port->buf_.begin (), input_port->buf_.end (), 1.0f);
-  input_port->clear_buffer (0, BLOCK_LENGTH);
+  input_port->clear_buffer (0, BLOCK_LENGTH.in<size_t> (units::samples));
 
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       EXPECT_EQ (input_port->buf_[i], 0.0f);
     }
@@ -71,10 +75,10 @@ TEST_F (CVPortTest, BufferClearing)
 TEST_F (CVPortTest, SignalProcessing)
 {
   // Process output port (signal generation)
-  EngineProcessTimeInfo time_info{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);
@@ -89,10 +93,10 @@ TEST_F (CVPortTest, RingBufferWriting)
   // Enable ring buffer writing
   RingBufferOwningPortMixin::RingBufferReader reader (*output_port);
 
-  EngineProcessTimeInfo time_info{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);

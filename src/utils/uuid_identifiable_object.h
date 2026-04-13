@@ -5,19 +5,20 @@
 
 #include <utility>
 
-#include "utils/format.h"
 #include "utils/icloneable.h"
 #include "utils/logger.h"
+#include "utils/optional_ref.h"
 #include "utils/rt_thread_id.h"
 #include "utils/serialization.h"
-#include "utils/utf8_string.h"
 
 #include <QUuid>
 
-#include "type_safe/strong_typedef.hpp"
+#include <boost/describe/class.hpp>
 #include <boost/stl_interfaces/iterator_interface.hpp>
 #include <boost/unordered/unordered_flat_map.hpp>
+#include <fmt/format.h>
 #include <nlohmann/json_fwd.hpp>
+#include <type_safe/strong_typedef.hpp>
 
 namespace zrythm::utils
 {
@@ -292,8 +293,8 @@ private:
   }
 
 private:
-  std::optional<UuidType> id_;
-  OptionalRef<RegistryT>  registry_;
+  std::optional<UuidType>       id_;
+  utils::OptionalRef<RegistryT> registry_;
 };
 
 template <typename ReturnType, typename UuidType>
@@ -1038,7 +1039,7 @@ struct fmt::formatter<T> : fmt::formatter<std::string_view>
   template <typename FormatContext>
   auto format (const T &uuid, FormatContext &ctx) const
   {
-    return fmt::formatter<QString>{}.format (
-      type_safe::get (uuid).toString (QUuid::WithoutBraces), ctx);
+    return fmt::formatter<std::string_view>{}.format (
+      type_safe::get (uuid).toString (QUuid::WithoutBraces).toUtf8 (), ctx);
   }
 };

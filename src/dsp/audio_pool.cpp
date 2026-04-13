@@ -7,8 +7,11 @@
 #include <thread>
 
 #include "dsp/audio_pool.h"
+#include "utils/enum_utils.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
+
+#include <fmt/std.h>
 
 namespace zrythm::dsp
 {
@@ -45,7 +48,7 @@ init_from (
   // nothing needed
 }
 
-fs::path
+std::filesystem::path
 AudioPool::get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup)
   const
 {

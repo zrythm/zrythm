@@ -85,14 +85,15 @@ public:
 #endif
 
   void
-  save_state (bool is_backup, std::optional<fs::path> abs_state_dir) override;
+  save_state (bool is_backup, std::optional<std::filesystem::path> abs_state_dir)
+    override;
 
   /**
    * @brief Loads the state from the given file or from its state file.
    *
    * @throw ZrythmException if failed to load state.
    */
-  void load_state (std::optional<fs::path> abs_path);
+  void load_state (std::optional<std::filesystem::path> abs_path);
 
   void update_buffer_size_and_sample_rate ();
 
@@ -129,7 +130,7 @@ public:
    * Returns the latency in samples.
    */
 
-  nframes_t get_single_playback_latency () const override;
+  units::sample_u32_t get_single_playback_latency () const override;
 
   /**
    * @brief Adds the internal plugin from the given descriptor.

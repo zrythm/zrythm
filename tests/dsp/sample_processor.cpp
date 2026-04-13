@@ -18,7 +18,7 @@ TEST_F (ZrythmFixture, QueueFile)
       processed_frames += 256;
     }
 
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   SAMPLE_PROCESSOR->queue_file (file);
 
   ASSERT_EQ (SAMPLE_PROCESSOR->playhead_.frames_, 0);
@@ -62,7 +62,8 @@ TEST_F (ZrythmFixture, QueueMidiAndRollTransport)
   SAMPLE_PROCESSOR->instrument_setting_ = std::make_unique<PluginConfiguration> (
     test_plugin_manager_get_plugin_setting (HELM_BUNDLE, HELM_URI, false));
 
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "1_track_with_data.mid");
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "1_track_with_data.mid");
 
   TRANSPORT->request_roll (true);
 

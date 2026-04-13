@@ -158,7 +158,7 @@ TEST_F (ZrythmFixture, MixdownMidi)
 
 TEST_F (ZrythmFixture, ExportWav)
 {
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
     1, -1, nullptr);
@@ -824,7 +824,7 @@ TEST_F (ZrythmFixture, ExportChordTrackRoutedToInstrumentTrack)
 TEST_F (ZrythmFixture, ExportSendTrackOnly)
 {
   /* create an audio track */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
     1, -1, nullptr);

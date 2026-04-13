@@ -3,9 +3,8 @@
 
 #pragma once
 
+#include <filesystem>
 #include <string_view>
-
-#include "utils/types.h"
 
 namespace zrythm::structure::project
 {
@@ -58,6 +57,6 @@ public:
   /**
    * @brief Returns the path of the given type relative to a project's directory.
    */
-  static fs::path get_path (ProjectPath path);
+  static std::filesystem::path get_path (ProjectPath path);
 };
 }

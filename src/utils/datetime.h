@@ -7,8 +7,7 @@
  * Date and time utils.
  */
 
-#ifndef __UTILS_DATETIME_H__
-#define __UTILS_DATETIME_H__
+#pragma once
 
 #include "utils/utf8_string.h"
 
@@ -38,5 +37,3 @@ Utf8String
 get_for_filename ();
 
 }; // zrythm::utils::datetime
-
-#endif

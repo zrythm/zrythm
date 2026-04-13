@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,6 +8,7 @@
 
 #include "dsp/atomic_position.h"
 
+#include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
@@ -27,6 +28,9 @@ class AtomicPositionQmlAdapter : public QObject
 public:
   using ConstraintFunction =
     std::function<units::precise_tick_t (units::precise_tick_t)>;
+  using TimeFormat = AtomicPosition::TimeFormat;
+
+  Q_ENUM (TimeFormat)
 
   explicit AtomicPositionQmlAdapter (
     AtomicPosition                   &atomicPos,

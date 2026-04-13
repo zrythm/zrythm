@@ -32,7 +32,7 @@ protected:
 // Test initial state
 TEST_F (AtomicPositionQmlAdapterTest, InitialState)
 {
-  EXPECT_EQ (qml_pos->mode (), TimeFormat::Musical);
+  EXPECT_EQ (qml_pos->mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (qml_pos->ticks (), 0.0);
   EXPECT_DOUBLE_EQ (qml_pos->seconds (), 0.0);
   EXPECT_EQ (qml_pos->samples (), 0);
@@ -55,7 +55,7 @@ TEST_F (AtomicPositionQmlAdapterTest, AbsoluteModePropertyBindings)
 {
   QSignalSpy posSpy (qml_pos.get (), &AtomicPositionQmlAdapter::positionChanged);
 
-  qml_pos->setMode (TimeFormat::Absolute);
+  qml_pos->setMode (AtomicPosition::TimeFormat::Absolute);
   EXPECT_EQ (posSpy.count (), 1);
 
   qml_pos->setSeconds (1.0);
@@ -70,13 +70,13 @@ TEST_F (AtomicPositionQmlAdapterTest, ModeConversionSignals)
 {
   QSignalSpy posSpy (qml_pos.get (), &AtomicPositionQmlAdapter::positionChanged);
 
-  qml_pos->setMode (TimeFormat::Absolute);
+  qml_pos->setMode (AtomicPosition::TimeFormat::Absolute);
   EXPECT_EQ (posSpy.count (), 1);
-  EXPECT_EQ (qml_pos->mode (), TimeFormat::Absolute);
+  EXPECT_EQ (qml_pos->mode (), AtomicPosition::TimeFormat::Absolute);
 
-  qml_pos->setMode (TimeFormat::Musical);
+  qml_pos->setMode (AtomicPosition::TimeFormat::Musical);
   EXPECT_EQ (posSpy.count (), 2);
-  EXPECT_EQ (qml_pos->mode (), TimeFormat::Musical);
+  EXPECT_EQ (qml_pos->mode (), AtomicPosition::TimeFormat::Musical);
 }
 
 // Test samples property
@@ -87,7 +87,7 @@ TEST_F (AtomicPositionQmlAdapterTest, SamplesProperty)
   EXPECT_EQ (qml_pos->samples (), 22050 / 2);
 
   // Test absolute mode
-  qml_pos->setMode (TimeFormat::Absolute);
+  qml_pos->setMode (AtomicPosition::TimeFormat::Absolute);
   qml_pos->setSeconds (0.25);
   EXPECT_EQ (qml_pos->samples (), 11025);
 }

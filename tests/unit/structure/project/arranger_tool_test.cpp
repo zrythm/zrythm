@@ -7,7 +7,8 @@
 
 #include <gtest/gtest.h>
 
-using namespace zrythm::structure::project;
+namespace zrythm::structure::project
+{
 
 class ArrangerToolTest
     : public ::testing::Test,
@@ -192,4 +193,5 @@ TEST_F (ArrangerToolTest, InitFrom)
   EXPECT_EQ (
     cloned_tool->toolValue (),
     static_cast<int> (ArrangerTool::ToolType::Audition));
+}
 }

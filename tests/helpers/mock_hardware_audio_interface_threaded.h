@@ -24,14 +24,14 @@ class ThreadedMockHardwareAudioInterface : public dsp::IHardwareAudioInterface
 public:
   explicit ThreadedMockHardwareAudioInterface (
     units::sample_rate_t sample_rate = units::sample_rate (48000),
-    nframes_t            block_length = 256)
+    units::sample_u32_t  block_length = units::samples (256))
       : sample_rate_ (sample_rate), block_length_ (block_length)
   {
   }
 
   ~ThreadedMockHardwareAudioInterface () override { stop (); }
 
-  [[nodiscard]] nframes_t get_block_length () const override
+  [[nodiscard]] units::sample_u32_t get_block_length () const override
   {
     return block_length_;
   }
@@ -68,17 +68,19 @@ public:
         callback_thread_ = std::jthread ([this] (std::stop_token stoken) {
           constexpr int      num_channels = 2;
           std::vector<float> output_buf (
-            static_cast<size_t> (block_length_) * num_channels, 0.f);
+            block_length_.in (units::samples) *num_channels, 0.f);
           std::vector<float> input_buf (
-            static_cast<size_t> (block_length_) * num_channels, 0.f);
+            block_length_.in (units::samples) *num_channels, 0.f);
           std::vector<float *>       output_ptrs (num_channels);
           std::vector<const float *> input_ptrs (num_channels);
           for (int ch = 0; ch < num_channels; ++ch)
             {
               output_ptrs[ch] =
-                output_buf.data () + static_cast<size_t> (ch) * block_length_;
+                output_buf.data ()
+                + (static_cast<size_t> (ch) * block_length_.in (units::samples));
               input_ptrs[ch] =
-                input_buf.data () + static_cast<size_t> (ch) * block_length_;
+                input_buf.data ()
+                + (static_cast<size_t> (ch) * block_length_.in (units::samples));
             }
 
           while (
@@ -90,11 +92,11 @@ public:
                 {
                   cb->process_audio (
                     input_ptrs.data (), num_channels, output_ptrs.data (),
-                    num_channels, static_cast<int> (block_length_));
+                    num_channels, block_length_.in<int> (units::samples));
                   process_call_count_.fetch_add (1, std::memory_order_acq_rel);
                 }
               auto sleep_us = static_cast<int64_t> (
-                static_cast<double> (block_length_) * 1'000'000.0
+                block_length_.in<double> (units::samples) * 1'000'000.0
                 / sample_rate_.in (units::sample_rate));
               std::this_thread::sleep_for (std::chrono::microseconds (sleep_us));
             }
@@ -125,7 +127,7 @@ private:
   }
 
   units::sample_rate_t               sample_rate_;
-  nframes_t                          block_length_;
+  units::sample_u32_t                block_length_;
   std::atomic<dsp::IAudioCallback *> callback_{ nullptr };
   std::atomic<bool>                  is_running_{ false };
   std::atomic<std::size_t>           process_call_count_{ 0 };

@@ -7,8 +7,7 @@
  * Memory utils.
  */
 
-#ifndef __UTILS_MEM_H__
-#define __UTILS_MEM_H__
+#pragma once
 
 #include <cstddef>
 
@@ -17,11 +16,3 @@ z_realloc (void * ptr, size_t size);
 
 void
 z_free_strv (char ** strv);
-
-/**
- * Reallocate and zero out newly added memory.
- */
-void *
-realloc_zero (void * pBuffer, size_t oldSize, size_t newSize);
-
-#endif

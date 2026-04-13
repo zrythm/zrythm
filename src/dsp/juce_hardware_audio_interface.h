@@ -30,7 +30,7 @@ public:
 
   ~JuceHardwareAudioInterface () override;
 
-  [[nodiscard]] nframes_t            get_block_length () const override;
+  [[nodiscard]] units::sample_u32_t  get_block_length () const override;
   [[nodiscard]] units::sample_rate_t get_sample_rate () const override;
 
   void add_audio_callback (IAudioCallback * callback) override;

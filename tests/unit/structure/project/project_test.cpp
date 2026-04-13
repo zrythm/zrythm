@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/project.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
@@ -10,7 +11,8 @@
 
 #include <gtest/gtest.h>
 
-using namespace zrythm::structure::project;
+namespace zrythm::structure::project
+{
 using namespace ::testing;
 
 // Fixture for testing Project functionality
@@ -101,7 +103,7 @@ protected:
   }
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
-  fs::path                                         project_dir;
+  std::filesystem::path                            project_dir;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
   std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
   test_helpers::MockSettingsBackend *              mock_backend_ptr{};
@@ -347,4 +349,5 @@ TEST_F (ProjectTest, EngineAccess)
 
   // Verify audio_engine_ member is the same
   EXPECT_EQ (engine, project->audio_engine_.get ());
+}
 }

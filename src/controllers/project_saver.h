@@ -6,8 +6,6 @@
 #include <filesystem>
 #include <string>
 
-#include "utils/types.h"
-#include "utils/utf8_string.h"
 #include "utils/version.h"
 
 #include <QByteArray>
@@ -61,7 +59,7 @@ public:
     const structure::project::ProjectUiState &ui_state,
     const undo::UndoStack                    &undo_stack,
     utils::Version                            app_version,
-    const fs::path                           &path,
+    const std::filesystem::path              &path,
     bool                                      is_backup);
 
   /**
@@ -79,7 +77,8 @@ public:
    * @param project_directory The root project directory.
    * @throw ZrythmException If the directories cannot be created.
    */
-  static void make_project_dirs (const fs::path &project_directory);
+  static void
+  make_project_dirs (const std::filesystem::path &project_directory);
 
   /**
    * Compresses or decompresses project data using zstd.
@@ -118,7 +117,7 @@ public:
    * @throw ZrythmException If an error occurs.
    */
   static std::string
-  get_existing_uncompressed_text (const fs::path &project_dir);
+  get_existing_uncompressed_text (const std::filesystem::path &project_dir);
 
 private:
   /**
@@ -138,7 +137,7 @@ private:
    */
   static void cleanup_plugin_state_dirs (
     const structure::project::Project &main_project,
-    const fs::path                    &project_dir,
+    const std::filesystem::path       &project_dir,
     bool                               is_backup);
 };
 

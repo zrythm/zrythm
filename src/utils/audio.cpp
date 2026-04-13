@@ -4,8 +4,6 @@
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/dsp.h"
-#include "utils/exceptions.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 
@@ -20,12 +18,12 @@ namespace zrythm::utils::audio
  * Returns the number of frames in the given audio
  * file.
  */
-unsigned_frame_t
-get_num_frames (const fs::path &filepath)
+uint32_t
+get_num_frames (const std::filesystem::path &filepath)
 {
   AudioFile  audio_file{ filepath };
   const auto metadata = audio_file.read_metadata ();
-  return static_cast<unsigned_frame_t> (metadata.num_frames);
+  return static_cast<uint32_t> (metadata.num_frames);
 }
 
 bool
@@ -117,7 +115,7 @@ frames_silent (std::span<const float> src)
 }
 
 bool
-audio_file_is_silent (const fs::path &filepath)
+audio_file_is_silent (const std::filesystem::path &filepath)
 {
   AudioFile   audio_file{ filepath };
   AudioBuffer buf;
@@ -266,7 +264,9 @@ AudioBuffer::deinterleave_samples (size_t num_channels)
   int read_index = 0;
   for (const auto sample : std::views::iota (0, total_samples))
     {
-      for (const auto channel : std::views::iota (0_zu, num_channels))
+      for (
+        const auto channel : std::views::iota (
+          static_cast<decltype (num_channels)> (0), num_channels))
         {
           tempBuffer.setSample (
             static_cast<int> (channel), static_cast<int> (sample),

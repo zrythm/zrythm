@@ -20,6 +20,7 @@ target_sources(zrythm_utils_lib
     dsp_context.cpp
     env.cpp
     exceptions.cpp
+    expandable_tick_range.cpp
     file_path_list.cpp
     gtest_wrapper.cpp
     hash.cpp
@@ -38,6 +39,7 @@ target_sources(zrythm_utils_lib
     symap.cpp
     uuid_identifiable_object.cpp
     # vamp.cpp
+    version.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -59,10 +61,15 @@ target_sources(zrythm_utils_lib
       directory_manager.h
       dsp.h
       dsp_context.h
+      enum_utils.h
       env.h
       exceptions.h
       expandable_tick_range.h
       file_path_list.h
+      format.h
+      format_boost.h
+      format_juce.h
+      format_qt.h
       gtest_wrapper.h
       hash.h
       io_utils.h
@@ -78,6 +85,7 @@ target_sources(zrythm_utils_lib
       networking.h
       note_type.h
       object_pool.h
+      optional_ref.h
       pcg_rand.h
       playback_cache_scheduler.h
       qsettings_backend.h
@@ -106,8 +114,13 @@ set_target_properties(zrythm_utils_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-target_precompile_headers(zrythm_utils_lib PUBLIC
-  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils.h>)
+target_precompile_headers(zrythm_utils_lib
+  PUBLIC
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils.h>
+    # Formatter specialization for standard types breaks unless this is
+    # included in PCH
+    $<$<COMPILE_LANGUAGE:CXX>:fmt/std.h>
+)
 
 target_link_libraries(zrythm_utils_lib
   PUBLIC

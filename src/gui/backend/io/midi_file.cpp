@@ -10,7 +10,7 @@
 
 MidiFile::MidiFile (Format format) : format_ (format), for_reading_ (false) { }
 
-MidiFile::MidiFile (const fs::path &path) : for_reading_ (true)
+MidiFile::MidiFile (const std::filesystem::path &path) : for_reading_ (true)
 {
   juce::File file = utils::Utf8String::from_path (path).to_juce_file ();
   juce::FileInputStream in_stream (file);
@@ -198,7 +198,7 @@ MidiFile::into_region (
 void
 MidiFile::export_midi_region_to_midi_file (
   const structure::arrangement::MidiRegion &region,
-  const fs::path                           &full_path,
+  const std::filesystem::path              &full_path,
   int                                       midi_version,
   const bool                                export_full)
 {

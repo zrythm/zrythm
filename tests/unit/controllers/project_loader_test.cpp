@@ -114,7 +114,7 @@ TEST_F (ProjectLoaderTest, LoadFromDirectoryMissingProjectFile)
 {
   // Create directory but no project file
   auto temp_path = project_dir / "empty_project";
-  fs::create_directories (temp_path);
+  std::filesystem::create_directories (temp_path);
 
   auto future = ProjectLoader::load_from_directory (temp_path);
   EXPECT_ANY_THROW ({ future.waitForFinished (); });

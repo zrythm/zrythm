@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/atomic_position_qml_adapter.h"
@@ -81,14 +81,14 @@ AtomicPositionQmlAdapter::setSamples (double samples)
   Q_EMIT positionChanged ();
 }
 
-TimeFormat
+AtomicPosition::TimeFormat
 AtomicPositionQmlAdapter::mode () const
 {
   return atomic_pos_.get_current_mode ();
 }
 
 void
-AtomicPositionQmlAdapter::setMode (TimeFormat format)
+AtomicPositionQmlAdapter::setMode (AtomicPosition::TimeFormat format)
 {
   atomic_pos_.set_mode (format);
   Q_EMIT positionChanged ();

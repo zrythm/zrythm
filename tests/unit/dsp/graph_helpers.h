@@ -15,16 +15,22 @@ class MockProcessable : public zrythm::dsp::graph::IProcessable
 {
 public:
   MOCK_METHOD (utils::Utf8String, get_node_name, (), (const, override));
-  MOCK_METHOD (nframes_t, get_single_playback_latency, (), (const, override));
+  MOCK_METHOD (
+    units::sample_u32_t,
+    get_single_playback_latency,
+    (),
+    (const, override));
   MOCK_METHOD (
     void,
     prepare_for_processing,
-    (const graph::GraphNode *, units::sample_rate_t, nframes_t),
+    (const graph::GraphNode *, units::sample_rate_t, units::sample_u32_t),
     (override));
   MOCK_METHOD (
     void,
     process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
+    (dsp::graph::EngineProcessTimeInfo,
+     const dsp::ITransport &,
+     const dsp::TempoMap &),
     (noexcept, override));
   MOCK_METHOD (void, release_resources, (), (override));
 };

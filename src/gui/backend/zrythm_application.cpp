@@ -5,7 +5,9 @@
 
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_protocol_paths.h"
+#include "utils/backtrace.h"
 #include "utils/directory_manager.h"
+#include "utils/format_juce.h"
 #include "utils/qsettings_backend.h"
 #include "utils/thread_safe_fftw.h"
 
@@ -374,7 +376,7 @@ ZrythmApplication::setup_ui ()
     dir_mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR);
   auto freedesktop_icon_theme_dir = parent_datadir / "icons";
 
-  auto prepend_icon_theme_search_path = [] (const fs::path &path) {
+  auto prepend_icon_theme_search_path = [] (const std::filesystem::path &path) {
     QIcon::themeSearchPaths ().prepend (
       utils::Utf8String::from_path (path).to_qstring ());
     z_debug ("added icon theme search path: {}", path);
@@ -495,8 +497,8 @@ ZrythmApplication::launch_engine_process ()
 
   engine_process_ = new QProcess (this);
   engine_process_->setProcessChannelMode (QProcess::MergedChannels);
-  fs::path   path;
-  const auto path_from_env =
+  std::filesystem::path path;
+  const auto            path_from_env =
     QProcessEnvironment::systemEnvironment ().value (u"ZRYTHM_ENGINE_PATH"_s);
   if (!path_from_env.isEmpty ())
     {

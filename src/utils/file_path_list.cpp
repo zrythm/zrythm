@@ -21,7 +21,7 @@ FilePathList::getPaths () const
 {
   QStringList paths;
   std::ranges::transform (
-    paths_, std::back_inserter (paths), [] (const fs::path &path) {
+    paths_, std::back_inserter (paths), [] (const std::filesystem::path &path) {
       return utils::Utf8String::from_path (path).to_qstring ();
     });
   return paths;
@@ -50,7 +50,7 @@ FilePathList::addPath (const QString &path)
 }
 
 void
-FilePathList::add_path (const fs::path &path)
+FilePathList::add_path (const std::filesystem::path &path)
 {
   paths_.push_back (path);
 }

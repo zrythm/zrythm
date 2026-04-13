@@ -10,7 +10,6 @@ add_executable(zrythm_plugins_unit_tests
   plugin_group_test.cpp
   plugin_protocol_test.cpp
   plugin_scan_manager_test.cpp
-  plugin_slot_test.cpp
 )
 
 set_target_properties(zrythm_plugins_unit_tests PROPERTIES

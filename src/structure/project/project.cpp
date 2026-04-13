@@ -11,6 +11,7 @@
 #include "structure/project/project_graph_builder.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/tracks/tracklist.h"
+#include "utils/app_settings.h"
 #include "utils/logger.h"
 
 #include <juce_wrapper.h>
@@ -370,7 +371,7 @@ Project::add_default_tracks ()
 void
 init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type)
 {
-  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
+  assert ((QThread::currentThread () == qApp->thread ()));
   z_debug ("cloning project...");
 
   // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);

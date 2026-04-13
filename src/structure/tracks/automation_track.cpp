@@ -3,6 +3,8 @@
 
 #include "structure/tracks/automation_track.h"
 
+#include <magic_enum.hpp>
+
 namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
@@ -87,6 +89,15 @@ AutomationTrack::setRecordMode (AutomationRecordMode record_mode)
   Q_EMIT recordModeChanged (record_mode);
 }
 
+Q_INVOKABLE void
+AutomationTrack::swapRecordMode ()
+{
+  record_mode_ = static_cast<AutomationRecordMode> (
+    (std::to_underlying (record_mode_) + 1)
+    % magic_enum::enum_count<AutomationRecordMode> ());
+  Q_EMIT recordModeChanged (record_mode_);
+}
+
 void
 AutomationTrack::regeneratePlaybackCaches (
   utils::ExpandableTickRange affectedRange)
@@ -118,7 +129,7 @@ AutomationTrack::get_region_before (
       {
         AutomationRegion * latest_r{};
         auto               latest_distance =
-          units::samples (std::numeric_limits<signed_frame_t>::min ());
+          units::samples (std::numeric_limits<int64_t>::min ());
         for (const auto &region : std::views::reverse (regions))
           {
             auto distance_from_r_end =

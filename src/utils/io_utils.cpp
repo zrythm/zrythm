@@ -35,7 +35,9 @@
 #include <fstream>
 
 #include "utils/exceptions.h"
+#include "utils/format_qt.h"
 #include "utils/logger.h"
+
 #ifdef __linux__
 #  include <sys/ioctl.h>
 #  include <sys/stat.h>
@@ -57,6 +59,7 @@
 
 #include "juce_wrapper.h"
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
 #  include "CoreFoundation/CoreFoundation.h"
@@ -73,20 +76,20 @@ get_path_separator_string ()
     std::string{ QDir::listSeparator ().toLatin1 () });
 }
 
-fs::path
+std::filesystem::path
 get_home_path ()
 {
   return Utf8String::from_qstring (QDir::homePath ()).to_path ();
 }
 
-fs::path
+std::filesystem::path
 get_temp_path ()
 {
   return Utf8String::from_qstring (QDir::tempPath ()).to_path ();
 }
 
-fs::path
-get_dir (const fs::path &filename)
+std::filesystem::path
+get_dir (const std::filesystem::path &filename)
 {
   return Utf8String::from_qstring (
            QFileInfo (Utf8String::from_path (filename).to_qstring ())
@@ -94,7 +97,7 @@ get_dir (const fs::path &filename)
     .to_path ();
 }
 
-fs::path
+std::filesystem::path
 uri_to_file (const utils::Utf8String &uri)
 {
   auto url = QUrl (uri.to_qstring ());
@@ -106,7 +109,7 @@ uri_to_file (const utils::Utf8String &uri)
 }
 
 void
-mkdir (const fs::path &dir)
+mkdir (const std::filesystem::path &dir)
 {
   // this is called during logger instantiation so check if logger exists
   if (LoggerProvider::has_logger ())
@@ -126,8 +129,8 @@ mkdir (const fs::path &dir)
     }
 }
 
-fs::path
-file_get_ext (const fs::path &filename)
+std::filesystem::path
+file_get_ext (const std::filesystem::path &filename)
 {
   if (filename.has_extension ())
     {
@@ -139,7 +142,7 @@ file_get_ext (const fs::path &filename)
 }
 
 bool
-touch_file (const fs::path &file_path)
+touch_file (const std::filesystem::path &file_path)
 {
   juce::File file (utils::Utf8String::from_path (file_path).to_juce_file ());
   if (file.exists ())
@@ -154,25 +157,25 @@ touch_file (const fs::path &file_path)
     }
 }
 
-fs::path
-file_strip_ext (const fs::path &filename)
+std::filesystem::path
+file_strip_ext (const std::filesystem::path &filename)
 {
   return filename.parent_path () / filename.stem ();
 }
-fs::path
-path_get_basename (const fs::path &filename)
+std::filesystem::path
+path_get_basename (const std::filesystem::path &filename)
 {
   return filename.filename ();
 }
 
-fs::path
-path_get_basename_without_ext (const fs::path &filename)
+std::filesystem::path
+path_get_basename_without_ext (const std::filesystem::path &filename)
 {
   return filename.stem ();
 }
 
 qint64
-file_get_last_modified_datetime (const fs::path &filename)
+file_get_last_modified_datetime (const std::filesystem::path &filename)
 {
   juce::File file (utils::Utf8String::from_path (filename).to_juce_file ());
   if (file.exists ())
@@ -184,7 +187,7 @@ file_get_last_modified_datetime (const fs::path &filename)
 }
 
 Utf8String
-file_get_last_modified_datetime_as_str (const fs::path &filename)
+file_get_last_modified_datetime_as_str (const std::filesystem::path &filename)
 {
   qint64 secs = file_get_last_modified_datetime (filename);
   if (secs == -1)
@@ -194,7 +197,7 @@ file_get_last_modified_datetime_as_str (const fs::path &filename)
 }
 
 bool
-remove (const fs::path &path)
+remove (const std::filesystem::path &path)
 {
   z_debug ("Removing {}...", path);
 
@@ -213,7 +216,7 @@ remove (const fs::path &path)
 }
 
 bool
-rmdir (const fs::path &path, bool force)
+rmdir (const std::filesystem::path &path, bool force)
 {
 
   if (!path.is_absolute () || !fs::exists (path) || !fs::is_directory (path))
@@ -244,9 +247,9 @@ rmdir (const fs::path &path, bool force)
  */
 static void
 append_files_from_dir_ending_in (
-  std::vector<fs::path>                  &files,
+  std::vector<std::filesystem::path>     &files,
   bool                                    recursive,
-  const fs::path                         &_dir,
+  const std::filesystem::path            &_dir,
   const std::optional<utils::Utf8String> &opt_end_string)
 {
   auto directory = utils::Utf8String::from_path (_dir).to_juce_file ();
@@ -272,18 +275,18 @@ append_files_from_dir_ending_in (
     }
 }
 
-std::vector<fs::path>
-get_files_in_dir (const fs::path &_dir)
+std::vector<std::filesystem::path>
+get_files_in_dir (const std::filesystem::path &_dir)
 {
   return get_files_in_dir_ending_in (_dir, false, std::nullopt);
 }
 
 void
 copy_dir (
-  const fs::path &destdir,
-  const fs::path &srcdir,
-  bool            follow_symlinks,
-  bool            recursive)
+  const std::filesystem::path &destdir,
+  const std::filesystem::path &srcdir,
+  bool                         follow_symlinks,
+  bool                         recursive)
 {
   z_debug (
     "attempting to copy dir '{}' to '{}' (recursive: {})", srcdir, destdir,
@@ -339,7 +342,9 @@ copy_dir (
 }
 
 void
-copy_file (const fs::path &destfile, const fs::path &srcfile)
+copy_file (
+  const std::filesystem::path &destfile,
+  const std::filesystem::path &srcfile)
 {
   auto src_file = QFile (srcfile);
   if (!src_file.copy (destfile))
@@ -352,7 +357,10 @@ copy_file (const fs::path &destfile, const fs::path &srcfile)
 }
 
 void
-move_file (const fs::path &destfile, const fs::path &srcfile, bool force)
+move_file (
+  const std::filesystem::path &destfile,
+  const std::filesystem::path &srcfile,
+  bool                         force)
 {
   if (force && path_exists (destfile))
     {
@@ -372,29 +380,29 @@ move_file (const fs::path &destfile, const fs::path &srcfile, bool force)
     }
 }
 
-std::vector<fs::path>
-get_files_in_dir_as_basenames (const fs::path &_dir)
+std::vector<std::filesystem::path>
+get_files_in_dir_as_basenames (const std::filesystem::path &_dir)
 {
   return get_files_in_dir (_dir)
-         | std::views::transform ([] (const fs::path &path) {
+         | std::views::transform ([] (const std::filesystem::path &path) {
              return path_get_basename (path);
            })
          | std::ranges::to<std::vector> ();
 }
 
-std::vector<fs::path>
+std::vector<std::filesystem::path>
 get_files_in_dir_ending_in (
-  const fs::path                         &_dir,
+  const std::filesystem::path            &_dir,
   bool                                    recursive,
   const std::optional<utils::Utf8String> &end_string)
 {
-  std::vector<fs::path> arr;
+  std::vector<std::filesystem::path> arr;
   append_files_from_dir_ending_in (arr, recursive, _dir, end_string);
   return arr;
 }
 
-fs::path
-get_next_available_filepath (const fs::path &filepath)
+std::filesystem::path
+get_next_available_filepath (const std::filesystem::path &filepath)
 {
   int  i = 1;
   auto file_without_ext = file_strip_ext (filepath);
@@ -517,13 +525,13 @@ get_bundle_path (char * bundle_path)
 #endif
 
 bool
-path_exists (const fs::path &path)
+path_exists (const std::filesystem::path &path)
 {
   return fs::exists (path);
 }
 
 bool
-reflink_file (const fs::path &dest, const fs::path &src)
+reflink_file (const std::filesystem::path &dest, const std::filesystem::path &src)
 {
 #ifdef __linux__
   int src_fd = open (src.c_str (), O_RDONLY);
@@ -551,13 +559,13 @@ reflink_file (const fs::path &dest, const fs::path &src)
 }
 
 bool
-is_file_hidden (const fs::path &file)
+is_file_hidden (const std::filesystem::path &file)
 {
   return QFileInfo (file).isHidden ();
 }
 
 QByteArray
-read_file_contents (const fs::path &path)
+read_file_contents (const std::filesystem::path &path)
 {
   QFile file (path);
   if (file.open (QIODevice::ReadOnly))
@@ -570,7 +578,10 @@ read_file_contents (const fs::path &path)
 }
 
 void
-set_file_contents (const fs::path &path, const char * contents, size_t size)
+set_file_contents (
+  const std::filesystem::path &path,
+  const char *                 contents,
+  size_t                       size)
 {
   QFile file (path);
   if (file.open (QIODevice::WriteOnly))
@@ -587,7 +598,7 @@ set_file_contents (const fs::path &path, const char * contents, size_t size)
 }
 
 void
-set_file_contents (const fs::path &file_path, const Utf8String &data)
+set_file_contents (const std::filesystem::path &file_path, const Utf8String &data)
 {
   std::ofstream file (file_path);
   if (!file.is_open ())

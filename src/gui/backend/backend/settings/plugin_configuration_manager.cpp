@@ -33,7 +33,7 @@ PluginConfigurationManager::create_configuration_for_descriptor (
   return PluginConfiguration::create_new_for_descriptor (descr);
 }
 
-fs::path
+std::filesystem::path
 PluginConfigurationManager::get_file_path ()
 {
   auto &dir_mgr =
@@ -41,7 +41,7 @@ PluginConfigurationManager::get_file_path ()
   auto zrythm_dir = dir_mgr.get_dir (DirectoryManager::DirectoryType::USER_TOP);
   z_return_val_if_fail (!zrythm_dir.empty (), "");
 
-  return fs::path (zrythm_dir) / PLUGIN_SETTINGS_JSON_FILENAME;
+  return std::filesystem::path (zrythm_dir) / PLUGIN_SETTINGS_JSON_FILENAME;
 }
 
 void

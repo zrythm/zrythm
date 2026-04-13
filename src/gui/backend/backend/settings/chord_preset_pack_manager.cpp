@@ -12,7 +12,7 @@
 
 using namespace zrythm;
 
-fs::path
+std::filesystem::path
 ChordPresetPackManager::get_user_packs_path ()
 {
   auto zrythm_dir =
@@ -465,7 +465,7 @@ ChordPresetPackManager::add_user_packs ()
       const auto main_path = get_user_packs_path ();
       z_debug ("Reading user chord packs from {}...", main_path);
 
-      std::vector<fs::path> pack_paths;
+      std::vector<std::filesystem::path> pack_paths;
       if (fs::is_directory (main_path))
         {
           try

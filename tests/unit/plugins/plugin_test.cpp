@@ -40,13 +40,13 @@ public:
     Q_EMIT instantiationFinished (successful, error);
   }
 
-  void save_state (std::optional<fs::path> abs_state_dir) override
+  void save_state (std::optional<std::filesystem::path> abs_state_dir) override
   {
     save_state_called_ = true;
     last_save_state_dir_ = abs_state_dir;
   }
 
-  void load_state (std::optional<fs::path> abs_state_dir) override
+  void load_state (std::optional<std::filesystem::path> abs_state_dir) override
   {
     load_state_called_ = true;
     last_load_state_dir_ = abs_state_dir;
@@ -54,32 +54,33 @@ public:
 
   void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
-    nframes_t            max_block_length) override
+    units::sample_u32_t  max_block_length) override
   {
     prepare_called_ = true;
     last_sample_rate_ = sample_rate;
     last_max_block_length_ = max_block_length;
   }
 
-  void process_impl (EngineProcessTimeInfo time_info) noexcept override
+  void
+  process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept override
   {
     process_called_ = true;
     last_time_info_ = time_info;
   }
 
-  bool                    save_state_called_ = false;
-  bool                    load_state_called_ = false;
-  bool                    prepare_called_ = false;
-  bool                    process_called_ = false;
-  std::optional<fs::path> last_save_state_dir_;
-  std::optional<fs::path> last_load_state_dir_;
-  units::sample_rate_t    last_sample_rate_;
-  nframes_t               last_max_block_length_ = 0;
-  EngineProcessTimeInfo   last_time_info_{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0
+  bool                                 save_state_called_ = false;
+  bool                                 load_state_called_ = false;
+  bool                                 prepare_called_ = false;
+  bool                                 process_called_ = false;
+  std::optional<std::filesystem::path> last_save_state_dir_;
+  std::optional<std::filesystem::path> last_load_state_dir_;
+  units::sample_rate_t                 last_sample_rate_;
+  units::sample_u32_t                  last_max_block_length_;
+  dsp::graph::EngineProcessTimeInfo    last_time_info_{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0)
   };
 };
 
@@ -95,7 +96,7 @@ protected:
     plugin_ = std::make_unique<TestPlugin> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] () { return fs::path{ "/tmp/test_state" }; });
+      [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
@@ -113,7 +114,7 @@ protected:
   std::unique_ptr<dsp::PortRegistry>               port_registry_;
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
   units::sample_rate_t        sample_rate_{ units::sample_rate (48000) };
-  nframes_t                   max_block_length_{ 1024 };
+  units::sample_u32_t         max_block_length_{ units::samples (1024) };
   std::unique_ptr<TestPlugin> plugin_;
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
@@ -230,16 +231,16 @@ TEST_F (PluginTest, ProcessingWhenEnabled)
   bypass->setBaseValue (0.0f); // Not bypassed
 
   // Process
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   EXPECT_TRUE (plugin_->process_called_);
-  EXPECT_EQ (plugin_->last_time_info_.nframes_, 512);
+  EXPECT_EQ (plugin_->last_time_info_.nframes_, units::samples (512));
 }
 
 TEST_F (PluginTest, ProcessingWhenBypassed)
@@ -259,11 +260,11 @@ TEST_F (PluginTest, ProcessingWhenBypassed)
   bypass->setBaseValue (1.0f); // Bypassed
 
   // Process
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -286,11 +287,11 @@ TEST_F (PluginTest, ProcessingWhenInstantiationFailed)
   plugin_->set_instantiation_failed (true);
 
   // Process
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -312,11 +313,11 @@ TEST_F (PluginTest, CurrentlyEnabled)
   // Create bypass parameter
   auto * bypass = plugin_->bypassParameter ();
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Test enabled
@@ -388,7 +389,7 @@ TEST_F (PluginTest, SaveAndLoadState)
   EXPECT_FALSE (plugin_->last_save_state_dir_.has_value ());
 
   // Test save state with custom directory
-  fs::path custom_dir{ "/custom/state/dir" };
+  std::filesystem::path custom_dir{ "/custom/state/dir" };
   plugin_->save_state (custom_dir);
   EXPECT_EQ (plugin_->last_save_state_dir_, custom_dir);
 
@@ -423,7 +424,7 @@ TEST_F (PluginTest, JsonSerializationRoundtrip)
   TestPlugin deserialized (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
   from_json (j, deserialized);
 
   // Verify state
@@ -469,11 +470,11 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   auto * bypass = plugin_->bypassParameter ();
   bypass->setBaseValue (1.0f); // Bypassed
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 

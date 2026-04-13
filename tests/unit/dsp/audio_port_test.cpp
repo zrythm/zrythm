@@ -13,8 +13,8 @@ namespace zrythm::dsp
 class AudioPortTest : public ::testing::Test
 {
 protected:
-  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
-  static constexpr nframes_t BLOCK_LENGTH = 256;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (256);
 
   void SetUp () override
   {
@@ -29,7 +29,7 @@ protected:
     stereo_output->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Fill with test data
-    for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+    for (const auto i : std::views::iota (0, BLOCK_LENGTH.in (units::samples)))
       {
         float sample =
           0.5f

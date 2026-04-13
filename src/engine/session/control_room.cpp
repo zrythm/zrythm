@@ -10,6 +10,8 @@
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <juce_wrapper.h>
 
+using namespace Qt::StringLiterals;
+
 namespace zrythm::engine::session
 {
 ControlRoom::ControlRoom (
@@ -90,7 +92,7 @@ ControlRoom::ControlRoom (
   monitor_fader_->set_preprocess_audio_callback (
     [this] (
       std::pair<std::span<float>, std::span<float>> stereo_bufs,
-      const EngineProcessTimeInfo                  &time_nfo) {
+      const dsp::graph::EngineProcessTimeInfo      &time_nfo) {
       const float dim_amp = dim_volume_->baseValue ();
 
       /* if have listened tracks */
@@ -109,11 +111,11 @@ ControlRoom::ControlRoom (
         {
           /* dim signal */
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.first[time_nfo.local_offset_], dim_amp,
-            time_nfo.nframes_);
+            &stereo_bufs.first[time_nfo.local_offset_.in (units::samples)],
+            dim_amp, time_nfo.nframes_.in (units::samples));
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.second[time_nfo.local_offset_], dim_amp,
-            time_nfo.nframes_);
+            &stereo_bufs.second[time_nfo.local_offset_.in (units::samples)],
+            dim_amp, time_nfo.nframes_.in (units::samples));
 
           /* add listened signal */
           /* TODO add "listen" buffer on fader struct and add listened
@@ -131,15 +133,17 @@ ControlRoom::ControlRoom (
                         {
                           auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (
-                            &stereo_bufs.first[time_nfo.local_offset_],
+                            &stereo_bufs.first[time_nfo.local_offset_.in (
+                              units::samples)],
                             f->get_stereo_out_port ().buffers ()->getReadPointer (
-                              0, time_nfo.local_offset_),
-                            listen_amp, time_nfo.nframes_);
+                              0, time_nfo.local_offset_.in<int> (units::samples)),
+                            listen_amp, time_nfo.nframes_.in (units::samples));
                           utils::float_ranges::product (
-                            &stereo_bufs.second[time_nfo.local_offset_],
+                            &stereo_bufs.second[time_nfo.local_offset_.in (
+                              units::samples)],
                             f->get_stereo_out_port ().buffers ()->getReadPointer (
-                              1, time_nfo.local_offset_),
-                            listen_amp, time_nfo.nframes_);
+                              1, time_nfo.local_offset_.in<int> (units::samples)),
+                            listen_amp, time_nfo.nframes_.in (units::samples));
                         }
                     }
                 },
@@ -151,11 +155,11 @@ ControlRoom::ControlRoom (
       if (dim_output_)
         {
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.first[time_nfo.local_offset_], dim_amp,
-            time_nfo.nframes_);
+            &stereo_bufs.first[time_nfo.local_offset_.in (units::samples)],
+            dim_amp, time_nfo.nframes_.in (units::samples));
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.second[time_nfo.local_offset_], dim_amp,
-            time_nfo.nframes_);
+            &stereo_bufs.second[time_nfo.local_offset_.in (units::samples)],
+            dim_amp, time_nfo.nframes_.in (units::samples));
         }
     });
 }

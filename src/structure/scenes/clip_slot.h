@@ -87,7 +87,7 @@ public:
     arrangement::ArrangerObjectRegistry &object_registry,
     const tracks::TrackCollection       &track_collection,
     QObject *                            parent = nullptr);
-  Z_DISABLE_COPY_MOVE (ClipSlotList)
+  Q_DISABLE_COPY_MOVE (ClipSlotList)
 
   enum ClipSlotListRoles
   {

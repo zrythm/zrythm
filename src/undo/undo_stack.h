@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "utils/qt.h"
 
 #include <QUndoCommand>
@@ -13,6 +15,7 @@
 
 namespace zrythm::undo
 {
+using namespace std::string_view_literals;
 
 class UndoStack : public QObject
 {

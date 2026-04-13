@@ -7,6 +7,8 @@
 #include "utils/logger.h"
 #include "utils/resampler.h"
 
+#include <fmt/std.h>
+
 namespace zrythm::utils::audio
 {
 

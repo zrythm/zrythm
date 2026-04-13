@@ -145,8 +145,8 @@ QmlUtils::getAutomationRegionValues (QObject * automationRegion, int pixelWidth)
   try
     {
       // Calculate total length in samples
-      auto totalLengthSamples = static_cast<unsigned_frame_t> (
-        region->bounds ()->length ()->samples ());
+      auto totalLengthSamples =
+        static_cast<uint64_t> (region->bounds ()->length ()->samples ());
 
       if (totalLengthSamples == 0)
         {

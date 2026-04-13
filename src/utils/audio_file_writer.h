@@ -1,14 +1,15 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "utils/types.h"
+#include <filesystem>
+
 #include "utils/units.h"
 
 #include <QPromise>
 
-#include <juce_wrapper.h>
+#include "juce_wrapper.h"
 
 namespace zrythm::utils
 {
@@ -31,9 +32,9 @@ public:
    * @param buffer Audio buffer to write (will be moved)
    */
   static QFuture<void> write_async (
-    WriteOptions              options,
-    const fs::path           &file_path,
-    juce::AudioSampleBuffer &&buffer);
+    WriteOptions                 options,
+    const std::filesystem::path &file_path,
+    juce::AudioSampleBuffer    &&buffer);
 
 private:
   /**
@@ -45,10 +46,10 @@ private:
    * @param buffer Audio buffer to write
    */
   static void write (
-    QPromise<void>           &promise,
-    WriteOptions              options,
-    const fs::path           &file_path,
-    juce::AudioSampleBuffer &&buffer);
+    QPromise<void>              &promise,
+    WriteOptions                 options,
+    const std::filesystem::path &file_path,
+    juce::AudioSampleBuffer    &&buffer);
 };
 
 } // namespace zrythm::utils

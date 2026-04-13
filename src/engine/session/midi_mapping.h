@@ -23,7 +23,7 @@ public:
   MidiMapping (
     dsp::ProcessorParameterRegistry &param_registry,
     QObject *                        parent = nullptr);
-  Z_DISABLE_COPY_MOVE (MidiMapping)
+  Q_DISABLE_COPY_MOVE (MidiMapping)
 
 public:
   friend void init_from (

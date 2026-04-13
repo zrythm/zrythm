@@ -26,6 +26,7 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "utils/logger.h"
 #include "utils/midi.h"
 
 /* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2

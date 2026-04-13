@@ -22,7 +22,7 @@ class AutomationPoint final : public ArrangerObject
 
 public:
   AutomationPoint (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
-  Z_DISABLE_COPY_MOVE (AutomationPoint)
+  Q_DISABLE_COPY_MOVE (AutomationPoint)
   ~AutomationPoint () override;
 
   // ========================================================================

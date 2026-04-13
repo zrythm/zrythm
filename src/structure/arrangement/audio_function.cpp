@@ -2,9 +2,29 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/audio_function.h"
+#include "utils/enum_utils.h"
 #include "utils/utf8_string.h"
 
 #include <rubberband/rubberband-c.h>
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::structure::arrangement::AudioFunctionType,
+  AudioFunctionType,
+  QT_TR_NOOP_UTF8 ("Invert"),
+  QT_TR_NOOP_UTF8 ("Normalize peak"),
+  QT_TR_NOOP_UTF8 ("Normalize RMS"),
+  QT_TR_NOOP_UTF8 ("Normalize LUFS"),
+  QT_TR_NOOP_UTF8 ("Linear fade in"),
+  QT_TR_NOOP_UTF8 ("Linear fade out"),
+  QT_TR_NOOP_UTF8 ("Nudge left"),
+  QT_TR_NOOP_UTF8 ("Nudge right"),
+  QT_TR_NOOP_UTF8 ("Reverse"),
+  QT_TR_NOOP_UTF8 ("Pitch shift"),
+  QT_TR_NOOP_UTF8 ("Copy L to R"),
+  QT_TR_NOOP_UTF8 ("External program"),
+  QT_TR_NOOP_UTF8 ("Guile script"),
+  QT_TR_NOOP_UTF8 ("Custom plugin"),
+  QT_TR_NOOP_UTF8 ("Invalid"));
 
 namespace zrythm::structure::arrangement
 {
@@ -197,8 +217,8 @@ apply_plugin (
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
-          signed_frame_t actual_j =
-            (signed_frame_t) (i + j) - (signed_frame_t) latency;
+          int64_t actual_j =
+            (int64_t) (i + j) - (int64_t) latency;
           if (actual_j < 0)
             continue;
 #  if 0
@@ -209,8 +229,8 @@ apply_plugin (
 #  endif
           z_return_val_if_fail (l_out, -1);
           z_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
-          frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
+          frames[actual_j * (int64_t) channels] = l_out->buf[j];
+          frames[actual_j * (int64_t) channels + 1] = r_out->buf[j];
         }
       if (i > latency)
         {
@@ -237,8 +257,8 @@ apply_plugin (
       lilv_instance_run (pl->lv2->instance, step);
       for (size_t j = 0; j < step; j++)
         {
-          signed_frame_t actual_j =
-            (signed_frame_t) (i + j + num_frames) - (signed_frame_t) latency;
+          int64_t actual_j =
+            (int64_t) (i + j + num_frames) - (int64_t) latency;
           z_return_val_if_fail (actual_j >= 0, -1);
 #  if 0
           z_info (
@@ -248,8 +268,8 @@ apply_plugin (
 #  endif
           z_return_val_if_fail (l_out, -1);
           z_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
-          frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
+          frames[actual_j * (int64_t) channels] = l_out->buf[j];
+          frames[actual_j * (int64_t) channels + 1] = r_out->buf[j];
         }
       i += step;
       step = (uint32_t) MIN (step, latency - i);
@@ -298,7 +318,7 @@ audio_function_apply (
   end.add_frames (-r->get_position ().frames_, AUDIO_ENGINE->ticks_per_frame_);
 
   /* create a copy of the frames to be replaced */
-  auto num_frames = (unsigned_frame_t) (end.frames_ - start.frames_);
+  auto num_frames = (uint64_t) (end.frames_ - start.frames_);
 
   auto                      channels = orig_clip->get_num_channels ();
   utils::audio::AudioBuffer src_frames{
@@ -315,9 +335,9 @@ audio_function_apply (
         j, 0, orig_clip->get_samples (), j, start.frames_, num_frames);
     }
 
-  auto nudge_frames = (unsigned_frame_t) Position::get_frames_from_ticks (
+  auto nudge_frames = (uint64_t) Position::get_frames_from_ticks (
     ArrangerObject::DEFAULT_NUDGE_TICKS, AUDIO_ENGINE->frames_per_tick_);
-  unsigned_frame_t num_frames_excl_nudge;
+  uint64_t num_frames_excl_nudge;
   z_debug ("num frames {}, nudge_frames {}", num_frames, nudge_frames);
   z_return_if_fail_cmp (nudge_frames, >, 0);
 

@@ -7,7 +7,6 @@
 #include "utils/audio_file.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
-#include "utils/types.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
@@ -28,6 +27,8 @@ class FileAudioSource final
 public:
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
+  using channels_t = uint_fast8_t;
+  using bpm_t = float;
 
 public:
   FileAudioSource (QObject * parent = nullptr) : QObject (parent) { }
@@ -43,10 +44,10 @@ public:
    * @throw ZrythmException on error.
    */
   FileAudioSource (
-    const fs::path      &full_path,
-    units::sample_rate_t project_sample_rate,
-    bpm_t                current_bpm,
-    QObject *            parent = nullptr);
+    const std::filesystem::path &full_path,
+    units::sample_rate_t         project_sample_rate,
+    bpm_t                        current_bpm,
+    QObject *                    parent = nullptr);
 
   /**
    * Creates an audio clip by copying the given buffer.
@@ -72,7 +73,7 @@ public:
    */
   FileAudioSource (
     const float *                  arr,
-    unsigned_frame_t               nframes,
+    units::sample_u64_t            nframes,
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
     units::sample_rate_t           project_sample_rate,
@@ -80,7 +81,8 @@ public:
     const utils::Utf8String       &name,
     QObject *                      parent = nullptr)
       : FileAudioSource (
-          *utils::audio::AudioBuffer::from_interleaved (arr, nframes, channels),
+          *utils::audio::AudioBuffer::
+            from_interleaved (arr, nframes.in (units::samples), channels),
           bit_depth,
           project_sample_rate,
           current_bpm,
@@ -100,7 +102,7 @@ public:
    */
   FileAudioSource (
     channels_t               channels,
-    unsigned_frame_t         nframes,
+    units::sample_u64_t      nframes,
     units::sample_rate_t     project_sample_rate,
     bpm_t                    current_bpm,
     const utils::Utf8String &name,
@@ -144,7 +146,7 @@ public:
    */
   void replace_frames (
     const utils::audio::AudioBuffer &src_frames,
-    unsigned_frame_t                 start_frame);
+    units::sample_u64_t              start_frame);
 
   /**
    * Replaces the clip's frames starting from @p start_frame with @p frames.
@@ -156,10 +158,10 @@ public:
    * copied from the start).
    */
   void replace_frames_from_interleaved (
-    const float *    frames,
-    unsigned_frame_t start_frame,
-    unsigned_frame_t num_frames_per_channel,
-    channels_t       channels);
+    const float *       frames,
+    units::sample_u64_t start_frame,
+    units::sample_u64_t num_frames_per_channel,
+    channels_t          channels);
 
   /**
    * @brief Unloads the clip's frames from memory.
@@ -183,9 +185,9 @@ public:
    * @throw ZrythmException on I/O error.
    */
   void init_from_file (
-    const fs::path      &full_path,
-    units::sample_rate_t project_sample_rate,
-    std::optional<bpm_t> bpm_to_set);
+    const std::filesystem::path &full_path,
+    units::sample_rate_t         project_sample_rate,
+    std::optional<bpm_t>         bpm_to_set);
 
 private:
   friend void init_from (
@@ -242,7 +244,7 @@ public:
    */
   explicit FileAudioSourceWriter (
     const FileAudioSource &source,
-    fs::path               path,
+    std::filesystem::path  path,
     bool                   parts);
 
   /**
@@ -274,14 +276,14 @@ private:
 
   const FileAudioSource                   &source_;
   std::unique_ptr<juce::AudioFormatWriter> writer_;
-  fs::path                                 writer_path_;
+  std::filesystem::path                    writer_path_;
 
   /**
    * Frames already written to the file, per channel.
    *
    * Used when writing in chunks/parts.
    */
-  unsigned_frame_t frames_written_{};
+  units::sample_u64_t frames_written_;
 
   /**
    * Time the last write took place.

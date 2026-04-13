@@ -3,6 +3,7 @@
 
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 #include "utils/qt.h"
 
@@ -12,7 +13,8 @@
 
 #include <gtest/gtest.h>
 
-using namespace zrythm::structure::project;
+namespace zrythm::structure::project
+{
 using namespace ::testing;
 
 class ProjectUiStateTest
@@ -94,7 +96,7 @@ protected:
   }
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
-  fs::path                                         project_dir;
+  std::filesystem::path                            project_dir;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
   std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
   test_helpers::MockSettingsBackend *              mock_backend_ptr{};
@@ -180,4 +182,5 @@ TEST_F (ProjectUiStateTest, AllAccessorsNonNull)
   EXPECT_NE (ui_state->timeline (), nullptr);
   EXPECT_NE (ui_state->snapGridTimeline (), nullptr);
   EXPECT_NE (ui_state->snapGridEditor (), nullptr);
+}
 }

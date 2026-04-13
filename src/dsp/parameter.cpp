@@ -5,11 +5,20 @@
 
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
+#include "utils/enum_utils.h"
 
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
+utils::Utf8String
+ParameterRange::unit_to_string (Unit unit)
+{
+  constexpr std::array<std::u8string_view, 8> port_unit_strings = {
+    u8"none", u8"Hz", u8"MHz", u8"dB", u8"°", u8"s", u8"ms", u8"μs",
+  };
+  return port_unit_strings.at (ENUM_VALUE_TO_INT (unit));
+}
 
 void
 to_json (nlohmann::json &j, const ParameterRange &p)
@@ -50,9 +59,9 @@ ProcessorParameter::ProcessorParameter (
 
 void
 ProcessorParameter::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   float current_val = base_value_.load ();
 
@@ -67,8 +76,7 @@ ProcessorParameter::process_block (
   if (automation_value_provider_)
     {
       const auto val = std::invoke (
-        automation_value_provider_.value (),
-        units::samples (time_nfo.g_start_frame_w_offset_));
+        automation_value_provider_.value (), time_nfo.g_start_frame_w_offset_);
       if (val.has_value ())
         {
           current_val = std::clamp (val.value (), 0.f, 1.f);
@@ -88,7 +96,8 @@ ProcessorParameter::process_block (
         continue;
 
       // modulation value [0, 1]
-      auto modulation_base_val = src_port->buf_[time_nfo.local_offset_];
+      auto modulation_base_val =
+        src_port->buf_[time_nfo.local_offset_.in (units::samples)];
 
       // if bipolar, convert to [-1, 1]
       if (conn->bipolar_)
@@ -107,7 +116,7 @@ void
 ProcessorParameter::prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   modulation_input_ = modulation_input_uuid_.get_object_as<dsp::CVPort> ();
 }

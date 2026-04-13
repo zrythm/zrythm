@@ -30,7 +30,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     std::nullopt, std::nullopt,
     [this] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
-      const EngineProcessTimeInfo &time_nfo) {
+      const dsp::graph::EngineProcessTimeInfo &time_nfo) {
       out_events.transform_chord_and_append (
         in_events,
         [this] (midi_byte_t note_number) {
@@ -61,27 +61,6 @@ init_from (
     static_cast<const arrangement::ArrangerObjectOwner<
       arrangement::ScaleObject> &> (other),
     clone_type);
-}
-
-void
-ChordTrack::set_playback_caches ()
-{
-// FIXME: TODO
-#if 0
-  region_snapshots_.clear ();
-  region_snapshots_.reserve (region_list_->regions_.size ());
-  foreach_region ([&] (auto &region) {
-    z_return_if_fail (region.track_id_ == get_uuid ());
-    region_snapshots_.push_back (region.clone_unique ());
-  });
-
-  scale_snapshots_.clear ();
-  scale_snapshots_.reserve (scales_.size ());
-  for (const auto &scale : get_scales_view ())
-    {
-      scale_snapshots_.push_back (scale->clone_unique ());
-    }
-#endif
 }
 
 auto

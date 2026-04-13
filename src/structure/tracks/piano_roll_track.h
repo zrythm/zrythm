@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/midi_event.h"
-#include "utils/types.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -28,7 +27,7 @@ class PianoRollTrackMixin : public QObject
   QML_UNCREATABLE ("")
 public:
   PianoRollTrackMixin (QObject * parent = nullptr);
-  Z_DISABLE_COPY_MOVE (PianoRollTrackMixin)
+  Q_DISABLE_COPY_MOVE (PianoRollTrackMixin)
   ~PianoRollTrackMixin () override = default;
 
   // ========================================================================

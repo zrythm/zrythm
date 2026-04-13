@@ -4,17 +4,16 @@
 #pragma once
 
 #include <cstdlib>
+#include <filesystem>
 #include <string>
 #include <utility>
 
 #include "utils/traits.h"
-#include "utils/types.h"
 
 #include <QString>
 #include <QUrl>
 
 #include <fmt/format.h>
-#include <fmt/ranges.h>
 #include <nlohmann/json_fwd.hpp>
 
 namespace juce
@@ -56,7 +55,7 @@ public:
   friend void to_json (nlohmann::json &j, const Utf8String &s);
   friend void from_json (const nlohmann::json &j, Utf8String &s);
 
-  static Utf8String from_path (const fs::path &path)
+  static Utf8String from_path (const std::filesystem::path &path)
   {
     return Utf8String{ path.generic_u8string () };
   }
@@ -92,7 +91,7 @@ public:
   auto               empty () const noexcept { return str_.empty (); }
 
   // --- Conversions ---
-  fs::path      to_path () const { return { to_u8_string () }; }
+  std::filesystem::path to_path () const { return { to_u8_string () }; }
   std::u8string to_u8_string () const { return { str_.begin (), str_.end () }; }
   QString       to_qstring () const { return QString::fromUtf8 (c_str ()); }
   juce::String  to_juce_string () const;
@@ -114,8 +113,8 @@ public:
     return Utf8String::from_utf8_encoded_string (str_ + other.str_);
   }
 
-                       operator fs::path () const { return to_path (); }
-                       operator QString () const { return to_qstring (); }
+  operator std::filesystem::path () const { return to_path (); }
+  operator QString () const { return to_qstring (); }
   friend std::ostream &operator<< (std::ostream &os, const Utf8String &str)
   {
     return os << str.view ();
@@ -192,25 +191,24 @@ public:
   Utf8String expand_env_vars () const;
 
   static Utf8String
-  join (const RangeOf<Utf8String> auto &strings, const Utf8String &delimiter)
+  join (RangeOf<Utf8String> auto &&strings, const Utf8String &delimiter)
   {
-    return Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "{}",
-        fmt::join (
-          std::views::transform (strings, &Utf8String::view),
-          delimiter.view ())));
+    auto it = std::ranges::begin (strings);
+    auto end = std::ranges::end (strings);
+    if (it == end)
+      return {};
+    Utf8String result = *it;
+    for (++it; it != end; ++it)
+      {
+        result += delimiter;
+        result += *it;
+      }
+    return result;
   }
 
   // --- Comparisons ---
-  friend auto operator<=> (const Utf8String &a, const Utf8String &b) noexcept
-  {
-    return a.str_ <=> b.str_;
-  }
-  friend bool operator== (const Utf8String &a, const Utf8String &b) noexcept
-  {
-    return a.str_ == b.str_;
-  }
+  friend auto operator<=> (const Utf8String &, const Utf8String &) = default;
+  friend bool operator== (const Utf8String &, const Utf8String &) = default;
 
 private:
   std::string str_;
@@ -272,8 +270,8 @@ template <>
 struct fmt::formatter<zrythm::utils::Utf8String>
     : fmt::formatter<std::string_view>
 {
-  template <typename FormatContext>
-  auto format (const zrythm::utils::Utf8String &s, FormatContext &ctx) const
+  auto format (const zrythm::utils::Utf8String &s, format_context &ctx) const
+    -> format_context::iterator
   {
     return fmt::formatter<std::string_view>::format (s.view (), ctx);
   }

@@ -12,7 +12,6 @@
 #include "structure/arrangement/loopable_object.h"
 #include "structure/arrangement/muteable_object.h"
 #include "structure/arrangement/named_object.h"
-#include "utils/types.h"
 #include "utils/units.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -63,7 +62,7 @@ public:
   /**
    * The type of the object.
    */
-  enum class Type : basic_enum_base_type_t
+  enum class Type : std::uint8_t
   {
     MidiRegion,
     AudioRegion,
@@ -82,7 +81,7 @@ public:
 
 public:
   ~ArrangerObject () noexcept override;
-  Z_DISABLE_COPY_MOVE (ArrangerObject)
+  Q_DISABLE_COPY_MOVE (ArrangerObject)
 
   /**
    * @brief @see @ref is_start_hit_by_range().

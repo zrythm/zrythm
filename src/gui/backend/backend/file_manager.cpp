@@ -175,7 +175,7 @@ FileManager::load_files_from_location (FileBrowserLocation &location)
 
   /* create special parent dir entry */
   {
-    auto           parent_dir = fs::path (location.path_).parent_path ();
+    auto parent_dir = std::filesystem::path (location.path_).parent_path ();
     FileDescriptor fd;
     fd.abs_path_ = parent_dir;
     fd.type_ = FileType::ParentDirectory;
@@ -266,7 +266,7 @@ FileManager::save_locations ()
 }
 
 void
-FileManager::add_location_and_save (const fs::path &abs_path)
+FileManager::add_location_and_save (const std::filesystem::path &abs_path)
 {
   FileBrowserLocation loc;
   loc.path_ = abs_path;
@@ -277,8 +277,8 @@ FileManager::add_location_and_save (const fs::path &abs_path)
 
 void
 FileManager::remove_location_and_save (
-  const fs::path &location,
-  bool            skip_if_standard)
+  const std::filesystem::path &location,
+  bool                         skip_if_standard)
 {
   auto it = std::find_if (locations.begin (), locations.end (), [&] (auto &loc) {
     return loc.path_ == location;

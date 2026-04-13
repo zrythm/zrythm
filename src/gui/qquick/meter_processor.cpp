@@ -165,9 +165,10 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
               ring = port->cv_ring_.get ();
             }
 
-          size_t       read_space_avail = ring->read_space ();
-          const size_t block_length = audio_engine_->get_block_length ();
-          size_t       blocks_to_read =
+          size_t     read_space_avail = ring->read_space ();
+          const auto block_length =
+            audio_engine_->get_block_length ().in (units::samples);
+          size_t blocks_to_read =
             block_length == 0 ? 0 : read_space_avail / block_length;
           /* if no blocks available, skip */
           if (blocks_to_read == 0)

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_span.h"
-#include "utils/format.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -30,10 +29,3 @@ public:
 };
 
 }
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::structure::arrangement::AutomationFunction::Type,
-  AutomationFunctionType,
-  QT_TR_NOOP_UTF8 ("Flip H"),
-  QT_TR_NOOP_UTF8 ("Flip V"),
-  QT_TR_NOOP_UTF8 ("Flatten"));

@@ -112,9 +112,9 @@ private:
     const utils::Utf8String &category,
     const utils::Utf8String &author);
 
-  static fs::path get_known_plugins_xml_path ();
-  void            serialize_known_plugins ();
-  void            deserialize_known_plugins ();
+  static std::filesystem::path get_known_plugins_xml_path ();
+  void                         serialize_known_plugins ();
+  void                         deserialize_known_plugins ();
 
 private:
   /** Plugin categories. */

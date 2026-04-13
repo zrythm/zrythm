@@ -8,7 +8,6 @@
 #include "structure/arrangement/region_renderer.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/qt.h"
-#include "utils/types.h"
 
 #include <farbot/RealtimeObject.hpp>
 
@@ -160,9 +159,9 @@ public:
    * Process MIDI events for the given time range.
    */
   void process_midi_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState   transport_state,
-    dsp::MidiEventVector        &output_buffer) noexcept [[clang::nonblocking]];
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    dsp::ITransport::PlayState               transport_state,
+    dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
 
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
@@ -287,10 +286,10 @@ public:
    * Process audio events for the given time range.
    */
   void process_audio_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState   transport_state,
-    std::span<float>             output_left,
-    std::span<float>             output_right) noexcept [[clang::nonblocking]];
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    dsp::ITransport::PlayState               transport_state,
+    std::span<float>                         output_left,
+    std::span<float> output_right) noexcept [[clang::nonblocking]];
 
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
@@ -369,9 +368,9 @@ public:
    * Process automation events for the given time range.
    */
   void process_automation_events (
-    const EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState   transport_state,
-    std::span<float>             output_values) noexcept [[clang::nonblocking]];
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    dsp::ITransport::PlayState               transport_state,
+    std::span<float> output_values) noexcept [[clang::nonblocking]];
 
   /**
    * Get the automation value for a specific sample position.

@@ -20,7 +20,7 @@ JucePlugin::JucePlugin (
   StateDirectoryParentPathProvider              state_path_provider,
   CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
   std::function<units::sample_rate_t ()> sample_rate_provider,
-  std::function<nframes_t ()>            buffer_size_provider,
+  std::function<units::sample_u32_t ()>  buffer_size_provider,
   PluginHostWindowFactory                top_level_window_provider,
   QObject *                              parent)
     : Plugin (dependencies, std::move (state_path_provider), parent),
@@ -103,7 +103,7 @@ JucePlugin::initialize_juce_plugin_async ()
 
   // Get current sample rate and buffer size
   const double sample_rate = sample_rate_provider_ ().in (units::sample_rate);
-  const int    buffer_size = static_cast<int> (buffer_size_provider_ ());
+  const int    buffer_size = buffer_size_provider_ ().in<int> (units::samples);
 
   // Create plugin instance asynchronously
   create_plugin_instance_async_func_ (
@@ -292,20 +292,20 @@ JucePlugin::create_parameters_from_juce_plugin ()
   update_parameter_values ();
 }
 
-nframes_t
+units::sample_u32_t
 JucePlugin::get_single_playback_latency () const
 {
   if (juce_plugin_)
     {
-      return juce_plugin_->getLatencySamples ();
+      return units::samples (juce_plugin_->getLatencySamples ());
     }
-  return 0;
+  return units::samples (0);
 }
 
 void
 JucePlugin::prepare_for_processing_impl (
   units::sample_rate_t sample_rate,
-  nframes_t            max_block_length)
+  units::sample_u32_t  max_block_length)
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;
@@ -315,14 +315,15 @@ JucePlugin::prepare_for_processing_impl (
       // Prepare JUCE plugin
       juce_plugin_->prepareToPlay (
         sample_rate.in (units::sample_rate),
-        static_cast<int> (max_block_length));
+        max_block_length.in<int> (units::samples));
 
       // Resize audio buffers
       const int num_inputs = juce_plugin_->getTotalNumInputChannels ();
       const int num_outputs = juce_plugin_->getTotalNumOutputChannels ();
 
       juce_audio_buffer_.setSize (
-        std::max (num_inputs, num_outputs), static_cast<int> (max_block_length));
+        std::max (num_inputs, num_outputs),
+        max_block_length.in<int> (units::samples));
 
       // Setup channel pointers
       input_channels_.resize (num_inputs);
@@ -348,7 +349,7 @@ JucePlugin::prepare_for_processing_impl (
 }
 
 void
-JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
+JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;
@@ -370,10 +371,10 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
               if (total_port_chs + i == ch)
                 {
                   utils::float_ranges::copy (
-                    &input_channels_[ch][local_offset],
+                    &input_channels_[ch][local_offset.in (units::samples)],
                     port->buffers ()->getReadPointer (
-                      i, static_cast<int> (local_offset)),
-                    nframes);
+                      i, local_offset.in<int> (units::samples)),
+                    nframes.in (units::samples));
                 }
             }
           total_port_chs += port->num_channels ();
@@ -386,7 +387,9 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
     ++ch)
     {
       utils::float_ranges::fill (
-        &juce_audio_buffer_.getWritePointer (ch)[local_offset], 0.0f, nframes);
+        &juce_audio_buffer_.getWritePointer (
+          ch)[local_offset.in (units::samples)],
+        0.0f, nframes.in (units::samples));
     }
 
   // Clear MIDI buffer
@@ -398,7 +401,9 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
     {
       for (const auto &ev : midi_in->midi_events_.active_events_)
         {
-          if (ev.time_ >= local_offset && ev.time_ < local_offset + nframes)
+          if (
+            ev.time_ >= local_offset.in (units::samples)
+            && ev.time_ < (local_offset + nframes).in (units::samples))
             {
               juce_midi_buffer_.addEvent (
                 ev.raw_buffer_.data (),
@@ -414,8 +419,8 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
   // Process audio through JUCE plugin
   juce::AudioBuffer<float> temp_buffer_with_offset (
     juce_audio_buffer_.getArrayOfWritePointers (),
-    juce_audio_buffer_.getNumChannels (), static_cast<int> (local_offset),
-    static_cast<int> (nframes));
+    juce_audio_buffer_.getNumChannels (), local_offset.in<int> (units::samples),
+    nframes.in<int> (units::samples));
   {
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
     // RTSan violations are outside our control here.
@@ -438,8 +443,9 @@ JucePlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
                 {
                   utils::float_ranges::copy (
                     port->buffers ()->getWritePointer (
-                      i, static_cast<int> (local_offset)),
-                    &output_channels_[ch][local_offset], nframes);
+                      i, local_offset.in<int> (units::samples)),
+                    &output_channels_[ch][local_offset.in (units::samples)],
+                    nframes.in (units::samples));
                 }
             }
           total_port_chs += port->num_channels ();
@@ -497,7 +503,7 @@ JucePlugin::sync_parameters_to_juce ()
 }
 
 void
-JucePlugin::save_state (std::optional<fs::path> abs_state_dir)
+JucePlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
 {
   if (!juce_plugin_)
     return;
@@ -510,14 +516,15 @@ JucePlugin::save_state (std::optional<fs::path> abs_state_dir)
   try
     {
       // Create state directory if it doesn't exist
-      fs::create_directories (*abs_state_dir);
+      std::filesystem::create_directories (*abs_state_dir);
 
       // Save JUCE plugin state
       juce::MemoryBlock state_data;
       juce_plugin_->getStateInformation (state_data);
 
-      const fs::path state_file = *abs_state_dir / "juce_plugin_state.dat";
-      QFile          file (state_file);
+      const std::filesystem::path state_file =
+        *abs_state_dir / "juce_plugin_state.dat";
+      QFile file (state_file);
       if (!file.open (QFile::OpenModeFlag::WriteOnly))
         {
           throw std::runtime_error (
@@ -542,7 +549,7 @@ JucePlugin::save_state (std::optional<fs::path> abs_state_dir)
 }
 
 void
-JucePlugin::load_state (std::optional<fs::path> abs_state_dir)
+JucePlugin::load_state (std::optional<std::filesystem::path> abs_state_dir)
 {
   if (!juce_plugin_)
     return;
@@ -555,8 +562,9 @@ JucePlugin::load_state (std::optional<fs::path> abs_state_dir)
   try
     {
       // Load JUCE plugin state
-      const fs::path state_file = *abs_state_dir / "juce_plugin_state.dat";
-      if (fs::exists (state_file))
+      const std::filesystem::path state_file =
+        *abs_state_dir / "juce_plugin_state.dat";
+      if (std::filesystem::exists (state_file))
         {
           auto contents = utils::io::read_file_contents (state_file);
           juce_plugin_->setStateInformation (

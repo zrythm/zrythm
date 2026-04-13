@@ -26,7 +26,7 @@ protected:
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
 
     sample_rate_ = units::sample_rate (48000);
-    max_block_length_ = 1024;
+    max_block_length_ = units::samples (1024);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
@@ -51,7 +51,7 @@ protected:
   std::unique_ptr<ProcessorParameterRegistry> param_registry_;
   std::unique_ptr<AudioSampleProcessor>       processor_;
   units::sample_rate_t                        sample_rate_;
-  nframes_t                                   max_block_length_;
+  units::sample_u32_t                         max_block_length_;
   std::unique_ptr<graph_test::MockTransport>  mock_transport_;
   std::unique_ptr<dsp::TempoMap>              tempo_map_;
 };
@@ -86,16 +86,16 @@ TEST_F (AudioSampleProcessorTest, PlayableSampleSingleChannelConstruction)
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     AudioSampleProcessor::PlayableSampleSingleChannel::UnmutableSampleSpan (
       test_buffer),
-    0,    // channel_index
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // channel_index
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   EXPECT_EQ (sample.buf_.size (), 5);
   EXPECT_EQ (sample.channel_index_, 0);
   EXPECT_EQ (sample.volume_, 1.0f);
-  EXPECT_EQ (sample.start_offset_, 0);
-  EXPECT_EQ (sample.offset_, 0);
+  EXPECT_EQ (sample.start_offset_, units::samples (0));
+  EXPECT_EQ (sample.offset_, units::samples (0));
 }
 
 TEST_F (AudioSampleProcessorTest, AddSampleToProcess)
@@ -107,9 +107,9 @@ TEST_F (AudioSampleProcessorTest, AddSampleToProcess)
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     AudioSampleProcessor::PlayableSampleSingleChannel::UnmutableSampleSpan (
       test_buffer),
-    0,    // channel_index
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // channel_index
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   // Should not throw
@@ -127,18 +127,18 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -162,18 +162,18 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
   // Test with 0.5 volume
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    0.5f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    0.5f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 3
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (3)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -195,18 +195,18 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
   // Test with start offset of 2 frames
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    2,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (2), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -231,28 +231,28 @@ TEST_F (AudioSampleProcessorTest, MultipleSamples)
   std::vector<float> left_buffer = { 0.3f, 0.3f, 0.3f };
   AudioSampleProcessor::PlayableSampleSingleChannel left_sample (
     std::span<const float> (left_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   // Add sample to right channel
   std::vector<float> right_buffer = { 0.7f, 0.7f, 0.7f };
   AudioSampleProcessor::PlayableSampleSingleChannel right_sample (
     std::span<const float> (right_buffer),
-    1,    // right channel
-    1.0f, // volume
-    0,    // start_offset
+    1,                  // right channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (left_sample);
   processor_->add_sample_to_process (right_sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 3
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (3)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -276,19 +276,19 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
   // First cycle - process 5 frames
-  EngineProcessTimeInfo time_nfo1{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo1{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo1, *mock_transport_, *tempo_map_);
@@ -300,11 +300,11 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
     }
 
   // Second cycle - process remaining 5 frames
-  EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = 5,
-    .g_start_frame_w_offset_ = 5,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo2{
+    .g_start_frame_ = units::samples (5),
+    .g_start_frame_w_offset_ = units::samples (5),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
@@ -327,18 +327,18 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
   // Test with start offset larger than cycle size
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    10,   // start_offset (larger than cycle size)
+    0,                   // left channel
+    1.0f,                // volume
+    units::samples (10), // start_offset (larger than cycle size)
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -351,11 +351,11 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
 
   // Process another cycle - frames 5-9, sample still hasn't started (starts at
   // 10)
-  EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = 5,
-    .g_start_frame_w_offset_ = 5,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo2{
+    .g_start_frame_ = units::samples (5),
+    .g_start_frame_w_offset_ = units::samples (5),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
@@ -367,11 +367,11 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
     }
 
   // Process a third cycle - frames 10-14, sample should start here
-  EngineProcessTimeInfo time_nfo3{
-    .g_start_frame_ = 10,
-    .g_start_frame_w_offset_ = 10,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo3{
+    .g_start_frame_ = units::samples (10),
+    .g_start_frame_w_offset_ = units::samples (10),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo3, *mock_transport_, *tempo_map_);
@@ -395,18 +395,18 @@ TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
   // Test with invalid channel index (should be ignored)
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    5,    // invalid channel index
-    1.0f, // volume
-    0,    // start_offset
+    5,                  // invalid channel index
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 3
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (3)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -429,18 +429,18 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (empty_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -460,18 +460,18 @@ TEST_F (AudioSampleProcessorTest, ZeroFrames)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0 // Zero frames
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0) // Zero frames
   };
 
   // Should not crash
@@ -486,9 +486,9 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample (
     std::span<const float> (test_buffer),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample);
@@ -500,11 +500,11 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
   // We can verify this by processing and checking no samples are played
   const auto * port = processor_->get_output_audio_port_non_rt ();
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 5
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (5)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -528,26 +528,26 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample1 (
     std::span<const float> (buffer1),
-    0,    // left channel
-    1.0f, // volume
-    0,    // start_offset
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (0), // start_offset
     std::source_location::current ());
 
   AudioSampleProcessor::PlayableSampleSingleChannel sample2 (
     std::span<const float> (buffer2),
-    0,    // left channel
-    1.0f, // volume
-    1,    // start_offset (delayed by 1 frame)
+    0,                  // left channel
+    1.0f,               // volume
+    units::samples (1), // start_offset (delayed by 1 frame)
     std::source_location::current ());
 
   processor_->add_sample_to_process (sample1);
   processor_->add_sample_to_process (sample2);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 4
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (4)
   };
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -568,7 +568,9 @@ TEST_F (AudioSampleProcessorTest, ResourceCleanup)
   auto * const port = processor_->get_output_audio_port_non_rt ();
 
   // Verify ports are prepared
-  EXPECT_GE (port->buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (
+    port->buffers ()->getNumSamples (),
+    max_block_length_.in<int> (units::samples));
 
   // Release resources
   processor_->release_resources ();

@@ -288,7 +288,7 @@ public:
    *
    * This will be used as the track name.
    */
-  fs::path file_basename_;
+  std::filesystem::path file_basename_;
 
   /**
    * If this is an action to create a MIDI track

@@ -94,11 +94,11 @@ IncludeCategories:
     Priority:        3
     CaseSensitive:   true
   - Regex:           '^<(Q|qqml).*>$'
-    Priority:        10
+    Priority:        100
   - Regex:           '^"(tests|helpers)/.*"$'
-    Priority:        30
+    Priority:        300
   - Regex:           '.*'
-    Priority:        40
+    Priority:        400
 # don't use main includes
 IncludeIsMainRegex: '^$'
 IndentAccessModifiers: false

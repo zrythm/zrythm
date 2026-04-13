@@ -96,8 +96,8 @@ ClipPlaybackDataProvider::queue_stop_playback (
 
 void
 ClipPlaybackDataProvider::process_midi_events (
-  const EngineProcessTimeInfo &time_nfo,
-  dsp::MidiEventVector        &output_buffer) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  dsp::MidiEventVector                    &output_buffer) noexcept
 {
   [&] () {
     decltype (active_midi_playback_sequence_)::ScopedAccess<
@@ -136,7 +136,7 @@ ClipPlaybackDataProvider::process_midi_events (
     // Process MIDI chunks with looping using the common template method
     process_chunks_with_looping (
       internal_buffer_start_offset, samples_to_process, clip_loop_end_samples,
-      units::samples (time_nfo.local_offset_),
+      time_nfo.local_offset_,
       [&] (
         units::sample_t current_internal_buffer_offset,
         units::sample_t samples_to_process_in_chunk,
@@ -197,14 +197,12 @@ ClipPlaybackDataProvider::process_midi_events (
             // This is the event's timestamp relative to the start of this
             // processing chunk plus the total samples already processed
             const auto event_offset_in_chunk =
-              static_cast<unsigned_frame_t> (timestamp_dbl)
-              - current_internal_buffer_offset.in<unsigned_frame_t> (
-                units::samples);
+              static_cast<uint64_t> (timestamp_dbl)
+              - current_internal_buffer_offset.in<uint64_t> (units::samples);
             const auto local_timestamp =
-              total_samples_processed.in<unsigned_frame_t> (units::samples)
+              total_samples_processed.in<uint64_t> (units::samples)
               + event_offset_in_chunk
-              + output_buffer_timestamp_offset.in<unsigned_frame_t> (
-                units::samples);
+              + output_buffer_timestamp_offset.in<uint64_t> (units::samples);
 
             output_buffer.add_raw (
               event->message.getRawData (), event->message.getRawDataSize (),
@@ -224,7 +222,8 @@ ClipPlaybackDataProvider::process_midi_events (
       for (int channel = 1; channel <= 16; ++channel)
         {
           output_buffer.add_all_notes_off (
-            channel, time_nfo.local_offset_, true); // All notes off
+            channel, time_nfo.local_offset_.in (units::samples),
+            true); // All notes off
         }
     }
 
@@ -234,12 +233,11 @@ ClipPlaybackDataProvider::process_midi_events (
 
 void
 ClipPlaybackDataProvider::update_playback_position (
-  const EngineProcessTimeInfo &time_nfo,
-  units::sample_t              clip_loop_end_samples)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  units::sample_t                          clip_loop_end_samples)
 {
-  const auto current_timeline_position =
-    units::samples (time_nfo.g_start_frame_w_offset_);
-  auto previous_timeline_position = last_seen_timeline_position_;
+  const auto current_timeline_position = time_nfo.g_start_frame_w_offset_;
+  auto       previous_timeline_position = last_seen_timeline_position_;
 
   // If the timeline position moved (either forward or backward), recalculate
   // our internal buffer position
@@ -276,14 +274,13 @@ ClipPlaybackDataProvider::update_playback_position (
 
 std::pair<units::sample_t, units::sample_t>
 ClipPlaybackDataProvider::handle_quantization_and_start (
-  const EngineProcessTimeInfo          &time_nfo,
-  units::sample_t                       clip_loop_end_samples,
-  structure::tracks::ClipQuantizeOption quantize_opt)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  units::sample_t                          clip_loop_end_samples,
+  structure::tracks::ClipQuantizeOption    quantize_opt)
 {
-  const auto current_timeline_position =
-    units::samples (time_nfo.g_start_frame_w_offset_);
+  const auto current_timeline_position = time_nfo.g_start_frame_w_offset_;
   const auto timeline_end_position =
-    units::samples (time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_);
+    time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_;
   const auto current_timeline_tick_position =
     tempo_map_.samples_to_tick (current_timeline_position);
   const auto timeline_end_tick_position =
@@ -291,10 +288,10 @@ ClipPlaybackDataProvider::handle_quantization_and_start (
 
   // Position we started playing from in our own buffer
   auto internal_buffer_start_offset = internal_clip_buffer_position_.load ();
-  auto samples_to_process = units::samples (time_nfo.nframes_);
+  auto samples_to_process = time_nfo.nframes_;
 
   // Offset to apply when writing events to the output buffer
-  auto output_buffer_timestamp_offset = units::samples (time_nfo.local_offset_);
+  auto output_buffer_timestamp_offset = time_nfo.local_offset_;
 
   if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
     z_debug (
@@ -493,9 +490,9 @@ ClipPlaybackDataProvider::process_chunks_with_looping (
 
 void
 ClipPlaybackDataProvider::process_audio_events (
-  const EngineProcessTimeInfo &time_nfo,
-  std::span<float>             left_buffer,
-  std::span<float>             right_buffer) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  std::span<float>                         left_buffer,
+  std::span<float>                         right_buffer) noexcept
 {
   [&] () {
     decltype (active_audio_playback_buffer_)::ScopedAccess<
@@ -540,7 +537,7 @@ ClipPlaybackDataProvider::process_audio_events (
     // Process audio chunks with looping using the common template method
     process_chunks_with_looping (
       internal_buffer_start_offset, samples_to_process, clip_loop_end_samples,
-      units::samples (time_nfo.local_offset_),
+      time_nfo.local_offset_,
       [&] (
         units::sample_t current_internal_buffer_offset,
         units::sample_t samples_to_process_in_chunk,

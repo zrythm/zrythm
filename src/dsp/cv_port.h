@@ -32,9 +32,9 @@ public:
   CVPort (utils::Utf8String label, PortFlow flow);
 
   [[gnu::hot]] void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
@@ -44,7 +44,7 @@ public:
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
   void release_resources () override;
 
 private:

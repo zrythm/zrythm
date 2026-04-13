@@ -1,16 +1,15 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
 #include "utils/debug.h"
-#include "utils/directory_manager.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 
 #include <QStandardPaths>
 
+#include <gtest/gtest.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -196,7 +195,7 @@ Logger::Logger (LoggerType type) : type_ (type)
   init_sinks (false);
 }
 
-fs::path
+std::filesystem::path
 Logger::get_log_file_path () const
 {
   auto str_datetime = utils::datetime::get_for_filename ();
@@ -218,8 +217,10 @@ Logger::need_backtrace () const
   return now - last_bt_time_ > backtrace_cooldown_time;
 }
 
-std::pair<fs::path, fs::path>
-Logger::generate_compresed_file (fs::path &dir, fs::path &path) const
+std::pair<std::filesystem::path, std::filesystem::path>
+Logger::generate_compresed_file (
+  std::filesystem::path &dir,
+  std::filesystem::path &path) const
 {
 #if 0
     Error * err = NULL;
@@ -290,10 +291,13 @@ TestLogger::TestLogger ()
   init_sinks (true);
 }
 
-std::pair<fs::path, fs::path>
-TestLogger::generate_compresed_file (fs::path &dir, fs::path &path) const
+std::pair<std::filesystem::path, std::filesystem::path>
+TestLogger::generate_compresed_file (
+  std::filesystem::path &dir,
+  std::filesystem::path &path) const
 {
-  return std::make_pair (fs::path{ u8"dir" }, fs::path{ u8"path" });
+  return std::make_pair (
+    std::filesystem::path{ u8"dir" }, std::filesystem::path{ u8"path" });
 }
 
 bool
@@ -302,7 +306,7 @@ TestLogger::need_backtrace () const
   return true;
 }
 
-fs::path
+std::filesystem::path
 TestLogger::get_log_file_path () const
 {
   auto tmp_log_dir = utils::io::get_temp_path () / "zrythm_test_logs";

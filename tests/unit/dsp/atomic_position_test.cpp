@@ -27,7 +27,7 @@ protected:
 // Test initial state
 TEST_F (AtomicPositionTest, InitialState)
 {
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 0.0);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 0.0);
 }
@@ -37,14 +37,14 @@ TEST_F (AtomicPositionTest, MusicalModeOperations)
 {
   // Set ticks in Musical mode
   pos->set_ticks (units::ticks (960.0));
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 960.0);
   EXPECT_DOUBLE_EQ (
     pos->get_seconds ().in (units::seconds), 0.5); // 960 ticks @ 120 BPM = 0.5s
 
   // Set ticks again
   pos->set_ticks (units::ticks (1920.0));
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 1920.0);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 1.0);
 }
@@ -53,18 +53,18 @@ TEST_F (AtomicPositionTest, MusicalModeOperations)
 TEST_F (AtomicPositionTest, AbsoluteModeOperations)
 {
   // Switch to Absolute mode
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
 
   // Set seconds in Absolute mode
   pos->set_seconds (units::seconds (0.5));
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Absolute);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 0.5);
   EXPECT_DOUBLE_EQ (
     pos->get_ticks ().in (units::ticks), 960.0); // 0.5s @ 120 BPM = 960 ticks
 
   // Set seconds again
   pos->set_seconds (units::seconds (1.0));
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Absolute);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 1.0);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 1920.0);
 }
@@ -76,23 +76,23 @@ TEST_F (AtomicPositionTest, ModeConversion)
   pos->set_ticks (units::ticks (960.0));
 
   // Convert to Absolute mode
-  pos->set_mode (TimeFormat::Absolute);
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 0.5);
 
   // Convert back to Musical mode
-  pos->set_mode (TimeFormat::Musical);
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
+  pos->set_mode (AtomicPosition::TimeFormat::Musical);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 960.0);
 }
 
 // Test setting ticks in Absolute mode
 TEST_F (AtomicPositionTest, SetTicksInAbsoluteMode)
 {
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_ticks (units::ticks (960.0)); // Should convert to seconds
 
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Absolute);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 0.5);
   EXPECT_DOUBLE_EQ (
     pos->get_ticks ().in (units::ticks), 960.0); // Should convert back
@@ -103,7 +103,7 @@ TEST_F (AtomicPositionTest, SetSecondsInMusicalMode)
 {
   pos->set_seconds (units::seconds (0.5)); // Should convert to ticks
 
-  EXPECT_EQ (pos->get_current_mode (), TimeFormat::Musical);
+  EXPECT_EQ (pos->get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 960.0);
   EXPECT_DOUBLE_EQ (
     pos->get_seconds ().in (units::seconds), 0.5); // Should convert back
@@ -119,7 +119,7 @@ TEST_F (AtomicPositionTest, FractionalPositions)
     pos->get_seconds ().in (units::seconds), 480.5 / 960.0 * 0.5);
 
   // Test fractional seconds in Absolute mode
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (0.25));
   EXPECT_DOUBLE_EQ (pos->get_seconds ().in (units::seconds), 0.25);
   EXPECT_DOUBLE_EQ (pos->get_ticks ().in (units::ticks), 0.25 / 0.5 * 960.0);
@@ -145,7 +145,7 @@ TEST_F (AtomicPositionTest, GetSetSamplesInMusicalMode)
 TEST_F (AtomicPositionTest, GetSetSamplesInAbsoluteMode)
 {
   // Switch to Absolute mode and set position
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (0.5));
 
   // Same as above: 0.5s * 44100 Hz = 22050 samples
@@ -168,7 +168,7 @@ TEST_F (AtomicPositionTest, GetSetSamplesFractional)
     static_cast<int64_t> (expectedSeconds * 44100.0));
 
   // Fractional seconds
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (0.25));
   EXPECT_EQ (
     pos->get_samples ().in (units::samples),
@@ -195,7 +195,7 @@ TEST_F (AtomicPositionTest, ThreadSafety)
   EXPECT_DOUBLE_EQ (seconds, 0.5);
 
   // Change mode and values
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (1.0));
 
   // Reader gets again
@@ -250,7 +250,7 @@ TEST_F (AtomicPositionTest, SerializationMusicalMode)
   j.get_to (new_pos);
 
   // Verify state
-  EXPECT_EQ (new_pos.get_current_mode (), TimeFormat::Musical);
+  EXPECT_EQ (new_pos.get_current_mode (), AtomicPosition::TimeFormat::Musical);
   EXPECT_DOUBLE_EQ (new_pos.get_ticks ().in (units::ticks), 960.0);
   EXPECT_DOUBLE_EQ (new_pos.get_seconds ().in (units::seconds), 0.5);
 }
@@ -259,7 +259,7 @@ TEST_F (AtomicPositionTest, SerializationMusicalMode)
 TEST_F (AtomicPositionTest, SerializationAbsoluteMode)
 {
   // Set absolute position
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (1.5));
 
   // Serialize to JSON
@@ -271,7 +271,7 @@ TEST_F (AtomicPositionTest, SerializationAbsoluteMode)
   j.get_to (new_pos);
 
   // Verify state
-  EXPECT_EQ (new_pos.get_current_mode (), TimeFormat::Absolute);
+  EXPECT_EQ (new_pos.get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (new_pos.get_seconds ().in (units::seconds), 1.5);
   EXPECT_DOUBLE_EQ (new_pos.get_ticks ().in (units::ticks), 1.5 / 0.5 * 960.0);
 }
@@ -281,7 +281,7 @@ TEST_F (AtomicPositionTest, SerializationAfterModeConversion)
 {
   // Set musical position and convert to absolute
   pos->set_ticks (units::ticks (1920.0));
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
 
   // Serialize to JSON
   nlohmann::json j;
@@ -292,7 +292,7 @@ TEST_F (AtomicPositionTest, SerializationAfterModeConversion)
   j.get_to (new_pos);
 
   // Verify state
-  EXPECT_EQ (new_pos.get_current_mode (), TimeFormat::Absolute);
+  EXPECT_EQ (new_pos.get_current_mode (), AtomicPosition::TimeFormat::Absolute);
   EXPECT_DOUBLE_EQ (new_pos.get_seconds ().in (units::seconds), 1.0);
   EXPECT_DOUBLE_EQ (new_pos.get_ticks ().in (units::ticks), 1920.0);
 }
@@ -300,7 +300,7 @@ TEST_F (AtomicPositionTest, SerializationAfterModeConversion)
 TEST_F (AtomicPositionTest, Formatter)
 {
   pos->set_ticks (units::ticks (960.0));
-  pos->set_mode (TimeFormat::Musical);
+  pos->set_mode (AtomicPosition::TimeFormat::Musical);
 
   const std::string formatted = fmt::format ("{}", *pos);
   EXPECT_TRUE (formatted.find ("Ticks: 960.00") != std::string::npos);
@@ -309,7 +309,7 @@ TEST_F (AtomicPositionTest, Formatter)
   EXPECT_TRUE (formatted.find ("Mode: Musical") != std::string::npos);
 
   // Test in Absolute mode
-  pos->set_mode (TimeFormat::Absolute);
+  pos->set_mode (AtomicPosition::TimeFormat::Absolute);
   pos->set_seconds (units::seconds (1.5));
 
   const std::string formatted2 = fmt::format ("{}", *pos);

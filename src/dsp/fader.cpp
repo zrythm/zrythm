@@ -280,7 +280,7 @@ void
 Fader::custom_prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   processing_caches_ = std::make_unique<FaderProcessingCaches> ();
 
@@ -329,9 +329,9 @@ Fader::custom_release_resources ()
 
 void
 Fader::custom_process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   current_gain_.setTargetValue (calculate_target_gain_rt ());
 
@@ -374,7 +374,8 @@ Fader::custom_process_block (
       {
         for (
           const auto i : std::views::iota (
-            static_cast<int> (time_nfo.local_offset_), out_buf->getNumSamples ()))
+            time_nfo.local_offset_.in<int> (units::samples),
+            out_buf->getNumSamples ()))
           {
             const auto gain = current_gain_.getCurrentValue ();
             for (
@@ -391,11 +392,11 @@ Fader::custom_process_block (
         auto [calc_l, calc_r] = dsp::calculate_balance_control (
           dsp::BalanceControlAlgorithm::Linear, pan);
         out_buf->applyGain (
-          0, static_cast<int> (time_nfo.local_offset_),
-          static_cast<int> (time_nfo.nframes_), calc_l);
+          0, time_nfo.local_offset_.in<int> (units::samples),
+          time_nfo.nframes_.in<int> (units::samples), calc_l);
         out_buf->applyGain (
-          1, static_cast<int> (time_nfo.local_offset_),
-          static_cast<int> (time_nfo.nframes_), calc_r);
+          1, time_nfo.local_offset_.in<int> (units::samples),
+          time_nfo.nframes_.in<int> (units::samples), calc_r);
       }
 
       /* make mono if mono compat enabled */
@@ -403,10 +404,10 @@ Fader::custom_process_block (
         {
           utils::float_ranges::make_mono (
             out_buf->getWritePointer (
-              0, static_cast<int> (time_nfo.local_offset_)),
+              0, time_nfo.local_offset_.in<int> (units::samples)),
             out_buf->getWritePointer (
-              1, static_cast<int> (time_nfo.local_offset_)),
-            time_nfo.nframes_, false);
+              1, time_nfo.local_offset_.in<int> (units::samples)),
+            time_nfo.nframes_.in (units::samples), false);
         }
 
       /* swap phase if need */
@@ -414,12 +415,12 @@ Fader::custom_process_block (
         {
           utils::float_ranges::mul_k2 (
             out_buf->getWritePointer (
-              0, static_cast<int> (time_nfo.local_offset_)),
-            -1.f, time_nfo.nframes_);
+              0, time_nfo.local_offset_.in<int> (units::samples)),
+            -1.f, time_nfo.nframes_.in (units::samples));
           utils::float_ranges::mul_k2 (
             out_buf->getWritePointer (
-              1, static_cast<int> (time_nfo.local_offset_)),
-            -1.f, time_nfo.nframes_);
+              1, time_nfo.local_offset_.in<int> (units::samples)),
+            -1.f, time_nfo.nframes_.in (units::samples));
         }
 
       // hard-limit output if requested
@@ -429,8 +430,8 @@ Fader::custom_process_block (
             {
               utils::float_ranges::clip (
                 out_buf->getWritePointer (
-                  ch, static_cast<int> (time_nfo.local_offset_)),
-                -2.f, 2.f, time_nfo.nframes_);
+                  ch, time_nfo.local_offset_.in<int> (units::samples)),
+                -2.f, 2.f, time_nfo.nframes_.in (units::samples));
             }
         }
     } // endif is_audio()
@@ -472,7 +473,7 @@ Fader::custom_process_block (
 
       // Note: Currently for MIDI, we are using the gain at the start of the
       // cycle for the whole cycle. We should interpolate instead
-      current_gain_.skip (static_cast<int> (time_nfo.nframes_));
+      current_gain_.skip (time_nfo.nframes_.in<int> (units::samples));
     }
 }
 

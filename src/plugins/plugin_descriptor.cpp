@@ -552,7 +552,7 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
       {
         p.path_or_id_ =
           val.at (utils::serialization::kVariantNonObjectValueKey)
-            .get<fs::path> ();
+            .get<std::filesystem::path> ();
       }
     else
       {

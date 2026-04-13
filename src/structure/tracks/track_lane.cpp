@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_lane.h"
+#include "utils/format_qt.h"
 
 #include <nlohmann/json.hpp>
 

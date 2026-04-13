@@ -65,7 +65,7 @@ protected:
   std::filesystem::path          temp_dir;
   std::filesystem::path          test_wav;
   units::sample_rate_t           project_sample_rate;
-  bpm_t                          current_bpm;
+  FileAudioSource::bpm_t         current_bpm;
 };
 
 // Test constructors
@@ -102,8 +102,9 @@ TEST_F (FileAudioSourceTest, CreateFromInterleaved)
   float     arr[20] = { 0 }; // 2ch * 10frames
 
   FileAudioSource src (
-    arr, nframes, channels, FileAudioSource::BitDepth::BIT_DEPTH_32,
-    project_sample_rate, current_bpm, u8"interleaved_test", nullptr);
+    arr, units::samples (nframes), channels,
+    FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate, current_bpm,
+    u8"interleaved_test", nullptr);
 
   EXPECT_EQ (src.get_num_channels (), channels);
   EXPECT_EQ (src.get_num_frames (), nframes);
@@ -112,7 +113,8 @@ TEST_F (FileAudioSourceTest, CreateFromInterleaved)
 TEST_F (FileAudioSourceTest, CreateRecording)
 {
   FileAudioSource src (
-    2, 100, project_sample_rate, current_bpm, u8"recording", nullptr);
+    2, units::samples (100), project_sample_rate, current_bpm, u8"recording",
+    nullptr);
   EXPECT_EQ (src.get_num_channels (), 2);
   EXPECT_EQ (src.get_num_frames (), 100);
 }
@@ -143,7 +145,7 @@ TEST_F (FileAudioSourceTest, ReplaceFrames)
 
   utils::audio::AudioBuffer replacement (2, 50);
   replacement.clear ();
-  src.replace_frames (replacement, 25);
+  src.replace_frames (replacement, units::samples (25));
 
   // Verify frame count remains the same
   EXPECT_EQ (src.get_num_frames (), 100);

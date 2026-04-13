@@ -34,17 +34,18 @@ init_from (
 
 void
 AudioPort::add_source_rt (
-  const AudioPort      &src,
-  EngineProcessTimeInfo time_nfo,
-  float                 multiplier)
+  const AudioPort                  &src,
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  float                             multiplier)
 {
   const auto add_src =
     [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
       buf_->addFrom (
-        static_cast<int> (dest_ch), static_cast<int> (time_nfo.local_offset_),
-        *src.buf_, static_cast<int> (src_ch),
-        static_cast<int> (time_nfo.local_offset_),
-        static_cast<int> (time_nfo.nframes_), gain);
+        static_cast<int> (dest_ch),
+        time_nfo.local_offset_.in<int> (units::samples), *src.buf_,
+        static_cast<int> (src_ch),
+        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.nframes_.in<int> (units::samples), gain);
     };
 
   if (src.num_channels_ == num_channels_)
@@ -80,9 +81,9 @@ AudioPort::add_source_rt (
 
 void
 AudioPort::copy_source_rt (
-  const AudioPort      &src,
-  EngineProcessTimeInfo time_nfo,
-  float                 multiplier)
+  const AudioPort                  &src,
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  float                             multiplier)
 {
   const auto add_src =
     [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
@@ -90,19 +91,20 @@ AudioPort::copy_source_rt (
         {
           buf_->copyFrom (
             static_cast<int> (dest_ch),
-            static_cast<int> (time_nfo.local_offset_), *src.buf_,
-            static_cast<int> (src_ch), static_cast<int> (time_nfo.local_offset_),
-            static_cast<int> (time_nfo.nframes_));
+            time_nfo.local_offset_.in<int> (units::samples), *src.buf_,
+            static_cast<int> (src_ch),
+            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.nframes_.in<int> (units::samples));
         }
       else
         {
           buf_->copyFrom (
             static_cast<int> (dest_ch),
-            static_cast<int> (time_nfo.local_offset_),
+            time_nfo.local_offset_.in<int> (units::samples),
             src.buf_->getReadPointer (
               static_cast<int> (src_ch),
-              static_cast<int> (time_nfo.local_offset_)),
-            static_cast<int> (time_nfo.nframes_), gain);
+              time_nfo.local_offset_.in<int> (units::samples)),
+            time_nfo.nframes_.in<int> (units::samples), gain);
         }
     };
 
@@ -148,7 +150,7 @@ void
 AudioPort::prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   if (node != nullptr)
     {
@@ -161,16 +163,16 @@ AudioPort::prepare_for_processing (
       set_port_sources (source_audio_ports);
     }
 
-  size_t max = std::max (max_block_length, 1u);
+  auto max = std::max (max_block_length, units::samples (1u));
   buf_ = std::make_unique<juce::AudioSampleBuffer> (
-    num_channels_, static_cast<int> (max));
+    num_channels_, max.in<int> (units::samples));
   buf_->clear ();
 
   // 8 cycles
   audio_ring_.clear ();
-  std::ranges::for_each (
-    std::views::iota (0u, num_channels_),
-    [&] (const auto &) { audio_ring_.emplace_back (max * 8); });
+  std::ranges::for_each (std::views::iota (0u, num_channels_), [&] (const auto &) {
+    audio_ring_.emplace_back (max.in (units::samples) * 8);
+  });
 }
 
 void
@@ -182,9 +184,9 @@ AudioPort::release_resources ()
 
 void
 AudioPort::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   for (const auto &[_src_port, conn] : port_sources ())
     {
@@ -202,10 +204,10 @@ AudioPort::process_block (
           /* sum the signals */
           buf_->addFrom (
             static_cast<int> (dest_ch),
-            static_cast<int> (time_nfo.local_offset_), *src_port->buf_,
+            time_nfo.local_offset_.in<int> (units::samples), *src_port->buf_,
             static_cast<int> (source_ch),
-            static_cast<int> (time_nfo.local_offset_),
-            static_cast<int> (time_nfo.nframes_), multiplier);
+            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.nframes_.in<int> (units::samples), multiplier);
         }
       else
         {
@@ -217,8 +219,8 @@ AudioPort::process_block (
     {
       constexpr float max_allowed_peak = 2.f;
       float           abs_peak = buf_->getMagnitude (
-        static_cast<int> (time_nfo.local_offset_),
-        static_cast<int> (time_nfo.nframes_));
+        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.nframes_.in<int> (units::samples));
       if (abs_peak > max_allowed_peak)
         {
           for (const auto ch : std::views::iota (0u, num_channels_))
@@ -228,8 +230,9 @@ AudioPort::process_block (
               utils::float_ranges::clip (
                 buf_->getWritePointer (
                   static_cast<int> (ch),
-                  static_cast<int> (time_nfo.local_offset_)),
-                -max_allowed_peak, max_allowed_peak, time_nfo.nframes_);
+                  time_nfo.local_offset_.in<int> (units::samples)),
+                -max_allowed_peak, max_allowed_peak,
+                time_nfo.nframes_.in (units::samples));
             }
         }
     }
@@ -240,8 +243,9 @@ AudioPort::process_block (
         {
           audio_ring_[ch].force_write_multiple (
             buf_->getReadPointer (
-              static_cast<int> (ch), static_cast<int> (time_nfo.local_offset_)),
-            time_nfo.nframes_);
+              static_cast<int> (ch),
+              time_nfo.local_offset_.in<int> (units::samples)),
+            time_nfo.nframes_.in (units::samples));
         }
     }
 }

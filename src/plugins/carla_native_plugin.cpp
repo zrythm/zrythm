@@ -1242,7 +1242,10 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   /* set resources dir */
   const char * carla_filename = carla_get_library_filename ();
   auto         dir =
-    fs::path (carla_filename).parent_path ().parent_path ().parent_path ();
+    std::filesystem::path (carla_filename)
+      .parent_path ()
+      .parent_path ()
+      .parent_path ();
   auto res_dir = dir / "share" / "carla" / "resources";
   // FIXME leak
   native_host_descriptor_.resourceDir = g_strdup (res_dir);
@@ -1383,7 +1386,7 @@ CarlaNativePlugin::instantiate_impl (bool loading, bool use_state_file)
   auto * dir_mgr = DirectoryManager::getInstance ();
   auto   zrythm_libdir =
     dir_mgr->get_dir (DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
-  auto carla_binaries_dir = fs::path (zrythm_libdir) / "carla";
+  auto carla_binaries_dir = std::filesystem::path (zrythm_libdir) / "carla";
   z_debug (
     "setting carla engine option [ENGINE_OPTION_PATH_BINARIES] to '{}'",
     carla_binaries_dir);
@@ -1857,20 +1860,20 @@ CarlaNativePlugin::get_param_from_param_id (const uint32_t id)
 #endif
 }
 
-nframes_t
+units::sample_u32_t
 CarlaNativePlugin::get_single_playback_latency () const
 {
 #if HAVE_CARLA
-  return carla_get_plugin_latency (host_handle_, 0);
+  return units::samples (carla_get_plugin_latency (host_handle_, 0));
 #else
-  return 0;
+  return units::samples (0);
 #endif
 }
 
 void
 CarlaNativePlugin::save_state (
-  bool                    is_backup,
-  std::optional<fs::path> abs_state_dir)
+  bool                                 is_backup,
+  std::optional<std::filesystem::path> abs_state_dir)
 {
 #if HAVE_CARLA
   if (!instantiated_)
@@ -1884,7 +1887,8 @@ CarlaNativePlugin::save_state (
 
   io_mkdir (dir_to_use);
 
-  auto state_file_abs_path = fs::path (dir_to_use) / CARLA_STATE_FILENAME;
+  auto state_file_abs_path =
+    std::filesystem::path (dir_to_use) / CARLA_STATE_FILENAME;
   z_debug ("saving carla plugin state to {}", state_file_abs_path);
 
   if (!carla_save_plugin_state (host_handle_, 0, state_file_abs_path))
@@ -1898,10 +1902,10 @@ CarlaNativePlugin::save_state (
 }
 
 void
-CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
+CarlaNativePlugin::load_state (std::optional<std::filesystem::path> abs_path)
 {
 #if HAVE_CARLA
-  fs::path state_file;
+  std::filesystem::path state_file;
   if (abs_path)
     {
       state_file = *abs_path;
@@ -1914,7 +1918,8 @@ CarlaNativePlugin::load_state (std::optional<fs::path> abs_path)
         }
       auto state_dir_abs_path =
         get_abs_state_dir (PROJECT->loading_from_backup_, false);
-      state_file = fs::path (state_dir_abs_path) / CARLA_STATE_FILENAME;
+      state_file =
+        std::filesystem::path (state_dir_abs_path) / CARLA_STATE_FILENAME;
     }
   z_debug (
     "loading state from {} (given path: {})...", state_file,

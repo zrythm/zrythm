@@ -8,6 +8,8 @@
 
 #include <gtest/gtest.h>
 
+namespace zrythm
+{
 using namespace zrythm::structure::project;
 using namespace zrythm::structure::arrangement;
 using namespace zrythm::structure::tracks;
@@ -192,4 +194,5 @@ TEST_F (ClipEditorTest, TrackResolverThrowsForNonexistentUuid)
   // Verify the track resolver throws for non-existent UUIDs
   TrackUuid fake_uuid (QUuid::createUuid ());
   EXPECT_THROW (track_resolver_ (fake_uuid), std::exception);
+}
 }

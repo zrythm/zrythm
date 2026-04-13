@@ -24,14 +24,15 @@ TEST (IoTest, DirectoryOperations)
   // Test directory creation and removal
   auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
   EXPECT_TRUE (
-    fs::exists (utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ()));
+    std::filesystem::exists (
+      utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ()));
 
   // Test nested directory creation
   auto nested_path =
     utils::Utf8String::from_qstring (tmp_dir->path ()).to_path () / u8"a"
     / u8"b" / u8"c";
   EXPECT_NO_THROW (utils::io::mkdir (nested_path));
-  EXPECT_TRUE (fs::exists (nested_path));
+  EXPECT_TRUE (std::filesystem::exists (nested_path));
 }
 
 TEST (IoTest, FileOperations)
@@ -39,7 +40,7 @@ TEST (IoTest, FileOperations)
   // Test file creation and removal
   auto tmp_file = zrythm::utils::io::make_tmp_file ();
   EXPECT_TRUE (
-    fs::exists (
+    std::filesystem::exists (
       utils::Utf8String::from_qstring (tmp_file->fileName ()).to_path ()));
 
   // Test file contents
@@ -70,7 +71,7 @@ TEST (IoTest, DirectoryListing)
   auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
 
   // Create test files
-  fs::path dir_path =
+  std::filesystem::path dir_path =
     utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
   EXPECT_NO_THROW (
     zrythm::utils::io::set_file_contents (dir_path / "file1.txt", u8"test1"));
@@ -138,28 +139,30 @@ TEST (IoTest, GetFilesInDirectory)
 TEST (IoTest, QStringConversions)
 {
   {
-    QString  qstr = "test";
-    fs::path path = utils::Utf8String::from_qstring (qstr).to_path ();
-    EXPECT_EQ (path, fs::path ("test"));
+    QString               qstr = "test";
+    std::filesystem::path path =
+      utils::Utf8String::from_qstring (qstr).to_path ();
+    EXPECT_EQ (path, std::filesystem::path ("test"));
   }
 
   // Test with non-ASCII characters
   {
-    QString  qstr = "C:/テスト";
-    fs::path path = utils::Utf8String::from_qstring (qstr).to_path ();
-    EXPECT_EQ (path, fs::path (u"C:/テスト"));
+    QString               qstr = "C:/テスト";
+    std::filesystem::path path =
+      utils::Utf8String::from_qstring (qstr).to_path ();
+    EXPECT_EQ (path, std::filesystem::path (u"C:/テスト"));
   }
 
   {
-    fs::path path = fs::path ("test");
-    QString  qstr = utils::Utf8String::from_path (path).to_qstring ();
+    std::filesystem::path path = std::filesystem::path ("test");
+    QString qstr = utils::Utf8String::from_path (path).to_qstring ();
     EXPECT_EQ (qstr, "test");
   }
 
   // Test with non-ASCII characters
   {
-    fs::path path = fs::path (u"C:/テスト");
-    QString  qstr = utils::Utf8String::from_path (path).to_qstring ();
+    std::filesystem::path path = std::filesystem::path (u"C:/テスト");
+    QString qstr = utils::Utf8String::from_path (path).to_qstring ();
     EXPECT_EQ (qstr, "C:/テスト");
   }
 }
@@ -178,14 +181,14 @@ TEST (IoTest, MoveFile)
     // Create source file with content
     utils::Utf8String test_data = u8"Test content for move";
     EXPECT_NO_THROW (utils::io::set_file_contents (src_file, test_data));
-    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
 
     // Move file
     EXPECT_NO_THROW (utils::io::move_file (dest_file, src_file));
 
     // Verify source is removed and destination exists
-    EXPECT_FALSE (fs::exists (src_file));
-    EXPECT_TRUE (fs::exists (dest_file));
+    EXPECT_FALSE (std::filesystem::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (dest_file));
 
     // Verify content is preserved
     auto read_data = utils::io::read_file_contents (dest_file);
@@ -203,13 +206,13 @@ TEST (IoTest, MoveFile)
 
     // Create source file
     utils::io::set_file_contents (src_file, u8"test");
-    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
 
     // Attempt to move to non-existent directory
     EXPECT_THROW (utils::io::move_file (dest_file, src_file), ZrythmException);
 
     // Source file should still exist
-    EXPECT_TRUE (fs::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
   }
 
   // Test moving non-existent source file (should fail)
@@ -257,15 +260,15 @@ TEST (IoTest, MoveFile)
     // Create both source and destination files
     utils::io::set_file_contents (src_file, u8"source content");
     utils::io::set_file_contents (dest_file, u8"dest content");
-    EXPECT_TRUE (fs::exists (src_file));
-    EXPECT_TRUE (fs::exists (dest_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (dest_file));
 
     // Attempt to move without force - should fail
     EXPECT_THROW (utils::io::move_file (dest_file, src_file), ZrythmException);
 
     // Both files should still exist
-    EXPECT_TRUE (fs::exists (src_file));
-    EXPECT_TRUE (fs::exists (dest_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (dest_file));
 
     // Destination should have original content
     auto read_data = utils::io::read_file_contents (dest_file);
@@ -285,15 +288,15 @@ TEST (IoTest, MoveFile)
     utils::Utf8String src_content = u8"new content from source";
     utils::io::set_file_contents (src_file, src_content);
     utils::io::set_file_contents (dest_file, u8"old dest content");
-    EXPECT_TRUE (fs::exists (src_file));
-    EXPECT_TRUE (fs::exists (dest_file));
+    EXPECT_TRUE (std::filesystem::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (dest_file));
 
     // Move with force - should succeed
     EXPECT_NO_THROW (utils::io::move_file (dest_file, src_file, true));
 
     // Source should be removed, destination should exist
-    EXPECT_FALSE (fs::exists (src_file));
-    EXPECT_TRUE (fs::exists (dest_file));
+    EXPECT_FALSE (std::filesystem::exists (src_file));
+    EXPECT_TRUE (std::filesystem::exists (dest_file));
 
     // Destination should have source content
     auto read_data = utils::io::read_file_contents (dest_file);

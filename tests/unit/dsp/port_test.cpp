@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port.h"
+#include "utils/format_boost.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
 {
-static_assert (fmt::is_formattable<Port> ());
+static_assert (fmt::formattable<Port>);
 
 class TestPort : public Port
 {
@@ -22,7 +23,9 @@ public:
   MOCK_METHOD (
     void,
     process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
+    (dsp::graph::EngineProcessTimeInfo,
+     const dsp::ITransport &,
+     const dsp::TempoMap &),
     (noexcept, override));
 };
 

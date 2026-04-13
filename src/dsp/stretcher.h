@@ -70,7 +70,7 @@ public:
    * @return The number of output samples generated per
    *   channel.
    */
-  signed_frame_t stretch (
+  units::sample_t stretch (
     const float * in_samples_l,
     const float * in_samples_r,
     size_t        in_samples_size,

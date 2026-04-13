@@ -101,7 +101,8 @@ protected:
       .plugin_registry_ = *plugin_registry_,
       .processor_base_dependencies_{
                                     .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      .state_dir_path_provider_ = [] () { return fs::path{ "/tmp/test_state" }; },
+      .state_dir_path_provider_ =
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; },
       .create_plugin_instance_async_func_ = create_mock_async_func (),
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
@@ -118,7 +119,7 @@ protected:
   std::unique_ptr<PluginFactory>                   factory_;
 
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
-  nframes_t            buffer_size_{ 1024 };
+  units::sample_u32_t  buffer_size_{ units::samples (1024) };
 };
 
 // Test basic factory construction
@@ -374,14 +375,15 @@ TEST_F (PluginFactoryTest, MultiplePluginsIndependent)
 TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
 {
   // Create custom providers
-  auto custom_sample_rate = units::sample_rate (44100);
-  auto custom_buffer_size = 512;
+  constexpr auto custom_sample_rate = units::sample_rate (44100);
+  constexpr auto custom_buffer_size = units::samples (512);
 
   auto factory_deps = PluginFactory::CommonFactoryDependencies{
     .plugin_registry_ = *plugin_registry_,
     .processor_base_dependencies_{
                                   .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    .state_dir_path_provider_ = [] () { return fs::path{ "/tmp/test_state" }; },
+    .state_dir_path_provider_ =
+      [] () { return std::filesystem::path{ "/tmp/test_state" }; },
     .create_plugin_instance_async_func_ = create_mock_async_func (),
     .sample_rate_provider_ =
       [custom_sample_rate] () { return custom_sample_rate; },

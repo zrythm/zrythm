@@ -201,7 +201,7 @@ ProjectSession::createArrangerObjectSelectionOperator (
   return sel_operator;
 }
 
-std::optional<fs::path>
+std::optional<std::filesystem::path>
 ProjectSession::get_newer_backup ()
 {
   // TODO
@@ -222,8 +222,8 @@ ProjectSession::get_newer_backup ()
       return std::nullopt;
     }
 
-  fs::path   result;
-  const auto backups_dir =
+  std::filesystem::path result;
+  const auto            backups_dir =
     project_directory_
     / structure::project::ProjectPathProvider::get_path (
       structure::project::ProjectPathProvider::ProjectPath::BackupsDir);

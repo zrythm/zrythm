@@ -3,8 +3,7 @@
 
 #pragma once
 
-#include "utils/types.h"
-
+#include <QDateTime>
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -29,7 +28,7 @@ public:
    * @param path
    * @param parent
    */
-  ProjectInfo (const fs::path &path, QObject * parent = nullptr);
+  ProjectInfo (const std::filesystem::path &path, QObject * parent = nullptr);
 
   QString   getName () const;
   QString   getPath () const;
@@ -48,9 +47,9 @@ Q_SIGNALS:
   void pathChanged ();
 
 private:
-  QString   name_;
-  fs::path  path_;
-  QDateTime last_saved_at_;
+  QString               name_;
+  std::filesystem::path path_;
+  QDateTime             last_saved_at_;
 };
 
 } // namespace zrythm::gui

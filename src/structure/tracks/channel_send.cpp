@@ -145,9 +145,9 @@ ChannelSend::clear_destination_port ()
 
 void
 ChannelSend::custom_process_block (
-  const EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport      &transport,
-  const dsp::TempoMap        &tempo_map) noexcept
+  const dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport                  &transport,
+  const dsp::TempoMap                    &tempo_map) noexcept
 {
   const auto local_offset = time_nfo.local_offset_;
   const auto nframes = time_nfo.nframes_;
@@ -187,7 +187,7 @@ void
 ChannelSend::custom_prepare_for_processing (
   const dsp::graph::GraphNode * node,
   units::sample_rate_t          sample_rate,
-  nframes_t                     max_block_length)
+  units::sample_u32_t           max_block_length)
 {
   processing_caches_ = std::make_unique<ChannelSendProcessingCaches> ();
 

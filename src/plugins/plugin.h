@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -13,7 +13,6 @@
 #include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
-#include "plugins/plugin_slot.h"
 
 namespace zrythm::plugins
 {
@@ -48,13 +47,14 @@ class Plugin
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
-  Z_DISABLE_COPY_MOVE (Plugin)
+  Q_DISABLE_COPY_MOVE (Plugin)
 public:
   /**
    * @brief Returns the parent path where the plugin should save its state
    * directory in (or load it).
    */
-  using StateDirectoryParentPathProvider = std::function<fs::path ()>;
+  using StateDirectoryParentPathProvider =
+    std::function<std::filesystem::path ()>;
 
   enum class InstantiationStatus : std::uint8_t
   {
@@ -180,21 +180,21 @@ public:
   void custom_prepare_for_processing (
     const dsp::graph::GraphNode * node,
     units::sample_rate_t          sample_rate,
-    nframes_t                     max_block_length) final;
+    units::sample_u32_t           max_block_length) final;
 
   [[gnu::hot]] void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept final;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept final;
 
   void custom_release_resources () final;
 
   // ============================================================================
 
-  fs::path get_state_directory () const
+  std::filesystem::path get_state_directory () const
   {
     return state_dir_parent_path_provider_ ()
-           / fs::path (
+           / std::filesystem::path (
              type_safe::get (get_uuid ())
                .toString (QUuid::WithoutBraces)
                .toStdString ());
@@ -229,21 +229,24 @@ public:
    *
    * @throw ZrythmException If the state could not be saved.
    */
-  virtual void save_state (std::optional<fs::path> abs_state_dir) = 0;
+  virtual void
+  save_state (std::optional<std::filesystem::path> abs_state_dir) = 0;
 
   /**
    * Load the state from the default directory or from @p abs_state_dir if given.
    *
    * @throw ZrythmException If the state could not be saved.
    */
-  virtual void load_state (std::optional<fs::path> abs_state_dir) = 0;
+  virtual void
+  load_state (std::optional<std::filesystem::path> abs_state_dir) = 0;
 
 private:
   virtual void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
-    nframes_t            max_block_length) { };
+    units::sample_u32_t  max_block_length) { };
 
-  virtual void process_impl (EngineProcessTimeInfo time_info) noexcept = 0;
+  virtual void
+  process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept = 0;
 
   virtual void release_resources_impl () { }
 
@@ -256,9 +259,9 @@ private:
    * override this.
    */
   [[gnu::hot]] virtual void process_passthrough_impl (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept;
 
   // ============================================================================
 

@@ -3,7 +3,7 @@
 
 #include "plugins/plugin_protocol.h"
 #include "utils/bidirectional_map.h"
-#include "utils/types.h"
+#include "utils/enum_utils.h"
 
 using namespace zrythm::plugins;
 

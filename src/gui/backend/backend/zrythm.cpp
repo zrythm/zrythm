@@ -41,8 +41,10 @@ Zrythm::Zrythm ()
 }
 
 void
-Zrythm::
-  pre_init (std::optional<fs::path> exe_path, bool have_ui, bool optimized_dsp)
+Zrythm::pre_init (
+  std::optional<std::filesystem::path> exe_path,
+  bool                                 have_ui,
+  bool                                 optimized_dsp)
 {
   if (exe_path)
     exe_path_ = *exe_path;

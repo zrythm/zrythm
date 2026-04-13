@@ -3,15 +3,15 @@
 
 #pragma once
 
+#include <filesystem>
 #include <source_location>
-
-#include "utils/utf8_string.h"
 
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
 namespace zrythm::utils
 {
+class Utf8String;
 
 class ILogger
 {
@@ -29,8 +29,10 @@ public:
    * @return The directory and the path of the compressed file.
    * @throw ZrythmException on failure.
    */
-  virtual std::pair<fs::path, fs::path>
-  generate_compresed_file (fs::path &dir, fs::path &path) const = 0;
+  virtual std::pair<std::filesystem::path, std::filesystem::path>
+  generate_compresed_file (
+    std::filesystem::path &dir,
+    std::filesystem::path &path) const = 0;
 
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
@@ -46,7 +48,7 @@ public:
 
   virtual bool need_backtrace () const = 0;
 
-  virtual fs::path get_log_file_path () const = 0;
+  virtual std::filesystem::path get_log_file_path () const = 0;
 
 protected:
   std::shared_ptr<spdlog::logger> logger_;
@@ -71,12 +73,14 @@ public:
 
   Logger (LoggerType type);
 
-  std::pair<fs::path, fs::path>
-  generate_compresed_file (fs::path &dir, fs::path &path) const override;
+  std::pair<std::filesystem::path, std::filesystem::path>
+  generate_compresed_file (
+    std::filesystem::path &dir,
+    std::filesystem::path &path) const override;
 
   bool need_backtrace () const override;
 
-  [[nodiscard]] fs::path get_log_file_path () const override;
+  [[nodiscard]] std::filesystem::path get_log_file_path () const override;
 
 private:
   LoggerType type_{};
@@ -87,12 +91,14 @@ class TestLogger : public ILogger
 public:
   TestLogger ();
 
-  std::pair<fs::path, fs::path>
-  generate_compresed_file (fs::path &dir, fs::path &path) const override;
+  std::pair<std::filesystem::path, std::filesystem::path>
+  generate_compresed_file (
+    std::filesystem::path &dir,
+    std::filesystem::path &path) const override;
 
   bool need_backtrace () const override;
 
-  fs::path get_log_file_path () const override;
+  std::filesystem::path get_log_file_path () const override;
 };
 
 class LoggerProvider

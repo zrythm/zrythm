@@ -161,7 +161,7 @@ protected:
       unsupported_file_path_, u8"This is not audio or MIDI");
   }
 
-  void createMockWavFile (const fs::path &path)
+  void createMockWavFile (const std::filesystem::path &path)
   {
     // Minimal WAV file header (44 bytes) + some silence
     std::vector<uint8_t> wav_data = {
@@ -223,7 +223,7 @@ protected:
       path, reinterpret_cast<const char *> (wav_data.data ()), wav_data.size ());
   }
 
-  void createMockMidiFile (const fs::path &path)
+  void createMockMidiFile (const std::filesystem::path &path)
   {
     // Minimal MIDI file header and one note
     std::vector<uint8_t> midi_data = {
@@ -281,10 +281,10 @@ protected:
 
   // Test files
   std::unique_ptr<QTemporaryDir> temp_dir_;
-  fs::path                       temp_dir_path_;
-  fs::path                       audio_file_path_;
-  fs::path                       midi_file_path_;
-  fs::path                       unsupported_file_path_;
+  std::filesystem::path          temp_dir_path_;
+  std::filesystem::path          audio_file_path_;
+  std::filesystem::path          midi_file_path_;
+  std::filesystem::path          unsupported_file_path_;
 };
 
 // Test file type detection

@@ -18,11 +18,14 @@
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/app_settings.h"
 
 namespace zrythm::dsp
 {
 class Fader;
+}
+namespace zrythm::utils
+{
+class AppSettings;
 }
 
 namespace zrythm::structure::project
@@ -73,7 +76,8 @@ public:
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
   using PluginRegistry = plugins::PluginRegistry;
-  using ProjectDirectoryPathProvider = std::function<fs::path (bool for_backup)>;
+  using ProjectDirectoryPathProvider =
+    std::function<std::filesystem::path (bool for_backup)>;
 
 public:
   Project (
@@ -86,7 +90,7 @@ public:
     dsp::Fader                                     &monitor_fader,
     QObject *                                       parent = nullptr);
   ~Project () override;
-  Z_DISABLE_COPY_MOVE (Project)
+  Q_DISABLE_COPY_MOVE (Project)
 
   // =========================================================
   // QML interface

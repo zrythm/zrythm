@@ -42,11 +42,15 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/clap_plugin_param.h"
+#include "utils/format_qt.h"
+#include "utils/io_utils.h"
 #include "utils/views.h"
 
+#include <QFile>
 #include <QLibrary>
 #include <QSemaphore>
 #include <QSocketNotifier>
+#include <QTimer>
 
 #include <clap/helpers/event-list.hh>
 #include <clap/helpers/host.hxx>
@@ -128,7 +132,7 @@ public:
   void handlePluginOutputEvents ();
   void generatePluginInputEvents ();
 
-  void setup_audio_ports_for_processing (nframes_t block_size);
+  void setup_audio_ports_for_processing (units::sample_u32_t block_size);
 
   void setPluginWindowVisibility (bool isVisible);
 
@@ -247,7 +251,7 @@ private:
   PluginHostWindowFactory            host_window_factory_;
   std::unique_ptr<IPluginHostWindow> editor_;
 
-  nframes_t latency_{};
+  units::sample_u32_t latency_;
 };
 
 ClapPlugin::ClapPlugin (
@@ -295,7 +299,8 @@ ClapPlugin::on_configuration_changed ()
 {
   z_debug ("configuration changed");
   auto success = load_plugin (
-    std::get<fs::path> (configuration ()->descriptor ()->path_or_id_),
+    std::get<std::filesystem::path> (
+      configuration ()->descriptor ()->path_or_id_),
     configuration ()->descriptor ()->unique_id_);
   Q_EMIT instantiationFinished (success, {});
 }
@@ -653,13 +658,13 @@ ClapPlugin::latencyChanged () noexcept
 {
   z_debug (
     "{} latency changed to {}", get_name (), pimpl_->plugin_->latencyGet ());
-  pimpl_->latency_ = pimpl_->plugin_->latencyGet ();
+  pimpl_->latency_ = units::samples (pimpl_->plugin_->latencyGet ());
 }
 
 void
 ClapPlugin::prepare_for_processing_impl (
   units::sample_rate_t sample_rate,
-  nframes_t            max_block_length)
+  units::sample_u32_t  max_block_length)
 {
   assert (is_main_thread);
 
@@ -674,8 +679,10 @@ ClapPlugin::prepare_for_processing_impl (
 
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
-  if (!pimpl_->plugin_->activate (
-        sample_rate.in (units::sample_rate), 1, max_block_length))
+  if (
+    !pimpl_->plugin_->activate (
+      sample_rate.in (units::sample_rate), 1,
+      max_block_length.in (units::samples)))
     {
       pimpl_->setPluginState (ClapPluginImpl::InactiveWithError);
       return;
@@ -685,7 +692,7 @@ ClapPlugin::prepare_for_processing_impl (
   pimpl_->setPluginState (ClapPluginImpl::ActiveAndSleeping);
   if (pimpl_->plugin_->canUseLatency ())
     {
-      pimpl_->latency_ = pimpl_->plugin_->latencyGet ();
+      pimpl_->latency_ = units::samples (pimpl_->plugin_->latencyGet ());
     }
 }
 
@@ -710,9 +717,9 @@ ClapPlugin::release_resources_impl ()
 }
 
 void
-ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
+ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 {
-  pimpl_->process_.frames_count = time_info.nframes_;
+  pimpl_->process_.frames_count = time_info.nframes_.in (units::samples);
   pimpl_->process_.steady_time = -1;
 
   // This can get called during offline rendering
@@ -788,8 +795,9 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
           for (const auto ch : std::views::iota (0, in_buf.getNumChannels ()))
             {
               in_buf.copyFrom (
-                ch, static_cast<int> (local_offset), *port->buffers (), ch,
-                static_cast<int> (local_offset), static_cast<int> (nframes));
+                ch, local_offset.in<int> (units::samples), *port->buffers (),
+                ch, local_offset.in<int> (units::samples),
+                nframes.in<int> (units::samples));
             }
         }
 
@@ -812,7 +820,8 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
           if (status == CLAP_PROCESS_ERROR) [[unlikely]]
             {
               port->buffers ()->clear (
-                static_cast<int> (local_offset), static_cast<int> (nframes));
+                local_offset.in<int> (units::samples),
+                nframes.in<int> (units::samples));
             }
           else
             {
@@ -820,8 +829,9 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
               for (const auto ch : std::views::iota (0, buf.getNumChannels ()))
                 {
                   port->buffers ()->copyFrom (
-                    ch, static_cast<int> (local_offset), buf, ch,
-                    static_cast<int> (local_offset), static_cast<int> (nframes));
+                    ch, local_offset.in<int> (units::samples), buf, ch,
+                    local_offset.in<int> (units::samples),
+                    nframes.in<int> (units::samples));
                 }
             }
         }
@@ -838,7 +848,7 @@ ClapPlugin::process_impl (EngineProcessTimeInfo time_info) noexcept
 }
 
 void
-ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
+ClapPlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
 {
   if (pimpl_->plugin_->canUseState ())
     {
@@ -847,7 +857,7 @@ ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
           abs_state_dir = get_state_directory ();
         }
 
-      const fs::path state_file = *abs_state_dir / "clap_state.dat";
+      const std::filesystem::path state_file = *abs_state_dir / "clap_state.dat";
 
       clap_ostream_t ostream{};
       ostream.ctx = this;
@@ -865,7 +875,7 @@ ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
       pimpl_->plugin_->stateSave (&ostream);
 
       // Create state directory if it doesn't exist
-      fs::create_directories (*abs_state_dir);
+      std::filesystem::create_directories (*abs_state_dir);
 
       QFile file (state_file);
       if (!file.open (QFile::OpenModeFlag::WriteOnly))
@@ -884,7 +894,7 @@ ClapPlugin::save_state (std::optional<fs::path> abs_state_dir)
 }
 
 void
-ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
+ClapPlugin::load_state (std::optional<std::filesystem::path> abs_state_dir)
 {
   if (pimpl_->plugin_->canUseState ())
     {
@@ -894,8 +904,8 @@ ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
         }
 
       // Load CLAP plugin state
-      const fs::path state_file = *abs_state_dir / "clap_state.dat";
-      if (!fs::exists (state_file))
+      const std::filesystem::path state_file = *abs_state_dir / "clap_state.dat";
+      if (!std::filesystem::exists (state_file))
         {
           z_warning ("no state file found at {}", state_file);
           return;
@@ -920,14 +930,16 @@ ClapPlugin::load_state (std::optional<fs::path> abs_state_dir)
     }
 }
 
-nframes_t
+units::sample_u32_t
 ClapPlugin::get_single_playback_latency () const
 {
   return pimpl_->latency_;
 }
 
 bool
-ClapPlugin::load_plugin (const fs::path &path, int64_t plugin_unique_id)
+ClapPlugin::load_plugin (
+  const std::filesystem::path &path,
+  int64_t                      plugin_unique_id)
 {
   assert (is_main_thread);
 
@@ -1341,7 +1353,7 @@ ClapPlugin::create_ports_from_clap_plugin ()
 
 void
 ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
-  nframes_t block_size)
+  units::sample_u32_t block_size)
 {
   const auto setup_for_direction = [&] (bool is_input) {
     auto &audio_bufs = is_input ? audio_in_bufs_ : audio_out_bufs_;
@@ -1354,7 +1366,8 @@ ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
         clap_audio_port_info_t nfo;
         plugin_->audioPortsGet (i, is_input, &nfo);
         juce_buf.setSize (
-          static_cast<int> (nfo.channel_count), static_cast<int> (block_size));
+          static_cast<int> (nfo.channel_count),
+          block_size.in<int> (units::samples));
         auto &clap_buf = audio_clap_bufs.at (i);
         clap_buf.channel_count = nfo.channel_count;
         clap_buf.data32 =

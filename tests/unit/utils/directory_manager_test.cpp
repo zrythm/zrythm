@@ -9,19 +9,19 @@ TEST (DirectoryManagerTest, TestingDirCreation)
   TestingDirectoryManager mgr;
   auto                    testing_dir = mgr.get_testing_dir ();
   EXPECT_FALSE (testing_dir.empty ());
-  EXPECT_TRUE (fs::exists (testing_dir));
+  EXPECT_TRUE (std::filesystem::exists (testing_dir));
 }
 
 TEST (DirectoryManagerTest, TestingDirRemoval)
 {
-  fs::path dir_path;
+  std::filesystem::path dir_path;
   {
     TestingDirectoryManager mgr;
     dir_path = mgr.get_testing_dir ();
-    EXPECT_TRUE (fs::exists (dir_path));
+    EXPECT_TRUE (std::filesystem::exists (dir_path));
   }
   // Directory should be removed when mgr goes out of scope
-  EXPECT_FALSE (fs::exists (dir_path));
+  EXPECT_FALSE (std::filesystem::exists (dir_path));
 }
 
 TEST (DirectoryManagerTest, TestingUserDir)
@@ -41,10 +41,10 @@ TEST (DirectoryManagerTest, TestingGetDir)
     mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_PREFIX), ZRYTHM_PREFIX);
   EXPECT_EQ (
     mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_BINDIR),
-    fs::path (ZRYTHM_PREFIX) / BINDIR_NAME);
+    std::filesystem::path (ZRYTHM_PREFIX) / BINDIR_NAME);
   EXPECT_EQ (
     mgr.get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_DATADIR),
-    fs::path (ZRYTHM_PREFIX) / DATADIR_NAME);
+    std::filesystem::path (ZRYTHM_PREFIX) / DATADIR_NAME);
 
   // Test user dirs
   EXPECT_EQ (

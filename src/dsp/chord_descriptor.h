@@ -3,9 +3,14 @@
 
 #pragma once
 
-#include "utils/utf8_string.h"
+namespace zrythm::utils
+{
+class Utf8String;
+}
 
-#include <nlohmann/json.hpp>
+#include <QObject>
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {
@@ -181,15 +186,9 @@ public:
            && lhs.notes_ == rhs.notes_ && lhs.inversion_ == rhs.inversion_;
   }
 
-  NLOHMANN_DEFINE_TYPE_INTRUSIVE (
-    ChordDescriptor,
-    has_bass_,
-    root_note_,
-    bass_note_,
-    type_,
-    accent_,
-    notes_,
-    inversion_)
+private:
+  friend void to_json (nlohmann::json &j, const ChordDescriptor &c);
+  friend void from_json (const nlohmann::json &j, ChordDescriptor &c);
 
 public:
   /** Has bass note or not. */

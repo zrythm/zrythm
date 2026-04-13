@@ -93,7 +93,7 @@ TEST_F (ZrythmFixture, MonoPlugin)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &PLAYHEAD, TRACKLIST->get_num_tracks (),
     1, -1, nullptr);
@@ -199,9 +199,9 @@ TEST_F (ZrythmFixture, Process)
   const auto           &out = pl->out_ports_[0];
   nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = local_offset
   };
   pl->process (time_nfo);
@@ -209,7 +209,7 @@ TEST_F (ZrythmFixture, Process)
     {
       ASSERT_TRUE (fabsf (out->buf_[i]) > 1e-10f);
     }
-  time_nfo.g_start_frame_ = 0;
+  time_nfo.g_start_frame_ = units::samples (0);
   time_nfo.g_start_frame_w_offset_ = local_offset;
   time_nfo.local_offset_ = local_offset;
   time_nfo.nframes_ = AUDIO_ENGINE->block_length_ - local_offset;

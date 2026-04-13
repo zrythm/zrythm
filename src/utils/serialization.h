@@ -9,7 +9,6 @@
 #include "utils/exceptions.h"
 #include "utils/qt.h"
 #include "utils/traits.h"
-#include "utils/types.h"
 
 #include <QUuid>
 
@@ -18,6 +17,7 @@
 #include <nlohmann/json.hpp>
 
 using zrythm::utils::exceptions::ZrythmException;
+using namespace std::string_view_literals;
 
 inline void
 to_json (nlohmann::json &j, const QString &s)

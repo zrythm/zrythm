@@ -100,14 +100,14 @@ Zrythm is a highly automated and intuitive digital audio workstation (DAW) writt
 zrythm/
 ├── src/                 # Main source code
 │   ├── main.cpp        # Application entry point
-│   ├── gui/            # Qt/QML user interface
+│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/backend/legacy_actions are legacy unused code kept for reference)
 │   ├── dsp/            # Digital signal processing
 │   ├── engine/         # Core audio engine
 │   ├── plugins/        # Audio plugin hosting-related code
 │   ├── structure/      # Project building blocks (tracks, objects, etc.)
 │   └── utils/          # Utility functions
 ├── ext/                # Vendored dependencies
-├── tests/              # Tests
+├── tests/              # Tests (only unit/, integration/ and benchmarks/ are active; other directories are legacy unused code kept for reference)
 │   └── unit/           # Unit tests location
 ├── data/               # Application data (themes, samples, etc.)
 └── i18n/               # Internationalization files
@@ -134,7 +134,8 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake).
 
 **Test Structure:**
 - Unit tests located in [`tests/unit/`](tests/unit/)
-- Benchmarks (when `ZRYTHM_BENCHMARKS=ON`)
+- Integration tests located in [`tests/integration/`](tests/integration/)
+- Benchmarks located in [`tests/benchmarks/`](tests/benchmarks/) (when `ZRYTHM_BENCHMARKS=ON`)
 - GUI tests (when `ZRYTHM_GUI_TESTS=ON`)
 
 **Test Frameworks:**
@@ -248,7 +249,7 @@ See [QObjectUniquePtr](src/utils/qt.h) for a unique pointer type for QObject-der
 
 ### DSP Graph
 
-See `graph.h`, `graph_node.h` under `src/dsp/`. [`EngineProcessTimeInfo`](src/utils/types.h) holds timing information that is passed to processing callbacks and is used throughout the code. [`ITransport`](src/dsp/itransport.h) abstracts some common transport functionality needed by the graph.
+See `graph.h`, `graph_node.h` under `src/dsp/`. [`EngineProcessTimeInfo`](src/dsp/graph_node.h) holds timing information that is passed to processing callbacks and is used throughout the code. [`ITransport`](src/dsp/itransport.h) abstracts some common transport functionality needed by the graph.
 
 ### Audio Processors & Parameters
 

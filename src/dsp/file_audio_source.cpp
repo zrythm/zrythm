@@ -8,18 +8,20 @@
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/debug.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 
-#include <fmt/printf.h>
+#include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace zrythm::dsp
 {
 
 FileAudioSource::FileAudioSource (
-  const fs::path      &full_path,
-  units::sample_rate_t project_sample_rate,
-  bpm_t                current_bpm,
-  QObject *            parent)
+  const std::filesystem::path &full_path,
+  units::sample_rate_t         project_sample_rate,
+  bpm_t                        current_bpm,
+  QObject *                    parent)
     : QObject (parent)
 {
   init_from_file (full_path, project_sample_rate, current_bpm);
@@ -48,15 +50,16 @@ FileAudioSource::FileAudioSource (
 }
 
 FileAudioSource::FileAudioSource (
-  const channels_t         channels,
-  const unsigned_frame_t   nframes,
-  units::sample_rate_t     project_sample_rate,
-  bpm_t                    current_bpm,
-  const utils::Utf8String &name,
-  QObject *                parent)
+  const channels_t          channels,
+  const units::sample_u64_t nframes,
+  units::sample_rate_t      project_sample_rate,
+  bpm_t                     current_bpm,
+  const utils::Utf8String  &name,
+  QObject *                 parent)
     : QObject (parent)
 {
-  ch_frames_.setSize (channels, static_cast<int> (nframes), false, true, false);
+  ch_frames_.setSize (
+    channels, nframes.in<int> (units::samples), false, true, false);
   name_ = name;
   bpm_ = current_bpm;
   samplerate_ = project_sample_rate;
@@ -66,9 +69,9 @@ FileAudioSource::FileAudioSource (
 
 void
 FileAudioSource::init_from_file (
-  const fs::path      &full_path,
-  units::sample_rate_t project_sample_rate,
-  std::optional<bpm_t> bpm_to_set)
+  const std::filesystem::path &full_path,
+  units::sample_rate_t         project_sample_rate,
+  std::optional<bpm_t>         bpm_to_set)
 {
   samplerate_ = project_sample_rate;
   assert (samplerate_ > units::sample_rate (0));
@@ -127,13 +130,15 @@ init_from (
 
 void
 FileAudioSource::replace_frames_from_interleaved (
-  const float *    frames,
-  unsigned_frame_t start_frame,
-  unsigned_frame_t num_frames_per_channel,
-  channels_t       channels)
+  const float *       frames,
+  units::sample_u64_t start_frame,
+  units::sample_u64_t num_frames_per_channel,
+  channels_t          channels)
 {
   utils::audio::AudioBuffer buf (
-    1, static_cast<int> (num_frames_per_channel) * static_cast<int> (channels));
+    1,
+    num_frames_per_channel.in<int> (units::samples)
+      * static_cast<int> (channels));
   buf.deinterleave_samples (channels);
   replace_frames (buf, start_frame);
 }
@@ -141,7 +146,7 @@ FileAudioSource::replace_frames_from_interleaved (
 void
 FileAudioSource::replace_frames (
   const utils::audio::AudioBuffer &src_frames,
-  unsigned_frame_t                 start_frame)
+  units::sample_u64_t              start_frame)
 {
   z_return_if_fail_cmp (
     src_frames.getNumChannels (), ==, ch_frames_.getNumChannels ());
@@ -149,8 +154,8 @@ FileAudioSource::replace_frames (
   for (int i = 0; i < src_frames.getNumChannels (); ++i)
     {
       ch_frames_.copyFrom (
-        i, static_cast<int> (start_frame), src_frames.getReadPointer (i, 0),
-        src_frames.getNumSamples ());
+        i, start_frame.in<int> (units::samples),
+        src_frames.getReadPointer (i, 0), src_frames.getNumSamples ());
     }
 
   Q_EMIT samplesChanged ();
@@ -162,7 +167,7 @@ FileAudioSource::expand_with_frames (const utils::audio::AudioBuffer &frames)
   z_return_if_fail (frames.getNumChannels () == ch_frames_.getNumChannels ());
   z_return_if_fail (frames.getNumSamples () > 0);
 
-  unsigned_frame_t prev_end = ch_frames_.getNumSamples ();
+  units::sample_u64_t prev_end = units::samples (ch_frames_.getNumSamples ());
   ch_frames_.setSize (
     ch_frames_.getNumChannels (),
     ch_frames_.getNumSamples () + frames.getNumSamples (), true, false);
@@ -173,7 +178,7 @@ FileAudioSource::expand_with_frames (const utils::audio::AudioBuffer &frames)
 
 FileAudioSourceWriter::FileAudioSourceWriter (
   const FileAudioSource &source,
-  fs::path               path,
+  std::filesystem::path  path,
   bool                   parts)
     : parts_ (parts), source_ (source), writer_path_ (std::move (path))
 {
@@ -195,7 +200,7 @@ FileAudioSourceWriter::finalize_buffered_write ()
 {
   assert (parts_);
 
-  if (frames_written_ == 0)
+  if (frames_written_ == units::samples (0))
     {
       z_debug ("nothing to write, skipping");
       return;
@@ -210,7 +215,8 @@ void
 FileAudioSourceWriter::write_to_file ()
 {
   assert (source_.get_samplerate () > units::sample_rate (0));
-  assert (frames_written_ < std::numeric_limits<size_t>::max ());
+  assert (
+    frames_written_ < units::samples (std::numeric_limits<size_t>::max ()));
 
   // Use a static mutex to protect JUCE object creation to avoid data races
   // in LeakedObjectDetector counters during multi-threaded execution
@@ -255,12 +261,14 @@ FileAudioSourceWriter::write_to_file ()
   const auto num_frames = source_.get_num_frames ();
   if (parts_)
     {
-      z_return_if_fail_cmp (num_frames, >=, (int) frames_written_);
-      unsigned_frame_t nframes_to_write_this_time = num_frames - frames_written_;
-      z_return_if_fail_cmp (nframes_to_write_this_time, <, SIZE_MAX);
+      z_return_if_fail_cmp (units::samples (num_frames), >=, frames_written_);
+      units::sample_u64_t nframes_to_write_this_time =
+        units::samples (num_frames) - frames_written_;
+      z_return_if_fail_cmp (
+        nframes_to_write_this_time, <, units::samples (SIZE_MAX));
 
       // create writer if first time
-      if (frames_written_ == 0)
+      if (frames_written_ == units::samples (0))
         {
           writer_ = create_writer_for_filepath ();
         }
@@ -269,10 +277,10 @@ FileAudioSourceWriter::write_to_file ()
           z_return_if_fail (writer_ != nullptr);
         }
       writer_->writeFromAudioSampleBuffer (
-        source_.get_samples (), static_cast<int> (frames_written_),
-        static_cast<int> (nframes_to_write_this_time));
+        source_.get_samples (), frames_written_.in<int> (units::samples),
+        nframes_to_write_this_time.in<int> (units::samples));
 
-      frames_written_ = num_frames;
+      frames_written_ = units::samples (num_frames);
       last_write_ = get_monotonic_time_usecs ();
     }
   else

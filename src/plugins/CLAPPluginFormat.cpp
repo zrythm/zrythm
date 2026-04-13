@@ -34,6 +34,8 @@
  */
 
 #include "plugins/CLAPPluginFormat.h"
+#include "utils/format_juce.h"
+#include "utils/format_qt.h"
 
 #include <QLibrary>
 #include <QtSystemDetection>

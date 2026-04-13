@@ -3,14 +3,8 @@
 
 #pragma once
 
-#include <cstdint>
-
-#include "dsp/audio_port.h"
-#include "dsp/midi_port.h"
-#include "dsp/parameter.h"
 #include "dsp/processor_base.h"
 #include "utils/icloneable.h"
-#include "utils/types.h"
 
 namespace zrythm::dsp
 {
@@ -51,7 +45,7 @@ class Fader : public QObject, public dsp::ProcessorBase
   };
 
 public:
-  enum class MidiFaderMode : basic_enum_base_type_t
+  enum class MidiFaderMode : uint8_t
   {
     /** Multiply velocity of all MIDI note ons. */
     MIDI_FADER_MODE_VEL_MULTIPLIER,
@@ -87,7 +81,7 @@ public:
    */
   using PreProcessAudioCallback = std::function<void (
     std::pair<std::span<float>, std::span<float>> stereo_bufs,
-    const EngineProcessTimeInfo                  &time_nfo)>;
+    const dsp::graph::EngineProcessTimeInfo      &time_nfo)>;
 
   /**
    * Creates a new fader.
@@ -236,14 +230,14 @@ public:
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
 
   void custom_release_resources () override;
 
   [[gnu::hot]] void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   // ============================================================================
 

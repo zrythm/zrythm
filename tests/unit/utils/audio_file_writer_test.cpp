@@ -61,8 +61,8 @@ protected:
 
   // Verifies that a file exists and has expected content
   void verify_file_exists_and_size (
-    const fs::path &file_path,
-    size_t          expected_min_size)
+    const std::filesystem::path &file_path,
+    size_t                       expected_min_size)
   {
     EXPECT_TRUE (std::filesystem::exists (file_path))
       << "Output file should exist: " << file_path;
@@ -94,7 +94,7 @@ protected:
   }
 
   std::unique_ptr<QTemporaryDir> temp_dir_;
-  fs::path                       temp_dir_path_;
+  std::filesystem::path          temp_dir_path_;
 };
 
 TEST_F (AudioFileWriterTest, WriteWavFile)

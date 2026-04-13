@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -40,7 +40,7 @@ public:
       auto obj_ref =
         track_deps_.track_registry_.create_object<TrackT> (track_deps_);
       auto * track = obj_ref.template get_object_as<TrackT> ();
-      track->setName (format_qstr (QObject::tr ("{} Track"), track->type ()));
+      track->set_default_name ();
       return obj_ref;
     }
 

@@ -79,11 +79,15 @@ public:
   GraphScheduler (
     RunOnMainThreadFunc                 run_on_main_thread_func,
     units::sample_rate_t                sample_rate,
-    nframes_t                           max_block_length,
+    units::sample_u32_t                 max_block_length,
     bool                                realtime_threads = true,
     std::optional<juce::AudioWorkgroup> thread_workgroup = std::nullopt);
+  // copy/move don't make sense here
+  GraphScheduler (const GraphScheduler &) = delete;
+  GraphScheduler &operator= (const GraphScheduler &) = delete;
+  GraphScheduler (GraphScheduler &&) = delete;
+  GraphScheduler &operator= (GraphScheduler &&) = delete;
   ~GraphScheduler ();
-  Z_DISABLE_COPY_MOVE (GraphScheduler); // copy/move don't make sense here
 
   /**
    * @brief Steals the nodes from the given collection and prepares for
@@ -92,9 +96,9 @@ public:
    * @warning Nodes added here are expected to be unique for their
    * IProcessable's. This means that an IProcessable-derived object may not be
    * in more than one graph at a time, otherwise @ref release_node_resources()
-   * may be called while another graph is using them. FIXME: alleviate this but
-   * passing the graph to prepare_for_processing/release_resources and having
-   * each processable have a separate cache per graph.
+   * may be called while another graph is using them. FIXME: alleviate this
+   * but passing the graph to prepare_for_processing/release_resources and
+   * having each processable have a separate cache per graph.
    *
    * @param nodes Nodes to steal.
    * @param sample_rate The current sample rate to prepare the nodes for.
@@ -103,14 +107,14 @@ public:
   void rechain_from_node_collection (
     GraphNodeCollection &&nodes,
     units::sample_rate_t  sample_rate,
-    nframes_t             max_block_length);
+    units::sample_u32_t   max_block_length);
 
   /**
    * Starts the threads that will be processing the graph.
    *
    * @param num_threads Number of threads to use. If not set, uses an
-   * appropriate number based on the number of cores. If set, the number will be
-   * clamped to reasonable bounds.
+   * appropriate number based on the number of cores. If set, the number will
+   * be clamped to reasonable bounds.
    * @throw ZrythmException on failure.
    */
   void start_threads (std::optional<int> num_threads = std::nullopt);
@@ -131,10 +135,10 @@ public:
    * @param tempo_map Tempo map for this cycle
    */
   void run_cycle (
-    EngineProcessTimeInfo  time_nfo,
-    nframes_t              remaining_preroll_frames,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map);
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    units::sample_u64_t               remaining_preroll_frames,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map);
 
   /**
    * @brief Returns whether the given thread is one of the graph threads.
@@ -196,7 +200,7 @@ private:
   /**
    * @brief Time info for the current process cycle.
    */
-  EngineProcessTimeInfo time_nfo_;
+  dsp::graph::EngineProcessTimeInfo time_nfo_;
 
   /**
    * @brief Transport for the current process cycle.
@@ -211,7 +215,7 @@ private:
   /**
    * @brief Number of preroll frames remaining in the current process cycle.
    */
-  nframes_t remaining_preroll_frames_{};
+  units::sample_u64_t remaining_preroll_frames_{};
 
   /** Synchronization with main process callback. */
   moodycamel::LightweightSemaphore callback_start_sem_{ 0 };
@@ -245,7 +249,7 @@ private:
   std::optional<juce::AudioWorkgroup> thread_workgroup_;
 
   units::sample_rate_t sample_rate_;
-  nframes_t            max_block_length_;
+  units::sample_u32_t  max_block_length_;
 
   RunOnMainThreadFunc run_on_main_thread_func_;
 };

@@ -39,6 +39,8 @@ set_target_properties(zrythm_commands_lib PROPERTIES
 )
 
 target_precompile_headers(zrythm_commands_lib PUBLIC
+  # This needs to be included first otherwise partial template specializations fail
+  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/../utils/format_qt.h>
   $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/rename_track_command.h>)
 
 target_link_libraries(zrythm_commands_lib

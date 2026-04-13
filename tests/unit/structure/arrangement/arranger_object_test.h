@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,8 +6,10 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object.h"
 
+namespace zrythm
+{
 // Mock ArrangerObject with public constructor
-class MockArrangerObject : public zrythm::structure::arrangement::ArrangerObject
+class MockArrangerObject : public structure::arrangement::ArrangerObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -17,11 +19,12 @@ public:
     structure::arrangement::ArrangerObject::ArrangerObjectFeatures;
 
   MockArrangerObject (
-    Type                         type,
-    const zrythm::dsp::TempoMap &tempo_map,
-    ArrangerObjectFeatures       features = ArrangerObjectFeatures::Bounds,
-    QObject *                    parent = nullptr)
+    Type                   type,
+    const dsp::TempoMap   &tempo_map,
+    ArrangerObjectFeatures features = ArrangerObjectFeatures::Bounds,
+    QObject *              parent = nullptr)
       : ArrangerObject (type, tempo_map, features, parent)
   {
   }
 };
+}

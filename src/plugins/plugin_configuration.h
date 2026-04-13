@@ -63,8 +63,6 @@ public:
    */
   void validate ();
 
-  void print () const;
-
   friend void init_from (
     PluginConfiguration       &obj,
     const PluginConfiguration &other,

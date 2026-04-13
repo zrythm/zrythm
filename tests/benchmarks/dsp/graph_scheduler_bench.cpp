@@ -11,8 +11,9 @@
 #include <benchmark/benchmark.h>
 #include <gmock/gmock.h>
 
+namespace zrythm::dsp::graph
+{
 using namespace testing;
-using namespace zrythm::dsp::graph;
 
 class GraphSchedulerBenchmark : public benchmark::Fixture
 {
@@ -71,7 +72,8 @@ protected:
 
     ON_CALL (*proc, get_node_name ())
       .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
-    ON_CALL (*proc, get_single_playback_latency ()).WillByDefault (Return (0));
+    ON_CALL (*proc, get_single_playback_latency ())
+      .WillByDefault (Return (units::samples (0)));
     ON_CALL (*proc, prepare_for_processing (_, _, _)).WillByDefault (Return ());
     ON_CALL (*proc, release_resources ()).WillByDefault (Return ());
 
@@ -203,7 +205,7 @@ protected:
   }
 
   units::sample_rate_t            sample_rate_{ units::sample_rate (48000) };
-  size_t                          max_block_length_{ 1024 };
+  units::sample_u32_t             max_block_length_{ units::samples (1024) };
   std::unique_ptr<MockTransport>  transport_;
   std::unique_ptr<dsp::TempoMap>  tempo_map_;
   std::unique_ptr<GraphScheduler> scheduler_;
@@ -225,12 +227,17 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
     create_linear_chain (num_nodes), sample_rate_, max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = block_size;
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (block_size)
+  };
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+      scheduler_->run_cycle (
+        time_info, units::samples (0), *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();
@@ -250,12 +257,17 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
     max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = block_size;
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (block_size)
+  };
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+      scheduler_->run_cycle (
+        time_info, units::samples (0), *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();
@@ -275,12 +287,17 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
     max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = block_size;
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (block_size)
+  };
 
   for (auto _ : state)
     {
-      scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+      scheduler_->run_cycle (
+        time_info, units::samples (0), *transport_, *tempo_map_);
     }
 
   scheduler_->terminate_threads ();
@@ -355,3 +372,4 @@ BENCHMARK_REGISTER_F (GraphSchedulerBenchmark, ComplexGraph)
   ->Complexity ();
 
 BENCHMARK_MAIN ();
+}

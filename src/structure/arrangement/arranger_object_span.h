@@ -4,7 +4,6 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
-#include "utils/debug.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::structure::arrangement
@@ -243,7 +242,7 @@ stretch_region_contents (RegionT &r, double ratio)
 
       /* readjust end position to match the number of frames exactly */
       dsp::Position new_end_pos (
-        static_cast<signed_frame_t> (num_frames_per_channel),
+        static_cast<int64_t> (num_frames_per_channel),
         AUDIO_ENGINE->ticks_per_frame_);
 
       r.loopEndPosition ()->setSamples (num_frames_per_channel);
@@ -601,7 +600,7 @@ public:
   static auto split_bounded_object (
     const BoundedObjectT &self,
     const auto           &factory,
-    signed_frame_t        global_pos)
+    int64_t               global_pos)
     -> std::pair<ArrangerObjectUuidReference, ArrangerObjectUuidReference>
   {
     const auto &tempo_map = self.get_tempo_map ();
@@ -703,7 +702,7 @@ public:
           ->setSamples (local_pos);
       }
     get_derived_object (new_object2_ref)->position ()->setSamples (global_pos);
-    signed_frame_t r2_local_end =
+    int64_t r2_local_end =
       ArrangerObjectSpan::bounds_projection (get_derived_object (new_object2_ref))
         ->get_end_position_samples (true);
     r2_local_end -=

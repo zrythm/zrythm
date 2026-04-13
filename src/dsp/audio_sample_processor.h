@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,8 +6,6 @@
 #include <source_location>
 
 #include "dsp/processor_base.h"
-#include "utils/dsp.h"
-#include "utils/types.h"
 
 #include <boost/container/static_vector.hpp>
 
@@ -39,9 +37,9 @@ public:
     using UnmutableSampleSpan = std::span<const float>;
     PlayableSampleSingleChannel (
       UnmutableSampleSpan  buf,
-      channels_t           channel_index,
+      uint8_t              channel_index,
       float                volume,
-      nframes_t            start_offset,
+      units::sample_u32_t  start_offset,
       std::source_location source_location)
         : buf_ (buf), channel_index_ (channel_index), volume_ (volume),
           start_offset_ (start_offset), source_location_ (source_location)
@@ -53,10 +51,10 @@ public:
     /**
      * @brief Channel index to play this sample at.
      */
-    channels_t channel_index_;
+    uint8_t channel_index_;
 
     /** The current offset in the buffer. */
-    unsigned_frame_t offset_ = 0;
+    units::sample_u64_t offset_;
 
     /** The volume to play the sample at (ratio from
      * 0.0 to 2.0, where 1.0 is the normal volume). */
@@ -64,7 +62,7 @@ public:
 
     /** Offset relative to the current processing cycle
      * to start playing the sample. */
-    nframes_t start_offset_ = 0;
+    units::sample_u32_t start_offset_;
 
     // For debugging purposes
     std::source_location source_location_;
@@ -109,74 +107,14 @@ public:
   auto get_output_audio_port_rt () const { return audio_out_; }
 
   void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override
-  {
-    const auto cycle_offset = time_nfo.local_offset_;
-    const auto nframes = time_nfo.nframes_;
-
-    auto * out_port = get_output_audio_port_rt ();
-
-    // Clear output
-    out_port->clear_buffer (cycle_offset, nframes);
-
-    // Process the samples in the queue
-    for (auto it = samples_to_play_.begin (); it != samples_to_play_.end ();)
-      {
-        auto &sp = *it;
-
-        // If sample starts after this cycle, update offset and skip processing
-        if (sp.start_offset_ >= nframes)
-          {
-            sp.start_offset_ -= nframes;
-            ++it;
-            continue;
-          }
-
-        const auto process_samples =
-          [&] (nframes_t fader_buf_offset, nframes_t len) {
-            if (sp.channel_index_ < 2) [[likely]]
-              {
-                out_port->buffers ()->addFrom (
-                  sp.channel_index_, static_cast<int> (fader_buf_offset),
-                  &sp.buf_[sp.offset_], static_cast<int> (len), sp.volume_);
-              }
-            sp.offset_ += len;
-          };
-
-        // If sample is already playing
-        if (sp.offset_ > 0)
-          {
-            const auto max_frames =
-              std::min ((nframes_t) (sp.buf_.size () - sp.offset_), nframes);
-            process_samples (cycle_offset, max_frames);
-          }
-        // If we can start playback in this cycle
-        else if (sp.start_offset_ >= cycle_offset)
-          {
-            const auto max_frames = std::min (
-              (nframes_t) sp.buf_.size (),
-              (cycle_offset + nframes) - sp.start_offset_);
-            process_samples (sp.start_offset_, max_frames);
-          }
-
-        // If the sample is finished playing, remove it
-        if (sp.offset_ >= (unsigned_frame_t) sp.buf_.size ())
-          {
-            it = samples_to_play_.erase (it);
-          }
-        else
-          {
-            ++it;
-          }
-      }
-  }
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override
+    units::sample_u32_t      max_block_length) override
   {
     samples_to_play_.clear ();
     audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();

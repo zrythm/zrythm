@@ -40,8 +40,11 @@ set_target_properties(zrythm_actions_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-target_precompile_headers(zrythm_actions_lib PUBLIC
-  $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/track_operator.h>)
+target_precompile_headers(zrythm_actions_lib
+  PUBLIC
+    # This needs to be included first otherwise QString formatters fail to compile (partial template instantiation mixup with pch)
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/../utils/format_qt.h>
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/track_operator.h>)
 
 target_link_libraries(zrythm_actions_lib
   PUBLIC

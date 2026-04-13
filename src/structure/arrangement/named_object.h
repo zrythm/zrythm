@@ -24,7 +24,7 @@ class ArrangerObjectName : public QObject
 
 public:
   ArrangerObjectName (QObject * parent = nullptr) : QObject (parent) { }
-  Z_DISABLE_COPY_MOVE (ArrangerObjectName)
+  Q_DISABLE_COPY_MOVE (ArrangerObjectName)
   ~ArrangerObjectName () override = default;
 
   // ========================================================================

@@ -2,6 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/automation_function.h"
+#include "utils/enum_utils.h"
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::structure::arrangement::AutomationFunction::Type,
+  AutomationFunctionType,
+  QT_TR_NOOP_UTF8 ("Flip H"),
+  QT_TR_NOOP_UTF8 ("Flip V"),
+  QT_TR_NOOP_UTF8 ("Flatten"));
 
 namespace zrythm::structure::arrangement
 {

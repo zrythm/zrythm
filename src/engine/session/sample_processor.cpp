@@ -102,7 +102,6 @@ SampleProcessor::init_common ()
   // tracklist_ =
   //   std::make_unique<Tracklist> (audio_engine_->get_track_registry (), this);
   midi_events_ = std::make_unique<dsp::MidiEvents> ();
-  current_samples_.reserve (256);
 }
 
 void
@@ -114,27 +113,10 @@ SampleProcessor::init_loaded (device_io::AudioEngine * engine)
 }
 
 void
-SampleProcessor::remove_sample_playback (SamplePlayback &in_sp)
-{
-  auto it = std::ranges::find_if (current_samples_, [&in_sp] (const auto &sp) {
-    return &sp == &in_sp;
-  });
-
-  if (it != current_samples_.end ())
-    {
-      current_samples_.erase (it);
-    }
-  else
-    {
-      z_warning ("Sample playback not found for removal");
-    }
-}
-
-void
 SampleProcessor::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
 #if 0
   const auto    cycle_offset = time_nfo.local_offset_;
@@ -225,7 +207,7 @@ SampleProcessor::process_block (
               using TrackT = base_type<decltype (track)>;
               if constexpr (ProcessableTrack<TrackT>)
                 {
-                  EngineProcessTimeInfo inner_time_nfo = {
+                  dsp::graph::EngineProcessTimeInfo inner_time_nfo = {
                     .g_start_frame_ =
                       static_cast<unsigned_frame_t> (playhead_.frames_),
                     .g_start_frame_w_offset_ =
@@ -521,7 +503,7 @@ SampleProcessor::queue_file_or_chord_preset (
                             audio_engine_->ticks_per_frame_);
                           for (
                             const auto k : std::views::iota (
-                              0_zu, dsp::ChordDescriptor::MAX_NOTES))
+                              0zu, dsp::ChordDescriptor::MAX_NOTES))
                             {
                               if (descr.notes_[k])
                                 {

@@ -109,7 +109,7 @@ public:
     add_midi_region (MIDI_REGION7_START_BAR, MIDI_REGION7_END_BAR);
 
     /* create audio track with region */
-    FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+    FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
     Position       start, end;
     start.set_to_bar (AUDIO_REGION_START_BAR);
     end.set_to_bar (AUDIO_REGION_END_BAR);
@@ -462,7 +462,8 @@ TEST_F (ZrythmFixture, RemoveRangeWithObjectsInside)
 {
   /* create midi track with region */
   midi_track_pos = TRACKLIST->get_num_tracks ();
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "1_track_with_data.mid");
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "1_track_with_data.mid");
   Track::create_with_action (
     Track::Type::Midi, nullptr, &file, nullptr, midi_track_pos, 1, -1, nullptr);
   auto midi_track = TRACKLIST->get_track<MidiTrack> (midi_track_pos);

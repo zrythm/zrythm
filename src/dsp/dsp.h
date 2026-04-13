@@ -1,36 +1,20 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "../utils/utils.h"
-#include "./atomic_position.h"
 #include "./atomic_position_qml_adapter.h"
-#include "./audio_pool.h"
 #include "./chord_descriptor.h"
 #include "./curve.h"
-#include "./ditherer.h"
 #include "./file_audio_source.h"
 #include "./graph.h"
 #include "./graph_builder.h"
-#include "./graph_export.h"
 #include "./graph_node.h"
-#include "./graph_scheduler.h"
-#include "./graph_thread.h"
 #include "./itransport.h"
-#include "./kmeter_dsp.h"
 #include "./midi_event.h"
 #include "./musical_scale.h"
-#include "./panning.h"
 #include "./parameter.h"
-#include "./peak_dsp.h"
-#include "./peak_fall_smooth.h"
-#include "./playhead.h"
-#include "./playhead_qml_adapter.h"
 #include "./port_all.h"
 #include "./port_connection.h"
 #include "./port_span.h"
-#include "./stretcher.h"
-#include "./tempo_map.h"
 #include "./tempo_map_qml_adapter.h"
-#include "./true_peak_dsp.h"

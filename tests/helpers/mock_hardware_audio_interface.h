@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/iaudio_callback.h"
 
@@ -20,12 +22,12 @@ class MockHardwareAudioInterface : public dsp::IHardwareAudioInterface
 public:
   explicit MockHardwareAudioInterface (
     units::sample_rate_t sample_rate = units::sample_rate (48000),
-    nframes_t            block_length = 256)
+    units::sample_u32_t  block_length = units::samples (256))
       : sample_rate_ (sample_rate), block_length_ (block_length)
   {
   }
 
-  [[nodiscard]] nframes_t get_block_length () const override
+  [[nodiscard]] units::sample_u32_t get_block_length () const override
   {
     return block_length_;
   }
@@ -56,7 +58,7 @@ public:
 
 private:
   units::sample_rate_t  sample_rate_;
-  nframes_t             block_length_;
+  units::sample_u32_t   block_length_;
   dsp::IAudioCallback * callback_ = nullptr;
 };
 

@@ -15,7 +15,8 @@
 
 TEST_F (ZrythmFixture, HandleDropEmptyMidiFile)
 {
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "empty_midi_file_type1.mid");
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "empty_midi_file_type1.mid");
 
   ASSERT_ANY_THROW (TRACKLIST->import_files (
     nullptr, &file, nullptr, nullptr, -1, &PLAYHEAD, nullptr));

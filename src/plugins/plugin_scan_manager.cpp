@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -40,6 +40,7 @@
 #include <utility>
 
 #include "plugins/plugin_scan_manager.h"
+#include "utils/format_juce.h"
 
 using namespace zrythm::plugins;
 using namespace zrythm::plugins::scanner_private;

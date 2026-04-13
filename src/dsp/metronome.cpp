@@ -78,9 +78,9 @@ Metronome::find_and_queue_metronome_samples (
 
 void
 Metronome::custom_process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   if (!enabled_.load ())
     {
@@ -95,10 +95,9 @@ Metronome::custom_process_block (
     transport.get_play_state () == dsp::ITransport::PlayState::Rolling
     && transport.metronome_countin_frames_remaining () == units::samples (0))
     {
-      const auto loffset = units::samples (time_nfo.local_offset_);
-      const auto nframes = units::samples (time_nfo.nframes_);
-      const auto playhead_before =
-        units::samples (time_nfo.g_start_frame_w_offset_);
+      const auto loffset = time_nfo.local_offset_;
+      const auto nframes = time_nfo.nframes_;
+      const auto playhead_before = time_nfo.g_start_frame_w_offset_;
       const auto playhead_after_ignoring_loops = playhead_before + nframes;
       const auto playhead_after_taking_loops_into_account =
         transport.get_playhead_position_after_adding_frames_in_audio_thread (
@@ -141,7 +140,7 @@ void
 Metronome::custom_prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   AudioSampleProcessor::custom_prepare_for_processing (
     node, sample_rate, max_block_length);
@@ -164,12 +163,12 @@ Metronome::queue_metronome (
         dsp::AudioSampleProcessor::PlayableSampleSingleChannel (
           std::span (
             buffer_to_use.getReadPointer (0), buffer_to_use.getNumSamples ()),
-          0, volume, offset.in (units::samples), loc));
+          0, volume, offset, loc));
       add_sample_to_process (
         dsp::AudioSampleProcessor::PlayableSampleSingleChannel (
           std::span (
             buffer_to_use.getReadPointer (0), buffer_to_use.getNumSamples ()),
-          1, volume, offset.in (units::samples), loc));
+          1, volume, offset, loc));
     }
   else
     {
@@ -180,36 +179,34 @@ Metronome::queue_metronome (
               std::span (
                 buffer_to_use.getReadPointer (channel_index),
                 buffer_to_use.getNumSamples ()),
-              channel_index, volume, offset.in (units::samples), loc));
+              channel_index, volume, offset, loc));
         }
     }
 }
 
 void
 Metronome::queue_metronome_countin (
-  const EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport       &transport,
-  const dsp::TempoMap         &tempo_map)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport                   &transport,
+  const dsp::TempoMap                     &tempo_map)
 {
   const auto countin_frames_remaining =
     transport.metronome_countin_frames_remaining ();
 
   const auto frame_to_tick = [&tempo_map] (const auto frame) {
-    return static_cast<signed_frame_t> (std::round (
-      tempo_map.samples_to_tick (units::samples (static_cast<double> (frame)))
-        .in (units::tick)));
+    return au::round_as<int64_t> (
+      units::ticks, tempo_map.samples_to_tick (frame));
   };
   const auto tick_to_frame = [&tempo_map] (const units::tick_t tick) {
-    const units::sample_t s = tempo_map.tick_to_samples_rounded (
+    return tempo_map.tick_to_samples_rounded (
       static_cast<units::precise_tick_t> (tick));
-    return static_cast<signed_frame_t> (s.in (units::samples));
   };
 
-  signed_frame_t frames_per_beat{};
-  signed_frame_t frames_per_bar{};
+  units::sample_t frames_per_beat;
+  units::sample_t frames_per_bar;
   {
     const auto current_musical_pos = tempo_map.tick_to_musical_position (
-      units::ticks (frame_to_tick (time_nfo.g_start_frame_)));
+      frame_to_tick (time_nfo.g_start_frame_));
     const auto tick_at_bar_start = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 1, .sixteenth = 1, .tick = 0 });
@@ -233,13 +230,13 @@ Metronome::queue_metronome_countin (
   const auto full_block_size = time_nfo.local_offset_ + time_nfo.nframes_;
 
   // used to avoid appending beat events where we already have bar events
-  boost::container::static_vector<signed_frame_t, 16> queued_events;
+  boost::container::static_vector<units::sample_u64_t, 16> queued_events;
 
   const auto queue_events =
     [this, &time_nfo, countin_frames_remaining, full_block_size,
      &queued_events] (const auto &frames_per_unit, bool emphasis) {
-      const auto offset0 = -countin_frames_remaining.in (
-        units::samples); // time of first sample in block
+      const auto offset0 =
+        -countin_frames_remaining; // time of first sample in block
 
       for (int k = 1;; ++k)
         {
@@ -258,7 +255,7 @@ Metronome::queue_metronome_countin (
                 && idx < (time_nfo.local_offset_ + time_nfo.nframes_)
                 && !std::ranges::contains (queued_events, idx))
                 {
-                  queue_metronome (emphasis, units::samples (idx));
+                  queue_metronome (emphasis, idx);
                   queued_events.push_back (idx);
                 }
             }

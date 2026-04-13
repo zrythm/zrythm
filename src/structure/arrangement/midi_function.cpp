@@ -4,8 +4,21 @@
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/project/project.h"
+#include "utils/enum_utils.h"
 #include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::structure::arrangement::MidiFunction::Type,
+  MidiFunctionType,
+  QT_TR_NOOP_UTF8 ("Crescendo"),
+  QT_TR_NOOP_UTF8 ("Flam"),
+  QT_TR_NOOP_UTF8 ("Flip H"),
+  QT_TR_NOOP_UTF8 ("Flip V"),
+  QT_TR_NOOP_UTF8 ("Legato"),
+  QT_TR_NOOP_UTF8 ("Portato"),
+  QT_TR_NOOP_UTF8 ("Staccato"),
+  QT_TR_NOOP_UTF8 ("Strum"));
 
 namespace zrythm::structure::arrangement
 {

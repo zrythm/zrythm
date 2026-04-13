@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,7 +7,6 @@
 #include "dsp/cv_port.h"
 #include "dsp/graph_node.h"
 #include "dsp/midi_port.h"
-#include "utils/format.h"
 #include "utils/math_utils.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
@@ -85,13 +84,7 @@ public:
     Us,
   };
 
-  static utils::Utf8String unit_to_string (Unit unit)
-  {
-    constexpr std::array<std::u8string_view, 8> port_unit_strings = {
-      u8"none", u8"Hz", u8"MHz", u8"dB", u8"°", u8"s", u8"ms", u8"μs",
-    };
-    return port_unit_strings.at (ENUM_VALUE_TO_INT (unit));
-  }
+  static utils::Utf8String unit_to_string (Unit unit);
 
 public:
   ParameterRange () = default;
@@ -344,14 +337,14 @@ public:
    * by the owning processor.
    */
   void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
   void release_resources () override;
 
   // ========================================================================

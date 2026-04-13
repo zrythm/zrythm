@@ -3,12 +3,17 @@
 
 #pragma once
 
+#include <filesystem>
+
 #include "utils/utf8_string.h"
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include "juce_wrapper.h"
+namespace juce
+{
+class FileSearchPath;
+}
 
 namespace zrythm::utils
 {
@@ -31,7 +36,7 @@ public:
   Q_INVOKABLE void addPath (const QString &path);
   Q_INVOKABLE void clear ();
 
-  void                 add_path (const fs::path &path);
+  void                 add_path (const std::filesystem::path &path);
   void                 add_path (const Utf8String &path);
   void                 add_paths (const juce::FileSearchPath &paths);
   juce::FileSearchPath get_as_juce_file_search_path () const;
@@ -49,7 +54,7 @@ public:
   bool empty () const { return paths_.empty (); }
 
 private:
-  std::vector<fs::path> paths_;
+  std::vector<std::filesystem::path> paths_;
 };
 
 } // namespace zrythm::utils

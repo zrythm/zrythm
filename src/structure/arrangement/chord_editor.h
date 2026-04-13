@@ -7,6 +7,7 @@
 #include "dsp/musical_scale.h"
 #include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
+#include "utils/midi.h"
 
 class ChordPreset;
 

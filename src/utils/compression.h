@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_COMPRESSION_H__
-#define __UTILS_COMPRESSION_H__
+#pragma once
 
-#include "utils/types.h"
 #include "utils/utf8_string.h"
 
 /**
@@ -30,5 +28,3 @@ CStringRAII
 decompress_string_from_base64 (const QByteArray &b64);
 
 }; // namespace zrythm::utils::compression
-
-#endif // __UTILS_COMPRESSION_H__

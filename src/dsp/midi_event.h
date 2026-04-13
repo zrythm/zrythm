@@ -6,8 +6,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 
-#include "utils/types.h"
+#include "utils/midi.h"
+#include "utils/units.h"
 
 #include <crill/spin_mutex.h>
 
@@ -222,8 +224,8 @@ public:
   [[gnu::hot]] void append_w_filter (
     const MidiEventVector              &src,
     std::optional<std::array<bool, 16>> channels,
-    nframes_t                           local_offset,
-    nframes_t                           nframes);
+    units::sample_u32_t                 local_offset,
+    units::sample_u32_t                 nframes);
 
   /**
    * Appends the events from @p src.
@@ -231,8 +233,10 @@ public:
    * @param local_offset The start frame offset from 0 in this cycle.
    * @param nframes Number of frames to process.
    */
-  void
-  append (const MidiEventVector &src, nframes_t local_offset, nframes_t nframes);
+  void append (
+    const MidiEventVector &src,
+    units::sample_u32_t    local_offset,
+    units::sample_u32_t    nframes);
 
   using NotePitchToChordDescriptorFunc =
     std::function<const ChordDescriptor *(midi_byte_t)>;
@@ -247,8 +251,8 @@ public:
     const MidiEventVector         &src,
     NotePitchToChordDescriptorFunc note_number_to_chord_descriptor,
     midi_byte_t                    velocity_to_use,
-    nframes_t                      local_offset,
-    nframes_t                      nframes);
+    units::sample_u32_t            local_offset,
+    units::sample_u32_t            nframes);
 
   /**
    * Adds a note on event to the given MidiEvents.
@@ -445,7 +449,7 @@ public:
    * @param local_offset The start frame offset from 0 in this cycle.
    * @param nframes Number of frames to process.
    */
-  void dequeue (nframes_t local_offset, nframes_t nframes);
+  void dequeue (units::sample_u32_t local_offset, units::sample_u32_t nframes);
 
 public:
   /** Events to use in this cycle. */

@@ -33,7 +33,7 @@ public:
   Q_ENUM (ToolType)
 
   ArrangerTool (QObject * parent = nullptr);
-  Z_DISABLE_COPY_MOVE (ArrangerTool)
+  Q_DISABLE_COPY_MOVE (ArrangerTool)
   ~ArrangerTool () override;
 
   [[nodiscard]] int toolValue () const;

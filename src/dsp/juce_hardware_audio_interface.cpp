@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "dsp/juce_hardware_audio_interface.h"
+#include "utils/format_juce.h"
 #include "utils/logger.h"
 
 namespace zrythm::dsp
@@ -48,12 +49,12 @@ JuceHardwareAudioInterface::~JuceHardwareAudioInterface ()
   callback_adapters_.clear ();
 }
 
-[[nodiscard]] nframes_t
+[[nodiscard]] units::sample_u32_t
 JuceHardwareAudioInterface::get_block_length () const
 {
   auto * dev = device_manager_->getCurrentAudioDevice ();
   assert (dev != nullptr);
-  return dev->getCurrentBufferSizeSamples ();
+  return units::samples (dev->getCurrentBufferSizeSamples ());
 }
 
 [[nodiscard]] units::sample_rate_t

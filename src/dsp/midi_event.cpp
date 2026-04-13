@@ -41,9 +41,9 @@ constexpr std::array<std::string_view, 5> midi_event_type_strings = {
 
 void
 MidiEventVector::append (
-  const MidiEventVector &src,
-  const nframes_t        local_offset,
-  const nframes_t        nframes)
+  const MidiEventVector    &src,
+  const units::sample_u32_t local_offset,
+  const units::sample_u32_t nframes)
 {
   append_w_filter (src, std::nullopt, local_offset, nframes);
 }
@@ -52,10 +52,10 @@ void
 MidiEventVector::transform_chord_and_append (
   const MidiEventVector &src,
   std::function<const ChordDescriptor *(midi_byte_t)>
-                  note_number_to_chord_descriptor,
-  midi_byte_t     velocity_to_use,
-  const nframes_t local_offset,
-  const nframes_t nframes)
+                            note_number_to_chord_descriptor,
+  midi_byte_t               velocity_to_use,
+  const units::sample_u32_t local_offset,
+  const units::sample_u32_t nframes)
 {
   {
     const std::lock_guard<crill::spin_mutex> lock (src.lock_);
@@ -63,7 +63,8 @@ MidiEventVector::transform_chord_and_append (
       {
         /* only copy events inside the current time range */
         if (
-          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
+          units::samples (src_ev.time_) < local_offset
+          || units::samples (src_ev.time_) >= local_offset + nframes)
           {
             continue;
           }
@@ -104,8 +105,8 @@ void
 MidiEventVector::append_w_filter (
   const MidiEventVector              &src,
   std::optional<std::array<bool, 16>> channels,
-  const nframes_t                     local_offset,
-  const nframes_t                     nframes)
+  const units::sample_u32_t           local_offset,
+  const units::sample_u32_t           nframes)
 {
   {
     const std::lock_guard<crill::spin_mutex> lock (src.lock_);
@@ -113,7 +114,8 @@ MidiEventVector::append_w_filter (
       {
         /* only copy events inside the current time range */
         if (
-          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
+          units::samples (src_ev.time_) < local_offset
+          || units::samples (src_ev.time_) >= local_offset + nframes)
           {
             if (ZRYTHM_TESTING)
               {
@@ -254,7 +256,9 @@ MidiEvents::has_note_on (bool check_main, bool check_queued)
 #endif
 
 void
-MidiEvents::dequeue (const nframes_t local_offset, const nframes_t nframes)
+MidiEvents::dequeue (
+  const units::sample_u32_t local_offset,
+  const units::sample_u32_t nframes)
 {
   if (ZRYTHM_TESTING) [[unlikely]]
     {
@@ -263,7 +267,8 @@ MidiEvents::dequeue (const nframes_t local_offset, const nframes_t nframes)
 
   active_events_.append (queued_events_, local_offset, nframes);
   queued_events_.remove_if ([local_offset, nframes] (const MidiEvent &ev) {
-    return ev.time_ >= local_offset && ev.time_ < local_offset + nframes;
+    return units::samples (ev.time_) >= local_offset
+           && units::samples (ev.time_) < local_offset + nframes;
   });
 }
 

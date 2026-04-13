@@ -66,7 +66,7 @@ protected:
 
     for (const auto &path : path_list)
       {
-        paths->add_path (fs::path (path.toStdString ()));
+        paths->add_path (std::filesystem::path (path.toStdString ()));
       }
 
     return paths;
@@ -183,7 +183,7 @@ TEST_F (BundledVST3PluginsScanTest, PluginScanManagerIntegration)
         auto search_paths = get_vst3_search_paths ();
         for (const auto &path : search_paths->getPaths ())
           {
-            paths->add_path (fs::path (path.toStdString ()));
+            paths->add_path (std::filesystem::path (path.toStdString ()));
           }
       }
     return paths;

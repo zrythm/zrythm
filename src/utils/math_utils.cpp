@@ -11,18 +11,17 @@
 namespace zrythm::utils::math
 {
 
-audio_sample_type_t
-calculate_rms_amp (const audio_sample_type_t * buf, const nframes_t nframes)
+float
+calculate_rms_amp (const float * buf, const uint32_t nframes)
 {
-  audio_sample_type_t sum = 0;
-  audio_sample_type_t sample = 0;
+  float sum = 0;
+  float sample = 0;
   for (unsigned int i = 0; i < nframes; i += RMS_FRAMES)
     {
       sample = buf[i];
       sum += (sample * sample);
     }
-  return std::sqrtf (
-    sum / ((audio_sample_type_t) nframes / (audio_sample_type_t) RMS_FRAMES));
+  return std::sqrtf (sum / ((float) nframes / (float) RMS_FRAMES));
 }
 
 /**
@@ -64,7 +63,7 @@ is_string_valid_float (const std::string &str, float * ret)
     sscanf (str.c_str (), "%f %n", &dummy, &len) == 1
     && len == (int) strlen (str.c_str ()))
     {
-      if (ret)
+      if (ret != nullptr)
         {
           *ret = dummy;
         }

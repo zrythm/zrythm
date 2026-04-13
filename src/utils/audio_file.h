@@ -1,10 +1,7 @@
-// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __IO_AUDIO_FILE_H__
-#define __IO_AUDIO_FILE_H__
-
-#include "zrythm-config.h"
+#pragma once
 
 #include <memory>
 #include <utility>
@@ -55,7 +52,7 @@ public:
    * @param filepath Path to the file.
    * @param for_writing Whether to create the file for writing.
    */
-  AudioFile (fs::path filepath, bool for_writing = false)
+  AudioFile (std::filesystem::path filepath, bool for_writing = false)
       : filepath_ (std::move (filepath)), for_writing_ (for_writing)
   {
   }
@@ -114,7 +111,7 @@ private:
 
 public:
   /** Absolute path. */
-  fs::path filepath_;
+  std::filesystem::path filepath_;
 
   AudioFileMetadata metadata_;
 
@@ -125,5 +122,3 @@ public:
 };
 
 }; // namespace zrythm::utils::audio
-
-#endif

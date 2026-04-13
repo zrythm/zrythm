@@ -36,7 +36,7 @@ namespace zrythm::dsp::graph
 GraphScheduler::GraphScheduler (
   RunOnMainThreadFunc                 run_on_main_thread_func,
   units::sample_rate_t                sample_rate,
-  nframes_t                           max_block_length,
+  units::sample_u32_t                 max_block_length,
   bool                                realtime_threads,
   std::optional<juce::AudioWorkgroup> thread_workgroup)
     : thread_workgroup_ (std::move (thread_workgroup)),
@@ -49,7 +49,7 @@ GraphScheduler::GraphScheduler (
         juce::Thread::RealtimeOptions ()
           .withPriority (9)
           .withApproximateAudioProcessingTime (
-            static_cast<int> (max_block_length),
+            max_block_length.in<int> (units::samples),
             sample_rate.in (units::sample_rate));
     }
 }
@@ -78,7 +78,7 @@ void
 GraphScheduler::rechain_from_node_collection (
   GraphNodeCollection &&nodes,
   units::sample_rate_t  sample_rate,
-  nframes_t             max_block_length)
+  units::sample_u32_t   max_block_length)
 {
   z_debug ("rechaining graph...");
 
@@ -280,10 +280,10 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 
 void
 GraphScheduler::run_cycle (
-  const EngineProcessTimeInfo time_nfo,
-  const nframes_t             remaining_preroll_frames,
-  const dsp::ITransport      &transport,
-  const dsp::TempoMap        &tempo_map)
+  const dsp::graph::EngineProcessTimeInfo time_nfo,
+  units::sample_u64_t                     remaining_preroll_frames,
+  const dsp::ITransport                  &transport,
+  const dsp::TempoMap                    &tempo_map)
 {
   time_nfo_ = time_nfo;
   remaining_preroll_frames_ = remaining_preroll_frames;

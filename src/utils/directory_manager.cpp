@@ -7,17 +7,17 @@
 
 using namespace zrythm;
 
-fs::path
+std::filesystem::path
 DirectoryManager::get_prefix () const
 {
   // return parent path of the executable's owner path (1 level above "bin")
   return application_dir_path_provider_ ().parent_path ();
 }
 
-fs::path
+std::filesystem::path
 DirectoryManager::get_user_dir (bool force_default)
 {
-  fs::path dir = user_dir_provider_ ();
+  std::filesystem::path dir = user_dir_provider_ ();
   if (force_default || dir.empty ())
     {
       dir = default_user_dir_provider_ ();
@@ -26,19 +26,19 @@ DirectoryManager::get_user_dir (bool force_default)
   return dir;
 }
 
-fs::path
+std::filesystem::path
 DirectoryManager::get_default_user_dir ()
 {
   return get_user_dir (true);
 }
 
-fs::path
+std::filesystem::path
 IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
 {
   /* handle system dirs */
   if (type < DirectoryManager::DirectoryType::USER_TOP)
     {
-      fs::path prefix = get_prefix ();
+      std::filesystem::path prefix = get_prefix ();
 
       switch (type)
         {
@@ -52,13 +52,13 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
           return prefix / LIBDIR_NAME;
         case DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR:
           {
-            fs::path parent_path =
+            std::filesystem::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_LIBDIR);
             return parent_path / "zrythm";
           }
         case DirectoryManager::DirectoryType::SYSTEM_BUNDLED_PLUGINSDIR:
           {
-            fs::path parent_path =
+            std::filesystem::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_ZRYTHM_LIBDIR);
             return parent_path / "lv2";
           }
@@ -68,7 +68,7 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
             // On macOS, VST3 plugins are bundled in Contents/Resources/vst3
             return prefix / "Resources" / "vst3";
 #else
-            fs::path parent_path =
+            std::filesystem::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_PARENT_LIBDIR);
             return parent_path / "vst3";
 #endif
@@ -85,13 +85,13 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
           return prefix / DATADIR_NAME / "zrythm" / "themes";
         case DirectoryManager::DirectoryType::SYSTEM_THEMES_CSS_DIR:
           {
-            fs::path parent_path =
+            std::filesystem::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_THEMESDIR);
             return parent_path / "css";
           }
         case DirectoryManager::DirectoryType::SYSTEM_THEMES_ICONS_DIR:
           {
-            fs::path parent_path =
+            std::filesystem::path parent_path =
               get_dir (DirectoryManager::DirectoryType::SYSTEM_THEMESDIR);
             return parent_path / "icons";
           }
@@ -106,7 +106,7 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
   /* handle user dirs */
   else
     {
-      fs::path user_dir = get_user_dir (false);
+      std::filesystem::path user_dir = get_user_dir (false);
 
       switch (type)
         {
@@ -140,13 +140,13 @@ IDirectoryManager::get_dir (DirectoryManager::DirectoryType type)
   z_return_val_if_reached ("");
 }
 
-fs::path
+std::filesystem::path
 TestingDirectoryManager::get_user_dir (bool force_default)
 {
   return get_testing_dir ();
 }
 
-fs::path
+std::filesystem::path
 TestingDirectoryManager::get_default_user_dir ()
 {
   return get_testing_dir ();
@@ -162,7 +162,7 @@ TestingDirectoryManager::remove_testing_dir ()
   testing_dir_.clear ();
 }
 
-const fs::path &
+const std::filesystem::path &
 TestingDirectoryManager::get_testing_dir ()
 {
   if (testing_dir_.empty ())
@@ -176,7 +176,7 @@ TestingDirectoryManager::get_testing_dir ()
   return testing_dir_;
 }
 
-fs::path
+std::filesystem::path
 TestingDirectoryManager::get_prefix () const
 {
   return ZRYTHM_PREFIX;

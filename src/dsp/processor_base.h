@@ -1,9 +1,7 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
-
-#include <utility>
 
 #include "dsp/graph.h"
 #include "dsp/graph_node.h"
@@ -26,7 +24,7 @@ class ProcessorBase : public dsp::graph::IProcessable
   struct BaseProcessingCache
   {
     units::sample_rate_t sample_rate_;
-    nframes_t            max_block_length_{};
+    units::sample_u32_t  max_block_length_{};
 
     std::vector<dsp::ProcessorParameter *> live_params_;
     std::vector<dsp::PortPtrVariant>       live_input_ports_;
@@ -74,13 +72,13 @@ public:
    * processor implementations to do.
    */
   void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept final;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept final;
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) final;
+    units::sample_u32_t      max_block_length) final;
   void release_resources () final;
 
   // ============================================================================
@@ -92,14 +90,14 @@ protected:
    * By default, this does passthrough to same-type ports.
    */
   virtual void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]];
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]];
 
   virtual void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length)
+    units::sample_u32_t      max_block_length)
   {
   }
 

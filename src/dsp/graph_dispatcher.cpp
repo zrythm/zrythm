@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
 
 #include "dsp/graph.h"
 #include "dsp/graph_dispatcher.h"
+#include "dsp/graph_export.h"
 #include "dsp/graph_pruner.h"
 
 namespace zrythm::dsp
@@ -24,11 +25,11 @@ DspGraphDispatcher::DspGraphDispatcher (
 {
 }
 
-nframes_t
+units::sample_u32_t
 DspGraphDispatcher::get_max_route_playback_latency ()
 {
   if (scheduler_ == nullptr)
-    return 0;
+    return {};
 
   max_route_playback_latency_ =
     scheduler_->get_nodes ().get_max_route_playback_latency ();
@@ -38,7 +39,7 @@ DspGraphDispatcher::get_max_route_playback_latency ()
 
 void
 DspGraphDispatcher::preprocess_at_start_of_cycle (
-  const EngineProcessTimeInfo &time_nfo) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo) noexcept
 {
 
   // TODO: fill live key-press events for the currently active piano roll
@@ -84,11 +85,11 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
 
 void
 DspGraphDispatcher::start_cycle (
-  const ITransport     &current_transport_state,
-  EngineProcessTimeInfo time_nfo,
-  nframes_t             remaining_latency_preroll,
-  bool                  realtime_context,
-  const dsp::TempoMap  &tempo_map) noexcept
+  const ITransport                 &current_transport_state,
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  units::sample_u64_t               remaining_latency_preroll,
+  bool                              realtime_context,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   if (scheduler_ == nullptr)
     {

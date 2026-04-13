@@ -8,6 +8,7 @@
 #include "gui/backend/plugin_protocol_paths.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/out_of_process_scanner.h"
+#include "utils/io_utils.h"
 
 #include <QtConcurrent>
 
@@ -124,7 +125,7 @@ PluginManager::add_descriptor (const zrythm::plugins::PluginDescriptor &descr)
 #endif
 }
 
-fs::path
+std::filesystem::path
 PluginManager::get_known_plugins_xml_path ()
 {
   QString local_app_data_path =

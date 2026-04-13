@@ -29,7 +29,7 @@ public:
     NameProvider                                  name_provider,
     QObject *                                     parent = nullptr);
   ~RecordableTrackMixin () override = default;
-  Z_DISABLE_COPY_MOVE (RecordableTrackMixin)
+  Q_DISABLE_COPY_MOVE (RecordableTrackMixin)
 
   // ========================================================================
   // QML Interface

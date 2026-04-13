@@ -5,8 +5,6 @@
 
 #include "dsp/curve.h"
 #include "structure/arrangement/arranger_object_span.h"
-#include "utils/format.h"
-#include "utils/types.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -60,14 +58,3 @@ public:
   static void apply (ArrangerObjectSpan sel, Type type, Options opts);
 };
 }
-DEFINE_ENUM_FORMATTER (
-  zrythm::structure::arrangement::MidiFunction::Type,
-  MidiFunctionType,
-  QT_TR_NOOP_UTF8 ("Crescendo"),
-  QT_TR_NOOP_UTF8 ("Flam"),
-  QT_TR_NOOP_UTF8 ("Flip H"),
-  QT_TR_NOOP_UTF8 ("Flip V"),
-  QT_TR_NOOP_UTF8 ("Legato"),
-  QT_TR_NOOP_UTF8 ("Portato"),
-  QT_TR_NOOP_UTF8 ("Staccato"),
-  QT_TR_NOOP_UTF8 ("Strum"));

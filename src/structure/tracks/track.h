@@ -12,7 +12,6 @@
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane_list.h"
 #include "structure/tracks/track_processor.h"
-#include "utils/format.h"
 #include "utils/playback_cache_scheduler.h"
 
 #include <QColor>
@@ -26,7 +25,7 @@ class TempoMapWrapper;
 
 namespace zrythm::structure::tracks
 {
-using SoloedTracksExistGetter = GenericBoolGetter;
+using SoloedTracksExistGetter = std::function<bool ()>;
 
 struct BaseTrackDependencies
 {
@@ -93,14 +92,13 @@ public:
   using PortType = dsp::PortType;
   using PluginRegistry = plugins::PluginRegistry;
   using PluginPtrVariant = PluginRegistry::VariantType;
-  using PluginSlot = plugins::PluginSlot;
   using ArrangerObject = structure::arrangement::ArrangerObject;
   using ArrangerObjectPtrVariant =
     structure::arrangement::ArrangerObjectPtrVariant;
   using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using Color = utils::Color;
 
-  enum class Type : basic_enum_base_type_t
+  enum class Type : uint8_t
   {
     /**
      * Instrument tracks must have an Instrument plugin at the first slot and
@@ -303,7 +301,7 @@ public:
 
 public:
   ~Track () override;
-  Z_DISABLE_COPY_MOVE (Track)
+  Q_DISABLE_COPY_MOVE (Track)
 
 protected:
   enum class TrackFeatures : std::uint8_t
@@ -490,6 +488,11 @@ public:
 
   bool can_be_group_target () const { return type_can_be_group_target (type_); }
 
+  /**
+   * @brief Sets a default name for this track (based on its type).
+   */
+  void set_default_name ();
+
   template <arrangement::RegionObject RegionT>
   auto generate_name_for_region (
     const RegionT    &region,
@@ -533,6 +536,8 @@ public:
    */
   void collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
 
+// TODO
+#if 0
   /**
    * Returns if @p descr can be dropped at @p slot_type in a track of type @p
    * track_type.
@@ -541,12 +546,7 @@ public:
     const plugins::PluginDescriptor &descr,
     zrythm::plugins::PluginSlotType  slot_type,
     Track::Type                      track_type);
-
-  /**
-   * Set various caches (snapshots, track name hash, plugin input/output
-   * ports, etc).
-   */
-  void set_caches (CacheType types);
+#endif
 
   utils::Utf8String get_full_designation_for_port (const dsp::Port &port) const;
 
@@ -584,13 +584,6 @@ public:
 protected:
   friend void
   init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type);
-
-  /**
-   * @brief Set the playback caches for a track.
-   *
-   * This is called by @ref set_caches().
-   */
-  virtual void set_playback_caches () { }
 
   void generate_automation_tracks_for_processor (
     std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ats,
@@ -833,19 +826,3 @@ struct FinalTrackDependencies : public BaseTrackDependencies
 };
 
 } // namespace zrythm::structure::tracks
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::structure::tracks::Track::Type,
-  Track_Type,
-  QT_TR_NOOP_UTF8 ("Instrument"),
-  QT_TR_NOOP_UTF8 ("Audio"),
-  QT_TR_NOOP_UTF8 ("Master"),
-  QT_TR_NOOP_UTF8 ("Chord"),
-  QT_TR_NOOP_UTF8 ("Marker"),
-  QT_TR_NOOP_UTF8 ("Modulator"),
-  QT_TR_NOOP_UTF8 ("Audio FX"),
-  QT_TR_NOOP_UTF8 ("Audio Group"),
-  QT_TR_NOOP_UTF8 ("MIDI"),
-  QT_TR_NOOP_UTF8 ("MIDI FX"),
-  QT_TR_NOOP_UTF8 ("MIDI Group"),
-  QT_TR_NOOP_UTF8 ("Folder"));

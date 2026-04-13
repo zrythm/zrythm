@@ -3,10 +3,6 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
-#include <span>
-
 #ifdef __GNUC__
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wundef"

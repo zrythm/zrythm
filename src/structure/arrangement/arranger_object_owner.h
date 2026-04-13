@@ -48,7 +48,7 @@ public:
       }
   }
   virtual ~ArrangerObjectOwner () = default;
-  Z_DISABLE_COPY_MOVE (ArrangerObjectOwner)
+  Q_DISABLE_COPY_MOVE (ArrangerObjectOwner)
 
   auto &get_children_vector () const
   {

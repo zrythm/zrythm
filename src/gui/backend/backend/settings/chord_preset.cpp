@@ -26,17 +26,15 @@ ChordPreset::get_info_text () const
 {
   auto str = utils::Utf8String::from_qstring (QObject::tr ("Chords"));
   str += u8":\n";
-  const auto joined_str = fmt::format (
-    "{}",
-    fmt::join (
-      descr_ | std::views::filter ([] (const auto &descr) {
-        return descr.type_ != dsp::ChordType::None;
-      }) | std::views::transform ([] (const auto &descr) {
-        return descr.to_string ().str ();
-      }),
-      ", "));
+  const auto joined_str = utils::Utf8String::join (
+    descr_ | std::views::filter ([] (const auto &descr) {
+      return descr.type_ != dsp::ChordType::None;
+    }) | std::views::transform ([] (const auto &descr) {
+      return descr.to_string ();
+    }),
+    u8", ");
 
-  return str + utils::Utf8String::from_utf8_encoded_string (joined_str);
+  return str + joined_str;
 }
 
 ChordPreset::NameT

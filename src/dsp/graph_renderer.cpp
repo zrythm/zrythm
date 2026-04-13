@@ -7,6 +7,7 @@
 #include "dsp/graph_renderer.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/transport.h"
+#include "utils/format.h"
 
 #include <QtConcurrentRun>
 
@@ -24,12 +25,11 @@ GraphRenderer::render (
   z_debug ("Rendering range {}...", range);
 
   graph::GraphScheduler graph_scheduler (
-    std::move (run_on_main_thread), options.sample_rate_,
-    options.block_length_.in (units::samples), false);
+    std::move (run_on_main_thread), options.sample_rate_, options.block_length_,
+    false);
 
   graph_scheduler.rechain_from_node_collection (
-    std::move (nodes), options.sample_rate_,
-    options.block_length_.in (units::samples));
+    std::move (nodes), options.sample_rate_, options.block_length_);
   graph_scheduler.start_threads (options.num_threads_);
 
   // Update latencies and get max latency for preroll
@@ -38,10 +38,10 @@ GraphRenderer::render (
     graph_scheduler.get_nodes ().get_max_route_playback_latency ();
 
   const auto total_frames = range.second - range.first;
-  const auto num_samples = total_frames.in<int> (units::samples);
+  const auto num_samples = total_frames;
 
   // Handle empty range case
-  if (num_samples <= 0)
+  if (num_samples <= units::samples (0))
     {
       promise.setException (
         std::make_exception_ptr (
@@ -52,7 +52,7 @@ GraphRenderer::render (
   // Initialize output buffer with latency preroll added
   const auto total_samples_with_latency = num_samples + max_latency_frames;
   juce::AudioSampleBuffer output{
-    2, static_cast<int> (total_samples_with_latency)
+    2, total_samples_with_latency.in<int> (units::samples)
   };
   output.clear ();
 
@@ -75,9 +75,9 @@ GraphRenderer::render (
   };
 
   // Process in blocks
-  signed_frame_t covered_frames = 0;
-  auto           current_pos = range.first;
-  auto           latency_preroll_frames = max_latency_frames;
+  units::sample_t covered_frames;
+  auto            current_pos = range.first;
+  auto            latency_preroll_frames = max_latency_frames;
 
   // Prepare for progress reporting
   promise.setProgressRange (0, output.getNumSamples ());
@@ -93,26 +93,24 @@ GraphRenderer::render (
       // Calculate number of frames to process in this block
       const auto frames_remaining = range.second - current_pos;
       const auto nframes = [&] () {
-        const auto num_frames = std::min (
-          frames_remaining.in<signed_frame_t> (units::samples),
-          options.block_length_.in<signed_frame_t> (units::samples));
-        return latency_preroll_frames > 0
+        const auto num_frames =
+          std::min (frames_remaining, options.block_length_);
+        return latency_preroll_frames > units::samples (0)
                  ? std::min (
-                     static_cast<signed_frame_t> (latency_preroll_frames), num_frames)
+                     latency_preroll_frames.as<int64_t> (units::samples), num_frames)
                  : num_frames;
       }();
 
       // Setup time info for this processing cycle
-      EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = current_pos.in<unsigned_frame_t> (units::samples),
-        .g_start_frame_w_offset_ =
-          current_pos.in<unsigned_frame_t> (units::samples),
-        .local_offset_ = 0,
-        .nframes_ = static_cast<nframes_t> (nframes),
+      dsp::graph::EngineProcessTimeInfo time_nfo = {
+        .g_start_frame_ = current_pos,
+        .g_start_frame_w_offset_ = current_pos,
+        .local_offset_ = units::samples (0),
+        .nframes_ = nframes,
       };
 
       // Only update transport position after latency preroll is exhausted
-      if (latency_preroll_frames <= 0)
+      if (latency_preroll_frames <= units::samples (0))
         {
           transport_snapshot.set_position (current_pos);
         }
@@ -137,7 +135,7 @@ GraphRenderer::render (
                 {
                   temp_buffer.addFrom (
                     channel_index, 0, *audio_port->buffers (), channel_index, 0,
-                    static_cast<int> (nframes));
+                    nframes.in<int> (units::samples));
                 }
             }
         }
@@ -149,26 +147,28 @@ GraphRenderer::render (
           if (ch < temp_buffer.getNumChannels ())
             {
               output.copyFrom (
-                ch, static_cast<int> (output_offset), temp_buffer, ch, 0,
-                static_cast<int> (nframes));
+                ch, output_offset.in<int> (units::samples), temp_buffer, ch, 0,
+                nframes.in<int> (units::samples));
             }
         }
 
       // Update position and counters
-      current_pos += units::samples (latency_preroll_frames > 0 ? 0 : nframes);
+      current_pos +=
+        latency_preroll_frames > units::samples (0)
+          ? units::samples (0).as<int64_t> (units::samples)
+          : nframes;
       covered_frames += nframes;
 
       // Update latency preroll frames for next iteration
-      if (latency_preroll_frames > 0)
+      if (latency_preroll_frames > units::samples (0))
         {
           assert (latency_preroll_frames >= nframes);
-          latency_preroll_frames =
-            static_cast<nframes_t> (latency_preroll_frames - nframes);
+          latency_preroll_frames = latency_preroll_frames - nframes;
         }
 
       // Update progress
       promise.setProgressValueAndText (
-        static_cast<int> (covered_frames),
+        covered_frames.in<int> (units::samples),
         QObject::tr ("Rendering to audio..."));
     }
 

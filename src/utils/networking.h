@@ -5,7 +5,6 @@
 
 #include <filesystem>
 
-#include "utils/types.h"
 #include "utils/utf8_string.h"
 
 #include "juce_wrapper.h"
@@ -23,16 +22,16 @@ public:
   {
   public:
     MultiPartMimeObject (
-      std::string name,
-      fs::path    filepath,
-      std::string mimetype);
+      std::string           name,
+      std::filesystem::path filepath,
+      std::string           mimetype);
 
     friend class URL;
 
   private:
-    std::string name_;
-    fs::path    filepath_;
-    std::string mimetype_;
+    std::string           name_;
+    std::filesystem::path filepath_;
+    std::string           mimetype_;
   };
 
 public:

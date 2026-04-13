@@ -43,14 +43,13 @@ MidiTimelineDataProvider::get_midi_events () const
 
 void
 MidiTimelineDataProvider::process_midi_events (
-  const EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState   transport_state,
-  dsp::MidiEventVector        &output_buffer) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  dsp::ITransport::PlayState               transport_state,
+  dsp::MidiEventVector                    &output_buffer) noexcept
 {
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
-  const auto current_transport_position =
-    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
+  const auto current_transport_position = time_nfo.g_start_frame_w_offset_;
 
   // Check for transport position jump (seek, loop, etc.)
   const bool transport_position_jumped =
@@ -68,10 +67,11 @@ MidiTimelineDataProvider::process_midi_events (
     transport_stopped_rolling
     || (transport_rolling && transport_position_jumped))
     {
-      for (int channel = 1; channel <= 16; ++channel)
+      for (const auto channel : std::views::iota (1, 17))
         {
           output_buffer.add_all_notes_off (
-            channel, time_nfo.local_offset_, true); // All notes off
+            channel, time_nfo.local_offset_.in<midi_time_t> (units::samples),
+            true); // All notes off
         }
     }
 
@@ -82,30 +82,30 @@ MidiTimelineDataProvider::process_midi_events (
         farbot::ThreadType::realtime>
                  midi_seq{ active_midi_playback_sequence_ };
       const auto first_idx = midi_seq->getNextIndexAtTime (
-        static_cast<double> (time_nfo.g_start_frame_w_offset_));
+        time_nfo.g_start_frame_w_offset_.in<double> (units::samples));
       for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
         {
           const auto * event = midi_seq->getEventPointer (i);
           const auto   timestamp_dbl = event->message.getTimeStamp ();
           if (
-            timestamp_dbl >= static_cast<double> (
-              time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_))
+            timestamp_dbl
+            >= (time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_)
+                 .in<double> (units::samples))
             {
               break;
             }
 
           const auto local_timestamp =
-            static_cast<decltype (time_nfo.g_start_frame_)> (timestamp_dbl)
-            - time_nfo.g_start_frame_;
+            units::samples (timestamp_dbl) - time_nfo.g_start_frame_;
           output_buffer.add_raw (
             event->message.getRawData (), event->message.getRawDataSize (),
-            static_cast<midi_time_t> (local_timestamp));
+            au::floor_in<midi_byte_t> (units::samples, local_timestamp));
         }
     }
 
   // Update tracking for next time
   next_expected_transport_position_ =
-    current_transport_position + units::samples (time_nfo.nframes_);
+    current_transport_position + time_nfo.nframes_;
   last_seen_transport_state_ = transport_state;
 }
 
@@ -162,35 +162,32 @@ AudioTimelineDataProvider::get_audio_regions () const
 
 void
 AudioTimelineDataProvider::process_audio_events (
-  const EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState   transport_state,
-  std::span<float>             output_left,
-  std::span<float>             output_right) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  dsp::ITransport::PlayState               transport_state,
+  std::span<float>                         output_left,
+  std::span<float>                         output_right) noexcept
 {
   // Set to true to enable debug logging for timeline data provider
   static constexpr bool TIMELINE_DATA_PROVIDER_DEBUG = false;
 
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
-  const auto current_transport_position =
-    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
+  const auto current_transport_position = time_nfo.g_start_frame_w_offset_;
 
   // Only process audio events if transport is rolling
   if (!transport_rolling)
     {
       // Update tracking for next time
       next_expected_transport_position_ =
-        current_transport_position + units::samples (time_nfo.nframes_);
+        current_transport_position + time_nfo.nframes_;
       return;
     }
 
   decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::realtime>
     audio_regions{ active_audio_regions_ };
 
-  const auto start_frame =
-    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
-  const auto end_frame =
-    start_frame + units::samples (static_cast<int64_t> (time_nfo.nframes_));
+  const auto start_frame = time_nfo.g_start_frame_w_offset_;
+  const auto end_frame = start_frame + time_nfo.nframes_;
 
   if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
     {
@@ -220,8 +217,8 @@ AudioTimelineDataProvider::process_audio_events (
         }
 
       // Calculate the overlap range
-      const auto overlap_start = std::max (region.start_sample, start_frame);
-      const auto overlap_end = std::min (region.end_sample, end_frame);
+      const auto overlap_start = au::max (region.start_sample, start_frame);
+      const auto overlap_end = au::min (region.end_sample, end_frame);
       const auto overlap_length = overlap_end - overlap_start;
 
       if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
@@ -282,15 +279,16 @@ AudioTimelineDataProvider::process_audio_events (
           // bounds
           const auto input_buffer_limit =
             au::max (buffer_samples - buffer_offset, units::samples (0));
-          const auto output_buffer_limit = au::max (
-            units::samples (time_nfo.nframes_) - output_offset,
-            units::samples (0));
+          const auto output_buffer_limit =
+            au::max (time_nfo.nframes_ - output_offset, units::samples (0));
 
           // Also ensure we don't exceed the actual span size
           const auto actual_output_span_size =
             units::samples (static_cast<int64_t> (output_data.size ()));
-          const auto span_based_limit = au::max (
-            actual_output_span_size - output_offset, units::samples (0));
+          const auto span_based_limit =
+            (output_offset >= actual_output_span_size)
+              ? units::samples (static_cast<uint64_t> (0))
+              : actual_output_span_size - output_offset;
 
           const auto actual_overlap_length = std::min (
             { overlap_length, input_buffer_limit, output_buffer_limit,
@@ -315,9 +313,7 @@ AudioTimelineDataProvider::process_audio_events (
                 input_buffer_limit, output_buffer_limit, span_based_limit);
 
               // Check if output access would exceed buffer bounds
-              if (
-                output_offset + actual_overlap_length
-                > units::samples (static_cast<int64_t> (time_nfo.nframes_)))
+              if (output_offset + actual_overlap_length > time_nfo.nframes_)
                 {
                   z_debug (
                     "WARNING: Output access would exceed buffer bounds! {} + {} > {}",
@@ -336,7 +332,7 @@ AudioTimelineDataProvider::process_audio_events (
 
           for (
             const auto i :
-            std::views::iota (0, actual_overlap_length.in (units::samples)))
+            std::views::iota (0zu, actual_overlap_length.in (units::samples)))
             {
               const auto i_samples = units::samples (i);
               const auto buffer_idx = buffer_offset + i_samples;
@@ -354,8 +350,7 @@ AudioTimelineDataProvider::process_audio_events (
               if (
                 buffer_idx >= units::samples (0) && buffer_idx < buffer_samples
                 && output_idx >= units::samples (0)
-                && output_idx < units::samples (
-                     static_cast<int64_t> (time_nfo.nframes_)))
+                && output_idx < time_nfo.nframes_)
                 {
                   output_data[output_idx.in (units::samples)] +=
                     channel_data[buffer_idx.in (units::samples)];
@@ -376,7 +371,7 @@ AudioTimelineDataProvider::process_audio_events (
 
   // Update tracking for next time
   next_expected_transport_position_ =
-    current_transport_position + units::samples (time_nfo.nframes_);
+    current_transport_position + time_nfo.nframes_;
 }
 
 // ========== AutomationTimelineDataProvider Implementation ==========
@@ -462,9 +457,9 @@ AutomationTimelineDataProvider::get_automation_value_rt (
 
 void
 AutomationTimelineDataProvider::process_automation_events (
-  const EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState   transport_state,
-  std::span<float>             output_values) noexcept
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  dsp::ITransport::PlayState               transport_state,
+  std::span<float>                         output_values) noexcept
 {
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
@@ -475,12 +470,11 @@ AutomationTimelineDataProvider::process_automation_events (
       return;
     }
 
-  const auto start_frame =
-    units::samples (static_cast<int64_t> (time_nfo.g_start_frame_w_offset_));
-  const auto nframes = units::samples (static_cast<int64_t> (time_nfo.nframes_));
+  const auto start_frame = time_nfo.g_start_frame_w_offset_;
+  const auto nframes = time_nfo.nframes_;
 
   // Generate automation values for each sample in the time range
-  for (const auto i : std::views::iota (0, nframes.in (units::samples)))
+  for (const auto i : std::views::iota (0zu, nframes.in (units::samples)))
     {
       const auto sample_position = start_frame + units::samples (i);
       const auto automation_value = get_automation_value_rt (sample_position);

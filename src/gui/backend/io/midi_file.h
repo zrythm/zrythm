@@ -53,7 +53,7 @@ public:
    * @param path Path to read.
    * @throw ZrythmException If the file could not be read.
    */
-  MidiFile (const fs::path &path);
+  MidiFile (const std::filesystem::path &path);
 
   /**
    * Returns whether the given track in the midi file has data.
@@ -100,7 +100,7 @@ public:
    */
   static void export_midi_region_to_midi_file (
     const structure::arrangement::MidiRegion &region,
-    const fs::path                           &full_path,
+    const std::filesystem::path              &full_path,
     int                                       midi_version,
     bool                                      export_full);
 

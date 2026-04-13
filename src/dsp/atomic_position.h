@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -9,8 +9,7 @@
 #include <limits>
 
 #include "dsp/tempo_map.h"
-#include "utils/format.h"
-#include "utils/types.h"
+#include "utils/enum_utils.h"
 #include "utils/units.h"
 
 #include <fmt/format.h>
@@ -76,6 +75,17 @@ public:
 class AtomicPosition
 {
 public:
+  enum class TimeFormat : std::uint8_t
+  {
+    /// Musical time (ticks)
+    Musical,
+    /**
+     * @brief Absolute time (seconds)
+     * @note Not samples so that sample rate changes don't require repositioning.
+     */
+    Absolute,
+  };
+
   struct TimeConversionFunctions
   {
     std::function<units::precise_second_t (units::precise_tick_t)>

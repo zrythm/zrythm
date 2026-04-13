@@ -7,6 +7,7 @@
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/format.h"
 #include "utils/io_utils.h"
 #include "utils/views.h"
 
@@ -25,7 +26,7 @@ plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
 }
 
 void
-ProjectSaver::make_project_dirs (const fs::path &project_directory)
+ProjectSaver::make_project_dirs (const std::filesystem::path &project_directory)
 {
   for (
     auto type :
@@ -159,7 +160,8 @@ ProjectSaver::set_and_create_next_available_backup_dir ()
 }
 
 std::string
-ProjectSaver::get_existing_uncompressed_text (const fs::path &project_dir)
+ProjectSaver::get_existing_uncompressed_text (
+  const std::filesystem::path &project_dir)
 {
   /* get file contents */
   const auto project_file_path =
@@ -310,7 +312,7 @@ ProjectSaver::autosave_cb (void * data)
 void
 ProjectSaver::cleanup_plugin_state_dirs (
   const structure::project::Project &main_project,
-  const fs::path                    &project_dir,
+  const std::filesystem::path       &project_dir,
   bool                               is_backup)
 {
   z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
@@ -379,7 +381,7 @@ ProjectSaver::save (
   const structure::project::ProjectUiState &ui_state,
   const undo::UndoStack                    &undo_stack,
   utils::Version                            app_version,
-  const fs::path                           &path,
+  const std::filesystem::path              &path,
   bool                                      is_backup)
 {
   z_info ("Saving project at {}, is backup: {}", path, is_backup);
@@ -398,9 +400,9 @@ ProjectSaver::save (
         .to_path ();
 
   /* pause engine */
-  EngineState state{};
-  bool        engine_paused = false;
-  auto *      engine = project.engine ();
+  dsp::AudioEngine::EngineState state{};
+  bool                          engine_paused = false;
+  auto *                        engine = project.engine ();
   if (engine->activated ())
     {
       engine->wait_for_pause (state, false, true);

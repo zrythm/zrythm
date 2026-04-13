@@ -5,10 +5,10 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
+#include <filesystem>
 
-#include "utils/format.h"
-#include "utils/logger.h"
-#include "utils/types.h"
+#include "juce_wrapper.h"
 
 namespace zrythm::utils::audio
 {
@@ -40,7 +40,7 @@ bit_depth_enum_to_int (BitDepth depth)
 {
   auto it =
     std::ranges::find (bit_depth_map, depth, &std::pair<int, BitDepth>::second);
-  z_return_val_if_fail (it != bit_depth_map.end (), -1);
+  assert (it != bit_depth_map.end ());
   return it->first;
 }
 
@@ -49,7 +49,7 @@ bit_depth_int_to_enum (int depth)
 {
   auto it =
     std::ranges::find (bit_depth_map, depth, &std::pair<int, BitDepth>::first);
-  z_return_val_if_fail (it != bit_depth_map.end (), BitDepth::BIT_DEPTH_16);
+  assert (it != bit_depth_map.end ());
   return it->second;
 }
 
@@ -57,8 +57,8 @@ bit_depth_int_to_enum (int depth)
  * Returns the number of frames in the given audio
  * file.
  */
-unsigned_frame_t
-get_num_frames (const fs::path &filepath);
+uint32_t
+get_num_frames (const std::filesystem::path &filepath);
 
 /**
  * Returns whether the frame buffers are equal.
@@ -101,7 +101,7 @@ detect_bpm (
   std::vector<float> &candidates);
 
 bool
-audio_file_is_silent (const fs::path &filepath);
+audio_file_is_silent (const std::filesystem::path &filepath);
 
 /**
  * Returns the number of CPU cores.
@@ -109,12 +109,12 @@ audio_file_is_silent (const fs::path &filepath);
 int
 get_num_cores ();
 
-class AudioBuffer : public juce::AudioBuffer<audio_sample_type_t>
+class AudioBuffer : public juce::AudioSampleBuffer
 {
 public:
   AudioBuffer () = default;
   AudioBuffer (int num_channels, int num_frames_per_channel)
-      : juce::AudioBuffer<audio_sample_type_t> (num_channels, num_frames_per_channel)
+      : juce::AudioSampleBuffer (num_channels, num_frames_per_channel)
   {
   }
 
@@ -152,6 +152,8 @@ public:
 
 }; // namespace zrythm::utils::audio
 
+// TODO
+#if 0
 DEFINE_ENUM_FORMATTER (
   zrythm::utils::audio::BitDepth,
   BitDepth,
@@ -159,3 +161,4 @@ DEFINE_ENUM_FORMATTER (
   QT_TR_NOOP_UTF8 ("16 bit"),
   QT_TR_NOOP_UTF8 ("24 bit"),
   QT_TR_NOOP_UTF8 ("32 bit"));
+#endif

@@ -132,7 +132,7 @@ TEST_F (TrackFixture, FillMidiEvents)
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) pos.frames_,
     .g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_,
-    .local_offset_ = 0,
+    .local_offset_ = units::samples (0),
     .nframes_ = BUFFER_SIZE,
   };
 
@@ -181,7 +181,7 @@ TEST_F (TrackFixture, FillMidiEvents)
   {
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 1;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -199,7 +199,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (BUFFER_SIZE);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -218,7 +218,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames ((-BUFFER_SIZE) - 1);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -236,7 +236,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-BUFFER_SIZE);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -263,7 +263,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-BUFFER_SIZE);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -289,7 +289,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames ((-BUFFER_SIZE) + 1);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -312,7 +312,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames ((-BUFFER_SIZE) + 1);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -355,7 +355,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-365);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 512;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -398,7 +398,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-365);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 2000;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 2);
@@ -446,7 +446,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-6);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -466,7 +466,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.update_frames_from_ticks (0.0);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -485,7 +485,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.update_frames_from_ticks (0.0);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_EMPTY (events);
@@ -503,7 +503,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-10);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -524,7 +524,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-10);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -567,7 +567,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-10);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 2);
@@ -598,7 +598,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-10);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -632,7 +632,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.set_to_bar (3);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = BUFFER_SIZE;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -662,7 +662,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-30);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 2);
@@ -679,7 +679,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos = TRANSPORT->loop_start_pos_;
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 10;
     set_caches_and_fill ();
     auto ev = events.front ();
@@ -712,7 +712,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     time_nfo.g_start_frame_w_offset_ =
       (unsigned_frame_t) r->pos_.frames_ + (unsigned_frame_t) mn->pos_.frames_
       - 4;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -728,7 +728,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     time_nfo.g_start_frame_w_offset_ =
       (unsigned_frame_t) r->pos_.frames_
       + (unsigned_frame_t) r->loop_end_pos_.frames_ - 4;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 30;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 1);
@@ -757,7 +757,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-10);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 50;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 2);
@@ -789,7 +789,7 @@ TEST_F (TrackFixture, FillMidiEvents)
     pos.add_frames (-5);
     time_nfo.g_start_frame_ = (unsigned_frame_t) pos.frames_;
     time_nfo.g_start_frame_w_offset_ = (unsigned_frame_t) pos.frames_;
-    time_nfo.local_offset_ = 0;
+    time_nf.local_offset_ = units::samples (0);
     time_nfo.nframes_ = 50;
     set_caches_and_fill ();
     ASSERT_SIZE_EQ (events, 2);

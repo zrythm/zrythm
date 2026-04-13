@@ -89,7 +89,7 @@ public:
     DeviceGroupType                               type,
     ProcessingTypeHint                            processing_type,
     QObject *                                     parent = nullptr);
-  Z_DISABLE_COPY_MOVE (PluginGroup)
+  Q_DISABLE_COPY_MOVE (PluginGroup)
   ~PluginGroup () override;
 
   // ============================================================================

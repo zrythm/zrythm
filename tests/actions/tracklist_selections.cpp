@@ -210,7 +210,9 @@ TEST_F (ZrythmFixture, CheckPortAndPluginTrackPositionAfterDuplicationWithCarla)
 #endif
 
 static void
-test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
+test_num_tracks_with_file (
+  const std::filesystem::path &filepath,
+  const int                    num_tracks)
 {
   FileDescriptor file (filepath);
 
@@ -233,10 +235,10 @@ test_num_tracks_with_file (const fs::path &filepath, const int num_tracks)
 TEST_F (ZrythmFixture, CreateTracksFromMIDIFile)
 {
   auto midi_file =
-    fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
+    std::filesystem::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
   test_num_tracks_with_file (midi_file, 1);
 
-  midi_file = fs::path (TESTS_SRCDIR) / "1_track_with_data.mid";
+  midi_file = std::filesystem::path (TESTS_SRCDIR) / "1_track_with_data.mid";
   test_num_tracks_with_file (midi_file, 1);
 
   auto midi_track =
@@ -244,7 +246,7 @@ TEST_F (ZrythmFixture, CreateTracksFromMIDIFile)
   ASSERT_NONNULL (midi_track);
   ASSERT_SIZE_EQ (midi_track->lanes_[0]->regions_[0]->midi_notes_, 3);
 
-  midi_file = fs::path (TESTS_SRCDIR) / "those_who_remain.mid";
+  midi_file = std::filesystem::path (TESTS_SRCDIR) / "those_who_remain.mid";
   test_num_tracks_with_file (midi_file, 1);
 }
 
@@ -1103,7 +1105,7 @@ TEST_F (ZrythmFixture, DuplicateMultipleTracks)
 TEST_F (ZrythmFixture, DeleteTrackWithMidiFile)
 {
   const auto midi_file =
-    fs::path (TESTS_SRCDIR) / "format_1_two_tracks_with_data.mid";
+    std::filesystem::path (TESTS_SRCDIR) / "format_1_two_tracks_with_data.mid";
   test_num_tracks_with_file (midi_file, 2);
 
   ASSERT_SIZE_EQ (
@@ -2455,7 +2457,7 @@ TEST (CopyTrackAfterUninstallingPlugin)
 TEST_F (ZrythmFixture, MoveTrackWithClipEditorRegion)
 {
   auto midi_file =
-    fs::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
+    std::filesystem::path (TESTS_SRCDIR) / "1_empty_track_1_track_with_data.mid";
   FileDescriptor file (midi_file);
   const auto     num_tracks_before = TRACKLIST->get_num_tracks ();
   ASSERT_NO_THROW (

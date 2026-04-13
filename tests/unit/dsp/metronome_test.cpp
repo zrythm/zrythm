@@ -64,11 +64,11 @@ protected:
    * @brief Helper to verify sample was queued correctly
    */
   void verify_sample_queued (
-    size_t     index,
-    bool       emphasis,
-    nframes_t  expected_offset,
-    channels_t expected_channel,
-    float      expected_volume = 1.0f)
+    size_t              index,
+    bool                emphasis,
+    units::sample_u32_t expected_offset,
+    uint8_t             expected_channel,
+    float               expected_volume = 1.0f)
   {
     ASSERT_LT (index, queued_samples_.size ());
 
@@ -169,7 +169,7 @@ TEST_F (MetronomeTest, PrepareForProcessing)
 
   // Should not throw
   EXPECT_NO_THROW (metronome->prepare_for_processing (
-    nullptr, units::sample_rate (44100), 256));
+    nullptr, units::sample_rate (44100), units::samples (256)));
 }
 
 TEST_F (MetronomeTest, BasicPlaybackNoTicks)
@@ -180,14 +180,15 @@ TEST_F (MetronomeTest, BasicPlaybackNoTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Paused));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
-  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), units::samples (256));
   metronome->process_block (time_nfo, *transport_, *tempo_map_);
 
   // No samples should be queued when not rolling
@@ -202,20 +203,21 @@ TEST_F (MetronomeTest, BasicPlaybackWithTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
-  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), units::samples (256));
   metronome->process_block (time_nfo, *transport_, *tempo_map_);
 
   // Should have queued an emphasis sample
   EXPECT_EQ (queued_samples_.size (), 2);
-  verify_sample_queued (0, true, 0, 0);
-  verify_sample_queued (1, true, 0, 1);
+  verify_sample_queued (0, true, units::samples (0), 0);
+  verify_sample_queued (1, true, units::samples (0), 1);
 }
 
 TEST_F (MetronomeTest, BarAndBeatTicks)
@@ -232,12 +234,12 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   // 120 BPM = 0.5 seconds per beat = 22050 samples per beat
-  const nframes_t samples_per_beat = 22050;
+  constexpr auto samples_per_beat = units::samples (22050);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 4 // 4 beats
   };
 
@@ -249,8 +251,8 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   EXPECT_EQ (queued_samples_.size (), 8);
 
   // First tick should be emphasis (bar start)
-  verify_sample_queued (0, true, 0, 0);
-  verify_sample_queued (1, true, 0, 1);
+  verify_sample_queued (0, true, units::samples (0), 0);
+  verify_sample_queued (1, true, units::samples (0), 1);
 
   // Remaining ticks should be normal beats
   for (size_t i = 2; i < 8; i += 2)
@@ -280,12 +282,12 @@ TEST_F (MetronomeTest, LoopCrossing)
       ::testing::Return (
         std::make_pair (units::samples (0u), units::samples (44100u))));
 
-  const nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 44100 - 11025, // Start just before loop
-    .g_start_frame_w_offset_ = 44100 - 11025,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (44100 - 11025), // Start just before loop
+    .g_start_frame_w_offset_ = units::samples (44100 - 11025),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 2 // 2 beats
   };
 
@@ -301,11 +303,13 @@ TEST_F (MetronomeTest, LoopCrossing)
 
   // Verify tick positions are at the correct sample locations
   // Goes back to 0 after looping (bar tick)
-  verify_sample_queued (0, true, 11025, 0);
-  verify_sample_queued (1, true, 11025, 1);
+  verify_sample_queued (0, true, units::samples (11025), 0);
+  verify_sample_queued (1, true, units::samples (11025), 1);
   // Next beat after looping
-  verify_sample_queued (2, false, (samples_per_beat * 2) - 11025, 0);
-  verify_sample_queued (3, false, (samples_per_beat * 2) - 11025, 1);
+  verify_sample_queued (
+    2, false, (samples_per_beat * 2) - units::samples (11025), 0);
+  verify_sample_queued (
+    3, false, (samples_per_beat * 2) - units::samples (11025), 1);
 }
 
 TEST_F (MetronomeTest, CountinTicks)
@@ -324,12 +328,12 @@ TEST_F (MetronomeTest, CountinTicks)
     .WillRepeatedly (
       ::testing::Return (units::samples (88200))); // 2 seconds (1 bar) countin
 
-  const nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 2
   };
 
@@ -339,8 +343,8 @@ TEST_F (MetronomeTest, CountinTicks)
 
   // Should queue countin ticks
   EXPECT_EQ (queued_samples_.size (), 4);
-  verify_sample_queued (0, true, 0, 0);
-  verify_sample_queued (1, true, 0, 1);
+  verify_sample_queued (0, true, units::samples (0), 0);
+  verify_sample_queued (1, true, units::samples (0), 1);
   verify_sample_queued (2, false, samples_per_beat, 0);
   verify_sample_queued (3, false, samples_per_beat, 1);
 }
@@ -358,12 +362,12 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 22050;
+  constexpr auto samples_per_beat = units::samples (22050);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat
   };
 
@@ -373,8 +377,8 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
 
   // Should have queued samples with correct volume
   ASSERT_EQ (queued_samples_.size (), 2);
-  verify_sample_queued (0, true, 0, 0, 0.5f);
-  verify_sample_queued (1, true, 0, 1, 0.5f);
+  verify_sample_queued (0, true, units::samples (0), 0, 0.5f);
+  verify_sample_queued (1, true, units::samples (0), 1, 0.5f);
 }
 
 TEST_F (MetronomeTest, EmptyRangeHandling)
@@ -385,14 +389,15 @@ TEST_F (MetronomeTest, EmptyRangeHandling)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0 // Empty range
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0) // Empty range
   };
 
-  metronome->prepare_for_processing (nullptr, units::sample_rate (44100), 256);
+  metronome->prepare_for_processing (
+    nullptr, units::sample_rate (44100), units::samples (256));
   metronome->process_block (time_nfo, *transport_, *tempo_map_);
 
   // Should handle empty range gracefully
@@ -412,12 +417,12 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 22050;
+  constexpr auto samples_per_beat = units::samples (22050);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 3 // 3 beats in 3/4
   };
 
@@ -442,12 +447,13 @@ TEST_F (MetronomeTest, HighTempo)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 11025; // 240 BPM = 0.25s per beat
+  constexpr auto samples_per_beat =
+    units::samples (11025); // 240 BPM = 0.25s per beat
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 4
   };
 
@@ -457,8 +463,8 @@ TEST_F (MetronomeTest, HighTempo)
 
   // Should have 4 ticks at high tempo
   EXPECT_EQ (queued_samples_.size (), 8);
-  verify_sample_queued (0, true, 0, 0);
-  verify_sample_queued (1, true, 0, 1);
+  verify_sample_queued (0, true, units::samples (0), 0);
+  verify_sample_queued (1, true, units::samples (0), 1);
   verify_sample_queued (2, false, samples_per_beat, 0);
   verify_sample_queued (3, false, samples_per_beat, 1);
   verify_sample_queued (4, false, samples_per_beat * 2, 0);
@@ -483,12 +489,12 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 4
   };
 
@@ -516,12 +522,12 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 4
   };
 
@@ -531,8 +537,8 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
 
   // Should have ticks when enabled
   EXPECT_EQ (queued_samples_.size (), 8);
-  verify_sample_queued (0, true, 0, 0);
-  verify_sample_queued (1, true, 0, 1);
+  verify_sample_queued (0, true, units::samples (0), 0);
+  verify_sample_queued (1, true, units::samples (0), 1);
 }
 
 TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
@@ -548,12 +554,12 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  const nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat * 2
   };
 
@@ -591,12 +597,12 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  constexpr nframes_t samples_per_beat = 22050; // 120 BPM
+  constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = samples_per_beat
   };
 
@@ -618,8 +624,8 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   auto * out_r = out_port->buffers ()->getWritePointer (1);
 
   // Fill with non-zero data to simulate stuck audio
-  std::fill_n (out_l, time_nfo.nframes_, 0.5f);
-  std::fill_n (out_r, time_nfo.nframes_, 0.5f);
+  std::fill_n (out_l, time_nfo.nframes_.in (units::samples), 0.5f);
+  std::fill_n (out_r, time_nfo.nframes_.in (units::samples), 0.5f);
 
   // Now disable metronome
   metronome->setEnabled (false);
@@ -628,7 +634,9 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   metronome->process_block (time_nfo, *transport_, *tempo_map_);
 
   // Verify the buffer was cleared (should be all zeros)
-  for (nframes_t i = 0; i < time_nfo.nframes_; ++i)
+  for (
+    const auto i : std::views::iota (
+      size_t{ 0 }, time_nfo.nframes_.in<size_t> (units::samples)))
     {
       EXPECT_FLOAT_EQ (out_l[i], 0.0f)
         << "Left channel not cleared at sample " << i;

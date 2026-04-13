@@ -4,8 +4,6 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object.h"
-#include "utils/format.h"
-#include "utils/logger.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -84,22 +82,3 @@ audio_function_apply (
   AudioFunctionOpts                                       opts,
   std::optional<utils::Utf8String>                        uri);
 }
-
-DEFINE_ENUM_FORMATTER (
-  zrythm::structure::arrangement::AudioFunctionType,
-  AudioFunctionType,
-  QT_TR_NOOP_UTF8 ("Invert"),
-  QT_TR_NOOP_UTF8 ("Normalize peak"),
-  QT_TR_NOOP_UTF8 ("Normalize RMS"),
-  QT_TR_NOOP_UTF8 ("Normalize LUFS"),
-  QT_TR_NOOP_UTF8 ("Linear fade in"),
-  QT_TR_NOOP_UTF8 ("Linear fade out"),
-  QT_TR_NOOP_UTF8 ("Nudge left"),
-  QT_TR_NOOP_UTF8 ("Nudge right"),
-  QT_TR_NOOP_UTF8 ("Reverse"),
-  QT_TR_NOOP_UTF8 ("Pitch shift"),
-  QT_TR_NOOP_UTF8 ("Copy L to R"),
-  QT_TR_NOOP_UTF8 ("External program"),
-  QT_TR_NOOP_UTF8 ("Guile script"),
-  QT_TR_NOOP_UTF8 ("Custom plugin"),
-  QT_TR_NOOP_UTF8 ("Invalid"));

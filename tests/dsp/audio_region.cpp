@@ -18,8 +18,9 @@ TEST_F (ZrythmFixture, ChangeSampleRate)
   pos.set_to_bar (2);
 
   /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
@@ -28,7 +29,7 @@ TEST_F (ZrythmFixture, ChangeSampleRate)
 
   /* save the project */
   PROJECT->save (PROJECT->dir_, false, false, false);
-  auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
+  auto prj_file = std::filesystem::path (PROJECT->dir_) / PROJECT_FILE;
 
   /* adjust the samplerate to be given at startup */
   zrythm_app->samplerate_ = (int) AUDIO_ENGINE->sample_rate_ * 2;
@@ -58,7 +59,8 @@ TEST_F (ZrythmFixture, FillStereoPorts)
   pos.set_to_bar (2);
 
   /* create audio track with region */
-  auto filepath = fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3";
+  auto filepath =
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3";
   FileDescriptor file (filepath);
   int            num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
@@ -82,7 +84,7 @@ TEST_F (ZrythmFixture, FillStereoPorts)
   const EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
     .g_start_frame_w_offset_ = (unsigned_frame_t) PLAYHEAD.frames_,
-    .local_offset_ = 0,
+    .local_offset_ = units::samples (0),
     .nframes_ = 100
   };
   r->fill_stereo_ports (time_nfo, ports);
@@ -108,8 +110,9 @@ TEST_F (ZrythmFixture, LoadProjectWithSelectedAudioRegion)
   pos.set_to_bar (2);
 
   /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
@@ -140,8 +143,9 @@ TEST_P (AudioRegionSampleRateTest, LoadProjectWithDifferentSampleRate)
   pos.set_to_bar (2);
 
   /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
 
@@ -173,8 +177,9 @@ TEST_F (ZrythmFixture, DetectBPM)
   pos.set_to_bar (2);
 
   /* create audio track with region */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &pos, num_tracks_before, 1, -1, nullptr);
   auto track = TRACKLIST->get_last_track<AudioTrack> ();

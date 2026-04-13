@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -9,28 +9,12 @@
 #include <cinttypes>
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 
 #include <QtTypes>
 
 #include <gsl-lite/gsl-lite.hpp>
 
-#if defined(__GNUC__) || defined(__clang__)
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wshadow"
-#elifdef _MSC_VER
-#  pragma warning(push)
-#  pragma warning(disable : 4458) // declaration hides class member
-#endif
-
-#include <magic_enum_all.hpp>
-
-#if defined(__GNUC__) || defined(__clang__)
-#  pragma GCC diagnostic pop
-#elifdef _MSC_VER
-#  pragma warning(pop)
-#endif
-
-using namespace magic_enum::bitwise_operators;
 using namespace std::literals;
 namespace gsl = ::gsl_lite;
 
@@ -50,15 +34,6 @@ operator""_zu (unsigned long long int x)
 // qint64
 using RtTimePoint = int64_t;
 using RtDuration = int64_t;
-
-/** MIDI byte. */
-using midi_byte_t = uint8_t;
-
-/** Frame count. */
-using nframes_t = uint32_t;
-
-/** MIDI time in global frames. */
-using midi_time_t = uint32_t;
 
 /** Number of channels. */
 using channels_t = uint_fast8_t;
@@ -126,55 +101,6 @@ enum class AudioValueFormat
 };
 
 /**
- * Common struct to pass around during processing to avoid repeating the data in
- * function arguments.
- */
-struct EngineProcessTimeInfo
-{
-public:
-  void print () const;
-
-public:
-  /** Global position at the start of the processing cycle (no offset added). */
-  unsigned_frame_t g_start_frame_ = 0;
-
-  /** Global position with EngineProcessTimeInfo.local_offset added, for
-   * convenience. */
-  unsigned_frame_t g_start_frame_w_offset_ = 0;
-
-  /** Offset in the current processing cycle, between 0 and the number of
-   * frames in AudioEngine.block_length. */
-  nframes_t local_offset_ = 0;
-
-  /**
-   * Number of frames to process in this call, starting from the offset.
-   */
-  nframes_t nframes_ = 0;
-};
-
-// TODO: check if pausing/resuming can be done with RAII
-struct EngineState
-{
-  /** Engine running. */
-  bool running_;
-  /** Playback. */
-  bool playing_;
-  /** Transport loop. */
-  bool looping_;
-};
-
-enum class TimeFormat : std::uint8_t
-{
-  /// Musical time (ticks)
-  Musical,
-  /**
-   * @brief Absolute time (seconds)
-   * @note Not samples so that sample rate changes don't require repositioning.
-   */
-  Absolute,
-};
-
-/**
  * Beat unit.
  */
 enum class BeatUnit
@@ -184,47 +110,6 @@ enum class BeatUnit
   Eight,
   Sixteen
 };
-
-#define ENUM_INT_TO_VALUE_CONST(_enum, _int) \
-  (magic_enum::enum_value<_enum, _int> ())
-#define ENUM_INT_TO_VALUE(_enum, _int) (magic_enum::enum_value<_enum> (_int))
-#define ENUM_VALUE_TO_INT(_val) (magic_enum::enum_integer (_val))
-
-#define ENUM_ENABLE_BITSET(_enum) \
-  template <> struct magic_enum::customize::enum_range<_enum> \
-  { \
-    static constexpr bool is_flags = true; \
-  }
-#define ENUM_BITSET(_enum, _val) (magic_enum::containers::bitset<_enum> (_val))
-#define ENUM_BITSET_TEST(_val, _other_val) \
-  /* (ENUM_BITSET (_enum, _val).test (_other_val)) */ \
-  (static_cast<std::underlying_type_t<decltype (_val)>> (_val) \
-   & static_cast<std::underlying_type_t<decltype (_val)>> (_other_val))
-
-/** @important ENUM_ENABLE_BITSET must be called on the enum that this is used
- * on. */
-#define ENUM_BITSET_TO_STRING(_enum, _val) \
-  (ENUM_BITSET (_enum, _val).to_string ().data ())
-
-#define ENUM_COUNT(_enum) (magic_enum::enum_count<_enum> ())
-#define ENUM_NAME(_val) (magic_enum::enum_name (_val).data ())
-#define ENUM_NAME_FROM_INT(_enum, _int) \
-  ENUM_NAME (ENUM_INT_TO_VALUE (_enum, _int))
-
-enum class CacheType
-{
-  // TrackNameHashes = 1 << 0,
-  // PluginPorts = 1 << 1,
-  PlaybackSnapshots = 1 << 2,
-  AutomationLaneRecordModes = 1 << 3,
-  AutomationLanePorts = 1 << 4,
-};
-
-ENUM_ENABLE_BITSET (CacheType);
-
-constexpr CacheType ALL_CACHE_TYPES =
-  CacheType::PlaybackSnapshots | CacheType::AutomationLaneRecordModes
-  | CacheType::AutomationLanePorts;
 
 /* types for simple timestamps/durations */
 using SteadyClock = std::chrono::steady_clock;
@@ -247,74 +132,6 @@ typename_to_string ()
 #define Z_DISABLE_MOVE(Class) \
   Class (Class &&) = delete; \
   Class &operator= (Class &&) = delete;
-
-/**
- * @brief Wrapper around std::optional<std::reference_wrapper<T>> that provides
- * a more convenient API.
- *
- * This class provides a convenient wrapper around
- * std::optional<std::reference_wrapper<T>> that allows you to easily access the
- * underlying value without having to check for the presence of a value first.
- *
- * The `operator*()` and `value()` methods return a reference to the underlying
- * value, and the `has_value()` method can be used to check if a value is
- * present.
- */
-template <typename T> struct OptionalRef
-{
-  OptionalRef () = default;
-  OptionalRef (std::nullopt_t) { }
-  OptionalRef (T &ref) : ref_ (ref) { }
-
-  std::optional<std::reference_wrapper<T>> ref_;
-
-  /**
-   * @brief Dereference the underlying value.
-   *
-   * @return A reference to the underlying value.
-   */
-  T &operator* ()
-  {
-    assert (has_value ());
-    return ref_->get ();
-  }
-  const T &operator* () const
-  {
-    assert (has_value ());
-    return ref_->get ();
-  }
-
-  const T * operator->() const
-  {
-    assert (has_value ());
-    return std::addressof (ref_->get ());
-  }
-  T * operator->()
-  {
-    assert (has_value ());
-    return std::addressof (ref_->get ());
-  }
-
-  explicit operator bool () const { return has_value (); }
-
-  /**
-   * @brief Check if a value is present.
-   *
-   * @return `true` if a value is present, `false` otherwise.
-   */
-  bool has_value () const { return ref_.has_value (); }
-
-  /**
-   * @brief Get a reference to the underlying value.
-   *
-   * @return A reference to the underlying value.
-   */
-  T &value ()
-  {
-    assert (has_value ());
-    return ref_->get ();
-  }
-};
 
 template <typename Tuple, typename Callable>
 void

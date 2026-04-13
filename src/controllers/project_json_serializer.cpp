@@ -6,6 +6,7 @@
 #include "structure/project/project_json_schema.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/datetime.h"
 #include "utils/serialization.h"
 
 #include <nlohmann/json-schema.hpp>

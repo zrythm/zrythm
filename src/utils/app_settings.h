@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "utils/format.h"
+#include "utils/format_qt.h"
 #include "utils/isettings_backend.h"
 #include "utils/logger.h"
 #include "utils/qt.h"

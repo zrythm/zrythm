@@ -131,7 +131,7 @@ private:
     j.at (kSettingsKey).get_to (p.settings_);
   }
 
-  static fs::path get_file_path ();
+  static std::filesystem::path get_file_path ();
 
   /**
    * @brief Deletes the cache file.

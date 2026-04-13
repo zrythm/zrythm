@@ -58,7 +58,7 @@ TrackProcessor::TrackProcessor (
         [] (
           dsp::MidiEventVector        &out_events,
           const dsp::MidiEventVector  &in_events,
-          const EngineProcessTimeInfo &time_nfo) {
+          const dsp::graph::EngineProcessTimeInfo &time_nfo) {
           out_events.append (
             in_events, time_nfo.local_offset_, time_nfo.nframes_);
         }),
@@ -306,19 +306,19 @@ TrackProcessor::set_custom_midi_event_provider (
 
 void
 TrackProcessor::handle_recording (
-  const EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport       &transport)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport                   &transport)
 {
   assert (handle_recording_cb_.has_value ());
 
-  auto       start = units::samples (time_nfo.g_start_frame_w_offset_);
-  auto       end = units::samples (time_nfo.g_start_frame_ + time_nfo.nframes_);
+  auto       start = time_nfo.g_start_frame_w_offset_;
+  auto       end = time_nfo.g_start_frame_ + time_nfo.nframes_;
   const auto loop = transport.get_loop_range_positions ();
 
   // split point + nframes pairs
   boost::container::static_vector<std::pair<units::sample_t, units::sample_t>, 6>
     ranges;
-  ranges.emplace_back (start, units::samples (time_nfo.nframes_));
+  ranges.emplace_back (start, time_nfo.nframes_);
 
   const bool loop_hit = transport.loop_enabled () && loop.second == end;
 
@@ -329,8 +329,7 @@ TrackProcessor::handle_recording (
       ranges.clear ();
       ranges.emplace_back (start, pre_loop);
       ranges.emplace_back (loop.second, units::samples (0)); // loop end pause
-      ranges.emplace_back (
-        loop.first, units::samples (time_nfo.nframes_) - pre_loop);
+      ranges.emplace_back (loop.first, time_nfo.nframes_ - pre_loop);
     }
   // Handle punch points
   if (transport.punch_enabled ())
@@ -441,12 +440,11 @@ TrackProcessor::handle_recording (
       if (index != 0 && range.first == ranges[index - 1].first)
         continue;
 
-      EngineProcessTimeInfo cur_time_nfo = {
-        .g_start_frame_ = range.first.in<unsigned_frame_t> (units::samples),
-        .g_start_frame_w_offset_ =
-          range.first.in<unsigned_frame_t> (units::samples),
-        .local_offset_ = 0,
-        .nframes_ = range.second.in<nframes_t> (units::samples)
+      dsp::graph::EngineProcessTimeInfo cur_time_nfo = {
+        .g_start_frame_ = range.first,
+        .g_start_frame_w_offset_ = range.first,
+        .local_offset_ = units::samples (0),
+        .nframes_ = range.second
       };
       if (is_midi ())
         {
@@ -478,8 +476,8 @@ TrackProcessor::handle_recording (
 
 void
 TrackProcessor::add_events_from_midi_cc_control_ports (
-  dsp::MidiEventVector &events,
-  const nframes_t       local_offset)
+  dsp::MidiEventVector     &events,
+  const units::sample_u32_t local_offset)
 {
   assert (has_midi_cc_);
 
@@ -497,7 +495,8 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
     if (it != range.end ())
       {
         add_event_cb (
-          cc, events, std::ranges::distance (range.begin (), it), local_offset);
+          cc, events, std::ranges::distance (range.begin (), it),
+          local_offset.in<midi_byte_t> (units::samples));
         return true;
       }
     return false;
@@ -686,9 +685,9 @@ TrackProcessor::set_midi_mappings ()
 
 void
 TrackProcessor::fill_midi_events (
-  const EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport       &transport,
-  dsp::MidiEventVector        &midi_events)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport                   &transport,
+  dsp::MidiEventVector                    &midi_events)
 {
   const auto active_providers = active_midi_event_providers_.load ();
 
@@ -716,9 +715,9 @@ TrackProcessor::fill_midi_events (
 
 void
 TrackProcessor::fill_audio_events (
-  const EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport       &transport,
-  StereoPortPair               stereo_ports)
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  const dsp::ITransport                   &transport,
+  StereoPortPair                           stereo_ports)
 {
   const auto active_providers = active_audio_providers_.load ();
 
@@ -747,9 +746,9 @@ TrackProcessor::fill_audio_events (
 
 void
 TrackProcessor::custom_process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   // First, clear all output
   if (is_audio ())
@@ -837,21 +836,23 @@ TrackProcessor::custom_process_block (
 
           utils::float_ranges::product (
             out_buf->getWritePointer (
-              0, static_cast<int> (time_nfo.local_offset_)),
-            in_buf->getReadPointer (0, static_cast<int> (time_nfo.local_offset_)),
-            input_gain_id_ ? input_gain () : 1.f, time_nfo.nframes_);
+              0, time_nfo.local_offset_.in<int> (units::samples)),
+            in_buf->getReadPointer (
+              0, time_nfo.local_offset_.in<int> (units::samples)),
+            input_gain_id_ ? input_gain () : 1.f,
+            time_nfo.nframes_.in (units::samples));
 
           const auto &src_right_buf =
             (mono_id_ && mono ())
               ? in_buf->getWritePointer (
-                  0, static_cast<int> (time_nfo.local_offset_))
+                  0, time_nfo.local_offset_.in<int> (units::samples))
               : in_buf->getWritePointer (
-                  1, static_cast<int> (time_nfo.local_offset_));
+                  1, time_nfo.local_offset_.in<int> (units::samples));
           utils::float_ranges::product (
             out_buf->getWritePointer (
-              1, static_cast<int> (time_nfo.local_offset_)),
+              1, time_nfo.local_offset_.in<int> (units::samples)),
             src_right_buf, input_gain_id_ ? input_gain () : 1.f,
-            time_nfo.nframes_);
+            time_nfo.nframes_.in<size_t> (units::samples));
         }
     }
   else if (is_midi ())
@@ -899,8 +900,8 @@ TrackProcessor::custom_process_block (
         output_gain_param.currentValue ());
 
       processing_caches_->audio_outs_rt_.front ()->buffers ()->applyGain (
-        static_cast<int> (time_nfo.local_offset_),
-        static_cast<int> (time_nfo.nframes_), output_gain);
+        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.nframes_.in<int> (units::samples), output_gain);
     }
 }
 
@@ -908,7 +909,7 @@ void
 TrackProcessor::custom_prepare_for_processing (
   const dsp::graph::GraphNode * node,
   units::sample_rate_t          sample_rate,
-  nframes_t                     max_block_length)
+  units::sample_u32_t           max_block_length)
 {
   if (node != nullptr)
     {
@@ -917,7 +918,7 @@ TrackProcessor::custom_prepare_for_processing (
 #if 0
       set_handle_recording_callback (
         [] (
-          const EngineProcessTimeInfo &time_nfo,
+          const dsp::graph::EngineProcessTimeInfo &time_nfo,
           const dsp::MidiEventVector * midi_events,
           std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
             stereo_ports) {

@@ -1,10 +1,12 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_descriptor.h"
-#include "utils/gtest_wrapper.h"
 
-using namespace zrythm::plugins;
+#include <gtest/gtest.h>
+
+namespace zrythm::plugins
+{
 
 namespace
 {
@@ -90,4 +92,5 @@ TEST (PluginDescriptorTest, Serialization)
   from_json (j, *deserialized);
 
   EXPECT_TRUE (original->is_same_plugin (*deserialized));
+}
 }

@@ -13,6 +13,7 @@
 
 namespace zrythm::dsp
 {
+using namespace std::string_view_literals;
 
 /**
  * Musical scale descriptor.
@@ -137,7 +138,7 @@ public:
     setScaleType (type);
     setRootKey (root);
   }
-  Z_DISABLE_COPY_MOVE (MusicalScale)
+  Q_DISABLE_COPY_MOVE (MusicalScale)
   ~MusicalScale () override = default;
 
   // ========================================================================
@@ -168,7 +169,7 @@ public:
   }
   Q_SIGNAL void rootKeyChanged (MusicalNote root_key);
 
-  Q_INVOKABLE QString toString () const { return to_string ().to_qstring (); }
+  Q_INVOKABLE QString toString () const;
 
   /**
    * Returns if the given key is in the given MusicalScale.

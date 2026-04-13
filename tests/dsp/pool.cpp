@@ -31,8 +31,9 @@ TEST_P (AudioPoolRemoveUnusedTest, RemoveUnused)
 {
   /* create many audio tracks with region to push the first few off the
    * undo stack */
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
-  int            num_tracks_before = TRACKLIST->get_num_tracks ();
+  FileDescriptor file (
+    std::filesystem::path (TESTS_SRCDIR) / "test_start_with_signal.mp3");
+  int num_tracks_before = TRACKLIST->get_num_tracks ();
   Track::create_with_action (
     Track::Type::Audio, nullptr, &file, &PLAYHEAD, num_tracks_before, 1, -1,
     nullptr);
@@ -67,7 +68,7 @@ TEST_P (AudioPoolRemoveUnusedTest, RemoveUnused)
       PROJECT.reset ();
 
       /* load the original project */
-      auto prj_filepath = fs::path (dir) / PROJECT_FILE;
+      auto prj_filepath = std::filesystem::path (dir) / PROJECT_FILE;
       test_project_reload (prj_filepath);
 
       return;

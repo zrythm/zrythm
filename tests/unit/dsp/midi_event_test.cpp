@@ -1,11 +1,12 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <thread>
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/midi_event.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 namespace zrythm::dsp
 {
@@ -126,7 +127,7 @@ TEST_F (MidiEventTest, EventFiltering)
   std::array<bool, 16> channels{};
   channels[0] = true; // Only allow channel 1
 
-  dest.append_w_filter (src, channels, 0, 30);
+  dest.append_w_filter (src, channels, units::samples (0), units::samples (30));
   EXPECT_EQ (dest.size (), 2);
   EXPECT_EQ (dest.at (0).raw_buffer_[0] & 0x0F, 0); // Channel 1
   EXPECT_EQ (dest.at (1).raw_buffer_[0] & 0x0F, 0); // Channel 1
@@ -143,7 +144,8 @@ TEST_F (MidiEventTest, ChordTransformation)
     return (note == 48) ? &chord_c_major_ : nullptr;
   };
 
-  dest.transform_chord_and_append (src, chord_mapper, 100, 0, 20);
+  dest.transform_chord_and_append (
+    src, chord_mapper, 100, units::samples (0), units::samples (20));
 
   // C major chord should have 3 notes (C, E, G)
   EXPECT_EQ (dest.size (), 6); // 3 note-ons + 3 note-offs
@@ -228,7 +230,7 @@ TEST_F (MidiEventTest, DequeueOperation)
   events.queued_events_.push_back (create_note_on (1, 62, 90, 25));
 
   // Only dequeue events between time 0-20
-  events.dequeue (0, 20);
+  events.dequeue (units::samples (0), units::samples (20));
 
   EXPECT_EQ (events.active_events_.size (), 1);
   EXPECT_EQ (events.queued_events_.size (), 1);

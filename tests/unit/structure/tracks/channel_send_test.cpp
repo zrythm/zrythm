@@ -55,7 +55,7 @@ protected:
   std::unique_ptr<dsp::PortRegistry>               port_registry_;
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
   units::sample_rate_t         sample_rate_{ units::sample_rate (48000) };
-  nframes_t                    max_block_length_{ 1024 };
+  units::sample_u32_t          max_block_length_{ units::samples (1024u) };
   std::unique_ptr<ChannelSend> audio_send_;
   std::unique_ptr<ChannelSend> midi_send_;
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
@@ -209,8 +209,10 @@ TEST_F (ChannelSendTest, PrepareAndReleaseResources)
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
 
-  EXPECT_GE (stereo_in.buffers ()->getNumSamples (), max_block_length_);
-  EXPECT_GE (stereo_out.buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (
+    units::samples (stereo_in.buffers ()->getNumSamples ()), max_block_length_);
+  EXPECT_GE (
+    units::samples (stereo_out.buffers ()->getNumSamples ()), max_block_length_);
 
   audio_send_->release_resources ();
 
@@ -237,11 +239,11 @@ TEST_F (ChannelSendTest, AudioProcessing)
   // Test passthrough (gain = 1.0)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (1.0f));
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   fill_input_bufs ();
   audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -298,11 +300,11 @@ TEST_F (ChannelSendTest, AudioProcessingWhenDisabled)
       stereo_in.buffers ()->setSample (1, i, 2.0f);
     }
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -329,11 +331,11 @@ TEST_F (ChannelSendTest, MidiProcessing)
   // Set amount parameter
   midi_send_->amountParam ()->setBaseValue (0.8f);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -355,11 +357,11 @@ TEST_F (ChannelSendTest, MidiProcessingWhenDisabled)
   midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
   midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -515,11 +517,11 @@ TEST_F (ChannelSendTest, EdgeCases)
   // Test with zero frames
   audio_send_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0)
   };
   EXPECT_NO_THROW (
     audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_));
@@ -541,7 +543,7 @@ TEST_F (ChannelSendTest, EdgeCases)
       stereo_in.buffers ()->setSample (1, i, 1.0f);
     }
 
-  time_nfo.nframes_ = 10;
+  time_nfo.nframes_ = units::samples (10);
   audio_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   for (int i = 0; i < 10; i++)
@@ -562,11 +564,11 @@ TEST_F (ChannelSendTest, BufferClearingBetweenProcessCalls)
   audio_send_->amountParam ()->setBaseValue (
     audio_send_->amountParam ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   const auto fill_input_bufs = [&] (float left_val, float right_val) {
@@ -633,11 +635,11 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
   // Set amount parameter
   midi_send_->amountParam ()->setBaseValue (0.8f);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Add MIDI events to input

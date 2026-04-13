@@ -13,6 +13,7 @@
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
@@ -317,7 +318,7 @@ protected:
   static constexpr utils::Version TEST_APP_VERSION_WITH_PATCH{ 2, 0, 1 };
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
-  fs::path                                         project_dir;
+  std::filesystem::path                            project_dir;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
   std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
   test_helpers::MockSettingsBackend *              mock_backend_ptr{};

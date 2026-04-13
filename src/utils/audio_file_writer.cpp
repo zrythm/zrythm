@@ -8,15 +8,17 @@
 
 #include <QtConcurrentRun>
 
+#include <fmt/std.h>
+
 namespace zrythm::utils
 {
 
 void
 AudioFileWriter::write (
-  QPromise<void>           &promise,
-  WriteOptions              options,
-  const fs::path           &file_path,
-  juce::AudioSampleBuffer &&buffer)
+  QPromise<void>              &promise,
+  WriteOptions                 options,
+  const std::filesystem::path &file_path,
+  juce::AudioSampleBuffer    &&buffer)
 {
   try
     {
@@ -137,16 +139,16 @@ AudioFileWriter::write (
 
 QFuture<void>
 AudioFileWriter::write_async (
-  WriteOptions              options,
-  const fs::path           &file_path,
-  juce::AudioSampleBuffer &&buffer)
+  WriteOptions                 options,
+  const std::filesystem::path &file_path,
+  juce::AudioSampleBuffer    &&buffer)
 {
   // This is a hack to work around the fact that QtConcurrent::run only supports
   // copyable arguments, and AudioSampleBuffer is not copyable
   return QtConcurrent::run (
     [inner_buffer = std::move (buffer)] (
       QPromise<void> &promise, WriteOptions inner_options,
-      const fs::path &inner_file_path) {
+      const std::filesystem::path &inner_file_path) {
       AudioFileWriter::write (
         promise, inner_options, inner_file_path,
         std::move (const_cast<juce::AudioSampleBuffer &> (inner_buffer)));

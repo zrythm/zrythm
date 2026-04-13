@@ -34,12 +34,14 @@ public:
   MOCK_METHOD (
     void,
     custom_process_block,
-    (EngineProcessTimeInfo, const dsp::ITransport &, const dsp::TempoMap &),
+    (dsp::graph::EngineProcessTimeInfo,
+     const dsp::ITransport &,
+     const dsp::TempoMap &),
     (noexcept, override));
   MOCK_METHOD (
     void,
     custom_prepare_for_processing,
-    (const dsp::graph::GraphNode *, units::sample_rate_t, nframes_t),
+    (const dsp::graph::GraphNode *, units::sample_rate_t, units::sample_u32_t),
     (override));
   MOCK_METHOD (void, custom_release_resources, (), (override));
 };
@@ -108,7 +110,7 @@ protected:
     auto ref = plugin_registry_->create_object<plugins::InternalPluginBase> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] { return fs::path ("/tmp"); }, nullptr);
+      [] { return std::filesystem::path ("/tmp"); }, nullptr);
     auto * pl = ref.get_object_as<plugins::InternalPluginBase> ();
     pl->set_configuration (config);
 
@@ -168,7 +170,7 @@ protected:
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
   dsp::graph::Graph                                graph_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
-  nframes_t            max_block_length_{ 1024 };
+  units::sample_u32_t  max_block_length_{ units::samples (1024u) };
 
   std::unique_ptr<Channel> audio_channel_;
   std::unique_ptr<Channel> midi_channel_;

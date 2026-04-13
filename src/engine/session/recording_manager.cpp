@@ -239,9 +239,9 @@ RecordingManager::handle_stop_recording (bool is_automation)
 
 void
 RecordingManager::handle_recording (
-  structure::tracks::TrackPtrVariant track_var,
-  const EngineProcessTimeInfo       &time_nfo,
-  const dsp::MidiEventVector *       midi_events,
+  structure::tracks::TrackPtrVariant       track_var,
+  const dsp::graph::EngineProcessTimeInfo &time_nfo,
+  const dsp::MidiEventVector *             midi_events,
   std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
     stereo_ports)
 {
@@ -267,7 +267,7 @@ RecordingManager::handle_recording (
   if (TRANSPORT->punchEnabled ())
     {
       inside_punch_range = TRANSPORT->position_is_inside_punch_range (
-        units::samples (time_nfo.g_start_frame_w_offset_));
+        time_nfo.g_start_frame_w_offset_);
     }
   else
     {
@@ -304,7 +304,7 @@ RecordingManager::handle_recording (
               skip_adding_track_events = true;
             }
           /* if pausing */
-          else if (time_nfo.nframes_ == 0)
+          else if (time_nfo.nframes_ == units::samples (0))
             {
               if (
                 recording_region_per_track_.contains (tr->get_uuid ())
@@ -429,12 +429,13 @@ RecordingManager::handle_recording (
               auto re = event_obj_pool_.acquire ();
               re->init (RecordingEvent::Type::Audio, *tr, time_nfo);
               utils::float_ranges::copy (
-                &re->lbuf_[time_nfo.local_offset_],
-                &stereo_ports->first[time_nfo.local_offset_], time_nfo.nframes_);
+                &re->lbuf_[time_nfo.local_offset_.in (units::samples)],
+                &stereo_ports->first[time_nfo.local_offset_.in (units::samples)],
+                time_nfo.nframes_.in (units::samples));
               utils::float_ranges::copy (
-                &re->rbuf_[time_nfo.local_offset_],
-                &stereo_ports->second[time_nfo.local_offset_],
-                time_nfo.nframes_);
+                &re->rbuf_[time_nfo.local_offset_.in (units::samples)],
+                &stereo_ports->second[time_nfo.local_offset_.in (units::samples)],
+                time_nfo.nframes_.in (units::samples));
               event_queue_.push_back (re);
             }
         }
@@ -566,8 +567,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
         {
 
           /* position to pause at */
-          [[maybe_unused]] auto pause_pos =
-            (signed_frame_t) ev.g_start_frame_w_offset_;
+          [[maybe_unused]] auto pause_pos = ev.g_start_frame_w_offset_;
 
 #if 0
   z_debug ("track {} pause start frames {}, nframes {}", tr->name_.c_str(), pause_pos.frames_, ev.nframes_);

@@ -48,7 +48,7 @@ public:
     AudioThreadChecker                            audio_thread_checker,
     PluginHostWindowFactory                       host_window_factory,
     QObject *                                     parent = nullptr);
-  Z_DISABLE_COPY_MOVE (ClapPlugin)
+  Q_DISABLE_COPY_MOVE (ClapPlugin)
   ~ClapPlugin () override;
 
   // clap_host
@@ -110,17 +110,18 @@ public:
   // Plugin Interface Implementation
   // ============================================================================
 
-  nframes_t get_single_playback_latency () const override;
+  units::sample_u32_t get_single_playback_latency () const override;
 
-  void save_state (std::optional<fs::path> abs_state_dir) override;
-  void load_state (std::optional<fs::path> abs_state_dir) override;
+  void save_state (std::optional<std::filesystem::path> abs_state_dir) override;
+  void load_state (std::optional<std::filesystem::path> abs_state_dir) override;
 
 protected:
   void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
-    nframes_t            max_block_length) override;
+    units::sample_u32_t  max_block_length) override;
 
-  void process_impl (EngineProcessTimeInfo time_info) noexcept override;
+  void
+  process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept override;
 
   void release_resources_impl () override;
 
@@ -150,7 +151,8 @@ private:
    * @param path
    * @param plugin_unique_id The hash of the CLAP plugin ID.
    */
-  bool load_plugin (const fs::path &path, int64_t plugin_unique_id);
+  bool
+  load_plugin (const std::filesystem::path &path, int64_t plugin_unique_id);
   void unload_current_plugin ();
 
   void create_ports_from_clap_plugin ();

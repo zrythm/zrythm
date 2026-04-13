@@ -11,7 +11,6 @@
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
 #include "utils/concurrency.h"
-#include "utils/types.h"
 
 namespace zrythm::dsp
 {
@@ -32,6 +31,17 @@ public:
     Uninitialized,
     Initialized,
     Active,
+  };
+
+  // TODO: check if pausing/resuming can be done with RAII
+  struct EngineState
+  {
+    /** Engine running. */
+    bool running_;
+    /** Playback. */
+    bool playing_;
+    /** Transport loop. */
+    bool looping_;
   };
 
 public:
@@ -92,7 +102,7 @@ public:
    */
   [[gnu::hot]] bool process_prepare (
     dsp::Transport::TransportSnapshot               &transport_snapshot,
-    nframes_t                                        nframes,
+    units::sample_u32_t                              nframes,
     SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
     [[clang::nonblocking]];
 
@@ -113,7 +123,7 @@ public:
    */
   [[gnu::hot]] auto process (
     const dsp::PlayheadProcessingGuard &playhead_guard,
-    nframes_t total_frames_to_process) noexcept [[clang::nonblocking]]
+    units::sample_u32_t total_frames_to_process) noexcept [[clang::nonblocking]]
   -> ProcessReturnStatus;
 
   /**
@@ -126,8 +136,8 @@ public:
   [[gnu::hot]] void advance_playhead_after_processing (
     dsp::Transport::TransportSnapshot  &transport_snapshot,
     const dsp::PlayheadProcessingGuard &playhead_guard,
-    nframes_t                           roll_nframes,
-    nframes_t nframes) noexcept [[clang::nonblocking]];
+    units::sample_u32_t                 roll_nframes,
+    units::sample_u32_t nframes) noexcept [[clang::nonblocking]];
 
   auto &get_monitor_out_port () { return monitor_out_; }
 
@@ -151,7 +161,7 @@ public:
     return SemaphoreRAII (process_lock_, true);
   }
 
-  nframes_t get_block_length () const
+  units::sample_u32_t get_block_length () const
   {
     return hw_interface_.get_block_length ();
   }
@@ -240,7 +250,7 @@ private:
    * @brief When first set, it is equal to the max playback latency of all
    * initial trigger nodes.
    */
-  nframes_t remaining_latency_preroll_{};
+  units::sample_u32_t remaining_latency_preroll_;
 
   /** To be set to 1 when the CC from the Midi in port should be captured. */
   std::atomic_bool capture_cc_{ false };

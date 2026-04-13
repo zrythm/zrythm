@@ -1,11 +1,10 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <cstdint>
 
-#include "utils/types.h"
 #include "utils/units.h"
 
 namespace zrythm::dsp

@@ -99,7 +99,7 @@ TEST_F (AudioEngineTest, GetBlockLengthReturnsCorrectValue)
     *transport_, *hw_interface_, *graph_dispatcher_, *tempo_map_);
 
   // Should return the buffer size from the audio device
-  EXPECT_EQ (engine->get_block_length (), 256);
+  EXPECT_EQ (engine->get_block_length (), units::samples (256));
 }
 
 TEST_F (AudioEngineTest, GetSampleRateReturnsCorrectValue)
@@ -206,7 +206,7 @@ TEST_F (AudioEngineTest, ProcessPrepareWithPauseRequestedUpdatesPlayState)
   // Get transport snapshot to test process_prepare
   auto snapshot = transport_->get_snapshot ();
 
-  bool result = engine->process_prepare (snapshot, 256, lock);
+  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
 
   EXPECT_FALSE (result); // Should not skip cycle
 }
@@ -231,7 +231,7 @@ TEST_F (
   // Get transport snapshot to test process_prepare
   auto snapshot = transport_->get_snapshot ();
 
-  bool result = engine->process_prepare (snapshot, 256, lock);
+  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
 
   EXPECT_FALSE (result); // Should not skip cycle
 }
@@ -252,7 +252,7 @@ TEST_F (AudioEngineTest, ProcessPrepareWithoutExportingAndNoSemaphoreSkipsCycle)
   // Get transport snapshot to test process_prepare
   auto snapshot = transport_->get_snapshot ();
 
-  bool result = engine->process_prepare (snapshot, 256, lock);
+  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
 
   EXPECT_TRUE (result); // Should skip cycle
 }
@@ -267,7 +267,7 @@ TEST_F (AudioEngineTest, ProcessWhenNotRunningReturnsSkipped)
   engine->set_running (false);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto                         result = engine->process (guard, 256);
+  auto result = engine->process (guard, units::samples (256));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessSkipped);
 }
@@ -282,7 +282,7 @@ TEST_F (AudioEngineTest, ProcessWithZeroFramesReturnsFailed)
   engine->set_running (true);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto                         result = engine->process (guard, 0);
+  auto result = engine->process (guard, units::samples (0));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessFailed);
 }
@@ -297,7 +297,7 @@ TEST_F (AudioEngineTest, ProcessWhenRunningReturnsCompleted)
   engine->set_running (true);
 
   dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto                         result = engine->process (guard, 256);
+  auto result = engine->process (guard, units::samples (256));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessCompleted);
 }
@@ -323,7 +323,8 @@ TEST_F (AudioEngineTest, PostProcessWithRollingStateUpdatesPlayhead)
 
   {
     dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-    engine->advance_playhead_after_processing (snapshot, guard, 128, 256);
+    engine->advance_playhead_after_processing (
+      snapshot, guard, units::samples (128), units::samples (256));
   }
 
   // Playhead should have advanced by 128 samples
@@ -354,7 +355,8 @@ TEST_F (AudioEngineTest, PostProcessWithNonRollingStateDoesNotUpdatePlayhead)
 
   {
     dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-    engine->advance_playhead_after_processing (snapshot, guard, 128, 256);
+    engine->advance_playhead_after_processing (
+      snapshot, guard, units::samples (128), units::samples (256));
   }
 
   // Playhead should not have advanced since transport is not rolling
@@ -372,7 +374,7 @@ TEST_F (AudioEngineTest, WaitforPauseWithNonRunningEngineReturnsEarly)
 
   transport_->setLoopEnabled (false);
 
-  EngineState state{};
+  AudioEngine::EngineState state{};
   engine->wait_for_pause (state, false, false);
 
   EXPECT_FALSE (state.running_);
@@ -391,7 +393,7 @@ TEST_F (AudioEngineTest, WaitforPauseWithPlayingEngineStopsPlayback)
   transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
   transport_->setLoopEnabled (true);
 
-  EngineState state{};
+  AudioEngine::EngineState state{};
   engine->wait_for_pause (state, true, false);
 
   EXPECT_TRUE (state.running_);
@@ -407,7 +409,9 @@ TEST_F (AudioEngineTest, ResumeWithNonRunningEngineDoesNothing)
 
   engine->set_running (true);
 
-  EngineState state{ .running_ = false, .playing_ = true, .looping_ = true };
+  AudioEngine::EngineState state{
+    .running_ = false, .playing_ = true, .looping_ = true
+  };
   engine->resume (state);
 
   // Should not modify the state since engine wasn't running
@@ -427,7 +431,9 @@ TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
   transport_->requestRoll ();
   transport_->setLoopEnabled (true);
 
-  EngineState state{ .running_ = true, .playing_ = true, .looping_ = true };
+  AudioEngine::EngineState state{
+    .running_ = true, .playing_ = true, .looping_ = true
+  };
   engine->resume (state);
 
   EXPECT_TRUE (state.running_);

@@ -51,7 +51,7 @@ public:
   /**
    * @brief Function to check if other soloed lanes exist in the owner.
    */
-  using SoloedLanesExistFunc = GenericBoolGetter;
+  using SoloedLanesExistFunc = std::function<bool ()>;
 
   static constexpr auto default_format_str = QT_TR_NOOP_UTF8 ("Lane {}");
 
@@ -76,7 +76,7 @@ public:
           std::move (dependencies.soloed_lanes_exist_func_))
   {
   }
-  Z_DISABLE_COPY_MOVE (TrackLane)
+  Q_DISABLE_COPY_MOVE (TrackLane)
   ~TrackLane () override;
 
   // ========================================================================

@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "structure/arrangement/editor_settings.h"
 #include "utils/icloneable.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -186,7 +187,7 @@ public:
   {
     vec.clear ();
 
-    for (const auto i : std::views::iota (0_zu, 128_zu))
+    for (const auto i : std::views::iota (0zu, 128zu))
       {
         MidiNoteDescriptor * descr;
         if (drum_mode)

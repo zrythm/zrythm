@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/passthrough_processors.h"
-#include "utils/gtest_wrapper.h"
 
 #include <QObject>
 
 #include "unit/dsp/graph_helpers.h"
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
-using namespace zrythm::dsp;
+namespace zrythm::dsp
+{
 
 class PassthroughProcessorsTest : public ::testing::Test
 {
@@ -23,7 +24,7 @@ protected:
     dependencies_ = std::make_unique<ProcessorBase::ProcessorBaseDependencies> (
       *port_registry_, *param_registry_);
     sample_rate_ = units::sample_rate (48000);
-    max_block_length_ = 1024;
+    max_block_length_ = units::samples (1024);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
@@ -43,7 +44,7 @@ protected:
   std::unique_ptr<ProcessorParameterRegistry>               param_registry_;
   std::unique_ptr<ProcessorBase::ProcessorBaseDependencies> dependencies_;
   units::sample_rate_t                                      sample_rate_;
-  nframes_t                                                 max_block_length_;
+  units::sample_u32_t                                       max_block_length_;
   std::unique_ptr<MidiPassthroughProcessor>                 midi_proc_;
   std::unique_ptr<StereoPassthroughProcessor>               audio_proc_;
   std::unique_ptr<graph_test::MockTransport>                mock_transport_;
@@ -64,7 +65,12 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   const auto event = midi_in.midi_events_.active_events_.at (0);
 
   // Process
-  EngineProcessTimeInfo time_nfo{ 0, 0, 0, 512 };
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
+  };
   midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
@@ -92,11 +98,11 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
     }
 
   // Process
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -122,7 +128,8 @@ TEST_F (PassthroughProcessorsTest, ResourceManagement)
   auto &midi_in = midi_proc_->get_midi_in_port (0);
   auto &audio_in = audio_proc_->get_audio_in_port ();
   EXPECT_NE (midi_in.midi_ring_, nullptr);
-  EXPECT_GE (audio_in.buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (
+    units::samples (audio_in.buffers ()->getNumSamples ()), max_block_length_);
 
   // Release resources
   midi_proc_->release_resources ();
@@ -214,7 +221,12 @@ TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  EngineProcessTimeInfo time_nfo{ 0, 0, 0, 0 };
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0)
+  };
 
   // Should handle without crashing
   midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -225,7 +237,8 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
 {
   const int large_size = 8192;
   audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
-  audio_proc_->prepare_for_processing (nullptr, sample_rate_, large_size);
+  audio_proc_->prepare_for_processing (
+    nullptr, sample_rate_, units::samples (large_size));
 
   // Get ports
   auto &in = audio_proc_->get_audio_in_port ();
@@ -238,11 +251,11 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
       in.buffers ()->setSample (1, i, cosf (static_cast<float> (i) * 0.1f));
     }
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = large_size
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (large_size)
   };
   audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -271,11 +284,11 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     }
 
   // First process call
-  EngineProcessTimeInfo time_nfo1{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_nfo1{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
   audio_proc_->process_block (time_nfo1, *mock_transport_, *tempo_map_);
 
@@ -295,11 +308,11 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     }
 
   // Second process call
-  EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = 256,
-    .g_start_frame_w_offset_ = 256,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_nfo2{
+    .g_start_frame_ = units::samples (256),
+    .g_start_frame_w_offset_ = units::samples (256),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
   audio_proc_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
 
@@ -318,11 +331,11 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
       in.buffers ()->setSample (1, i, static_cast<float> (i) * -0.03f);
     }
 
-  EngineProcessTimeInfo time_nfo3{
-    .g_start_frame_ = 512,
-    .g_start_frame_w_offset_ = 512,
-    .local_offset_ = 0,
-    .nframes_ = 128
+  dsp::graph::EngineProcessTimeInfo time_nfo3{
+    .g_start_frame_ = units::samples (512),
+    .g_start_frame_w_offset_ = units::samples (512),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (128)
   };
   audio_proc_->process_block (time_nfo3, *mock_transport_, *tempo_map_);
 
@@ -344,4 +357,5 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
         out.buffers ()->getSample (1, i), static_cast<float> (i) * -0.02f,
         1e-4f);
     }
+}
 }

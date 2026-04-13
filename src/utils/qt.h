@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "utils/types.h"
-
 #include <QPointer>
 
 namespace zrythm::utils
@@ -41,7 +39,7 @@ public:
 
   ~QObjectUniquePtr () { reset (); }
 
-  Z_DISABLE_COPY (QObjectUniquePtr)
+  Q_DISABLE_COPY (QObjectUniquePtr)
 
   // Allow moving
   QObjectUniquePtr (QObjectUniquePtr &&other) noexcept : ptr_ (other.release ())

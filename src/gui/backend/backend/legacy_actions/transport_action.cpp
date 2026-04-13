@@ -111,7 +111,7 @@ TransportAction::do_or_undo (bool do_it)
   EngineProcessTimeInfo time_nfo = {
     .g_start_frame_ = (unsigned_frame_t) PLAYHEAD.frames_,
     .g_start_frame_w_offset_ = (unsigned_frame_t) PLAYHEAD.frames_,
-    .local_offset_ = 0,
+   .local_offset_ = units::samples (0),
     .nframes_ = 1,
   };
   ROUTER->start_cycle (time_nfo);

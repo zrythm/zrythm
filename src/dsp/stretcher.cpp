@@ -32,7 +32,6 @@
 #include "utils/audio_file.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
-#include "utils/mem.h"
 
 #include <rubberband/rubberband-c.h>
 
@@ -182,7 +181,7 @@ Stretcher::create_rubberband (
   return stretcher;
 }
 
-signed_frame_t
+units::sample_t
 Stretcher::stretch (
   const float * in_samples_l,
   const float * in_samples_r,
@@ -193,13 +192,13 @@ Stretcher::stretch (
 {
   using rubberband_int_t = unsigned int;
   z_info ("{}: in samples size: {}", __func__, in_samples_size);
-  z_return_val_if_fail (in_samples_l, -1);
+  assert (in_samples_l != nullptr);
 
   /*rubberband_reset (pimpl_->rubberband_state);*/
 
   /* create the de-interleaved array */
   unsigned int channels = in_samples_r ? 2 : 1;
-  z_return_val_if_fail (pimpl_->channels == channels, -1);
+  assert (pimpl_->channels == channels);
   std::array<const float *, 2> in_samples{ nullptr, nullptr };
   in_samples[0] = in_samples_l;
   if (channels == 2)
@@ -241,7 +240,7 @@ Stretcher::stretch (
   if (avail < (int) out_samples_wanted)
     {
       z_debug ("not enough samples available");
-      return static_cast<signed_frame_t> (out_samples_wanted);
+      return units::samples (static_cast<int64_t> (out_samples_wanted));
     }
 
   z_debug ("samples wanted {} (avail {})", out_samples_wanted, avail);
@@ -252,7 +251,7 @@ Stretcher::stretch (
 
   z_debug ("out samples size: {}", retrieved_out_samples);
 
-  return static_cast<signed_frame_t> (retrieved_out_samples);
+  return units::samples (static_cast<int64_t> (retrieved_out_samples));
 }
 
 void
@@ -369,9 +368,9 @@ Stretcher::stretch_interleaved (zrythm::utils::audio::AudioBuffer &in_samples)
         static_cast<rubberband_int_t> (avail));
 
       /* save the result */
-      for (const auto i : std::views::iota (0_zu, channels))
+      for (const auto i : std::views::iota (0u, channels))
         {
-          for (const auto j : std::views::iota (0_zu, out_chunk_size))
+          for (const auto j : std::views::iota (0u, out_chunk_size))
             {
               out_samples.setSample (
                 static_cast<int> (i), static_cast<int> (j + total_out_frames),

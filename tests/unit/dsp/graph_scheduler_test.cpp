@@ -32,7 +32,7 @@ protected:
     ON_CALL (*processable_, get_node_name ())
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
-      .WillByDefault (Return (0));
+      .WillByDefault (Return (units::samples (0)));
     ON_CALL (*processable_, prepare_for_processing (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
@@ -59,7 +59,7 @@ protected:
   }
 
   units::sample_rate_t             sample_rate_{ units::sample_rate (48000) };
-  int                              block_length_{ 256 };
+  static constexpr auto            block_length_{ units::samples (256u) };
   std::unique_ptr<MockTransport>   transport_;
   std::unique_ptr<MockProcessable> processable_;
   std::unique_ptr<GraphScheduler>  scheduler_;
@@ -84,9 +84,14 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0u),
+    .nframes_ = units::samples (256u)
+  };
+  scheduler_->run_cycle (
+    time_info, units::samples (0), *transport_, *tempo_map_);
 
   scheduler_->terminate_threads ();
 }
@@ -106,9 +111,14 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (4);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0u),
+    .nframes_ = units::samples (256u)
+  };
+  scheduler_->run_cycle (
+    time_info, units::samples (0), *transport_, *tempo_map_);
 
   EXPECT_EQ (process_count, 3);
   scheduler_->terminate_threads ();
@@ -130,9 +140,14 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (1); // Single thread to ensure deterministic order
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = 256;
-  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0u),
+    .nframes_ = units::samples (256u)
+  };
+  scheduler_->run_cycle (
+    time_info, units::samples (0), *transport_, *tempo_map_);
 
   EXPECT_THAT (process_order, ElementsAre (0, 1, 2));
   scheduler_->terminate_threads ();
@@ -144,7 +159,8 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
 
   // Expect prepare to be called for each node
   EXPECT_CALL (
-    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    *processable_,
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (3);
 
   // Expect release to be called when scheduler is destroyed
@@ -164,7 +180,8 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   // First chain with initial parameters
   EXPECT_CALL (
-    *processable_, prepare_for_processing (_, units::sample_rate (48000), 256))
+    *processable_,
+    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
     .Times (3);
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
@@ -174,7 +191,7 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   // Rechain with larger buffer size and different sample rate
   const auto new_sample_rate = units::sample_rate (96000);
-  const int  new_block_length = 512;
+  const auto new_block_length = units::samples (512u);
 
   // Expect prepare to be called with new parameters
   EXPECT_CALL (
@@ -187,9 +204,14 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   // Run a processing cycle to ensure everything works
   scheduler_->start_threads (2);
 
-  EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = new_block_length;
-  scheduler_->run_cycle (time_info, 0, *transport_, *tempo_map_);
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0u),
+    .nframes_ = new_block_length
+  };
+  scheduler_->run_cycle (
+    time_info, units::samples (0), *transport_, *tempo_map_);
 
   scheduler_->terminate_threads ();
 }

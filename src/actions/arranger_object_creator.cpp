@@ -176,7 +176,10 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
     snap_grid_editor_.defaultTicks (static_cast<int64_t> (startTicks));
 
   /* create midi notes */
-  for (const auto i : std::views::iota (0_zu, dsp::ChordDescriptor::MAX_NOTES))
+  for (
+    const auto i : std::views::iota (
+      static_cast<decltype (dsp::ChordDescriptor::MAX_NOTES)> (0),
+      dsp::ChordDescriptor::MAX_NOTES))
     {
       if (descr.notes_.at (i))
         {

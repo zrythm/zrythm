@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/project_ui_state.h"
+#include "utils/app_settings.h"
 
 namespace zrythm::structure::project
 {

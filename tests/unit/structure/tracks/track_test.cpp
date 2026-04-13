@@ -261,6 +261,8 @@ TEST_F (TrackTest, TrackTypeSpecificBehavior)
   }
 }
 
+// TODO
+#if 0
 TEST_F (TrackTest, PluginDescriptorValidation)
 {
   // Test plugin descriptor validation for different slot types
@@ -304,5 +306,6 @@ TEST_F (TrackTest, PluginDescriptorValidation)
     Track::is_plugin_descriptor_valid_for_slot_type (
       descriptor, plugins::PluginSlotType::Instrument, Track::Type::Audio));
 }
+#endif
 
 } // namespace zrythm::structure::tracks

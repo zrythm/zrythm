@@ -5,6 +5,7 @@
 
 #include "zrythm-config.h"
 
+#include <filesystem>
 #include <optional>
 
 #include "utils/utf8_string.h"
@@ -14,6 +15,7 @@
 
 namespace zrythm::utils::io
 {
+namespace fs = std::filesystem;
 
 /**
  * @brief Get the path list separator as a string (":" or ";" on Windows).
@@ -24,10 +26,10 @@ get_path_separator_string ();
 /**
  * @brief Get the path to the user's home directory.
  */
-fs::path
+std::filesystem::path
 get_home_path ();
 
-fs::path
+std::filesystem::path
 get_temp_path ();
 
 /**
@@ -42,8 +44,8 @@ get_temp_path ();
  * @param filename The file path to get the directory for.
  * @return The directory portion of the file path.
  */
-fs::path
-get_dir (const fs::path &filename);
+std::filesystem::path
+get_dir (const std::filesystem::path &filename);
 
 /**
  * @brief Makes directory with parents if doesn't exist.
@@ -51,7 +53,7 @@ get_dir (const fs::path &filename);
  * @throw ZrythmException Failed to make directory with parents.
  */
 void
-mkdir (const fs::path &dir);
+mkdir (const std::filesystem::path &dir);
 
 /**
  * @brief Touches a file similar to UNIX touch.
@@ -59,22 +61,22 @@ mkdir (const fs::path &dir);
  * @return Whether successful.
  */
 bool
-touch_file (const fs::path &file_path);
+touch_file (const std::filesystem::path &file_path);
 
-fs::path
+std::filesystem::path
 uri_to_file (const utils::Utf8String &uri);
 
 /**
  * Strips extensions from given filename.
  */
-fs::path
-file_strip_ext (const fs::path &filename);
+std::filesystem::path
+file_strip_ext (const std::filesystem::path &filename);
 
 /**
  * Returns file extension or empty string if none.
  */
-fs::path
-file_get_ext (const fs::path &file);
+std::filesystem::path
+file_get_ext (const std::filesystem::path &file);
 
 /**
  * @brief Get the base name of a file path with the file extension.
@@ -86,8 +88,8 @@ file_get_ext (const fs::path &file);
  * @param filename The file path to get the base name for.
  * @return The base name of the file with the extension.
  */
-fs::path
-path_get_basename (const fs::path &filename);
+std::filesystem::path
+path_get_basename (const std::filesystem::path &filename);
 
 /**
  * @brief Returns the base name of the given file path, without the last file
@@ -100,18 +102,18 @@ path_get_basename (const fs::path &filename);
  * @param filename The file path to extract the base name from.
  * @return The base name of the file, without the last file extension.
  */
-fs::path
-path_get_basename_without_ext (const fs::path &filename);
+std::filesystem::path
+path_get_basename_without_ext (const std::filesystem::path &filename);
 
 /**
  * Returns the number of seconds since the epoch, or
  * -1 if failed.
  */
 qint64
-file_get_last_modified_datetime (const fs::path &filename);
+file_get_last_modified_datetime (const std::filesystem::path &filename);
 
 Utf8String
-file_get_last_modified_datetime_as_str (const fs::path &filename);
+file_get_last_modified_datetime_as_str (const std::filesystem::path &filename);
 
 /**
  * Removes the given file.
@@ -124,7 +126,7 @@ file_get_last_modified_datetime_as_str (const fs::path &filename);
  * @return True if the file was deleted, false if it didn't exist.
  */
 bool
-remove (const fs::path &path);
+remove (const std::filesystem::path &path);
 
 /**
  * @brief Creates a temporary directory in the system's default temp directory.
@@ -153,7 +155,7 @@ make_tmp_dir (
  * @see make_tmp_dir
  */
 inline std::unique_ptr<QTemporaryDir>
-make_tmp_dir_at_path (const fs::path &absolute_template_path)
+make_tmp_dir_at_path (const std::filesystem::path &absolute_template_path)
 {
   return make_tmp_dir (
     Utf8String::from_path (absolute_template_path).to_qstring (), false);
@@ -182,7 +184,7 @@ make_tmp_file (
  * @return Whether successful.
  */
 bool
-rmdir (const fs::path &path, bool force);
+rmdir (const std::filesystem::path &path, bool force);
 
 /**
  * @brief
@@ -190,8 +192,8 @@ rmdir (const fs::path &path, bool force);
  * @param _dir
  * @throw ZrythmException If @ref dir cannot be opened.
  */
-std::vector<fs::path>
-get_files_in_dir_as_basenames (const fs::path &_dir);
+std::vector<std::filesystem::path>
+get_files_in_dir_as_basenames (const std::filesystem::path &_dir);
 
 /**
  * Returns a list of the files in the given directory as absolute paths.
@@ -200,9 +202,9 @@ get_files_in_dir_as_basenames (const fs::path &_dir);
  *
  * @throw ZrythmException If @ref dir cannot be opened.
  */
-std::vector<fs::path>
+std::vector<std::filesystem::path>
 get_files_in_dir_ending_in (
-  const fs::path                         &_dir,
+  const std::filesystem::path            &_dir,
   bool                                    recursive,
   const std::optional<utils::Utf8String> &end_string);
 
@@ -213,8 +215,8 @@ get_files_in_dir_ending_in (
  * @see io_get_files_in_dir_ending_in().
  * @throw ZrythmException If @ref dir cannot be opened.
  */
-std::vector<fs::path>
-get_files_in_dir (const fs::path &_dir);
+std::vector<std::filesystem::path>
+get_files_in_dir (const std::filesystem::path &_dir);
 
 /**
  * Copies a directory.
@@ -229,10 +231,10 @@ get_files_in_dir (const fs::path &_dir);
  */
 void
 copy_dir (
-  const fs::path &destdir,
-  const fs::path &srcdir,
-  bool            follow_symlinks,
-  bool            recursive);
+  const std::filesystem::path &destdir,
+  const std::filesystem::path &srcdir,
+  bool                         follow_symlinks,
+  bool                         recursive);
 
 /**
  * @brief Copies a file from a source path to a destination path.
@@ -246,7 +248,9 @@ copy_dir (
  * @throw ZrythmException If the file copy operation fails.
  */
 void
-copy_file (const fs::path &destfile, const fs::path &srcfile);
+copy_file (
+  const std::filesystem::path &destfile,
+  const std::filesystem::path &srcfile);
 
 /**
  * @brief Moves (renames) a file from a source path to a destination path.
@@ -257,7 +261,10 @@ copy_file (const fs::path &destfile, const fs::path &srcfile);
  * @throw ZrythmException If the file rename operation fails.
  */
 void
-move_file (const fs::path &destfile, const fs::path &srcfile, bool force = false);
+move_file (
+  const std::filesystem::path &destfile,
+  const std::filesystem::path &srcfile,
+  bool                         force = false);
 
 /**
  * Returns a newly allocated path that is either
@@ -267,8 +274,8 @@ move_file (const fs::path &destfile, const fs::path &srcfile, bool force = false
  *
  * Example: "myfile" -> "myfile (1)"
  */
-fs::path
-get_next_available_filepath (const fs::path &filepath);
+std::filesystem::path
+get_next_available_filepath (const std::filesystem::path &filepath);
 
 /**
  * Returns the given file name with any illegal characters removed.
@@ -308,10 +315,10 @@ get_bundle_path (char * bundle_path);
  * Returns whether the file/dir exists.
  */
 bool
-path_exists (const fs::path &path);
+path_exists (const std::filesystem::path &path);
 
 bool
-is_file_hidden (const fs::path &file);
+is_file_hidden (const std::filesystem::path &file);
 
 /**
  * Do cp --reflink from @ref src to @ref dest.
@@ -319,7 +326,9 @@ is_file_hidden (const fs::path &file);
  * @return Whether successful.
  */
 [[nodiscard]] bool
-reflink_file (const fs::path &dest, const fs::path &src);
+reflink_file (
+  const std::filesystem::path &dest,
+  const std::filesystem::path &src);
 
 /**
  * @brief Reads the contents of a file into a QByteArray.
@@ -329,7 +338,7 @@ reflink_file (const fs::path &dest, const fs::path &src);
  * @throw ZrythmException on error.
  */
 [[nodiscard]] QByteArray
-read_file_contents (const fs::path &path);
+read_file_contents (const std::filesystem::path &path);
 
 /**
  * @brief Write arbitrary data to a file atomically (all at once).
@@ -339,7 +348,10 @@ read_file_contents (const fs::path &path);
  * @param size
  */
 void
-set_file_contents (const fs::path &path, const char * contents, size_t size);
+set_file_contents (
+  const std::filesystem::path &path,
+  const char *                 contents,
+  size_t                       size);
 
 /**
  * @brief Writes the string to the file.
@@ -349,7 +361,9 @@ set_file_contents (const fs::path &path, const char * contents, size_t size);
  * @throw ZrythmException On error.
  */
 void
-set_file_contents (const fs::path &file_path, const utils::Utf8String &data);
+set_file_contents (
+  const std::filesystem::path &file_path,
+  const utils::Utf8String     &data);
 
 /**
  * @brief Splits a string of paths separated by the system's list separator

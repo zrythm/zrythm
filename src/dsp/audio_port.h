@@ -8,6 +8,7 @@
 #include "utils/monotonic_time_provider.h"
 #include "utils/ring_buffer.h"
 
+#include "juce_wrapper.h"
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
@@ -63,9 +64,9 @@ public:
   static constexpr size_t AUDIO_RING_SIZE = 65536;
 
   [[gnu::hot]] void process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
@@ -82,14 +83,14 @@ public:
    * @brief Adds the contents of @p src to this port.
    */
   void add_source_rt (
-    const AudioPort      &src,
-    EngineProcessTimeInfo time_nfo,
-    float                 multiplier = 1.f);
+    const AudioPort                  &src,
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    float                             multiplier = 1.f);
 
   void copy_source_rt (
-    const AudioPort      &src,
-    EngineProcessTimeInfo time_nfo,
-    float                 multiplier = 1.f);
+    const AudioPort                  &src,
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    float                             multiplier = 1.f);
 
   friend void init_from (
     AudioPort             &obj,
@@ -99,7 +100,7 @@ public:
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
   void release_resources () override;
 
 private:

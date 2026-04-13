@@ -1726,7 +1726,7 @@ TEST_F (ArrangerSelectionsFixture, DeleteAutomationPoints)
 
 TEST_F (ZrythmFixture, DuplicateAudioRegions)
 {
-  auto audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
+  auto audio_file_path = std::filesystem::path (TESTS_SRCDIR) / "test.wav";
 
   /* create audio track with region */
   Position       pos1;
@@ -2012,7 +2012,7 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
 {
   Position pos, tmp;
 
-  auto           audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
+  auto audio_file_path = std::filesystem::path (TESTS_SRCDIR) / "test.wav";
   FileDescriptor file_descr (audio_file_path);
   pos.set_to_bar (2);
   Track::create_with_action (
@@ -2027,8 +2027,7 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
   ASSERT_SIZE_EQ (audio_track->lanes_[1]->regions_, 0);
 
   const auto frames_per_bar =
-    (unsigned_frame_t) (AUDIO_ENGINE->frames_per_tick_
-                        * (double) TRANSPORT->ticks_per_bar_);
+    (uint64_t) (AUDIO_ENGINE->frames_per_tick_ * (double) TRANSPORT->ticks_per_bar_);
 
   std::vector<float> l_frames;
 
@@ -2084,18 +2083,17 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
     tmp.set_to_bar (1);
     ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
     ASSERT_EQ (
-      (unsigned_frame_t) r2->end_pos_.frames_,
+      (uint64_t) r2->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
     ASSERT_EQ (
-      (unsigned_frame_t) r2->loop_end_pos_.frames_,
+      (uint64_t) r2->loop_end_pos_.frames_,
       /* total previous frames - r1 frames */
       l_frames.size () - r1_clip->num_frames_);
 
     /* check r2 audio positions */
     auto r2_clip = r2->get_clip ();
-    ASSERT_EQ (
-      r2_clip->num_frames_, (unsigned_frame_t) r2->loop_end_pos_.frames_);
+    ASSERT_EQ (r2_clip->num_frames_, (uint64_t) r2->loop_end_pos_.frames_);
     ASSERT_TRUE (audio_frames_equal (
       r2_clip->ch_frames_.getReadPointer (0), &l_frames[frames_per_bar],
       (size_t) r2_clip->num_frames_, 0.0001f));
@@ -2112,13 +2110,13 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
     tmp.set_to_bar (2);
     ASSERT_POSITION_EQ (r->pos_, tmp);
     tmp.set_to_bar (2);
-    tmp.add_frames ((signed_frame_t) l_frames.size ());
+    tmp.add_frames ((int64_t) l_frames.size ());
     ASSERT_POSITION_EQ (r->end_pos_, tmp);
     tmp.set_to_bar (1);
     ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
     tmp.set_to_bar (1);
     ASSERT_POSITION_EQ (r->clip_start_pos_, tmp);
-    tmp.from_frames ((signed_frame_t) l_frames.size ());
+    tmp.from_frames ((int64_t) l_frames.size ());
     ASSERT_POSITION_EQ (r->loop_end_pos_, tmp);
 
     CLIP_EDITOR->get_region ();
@@ -2169,17 +2167,17 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
     tmp.set_to_bar (1);
     ASSERT_POSITION_EQ (r2->loop_start_pos_, tmp);
     ASSERT_EQ (
-      (unsigned_frame_t) r2->end_pos_.frames_,
+      (uint64_t) r2->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
     ASSERT_EQ (
-      (unsigned_frame_t) r2->loop_end_pos_.frames_,
+      (uint64_t) r2->loop_end_pos_.frames_,
       /* total previous frames - r1 frames */
       l_frames.size () - r1_clip->num_frames_);
 
     /* check r2 audio positions */
     auto r2_clip = r2->get_clip ();
-    ASSERT_EQ ((signed_frame_t) r2_clip->num_frames_, r2->loop_end_pos_.frames_);
+    ASSERT_EQ ((int64_t) r2_clip->num_frames_, r2->loop_end_pos_.frames_);
     ASSERT_TRUE (audio_frames_equal (
       r2_clip->ch_frames_.getReadPointer (0), &l_frames[frames_per_bar],
       (size_t) r2_clip->num_frames_, 0.0001f));
@@ -2201,13 +2199,13 @@ TEST_F (ZrythmFixture, SplitAndMergeAudioUnlooped)
     tmp.set_to_bar (1);
     ASSERT_POSITION_EQ (r->loop_start_pos_, tmp);
     ASSERT_EQ (
-      (unsigned_frame_t) r->end_pos_.frames_,
+      (uint64_t) r->end_pos_.frames_,
       /* total previous frames + started at bar 2 (1 bar) */
       l_frames.size () + frames_per_bar);
     ASSERT_EQ (
       r->loop_end_pos_.frames_,
       /* total previous frames */
-      (signed_frame_t) l_frames.size ());
+      (int64_t) l_frames.size ());
 
     /* check frames */
     auto clip = r->get_clip ();
@@ -2242,7 +2240,7 @@ TEST_F (ZrythmFixture, ResizeLoopFromLeftSide)
 {
   Position pos, tmp;
 
-  const auto     audio_file_path = fs::path (TESTS_SRCDIR) / "test.wav";
+  const auto audio_file_path = std::filesystem::path (TESTS_SRCDIR) / "test.wav";
   FileDescriptor file_descr (audio_file_path);
   pos.set_to_bar (3);
   Track::create_with_action (
@@ -2674,7 +2672,7 @@ TEST_F (ZrythmFixture, MoveAudioRegionAndLowerBPM)
   /* create audio track with region */
   Position       pos;
   int            track_pos = TRACKLIST->tracks_.size ();
-  FileDescriptor file (fs::path (TESTS_SRCDIR) / "test.wav");
+  FileDescriptor file (std::filesystem::path (TESTS_SRCDIR) / "test.wav");
   ASSERT_NO_THROW (
     Track::create_with_action (
       Track::Type::Audio, nullptr, &file, &pos, track_pos, 1, -1, nullptr));
@@ -2828,7 +2826,7 @@ TEST_F (ZrythmFixture, MoveAudioRegionAndLowerSampleRate)
     {
       /* save the project */
       ASSERT_NO_THROW (PROJECT->save (PROJECT->dir_, 0, 0, false));
-      auto prj_file = fs::path (PROJECT->dir_) / PROJECT_FILE;
+      auto prj_file = std::filesystem::path (PROJECT->dir_) / PROJECT_FILE;
 
       /* adjust the samplerate to be given at startup */
       zrythm_app->samplerate_ = (int) AUDIO_ENGINE->sample_rate_ / 2;

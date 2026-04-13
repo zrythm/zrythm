@@ -28,11 +28,10 @@
 #pragma once
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <numbers>
 #include <string>
-
-#include "utils/types.h"
 
 /**
  * @brief Math utils.
@@ -219,7 +218,7 @@ amp_to_dbfs (T amp)
  * (0-2).
  */
 float
-calculate_rms_amp (const float * buf, nframes_t nframes);
+calculate_rms_amp (const float * buf, uint32_t nframes);
 
 /**
  * Calculate db using RMS method.
@@ -229,7 +228,7 @@ calculate_rms_amp (const float * buf, nframes_t nframes);
  */
 template <std::floating_point T>
 static inline T
-calculate_rms_db (const T * buf, nframes_t nframes)
+calculate_rms_db (const T * buf, uint32_t nframes)
 {
   return amp_to_dbfs (calculate_rms_amp (buf, nframes));
 }

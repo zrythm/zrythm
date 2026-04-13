@@ -8,8 +8,7 @@
  * SPDX-License-Identifier: ISC
  */
 
-#ifndef __UTILS_RING_BUFFER_H__
-#define __UTILS_RING_BUFFER_H__
+#pragma once
 
 #include <atomic>
 #include <cstddef>
@@ -315,5 +314,3 @@ private:
   std::atomic<size_t>  read_head_;
   std::atomic<size_t>  write_head_;
 };
-
-#endif // __UTILS_RING_BUFFER_H__

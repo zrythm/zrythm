@@ -1,38 +1,11 @@
 // SPDX-FileCopyrightText: © 2020-2021, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * This file incorporates work covered by the following copyright and
- * permission notices:
- *
- * ---
- *
- * Copyright (C) 2005-2006 Taybin Rutkin <taybin@taybin.com>
- * Copyright (C) 2007-2013 Paul Davis <paul@linuxaudiosystems.com>
- * Copyright (C) 2009 David Robillard <d@drobilla.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * ---
- */
 
 #include <cmath>
 
 #include "dsp/curve.h"
 #include "utils/debug.h"
 #include "utils/math_utils.h"
-#include "utils/utf8_string.h"
 
 #include <nlohmann/json.hpp>
 
@@ -225,6 +198,30 @@ from_json (const nlohmann::json &j, CurveOptions &opts)
 {
   j.at (CurveOptions::kCurvinessKey).get_to (opts.curviness_);
   j.at (CurveOptions::kAlgorithmKey).get_to (opts.algo_);
+}
+
+// === CurveOptionsQmlAdapter ===
+
+void
+CurveOptionsQmlAdapter::setCurviness (double curviness)
+{
+  if (qFuzzyCompare (options_.curviness_, curviness))
+    return;
+
+  curviness = std::clamp (curviness, -1.0, 1.0);
+  options_.curviness_ = curviness;
+  Q_EMIT curvinessChanged (curviness);
+}
+
+void
+CurveOptionsQmlAdapter::setAlgorithm (
+  zrythm::dsp::CurveOptions::Algorithm algorithm)
+{
+  if (options_.algo_ == algorithm)
+    return;
+
+  options_.algo_ = algorithm;
+  Q_EMIT algorithmChanged (algorithm);
 }
 
 } // namespace zrythm::dsp

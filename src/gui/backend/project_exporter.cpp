@@ -19,9 +19,9 @@ ProjectExporter::exportAudio (
 {
   dsp::GraphRenderer::RenderOptions options{
     .sample_rate_ = project->engine ()->get_sample_rate (),
-    .block_length_ = units::samples (project->engine ()->get_block_length ())
+    .block_length_ = project->engine ()->get_block_length ()
   };
-  EngineState state{};
+  dsp::AudioEngine::EngineState state{};
   project->engine ()->wait_for_pause (state, false, true);
   structure::project::ProjectGraphBuilder builder (
     *project, project->metronome (), project->monitor_fader ());

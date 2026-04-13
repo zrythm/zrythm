@@ -79,11 +79,11 @@ constexpr const char * TARGET_AUDIO_TRACK_NAME = "Target audio tr";
 constexpr int TARGET_MIDI_REGION_LANE = 0;
 constexpr int TARGET_AUDIO_REGION_LANE = 5;
 
-fs::path
+std::filesystem::path
 test_project_save ();
 
 [[gnu::cold]] void
-test_project_reload (const fs::path &prj_file);
+test_project_reload (const std::filesystem::path &prj_file);
 
 void
 test_project_save_and_reload ();

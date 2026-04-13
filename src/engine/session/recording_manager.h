@@ -64,9 +64,9 @@ public:
    * @ref RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING.
    */
   void handle_recording (
-    structure::tracks::TrackPtrVariant track_var,
-    const EngineProcessTimeInfo       &time_nfo,
-    const dsp::MidiEventVector *       midi_events,
+    structure::tracks::TrackPtrVariant       track_var,
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    const dsp::MidiEventVector *             midi_events,
     std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
       stereo_ports);
 

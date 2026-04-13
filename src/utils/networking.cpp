@@ -5,6 +5,7 @@
 
 #include "utils/env.h"
 #include "utils/exceptions.h"
+#include "utils/format_juce.h"
 #include "utils/logger.h"
 #include "utils/networking.h"
 
@@ -17,9 +18,9 @@ URL::URL (const std::string &url) : url_ (url)
 }
 
 URL::MultiPartMimeObject::MultiPartMimeObject (
-  const std::string name,
-  const fs::path    filepath,
-  const std::string mimetype)
+  const std::string           name,
+  const std::filesystem::path filepath,
+  const std::string           mimetype)
     : name_ (name), filepath_ (filepath), mimetype_ (mimetype)
 {
 }

@@ -57,7 +57,7 @@ protected:
   std::unique_ptr<dsp::PortRegistry>               port_registry_;
   std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
   units::sample_rate_t   sample_rate_{ units::sample_rate (48000) };
-  nframes_t              max_block_length_{ 1024 };
+  units::sample_u32_t    max_block_length_{ units::samples (1024) };
   std::unique_ptr<Fader> audio_fader_;
   std::unique_ptr<Fader> midi_fader_;
   std::unique_ptr<graph_test::MockTransport> mock_transport_;
@@ -163,8 +163,12 @@ TEST_F (FaderTest, PrepareAndReleaseResources)
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
 
-  EXPECT_GE (stereo_in.buffers ()->getNumSamples (), max_block_length_);
-  EXPECT_GE (stereo_out.buffers ()->getNumSamples (), max_block_length_);
+  EXPECT_GE (
+    stereo_in.buffers ()->getNumSamples (),
+    max_block_length_.in<int> (units::samples));
+  EXPECT_GE (
+    stereo_out.buffers ()->getNumSamples (),
+    max_block_length_.in<int> (units::samples));
 
   audio_fader_->release_resources ();
 
@@ -193,11 +197,11 @@ TEST_F (FaderTest, AudioProcessing)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing to reach target
@@ -264,11 +268,11 @@ TEST_F (FaderTest, MidiProcessing)
   // Set gain parameter
   midi_fader_->gain ()->setBaseValue (0.8f);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
   midi_fader_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -297,11 +301,11 @@ TEST_F (FaderTest, MuteFunctionality)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing to reach target
@@ -357,11 +361,11 @@ TEST_F (FaderTest, BalanceFunctionality)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing to reach target
@@ -425,11 +429,11 @@ TEST_F (FaderTest, SoloAndListenFunctionality)
   audio_fader_->prepare_for_processing (
     nullptr, sample_rate_, max_block_length_);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Test solo functionality
@@ -468,11 +472,11 @@ TEST_F (FaderTest, MonoCompatibilityFunctionality)
 
   // Test stereo mode (mono off)
   audio_fader_->monoToggle ()->setBaseValue (0.0f);
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing
@@ -531,11 +535,11 @@ TEST_F (FaderTest, SwapPhaseFunctionality)
 
   // Test normal phase
   audio_fader_->swapPhaseToggle ()->setBaseValue (0.0f);
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing
@@ -703,11 +707,11 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
   fader_with_callback->gain ()->setBaseValue (
     fader_with_callback->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Test no mute callback - wait for smoothing
@@ -746,7 +750,7 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   auto pre_process_cb =
     [&callback_called] (
       std::pair<std::span<float>, std::span<float>> stereo_bufs,
-      const EngineProcessTimeInfo                  &time_nfo) {
+      const dsp::graph::EngineProcessTimeInfo      &time_nfo) {
       callback_called = true;
       // Modify the buffers
       for (auto &sample : stereo_bufs.first)
@@ -778,11 +782,11 @@ TEST_F (FaderTest, PreProcessAudioCallback)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   for (int block = 0; block < 10; block++)
@@ -826,11 +830,11 @@ TEST_F (FaderTest, MuteGainCallback)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Test normal operation (no mute) - wait for smoothing
@@ -863,11 +867,11 @@ TEST_F (FaderTest, EdgeCases)
   audio_fader_->prepare_for_processing (
     nullptr, sample_rate_, max_block_length_);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0)
   };
   EXPECT_NO_THROW (
     audio_fader_->process_block (time_nfo, *mock_transport_, *tempo_map_));
@@ -891,7 +895,7 @@ TEST_F (FaderTest, EdgeCases)
       }
   };
 
-  time_nfo.nframes_ = 10;
+  time_nfo.nframes_ = units::samples (10);
   for (int block = 0; block < 10; block++)
     {
       fill_inputs (1.f, 1.f);
@@ -914,11 +918,11 @@ TEST_F (FaderTest, DbStringGetter)
   audio_fader_->prepare_for_processing (
     nullptr, sample_rate_, max_block_length_);
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 0
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (0)
   };
 
   // Test default value (0 dB)
@@ -970,11 +974,11 @@ TEST_F (FaderTest, HardLimitingFunctionality)
   hard_limit_fader->gain ()->setBaseValue (
     hard_limit_fader->gain ()->range ().convertTo0To1 (3.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process multiple blocks to allow smoothing to reach target
@@ -1032,11 +1036,11 @@ TEST_F (FaderTest, GainSmoothing)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (0.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   // Process until we reach silence
@@ -1116,11 +1120,11 @@ TEST_F (FaderTest, InputBufferClearedBetweenProcessCalls)
   audio_fader_->gain ()->setBaseValue (
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   const auto fill_input_bufs = [&] (float left_val, float right_val) {
@@ -1198,7 +1202,9 @@ TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
 
   // Fill input buffers with known values
   const auto fill_inputs = [&] (float left_val, float right_val) {
-    for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+    for (
+      const auto i :
+      std::views::iota (0, max_block_length_.in<int> (units::samples)))
       {
         stereo_in.buffers ()->setSample (0, i, left_val);
         stereo_in.buffers ()->setSample (1, i, right_val);
@@ -1210,18 +1216,18 @@ TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
     audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
 
   // Test with non-zero offset that would cause buffer overflow
-  const nframes_t offset = 256;  // Non-zero offset
-  const nframes_t nframes = 256; // Process half buffer
+  const auto offset = 256;  // Non-zero offset
+  const auto nframes = 256; // Process half buffer
 
-  EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = offset,
-    .local_offset_ = offset,
-    .nframes_ = nframes
+  dsp::graph::EngineProcessTimeInfo time_nfo{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (offset),
+    .local_offset_ = units::samples (offset),
+    .nframes_ = units::samples (nframes)
   };
 
   // Clear output buffer first
-  for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+  for (int i = 0; i < max_block_length_.in<int> (units::samples); i++)
     {
       stereo_out.buffers ()->setSample (0, i, 0.0f);
       stereo_out.buffers ()->setSample (1, i, 0.0f);
@@ -1238,11 +1244,9 @@ TEST_F (FaderTest, BufferOverflowWithNonZeroOffset)
 
   // Verify that only the intended range (offset to offset + nframes) is
   // processed and no buffer overflow occurred
-  for (int i = 0; i < static_cast<int> (max_block_length_); i++)
+  for (int i = 0; i < max_block_length_.in<int> (units::samples); i++)
     {
-      if (
-        i >= static_cast<int> (offset)
-        && i < static_cast<int> (offset + nframes))
+      if ((i >= offset) && i < (offset + nframes))
         {
           // This range should be processed
           EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 1.0f, 0.05f)

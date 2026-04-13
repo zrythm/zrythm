@@ -90,7 +90,7 @@ TEST_F (ProjectSaverTest, MakeProjectDirs)
   EXPECT_NO_THROW ({ ProjectSaver::make_project_dirs (test_project_dir); });
 
   // Verify directories were created
-  EXPECT_TRUE (fs::exists (test_project_dir));
+  EXPECT_TRUE (std::filesystem::exists (test_project_dir));
 
   const auto expected_dirs = {
     structure::project::ProjectPathProvider::ProjectPath::BackupsDir,
@@ -107,7 +107,7 @@ TEST_F (ProjectSaverTest, MakeProjectDirs)
       auto dir_path =
         test_project_dir
         / structure::project::ProjectPathProvider::get_path (dir_type);
-      EXPECT_TRUE (fs::exists (dir_path))
+      EXPECT_TRUE (std::filesystem::exists (dir_path))
         << "Directory not created: " << dir_path;
     }
 }
@@ -167,7 +167,7 @@ TEST_F (ProjectSaverTest, SaveCreatesProjectFile)
   create_ui_state_and_undo_stack (*project);
 
   auto save_dir = project_dir / "save_test";
-  fs::create_directories (save_dir);
+  std::filesystem::create_directories (save_dir);
 
   // Start the engine (required for save to work)
   project->engine ()->set_running (true);
@@ -193,7 +193,7 @@ TEST_F (ProjectSaverTest, SaveCreatesProjectFile)
     save_dir
     / structure::project::ProjectPathProvider::get_path (
       structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
-  EXPECT_TRUE (fs::exists (project_file_path))
+  EXPECT_TRUE (std::filesystem::exists (project_file_path))
     << "Project file not created: " << project_file_path;
 
   // Verify we can decompress and read the file
@@ -213,7 +213,7 @@ TEST_F (ProjectSaverTest, SaveReturnsProjectPath)
   create_ui_state_and_undo_stack (*project);
 
   auto save_dir = project_dir / "path_test_project";
-  fs::create_directories (save_dir);
+  std::filesystem::create_directories (save_dir);
 
   project->engine ()->set_running (true);
 
@@ -239,7 +239,7 @@ TEST_F (ProjectSaverTest, SaveTwiceToSameDirectory)
   create_ui_state_and_undo_stack (*project);
 
   auto save_dir = project_dir / "save_twice_test";
-  fs::create_directories (save_dir);
+  std::filesystem::create_directories (save_dir);
 
   project->engine ()->set_running (true);
 
@@ -266,7 +266,7 @@ TEST_F (ProjectSaverTest, SaveTwiceToSameDirectory)
     save_dir
     / structure::project::ProjectPathProvider::get_path (
       structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
-  EXPECT_TRUE (fs::exists (project_file_path));
+  EXPECT_TRUE (std::filesystem::exists (project_file_path));
 }
 
 } // namespace zrythm::controllers

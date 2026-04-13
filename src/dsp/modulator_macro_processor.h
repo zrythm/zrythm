@@ -3,11 +3,7 @@
 
 #pragma once
 
-#include "dsp/graph_node.h"
-#include "dsp/parameter.h"
-#include "dsp/port_fwd.h"
 #include "dsp/processor_base.h"
-#include "utils/types.h"
 
 namespace zrythm::dsp
 {
@@ -60,14 +56,14 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
 
   void custom_release_resources () override;
 

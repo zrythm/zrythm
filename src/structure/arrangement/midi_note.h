@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "structure/arrangement/arranger_object.h"
+#include "utils/midi.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -27,7 +28,7 @@ class MidiNote : public ArrangerObject
 
 public:
   MidiNote (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
-  Z_DISABLE_COPY_MOVE (MidiNote)
+  Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override;
 
   static constexpr midi_byte_t DEFAULT_VELOCITY = 90;

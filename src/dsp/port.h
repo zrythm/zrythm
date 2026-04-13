@@ -6,7 +6,6 @@
 #include "dsp/graph_node.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_fwd.h"
-#include "utils/types.h"
 #include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::dsp
@@ -28,7 +27,7 @@ class Port
     : public dsp::graph::IProcessable,
       public utils::UuidIdentifiableObject<Port>
 {
-  Z_DISABLE_COPY_MOVE (Port)
+  Q_DISABLE_COPY_MOVE (Port)
 public:
   using FullDesignationProvider =
     std::function<utils::Utf8String (const Port &port)>;
@@ -71,11 +70,6 @@ public:
   {
     return get_full_designation ();
   }
-
-  /**
-   * @brief Ports have no latency.
-   */
-  nframes_t get_single_playback_latency () const override { return 0; }
 
   // ========================================================================
 
@@ -175,7 +169,7 @@ public:
     ~RingBufferReader () { owner_.num_ring_buffer_readers_--; }
 
     // Delete copy and move operations
-    Z_DISABLE_COPY_MOVE (RingBufferReader)
+    Q_DISABLE_COPY_MOVE (RingBufferReader)
 
   private:
     RingBufferOwningPortMixin &owner_;
@@ -223,4 +217,4 @@ using PortUuidReference = utils::UuidReference<PortRegistry>;
 } // namespace zrythm::dsp
 
 void
-from_json (const nlohmann::json &j, dsp::PortRegistry &registry);
+from_json (const nlohmann::json &j, zrythm::dsp::PortRegistry &registry);

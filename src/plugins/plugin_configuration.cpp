@@ -37,12 +37,6 @@ PluginConfiguration::create_new_for_descriptor (
 }
 
 void
-PluginConfiguration::print () const
-{
-  z_debug ("{}", *this);
-}
-
-void
 PluginConfiguration::validate ()
 {
   /* if no custom UI, force generic */

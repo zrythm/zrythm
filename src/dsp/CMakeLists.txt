@@ -10,6 +10,7 @@ target_sources(zrythm_dsp_lib
     audio_callback.cpp
     audio_pool.cpp
     audio_port.cpp
+    audio_sample_processor.cpp
     chord_descriptor.cpp
     curve.cpp
     cv_port.cpp

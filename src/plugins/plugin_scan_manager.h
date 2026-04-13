@@ -50,6 +50,8 @@
 #include <QThread>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include "juce_wrapper.h"
+
 namespace zrythm::plugins
 {
 
@@ -135,7 +137,7 @@ class PluginScanManager final : public QObject
       currentlyScanningPluginChanged FINAL)
   QML_UNCREATABLE ("")
 
-  Z_DISABLE_COPY_MOVE (PluginScanManager)
+  Q_DISABLE_COPY_MOVE (PluginScanManager)
 
 public:
   /**

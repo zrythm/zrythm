@@ -45,7 +45,7 @@ struct FileBrowserLocation
 {
   FileBrowserLocation (
     QString                    label,
-    fs::path                   path,
+    std::filesystem::path      path,
     FileManagerSpecialLocation special_location)
       : label_ (std::move (label)), path_ (std::move (path)),
         special_location_ (special_location)
@@ -77,7 +77,7 @@ struct FileBrowserLocation
   QString label_;
 
   /** Absolute path. */
-  fs::path path_;
+  std::filesystem::path path_;
 
   /** Whether this is a standard (undeletable) location. */
   FileManagerSpecialLocation special_location_ = {};
@@ -124,7 +124,7 @@ public:
    *
    * @param abs_path The absolute path of the new location to add.
    */
-  void add_location_and_save (const fs::path &abs_path);
+  void add_location_and_save (const std::filesystem::path &abs_path);
 
   /**
    * Removes the given location (bookmark) from the saved locations and saves
@@ -134,8 +134,9 @@ public:
    * @param skip_if_standard Whether to skip removal if the location is a
    * standard location.
    */
-  void
-  remove_location_and_save (const fs::path &location, bool skip_if_standard);
+  void remove_location_and_save (
+    const std::filesystem::path &location,
+    bool                         skip_if_standard);
 
 private:
   /**

@@ -279,17 +279,6 @@ public:
   }
 
   /**
-   * Set various caches (snapshots, track name hashes, plugin
-   * input/output ports, etc).
-   */
-  void set_caches (CacheType types)
-  {
-    std::ranges::for_each (*this, [&] (const auto &track_var) {
-      std::visit ([&] (auto &&track) { track->set_caches (types); }, track_var);
-    });
-  }
-
-  /**
    * @brief Creates a snapshot of the track collection.
    *
    * Intended to be used in undoable actions.

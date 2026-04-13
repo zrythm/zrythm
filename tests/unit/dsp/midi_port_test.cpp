@@ -3,6 +3,7 @@
 
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
+#include "utils/format_boost.h"
 #include "utils/icloneable.h"
 
 #include "unit/dsp/graph_helpers.h"
@@ -10,13 +11,13 @@
 
 namespace zrythm::dsp
 {
-static_assert (fmt::is_formattable<MidiPort> ());
+static_assert (fmt::formattable<MidiPort>);
 
 class MidiPortTest : public ::testing::Test
 {
 protected:
-  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
-  static constexpr nframes_t BLOCK_LENGTH = 256;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (256);
 
   void SetUp () override
   {
@@ -58,10 +59,10 @@ TEST_F (MidiPortTest, MidiEventHandling)
   input_port->midi_events_.queued_events_.add_note_on (1, 60, 100, 0);
 
   // Process input port
-  EngineProcessTimeInfo time_info{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   input_port->process_block (time_info, *mock_transport_, *tempo_map_);
@@ -80,10 +81,10 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
   output_port->midi_events_.queued_events_.add_control_change (2, 1, 127, 20);
 
   // Process output port
-  EngineProcessTimeInfo time_info{
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
+  dsp::graph::EngineProcessTimeInfo time_info{
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
     .nframes_ = BLOCK_LENGTH
   };
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);

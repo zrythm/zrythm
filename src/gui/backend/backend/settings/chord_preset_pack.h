@@ -50,9 +50,9 @@ public:
   int         get_format_minor_version () const { return 0; }
 
   friend void init_from (
-    ChordPresetPack       &obj,
-    const ChordPresetPack &other,
-    utils::ObjectCloneType clone_type);
+    ChordPresetPack               &obj,
+    const ChordPresetPack         &other,
+    zrythm::utils::ObjectCloneType clone_type);
 
   bool contains_name (const NameT &name) const;
 

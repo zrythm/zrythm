@@ -47,13 +47,15 @@ InternalPluginBase::on_ui_visibility_changed ()
 }
 
 void
-InternalPluginBase::save_state (std::optional<fs::path> abs_state_dir)
+InternalPluginBase::save_state (
+  std::optional<std::filesystem::path> abs_state_dir)
 {
   // Minimal implementation - do nothing for dummy plugin
 }
 
 void
-InternalPluginBase::load_state (std::optional<fs::path> abs_state_dir)
+InternalPluginBase::load_state (
+  std::optional<std::filesystem::path> abs_state_dir)
 {
   // Minimal implementation - do nothing for dummy plugin
 }
@@ -61,13 +63,14 @@ InternalPluginBase::load_state (std::optional<fs::path> abs_state_dir)
 void
 InternalPluginBase::prepare_for_processing_impl (
   units::sample_rate_t sample_rate,
-  nframes_t            max_block_length)
+  units::sample_u32_t  max_block_length)
 {
   // Minimal implementation - no special preparation needed
 }
 
 void
-InternalPluginBase::process_impl (EngineProcessTimeInfo time_info) noexcept
+InternalPluginBase::process_impl (
+  dsp::graph::EngineProcessTimeInfo time_info) noexcept
 {
   // Simple pass-through implementation
 }

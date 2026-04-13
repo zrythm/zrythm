@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "utils/types.h"
 #include "utils/units.h"
 
 namespace zrythm::dsp
@@ -25,7 +24,7 @@ public:
   /**
    * @brief Returns the current block length (buffer size) in frames.
    */
-  virtual nframes_t get_block_length () const = 0;
+  virtual units::sample_u32_t get_block_length () const = 0;
 
   /**
    * @brief Returns the current sample rate.

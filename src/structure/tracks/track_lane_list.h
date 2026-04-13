@@ -31,7 +31,7 @@ public:
     dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
     QObject *                                       parent = nullptr);
   ~TrackLaneList () override;
-  Z_DISABLE_COPY_MOVE (TrackLaneList)
+  Q_DISABLE_COPY_MOVE (TrackLaneList)
 
   // ========================================================================
   // QML Interface

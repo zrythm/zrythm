@@ -45,9 +45,9 @@ public:
    */
   struct LoadResult
   {
-    nlohmann::json    json;
-    utils::Utf8String title;
-    fs::path          project_directory;
+    nlohmann::json        json;
+    utils::Utf8String     title;
+    std::filesystem::path project_directory;
   };
 
   /**
@@ -58,7 +58,7 @@ public:
    * @throw ZrythmException if loading fails.
    */
   [[nodiscard]] static QFuture<LoadResult>
-  load_from_directory (const fs::path &project_dir);
+  load_from_directory (const std::filesystem::path &project_dir);
 
   /**
    * @brief Reads and decompresses the project file.
@@ -68,7 +68,7 @@ public:
    * @throw ZrythmException if reading or decompression fails.
    */
   static std::string
-  get_uncompressed_project_text (const fs::path &project_dir);
+  get_uncompressed_project_text (const std::filesystem::path &project_dir);
 
   /**
    * @brief Parses JSON string and validates against schema.

@@ -25,6 +25,8 @@ set_target_properties(zrythm_structure_scenes_lib PROPERTIES
 
 target_precompile_headers(zrythm_structure_scenes_lib
   PUBLIC
+    # This needs to be included first otherwise partial template specializations fail
+    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/../../utils/format_qt.h>
     $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/clip_launcher.h>
 )
 

@@ -3,7 +3,24 @@
 
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
+#include "utils/format_qt.h"
 #include "utils/views.h"
+
+DEFINE_ENUM_FORMATTER (
+  zrythm::structure::tracks::Track::Type,
+  Track_Type,
+  QT_TR_NOOP_UTF8 ("Instrument"),
+  QT_TR_NOOP_UTF8 ("Audio"),
+  QT_TR_NOOP_UTF8 ("Master"),
+  QT_TR_NOOP_UTF8 ("Chord"),
+  QT_TR_NOOP_UTF8 ("Marker"),
+  QT_TR_NOOP_UTF8 ("Modulator"),
+  QT_TR_NOOP_UTF8 ("Audio FX"),
+  QT_TR_NOOP_UTF8 ("Audio Group"),
+  QT_TR_NOOP_UTF8 ("MIDI"),
+  QT_TR_NOOP_UTF8 ("MIDI FX"),
+  QT_TR_NOOP_UTF8 ("MIDI Group"),
+  QT_TR_NOOP_UTF8 ("Folder"));
 
 namespace zrythm::structure::tracks
 {
@@ -430,30 +447,6 @@ Track::contains_uninstantiated_plugin () const
 }
 
 void
-Track::set_caches (CacheType types)
-{
-  if (ENUM_BITSET_TEST (types, CacheType::PlaybackSnapshots))
-    {
-      set_playback_caches ();
-    }
-
-  if (
-    ENUM_BITSET_TEST (types, CacheType::AutomationLaneRecordModes)
-    || ENUM_BITSET_TEST (types, CacheType::AutomationLanePorts))
-    {
-// TODO
-#if 0
-      if (auto automatable_track = dynamic_cast<AutomatableTrack *> (this))
-        {
-          automatable_track->get_automation_tracklist ().set_caches (
-            CacheType::AutomationLaneRecordModes
-            | CacheType::AutomationLanePorts);
-        }
-#endif
-    }
-}
-
-void
 Track::setClipLauncherMode (bool mode)
 {
   if (mode == clip_launcher_mode_)
@@ -540,6 +533,7 @@ Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
     }
 }
 
+#if 0
 bool
 Track::is_plugin_descriptor_valid_for_slot_type (
   const plugins::PluginDescriptor &descr,
@@ -567,6 +561,14 @@ Track::is_plugin_descriptor_valid_for_slot_type (
     }
 
   z_return_val_if_reached (false);
+}
+#endif
+
+void
+Track::set_default_name ()
+{
+
+  setName (format_qstr (QObject::tr ("{} Track"), type ()));
 }
 
 void

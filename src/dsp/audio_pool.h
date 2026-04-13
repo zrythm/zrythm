@@ -31,7 +31,8 @@ public:
    * @param backup Whether this path is for a backup project (as opposed to the
    * main project).
    */
-  using ProjectPoolPathGetter = std::function<fs::path (bool backup)>;
+  using ProjectPoolPathGetter =
+    std::function<std::filesystem::path (bool backup)>;
   using SampleRateGetter = std::function<units::sample_rate_t ()>;
 
   AudioPool (
@@ -63,7 +64,7 @@ public:
    *
    * @param is_backup Whether writing to a backup project.
    */
-  [[nodiscard]] fs::path
+  [[nodiscard]] std::filesystem::path
   get_clip_path (const dsp::FileAudioSource::Uuid &id, bool is_backup) const;
 
   /**

@@ -5,7 +5,6 @@
 
 #include "dsp/audio_sample_processor.h"
 #include "dsp/tempo_map.h"
-#include "utils/types.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -62,14 +61,14 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    EngineProcessTimeInfo  time_nfo,
-    const dsp::ITransport &transport,
-    const dsp::TempoMap   &tempo_map) noexcept override;
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    const dsp::ITransport            &transport,
+    const dsp::TempoMap              &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
-    nframes_t                max_block_length) override;
+    units::sample_u32_t      max_block_length) override;
 
 private:
   /**
@@ -92,9 +91,9 @@ private:
    * Queues metronome events for preroll count-in.
    */
   void queue_metronome_countin (
-    const EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport       &transport,
-    const dsp::TempoMap         &tempo_map);
+    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    const dsp::ITransport                   &transport,
+    const dsp::TempoMap                     &tempo_map);
 
   /**
    * Queues a metronomem tick at the given local offset.

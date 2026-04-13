@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include "utils/format.h"
-#include "utils/logger.h"
-
+#include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <boost/describe/class.hpp>
 #include <nlohmann/json_fwd.hpp>
 
 using namespace std::string_view_literals;
@@ -148,30 +147,15 @@ public:
   // QML Interface
   // ========================================================================
 
-  double curviness () const { return options_.curviness_; }
-  void   setCurviness (double curviness)
-  {
-    if (qFuzzyCompare (options_.curviness_, curviness))
-      return;
-
-    curviness = std::clamp (curviness, -1.0, 1.0);
-    options_.curviness_ = curviness;
-    Q_EMIT curvinessChanged (curviness);
-  }
+  double        curviness () const { return options_.curviness_; }
+  void          setCurviness (double curviness);
   Q_SIGNAL void curvinessChanged (double curviness);
 
   zrythm::dsp::CurveOptions::Algorithm algorithm () const
   {
     return options_.algo_;
   }
-  void setAlgorithm (zrythm::dsp::CurveOptions::Algorithm algorithm)
-  {
-    if (options_.algo_ == algorithm)
-      return;
-
-    options_.algo_ = algorithm;
-    Q_EMIT algorithmChanged (algorithm);
-  }
+  void setAlgorithm (zrythm::dsp::CurveOptions::Algorithm algorithm);
   Q_SIGNAL void
   algorithmChanged (zrythm::dsp::CurveOptions::Algorithm algorithm);
 
@@ -188,6 +172,9 @@ private:
 
 } // namespace zrythm::dsp
 
+// These may be used in the UI eventually, but it's probably better to have a
+// method in CurveOptionsQmlAdapter that returns them (TODO)
+#if 0
 DEFINE_ENUM_FORMATTER (
   zrythm::dsp::CurveOptions::Algorithm,
   CurveOptions_Algorithm,
@@ -196,3 +183,4 @@ DEFINE_ENUM_FORMATTER (
   "Vital",
   QT_TR_NOOP_UTF8 ("Pulse"),
   QT_TR_NOOP_UTF8 ("Logarithmic"));
+#endif

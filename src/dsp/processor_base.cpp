@@ -59,7 +59,7 @@ void
 ProcessorBase::prepare_for_processing (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
-  nframes_t                max_block_length)
+  units::sample_u32_t      max_block_length)
 {
   processing_caches_ = std::make_unique<BaseProcessingCache> ();
   processing_caches_->sample_rate_ = sample_rate;
@@ -113,9 +113,9 @@ ProcessorBase::release_resources ()
 
 void
 ProcessorBase::process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   assert (processing_caches_ != nullptr);
 
@@ -128,8 +128,8 @@ ProcessorBase::process_block (
       auto nframes = time_nfo.nframes_;
       if (local_offset >= processing_caches_->max_block_length_)
         {
-          local_offset = 0;
-          nframes = 0;
+          local_offset = units::samples (0);
+          nframes = units::samples (0);
         }
       else
         nframes = processing_caches_->max_block_length_ - local_offset;
@@ -153,7 +153,9 @@ ProcessorBase::process_block (
     {
       std::visit (
         [&] (auto &&in_port) {
-          in_port->clear_buffer (time_nfo.local_offset_, time_nfo.nframes_);
+          in_port->clear_buffer (
+            time_nfo.local_offset_.in (units::samples),
+            time_nfo.nframes_.in (units::samples));
         },
         in_port_var);
     }
@@ -161,9 +163,9 @@ ProcessorBase::process_block (
 
 void
 ProcessorBase::custom_process_block (
-  EngineProcessTimeInfo  time_nfo,
-  const dsp::ITransport &transport,
-  const dsp::TempoMap   &tempo_map) noexcept
+  dsp::graph::EngineProcessTimeInfo time_nfo,
+  const dsp::ITransport            &transport,
+  const dsp::TempoMap              &tempo_map) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
 
@@ -192,7 +194,9 @@ ProcessorBase::custom_process_block (
     const auto &[in_port, out_port] :
     std::views::zip (midi_in_ports, midi_out_ports))
     {
-      out_port->clear_buffer (time_nfo.local_offset_, time_nfo.nframes_);
+      out_port->clear_buffer (
+        time_nfo.local_offset_.in (units::samples),
+        time_nfo.nframes_.in (units::samples));
       out_port->midi_events_.queued_events_.append (
         in_port->midi_events_.active_events_, time_nfo.local_offset_,
         time_nfo.nframes_);
@@ -208,8 +212,9 @@ ProcessorBase::custom_process_block (
     std::views::zip (cv_in_ports, cv_out_ports))
     {
       utils::float_ranges::copy (
-        &out_port->buf_[time_nfo.local_offset_],
-        &in_port->buf_[time_nfo.local_offset_], time_nfo.nframes_);
+        &out_port->buf_[time_nfo.local_offset_.in (units::samples)],
+        &in_port->buf_[time_nfo.local_offset_.in (units::samples)],
+        time_nfo.nframes_.in (units::samples));
     }
 }
 

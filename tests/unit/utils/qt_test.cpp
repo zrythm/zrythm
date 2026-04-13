@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/gtest_wrapper.h"
+#include "utils/format_qt.h"
 #include "utils/qt.h"
 
 #include <QCoreApplication>
+
+#include <gtest/gtest.h>
 
 using namespace zrythm::utils;
 
@@ -14,6 +16,8 @@ class QtTestQObject : public QObject
 public:
   explicit QtTestQObject (QObject * parent = nullptr) : QObject (parent) { }
 };
+static_assert (fmt::formattable<QPointer<QtTestQObject>>);
+static_assert (fmt::formattable<QObjectUniquePtr<QtTestQObject>>);
 
 TEST (QObjectUniquePtrTest, BasicOwnership)
 {

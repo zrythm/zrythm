@@ -46,7 +46,7 @@ protected:
   std::unique_ptr<PluginRegistry>                  plugin_registry_;
   std::unique_ptr<PluginGroup>                     device_group_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
-  nframes_t            max_block_length_{ 1024 };
+  units::sample_u32_t  max_block_length_{ units::samples (1024) };
 };
 
 TEST_F (DeviceGroupTest, ConstructionAndBasicProperties)
@@ -60,7 +60,7 @@ TEST_F (DeviceGroupTest, AppendPlugin)
   auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
   // Create plugin configuration
   auto descriptor = std::make_unique<PluginDescriptor> ();
@@ -96,7 +96,7 @@ TEST_F (DeviceGroupTest, InsertPluginAtSpecificIndex)
         dsp::ProcessorBase::ProcessorBaseDependencies{
           .port_registry_ = *port_registry_,
           .param_registry_ = *param_registry_ },
-        [] () { return fs::path{ "/tmp/test_state" }; });
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -140,11 +140,11 @@ TEST_F (DeviceGroupTest, InsertPluginAtEnd)
   auto plugin_ref1 = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
   auto plugin_ref2 = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
   auto descriptor1 = std::make_unique<PluginDescriptor> ();
   descriptor1->name_ = u8"Test InternalPluginBase 1";
@@ -181,7 +181,7 @@ TEST_F (DeviceGroupTest, RemovePlugin)
   auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
   auto descriptor = std::make_unique<PluginDescriptor> ();
   descriptor->name_ = u8"Test InternalPluginBase";
@@ -212,7 +212,7 @@ TEST_F (DeviceGroupTest, RemoveNonExistentPlugin)
   auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
   auto descriptor = std::make_unique<PluginDescriptor> ();
   descriptor->name_ = u8"Test InternalPluginBase";
@@ -237,7 +237,7 @@ TEST_F (DeviceGroupTest, QmlModelInterface)
         dsp::ProcessorBase::ProcessorBaseDependencies{
           .port_registry_ = *port_registry_,
           .param_registry_ = *param_registry_ },
-        [] () { return fs::path{ "/tmp/test_state" }; });
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -296,7 +296,7 @@ TEST_F (DeviceGroupTest, JsonSerializationRoundtrip)
         dsp::ProcessorBase::ProcessorBaseDependencies{
           .port_registry_ = *port_registry_,
           .param_registry_ = *param_registry_ },
-        [] () { return fs::path{ "/tmp/test_state" }; });
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -359,11 +359,11 @@ TEST_F (DeviceGroupTest, ModelSignals)
   auto plugin_ref1 = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
   auto plugin_ref2 = plugin_registry_->create_object<InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return fs::path{ "/tmp/test_state" }; });
+    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
   auto descriptor1 = std::make_unique<PluginDescriptor> ();
   descriptor1->name_ = u8"Test InternalPluginBase 1";
@@ -404,7 +404,7 @@ TEST_F (DeviceGroupTest, MultipleOperations)
         dsp::ProcessorBase::ProcessorBaseDependencies{
           .port_registry_ = *port_registry_,
           .param_registry_ = *param_registry_ },
-        [] () { return fs::path{ "/tmp/test_state" }; });
+        [] () { return std::filesystem::path{ "/tmp/test_state" }; });
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (

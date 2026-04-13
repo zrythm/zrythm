@@ -14,7 +14,7 @@ class ArrangerObjectFactory
 {
 public:
   using SampleRateProvider = std::function<units::sample_rate_t ()>;
-  using BpmProvider = std::function<bpm_t ()>;
+  using BpmProvider = std::function<float ()>;
 
   struct Dependencies
   {
@@ -155,7 +155,7 @@ public:
           auto file_audio_source =
             dependencies_.file_audio_source_registry_.create_object<
               dsp::FileAudioSource> (
-              1, 1, units::sample_rate (44100), 120, u8"dummy");
+              1, units::samples (1), units::sample_rate (44100), 120, u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
             file_audio_source);
@@ -339,7 +339,8 @@ public:
   {
     auto clip = dependencies_.file_audio_source_registry_.create_object<
       dsp::FileAudioSource> (
-      num_channels, 1, sample_rate_provider_ (), bpm_provider_ (), clip_name);
+      num_channels, units::samples (1), sample_rate_provider_ (),
+      bpm_provider_ (), clip_name);
     return create_audio_region_with_clip (std::move (clip), start_ticks);
   }
 

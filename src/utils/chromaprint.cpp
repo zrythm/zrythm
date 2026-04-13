@@ -16,7 +16,7 @@
 #  include <sndfile.h>
 
 std::unique_ptr<ChromaprintFingerprint>
-z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
+z_chromaprint_get_fingerprint (const char * file1, uint64_t max_frames)
 {
   int ret;
 
@@ -71,7 +71,7 @@ z_chromaprint_check_fingerprint_similarity (
   int          perc,
   int          expected_size)
 {
-  const unsigned_frame_t max_frames = std::min (
+  const uint64_t max_frames = std::min (
     zrythm::utils::audio::get_num_frames (file1),
     zrythm::utils::audio::get_num_frames (file2));
   auto fp1 = z_chromaprint_get_fingerprint (file1, max_frames);

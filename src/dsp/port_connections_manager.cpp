@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
 
 #include "dsp/port_connections_manager.h"
+#include "utils/format.h"
+#include "utils/format_boost.h"
 
 #include <fmt/format.h>
 
@@ -310,7 +312,7 @@ PortConnectionsManager::reset_connections_from_other (
 {
   clear_all ();
 
-  if (other)
+  if (other != nullptr)
     {
       connections_ = other->connections_;
       regenerate_hashtables ();

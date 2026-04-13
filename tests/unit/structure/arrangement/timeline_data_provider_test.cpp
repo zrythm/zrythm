@@ -214,12 +214,12 @@ protected:
 TEST_F (TimelineDataProviderTest, InitialState)
 {
   // Provider should start with no events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -230,12 +230,12 @@ TEST_F (TimelineDataProviderTest, InitialState)
 TEST_F (TimelineDataProviderTest, ProcessEventsWithNoEvents)
 {
   // Test processing when no events are available
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 1000,
-    .g_start_frame_w_offset_ = 1000,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (1000),
+    .g_start_frame_w_offset_ = units::samples (1000),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   midi_provider_->process_midi_events (
@@ -253,12 +253,12 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
   midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
 
   // Verify no events are generated
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -280,12 +280,12 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -299,7 +299,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
     {
       const auto &event = output_buffer.front ();
       EXPECT_GE (event.time_, 0);
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_LT (
+        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
 
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
@@ -321,12 +322,12 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -350,12 +351,12 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events with a global offset that's far from the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 10000,
-    .g_start_frame_w_offset_ = 10100, // 100 frame offset
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (10000),
+    .g_start_frame_w_offset_ = units::samples (10100), // 100 frame offset
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -391,15 +392,13 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing events that should include all notes
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = static_cast<nframes_t> (
-      (region3_start_samples - region1_start_samples).in (units::sample) + 256)
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region1_start_samples,
+    .g_start_frame_w_offset_ = region1_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ =
+      (region3_start_samples - region1_start_samples) + units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -429,12 +428,12 @@ TEST_F (TimelineDataProviderTest, MidiBasicFunctionality)
   EXPECT_NE (midi_provider_, nullptr);
 
   // Test that process_midi_events can be called without crashing
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -471,12 +470,12 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -523,12 +522,12 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -559,12 +558,12 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include only the first region
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   midi_provider_->process_midi_events (
@@ -604,12 +603,12 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -651,15 +650,13 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing events that should include all notes
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = static_cast<nframes_t> (
-      (region3_start_samples - region1_start_samples).in (units::sample) + 256)
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region1_start_samples,
+    .g_start_frame_w_offset_ = region1_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ =
+      (region3_start_samples - region1_start_samples) + units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -709,12 +706,12 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -747,12 +744,12 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -798,14 +795,12 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
     tempo_map_->tick_to_samples_rounded (units::ticks (region_start_ticks));
 
   // Test processing events that should include the note
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region_start_samples,
+    .g_start_frame_w_offset_ = region_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -821,7 +816,8 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 
       // The event should be at the beginning of our processing block
       // since the note is at the start of the region
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_LT (
+        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
 
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
@@ -834,13 +830,13 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 TEST_F (TimelineDataProviderTest, AudioInitialState)
 {
   // Provider should start with no audio
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -864,13 +860,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
   audio_provider_->generate_audio_events (*tempo_map_, empty_regions, range);
 
   // Verify no audio is generated
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -898,13 +894,13 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -939,13 +935,13 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should NOT include the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -973,13 +969,13 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio with a global offset that's far from the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 10000,
-    .g_start_frame_w_offset_ = 10100, // 100 frame offset
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (10000),
+    .g_start_frame_w_offset_ = units::samples (10100), // 100 frame offset
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1018,16 +1014,14 @@ TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing audio that should include all regions
-  std::vector<float>    output_left (1024, 0.0f);
-  std::vector<float>    output_right (1024, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = static_cast<nframes_t> (
-      (region3_start_samples - region1_start_samples).in (units::sample) + 256)
+  std::vector<float>                output_left (1024, 0.0f);
+  std::vector<float>                output_right (1024, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region1_start_samples,
+    .g_start_frame_w_offset_ = region1_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ =
+      (region3_start_samples - region1_start_samples) + units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1065,13 +1059,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1109,13 +1103,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should NOT include the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1150,13 +1144,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio that should include only the first region
-  std::vector<float>    output_left (512, 0.0f);
-  std::vector<float>    output_right (512, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 512
+  std::vector<float>                output_left (512, 0.0f);
+  std::vector<float>                output_right (512, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (512)
   };
 
   audio_provider_->process_audio_events (
@@ -1208,16 +1202,14 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing audio that should include all regions
-  std::vector<float>    output_left (1024, 0.0f);
-  std::vector<float>    output_right (1024, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region1_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = static_cast<nframes_t> (
-      (region3_start_samples - region1_start_samples).in (units::sample) + 256)
+  std::vector<float>                output_left (1024, 0.0f);
+  std::vector<float>                output_right (1024, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region1_start_samples,
+    .g_start_frame_w_offset_ = region1_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ =
+      (region3_start_samples - region1_start_samples) + units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1270,13 +1262,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1311,13 +1303,13 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1385,15 +1377,13 @@ TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
     tempo_map_->tick_to_samples_rounded (units::ticks (region_start_ticks));
 
   // Test processing audio that should include the region
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ =
-      static_cast<unsigned_frame_t> (region_start_samples.in (units::sample)),
-    .g_start_frame_w_offset_ =
-      static_cast<unsigned_frame_t> (region_start_samples.in (units::sample)),
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = region_start_samples,
+    .g_start_frame_w_offset_ = region_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1420,13 +1410,13 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
   EXPECT_NE (audio_provider_, nullptr);
 
   // Test that process_audio_events can be called without crashing
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1462,12 +1452,12 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
 TEST_F (TimelineDataProviderTest, AutomationProviderInitialState)
 {
   // Provider should start with no automation
-  std::vector<float>    output_values (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_values (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   automation_provider_->process_automation_events (
@@ -1493,12 +1483,12 @@ TEST_F (
     *tempo_map_, empty_regions, range);
 
   // Verify no automation is generated
-  std::vector<float>    output_values (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_values (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   automation_provider_->process_automation_events (
@@ -1527,12 +1517,12 @@ TEST_F (
   automation_provider_->generate_automation_events (*tempo_map_, regions, range);
 
   // Test processing automation that should include the region
-  std::vector<float>    output_values (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_values (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   automation_provider_->process_automation_events (
@@ -1629,12 +1619,12 @@ TEST_F (
 TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
 {
   // Provider should start with no chord events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1664,12 +1654,12 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should include chord events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1682,7 +1672,8 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   for (const auto &event : output_buffer)
     {
       EXPECT_GE (event.time_, 0);
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_LT (
+        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
       // Check that it's a valid MIDI message
       EXPECT_GE (event.raw_buffer_[0], 0x80);
       EXPECT_LE (event.raw_buffer_[0], 0xEF);
@@ -1711,12 +1702,12 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should NOT include the chord
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1745,12 +1736,12 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1777,13 +1768,13 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
   // Test processing audio
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   audio_provider_->process_audio_events (
@@ -1822,12 +1813,12 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1864,12 +1855,12 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1918,12 +1909,12 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // First, process with transport rolling - should generate MIDI events
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -1959,13 +1950,13 @@ TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   // First, process with transport rolling - should generate audio
@@ -2018,11 +2009,11 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
   dsp::MidiEventVector output_buffer;
 
   // First, process at position 0 with transport rolling
-  EngineProcessTimeInfo time_info1 = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_info1 = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -2033,11 +2024,11 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
   output_buffer.clear ();
 
   // Now process at a different position (jump) with transport still rolling
-  EngineProcessTimeInfo time_info2 = {
-    .g_start_frame_ = 5120, // Jumped position
-    .g_start_frame_w_offset_ = 5120,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_info2 = {
+    .g_start_frame_ = units::samples (5120), // Jumped position
+    .g_start_frame_w_offset_ = units::samples (5120),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -2068,11 +2059,11 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
   dsp::MidiEventVector output_buffer;
 
   // First, process at position 0 with transport rolling
-  EngineProcessTimeInfo time_info1 = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_info1 = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -2083,11 +2074,11 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
   output_buffer.clear ();
 
   // Now process at the expected next position with transport still rolling
-  EngineProcessTimeInfo time_info2 = {
-    .g_start_frame_ = 256, // Expected next position
-    .g_start_frame_w_offset_ = 256,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::graph::EngineProcessTimeInfo time_info2 = {
+    .g_start_frame_ = units::samples (256), // Expected next position
+    .g_start_frame_w_offset_ = units::samples (256),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -2117,12 +2108,12 @@ TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
-  dsp::MidiEventVector  output_buffer;
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   // Process with transport stopped (initial state) - should have no events
@@ -2146,13 +2137,13 @@ TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   audio_provider_->generate_audio_events (*tempo_map_, regions, range);
 
-  std::vector<float>    output_left (256, 0.0f);
-  std::vector<float>    output_right (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  std::vector<float>                output_left (256, 0.0f);
+  std::vector<float>                output_right (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   // Process with transport stopped - should clear buffers and not process audio
@@ -2177,15 +2168,15 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
   EXPECT_NE (automation_provider_, nullptr);
 
   // Test that process methods can be called without crashing
-  dsp::MidiEventVector  midi_buffer;
-  std::vector<float>    audio_left (256, 0.0f);
-  std::vector<float>    audio_right (256, 0.0f);
-  std::vector<float>    automation_values (256, 0.0f);
-  EngineProcessTimeInfo time_info = {
-    .g_start_frame_ = 0,
-    .g_start_frame_w_offset_ = 0,
-    .local_offset_ = 0,
-    .nframes_ = 256
+  dsp::MidiEventVector              midi_buffer;
+  std::vector<float>                audio_left (256, 0.0f);
+  std::vector<float>                audio_right (256, 0.0f);
+  std::vector<float>                automation_values (256, 0.0f);
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = units::samples (0),
+    .g_start_frame_w_offset_ = units::samples (0),
+    .local_offset_ = units::samples (0),
+    .nframes_ = units::samples (256)
   };
 
   midi_provider_->process_midi_events (

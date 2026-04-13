@@ -54,8 +54,10 @@ public:
    * @param have_ui Whether Zrythm is instantiated with a UI (false if headless).
    * @param testing Whether this is a unit test.
    */
-  void
-  pre_init (std::optional<fs::path> exe_path, bool have_ui, bool optimized_dsp);
+  void pre_init (
+    std::optional<std::filesystem::path> exe_path,
+    bool                                 have_ui,
+    bool                                 optimized_dsp);
 
   void init ();
 
@@ -122,7 +124,7 @@ private:
 
 public:
   /** argv[0]. */
-  fs::path exe_path_;
+  std::filesystem::path exe_path_;
 
   /**
    * Application settings
@@ -137,14 +139,14 @@ public:
   bool creating_project_ = false;
 
   /** Path to create a project in, including its title. */
-  fs::path create_project_path_;
+  std::filesystem::path create_project_path_;
 
   /**
    * Filename to open passed through the command line.
    *
    * Used only when a filename is passed, eg, zrytm myproject.zpj
    */
-  fs::path open_filename_;
+  std::filesystem::path open_filename_;
 
   /**
    * String interner for internal things.

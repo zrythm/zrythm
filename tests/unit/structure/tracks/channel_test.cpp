@@ -81,7 +81,7 @@ protected:
     auto ref = plugin_registry_->create_object<plugins::InternalPluginBase> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] { return fs::path ("/tmp"); }, nullptr);
+      [] { return std::filesystem::path ("/tmp"); }, nullptr);
     auto * pl = ref.get_object_as<plugins::InternalPluginBase> ();
     pl->set_configuration (config);
 
@@ -94,7 +94,7 @@ protected:
   Channel::NameProvider                            name_provider_;
   dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
-  nframes_t            max_block_length_{ 1024 };
+  units::sample_u32_t  max_block_length_{ units::samples (1024) };
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
 
@@ -253,9 +253,9 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
   channel->fader ()->prepare_for_processing (
     nullptr, sample_rate_, max_block_length_);
   channel->fader ()->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = max_block_length_ },
     *mock_transport_, *tempo_map_);
   EXPECT_TRUE (callback_called);

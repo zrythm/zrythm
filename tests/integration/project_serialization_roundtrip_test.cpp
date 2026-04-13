@@ -19,6 +19,7 @@
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
+#include "utils/app_settings.h"
 #include "utils/file_path_list.h"
 #include "utils/io_utils.h"
 
@@ -150,7 +151,7 @@ protected:
     auto        paths = std::make_unique<utils::FilePathList> ();
     QStringList path_list = paths_str.split (":::", Qt::SkipEmptyParts);
     for (const auto &path : path_list)
-      paths->add_path (fs::path (path.toStdString ()));
+      paths->add_path (std::filesystem::path (path.toStdString ()));
 
     if (paths->empty ())
       return nullptr;
@@ -239,7 +240,7 @@ protected:
       project_dir_
       / structure::project::ProjectPathProvider::get_path (
         structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
-    EXPECT_TRUE (fs::exists (project_file_path))
+    EXPECT_TRUE (std::filesystem::exists (project_file_path))
       << "Project file not created: " << project_file_path;
 
     original_bundle->project->engine ()->set_running (false);
@@ -332,12 +333,12 @@ protected:
       resave_dir
       / structure::project::ProjectPathProvider::get_path (
         structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
-    EXPECT_TRUE (fs::exists (resaved_project_file_path))
+    EXPECT_TRUE (std::filesystem::exists (resaved_project_file_path))
       << "Resaved project file not created: " << resaved_project_file_path;
   }
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;
-  fs::path                                         project_dir_;
+  std::filesystem::path                            project_dir_;
   std::shared_ptr<juce::AudioDeviceManager>        audio_device_manager_;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface_;
   std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager_;

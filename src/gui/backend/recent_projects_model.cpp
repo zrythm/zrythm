@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/recent_projects_model.h"
+#include "utils/app_settings.h"
+#include "utils/io_utils.h"
 
 using namespace zrythm::gui;
 

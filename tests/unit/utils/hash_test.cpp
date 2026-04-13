@@ -24,7 +24,7 @@ TEST (HashTest, HashObject)
 
 TEST (HashTest, HashFile)
 {
-  auto filepath = fs::path (TEST_WAV_FILE_PATH);
+  auto filepath = std::filesystem::path (TEST_WAV_FILE_PATH);
   auto hash1 = zrythm::utils::hash::get_file_hash (filepath);
   auto hash2 = zrythm::utils::hash::get_file_hash (filepath);
   EXPECT_NE (hash1, 0);

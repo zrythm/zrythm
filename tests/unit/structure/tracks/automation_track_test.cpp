@@ -30,9 +30,7 @@ protected:
       std::move (param_id));
   }
 
-  auto create_automation_region (
-    signed_frame_t timeline_pos_samples,
-    signed_frame_t length)
+  auto create_automation_region (int64_t timeline_pos_samples, int64_t length)
   {
     auto region_ref = obj_registry.create_object<arrangement::AutomationRegion> (
       *tempo_map, obj_registry, file_audio_source_registry, nullptr);

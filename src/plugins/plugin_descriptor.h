@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
+
+#include <filesystem>
 
 #include "plugins/plugin_protocol.h"
 #include "utils/icloneable.h"
@@ -9,17 +11,13 @@
 
 #include <QObject>
 
+#include "juce_wrapper.h"
 #include <boost/describe.hpp>
 #include <nlohmann/json_fwd.hpp>
 
-/**
- * @addtogroup plugins
- *
- * @{
- */
-
 namespace zrythm::plugins
 {
+using namespace std::string_view_literals;
 
 /**
  * Plugin category.
@@ -244,7 +242,7 @@ public:
    * @brief Identifier, for plugin formats that use unique identifiers, or path
    * otherwise.
    */
-  std::variant<fs::path, utils::Utf8String> path_or_id_;
+  std::variant<std::filesystem::path, utils::Utf8String> path_or_id_;
 
   /** Used by some plugin formats to uniquely identify the plugin. */
   int64_t unique_id_{};
@@ -289,9 +287,10 @@ template <> struct hash<zrythm::plugins::PluginDescriptor>
     size_t h{};
     h = h ^ qHash (d.protocol_);
     h = h ^ qHash (d.arch_);
-    if (std::holds_alternative<fs::path> (d.path_or_id_))
+    if (std::holds_alternative<std::filesystem::path> (d.path_or_id_))
       {
-        h = h ^ qHash (std::get<fs::path> (d.path_or_id_).string ());
+        h =
+          h ^ qHash (std::get<std::filesystem::path> (d.path_or_id_).string ());
       }
     else
       {
@@ -304,7 +303,3 @@ template <> struct hash<zrythm::plugins::PluginDescriptor>
   }
 };
 }
-
-/**
- * @}
- */

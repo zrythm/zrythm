@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -11,6 +11,7 @@
 
 namespace zrythm::structure::arrangement
 {
+using namespace std::string_view_literals;
 
 /**
  * Common editor settings.

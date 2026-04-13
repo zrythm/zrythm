@@ -7,7 +7,6 @@
 #include "dsp/graph_scheduler.h"
 #include "dsp/hardware_audio_interface.h"
 #include "utils/rt_thread_id.h"
-#include "utils/types.h"
 
 #include <juce_wrapper.h>
 
@@ -53,17 +52,17 @@ public:
    * @param tempo_map Tempo map for this cycle.
    */
   void start_cycle (
-    const dsp::ITransport &current_transport_state,
-    EngineProcessTimeInfo  time_nfo,
-    nframes_t              remaining_latency_preroll,
-    bool                   realtime_context,
-    const dsp::TempoMap   &tempo_map) noexcept [[clang::nonblocking]];
+    const dsp::ITransport            &current_transport_state,
+    dsp::graph::EngineProcessTimeInfo time_nfo,
+    units::sample_u64_t               remaining_latency_preroll,
+    bool                              realtime_context,
+    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]];
 
   /**
    * Returns the max playback latency of the trigger
    * nodes.
    */
-  nframes_t get_max_route_playback_latency ();
+  units::sample_u32_t get_max_route_playback_latency ();
 
   /**
    * Returns whether this is the thread that kicks off processing (thread that
@@ -136,8 +135,8 @@ private:
    *
    * @param time_nfo Current cycle time info.
    */
-  void
-  preprocess_at_start_of_cycle (const EngineProcessTimeInfo &time_nfo) noexcept
+  void preprocess_at_start_of_cycle (
+    const dsp::graph::EngineProcessTimeInfo &time_nfo) noexcept
     [[clang::nonblocking]];
 
 private:
@@ -159,7 +158,7 @@ private:
   std::unique_ptr<graph::GraphScheduler> scheduler_;
 
   /** Stored for the currently processing cycle */
-  nframes_t max_route_playback_latency_ = 0;
+  units::sample_u32_t max_route_playback_latency_;
 
   /**
    * @brief Current global latency offset.
@@ -169,7 +168,7 @@ private:
    *
    * TODO: figure out if this is supposed to be used anywhere, or delete.
    */
-  nframes_t global_offset_ = 0;
+  units::sample_u32_t global_offset_;
 
   /** ID of the thread that calls kicks off the cycle. */
   std::optional<unsigned int> process_kickoff_thread_;

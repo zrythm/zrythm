@@ -165,7 +165,7 @@ private:
    */
   static void delete_file ();
 
-  static fs::path get_file_path ();
+  static std::filesystem::path get_file_path ();
 
 public:
   /** Plugin collections. */

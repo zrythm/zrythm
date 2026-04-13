@@ -41,6 +41,7 @@ using namespace Qt::StringLiterals;
 using namespace std::chrono_literals;
 
 #include "plugins/out_of_process_scanner.h"
+#include "utils/format_juce.h"
 
 #include <QCoreApplication>
 #include <QProcessEnvironment>

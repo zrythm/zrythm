@@ -53,7 +53,7 @@ public:
     TrackRegistry &track_registry,
     QObject *      parent = nullptr) noexcept;
   ~TrackCollection () noexcept override;
-  Z_DISABLE_COPY_MOVE (TrackCollection)
+  Q_DISABLE_COPY_MOVE (TrackCollection)
 
   // ========================================================================
   // QML Interface

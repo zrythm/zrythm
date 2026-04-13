@@ -7,6 +7,8 @@
 #include "dsp/parameter.h"
 #include "dsp/port_connection.h"
 #include "dsp/tempo_map.h"
+#include "utils/format_boost.h"
+#include "utils/format_qt.h"
 
 #include <QSignalSpy>
 
@@ -19,8 +21,8 @@ namespace zrythm::dsp
 class ProcessorParameterTest : public ::testing::Test
 {
 protected:
-  static constexpr auto      SAMPLE_RATE = units::sample_rate (44100);
-  static constexpr nframes_t BLOCK_LENGTH = 256;
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (256);
 
   void SetUp () override
   {
@@ -50,13 +52,15 @@ protected:
     param_mod_input->set_port_sources (mod_sources);
 
     // Fill modulation source with test signal
-    for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+    for (
+      const auto i :
+      std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
       {
         mod_source->buf_[i] =
           0.5f
           * std::cos (
             2.0f * std::numbers::pi_v<float>
-            * static_cast<float> (i) / BLOCK_LENGTH);
+            * static_cast<float> (i) / BLOCK_LENGTH.in<float> (units::samples));
       }
 
     // Set up mock transport
@@ -92,9 +96,9 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
   });
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -117,9 +121,9 @@ TEST_F (ProcessorParameterTest, ModulationApplication)
 
   // Process block with modulation
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -138,9 +142,9 @@ TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
   conn->bipolar_ = false;
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -159,9 +163,9 @@ TEST_F (ProcessorParameterTest, BipolarModulation)
   conn->bipolar_ = true;
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -183,9 +187,9 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
   conn->bipolar_ = false;
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -202,7 +206,9 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
   mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
   // Fill with different signal
-  for (nframes_t i = 0; i < BLOCK_LENGTH; i++)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
     {
       mod_source2->buf_[i] = 0.25f;
     }
@@ -219,9 +225,9 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
   param_mod_input->port_sources ()[1].second->enabled_ = true;
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -238,9 +244,9 @@ TEST_F (ProcessorParameterTest, GestureBlocksAutomation)
   const float initial_value = param->baseValue ();
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
   param->endUserGesture ();
@@ -257,9 +263,9 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
   param_mod_input->port_sources ().front ().second->enabled_ = true;
 
   param->process_block (
-    { .g_start_frame_ = 0,
-      .g_start_frame_w_offset_ = 0,
-      .local_offset_ = 0,
+    { .g_start_frame_ = units::samples (0),
+      .g_start_frame_w_offset_ = units::samples (0),
+      .local_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 

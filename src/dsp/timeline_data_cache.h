@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "utils/types.h"
 #include "utils/units.h"
 
 #include <QObject>

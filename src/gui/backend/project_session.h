@@ -114,7 +114,7 @@ public:
    * @return The backup path if one exists with a newer timestamp, nullopt
    * otherwise.
    */
-  std::optional<fs::path> get_newer_backup ();
+  std::optional<std::filesystem::path> get_newer_backup ();
 
 Q_SIGNALS:
   void titleChanged (const QString &title);
@@ -124,8 +124,8 @@ private:
   utils::AppSettings &app_settings_;
 
   // Project title and directory
-  utils::Utf8String title_;
-  fs::path          project_directory_;
+  utils::Utf8String     title_;
+  std::filesystem::path project_directory_;
 
   // Core project data
   utils::QObjectUniquePtr<structure::project::Project> project_;

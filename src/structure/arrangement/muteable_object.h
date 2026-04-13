@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "utils/icloneable.h"
-#include "utils/types.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -26,7 +25,7 @@ public:
   {
   }
   ~ArrangerObjectMuteFunctionality () override = default;
-  Z_DISABLE_COPY_MOVE (ArrangerObjectMuteFunctionality)
+  Q_DISABLE_COPY_MOVE (ArrangerObjectMuteFunctionality)
 
   // ========================================================================
   // QML Interface

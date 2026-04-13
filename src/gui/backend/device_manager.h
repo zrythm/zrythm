@@ -1,13 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "utils/types.h"
-
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include <juce_wrapper.h>
+#include "juce_wrapper.h"
 
 namespace zrythm::gui::backend
 {

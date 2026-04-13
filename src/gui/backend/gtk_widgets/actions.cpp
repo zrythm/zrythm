@@ -723,7 +723,7 @@ void
 activate_save_as (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
   GtkFileDialog * dialog = gtk_file_dialog_new ();
-  fs::path        project_file_path =
+  std::filesystem::path        project_file_path =
     PROJECT->get_path (ProjectPath::ProjectFile, false);
   auto    str = project_file_path.parent_path ();
   GFile * file = g_file_new_for_path (str.string ().c_str ());

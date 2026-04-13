@@ -106,7 +106,6 @@ private:
   }
 
   bool initialize ();
-  void set_playback_caches () override;
 
 private:
   std::optional<dsp::MidiEventVector::NotePitchToChordDescriptorFunc>

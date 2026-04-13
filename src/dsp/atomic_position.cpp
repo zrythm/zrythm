@@ -13,7 +13,7 @@ to_json (nlohmann::json &j, const AtomicPosition &pos)
   const auto &[d, b] = pos.value_.load ();
   const auto mode = AtomicPosition::bool_to_format (b);
   // Only serialize mode if not default (Musical)
-  if (mode != TimeFormat::Musical)
+  if (mode != AtomicPosition::TimeFormat::Musical)
     {
       j[AtomicPosition::kMode] = mode;
     }
@@ -25,7 +25,7 @@ from_json (const nlohmann::json &j, AtomicPosition &pos)
   double value{};
   j.at (AtomicPosition::kValue).get_to (value);
   // Default to Musical if mode not present
-  TimeFormat mode = TimeFormat::Musical;
+  auto mode = AtomicPosition::TimeFormat::Musical;
   if (j.contains (AtomicPosition::kMode))
     {
       j.at (AtomicPosition::kMode).get_to (mode);

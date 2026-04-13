@@ -59,7 +59,7 @@ private:
    * @param arch
    * @return The path, or an empty path if an issue occurred.
    */
-  static fs::path get_discovery_path (PluginArchitecture arch);
+  static std::filesystem::path get_discovery_path (PluginArchitecture arch);
 
   /**
    * Array of CarlaPluginDiscoveryHandle's and a boolean whether done.

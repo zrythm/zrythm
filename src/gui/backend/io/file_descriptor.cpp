@@ -11,7 +11,7 @@
 
 using namespace zrythm;
 
-FileDescriptor::FileDescriptor (const fs::path &_abs_path)
+FileDescriptor::FileDescriptor (const std::filesystem::path &_abs_path)
     : type_ (get_type_from_path (_abs_path))
 {
   // z_debug ("creating new FileDescriptor for {}", path);
@@ -82,7 +82,7 @@ FileDescriptor::get_type_description (FileType type)
 }
 
 FileType
-FileDescriptor::get_type_from_path (const fs::path &file)
+FileDescriptor::get_type_from_path (const std::filesystem::path &file)
 {
   const auto ext = utils::Utf8String::from_path (utils::io::file_get_ext (file));
   FileType type = FileType::Other;

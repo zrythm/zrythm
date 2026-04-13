@@ -41,7 +41,7 @@ class FileDescriptor
 public:
   FileDescriptor () = default;
 
-  FileDescriptor (const fs::path &abs_path);
+  FileDescriptor (const std::filesystem::path &abs_path);
 
   /**
    * @brief Creates a new FileDescriptor from a URI.
@@ -83,7 +83,7 @@ public:
   /**
    * Returns the file type of the given file path.
    */
-  static FileType get_type_from_path (const fs::path &file);
+  static FileType get_type_from_path (const std::filesystem::path &file);
 
   bool is_audio () const { return is_type_audio (type_); }
 
@@ -110,7 +110,7 @@ public:
 
 public:
   /** Absolute path. */
-  fs::path abs_path_;
+  std::filesystem::path abs_path_;
 
   /** Type of file. */
   FileType type_ = {};
