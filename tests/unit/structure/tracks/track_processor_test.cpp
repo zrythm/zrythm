@@ -98,13 +98,14 @@ protected:
             if (msg.getRawDataSize () <= 3)
               {
                 dsp::MidiEvent new_event;
-                new_event.time_ = static_cast<uint64_t> (msg.getTimeStamp ());
+                new_event.time_ =
+                  units::samples (static_cast<uint32_t> (msg.getTimeStamp ()));
                 std::copy_n (
                   msg.getRawData (), msg.getRawDataSize (),
                   new_event.raw_buffer_.begin ());
 
                 // Only add events that are within the time range
-                if (units::samples (new_event.time_) < time_nfo.nframes_)
+                if (new_event.time_ < time_nfo.nframes_)
                   {
                     output_buffer.push_back (new_event);
                   }
@@ -444,9 +445,11 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
 
   // Add some MIDI events to input
   auto &midi_in = processor.get_midi_in_port ();
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10u));
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (20u));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -619,9 +622,11 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
 
   // Add some MIDI events to input
   auto &midi_in = processor.get_midi_in_port ();
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10u));
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (20u));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -741,7 +746,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
 
   // Add events to piano roll port
   auto &piano_roll = processor.get_piano_roll_port ();
-  piano_roll.midi_events_.active_events_.add_note_on (1, 72, 100, 0);
+  piano_roll.midi_events_.active_events_.add_note_on (
+    1, 72, 100, units::samples (0u));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -909,9 +915,12 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
 
   // Add multiple MIDI events
   auto &midi_in = processor.get_midi_in_port ();
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-  midi_in.midi_events_.active_events_.add_note_on (1, 67, 80, 20);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 67, 80, units::samples (20u));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -989,9 +998,11 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   auto &midi_in = processor.get_midi_in_port ();
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 80, 10);
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, 20);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 80, units::samples (10u));
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (20u));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 

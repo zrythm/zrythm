@@ -206,7 +206,7 @@ ClipPlaybackDataProvider::process_midi_events (
 
             output_buffer.add_raw (
               event->message.getRawData (), event->message.getRawDataSize (),
-              static_cast<midi_time_t> (local_timestamp));
+              units::samples (local_timestamp));
             if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
               z_debug ("Adding event with local_timestamp={}", local_timestamp);
           }
@@ -222,7 +222,7 @@ ClipPlaybackDataProvider::process_midi_events (
       for (int channel = 1; channel <= 16; ++channel)
         {
           output_buffer.add_all_notes_off (
-            channel, time_nfo.local_offset_.in (units::samples),
+            channel, time_nfo.local_offset_,
             true); // All notes off
         }
     }

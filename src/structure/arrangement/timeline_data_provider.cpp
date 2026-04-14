@@ -70,7 +70,7 @@ MidiTimelineDataProvider::process_midi_events (
       for (const auto channel : std::views::iota (1, 17))
         {
           output_buffer.add_all_notes_off (
-            channel, time_nfo.local_offset_.in<midi_time_t> (units::samples),
+            channel, time_nfo.local_offset_,
             true); // All notes off
         }
     }
@@ -99,7 +99,7 @@ MidiTimelineDataProvider::process_midi_events (
             units::samples (timestamp_dbl) - time_nfo.g_start_frame_;
           output_buffer.add_raw (
             event->message.getRawData (), event->message.getRawDataSize (),
-            au::floor_in<midi_byte_t> (units::samples, local_timestamp));
+            au::floor_as<uint32_t> (units::samples, local_timestamp));
         }
     }
 

@@ -61,7 +61,8 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   auto &midi_out = midi_proc_->get_midi_out_port (0);
 
   // Create test event
-  midi_in.midi_events_.active_events_.add_note_on (1, 0x3C, 0x7F, 3);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 0x3C, 0x7F, units::samples (3));
   const auto event = midi_in.midi_events_.active_events_.at (0);
 
   // Process

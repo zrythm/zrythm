@@ -261,9 +261,11 @@ TEST_F (FaderTest, MidiProcessing)
   auto &midi_out = midi_fader_->get_midi_out_port ();
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, 100);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10));
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (100));
 
   // Set gain parameter
   midi_fader_->gain ()->setBaseValue (0.8f);

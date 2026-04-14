@@ -50,7 +50,7 @@ public:
 
     // queue panic event
     midi_out_->midi_events_.queued_events_.panic_without_lock (
-      time_nfo.local_offset_.in (units::samples));
+      time_nfo.local_offset_);
   }
 
   void custom_prepare_for_processing (

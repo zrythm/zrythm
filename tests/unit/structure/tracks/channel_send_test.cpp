@@ -324,9 +324,11 @@ TEST_F (ChannelSendTest, MidiProcessing)
   auto &midi_out = midi_send_->get_midi_out_port ();
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, 100);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10));
+  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (100));
 
   // Set amount parameter
   midi_send_->amountParam ()->setBaseValue (0.8f);
@@ -354,8 +356,10 @@ TEST_F (ChannelSendTest, MidiProcessingWhenDisabled)
   midi_send_->enabledParam ()->setBaseValue (0.0f);
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-  midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0));
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 64, 90, units::samples (10));
 
   dsp::graph::EngineProcessTimeInfo time_nfo{
     .g_start_frame_ = units::samples (0),
@@ -644,9 +648,12 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
 
   // Add MIDI events to input
   const auto add_events = [&] () {
-    midi_in.midi_events_.active_events_.add_note_on (1, 60, 100, 0);
-    midi_in.midi_events_.active_events_.add_note_on (1, 64, 90, 10);
-    midi_in.midi_events_.active_events_.add_note_off (1, 60, 100);
+    midi_in.midi_events_.active_events_.add_note_on (
+      1, 60, 100, units::samples (0));
+    midi_in.midi_events_.active_events_.add_note_on (
+      1, 64, 90, units::samples (10));
+    midi_in.midi_events_.active_events_.add_note_off (
+      1, 60, units::samples (100));
   };
 
   // First process call

@@ -26,10 +26,10 @@ protected:
   }
 
   static MidiEvent create_note_on (
-    midi_byte_t channel,
-    midi_byte_t note,
-    midi_byte_t velocity,
-    midi_time_t time)
+    midi_byte_t         channel,
+    midi_byte_t         note,
+    midi_byte_t         velocity,
+    units::sample_u32_t time)
   {
     return MidiEvent (
       (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_ON | (channel - 1)), note,
@@ -37,7 +37,7 @@ protected:
   }
 
   static MidiEvent
-  create_note_off (midi_byte_t channel, midi_byte_t note, midi_time_t time)
+  create_note_off (midi_byte_t channel, midi_byte_t note, units::sample_u32_t time)
   {
     return MidiEvent (
       (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_OFF | (channel - 1)), note, 0,
@@ -50,18 +50,18 @@ protected:
 
 TEST_F (MidiEventTest, EventConstruction)
 {
-  MidiEvent ev (0x90, 60, 100, 42);
+  MidiEvent ev (0x90, 60, 100, units::samples (42));
   EXPECT_EQ (ev.raw_buffer_[0], 0x90);
   EXPECT_EQ (ev.raw_buffer_[1], 60);
   EXPECT_EQ (ev.raw_buffer_[2], 100);
-  EXPECT_EQ (ev.time_, 42);
+  EXPECT_EQ (ev.time_, units::samples (42));
 }
 
 TEST_F (MidiEventTest, EventComparison)
 {
-  MidiEvent ev1 (0x90, 60, 100, 42);
-  MidiEvent ev2 (0x90, 60, 100, 42);
-  MidiEvent ev3 (0x80, 60, 0, 42);
+  MidiEvent ev1 (0x90, 60, 100, units::samples (42));
+  MidiEvent ev2 (0x90, 60, 100, units::samples (42));
+  MidiEvent ev3 (0x80, 60, 0, units::samples (42));
 
   EXPECT_TRUE (ev1 == ev2);
   EXPECT_FALSE (ev1 == ev3);
@@ -73,8 +73,8 @@ TEST_F (MidiEventTest, VectorBasicOperations)
   EXPECT_TRUE (vec.empty ());
 
   // Add events
-  vec.push_back (create_note_on (1, 60, 100, 0));
-  vec.push_back (create_note_on (1, 62, 90, 10));
+  vec.push_back (create_note_on (1, 60, 100, units::samples (0)));
+  vec.push_back (create_note_on (1, 62, 90, units::samples (10)));
   EXPECT_EQ (vec.size (), 2);
 
   // Test iteration
@@ -98,7 +98,7 @@ TEST_F (MidiEventTest, ThreadSafety)
   auto worker = [&vec] {
     for (int i = 0; i < EVENTS_PER_THREAD; ++i)
       {
-        vec.push_back (create_note_on (1, 60 + i, 100, i));
+        vec.push_back (create_note_on (1, 60 + i, 100, units::samples (i)));
       }
   };
 
@@ -119,9 +119,9 @@ TEST_F (MidiEventTest, ThreadSafety)
 TEST_F (MidiEventTest, EventFiltering)
 {
   MidiEventVector src;
-  src.push_back (create_note_on (1, 60, 100, 5)); // Channel 1
-  src.push_back (create_note_on (2, 62, 90, 15)); // Channel 2
-  src.push_back (create_note_on (1, 64, 80, 25)); // Channel 1
+  src.push_back (create_note_on (1, 60, 100, units::samples (5))); // Channel 1
+  src.push_back (create_note_on (2, 62, 90, units::samples (15))); // Channel 2
+  src.push_back (create_note_on (1, 64, 80, units::samples (25))); // Channel 1
 
   MidiEventVector      dest;
   std::array<bool, 16> channels{};
@@ -136,8 +136,9 @@ TEST_F (MidiEventTest, EventFiltering)
 TEST_F (MidiEventTest, ChordTransformation)
 {
   MidiEventVector src;
-  src.push_back (create_note_on (1, 48, 100, 0)); // C3 (root for C major)
-  src.push_back (create_note_off (1, 48, 10));
+  src.push_back (
+    create_note_on (1, 48, 100, units::samples (0))); // C3 (root for C major)
+  src.push_back (create_note_off (1, 48, units::samples (10)));
 
   MidiEventVector dest;
   auto chord_mapper = [this] (midi_byte_t note) -> const ChordDescriptor * {
@@ -154,20 +155,20 @@ TEST_F (MidiEventTest, ChordTransformation)
 TEST_F (MidiEventTest, EventSorting)
 {
   MidiEventVector vec;
-  vec.push_back (create_note_on (1, 60, 100, 20));
-  vec.push_back (create_note_off (1, 60, 10));
-  vec.push_back (create_note_on (1, 62, 90, 5));
+  vec.push_back (create_note_on (1, 60, 100, units::samples (20)));
+  vec.push_back (create_note_off (1, 60, units::samples (10)));
+  vec.push_back (create_note_on (1, 62, 90, units::samples (5)));
 
   vec.sort ();
 
   // Should be sorted by time: 5, 10, 20
-  EXPECT_EQ (vec.at (0).time_, 5);
-  EXPECT_EQ (vec.at (1).time_, 10);
-  EXPECT_EQ (vec.at (2).time_, 20);
+  EXPECT_EQ (vec.at (0).time_, units::samples (5));
+  EXPECT_EQ (vec.at (1).time_, units::samples (10));
+  EXPECT_EQ (vec.at (2).time_, units::samples (20));
 
   // Verify note-on has precedence at same time
-  MidiEvent same_time_note_off = create_note_off (1, 64, 10);
-  MidiEvent same_time_note_on = create_note_on (1, 64, 80, 10);
+  MidiEvent same_time_note_off = create_note_off (1, 64, units::samples (10));
+  MidiEvent same_time_note_on = create_note_on (1, 64, 80, units::samples (10));
   vec.push_back (same_time_note_off);
   vec.push_back (same_time_note_on);
   vec.sort ();
@@ -180,8 +181,8 @@ TEST_F (MidiEventTest, EventSorting)
 TEST_F (MidiEventTest, ChannelSetting)
 {
   MidiEventVector vec;
-  vec.push_back (create_note_on (1, 60, 100, 0));
-  vec.push_back (create_note_on (2, 62, 90, 0));
+  vec.push_back (create_note_on (1, 60, 100, units::samples (0)));
+  vec.push_back (create_note_on (2, 62, 90, units::samples (0)));
 
   vec.set_channel (3);
 
@@ -194,8 +195,8 @@ TEST_F (MidiEventTest, ChannelSetting)
 TEST_F (MidiEventTest, PanicFunction)
 {
   MidiEventVector vec;
-  vec.push_back (create_note_on (1, 60, 100, 0));
-  vec.push_back (create_note_on (2, 62, 90, 0));
+  vec.push_back (create_note_on (1, 60, 100, units::samples (0)));
+  vec.push_back (create_note_on (2, 62, 90, units::samples (0)));
 
   vec.panic ();
 
@@ -212,12 +213,12 @@ TEST_F (MidiEventTest, PanicFunction)
 TEST_F (MidiEventTest, ClearDuplicates)
 {
   MidiEventVector vec;
-  MidiEvent       ev1 = create_note_on (1, 60, 100, 0);
-  MidiEvent       ev2 = create_note_on (1, 60, 100, 0); // Duplicate
+  MidiEvent       ev1 = create_note_on (1, 60, 100, units::samples (0));
+  MidiEvent ev2 = create_note_on (1, 60, 100, units::samples (0)); // Duplicate
 
   vec.push_back (ev1);
   vec.push_back (ev2);
-  vec.push_back (create_note_on (1, 62, 90, 0));
+  vec.push_back (create_note_on (1, 62, 90, units::samples (0)));
 
   vec.clear_duplicates ();
   EXPECT_EQ (vec.size (), 2);
@@ -226,15 +227,17 @@ TEST_F (MidiEventTest, ClearDuplicates)
 TEST_F (MidiEventTest, DequeueOperation)
 {
   MidiEvents events;
-  events.queued_events_.push_back (create_note_on (1, 60, 100, 5));
-  events.queued_events_.push_back (create_note_on (1, 62, 90, 25));
+  events.queued_events_.push_back (
+    create_note_on (1, 60, 100, units::samples (5)));
+  events.queued_events_.push_back (
+    create_note_on (1, 62, 90, units::samples (25)));
 
   // Only dequeue events between time 0-20
   events.dequeue (units::samples (0), units::samples (20));
 
   EXPECT_EQ (events.active_events_.size (), 1);
   EXPECT_EQ (events.queued_events_.size (), 1);
-  EXPECT_EQ (events.active_events_.front ().time_, 5);
+  EXPECT_EQ (events.active_events_.front ().time_, units::samples (5));
 }
 
 } // namespace zrythm::dsp

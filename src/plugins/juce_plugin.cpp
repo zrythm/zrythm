@@ -401,14 +401,12 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     {
       for (const auto &ev : midi_in->midi_events_.active_events_)
         {
-          if (
-            ev.time_ >= local_offset.in (units::samples)
-            && ev.time_ < (local_offset + nframes).in (units::samples))
+          if (ev.time_ >= local_offset && ev.time_ < local_offset + nframes)
             {
               juce_midi_buffer_.addEvent (
                 ev.raw_buffer_.data (),
                 static_cast<int> (ev.raw_buffer_.size ()),
-                static_cast<int> (ev.time_));
+                ev.time_.in<int> (units::samples));
             }
         }
     }
@@ -459,7 +457,7 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
       for (const auto &ev : juce_midi_buffer_)
         {
           midi_out->midi_events_.queued_events_.add_raw (
-            ev.data, ev.numBytes, ev.samplePosition);
+            ev.data, ev.numBytes, units::samples (ev.samplePosition));
         }
     }
 }

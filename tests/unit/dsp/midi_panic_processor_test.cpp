@@ -75,7 +75,7 @@ TEST_F (MidiPanicProcessorTest, BasicPanicOperation)
       EXPECT_EQ (ev.raw_buffer_[0] & 0xF0, 0xB0); // Control Change
       EXPECT_EQ (ev.raw_buffer_[1], 0x7B);        // All Notes Off
       EXPECT_EQ (ev.raw_buffer_[2], 0x00);        // Value
-      EXPECT_EQ (ev.time_, 0);
+      EXPECT_EQ (ev.time_, units::samples (0));
     }
 }
 

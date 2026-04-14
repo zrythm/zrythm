@@ -56,7 +56,8 @@ TEST_F (MidiPortTest, BasicProperties)
 TEST_F (MidiPortTest, MidiEventHandling)
 {
   // Add event to input port
-  input_port->midi_events_.queued_events_.add_note_on (1, 60, 100, 0);
+  input_port->midi_events_.queued_events_.add_note_on (
+    1, 60, 100, units::samples (0));
 
   // Process input port
   dsp::graph::EngineProcessTimeInfo time_info{
@@ -78,7 +79,8 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
   RingBufferOwningPortMixin::RingBufferReader reader (*output_port);
 
   // Add event to output port
-  output_port->midi_events_.queued_events_.add_control_change (2, 1, 127, 20);
+  output_port->midi_events_.queued_events_.add_control_change (
+    2, 1, 127, units::samples (20));
 
   // Process output port
   dsp::graph::EngineProcessTimeInfo time_info{
@@ -103,7 +105,7 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
     utils::midi::midi_get_controller_number (read_event.raw_buffer_), 1);
   EXPECT_EQ (
     utils::midi::midi_get_controller_value (read_event.raw_buffer_), 127);
-  EXPECT_EQ (read_event.time_, 20);
+  EXPECT_EQ (read_event.time_, units::samples (20));
 }
 
 TEST_F (MidiPortTest, ResourceManagement)

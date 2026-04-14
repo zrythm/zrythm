@@ -1154,7 +1154,7 @@ ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
       for (const auto &ev : owner_.midi_in_port_->midi_events_.active_events_)
         {
           clap_event_midi clap_ev{};
-          clap_ev.header.time = ev.time_;
+          clap_ev.header.time = ev.time_.in<uint32_t> (units::samples);
           clap_ev.header.type = CLAP_EVENT_MIDI;
           clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
           clap_ev.header.flags = 0;

@@ -50,7 +50,8 @@ MidiPort::clear_buffer (std::size_t offset, std::size_t nframes)
 {
   midi_events_.active_events_.remove_if (
     [offset, nframes] (const auto &ev) -> bool {
-      return ev.time_ >= offset && ev.time_ < (offset + nframes);
+      return ev.time_ >= units::samples (offset)
+             && ev.time_ < units::samples (offset + nframes);
     });
 }
 
@@ -212,8 +213,8 @@ MidiPort::process_block (
               double ninetysixth_ticks =
                 i * dsp::Position::TICKS_PER_NINETYSIXTH_NOTE_DBL;
               double      ratio = (ninetysixth_ticks - AUDIO_ENGINE->pos_nfo_current_.playhead_ticks_) / (AUDIO_ENGINE->pos_nfo_at_end_.playhead_ticks_ - AUDIO_ENGINE->pos_nfo_current_.playhead_ticks_);
-              auto midi_time = static_cast<midi_time_t> (std::floor (
-                ratio * (double) AUDIO_ENGINE->get_block_length ()));
+              auto midi_time = units::samples (static_cast<uint32_t> (std::floor (
+                ratio * (double) AUDIO_ENGINE->get_block_length ())));
               if (
                 midi_time >= time_nfo.local_offset_
                 && midi_time < time_nfo.local_offset_ + time_nfo.nframes_)

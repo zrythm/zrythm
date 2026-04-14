@@ -42,9 +42,6 @@
 /** MIDI byte. */
 using midi_byte_t = std::uint8_t;
 
-/** MIDI time in global frames. */
-using midi_time_t = std::uint32_t;
-
 namespace zrythm::utils::midi
 {
 /* see http://www.onicos.com/staff/iz/formats/midi-event.html */

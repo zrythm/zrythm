@@ -109,10 +109,10 @@ protected:
   }
 
   // Helper function to find events with specific pitch
-  std::vector<midi_time_t>
+  std::vector<units::sample_u32_t>
   find_event_timestamps (const dsp::MidiEventVector &events, midi_byte_t pitch)
   {
-    std::vector<midi_time_t> timestamps;
+    std::vector<units::sample_u32_t> timestamps;
     for (const auto &event : events)
       {
         if (
@@ -131,7 +131,7 @@ protected:
     return std::ranges::any_of (events, [] (const auto &ev) {
       // Check if timestamp is greater than a reasonable maximum
       // (e.g., 1 second of audio at 44100Hz = 44100 samples)
-      return ev.time_ > 44100;
+      return ev.time_ > units::samples (44100);
     });
   }
 
@@ -328,8 +328,8 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiRegion)
   if (!output_buffer.empty ())
     {
       const auto &event = output_buffer.front ();
-      EXPECT_GE (event.time_, 0);
-      EXPECT_LT (units::samples (event.time_), time_info.nframes_);
+      EXPECT_GE (event.time_, units::samples (0));
+      EXPECT_LT (event.time_, time_info.nframes_);
 
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
@@ -451,8 +451,8 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseLoopingBehavior)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process multiple buffers to trigger looping
-  std::vector<std::vector<midi_time_t>> loop_events;
-  dsp::MidiEventVector                  output_buffer;
+  std::vector<std::vector<units::sample_u32_t>> loop_events;
+  dsp::MidiEventVector                          output_buffer;
 
   // Process first buffer
   dsp::graph::EngineProcessTimeInfo time_info1 =
@@ -489,13 +489,13 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseLoopingBehavior)
     {
       // The first event in the second loop should be approximately at the loop
       // point (accounting for buffer offset)
-      EXPECT_LT (units::samples (second_loop_events[0]), time_info2.nframes_);
+      EXPECT_LT (second_loop_events[0], time_info2.nframes_);
     }
 
   if (!third_loop_events.empty ())
     {
       // The first event in the third loop should also be at the correct position
-      EXPECT_LT (units::samples (third_loop_events[0]), time_info3.nframes_);
+      EXPECT_LT (third_loop_events[0], time_info3.nframes_);
     }
 
   // Check for timestamp overflow
@@ -534,19 +534,19 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseEventTiming)
 
   // Verify that the events are at the correct positions
   // Note at position 0 should be at timestamp 0
-  EXPECT_EQ (pitch_60_events[0], 0);
+  EXPECT_EQ (pitch_60_events[0], units::samples (0));
 
   // Note at position 1150 samples should be at the correct position
-  EXPECT_EQ (pitch_62_events[0], 1150);
+  EXPECT_EQ (pitch_62_events[0], units::samples (1150));
 
   // Note at position 2295 samples should be at the correct position
-  EXPECT_EQ (pitch_64_events[0], 2295);
+  EXPECT_EQ (pitch_64_events[0], units::samples (2295));
 
   // Verify that all timestamps are within the buffer range
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, 0);
-      EXPECT_LT (units::samples (event.time_), time_info.nframes_);
+      EXPECT_GE (event.time_, units::samples (0));
+      EXPECT_LT (event.time_, time_info.nframes_);
     }
 
   // Check for timestamp overflow
@@ -656,8 +656,8 @@ TEST_P (
   // Verify that event timestamps are within the buffer range
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, 0);
-      EXPECT_LT (event.time_, buffer_size);
+      EXPECT_GE (event.time_, units::samples (0));
+      EXPECT_LT (event.time_, units::samples (buffer_size));
     }
 
   // Check that we have the expected pitches
@@ -705,7 +705,7 @@ TEST_F (ClipPlaybackDataProviderTest, ProcessEventsWithOffset)
 
   // The event should be offset by the difference between g_start_frame_w_offset
   // and g_start_frame_, which is 100 samples
-  EXPECT_EQ (pitch_60_events[0], 100);
+  EXPECT_EQ (pitch_60_events[0], units::samples (100));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer));
@@ -749,7 +749,7 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizationTimingAccuracy)
 
   // The event should be at timestamp 0 since we're starting exactly at the beat
   // boundary
-  EXPECT_EQ (pitch_60_events[0], 0);
+  EXPECT_EQ (pitch_60_events[0], units::samples (0));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer));
@@ -792,7 +792,7 @@ TEST_F (ClipPlaybackDataProviderTest, StateManagementAcrossBuffers)
   EXPECT_GT (pitch_62_events2.size (), 0);
 
   // The second note should be at the correct position relative to the buffer
-  EXPECT_EQ (pitch_62_events2[0], 1150 - 128);
+  EXPECT_EQ (pitch_62_events2[0], units::samples (1150 - 128));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer2));
@@ -859,8 +859,8 @@ TEST_F (ClipPlaybackDataProviderTest, LoopingEdgeCases)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process multiple buffers to verify looping
-  std::vector<std::vector<midi_time_t>> loop_events;
-  dsp::MidiEventVector                  output_buffer;
+  std::vector<std::vector<units::sample_u32_t>> loop_events;
+  dsp::MidiEventVector                          output_buffer;
 
   // Process several buffers
   for (int i = 0; i < 5; ++i)
@@ -882,14 +882,14 @@ TEST_F (ClipPlaybackDataProviderTest, LoopingEdgeCases)
 
   // Verify that events are at the correct positions in each buffer
   // The first buffer should have the event at position 0
-  EXPECT_EQ (loop_events[0][0], 0);
+  EXPECT_EQ (loop_events[0][0], units::samples (0));
 
   // Subsequent buffers should have events at positions that depend on where
   // the loop point falls within the buffer
   for (size_t i = 1; i < loop_events.size (); ++i)
     {
       // Events should be within the buffer range
-      EXPECT_LT (loop_events[i][0], 256);
+      EXPECT_LT (loop_events[i][0], units::samples (256));
     }
 
   // Check for timestamp overflow
@@ -928,7 +928,7 @@ TEST_F (ClipPlaybackDataProviderTest, EventsOnBufferBoundaries)
   // Should have the event in the second buffer at position 0
   auto pitch_60_events2 = find_event_timestamps (output_buffer2, 60);
   EXPECT_GT (pitch_60_events2.size (), 0);
-  EXPECT_EQ (pitch_60_events2[0], 0);
+  EXPECT_EQ (pitch_60_events2[0], units::samples (0));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer2));
@@ -981,7 +981,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
   EXPECT_GT (pitch_60_events3.size (), 0);
 
   // The event should be at timestamp 0 since we're starting at frame 0
-  EXPECT_EQ (pitch_60_events3[0], 0);
+  EXPECT_EQ (pitch_60_events3[0], units::samples (0));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer3));
@@ -1023,7 +1023,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovementWithLoop)
   EXPECT_GT (events.size (), 0);
 
   // The event should be at timestamp 0 since we're starting at frame 0
-  EXPECT_EQ (events[0], 0);
+  EXPECT_EQ (events[0], units::samples (0));
 
   // Check for timestamp overflow
   EXPECT_FALSE (has_timestamp_overflow (output_buffer));

@@ -34,10 +34,10 @@ public:
   // Rule of 0
   MidiEvent () = default;
   MidiEvent (
-    midi_byte_t byte1,
-    midi_byte_t byte2,
-    midi_byte_t byte3,
-    midi_time_t time)
+    midi_byte_t         byte1,
+    midi_byte_t         byte2,
+    midi_byte_t         byte3,
+    units::sample_u32_t time)
       : raw_buffer_sz_ (3), time_ (time)
   {
     raw_buffer_[0] = byte1;
@@ -53,22 +53,20 @@ public:
   /** Raw MIDI data. */
   std::array<midi_byte_t, 3> raw_buffer_{ 0, 0, 0 };
 
-  uint_fast8_t raw_buffer_sz_ = 0;
+  uint_fast8_t raw_buffer_sz_{};
 
   /** Time of the MIDI event, in frames from the start of the current cycle. */
-  midi_time_t time_ = 0;
+  units::sample_u32_t time_;
 
   /** Time using g_get_monotonic_time(). */
-  std::int64_t systime_ = 0;
+  std::int64_t systime_{};
 };
 
 inline bool
 operator== (const MidiEvent &lhs, const MidiEvent &rhs)
 {
-  return lhs.time_ == rhs.time_ && lhs.raw_buffer_[0] == rhs.raw_buffer_[0]
-         && lhs.raw_buffer_[1] == rhs.raw_buffer_[1]
-         && lhs.raw_buffer_[2] == rhs.raw_buffer_[2]
-         && lhs.raw_buffer_sz_ == rhs.raw_buffer_sz_;
+  return lhs.time_ == rhs.time_ && lhs.raw_buffer_sz_ == rhs.raw_buffer_sz_
+         && lhs.raw_buffer_ == rhs.raw_buffer_;
 }
 
 /**
@@ -261,10 +259,10 @@ public:
    * @param queued Add to queued events instead.
    */
   void add_note_on (
-    midi_byte_t channel,
-    midi_byte_t note_pitch,
-    midi_byte_t velocity,
-    midi_time_t time);
+    midi_byte_t         channel,
+    midi_byte_t         note_pitch,
+    midi_byte_t         velocity,
+    units::sample_u32_t time);
 
   /**
    * Adds a note on for each note in the chord.
@@ -273,7 +271,7 @@ public:
     const ChordDescriptor &descr,
     midi_byte_t            channel,
     midi_byte_t            velocity,
-    midi_time_t            time);
+    units::sample_u32_t    time);
 
   /**
    * Adds a note off for each note in the chord.
@@ -281,15 +279,17 @@ public:
   void add_note_offs_from_chord_descr (
     const ChordDescriptor &descr,
     midi_byte_t            channel,
-    midi_time_t            time);
+    units::sample_u32_t    time);
 
   /**
    * Add CC volume event.
    *
    * TODO
    */
-  void
-  add_cc_volume (midi_byte_t channel, midi_byte_t volume, midi_time_t time);
+  void add_cc_volume (
+    midi_byte_t         channel,
+    midi_byte_t         volume,
+    units::sample_u32_t time);
 
 #if 0
   /**
@@ -310,7 +310,8 @@ public:
    * This must be a full 3-byte message. If in 'running status' mode, the
    * caller is responsible for prepending the status byte.
    */
-  void add_event_from_buf (midi_time_t time, midi_byte_t * buf, int buf_size);
+  void
+  add_event_from_buf (units::sample_u32_t time, midi_byte_t * buf, int buf_size);
 
   /**
    * Adds a note off event to the given MidiEvents.
@@ -318,8 +319,10 @@ public:
    * @param channel MIDI channel starting from 1.
    * @param queued Add to queued events instead.
    */
-  void
-  add_note_off (midi_byte_t channel, midi_byte_t note_pitch, midi_time_t time);
+  void add_note_off (
+    midi_byte_t         channel,
+    midi_byte_t         note_pitch,
+    units::sample_u32_t time);
 
   /**
    * Adds a control event to the given MidiEvents.
@@ -327,25 +330,25 @@ public:
    * @param channel MIDI channel starting from 1.
    */
   void add_control_change (
-    midi_byte_t channel,
-    midi_byte_t controller,
-    midi_byte_t control,
-    midi_time_t time);
+    midi_byte_t         channel,
+    midi_byte_t         controller,
+    midi_byte_t         control,
+    units::sample_u32_t time);
 
   /**
    * Adds a song position event to the queue.
    *
    * @param total_sixteenths Total sixteenths.
    */
-  void add_song_pos (int64_t total_sixteenths, midi_time_t time);
+  void add_song_pos (int64_t total_sixteenths, units::sample_u32_t time);
 
-  void add_raw (const uint8_t * buf, size_t buf_sz, midi_time_t time);
+  void add_raw (const uint8_t * buf, size_t buf_sz, units::sample_u32_t time);
 
   void add_simple (
-    midi_byte_t byte1,
-    midi_byte_t byte2,
-    midi_byte_t byte3,
-    midi_time_t time)
+    midi_byte_t         byte1,
+    midi_byte_t         byte2,
+    midi_byte_t         byte3,
+    units::sample_u32_t time)
   {
     push_back (MidiEvent (byte1, byte2, byte3, time));
   }
@@ -356,22 +359,28 @@ public:
    * @param channel MIDI channel starting from 1.
    * @param pitchbend 0 to 16384.
    */
-  void
-  add_pitchbend (midi_byte_t channel, uint32_t pitchbend, midi_time_t time);
+  void add_pitchbend (
+    midi_byte_t         channel,
+    uint32_t            pitchbend,
+    units::sample_u32_t time);
 
-  void
-  add_channel_pressure (midi_byte_t channel, midi_byte_t value, midi_time_t time);
+  void add_channel_pressure (
+    midi_byte_t         channel,
+    midi_byte_t         value,
+    units::sample_u32_t time);
 
   /**
    * Queues MIDI note off to event queue.
    */
-  void
-  add_all_notes_off (midi_byte_t channel, midi_time_t time, bool with_lock);
+  void add_all_notes_off (
+    midi_byte_t         channel,
+    units::sample_u32_t time,
+    bool                with_lock);
 
   /**
    * Adds a note off message to every MIDI channel.
    */
-  void panic_without_lock (midi_time_t time)
+  void panic_without_lock (units::sample_u32_t time)
   {
     for (midi_byte_t i = 1; i < 17; i++)
       {

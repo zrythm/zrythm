@@ -176,9 +176,9 @@ TEST_F (PianoRollTrackTest, TransformMidiInputsFunc)
   dsp::MidiEventVector events;
 
   // Add some MIDI events with different channels
-  events.add_simple (0x90, 60, 100, 0); // Note on, channel 1
-  events.add_simple (0x91, 61, 100, 1); // Note on, channel 2
-  events.add_simple (0x92, 62, 100, 2); // Note on, channel 3
+  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
+  events.add_simple (0x91, 61, 100, units::samples (1)); // Note on, channel 2
+  events.add_simple (0x92, 62, 100, units::samples (2)); // Note on, channel 3
 
   // Test with passthrough disabled (default) - should change all channels to
   // track's MIDI channel
@@ -194,9 +194,9 @@ TEST_F (PianoRollTrackTest, TransformMidiInputsFunc)
 
   // Test with passthrough enabled - should leave channels unchanged
   events.clear ();
-  events.add_simple (0x90, 60, 100, 0); // Note on, channel 1
-  events.add_simple (0x91, 61, 100, 1); // Note on, channel 2
-  events.add_simple (0x92, 62, 100, 2); // Note on, channel 3
+  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
+  events.add_simple (0x91, 61, 100, units::samples (1)); // Note on, channel 2
+  events.add_simple (0x92, 62, 100, units::samples (2)); // Note on, channel 3
 
   track_->setPassthroughMidiInput (true);
   track_->transform_midi_inputs_func (events);
@@ -209,7 +209,7 @@ TEST_F (PianoRollTrackTest, TransformMidiInputsFunc)
 
   // Test with different track MIDI channel
   events.clear ();
-  events.add_simple (0x90, 60, 100, 0); // Note on, channel 1
+  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
 
   track_->setMidiChannel (12);
   track_->setPassthroughMidiInput (false);

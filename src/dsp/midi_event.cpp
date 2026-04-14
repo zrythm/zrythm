@@ -63,8 +63,7 @@ MidiEventVector::transform_chord_and_append (
       {
         /* only copy events inside the current time range */
         if (
-          units::samples (src_ev.time_) < local_offset
-          || units::samples (src_ev.time_) >= local_offset + nframes)
+          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
           {
             continue;
           }
@@ -114,8 +113,7 @@ MidiEventVector::append_w_filter (
       {
         /* only copy events inside the current time range */
         if (
-          units::samples (src_ev.time_) < local_offset
-          || units::samples (src_ev.time_) >= local_offset + nframes)
+          src_ev.time_ < local_offset || src_ev.time_ >= local_offset + nframes)
           {
             if (ZRYTHM_TESTING)
               {
@@ -267,14 +265,15 @@ MidiEvents::dequeue (
 
   active_events_.append (queued_events_, local_offset, nframes);
   queued_events_.remove_if ([local_offset, nframes] (const MidiEvent &ev) {
-    return units::samples (ev.time_) >= local_offset
-           && units::samples (ev.time_) < local_offset + nframes;
+    return ev.time_ >= local_offset && ev.time_ < local_offset + nframes;
   });
 }
 
 void
-MidiEventVector::
-  add_all_notes_off (midi_byte_t channel, midi_time_t time, bool with_lock)
+MidiEventVector::add_all_notes_off (
+  midi_byte_t         channel,
+  units::sample_u32_t time,
+  bool                with_lock)
 {
   assert (channel > 0 && channel <= 16);
 
@@ -309,7 +308,7 @@ MidiEventVector::panic ()
     {
       std::this_thread::sleep_for (std::chrono::milliseconds (10));
     }
-  panic_without_lock (0);
+  panic_without_lock (units::samples (0));
   lock_.unlock ();
 }
 
@@ -321,13 +320,13 @@ MidiEventVector::write_to_midi_sequence (
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
 
-    int last_time = 0;
+    units::sample_u32_t last_time;
     for (const MidiEvent &ev : events_)
       {
-        const int delta_time = (int) ev.time_ - last_time;
+        const auto delta_time = ev.time_ - last_time;
         sequence.addEvent (
           { ev.raw_buffer_.data (), static_cast<int> (ev.raw_buffer_.size ()),
-            static_cast<double> (delta_time) });
+            delta_time.in<double> (units::samples) });
         last_time += delta_time;
       }
   }
@@ -339,8 +338,10 @@ MidiEventVector::write_to_midi_sequence (
 }
 
 void
-MidiEventVector::
-  add_note_off (midi_byte_t channel, midi_byte_t note_pitch, midi_time_t time)
+MidiEventVector::add_note_off (
+  midi_byte_t         channel,
+  midi_byte_t         note_pitch,
+  units::sample_u32_t time)
 {
   z_return_if_fail (channel > 0);
   MidiEvent ev (
@@ -351,7 +352,7 @@ MidiEventVector::
 }
 
 void
-MidiEventVector::add_song_pos (int64_t total_sixteenths, midi_time_t time)
+MidiEventVector::add_song_pos (int64_t total_sixteenths, units::sample_u32_t time)
 {
   add_simple (
     utils::midi::MIDI_SONG_POSITION, total_sixteenths & 0x7f /* LSB */,
@@ -359,7 +360,8 @@ MidiEventVector::add_song_pos (int64_t total_sixteenths, midi_time_t time)
 }
 
 void
-MidiEventVector::add_raw (const uint8_t * buf, size_t buf_sz, midi_time_t time)
+MidiEventVector::
+  add_raw (const uint8_t * buf, size_t buf_sz, units::sample_u32_t time)
 {
   if (buf_sz > 3)
     {
@@ -379,10 +381,10 @@ MidiEventVector::add_raw (const uint8_t * buf, size_t buf_sz, midi_time_t time)
 
 void
 MidiEventVector::add_control_change (
-  uint8_t     channel,
-  uint8_t     controller,
-  uint8_t     control,
-  midi_time_t time)
+  uint8_t             channel,
+  uint8_t             controller,
+  uint8_t             control,
+  units::sample_u32_t time)
 {
   add_simple (
     (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (channel - 1)),
@@ -390,8 +392,10 @@ MidiEventVector::add_control_change (
 }
 
 void
-MidiEventVector::
-  add_pitchbend (midi_byte_t channel, uint32_t pitchbend, midi_time_t time)
+MidiEventVector::add_pitchbend (
+  midi_byte_t         channel,
+  uint32_t            pitchbend,
+  units::sample_u32_t time)
 {
   z_return_if_fail (pitchbend < 0x4000 && channel > 0);
 
@@ -408,9 +412,9 @@ MidiEventVector::
 
 void
 MidiEventVector::add_channel_pressure (
-  midi_byte_t channel,
-  midi_byte_t value,
-  midi_time_t time)
+  midi_byte_t         channel,
+  midi_byte_t         value,
+  units::sample_u32_t time)
 {
   z_return_if_fail (channel > 0);
 
@@ -477,10 +481,10 @@ MidiEventVector::sort ()
 
 void
 MidiEventVector::add_note_on (
-  uint8_t     channel,
-  uint8_t     note_pitch,
-  uint8_t     velocity,
-  midi_time_t time)
+  uint8_t             channel,
+  uint8_t             note_pitch,
+  uint8_t             velocity,
+  units::sample_u32_t time)
 {
   z_return_if_fail (channel > 0);
 #if 0
@@ -501,7 +505,7 @@ MidiEventVector::add_note_ons_from_chord_descr (
   const ChordDescriptor &descr,
   midi_byte_t            channel,
   midi_byte_t            velocity,
-  midi_time_t            time)
+  units::sample_u32_t    time)
 {
 #if 0
   z_info (
@@ -522,7 +526,7 @@ void
 MidiEventVector::add_note_offs_from_chord_descr (
   const ChordDescriptor &descr,
   midi_byte_t            channel,
-  midi_time_t            time)
+  units::sample_u32_t    time)
 {
   for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; ++i)
     {
@@ -535,7 +539,7 @@ MidiEventVector::add_note_offs_from_chord_descr (
 
 void
 MidiEventVector::
-  add_event_from_buf (midi_time_t time, midi_byte_t * buf, int buf_size)
+  add_event_from_buf (units::sample_u32_t time, midi_byte_t * buf, int buf_size)
 {
   if (buf_size != 3) [[unlikely]]
     {

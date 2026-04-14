@@ -298,9 +298,8 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
   if (!output_buffer.empty ())
     {
       const auto &event = output_buffer.front ();
-      EXPECT_GE (event.time_, 0);
-      EXPECT_LT (
-        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
+      EXPECT_GE (event.time_, units::samples (0));
+      EXPECT_LT (event.time_, time_info.nframes_);
 
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
@@ -494,10 +493,8 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   for (const auto &event : output_buffer)
     {
       const auto event_time = event.time_;
-      EXPECT_GE (
-        event_time, static_cast<midi_time_t> (sample_start.in (units::sample)));
-      EXPECT_LE (
-        event_time, static_cast<midi_time_t> (sample_end.in (units::sample)));
+      EXPECT_GE (event_time, sample_start);
+      EXPECT_LE (event_time, sample_end);
 
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
@@ -886,9 +883,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 
       // The event should be at the beginning of our processing block
       // since the note is at the start of the region
-      EXPECT_LT (
-        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
-
+      EXPECT_LT (event.time_, time_info.nframes_);
       // Verify it's a note on event with the correct pitch
       EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
       EXPECT_EQ (event.raw_buffer_[1], 60);          // Pitch
@@ -1741,9 +1736,8 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   // Verify events are valid MIDI events
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, 0);
-      EXPECT_LT (
-        event.time_, time_info.nframes_.in<midi_time_t> (units::samples));
+      EXPECT_GE (event.time_, units::samples (0));
+      EXPECT_LT (event.time_, time_info.nframes_);
       // Check that it's a valid MIDI message
       EXPECT_GE (event.raw_buffer_[0], 0x80);
       EXPECT_LE (event.raw_buffer_[0], 0xEF);

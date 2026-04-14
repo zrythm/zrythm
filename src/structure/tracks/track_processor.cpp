@@ -483,7 +483,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 
   using AddEventCallback = std::function<void (
     const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-    size_t index_in_vector, midi_byte_t time)>;
+    size_t index_in_vector, units::sample_u32_t time)>;
 
   // returns if an event was added
   const auto add_event_for_cc_if_in_range =
@@ -495,8 +495,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
     if (it != range.end ())
       {
         add_event_cb (
-          cc, events, std::ranges::distance (range.begin (), it),
-          local_offset.in<midi_byte_t> (units::samples));
+          cc, events, std::ranges::distance (range.begin (), it), local_offset);
         return true;
       }
     return false;
@@ -510,7 +509,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
           midi_cc_caches_->pitch_bend_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, midi_byte_t time) {
+            const size_t index_in_vector, units::sample_u32_t time) {
             vec_to_fill.add_pitchbend (
               index_in_vector + 1,
               utils::math::round_to_signed_32 (
@@ -525,7 +524,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
           midi_cc_caches_->poly_key_pressure_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, midi_byte_t time) {
+            const size_t index_in_vector, units::sample_u32_t time) {
             // TODO
           }))
         continue;
@@ -535,7 +534,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
           midi_cc_caches_->channel_pressure_ids_, *popped_cc,
           [] (
             const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, midi_byte_t time) {
+            const size_t index_in_vector, units::sample_u32_t time) {
             vec_to_fill.add_channel_pressure (
               index_in_vector + 1,
               (midi_byte_t) utils::math::round_to_signed_32 (
@@ -558,7 +557,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
             [channel] (
               const dsp::ProcessorParameter &cc,
               dsp::MidiEventVector &vec_to_fill, const size_t index_in_vector,
-              midi_byte_t time) {
+              units::sample_u32_t time) {
               vec_to_fill.add_control_change (
                 channel, index_in_vector,
                 (midi_byte_t) utils::math::round_to_signed_32 (
