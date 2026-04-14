@@ -124,6 +124,30 @@ QmlUtils::adjustOpacity (const QColor &color, float newOpacity)
     color.redF (), color.greenF (), color.blueF (), newOpacity);
 }
 
+QColor
+QmlUtils::getTrackBackgroundTinted (
+  const QColor &baseColor,
+  const QColor &trackColor,
+  const QColor &windowTextColor,
+  bool          isSelected,
+  bool          isHovered)
+{
+  auto blend = [] (const QColor &base, const QColor &overlay, float amount) {
+    const float inv = 1.0f - amount;
+    return QColor::fromRgbF (
+      base.redF () * inv + overlay.redF () * amount,
+      base.greenF () * inv + overlay.greenF () * amount,
+      base.blueF () * inv + overlay.blueF () * amount);
+  };
+
+  QColor c = blend (baseColor, trackColor, 0.12f);
+  if (isSelected)
+    c = blend (c, windowTextColor, 0.20f);
+  if (isHovered)
+    c = blend (c, windowTextColor, 0.05f);
+  return c;
+}
+
 QVector<float>
 QmlUtils::getAutomationRegionValues (QObject * automationRegion, int pixelWidth)
 {

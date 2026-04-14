@@ -31,6 +31,13 @@ public:
   Q_INVOKABLE static QColor
   adjustOpacity (const QColor &color, float newOpacity);
 
+  Q_INVOKABLE static QColor getTrackBackgroundTinted (
+    const QColor &baseColor,
+    const QColor &trackColor,
+    const QColor &windowTextColor,
+    bool          isSelected,
+    bool          isHovered);
+
   Q_INVOKABLE static QVector<float>
   getAutomationRegionValues (QObject * automationRegion, int pixelWidth);
 

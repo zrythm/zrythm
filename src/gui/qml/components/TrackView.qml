@@ -47,16 +47,7 @@ Control {
   opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : Style.getOpacity(track.enabled, root.Window.active)
 
   background: Rectangle {
-    color: {
-      let c = root.palette.window;
-      if (root.hovered)
-        c = Style.getColorBlendedTowardsContrast(c);
-
-      if (selectionTracker.isSelected || bgTapHandler.pressed)
-        c = Qt.alpha(root.palette.highlight, 0.15);
-
-      return c;
-    }
+    color: QmlUtils.getTrackBackgroundTinted(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered)
 
     Behavior on color {
       animation: Style.propertyAnimation
