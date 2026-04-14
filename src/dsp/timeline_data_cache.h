@@ -40,7 +40,12 @@ public:
   }
 
   /**
-   * @brief Removes cached data matching the given interval.
+   * @brief Removes cached data for intervals that truly overlap with the given
+   * interval.
+   *
+   * Adjacent intervals (where one's end equals another's start) are NOT
+   * considered overlapping, since cache entries use exclusive-end semantics
+   * (end = one past the last sample).
    *
    * @param interval The time interval to remove (in samples).
    *
@@ -76,6 +81,16 @@ public:
    * Used for debug visualization of cache coverage.
    */
   Q_SIGNAL void cachedRangesChanged (std::vector<IntervalType> ranges) const;
+
+protected:
+  /**
+   * @brief Returns true if two intervals truly overlap (adjacent intervals do
+   * not count).
+   */
+  static bool intervals_overlap (IntervalType a, IntervalType b) noexcept
+  {
+    return a.second > b.first && a.first < b.second;
+  }
 
 private:
   virtual void clear_impl () = 0;

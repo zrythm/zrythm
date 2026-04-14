@@ -20,14 +20,9 @@ MidiTimelineDataCache::clear_impl ()
 void
 MidiTimelineDataCache::remove_sequences_matching_interval (IntervalType interval)
 {
-  const auto [target_start, target_end] = interval;
-
-  // Remove MIDI sequences that overlap with the interval
+  // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (midi_sequences_, [&] (const auto &entry) {
-    const auto &[existing_interval, seq] = entry;
-    const auto [existing_start, existing_end] = existing_interval;
-    // Remove sequences that overlap with any part of the target interval
-    return !(existing_end < target_start || existing_start > target_end);
+    return intervals_overlap (entry.first, interval);
   });
 }
 
@@ -109,12 +104,10 @@ void
 AudioTimelineDataCache::remove_sequences_matching_interval (
   IntervalType interval)
 {
-  const auto [target_start, target_end] = interval;
-
-  // Remove audio regions that overlap with the interval
+  // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (audio_regions_, [&] (const AudioRegionEntry &entry) {
-    // Remove regions that overlap with any part of the target interval
-    return entry.end_sample >= target_start && entry.start_sample <= target_end;
+    return intervals_overlap (
+      { entry.start_sample, entry.end_sample }, interval);
   });
 }
 
@@ -170,12 +163,10 @@ void
 AutomationTimelineDataCache::remove_sequences_matching_interval (
   IntervalType interval)
 {
-  const auto [target_start, target_end] = interval;
-
-  // Remove automation sequences that overlap with the interval
+  // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (automation_sequences_, [&] (const AutomationCacheEntry &entry) {
-    // Remove sequences that overlap with any part of the target interval
-    return entry.end_sample >= target_start && entry.start_sample <= target_end;
+    return intervals_overlap (
+      { entry.start_sample, entry.end_sample }, interval);
   });
 }
 

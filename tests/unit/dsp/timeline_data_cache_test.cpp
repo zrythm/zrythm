@@ -186,6 +186,67 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
 }
 
+// Regression test for gitlab #5240: adjacent intervals (end == start) must not
+// be considered overlapping during removal.
+TEST_F (
+  MidiTimelineDataCacheTest,
+  RemoveSequencesMatchingInterval_AdjacentNotOverlapping)
+{
+  // Two adjacent regions: R1 at [0, 100) and R2 at [100, 200)
+  juce::MidiMessageSequence seq1;
+  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 10.0);
+  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 90.0);
+
+  juce::MidiMessageSequence seq2;
+  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
+  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 190.0);
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
+  cache->add_midi_sequence (
+    { units::samples (100), units::samples (200) }, seq2);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+
+  // Remove overlapping with [100, 200) — R1 at [0, 100) is adjacent, not
+  // overlapping
+  cache->remove_sequences_matching_interval (
+    { units::samples (100), units::samples (200) });
+  cache->finalize_changes ();
+
+  // R1 at [0, 100) should remain
+  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 2);
+}
+
+// Reverse direction: [0, 100) removal must not evict [100, 200)
+TEST_F (
+  MidiTimelineDataCacheTest,
+  RemoveSequencesMatchingInterval_AdjacentReverse)
+{
+  juce::MidiMessageSequence seq1;
+  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 10.0);
+  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 90.0);
+
+  juce::MidiMessageSequence seq2;
+  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
+  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 190.0);
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
+  cache->add_midi_sequence (
+    { units::samples (100), units::samples (200) }, seq2);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+
+  // Remove overlapping with [0, 100) - should only remove seq1
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
+  cache->finalize_changes ();
+
+  // seq2 at [100, 200) should remain
+  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 2);
+}
+
 TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
 {
   // Create sequences that match their intervals
@@ -215,7 +276,7 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
     { units::samples (50), units::samples (149) });
   cache->finalize_changes ();
 
-  // All sequences should be removed (all touch boundaries)
+  // All sequences should be removed (all truly overlap with [50, 149])
   EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 0);
 }
 
@@ -495,6 +556,65 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
   EXPECT_EQ (regions[1].start_sample, units::samples (400));
 }
 
+// Regression test for gitlab #5240 (audio variant)
+TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval_Adjacent)
+{
+  juce::AudioSampleBuffer buffer1 (2, 100);
+  juce::AudioSampleBuffer buffer2 (2, 100);
+  buffer1.clear ();
+  buffer2.clear ();
+
+  // Adjacent regions: [0, 100) and [100, 200)
+  cache->add_audio_region (
+    { units::samples (0), units::samples (100) }, buffer1);
+  cache->add_audio_region (
+    { units::samples (100), units::samples (200) }, buffer2);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_audio_regions ().size (), 2);
+
+  // Remove overlapping with [100, 200) — buffer1 at [0, 100) is adjacent, not
+  // overlapping
+  cache->remove_sequences_matching_interval (
+    { units::samples (100), units::samples (200) });
+  cache->finalize_changes ();
+
+  // buffer1 at [0, 100) should remain
+  const auto &regions = cache->get_audio_regions ();
+  EXPECT_EQ (regions.size (), 1);
+  EXPECT_EQ (regions[0].start_sample, units::samples (0));
+}
+
+// Reverse direction: [0, 100) removal must not evict [100, 200)
+TEST_F (
+  AudioTimelineDataCacheTest,
+  RemoveAudioRegionsMatchingInterval_AdjacentReverse)
+{
+  juce::AudioSampleBuffer buffer1 (2, 100);
+  juce::AudioSampleBuffer buffer2 (2, 100);
+  buffer1.clear ();
+  buffer2.clear ();
+
+  cache->add_audio_region (
+    { units::samples (0), units::samples (100) }, buffer1);
+  cache->add_audio_region (
+    { units::samples (100), units::samples (200) }, buffer2);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_audio_regions ().size (), 2);
+
+  // Remove overlapping with [0, 100) — buffer2 at [100, 200) is adjacent, not
+  // overlapping
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
+  cache->finalize_changes ();
+
+  // buffer2 at [100, 200) should remain
+  const auto &regions = cache->get_audio_regions ();
+  EXPECT_EQ (regions.size (), 1);
+  EXPECT_EQ (regions[0].start_sample, units::samples (100));
+}
+
 TEST_F (AudioTimelineDataCacheTest, AudioBufferIndependence)
 {
   // Add an audio buffer
@@ -723,6 +843,57 @@ TEST_F (
   EXPECT_EQ (sequences.size (), 2);
   EXPECT_EQ (sequences[0].start_sample, units::samples (0));
   EXPECT_EQ (sequences[1].start_sample, units::samples (400));
+}
+
+// Regression test for gitlab #5240 (automation variant)
+TEST_F (
+  AutomationTimelineDataCacheTest,
+  RemoveAutomationSequencesMatchingInterval_Adjacent)
+{
+  // Adjacent sequences: [0, 100) and [100, 200)
+  cache->add_automation_sequence (
+    { units::samples (0), units::samples (100) }, automation_values);
+  cache->add_automation_sequence (
+    { units::samples (100), units::samples (200) }, automation_values);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_automation_sequences ().size (), 2);
+
+  // Remove overlapping with [100, 200) — first entry at [0, 100) is adjacent,
+  // not overlapping
+  cache->remove_sequences_matching_interval (
+    { units::samples (100), units::samples (200) });
+  cache->finalize_changes ();
+
+  // First sequence at [0, 100) should remain
+  const auto &sequences = cache->get_automation_sequences ();
+  EXPECT_EQ (sequences.size (), 1);
+  EXPECT_EQ (sequences[0].start_sample, units::samples (0));
+}
+
+// Reverse direction: [0, 100) removal must not evict [100, 200)
+TEST_F (
+  AutomationTimelineDataCacheTest,
+  RemoveAutomationSequencesMatchingInterval_AdjacentReverse)
+{
+  cache->add_automation_sequence (
+    { units::samples (0), units::samples (100) }, automation_values);
+  cache->add_automation_sequence (
+    { units::samples (100), units::samples (200) }, automation_values);
+  cache->finalize_changes ();
+
+  EXPECT_EQ (cache->get_automation_sequences ().size (), 2);
+
+  // Remove overlapping with [0, 100) — second entry at [100, 200) is adjacent,
+  // not overlapping
+  cache->remove_sequences_matching_interval (
+    { units::samples (0), units::samples (100) });
+  cache->finalize_changes ();
+
+  // Second sequence at [100, 200) should remain
+  const auto &sequences = cache->get_automation_sequences ();
+  EXPECT_EQ (sequences.size (), 1);
+  EXPECT_EQ (sequences[0].start_sample, units::samples (100));
 }
 
 TEST_F (AutomationTimelineDataCacheTest, AutomationSequenceSorting)

@@ -730,6 +730,76 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
     }
 }
 
+// Reproduces gitlab issue #5240: duplicating an adjacent region causes the
+// preceding region's cache to be evicted and not regenerated.
+//
+// Scenario:
+// - R1 at ticks [0, 960), R2 at ticks [960, 1920) (adjacent regions)
+// - Generate cache for both regions
+// - Regenerate cache for R2's range only (as would happen when R2 is
+//   duplicated)
+// - Verify R1's cache is still intact (it was adjacent, not overlapping)
+TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
+{
+  // Create two adjacent MIDI regions (R1 and R2)
+  const double r1_start = 0.0;
+  const double r1_end = 960.0;   // 1 bar at 120 BPM
+  const double r2_start = 960.0; // Exactly adjacent
+  const double r2_end = 1920.0;
+
+  auto r1 = create_midi_region (r1_start, r1_end, 60);
+  auto r2 = create_midi_region (r2_start, r2_end, 64);
+
+  std::vector<const MidiRegion *> regions;
+  regions.push_back (r1);
+  regions.push_back (r2);
+
+  // Generate initial cache for both regions
+  utils::ExpandableTickRange full_range (std::pair (0.0, 1920.0));
+  midi_provider_->generate_midi_events (*tempo_map_, regions, full_range);
+
+  // Verify R1 produces events at its position
+  const auto r1_start_samples =
+    tempo_map_->tick_to_samples_rounded (units::ticks (r1_start));
+  const auto r1_end_samples =
+    tempo_map_->tick_to_samples_rounded (units::ticks (r1_end));
+
+  dsp::MidiEventVector              output_buffer;
+  dsp::graph::EngineProcessTimeInfo time_info = {
+    .g_start_frame_ = r1_start_samples,
+    .g_start_frame_w_offset_ = r1_start_samples,
+    .local_offset_ = units::samples (0),
+    .nframes_ = r1_end_samples - r1_start_samples
+  };
+
+  midi_provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
+  const auto r1_event_count = output_buffer.size ();
+  EXPECT_GT (r1_event_count, 0);
+
+  // Now simulate what happens when R2 is duplicated:
+  // generate_events is called with only R2's affected range
+  // (as would be emitted by the cache scheduler)
+  utils::ExpandableTickRange r2_range (std::make_pair (r2_start, r2_end));
+  midi_provider_->generate_midi_events (*tempo_map_, regions, r2_range);
+
+  // Verify R1's cache is still intact after regenerating R2's range.
+  // The provider may emit all-notes-off events due to detecting a transport
+  // jump; we only count note-on events.
+  output_buffer.clear ();
+  midi_provider_->process_midi_events (
+    time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
+
+  // R1 should still produce note events - its cache was NOT evicted
+  int note_on_count_after = 0;
+  for (const auto &event : output_buffer)
+    {
+      if ((event.raw_buffer_[0] & 0xF0) == 0x90)
+        ++note_on_count_after;
+    }
+  EXPECT_EQ (note_on_count_after, 1); // R1 has one note
+}
+
 TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
 {
   // Create a MIDI region at tick 0
