@@ -620,4 +620,86 @@ TEST_F (TrackCollectionOperatorTest, UndoFolderMoveWithDescendants)
     track_collection_->get_folder_parent (child2.id ()).value (), folder.id ());
 }
 
+// ============================================================================
+// Delete Tests
+// ============================================================================
+
+TEST_F (TrackCollectionOperatorTest, DeleteUndeletableTrackThrows)
+{
+  // The chord track is one of the non-deletable types
+  auto chord_track =
+    track_factory_->create_empty_track<structure::tracks::ChordTrack> ();
+  track_collection_->add_track (chord_track);
+
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (chord_track.get_object_base ());
+
+  EXPECT_THROW (
+    track_collection_operator_->deleteTracks (tracks), std::invalid_argument);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (TrackCollectionOperatorTest, DeleteMixedDeletableUndeletableThrows)
+{
+  auto audio = create_audio_bus_track ();
+  auto chord_track =
+    track_factory_->create_empty_track<structure::tracks::ChordTrack> ();
+
+  track_collection_->add_track (audio);
+  track_collection_->add_track (chord_track);
+
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (audio.get_object_base ());
+  tracks.append (chord_track.get_object_base ());
+
+  EXPECT_THROW (
+    track_collection_operator_->deleteTracks (tracks), std::invalid_argument);
+  EXPECT_EQ (undo_stack_->count (), 0);
+  // Audio track should still be present (no partial delete)
+  EXPECT_EQ (track_collection_->track_count (), 2);
+}
+
+TEST_F (TrackCollectionOperatorTest, DeleteWithEmptyList)
+{
+  auto track = create_audio_bus_track ();
+  track_collection_->add_track (track);
+
+  QList<structure::tracks::Track *> tracks;
+
+  track_collection_operator_->deleteTracks (tracks);
+
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (track_collection_->track_count (), 1);
+}
+
+TEST_F (TrackCollectionOperatorTest, DeleteWithNullCollection)
+{
+  track_collection_operator_->setCollection (nullptr);
+
+  auto track = create_audio_bus_track ();
+  track_collection_->add_track (track);
+
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (track.get_object_base ());
+
+  // Should not crash and no command pushed
+  track_collection_operator_->deleteTracks (tracks);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (TrackCollectionOperatorTest, DeleteWithNullUndoStack)
+{
+  track_collection_operator_->setUndoStack (nullptr);
+
+  auto track = create_audio_bus_track ();
+  track_collection_->add_track (track);
+
+  QList<structure::tracks::Track *> tracks;
+  tracks.append (track.get_object_base ());
+
+  // Should not crash and no command pushed
+  track_collection_operator_->deleteTracks (tracks);
+  EXPECT_EQ (track_collection_->track_count (), 1);
+}
+
 } // namespace zrythm::actions

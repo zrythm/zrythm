@@ -29,6 +29,7 @@ Control {
   property bool listViewIsLast: false
   property int listViewPastEndIndex: -1
   required property Track track // connected automatically when used as a delegate for a Tracklist model
+  required property TrackCollectionOperator trackCollectionOperator
   required property int trackIndex
   readonly property var trackModelIndex: trackSelectionModel?.getModelIndex(trackIndex)
   required property TrackSelectionModel trackSelectionModel
@@ -46,6 +47,40 @@ Control {
   implicitWidth: 200
   opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : Style.getOpacity(track.enabled, root.Window.active)
 
+  ContextMenu.menu: Menu {
+    id: contextMenu
+
+    onAboutToShow: {
+      const selectedIndexes = root.trackSelectionModel.selectedIndexes;
+      let anyUndeletable = false;
+      for (const idx of selectedIndexes) {
+        const t = idx.data(TrackCollection.TrackPtrRole);
+        if (t !== null && !t.isDeletable) {
+          anyUndeletable = true;
+          break;
+        }
+      }
+      const selCount = selectedIndexes.length;
+      deleteMenuItem.text = selCount > 1 ? qsTr("Delete %1 Tracks").arg(selCount) : qsTr("Delete Track");
+      deleteMenuItem.enabled = !anyUndeletable && selCount > 0;
+    }
+
+    MenuItem {
+      id: deleteMenuItem
+      text: qsTr("Delete Track")
+
+      onTriggered: {
+        const selectedIndexes = root.trackSelectionModel.selectedIndexes;
+        let tracksToDelete = [];
+        for (const idx of selectedIndexes) {
+          const t = idx.data(TrackCollection.TrackPtrRole);
+          if (t !== null && t.isDeletable)
+            tracksToDelete.push(t);
+        }
+        root.trackCollectionOperator.deleteTracks(tracksToDelete);
+      }
+    }
+  }
   background: Rectangle {
     color: QmlUtils.getTrackBackgroundTinted(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered)
 
@@ -56,11 +91,21 @@ Control {
     TapHandler {
       id: bgTapHandler
 
-      acceptedButtons: Qt.LeftButton | Qt.RightButton
+      acceptedButtons: Qt.LeftButton
       acceptedModifiers: Qt.NoModifier
 
       onTapped: (eventPoint, button) => {
         root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+      }
+    }
+
+    TapHandler {
+      acceptedButtons: Qt.RightButton
+
+      onTapped: (eventPoint, button) => {
+        if (!root.trackSelectionModel.isSelected(root.trackModelIndex))
+          root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+        contextMenu.popup();
       }
     }
 
@@ -313,13 +358,12 @@ Control {
                 }
 
                 ResizeHandle {
-                  resizeTarget: laneDelegate.trackLane
-
                   anchors.bottom: parent.bottom
                   anchors.left: parent.left
                   anchors.right: parent.right
+                  resizeTarget: laneDelegate.trackLane
 
-                  onResizingChanged: (active) => {
+                  onResizingChanged: active => {
                     root.isResizing = active;
                   }
                 }
@@ -619,17 +663,15 @@ Control {
       }
 
       ResizeHandle {
-        resizeTarget: root.track
-
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+        resizeTarget: root.track
 
-        onResizingChanged: (active) => {
+        onResizingChanged: active => {
           root.isResizing = active;
         }
       }
     }
   }
-
 }

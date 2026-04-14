@@ -128,7 +128,7 @@ ColumnLayout {
           text: "MIDI FX"
         }
 
-        onPluginClicked: function(plugin: Plugin) {
+        onPluginClicked: function (plugin: Plugin) {
           root.pluginClicked(plugin);
         }
       }
@@ -146,7 +146,7 @@ ColumnLayout {
           text: "Inserts"
         }
 
-        onPluginClicked: function(plugin: Plugin) {
+        onPluginClicked: function (plugin: Plugin) {
           root.pluginClicked(plugin);
         }
       }

@@ -8,6 +8,7 @@ target_sources(zrythm_commands_lib
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
+    delete_tracks_command.cpp
     remove_plugins_command.cpp
     resize_arranger_objects_command.cpp
   PUBLIC
@@ -26,6 +27,7 @@ target_sources(zrythm_commands_lib
       move_arranger_objects_command.h
       move_plugins_command.h
       move_tracks_command.h
+      delete_tracks_command.h
       resize_arranger_objects_command.h
       relocate_arranger_object_command.h
       remove_arranger_object_command.h

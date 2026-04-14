@@ -64,6 +64,7 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (QString icon READ icon WRITE setIcon NOTIFY iconChanged)
   Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
   Q_PROPERTY (bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+  Q_PROPERTY (bool isDeletable READ is_deletable CONSTANT)
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (
     double fullVisibleHeight READ fullVisibleHeight NOTIFY

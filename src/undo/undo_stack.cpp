@@ -7,6 +7,7 @@
 #include "commands/add_plugin_command.h"
 #include "commands/add_track_command.h"
 #include "commands/change_qobject_property_command.h"
+#include "commands/delete_tracks_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/move_plugins_command.h"
 #include "commands/remove_plugins_command.h"
@@ -43,8 +44,9 @@ bool
 UndoStack::command_or_children_require_graph_recalculation (
   const QUndoCommand &cmd) const
 {
-  static constexpr std::array<int, 5> command_ids_with_graph_pause = {
+  static constexpr std::array<int, 6> command_ids_with_graph_pause = {
     commands::AddEmptyTrackCommand::CommandId,
+    commands::DeleteTracksCommand::CommandId,
     commands::AddPluginCommand::CommandId,
     commands::MovePluginsCommand::CommandId,
     commands::RemovePluginsCommand::CommandId,

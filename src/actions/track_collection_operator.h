@@ -3,8 +3,12 @@
 
 #pragma once
 
+#include <ranges>
+#include <unordered_set>
+
 #include "structure/tracks/track_collection.h"
 #include "undo/undo_stack.h"
+#include "utils/traits.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -86,7 +90,58 @@ public:
     moveTracks (tracks, targetPosition, nullptr);
   }
 
+  /**
+   * @brief Deletes the given tracks (and their descendants if foldable).
+   *
+   * Pushes a single DeleteTracksCommand onto the undo stack.
+   * @throw std::invalid_argument if any track is non-deletable.
+   */
+  Q_INVOKABLE void
+  deleteTracks (const QList<zrythm::structure::tracks::Track *> &tracks);
+
 private:
+  /**
+   * @brief Expands track refs to include descendants of foldable tracks.
+   *
+   * When a folder track is in the range, all its descendants are added
+   * (deduplicating against the initial set). Preserves list order.
+   */
+  [[nodiscard]] std::vector<structure::tracks::TrackUuidReference>
+  expand_with_descendants (
+    RangeOf<structure::tracks::TrackUuidReference> auto &&track_refs) const
+  {
+    assert (collection_ != nullptr);
+
+    auto &registry = collection_->get_track_registry ();
+
+    auto seen =
+      track_refs
+      | std::views::transform ([] (const auto &ref) { return ref.id (); })
+      | std::ranges::to<std::unordered_set> ();
+
+    auto expanded =
+      track_refs
+      | std::ranges::to<std::vector<structure::tracks::TrackUuidReference>> ();
+
+    for (const auto &ref : track_refs)
+      {
+        if (collection_->is_track_foldable (ref.id ()))
+          {
+            for (
+              const auto &desc_id : collection_->get_all_descendants (ref.id ()))
+              {
+                if (!seen.contains (desc_id))
+                  {
+                    expanded.emplace_back (desc_id, registry);
+                    seen.insert (desc_id);
+                  }
+              }
+          }
+      }
+
+    return expanded;
+  }
+
   structure::tracks::TrackCollection * collection_{};
   undo::UndoStack *                    undo_stack_{};
 };

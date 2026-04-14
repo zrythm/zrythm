@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <unordered_set>
+#include <stdexcept>
 
 #include "actions/track_collection_operator.h"
+#include "commands/delete_tracks_command.h"
 #include "commands/move_tracks_command.h"
+
+#include <fmt/format.h>
 
 namespace zrythm::actions
 {
@@ -19,10 +22,10 @@ TrackCollectionOperator::moveTracks (
     return;
 
   // Convert Track* list to TrackUuidReference vector
+  auto &registry = collection_->get_track_registry ();
   std::vector<structure::tracks::TrackUuidReference> track_refs;
   track_refs.reserve (tracks.size ());
 
-  auto &registry = collection_->get_track_registry ();
   for (auto * track : tracks)
     {
       if (track != nullptr)
@@ -35,30 +38,7 @@ TrackCollectionOperator::moveTracks (
     return;
 
   // Expand the move list to include all descendants of any foldable tracks.
-  // When a folder is moved, its children must move with it.
-  auto seen =
-    track_refs
-    | std::views::transform ([&] (const auto &ref) { return ref.id (); })
-    | std::ranges::to<std::unordered_set> ();
-
-  // Collect descendants for each foldable track, preserving list order
-  auto expanded_refs = track_refs;
-  for (const auto &ref : track_refs)
-    {
-      if (collection_->is_track_foldable (ref.id ()))
-        {
-          for (
-            const auto &desc_id : collection_->get_all_descendants (ref.id ()))
-            {
-              if (!seen.contains (desc_id))
-                {
-                  expanded_refs.emplace_back (desc_id, registry);
-                  seen.insert (desc_id);
-                }
-            }
-        }
-    }
-  track_refs = std::move (expanded_refs);
+  track_refs = expand_with_descendants (track_refs);
 
   // Determine folder target.
   // targetPosition is a pre-removal index (the raw drop target from QML),
@@ -80,6 +60,41 @@ TrackCollectionOperator::moveTracks (
 
   auto cmd = std::make_unique<commands::MoveTracksCommand> (
     *collection_, std::move (track_refs), targetPosition, target_folder_uuid);
+  undo_stack_->push (cmd.release ());
+}
+
+void
+TrackCollectionOperator::deleteTracks (
+  const QList<structure::tracks::Track *> &tracks)
+{
+  if ((collection_ == nullptr) || (undo_stack_ == nullptr) || tracks.isEmpty ())
+    return;
+
+  auto &registry = collection_->get_track_registry ();
+  std::vector<structure::tracks::TrackUuidReference> track_refs;
+  track_refs.reserve (tracks.size ());
+
+  for (const auto * track : tracks)
+    {
+      if (track == nullptr)
+        continue;
+      if (!structure::tracks::Track::type_is_deletable (track->type ()))
+        {
+          throw std::invalid_argument (
+            fmt::format (
+              "Cannot delete non-deletable track: {}",
+              track->name ().toStdString ()));
+        }
+      track_refs.emplace_back (track->get_uuid (), registry);
+    }
+
+  if (track_refs.empty ())
+    return;
+
+  auto expanded_refs = expand_with_descendants (track_refs);
+
+  auto cmd = std::make_unique<commands::DeleteTracksCommand> (
+    *collection_, std::move (expanded_refs));
   undo_stack_->push (cmd.release ());
 }
 

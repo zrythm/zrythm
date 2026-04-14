@@ -43,6 +43,7 @@ ListView {
     listViewDropTargetIndex: root.dropTargetIndex
     listViewIsLast: index === ListView.view.count - 1
     listViewPastEndIndex: root.pinned ? ListView.view.count : ListView.view.count + root.tracklist.pinnedTracksCutoff
+    trackCollectionOperator: root.trackCollectionOperator
     trackIndex: root.pinned ? index : index + root.tracklist.pinnedTracksCutoff
     trackSelectionModel: root.trackSelectionModel
     tracklist: root.tracklist
