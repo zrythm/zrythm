@@ -33,7 +33,7 @@ Loader {
   x: objectX
 
   Binding on width {
-    value: root.arrangerObject.bounds ? root.arrangerObject.bounds.length.ticks * root.pxPerTick : 0
+    value: root.arrangerObject.bounds ? Math.max(root.arrangerObject.bounds.length.ticks * root.pxPerTick, 2) : 0
     when: !root.useCustomWidth && root.arrangerObject.bounds
   }
 

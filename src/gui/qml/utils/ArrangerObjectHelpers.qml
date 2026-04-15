@@ -52,18 +52,9 @@ QtObject {
     return obj && (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion || obj.type === ArrangerObject.ChordRegion || obj.type === ArrangerObject.AutomationRegion);
   }
 
-  function setObjectEndFromTimelineTicks(obj: ArrangerObject, timelineTicks: real) {
-    const bounds = getObjectBounds(obj);
-    if (!bounds) {
-      return;
-    }
-
-    if (obj.parentObject) {
-      const localTicks = timelineTicks - obj.parentObject.position.ticks;
-      bounds.length.ticks = localTicks - obj.position.ticks;
-    } else {
-      bounds.length.ticks = timelineTicks - obj.position.ticks;
-    }
+  function objectLengthFromTimelineEndTicks(obj: ArrangerObject, timelineTicks: real): real {
+    const parentOffset = obj.parentObject?.position.ticks ?? 0;
+    return timelineTicks - parentOffset - obj.position.ticks;
   }
 
   /**
@@ -79,7 +70,7 @@ QtObject {
    * @return Array of processed items for all visible loop segments
    */
   function processLoopedItems(loopRange: ArrangerObjectLoopRange, regionLengthTicks: real, contentWidth: real, items: var, processCallback: var): var {
-    const results = []
+    const results = [];
 
     // Looped region: calculate notes for each loop segment
     const loopStartTicks = loopRange.loopStartPosition.ticks;
@@ -131,5 +122,13 @@ QtObject {
     }
 
     return results;
+  }
+
+  function setObjectEndFromTimelineTicks(obj: ArrangerObject, timelineTicks: real) {
+    const bounds = getObjectBounds(obj);
+    if (!bounds) {
+      return;
+    }
+    bounds.length.ticks = objectLengthFromTimelineEndTicks(obj, timelineTicks);
   }
 }

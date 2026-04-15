@@ -762,7 +762,10 @@ Item {
               // Apply snapping to resize endpoint
               const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
               if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
-                ArrangerObjectHelpers.setObjectEndFromTimelineTicks(root.getObjectAtCurrentIndex(), endTicks);
+                const obj = root.getObjectAtCurrentIndex();
+                if (ArrangerObjectHelpers.objectLengthFromTimelineEndTicks(obj, endTicks) > 0) {
+                  ArrangerObjectHelpers.setObjectEndFromTimelineTicks(obj, endTicks);
+                }
               } else {
                 // Calculate delta in ticks based on the resize type and direction
                 let resizeType = ArrangerObjectSelectionOperator.Bounds;
