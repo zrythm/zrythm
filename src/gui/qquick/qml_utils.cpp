@@ -125,12 +125,13 @@ QmlUtils::adjustOpacity (const QColor &color, float newOpacity)
 }
 
 QColor
-QmlUtils::getTrackBackgroundTinted (
+QmlUtils::getTrackBackground (
   const QColor &baseColor,
   const QColor &trackColor,
   const QColor &windowTextColor,
   bool          isSelected,
-  bool          isHovered)
+  bool          isHovered,
+  bool          tint)
 {
   auto blend = [] (const QColor &base, const QColor &overlay, float amount) {
     const float inv = 1.0f - amount;
@@ -140,7 +141,7 @@ QmlUtils::getTrackBackgroundTinted (
       base.blueF () * inv + overlay.blueF () * amount);
   };
 
-  QColor c = blend (baseColor, trackColor, 0.12f);
+  QColor c = tint ? blend (baseColor, trackColor, 0.12f) : baseColor;
   if (isSelected)
     c = blend (c, windowTextColor, 0.20f);
   if (isHovered)

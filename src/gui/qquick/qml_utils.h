@@ -31,12 +31,31 @@ public:
   Q_INVOKABLE static QColor
   adjustOpacity (const QColor &color, float newOpacity);
 
-  Q_INVOKABLE static QColor getTrackBackgroundTinted (
+  /**
+   * @brief Computes a track background color with optional track-color tinting.
+   *
+   * When @p tint is true, blends 12% of @p trackColor into @p baseColor as a
+   * base tint, then layers windowText overlays for selection (20%) and hover
+   * (5%).
+   *
+   * When @p tint is false, skips the track color tint and applies only the
+   * selection and hover overlays directly to @p baseColor.
+   *
+   * @param baseColor The base background color (typically palette.window).
+   * @param trackColor The track's assigned color (used only when tint is true).
+   * @param windowTextColor The window text color (used for selection/hover
+   *   overlays).
+   * @param isSelected Whether the track is currently selected.
+   * @param isHovered Whether the track is currently hovered.
+   * @param tint Whether to apply the 12% track-color base tint.
+   */
+  Q_INVOKABLE static QColor getTrackBackground (
     const QColor &baseColor,
     const QColor &trackColor,
     const QColor &windowTextColor,
     bool          isSelected,
-    bool          isHovered);
+    bool          isHovered,
+    bool          tint = true);
 
   Q_INVOKABLE static QVector<float>
   getAutomationRegionValues (QObject * automationRegion, int pixelWidth);
