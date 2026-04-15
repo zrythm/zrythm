@@ -117,7 +117,7 @@ Arranger {
       const track = getTrackForObject(obj);
       if (track && track.lanes && track.lanes.lanesVisible) {
         // Use lane height if lanes are visible
-        const lane = getTrackLaneForObject(obj);
+        const lane = root.tracklist.getTrackLaneForObject(obj);
         if (lane) {
           return lane.height;
         }
@@ -161,7 +161,7 @@ Arranger {
       relativeY = 0;
     } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
       if (track.lanes && track.lanes.lanesVisible) {
-        const lane = getTrackLaneForObject(obj, track);
+        const lane = root.tracklist.getTrackLaneForObject(obj);
         const trackItem = getTrackItem(track);
         const trackLaneItem = getTrackLaneItem(lane, trackItem);
         if (trackLaneItem) {
@@ -223,20 +223,6 @@ Arranger {
     const laneItem = laneLoader.item.itemAt(0, laneListY);
     console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
     return laneItem?.trackLane ?? null;
-  }
-
-  function getTrackLaneForObject(obj: ArrangerObject, track: Track): TrackLane {
-    // Find the lane that contains this object
-    if (!track) {
-      track = getTrackForObject(obj);
-    }
-    if (track && track.lanes) {
-      for (let i = 0; i < track.lanes.rowCount(); ++i) {
-        const lane = track.lanes.data(track.lanes.index(i, 0), TrackLaneList.TrackLanePtrRole);
-        return lane;
-      }
-    }
-    return null;
   }
 
   function getTrackLaneItem(trackLane: TrackLane, trackItem: TrackDelegateItem): Item {
