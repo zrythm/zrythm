@@ -34,8 +34,8 @@ protected:
 
   void TearDown () override { delete scheduler_; }
 
-  // On Mac there are some issues with timing...
-#ifdef Q_OS_MACOS
+  // Mac and Windows CI runners have timing issues with tight delays.
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   static constexpr auto kDelay = 500ms;
 #else
   static constexpr auto kDelay = 50ms;
