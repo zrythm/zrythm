@@ -56,6 +56,10 @@ Item {
   property bool altHeld
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
+  // The unified model index of the object clicked with Ctrl held.
+  // Saved at press time so the deferred deselect on release targets the correct object
+  // even if currentIndex were to change between press and release.
+  property var clickedUnifiedIndexOnPress: null
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
   property bool ctrlHeld
@@ -84,6 +88,9 @@ Item {
   required property Transport transport
   required property UndoStack undoStack
   required property UnifiedProxyModel unifiedObjectsModel
+  // Whether the clicked object was already selected at press time (Ctrl+click only).
+  // Used to defer deselection to mouse release so that Ctrl+drag always has a valid target.
+  property bool wasClickedObjectSelectedOnPress: false
 
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
@@ -132,6 +139,19 @@ Item {
     return sourceIndex.model.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
   }
 
+  // Performs the deferred Ctrl+click toggle on mouse release.
+  // Only StartingMovingCopy needs this because Ctrl+click means "toggle
+  // selection" when no drag happens, whereas Alt+click and plain click do not
+  // toggle — they always select.
+  function handleDeferredCtrlClickToggle() {
+    if (root.wasClickedObjectSelectedOnPress) {
+      const idx = root.clickedUnifiedIndexOnPress;
+      if (idx && idx.valid) {
+        root.arrangerSelectionModel.select(idx, ItemSelectionModel.Deselect);
+      }
+    }
+  }
+
   function handleObjectHover(hovered: bool, arrangerObject: ArrangerObjectBaseView) {
     if (root.hoveredObject == arrangerObject && !hovered) {
       root.hoveredObject = null;
@@ -144,17 +164,22 @@ Item {
     const unifiedIndex = root.unifiedObjectsModel.mapFromSource(sourceModel.index(index, 0));
 
     if (mouse.modifiers & Qt.ControlModifier) {
-      root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Toggle);
-    } else if (mouse.modifiers & Qt.ShiftModifier)
-      if (arrangerSelectionModel.currentIndex.valid) {
-        // Range selection (TODO)
-        // const range = ItemSelectionRange(arrangerSelectionModel.currentIndex, unifiedIndex);
-        // arrangerSelectionModel.select(range, ItemSelectionModel.SelectCurrent);
-        console.log("Range selection unimplemented");
+      // Defer toggle to release — on press, just ensure the object is
+      // selected so that a potential Ctrl+drag always has a valid target.
+      // Save whether it was previously selected so onReleased can toggle
+      // it off if this turns out to be a click, not a drag.
+      root.wasClickedObjectSelectedOnPress = root.arrangerSelectionModel.isSelected(unifiedIndex);
+      root.clickedUnifiedIndexOnPress = unifiedIndex;
+      if (!root.wasClickedObjectSelectedOnPress) {
+        root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
       } else {
-        arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
+        root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.NoUpdate);
       }
-    else {
+    } else if (mouse.modifiers & Qt.ShiftModifier) {
+      // Shift+click: add to selection (range selection not yet implemented)
+      root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Select);
+      root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.NoUpdate);
+    } else {
       if (!root.arrangerSelectionModel.isSelected(unifiedIndex)) {
         root.arrangerSelectionModel.clear();
       }
@@ -504,19 +529,18 @@ Item {
 
       // Vertical grid lines
       ArrangerGridCanvas {
-        height: arrangerContent.height
-        width: root.scrollViewWidth
-        x: root.scrollX
-
         barLineOpacity: root.ruler.barLineOpacity
         beatLineOpacity: root.ruler.beatLineOpacity
         detailMeasurePxThreshold: root.ruler.detailMeasurePxThreshold
+        height: arrangerContent.height
         lineColor: root.palette.button
         pxPerTick: root.ruler.pxPerTick
         scrollX: root.scrollX
         scrollXPlusWidth: root.scrollXPlusWidth
         sixteenthLineOpacity: root.ruler.sixteenthLineOpacity
         tempoMap: root.tempoMap
+        width: root.scrollViewWidth
+        x: root.scrollX
       }
 
       Item {
@@ -661,7 +685,7 @@ Item {
               }
             } else if (action === Arranger.StartingPanning)
               action = Arranger.Panning;
-            else if (action === Arranger.StartingMoving) {
+            else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
               if (root.altHeld) {
                 action = Arranger.MovingLink;
               } else if (root.ctrlHeld) {
@@ -799,7 +823,13 @@ Item {
                   }
                   root.hoveredObject.isResizingR = false;
                 } else {
-                  action = Arranger.StartingMoving;
+                  if (mouse.modifiers & Qt.ControlModifier) {
+                    action = Arranger.StartingMovingCopy;
+                  } else if (mouse.modifiers & Qt.AltModifier) {
+                    action = Arranger.StartingMovingLink;
+                  } else {
+                    action = Arranger.StartingMoving;
+                  }
                 }
               } else {
                 action = Arranger.StartingSelection;
@@ -809,16 +839,30 @@ Item {
           root.updateCursor();
         }
         onReleased: {
-          if (action != Arranger.None && action != Arranger.StartingSelection) {
+          if (action === Arranger.StartingMovingCopy) {
+            // Ctrl+click without drag — perform the deferred toggle.
+            root.handleDeferredCtrlClickToggle();
+          } else if ([Arranger.StartingMoving, Arranger.StartingMovingLink].includes(action)) {
+            // Alt+click or plain click without drag — selection was already set
+            // in handleObjectSelection, nothing more to do.
+          } else if (action != Arranger.None && action != Arranger.StartingSelection) {
             if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
               if (root.tempQmlArrangerObjects.length > 0) {
                 const firstTempObj = root.tempQmlArrangerObjects[0];
                 // Calculate the final snapped position difference
                 const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
-                root.undoStack.beginMacro(qsTr("Copy Objects"));
                 if (action === Arranger.MovingCopy) {
+                  root.undoStack.beginMacro(qsTr("Copy Objects"));
                   // This creates new object clones at the original positions, and the following move operations move the original objects
                   root.selectionOperator.cloneObjects();
+                } else if (action === Arranger.MovingLink) {
+                  // TODO: Link operation is not yet implemented on the C++ side
+                  // (ArrangerObjectSelectionOperator has no linkObjects() method).
+                  // For now this performs a plain move. Replace with a proper link
+                  // operation once the C++ API is available.
+                  root.undoStack.beginMacro(qsTr("Move Objects"));
+                } else {
+                  root.undoStack.beginMacro(qsTr("Move Objects"));
                 }
                 moveSelectionsX(finalTicksDiff);
                 moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
@@ -836,6 +880,8 @@ Item {
           }
           action = Arranger.None;
           root.clearTempQmlArrangerObjects();
+          root.wasClickedObjectSelectedOnPress = false;
+          root.clickedUnifiedIndexOnPress = null;
           root.updateCursor();
         }
 

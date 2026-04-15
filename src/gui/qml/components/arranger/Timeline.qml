@@ -354,7 +354,7 @@ Arranger {
       model: overlay.cachedRanges
 
       delegate: Rectangle {
-        required property CachedTickRange modelData
+        required property cachedTickRange modelData
         readonly property real tickWidth: (modelData.endTick - modelData.startTick) * overlay.pxPerTick
         readonly property real tickX: modelData.startTick * overlay.pxPerTick
 
@@ -387,7 +387,7 @@ Arranger {
       model: overlay.activityEntries
 
       delegate: Rectangle {
-        required property PlaybackCacheActivityEntry modelData
+        required property playbackCacheActivityEntry modelData
         readonly property real tickWidth: modelData.isFullContent ? parent.width : (modelData.endTick - modelData.startTick) * overlay.pxPerTick
         readonly property real tickX: modelData.isFullContent ? 0 : modelData.startTick * overlay.pxPerTick
 

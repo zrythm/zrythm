@@ -25,7 +25,7 @@ struct PlaybackCacheActivityEntry
   Q_PROPERTY (double startTick MEMBER startTick)
   Q_PROPERTY (double endTick MEMBER endTick)
   Q_PROPERTY (bool isFullContent MEMBER isFullContent)
-  QML_ELEMENT
+  QML_VALUE_TYPE (playbackCacheActivityEntry)
   QML_UNCREATABLE ("")
 
 public:
@@ -44,7 +44,7 @@ struct CachedTickRange
   Q_GADGET
   Q_PROPERTY (double startTick MEMBER startTick)
   Q_PROPERTY (double endTick MEMBER endTick)
-  QML_ELEMENT
+  QML_VALUE_TYPE (cachedTickRange)
   QML_UNCREATABLE ("")
 
 public:
