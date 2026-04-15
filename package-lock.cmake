@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
-# SPDX-License-Identifier: CC0-1.0
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
 #
 # CPM Package Lock
 # This file should be committed to version control
@@ -19,21 +19,14 @@ CPMDeclarePackage(nlohmann_json
     "JSON_ImplicitConversions ON"
     "JSON_SystemInclude ON"
 )
-# clap
-CPMDeclarePackage(clap
-  NAME clap
-  VERSION 1.2.6
-  GIT_TAG 69a69252fdd6ac1d06e246d9a04c0a89d9607a17
-  GITHUB_REPOSITORY free-audio/clap
-  SYSTEM YES
-  EXCLUDE_FROM_ALL YES
-)
-# clap-helpers
-CPMDeclarePackage(clap-helpers
-  NAME clap-helpers
-  VERSION 0.2
-  GIT_TAG 3625679b5b32c2032df4134cae68cae0faa2ec36
-  GITHUB_REPOSITORY free-audio/clap-helpers
+# clap and clap-helpers are provided transitively by clap-juce-extensions below
+# CPMDeclarePackage(clap ...)
+# CPMDeclarePackage(clap-helpers ...)
+CPMDeclarePackage(clap-juce-extensions
+  NAME clap-juce-extensions
+  VERSION 0.1
+  GIT_TAG e1f67893cc409a40c1154fa2e78c97046da24ce0
+  GITHUB_REPOSITORY free-audio/clap-juce-extensions
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
 )

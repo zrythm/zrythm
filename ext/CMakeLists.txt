@@ -17,7 +17,9 @@ endif()
 add_library(juce_lib STATIC)
 
 # some versions of cmake require at least 1 source file for static libs...
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp" "// Empty file\n")
+file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp"
+  CONTENT "// Empty file\n"
+)
 target_sources(juce_lib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/empty.cpp")
 
 CPMGetPackage(juce)

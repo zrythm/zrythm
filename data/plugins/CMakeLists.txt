@@ -9,10 +9,13 @@ endif()
 # These are pure JUCE plugins without Qt meta-objects
 set(CMAKE_AUTOMOC OFF)
 
-# Set VST3 copy directory for all plugins (used when COPY_PLUGIN_AFTER_BUILD is TRUE)
+# Set VST3 copy directory for JUCE's COPY_PLUGIN_AFTER_BUILD
 set_directory_properties(PROPERTIES
   JUCE_VST3_COPY_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3"
 )
+
+# CLAP plugin output directory (set via JUCE target properties by clap_juce_extensions)
+set(CLAP_OUTPUT_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/clap")
 
 # Plugin definitions: "Name|Description|Type|Code"
 # See JUCE VST3_CATEGORIES property for available types
@@ -58,10 +61,12 @@ foreach(plugin_info ${plugins})
     set(is_synth TRUE)
     set(needs_midi_input TRUE)
     set(FAUST_POLYPHONY_ARGS "--midi")
+    set(clap_feature "instrument")
   else()
     set(is_synth FALSE)
     set(needs_midi_input FALSE)
     set(FAUST_POLYPHONY_ARGS)
+    set(clap_feature "audio-effect")
   endif()
 
   # Configure DSP file from template
@@ -145,11 +150,54 @@ foreach(plugin_info ${plugins})
         )
       endif()
 
-      # Add to test dependencies (use build directory path for tests)
+      # Add VST3 to test dependencies
       list(APPEND bundled_plugins_for_tests
         "${pl_underscored_name}|vst3|${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3/${pl_name}.vst3"
       )
       list(APPEND bundled_plugins_for_tests_tgts ${pl_underscored_name}_plugin_VST3)
+
+      # ============================================================
+      # CLAP plugin via clap-juce-extensions
+      # ============================================================
+      if(TARGET clap_juce_extensions)
+        # Disable auto-copy to ~/.clap/ - we copy to our build dir instead
+        set_target_properties(${pl_underscored_name}_plugin PROPERTIES
+          JUCE_COPY_PLUGIN_AFTER_BUILD FALSE
+        )
+        clap_juce_extensions_plugin(
+          TARGET ${pl_underscored_name}_plugin
+          CLAP_ID "org.zrythm.${pl_underscored_name}"
+          CLAP_FEATURES ${clap_feature}
+          CLAP_MISBEHAVIOUR_HANDLER_LEVEL "Terminate"
+          CLAP_CHECKING_LEVEL "Maximal"
+          CLAP_PROCESS_EVENTS_RESOLUTION_SAMPLES 0
+          CLAP_ALWAYS_SPLIT_BLOCK 0
+          CLAP_USE_JUCE_PARAMETER_RANGES OFF
+        )
+        set_target_properties(${pl_underscored_name}_plugin PROPERTIES
+          JUCE_COPY_PLUGIN_AFTER_BUILD TRUE
+        )
+
+        # Suppress jassert from upstream clap-juce-wrapper FIXMEs
+        # (e.g., unhandled bypass/deactivated states)
+        target_compile_definitions(${pl_underscored_name}_plugin_CLAP
+          PRIVATE JUCE_DISABLE_ASSERTIONS=1
+        )
+
+        # Copy CLAP plugin to our build directory for tests
+        add_custom_command(TARGET ${pl_underscored_name}_plugin_CLAP POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E make_directory "${CLAP_OUTPUT_DIR}"
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "$<TARGET_FILE:${pl_underscored_name}_plugin_CLAP>"
+            "${CLAP_OUTPUT_DIR}/"
+        )
+
+        # Add CLAP to test dependencies
+        list(APPEND bundled_plugins_for_tests
+          "${pl_underscored_name}|clap|${CLAP_OUTPUT_DIR}/${pl_name}.clap"
+        )
+        list(APPEND bundled_plugins_for_tests_tgts ${pl_underscored_name}_plugin_CLAP)
+      endif()
     else()
       message(WARNING "${pl_generated_cpp} not found. Run `cmake --build . --target gen-faust-plugins` to generate it")
     endif()
@@ -175,3 +223,4 @@ install(
 set(BUNDLED_PLUGINS_FOR_TESTS "${bundled_plugins_for_tests}" PARENT_SCOPE)
 set(BUNDLED_PLUGINS_FOR_TESTS_TGTS ${bundled_plugins_for_tests_tgts} PARENT_SCOPE)
 set(BUNDLED_VST3_SEARCH_PATHS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/vst3" PARENT_SCOPE)
+set(BUNDLED_CLAP_SEARCH_PATHS "${CLAP_OUTPUT_DIR}" PARENT_SCOPE)
