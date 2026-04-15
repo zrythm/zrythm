@@ -186,3 +186,18 @@ TEST (DspTest, MakeMono)
       EXPECT_FLOAT_EQ (l[i], r[i]);
     }
 }
+
+TEST (DspTest, NormalizeSilentBuffer)
+{
+  float src[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  float dest[4];
+  normalize (dest, src, 4);
+
+  // Result should be all zeros (not inf/NaN)
+  for (int i = 0; i < 4; i++)
+    {
+      EXPECT_FLOAT_EQ (dest[i], 0.0f);
+      EXPECT_FALSE (std::isnan (dest[i]));
+      EXPECT_FALSE (std::isinf (dest[i]));
+    }
+}

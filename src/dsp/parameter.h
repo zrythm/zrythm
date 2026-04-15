@@ -109,58 +109,8 @@ public:
     return std::clamp (val, minf_, maxf_);
   }
 
-  Q_INVOKABLE float convertFrom0To1 (float normalized_val) const
-  {
-    if (type_ == Type::Logarithmic)
-      {
-        const auto minf =
-          utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-        const auto maxf =
-          utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
-        normalized_val =
-          utils::math::floats_equal (normalized_val, 0.f) ? 1e-20f : normalized_val;
-
-        /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-        return minf * std::pow (maxf / minf, normalized_val);
-      }
-    if (type_ == Type::Toggle)
-      {
-        return normalized_val >= 0.001f ? 1.f : 0.f;
-      }
-    if (type_ == Type::GainAmplitude)
-      {
-        return utils::math::get_amp_val_from_fader (normalized_val);
-      }
-
-    return minf_ + (normalized_val * (maxf_ - minf_));
-  }
-
-  Q_INVOKABLE float convertTo0To1 (float real_val) const
-  {
-
-    if (type_ == Type::Logarithmic)
-      {
-        const auto minf =
-          utils::math::floats_equal (minf_, 0.f) ? 1e-20f : minf_;
-        const auto maxf =
-          utils::math::floats_equal (maxf_, 0.f) ? 1e-20f : maxf_;
-        real_val = utils::math::floats_equal (real_val, 0.f) ? 1e-20f : real_val;
-
-        /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-        return std::log (real_val / minf) / std::log (maxf / minf);
-      }
-    if (type_ == Type::Toggle)
-      {
-        return real_val;
-      }
-    if (type_ == Type::GainAmplitude)
-      {
-        return utils::math::get_fader_val_from_amp (real_val);
-      }
-
-    const auto sizef = maxf_ - minf_;
-    return (sizef - (maxf_ - real_val)) / sizef;
-  }
+  Q_INVOKABLE float convertFrom0To1 (float normalized_val) const;
+  Q_INVOKABLE float convertTo0To1 (float real_val) const;
 
   bool is_toggled (float normalized_val) const
   {

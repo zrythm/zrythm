@@ -250,7 +250,8 @@ normalize (float * dest, const float * src, size_t size, bool optimize = true)
 {
   copy (dest, src, size, optimize);
   const float abs_peak = abs_max (dest, size, optimize);
-  mul_k2 (dest, 1.f / abs_peak, size, optimize);
+  if (abs_peak > 0.f)
+    mul_k2 (dest, 1.f / abs_peak, size, optimize);
 }
 
 /**

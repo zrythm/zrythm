@@ -447,4 +447,16 @@ TEST_F (ProcessorParameterTest, Formatting)
     std::string::npos);
   EXPECT_NE (param_str.find ("label_=Cutoff"), std::string::npos);
 }
+
+// Test that logarithmic convertTo0To1 returns a finite value when real_val is
+// zero (log(0) would produce -inf without a guard).
+TEST_F (ProcessorParameterTest, LogarithmicConvertToNormalizedZeroValue)
+{
+  ParameterRange log_range (ParameterRange::Type::Logarithmic, 20.f, 20000.f);
+  const float    result = log_range.convertTo0To1 (0.f);
+  EXPECT_TRUE (std::isfinite (result))
+    << "convertTo0To1(0) returned non-finite value: " << result;
+  EXPECT_GE (result, 0.f);
+  EXPECT_LE (result, 1.f);
+}
 } // namespace zrythm::dsp

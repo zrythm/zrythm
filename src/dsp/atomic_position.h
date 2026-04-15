@@ -28,7 +28,12 @@ static_assert (
   "64-bit atomics not lock-free");
 
 /**
- * @brief Stores a double and a bool in an atomic uint64_t.
+ * @brief Stores a double and a bool in a single atomic uint64_t.
+ *
+ * The bool is stored in bit 0, and the double's LSB is cleared to make room.
+ * This causes up to 1 ULP of precision loss on the stored double, which is
+ * acceptable for DAW position values (far below sample-level precision).
+ * The error does not accumulate across repeated store/load cycles.
  */
 class AtomicDoubleWithBool
 {
