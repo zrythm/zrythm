@@ -184,13 +184,25 @@ foreach(plugin_info ${plugins})
           PRIVATE JUCE_DISABLE_ASSERTIONS=1
         )
 
-        # Copy CLAP plugin to our build directory for tests
-        add_custom_command(TARGET ${pl_underscored_name}_plugin_CLAP POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E make_directory "${CLAP_OUTPUT_DIR}"
-          COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "$<TARGET_FILE:${pl_underscored_name}_plugin_CLAP>"
-            "${CLAP_OUTPUT_DIR}/"
-        )
+        # Copy CLAP plugin to our build directory for tests.
+        # On macOS, CLAP plugins are directory bundles (.clap/), so we need
+        # copy_directory with TARGET_BUNDLE_DIR. On other platforms, a simple
+        # copy_if_different with TARGET_FILE suffices.
+        if(APPLE)
+          add_custom_command(TARGET ${pl_underscored_name}_plugin_CLAP POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CLAP_OUTPUT_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "$<TARGET_BUNDLE_DIR:${pl_underscored_name}_plugin_CLAP>"
+              "${CLAP_OUTPUT_DIR}/${pl_name}.clap"
+          )
+        else()
+          add_custom_command(TARGET ${pl_underscored_name}_plugin_CLAP POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CLAP_OUTPUT_DIR}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+              "$<TARGET_FILE:${pl_underscored_name}_plugin_CLAP>"
+              "${CLAP_OUTPUT_DIR}/"
+          )
+        endif()
 
         # Add CLAP to test dependencies
         list(APPEND bundled_plugins_for_tests
