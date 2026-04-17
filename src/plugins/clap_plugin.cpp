@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -186,10 +186,17 @@ private:
   /* param update queues */
   std::unordered_map<clap_id, std::unique_ptr<ClapPluginParam>> params_;
 
+  // Required by ReducingParamQueue::setOrUpdate()
   struct AppToEngineParamQueueValue
   {
     void * cookie;
     double value;
+
+    void update (const AppToEngineParamQueueValue &v) noexcept
+    {
+      cookie = v.cookie;
+      value = v.value;
+    }
   };
 
   struct EngineToAppParamQueueValue
@@ -224,9 +231,6 @@ private:
 
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
-
-  // temporary state data for writing/reading plugin states
-  QByteArray stateData_;
 
   bool scheduleRestart_ = false;
   bool scheduleDeactivate_ = false;
@@ -270,7 +274,8 @@ ClapPlugin::ClapPlugin (
         std::make_unique<ClapPluginImpl> (
           *this,
           std::move (audio_thread_checker),
-          std::move (host_window_factory)))
+          std::move (host_window_factory))),
+      clap_param_flush_timer_ (utils::make_qobject_unique<QTimer> (this))
 {
   is_main_thread = true;
 
@@ -284,6 +289,11 @@ ClapPlugin::ClapPlugin (
     this, &Plugin::uiVisibleChanged, this,
     &ClapPlugin::on_ui_visibility_changed);
 
+  // Connect param flush timer once; started when param map is built
+  connect (clap_param_flush_timer_.get (), &QTimer::timeout, this, [this] () {
+    flush_clap_params_to_zrythm ();
+  });
+
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
   bypass_id_ = bypass_ref.id ();
@@ -295,13 +305,16 @@ ClapPlugin::ClapPlugin (
 ClapPlugin::~ClapPlugin () = default;
 
 void
-ClapPlugin::on_configuration_changed ()
+ClapPlugin::on_configuration_changed (
+  PluginConfiguration * config,
+  bool                  generateNewPluginPortsAndParams)
 {
   z_debug ("configuration changed");
   auto success = load_plugin (
     std::get<std::filesystem::path> (
       configuration ()->descriptor ()->path_or_id_),
-    configuration ()->descriptor ()->unique_id_);
+    configuration ()->descriptor ()->unique_id_,
+    generateNewPluginPortsAndParams);
   Q_EMIT instantiationFinished (success, {});
 }
 
@@ -761,6 +774,11 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     static_cast<uint32_t> (pimpl_->audio_out_clap_bufs_.size ());
 
   pimpl_->evOut_.clear ();
+
+  // Sync Zrythm param values -> CLAP input queue
+  sync_params_to_clap ();
+  pimpl_->appToEngineValueQueue_.producerDone ();
+
   pimpl_->generatePluginInputEvents ();
 
   if (pimpl_->isPluginSleeping ())
@@ -843,6 +861,7 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
   pimpl_->evIn_.clear ();
 
   pimpl_->engineToAppValueQueue_.producerDone ();
+  sync_params_from_clap ();
 
   // TODO: send plugin to sleep if possible
 }
@@ -859,20 +878,8 @@ ClapPlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
 
       const std::filesystem::path state_file = *abs_state_dir / "clap_state.dat";
 
-      clap_ostream_t ostream{};
-      ostream.ctx = this;
-      ostream.write =
-        +[] (const clap_ostream * stream, const void * buffer, uint64_t size)
-        -> int64_t {
-        assert (is_main_thread);
-        auto * pl = static_cast<ClapPlugin *> (stream->ctx);
-        pl->pimpl_->stateData_.append (
-          static_cast<const char *> (buffer), static_cast<qsizetype> (size));
-        return static_cast<int64_t> (size);
-      };
-      pimpl_->stateData_.clear ();
       z_debug ("writing {}'s state to {}", get_name (), state_file);
-      pimpl_->plugin_->stateSave (&ostream);
+      auto state_data = save_state_to_byte_array ();
 
       // Create state directory if it doesn't exist
       std::filesystem::create_directories (*abs_state_dir);
@@ -884,7 +891,7 @@ ClapPlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
             fmt::format (
               "Failed to open state file for writing at {}", state_file));
         }
-      auto bytes_written = file.write (pimpl_->stateData_);
+      auto bytes_written = file.write (state_data);
       if (bytes_written == -1)
         {
           throw std::runtime_error (
@@ -911,22 +918,9 @@ ClapPlugin::load_state (std::optional<std::filesystem::path> abs_state_dir)
           return;
         }
 
-      pimpl_->stateData_ = utils::io::read_file_contents (state_file);
-
-      clap_istream_t istream{};
-      istream.ctx = this;
-      istream.read =
-        +[] (const clap_istream * stream, void * buffer, uint64_t size)
-        -> int64_t {
-        assert (is_main_thread);
-        auto * pl = static_cast<ClapPlugin *> (stream->ctx);
-        size = std::min<uint64_t> (size, pl->pimpl_->stateData_.size ());
-        std::memcpy (buffer, pl->pimpl_->stateData_.constData (), size);
-        pl->pimpl_->stateData_.remove (0, static_cast<qsizetype> (size));
-        return static_cast<int64_t> (size);
-      };
+      auto state_data = utils::io::read_file_contents (state_file);
       z_debug ("loading {}'s state from {}", get_name (), state_file);
-      pimpl_->plugin_->stateLoad (&istream);
+      apply_state_from_byte_array (state_data);
     }
 }
 
@@ -939,7 +933,8 @@ ClapPlugin::get_single_playback_latency () const
 bool
 ClapPlugin::load_plugin (
   const std::filesystem::path &path,
-  int64_t                      plugin_unique_id)
+  int64_t                      plugin_unique_id,
+  bool                         generate_new_ports)
 {
   assert (is_main_thread);
 
@@ -1029,11 +1024,26 @@ ClapPlugin::load_plugin (
       return false;
     }
 
-  create_ports_from_clap_plugin ();
+  if (generate_new_ports)
+    {
+      create_ports_from_clap_plugin ();
+    }
   scanParams ();
+  if (generate_new_ports)
+    {
+      create_parameters_from_clap_plugin ();
+    }
+  rebuild_clap_param_map ();
   // scanQuickControls ();
 
-  pluginLoadedChanged (true);
+  // Apply any pending state from JSON deserialization
+  if (state_to_apply_.has_value ())
+    {
+      apply_state_from_byte_array (*state_to_apply_);
+      state_to_apply_.reset ();
+    }
+
+  Q_EMIT pluginLoadedChanged (true);
 
   return true;
 }
@@ -1043,7 +1053,11 @@ ClapPlugin::unload_current_plugin ()
 {
   assert (is_main_thread);
 
-  pluginLoadedChanged (false);
+  clap_param_flush_timer_->stop ();
+  clap_to_zrythm_param_.clear ();
+  zrythm_to_clap_param_.clear ();
+
+  Q_EMIT pluginLoadedChanged (false);
 
   if (!pimpl_->library_.isLoaded ())
     return;
@@ -1352,6 +1366,152 @@ ClapPlugin::create_ports_from_clap_plugin ()
 }
 
 void
+ClapPlugin::create_parameters_from_clap_plugin ()
+{
+  assert (is_main_thread);
+
+  for (const auto &[clap_id, clap_param] : pimpl_->params_)
+    {
+      const auto &info = clap_param->info ();
+      const auto  unique_id = dsp::ProcessorParameter::UniqueId (
+        utils::Utf8String::from_utf8_encoded_string (std::to_string (clap_id)));
+
+      // Try to find an existing Zrythm param with the same unique ID
+      // (happens during deserialization with params already restored from JSON)
+      dsp::ProcessorParameter * zrythm_param = nullptr;
+      for (const auto &param_ref : get_parameters ())
+        {
+          auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
+          if (p->get_unique_id () == unique_id)
+            {
+              zrythm_param = p;
+              break;
+            }
+        }
+
+      if (zrythm_param == nullptr)
+        {
+          // No existing param — create a new one
+          dsp::ParameterRange range{
+            dsp::ParameterRange::Type::Linear,
+            static_cast<float> (info.min_value),
+            static_cast<float> (info.max_value), 0.f,
+            static_cast<float> (info.default_value)
+          };
+
+          if (info.flags & CLAP_PARAM_IS_STEPPED)
+            {
+              if (info.flags & CLAP_PARAM_IS_BYPASS)
+                {
+                  range =
+                    dsp::ParameterRange::make_toggle (info.default_value > 0.5);
+                }
+              else
+                {
+                  range = dsp::ParameterRange{
+                    dsp::ParameterRange::Type::Integer,
+                    static_cast<float> (info.min_value),
+                    static_cast<float> (info.max_value), 0.f,
+                    static_cast<float> (info.default_value)
+                  };
+                }
+            }
+
+          auto zrythm_param_ref =
+            dependencies ().param_registry_.create_object<dsp::ProcessorParameter> (
+              dependencies ().port_registry_, unique_id, range,
+              utils::Utf8String::from_utf8_encoded_string (info.name));
+          add_parameter (zrythm_param_ref);
+          zrythm_param =
+            zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
+          zrythm_param->set_automatable (
+            (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
+        }
+    }
+}
+
+void
+ClapPlugin::sync_params_to_clap ()
+{
+  for (const auto &[zrythm_param, clap_id_val] : zrythm_to_clap_param_)
+    {
+      const auto zrythm_value = zrythm_param->currentValue ();
+      auto       it = pimpl_->params_.find (clap_id_val);
+      if (it == pimpl_->params_.end ())
+        continue;
+
+      const auto * clap_param = it->second.get ();
+      const auto   range = zrythm_param->range ();
+      // Convert normalized [0,1] Zrythm value to CLAP real value
+      const double clap_value = range.convertFrom0To1 (zrythm_value);
+
+      pimpl_->appToEngineValueQueue_.setOrUpdate (
+        clap_id_val, { clap_param->info ().cookie, clap_value });
+    }
+}
+
+void
+ClapPlugin::sync_params_from_clap ()
+{
+  pimpl_->engineToAppValueQueue_.consume (
+    [this] (clap_id param_id, const auto &value) {
+      if (!value.has_value)
+        return;
+
+      auto it = clap_to_zrythm_param_.find (param_id);
+      if (it == clap_to_zrythm_param_.end ())
+        return;
+
+      auto *      zrythm_param = it->second;
+      const auto  range = zrythm_param->range ();
+      const float normalized =
+        range.convertTo0To1 (static_cast<float> (value.value));
+      clap_to_zrythm_queue_.push_back (
+        { .id = param_id, .normalized_value = normalized });
+    });
+}
+
+void
+ClapPlugin::flush_clap_params_to_zrythm ()
+{
+  ClapParamChange change;
+  while (clap_to_zrythm_queue_.pop_front (change))
+    {
+      auto it = clap_to_zrythm_param_.find (change.id);
+      if (it == clap_to_zrythm_param_.end ())
+        continue;
+
+      it->second->setBaseValue (change.normalized_value);
+    }
+}
+
+void
+ClapPlugin::rebuild_clap_param_map ()
+{
+  clap_to_zrythm_param_.clear ();
+  zrythm_to_clap_param_.clear ();
+  for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
+    {
+      const auto target_id = dsp::ProcessorParameter::UniqueId (
+        utils::Utf8String::from_utf8_encoded_string (
+          std::to_string (clap_id_val)));
+      for (const auto &param_ref : get_parameters ())
+        {
+          auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
+          if (p->get_unique_id () == target_id)
+            {
+              clap_to_zrythm_param_[clap_id_val] = p;
+              zrythm_to_clap_param_[p] = clap_id_val;
+              break;
+            }
+        }
+    }
+
+  // Start timer to flush CLAP -> Zrythm param changes on the message thread
+  clap_param_flush_timer_->start (std::chrono::milliseconds (20));
+}
+
+void
 ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
   units::sample_u32_t block_size)
 {
@@ -1581,6 +1741,75 @@ ClapPlugin::ClapPluginImpl::setPluginState (PluginState state)
     }
 
   state_ = state;
+}
+
+QByteArray
+ClapPlugin::save_state_to_byte_array () const
+{
+  if (!pimpl_ || !pimpl_->plugin_ || !pimpl_->plugin_->canUseState ())
+    return {};
+
+  QByteArray     state_data;
+  clap_ostream_t ostream{};
+  ostream.ctx = &state_data;
+  ostream.write =
+    +[] (const clap_ostream * stream, const void * buffer, uint64_t size)
+    -> int64_t {
+    auto * data = static_cast<QByteArray *> (stream->ctx);
+    data->append (
+      static_cast<const char *> (buffer), static_cast<qsizetype> (size));
+    return static_cast<int64_t> (size);
+  };
+  pimpl_->plugin_->stateSave (&ostream);
+  return state_data;
+}
+
+void
+ClapPlugin::apply_state_from_byte_array (const QByteArray &data)
+{
+  if (!pimpl_ || !pimpl_->plugin_ || !pimpl_->plugin_->canUseState ())
+    return;
+
+  QByteArray     mutable_data = data;
+  clap_istream_t istream{};
+  istream.ctx = &mutable_data;
+  istream.read =
+    +[] (const clap_istream * stream, void * buffer, uint64_t size) -> int64_t {
+    auto * d = static_cast<QByteArray *> (stream->ctx);
+    if (d->isEmpty ())
+      return 0;
+    size = std::min<uint64_t> (size, d->size ());
+    std::memcpy (buffer, d->constData (), size);
+    d->remove (0, static_cast<qsizetype> (size));
+    return static_cast<int64_t> (size);
+  };
+  pimpl_->plugin_->stateLoad (&istream);
+}
+
+void
+to_json (nlohmann::json &j, const ClapPlugin &p)
+{
+  to_json (j, static_cast<const Plugin &> (p));
+  auto state_data = p.save_state_to_byte_array ();
+  if (!state_data.isEmpty ())
+    {
+      j[ClapPlugin::kStateKey] = state_data.toBase64 ().toStdString ();
+    }
+}
+
+void
+from_json (const nlohmann::json &j, ClapPlugin &p)
+{
+  // State must be deserialized first, because the Plugin deserialization
+  // may cause an instantiation
+  if (j.contains (ClapPlugin::kStateKey))
+    {
+      auto state_str = j[ClapPlugin::kStateKey].get<std::string> ();
+      p.state_to_apply_ =
+        QByteArray::fromBase64 (QByteArray::fromStdString (state_str));
+    }
+
+  from_json (j, static_cast<Plugin &> (p));
 }
 
 } // namespace zrythm::plugins

@@ -8,6 +8,8 @@
  * These tests verify the full save -> load -> save cycle works correctly.
  */
 
+#include <optional>
+
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
 #include "controllers/project_loader.h"
@@ -15,20 +17,15 @@
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
-#include "structure/project/project.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
-#include "undo/undo_stack.h"
-#include "utils/app_settings.h"
-#include "utils/file_path_list.h"
-#include "utils/io_utils.h"
 
 #include <QSignalSpy>
 
-#include "helpers/mock_hardware_audio_interface_threaded.h"
-#include "helpers/mock_settings_backend.h"
+#include "helpers/bundled_plugin_finder.h"
+#include "helpers/project_fixture.h"
+#include "helpers/project_json_comparators.h"
 #include "helpers/qt_helpers.h"
-#include "helpers/scoped_juce_qapplication.h"
 
 #include <gtest/gtest.h>
 
@@ -37,7 +34,7 @@ namespace zrythm::controllers
 
 /**
  * @brief Owning wrapper that holds a project together with its UI state and
- * undo stack, ensuring correct destruction order (undo stack → ui state →
+ * undo stack, ensuring correct destruction order (undo stack -> ui state ->
  * project).
  */
 struct ProjectBundle
@@ -54,121 +51,26 @@ struct ProjectBundle
   }
 };
 
-class ProjectSerializationRoundtripTest
-    : public ::testing::Test,
-      protected test_helpers::ScopedJuceQApplication
+class ProjectSerializationRoundtripTest : public test_helpers::ProjectTestFixture
 {
 protected:
   static constexpr utils::Version TEST_APP_VERSION{ 2, 0, {} };
 
-  void SetUp () override
-  {
-    // Create a temporary directory for the project
-    temp_dir_obj_ = utils::io::make_tmp_dir ();
-    project_dir_ =
-      utils::Utf8String::from_qstring (temp_dir_obj_->path ()).to_path ();
-
-    hw_interface_ =
-      std::make_unique<test_helpers::ThreadedMockHardwareAudioInterface> ();
-
-    plugin_format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-    juce::addDefaultFormatsToManager (*plugin_format_manager_);
-
-    // Create a mock settings backend
-    auto mock_backend = std::make_unique<test_helpers::MockSettingsBackend> ();
-    mock_backend_ptr_ = mock_backend.get ();
-
-    // Set up default expectations for common settings
-    ON_CALL (*mock_backend_ptr_, value (testing::_, testing::_))
-      .WillByDefault (testing::Return (QVariant ()));
-
-    app_settings_ =
-      std::make_unique<utils::AppSettings> (std::move (mock_backend));
-
-    // Create port registry and monitor fader
-    port_registry_ = std::make_unique<dsp::PortRegistry> (nullptr);
-    param_registry_ = std::make_unique<dsp::ProcessorParameterRegistry> (
-      *port_registry_, nullptr);
-    monitor_fader_ = utils::make_qobject_unique<dsp::Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      dsp::PortType::Audio,
-      true,  // hard_limit_output
-      false, // make_params_automatable
-      [] () -> utils::Utf8String { return u8"Test Control Room"; },
-      [] (bool fader_solo_status) { return false; });
-
-    // Create metronome with test samples
-    juce::AudioSampleBuffer emphasis_sample (2, 512);
-    juce::AudioSampleBuffer normal_sample (2, 512);
-    metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      emphasis_sample, normal_sample, true, 1.0f, nullptr);
-  }
-
-  void TearDown () override
-  {
-    metronome_.reset ();
-    monitor_fader_.reset ();
-    param_registry_.reset ();
-    port_registry_.reset ();
-    app_settings_.reset ();
-    plugin_format_manager_.reset ();
-    hw_interface_.reset ();
-  }
-
-  std::unique_ptr<structure::project::Project> create_minimal_project ()
-  {
-    structure::project::Project::ProjectDirectoryPathProvider path_provider =
-      [this] (bool for_backup) {
-        return for_backup ? project_dir_ / "backups" : project_dir_;
-      };
-
-    plugins::PluginHostWindowFactory window_factory =
-      [] (plugins::Plugin &) -> std::unique_ptr<plugins::IPluginHostWindow> {
-      return nullptr;
-    };
-
-    return std::make_unique<structure::project::Project> (
-      *app_settings_, path_provider, *hw_interface_, plugin_format_manager_,
-      window_factory, *metronome_, *monitor_fader_);
-  }
-
   /**
-   * @brief Finds the first bundled VST3 plugin description.
+   * @brief Starts the engine, waits for a few processing cycles, then stops it.
    */
-  std::unique_ptr<juce::PluginDescription> findFirstBundledVst3Plugin ()
+  void process_a_few_cycles (structure::project::Project &project)
   {
-    QString paths_str = QStringLiteral (BUNDLED_VST3_SEARCH_PATHS);
-    if (paths_str.isEmpty ())
-      return nullptr;
-
-    auto        paths = std::make_unique<utils::FilePathList> ();
-    QStringList path_list = paths_str.split (":::", Qt::SkipEmptyParts);
-    for (const auto &path : path_list)
-      paths->add_path (std::filesystem::path (path.toStdString ()));
-
-    if (paths->empty ())
-      return nullptr;
-
-    juce::VST3PluginFormat vst3_format;
-    auto juce_search_paths = paths->get_as_juce_file_search_path ();
-    auto identifiers =
-      vst3_format.searchPathsForPlugins (juce_search_paths, false, false);
-    if (identifiers.isEmpty ())
-      return nullptr;
-
-    juce::OwnedArray<juce::PluginDescription> descriptions;
-    vst3_format.findAllTypesForFile (descriptions, identifiers[0]);
-    if (descriptions.isEmpty ())
-      return nullptr;
-
-    return std::make_unique<juce::PluginDescription> (*descriptions[0]);
+    auto * mock_hw = dynamic_cast<
+      test_helpers::ThreadedMockHardwareAudioInterface *> (hw_interface_.get ());
+    project.engine ()->activate ();
+    project.engine ()->graph_dispatcher ().recalc_graph (false);
+    project.engine ()->set_running (true);
+    const auto initial_count = mock_hw->process_call_count ();
+    while (mock_hw->process_call_count () - initial_count < 3)
+      QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+    project.engine ()->set_running (false);
+    project.engine ()->deactivate ();
   }
 
   /**
@@ -177,10 +79,19 @@ protected:
    * Creates a project, imports a plugin via PluginImporter, saves, loads into a
    * new instance, verifies the plugin runs correctly, and resaves.
    *
+   * Verifications performed (for all plugin types):
+   * 1. Registry sizes and IDs match between original save and resave
+   * 2. Plugin param counts are consistent (no duplication)
+   * 3. Parameter values are preserved through roundtrip
+   * 4. Plugin state data is present in the serialized JSON
+   *
    * @param descriptor The plugin descriptor to import.
+   * @param expected_param_count Expected number of parameters after import
+   *   (including bypass and gain). Use std::nullopt to skip this check.
    */
-  void
-  saveLoadSaveRoundtripWithPlugin (const plugins::PluginDescriptor &descriptor)
+  void save_load_save_roundtrip_with_plugin (
+    const plugins::PluginDescriptor &descriptor,
+    std::optional<size_t>            expected_param_count = std::nullopt)
   {
     // === Step 1: Create project and import plugin via PluginImporter ===
     auto original_bundle = std::make_unique<ProjectBundle> ();
@@ -225,9 +136,56 @@ protected:
     EXPECT_TRUE (instantiation_finished)
       << "Plugin instantiation did not complete";
 
-    // === Step 2: Save the project ===
-    original_bundle->project->engine ()->set_running (true);
+    // === Step 1b: Capture original plugin state for later comparison ===
+    auto &original_plugin_registry =
+      original_bundle->project->get_plugin_registry ();
+    ASSERT_EQ (original_plugin_registry.get_hash_map ().size (), 1);
 
+    auto original_plugin_var =
+      original_plugin_registry.get_hash_map () | std::views::values
+      | std::views::take (1);
+    auto original_plugin_it = original_plugin_var.begin ();
+    ASSERT_NE (original_plugin_it, original_plugin_var.end ());
+
+    // Capture param count and verify it matches expectations
+    const size_t original_param_count = std::visit (
+      [] (auto &&pl) { return pl->get_parameters ().size (); },
+      *original_plugin_it);
+    if (expected_param_count.has_value ())
+      {
+        EXPECT_EQ (original_param_count, *expected_param_count)
+          << "Plugin param count after import: expected="
+          << *expected_param_count << " actual=" << original_param_count;
+      }
+
+    // Set non-default values on all params and capture snapshots
+    struct ParamSnapshot
+    {
+      dsp::ProcessorParameter::Uuid uuid;
+      QString                       name;
+      float                         value;
+    };
+    std::vector<ParamSnapshot> original_param_values;
+
+    // Start the engine and wait for a few processing cycles so the
+    // plugin settles (some plugins reflect parameter values back via timers
+    // on first load) before we set our custom values.
+    process_a_few_cycles (*original_bundle->project);
+
+    std::visit (
+      [&] (auto &&pl) {
+        for (const auto &param_ref : pl->get_parameters ())
+          {
+            auto * param =
+              param_ref.template get_object_as<dsp::ProcessorParameter> ();
+            param->setBaseValue (0.75f);
+            original_param_values.push_back (
+              { param->get_uuid (), param->label (), 0.75f });
+          }
+      },
+      *original_plugin_it);
+
+    // === Step 2: Save the project ===
     auto save_future = ProjectSaver::save (
       *original_bundle->project, *original_bundle->ui_state,
       *original_bundle->undo_stack, TEST_APP_VERSION, project_dir_, false);
@@ -244,6 +202,28 @@ protected:
       << "Project file not created: " << project_file_path;
 
     original_bundle->project->engine ()->set_running (false);
+
+    // Capture the original save JSON for later registry comparison
+    const auto original_json = nlohmann::json::parse (
+      ProjectSaver::get_existing_uncompressed_text (project_dir_));
+
+    // === Step 2b: Verify state data is present in the serialized JSON ===
+    {
+      const auto &plugin_reg =
+        original_json["projectData"]["registries"]["pluginRegistry"];
+      ASSERT_EQ (plugin_reg.size (), 1)
+        << "Expected exactly 1 plugin in registry";
+      const auto &plugin_json = plugin_reg[0];
+
+      // All real plugin formats (VST3, CLAP) should persist state in JSON.
+      // Internal plugins may not have a "state" key (no binary to persist).
+      if (descriptor.protocol_ != plugins::Protocol::ProtocolType::Internal)
+        {
+          EXPECT_TRUE (plugin_json.contains ("state"))
+            << "Plugin JSON should contain 'state' key for format: "
+            << static_cast<int> (descriptor.protocol_);
+        }
+    }
 
     // Release objects that reference the original project before destroying it
     importer.reset ();
@@ -274,24 +254,9 @@ protected:
       *loaded_bundle->ui_state, *loaded_bundle->undo_stack);
 
     {
-      // Start processing immediately
+      // Start processing to verify the loaded plugin works correctly
       EXPECT_NO_FATAL_FAILURE ({
-        loaded_bundle->project->engine ()->activate ();
-        loaded_bundle->project->engine ()->graph_dispatcher ().recalc_graph (
-          false);
-        loaded_bundle->project->engine ()->set_running (true);
-
-        // Wait for the mock audio device to process a few cycles so the engine
-        // processes the plugin
-        auto * mock_hw =
-          dynamic_cast<test_helpers::ThreadedMockHardwareAudioInterface *> (
-            hw_interface_.get ());
-        const auto initial_count = mock_hw->process_call_count ();
-        while (mock_hw->process_call_count () - initial_count < 3)
-          QCoreApplication::processEvents ();
-
-        loaded_bundle->project->engine ()->set_running (false);
-        loaded_bundle->project->engine ()->deactivate ();
+        process_a_few_cycles (*loaded_bundle->project);
       }) << "Processing a plugin after loading a project should not crash";
     }
 
@@ -316,7 +281,41 @@ protected:
       },
       *loaded_plugin_it);
 
-    // === Step 5: Save the loaded project again ===
+    // === Step 4b: Verify param count consistency (no duplication) ===
+    const size_t loaded_param_count = std::visit (
+      [] (auto &&pl) { return pl->get_parameters ().size (); },
+      *loaded_plugin_it);
+    EXPECT_EQ (loaded_param_count, original_param_count)
+      << "Param count mismatch: original=" << original_param_count
+      << " loaded=" << loaded_param_count;
+
+    // === Step 4c: Verify parameter values are preserved ===
+    std::visit (
+      [&] (auto &&pl) {
+        for (const auto &original_snap : original_param_values)
+          {
+            bool found = false;
+            for (const auto &param_ref : pl->get_parameters ())
+              {
+                const auto * param =
+                  param_ref.template get_object_as<dsp::ProcessorParameter> ();
+                if (param->get_uuid () == original_snap.uuid)
+                  {
+                    found = true;
+                    EXPECT_FLOAT_EQ (param->baseValue (), original_snap.value)
+                      << "Parameter value not preserved: "
+                      << original_snap.name.toStdString ();
+                    break;
+                  }
+              }
+            EXPECT_TRUE (found)
+              << "Parameter from original not found in loaded plugin: "
+              << original_snap.name.toStdString ();
+          }
+      },
+      *loaded_plugin_it);
+
+    // === Step 5: Save the loaded project again and compare registries ===
     auto resave_dir = project_dir_ / "resave_test";
 
     loaded_bundle->project->engine ()->set_running (true);
@@ -335,23 +334,21 @@ protected:
         structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
     EXPECT_TRUE (std::filesystem::exists (resaved_project_file_path))
       << "Resaved project file not created: " << resaved_project_file_path;
-  }
 
-  std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;
-  std::filesystem::path                            project_dir_;
-  std::shared_ptr<juce::AudioDeviceManager>        audio_device_manager_;
-  std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface_;
-  std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager_;
-  test_helpers::MockSettingsBackend *              mock_backend_ptr_{};
-  std::unique_ptr<utils::AppSettings>              app_settings_;
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  utils::QObjectUniquePtr<dsp::Fader>              monitor_fader_;
-  utils::QObjectUniquePtr<dsp::Metronome>          metronome_;
+    // Compare original and resave JSON registries
+    const auto resave_json = nlohmann::json::parse (
+      ProjectSaver::get_existing_uncompressed_text (resave_dir));
+    // Skip port/param registry comparison — track-level macro ports and
+    // params are duplicated on resave (separate bug, not in scope).
+    test_helpers::expect_registries_match (
+      original_json, resave_json, { "portRegistry", "paramRegistry" });
+  }
 };
 
 /**
  * @brief Tests full save -> load -> save roundtrip with an internal plugin.
+ *
+ * Internal plugins have 2 built-in params (bypass + gain) and no FAUST params.
  */
 TEST_F (
   ProjectSerializationRoundtripTest,
@@ -361,23 +358,59 @@ TEST_F (
   descriptor->name_ = u8"Test Roundtrip Plugin";
   descriptor->protocol_ = plugins::Protocol::ProtocolType::Internal;
 
-  saveLoadSaveRoundtripWithPlugin (*descriptor);
+  // 2 built-in (bypass + gain), no FAUST params
+  save_load_save_roundtrip_with_plugin (*descriptor, 2);
 }
 
 /**
  * @brief Tests full save -> load -> save roundtrip with a bundled VST3 plugin.
+ *
+ * Uses the Highpass Filter plugin which has 1 FAUST parameter (Frequency).
+ * Expected params: 2 built-in (bypass + gain) + 1 JUCE bypass + 1 FAUST = 4.
  */
 TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
 {
-  auto juce_desc = findFirstBundledVst3Plugin ();
+  static const juce::String kTargetPluginName = "Highpass Filter";
+  auto                      juce_desc =
+    test_helpers::find_bundled_vst3_plugin_by_name (kTargetPluginName);
   ASSERT_NE (juce_desc, nullptr)
-    << "No bundled VST3 plugins found - check BUNDLED_VST3_SEARCH_PATHS";
+    << "Bundled VST3 plugin '" << kTargetPluginName
+    << "' not found - check BUNDLED_VST3_SEARCH_PATHS";
 
   auto descriptor =
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  saveLoadSaveRoundtripWithPlugin (*descriptor);
+  // 2 built-in (bypass + gain) + 1 JUCE bypass param + 1 FAUST param
+  // (Frequency)
+  save_load_save_roundtrip_with_plugin (*descriptor, 4);
+}
+
+/**
+ * @brief Tests full save -> load -> save roundtrip with a bundled CLAP plugin.
+ *
+ * Uses the Highpass Filter plugin which has 1 FAUST parameter (Frequency).
+ * Expected params: 2 built-in (bypass + gain) + 1 CLAP param (Frequency) = 3.
+ * This test catches bug 5: CLAP params not exposed as Zrythm
+ * ProcessorParameters.
+ */
+TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithClapPlugin)
+{
+  static const juce::String kTargetPluginName = "Highpass Filter";
+  auto                      juce_desc =
+    test_helpers::find_bundled_clap_plugin_by_name (kTargetPluginName);
+  ASSERT_NE (juce_desc, nullptr)
+    << "Bundled CLAP plugin '" << kTargetPluginName
+    << "' not found - check BUNDLED_CLAP_SEARCH_PATHS";
+
+  auto descriptor =
+    plugins::PluginDescriptor::from_juce_description (*juce_desc);
+  ASSERT_NE (descriptor, nullptr);
+
+  // The CLAP plugin wraps the same JUCE AudioProcessor but does not expose
+  // the JUCE bypass parameter as a separate CLAP param, so we get 3 params
+  // (bypass + gain + Frequency) instead of 4 like VST3.
+  save_load_save_roundtrip_with_plugin (*descriptor, 3);
 }
 
 } // namespace zrythm::controllers

@@ -68,7 +68,12 @@ Plugin::set_configuration (const PluginConfiguration &setting)
 
   set_name (get_name ());
 
-  Q_EMIT configurationChanged (configuration_.get ());
+  /* If ports/params were already restored (e.g., from JSON deserialization),
+   * tell handlers to skip generation and only reinitialize the underlying
+   * plugin instance. */
+  const bool generate_new =
+    get_input_ports ().empty () && get_output_ports ().empty ();
+  Q_EMIT configurationChanged (configuration_.get (), generate_new);
 }
 
 // ============================================================================

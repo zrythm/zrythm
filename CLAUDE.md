@@ -289,6 +289,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [ScopedJuceQApplication](tests/helpers/scoped_juce_qapplication.h): Inherits from ScopedQCoreApplication and also runs the JUCE message loop inside Qt's event loop. Only to be used when we can't avoid dependence on JUCE's message loop.
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
+- Logging can be enabled in tests by calling `init_logging(LoggerType::Test)` (from `src/utils/logger.h`)
 
 ## Common Tasks for AI Agents
 

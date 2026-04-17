@@ -1,9 +1,12 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "plugins/plugin.h"
+#include "utils/mpmc_queue.h"
+
+#include <QTimer>
 
 #include <juce_wrapper.h>
 
@@ -71,7 +74,9 @@ private Q_SLOTS:
   /**
    * @brief Handle configuration changes.
    */
-  void on_configuration_changed ();
+  void on_configuration_changed (
+    PluginConfiguration * configuration,
+    bool                  generateNewPluginPortsAndParams);
 
   /**
    * @brief Handle visibility changes.
@@ -84,7 +89,7 @@ private:
    *
    * @throw ZrythmException if plugin initialization fails
    */
-  void initialize_juce_plugin_async ();
+  void initialize_juce_plugin_async (bool generateNewPluginPortsAndParams);
 
   /**
    * @brief Create audio and MIDI ports based on the JUCE plugin's configuration.
@@ -97,14 +102,18 @@ private:
   void create_parameters_from_juce_plugin ();
 
   /**
-   * @brief Update parameter values from JUCE to Zrythm.
+   * @brief Update parameter values from Zrythm to JUCE.
+   *
+   * Meant to be called during processing right before processing the actual
+   * JUCE plugin to set the latest values to JUCE.
    */
-  void update_parameter_values ();
+  void sync_parameters_to_juce () noexcept [[clang::nonblocking]];
 
   /**
-   * @brief Update parameter values from Zrythm to JUCE.
+   * @brief Consumes queued JUCE param changes and updates Zrythm params.
+   * Called on the message thread via juce_param_flush_timer_.
    */
-  void sync_parameters_to_juce ();
+  void flush_juce_to_zrythm_queue () [[clang::blocking]];
 
   /**
    * @brief Show the plugin's editor window.
@@ -140,32 +149,19 @@ private:
   class JuceParamListener : public juce::AudioProcessorParameter::Listener
   {
   public:
-    JuceParamListener (dsp::ProcessorParameter &zrythm_param)
-        : zrythm_param_ (zrythm_param)
+    JuceParamListener (MPMCQueue<int> &queue, JucePlugin &parent)
+        : queue_ (queue), parent_ (parent)
     {
     }
 
     void parameterValueChanged (int parameterIndex, float newValue)
-      [[clang::blocking]] override
-    {
-      // FIXME: this may get called from the audio thread, according to the
-      // docs
-      // The logic here is not realtime-safe, and currently no test hits this
-      z_debug (
-        "{}: Parameter on JUCE side changed to {}",
-        zrythm_param_.get_node_name (), newValue);
-      zrythm_param_.setBaseValue (newValue);
-    }
+      [[clang::blocking]] override;
     void parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
-      [[clang::blocking]] override
-    {
-      // FIXME: this may get called from the audio thread, according to the
-      // docs
-      // The logic here is not realtime-safe, and currently no test hits this
-    }
+      [[clang::blocking]] override;
 
   private:
-    dsp::ProcessorParameter &zrythm_param_;
+    MPMCQueue<int> &queue_;
+    JucePlugin     &parent_;
   };
 
   // Parameter mapping between JUCE and Zrythm
@@ -178,6 +174,24 @@ private:
   };
 
   std::vector<ParameterMapping> parameter_mappings_;
+
+  /**
+   * @brief Maps JUCE param index -> position in parameter_mappings_.
+   * Built in create_parameters_from_juce_plugin() for O(1) lookup.
+   */
+  std::unordered_map<int, size_t> juce_param_index_to_mapping_;
+
+  /**
+   * @brief Lock-free queue for JUCE -> Zrythm param change indices.
+   * JuceParamListener pushes indices; flush_juce_to_zrythm_queue() consumes.
+   */
+  MPMCQueue<int> juce_to_zrythm_queue_;
+
+  /**
+   * @brief Timer that flushes the JUCE -> Zrythm queue on the message thread.
+   * Started when mappings are built; calls flush_juce_to_zrythm_queue().
+   */
+  utils::QObjectUniquePtr<QTimer> juce_param_flush_timer_;
 
   // Audio/MIDI buffer management
   std::vector<float *> input_channels_;

@@ -512,4 +512,84 @@ TEST_F (PluginTest, InstantiationStatusTransitions)
   EXPECT_EQ (spy.count (), 3);
 }
 
+// ============================================================================
+// Tests for configurationChanged signal contract
+// ============================================================================
+
+/**
+ * @brief Fresh plugin (no ports) should signal that handlers need to generate
+ * ports and parameters.
+ */
+TEST_F (PluginTest, ConfigurationChangedSignalsGenerationNeededForFreshPlugin)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Signal Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+
+  QSignalSpy spy (plugin_.get (), &Plugin::configurationChanged);
+  plugin_->set_configuration (config);
+
+  ASSERT_EQ (spy.count (), 1);
+  const auto args = spy.takeFirst ();
+  EXPECT_TRUE (args.at (1).toBool ())
+    << "Fresh plugin should signal generateNewPluginPortsAndParams = true";
+}
+
+/**
+ * @brief Plugin with pre-existing input ports (e.g., after JSON deserialization)
+ * should signal that handlers should NOT generate ports/params.
+ */
+TEST_F (PluginTest, ConfigurationChangedSignalsNoGenerationWithExistingInputPorts)
+{
+  auto midi_in = port_registry_->create_object<dsp::MidiPort> (
+    u8"MIDI In", dsp::PortFlow::Input);
+  plugin_->add_input_port (midi_in);
+
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Signal Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+
+  QSignalSpy spy (plugin_.get (), &Plugin::configurationChanged);
+  plugin_->set_configuration (config);
+
+  ASSERT_EQ (spy.count (), 1);
+  const auto args = spy.takeFirst ();
+  EXPECT_FALSE (args.at (1).toBool ())
+    << "Plugin with existing input ports should signal "
+       "generateNewPluginPortsAndParams = false";
+}
+
+/**
+ * @brief Plugin with pre-existing output ports (e.g., after JSON
+ * deserialization) should signal that handlers should NOT generate
+ * ports/params.
+ */
+TEST_F (
+  PluginTest,
+  ConfigurationChangedSignalsNoGenerationWithExistingOutputPorts)
+{
+  auto audio_out = port_registry_->create_object<dsp::AudioPort> (
+    u8"Audio Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo, 2);
+  plugin_->add_output_port (audio_out);
+
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Signal Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+
+  QSignalSpy spy (plugin_.get (), &Plugin::configurationChanged);
+  plugin_->set_configuration (config);
+
+  ASSERT_EQ (spy.count (), 1);
+  const auto args = spy.takeFirst ();
+  EXPECT_FALSE (args.at (1).toBool ())
+    << "Plugin with existing output ports should signal "
+       "generateNewPluginPortsAndParams = false";
+}
+
 } // namespace zrythm::plugins

@@ -3,6 +3,7 @@
 
 add_executable(zrythm_integration_tests
   bundled_plugins_scan_test.cpp
+  plugin_param_state_test.cpp
   project_serialization_roundtrip_test.cpp
 )
 
@@ -17,18 +18,5 @@ target_link_libraries(zrythm_integration_tests PRIVATE
   zrythm_controllers_lib
   zrythm_test_helpers_lib
 )
-
-# Pass the VST3 search paths to the test
-# Use `:::` to prevent CMake list expansion
-string(REPLACE ";" ":::" BUNDLED_VST3_SEARCH_PATHS_STR "${BUNDLED_VST3_SEARCH_PATHS}")
-string(REPLACE ";" ":::" BUNDLED_CLAP_SEARCH_PATHS_STR "${BUNDLED_CLAP_SEARCH_PATHS}")
-target_compile_definitions(zrythm_integration_tests PRIVATE
-  BUNDLED_VST3_SEARCH_PATHS="${BUNDLED_VST3_SEARCH_PATHS_STR}"
-  BUNDLED_CLAP_SEARCH_PATHS="${BUNDLED_CLAP_SEARCH_PATHS_STR}"
-  BUNDLED_PLUGINS_COUNT=14
-)
-
-# Ensure plugins are built before running tests
-add_dependencies(zrythm_integration_tests ${BUNDLED_PLUGINS_FOR_TESTS_TGTS})
 
 zrythm_discover_tests(zrythm_integration_tests)

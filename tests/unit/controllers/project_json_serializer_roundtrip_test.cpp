@@ -6,6 +6,8 @@
 namespace zrythm::controllers
 {
 
+using test_helpers::expect_registries_match;
+
 // ============================================================================
 // Round-Trip Tests
 // ============================================================================
@@ -82,7 +84,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_RegistriesPreserved)
   nlohmann::json j2 = ProjectJsonSerializer::serialize (
     *deserialized_project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 TEST_F (ProjectSerializationTest, RoundTrip_TracklistPreserved)
@@ -326,7 +328,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify all registries match (sizes and IDs)
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 /// List of non-singleton track types to test
@@ -394,7 +396,7 @@ TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify all registries match (sizes and IDs)
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 
   // Verify automation track counts match for each track
   {
@@ -547,7 +549,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify registries match
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 /// Test that a project with Audio track + Audio region validates
@@ -618,7 +620,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify registries match
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 /// Test that a project with track + Automation region + Automation point
@@ -693,7 +695,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AutomationRegionWithPoint_Validates)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify registries match
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 /// Test that a project with Chord track + Chord region + Chord object validates
@@ -770,7 +772,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j2); });
 
   // Verify registries match
-  expect_registries_match (j1, j2);
+  expect_registries_match (j1, j2, { "portRegistry" });
 }
 
 // ============================================================================

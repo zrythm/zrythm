@@ -100,10 +100,20 @@ public:
   /**
    * @brief Emitted when the configuration is set on the plugin.
    *
-   * Implementing plugins should attach to this and create all the plugin
-   * ports and parameters.
+   * Implementing plugins should attach to this and, if
+   * @p generateNewPluginPortsAndParams is true, query the underlying plugin
+   * for its port/parameter layout and create corresponding Zrythm objects.
+   * If false, ports and parameters already exist (e.g., after JSON
+   * deserialization) and only the underlying plugin instance needs to be
+   * reinitialized.
+   *
+   * @param configuration The plugin configuration.
+   * @param generateNewPluginPortsAndParams Whether the handler should create
+   *   new Zrythm ports and parameters from the underlying plugin.
    */
-  Q_SIGNAL void configurationChanged (PluginConfiguration * configuration);
+  Q_SIGNAL void configurationChanged (
+    PluginConfiguration * configuration,
+    bool                  generateNewPluginPortsAndParams);
 
   dsp::ProcessorParameter * bypassParameter () const
   {
@@ -164,12 +174,16 @@ public:
   }
 
   /**
-   * @brief Sets the plugin setting to use.
+   * @brief Sets the plugin configuration to use.
    *
    * This must be called exactly once right after construction to set the
    * PluginConfiguration for this plugin.
    *
-   * The plugin will have no ports or parameters until this is called.
+   * When called during fresh construction, the plugin will have no ports or
+   * parameters and the signal will instruct handlers to create them. When
+   * called during deserialization (after ports/params are already restored
+   * from JSON), the signal will instruct handlers to skip creation and only
+   * reinitialize the underlying plugin instance.
    */
   void set_configuration (const PluginConfiguration &setting);
 

@@ -31,7 +31,9 @@ InternalPluginBase::InternalPluginBase (
 }
 
 void
-InternalPluginBase::on_configuration_changed ()
+InternalPluginBase::on_configuration_changed (
+  PluginConfiguration * configuration,
+  bool                  generateNewPluginPortsAndParams)
 {
   z_debug ("configuration changed");
 

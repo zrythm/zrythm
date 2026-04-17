@@ -32,10 +32,13 @@ target_sources(zrythm_test_helpers_lib
   PUBLIC
     FILE_SET HEADERS
     FILES
+      helpers/bundled_plugin_finder.h
       helpers/mock_hardware_audio_interface.h
       helpers/mock_hardware_audio_interface_threaded.h
       helpers/mock_qobject.h
       helpers/mock_settings_backend.h
+      helpers/project_fixture.h
+      helpers/project_json_comparators.h
       helpers/qt_helpers.h
       helpers/scoped_qcoreapplication.h
       helpers/scoped_juce_qapplication.h
@@ -72,6 +75,20 @@ if("${BUNDLED_PLUGINS_FOR_TESTS_TGTS}" STREQUAL "")
   message(WARNING "Built-in plugins are not generated - generate them first")
   return()
 endif()
+
+# Pass the VST3 search paths to the test
+# Use `:::` to prevent CMake list expansion
+string(REPLACE ";" ":::" BUNDLED_VST3_SEARCH_PATHS_STR "${BUNDLED_VST3_SEARCH_PATHS}")
+string(REPLACE ";" ":::" BUNDLED_CLAP_SEARCH_PATHS_STR "${BUNDLED_CLAP_SEARCH_PATHS}")
+target_compile_definitions(zrythm_test_helpers_lib
+  PUBLIC
+    BUNDLED_VST3_SEARCH_PATHS="${BUNDLED_VST3_SEARCH_PATHS_STR}"
+    BUNDLED_CLAP_SEARCH_PATHS="${BUNDLED_CLAP_SEARCH_PATHS_STR}"
+    BUNDLED_PLUGINS_COUNT=14
+)
+
+# Ensure plugins are built before running tests
+add_dependencies(zrythm_test_helpers_lib ${BUNDLED_PLUGINS_FOR_TESTS_TGTS})
 
 add_subdirectory(integration)
 

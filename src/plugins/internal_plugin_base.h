@@ -50,7 +50,9 @@ private Q_SLOTS:
   /**
    * @brief Handle configuration changes.
    */
-  void on_configuration_changed ();
+  void on_configuration_changed (
+    PluginConfiguration * configuration,
+    bool                  generateNewPluginPortsAndParams);
 
   /**
    * @brief Handle visibility changes.
