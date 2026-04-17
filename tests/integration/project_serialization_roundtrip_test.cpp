@@ -185,6 +185,10 @@ protected:
       },
       *original_plugin_it);
 
+    // Process again so the baseValue changes propagate to the underlying
+    // plugin (JUCE/CLAP) before the state blob is captured during save.
+    process_a_few_cycles (*original_bundle->project);
+
     // === Step 2: Save the project ===
     auto save_future = ProjectSaver::save (
       *original_bundle->project, *original_bundle->ui_state,
