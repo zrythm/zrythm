@@ -67,7 +67,7 @@ protected:
     project.engine ()->graph_dispatcher ().recalc_graph (false);
     project.engine ()->set_running (true);
     const auto initial_count = mock_hw->process_call_count ();
-    while (mock_hw->process_call_count () - initial_count < 3)
+    while (mock_hw->process_call_count () - initial_count < 10)
       QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
     project.engine ()->set_running (false);
     project.engine ()->deactivate ();
