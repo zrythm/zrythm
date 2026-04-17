@@ -6,9 +6,9 @@ qt_add_library(zrythm_plugins_lib STATIC)
 target_sources(zrythm_plugins_lib
   PRIVATE
     # carla_native_plugin.cpp
+    CLAPPluginFormat.cpp
     clap_plugin.cpp
     clap_plugin_param.cpp
-    CLAPPluginFormat.cpp
     internal_plugin_base.cpp
     juce_plugin.cpp
     out_of_process_scanner.cpp
@@ -17,6 +17,7 @@ target_sources(zrythm_plugins_lib
     plugin_descriptor.cpp
     plugin_descriptor_list.cpp
     plugin_group.cpp
+    plugin_library.cpp
     plugin_parameter_list_model.cpp
     plugin_protocol.cpp
     plugin_scan_manager.cpp
@@ -25,9 +26,9 @@ target_sources(zrythm_plugins_lib
     BASE_DIRS ".."
     FILES
       # carla_native_plugin.h
+      CLAPPluginFormat.h
       clap_plugin.h
       clap_plugin_param.h
-      CLAPPluginFormat.h
       internal_plugin_base.h
       iplugin_host_window.h
       juce_plugin.h
@@ -36,11 +37,12 @@ target_sources(zrythm_plugins_lib
       plugin_all.h
       plugin_configuration.h
       plugin_descriptor.h
+      plugin_descriptor_list.h
       plugin_factory.h
       plugin_group.h
+      plugin_library.h
       plugin_parameter_list_model.h
       plugin_protocol.h
-      plugin_descriptor_list.h
       plugin_scan_manager.h
 )
 

@@ -42,12 +42,12 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/clap_plugin_param.h"
+#include "plugins/plugin_library.h"
 #include "utils/format_qt.h"
 #include "utils/io_utils.h"
 #include "utils/views.h"
 
 #include <QFile>
-#include <QLibrary>
 #include <QSemaphore>
 #include <QSocketNotifier>
 #include <QTimer>
@@ -142,7 +142,7 @@ private:
   ClapPlugin        &owner_;
   AudioThreadChecker audio_thread_checker_;
 
-  QLibrary library_;
+  PluginLibrary library_;
 
   const clap_plugin_entry *        pluginEntry_ = nullptr;
   const clap_plugin_factory *      pluginFactory_ = nullptr;
@@ -879,21 +879,14 @@ ClapPlugin::load_plugin (
 {
   assert (is_main_thread);
 
-  if (pimpl_->library_.isLoaded ())
+  if (pimpl_->library_.is_loaded ())
     unload_current_plugin ();
 
-  pimpl_->library_.setFileName (
-    utils::Utf8String::from_path (path).to_qstring ());
-  pimpl_->library_.setLoadHints (
-    QLibrary::ResolveAllSymbolsHint
-#if !defined(__has_feature) || !__has_feature(address_sanitizer)
-    | QLibrary::DeepBindHint
-#endif
-  );
-  if (!pimpl_->library_.load ())
+  if (!pimpl_->library_.load (utils::Utf8String::from_path (path)))
     {
       z_warning (
-        "Failed to load plugin '{}': {}", path, pimpl_->library_.errorString ());
+        "Failed to load plugin '{}': {}", path,
+        pimpl_->library_.error_string ());
       return false;
     }
 
@@ -1000,7 +993,7 @@ ClapPlugin::unload_current_plugin ()
 
   Q_EMIT pluginLoadedChanged (false);
 
-  if (!pimpl_->library_.isLoaded ())
+  if (!pimpl_->library_.is_loaded ())
     return;
 
   if (pimpl_->isGuiCreated_)

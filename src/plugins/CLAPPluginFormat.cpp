@@ -34,10 +34,10 @@
  */
 
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/plugin_library.h"
 #include "utils/format_juce.h"
 #include "utils/format_qt.h"
 
-#include <QLibrary>
 #include <QtSystemDetection>
 
 #include <clap/clap.h>
@@ -150,21 +150,13 @@ CLAPPluginFormat::findAllTypesForFile (
 {
   if (fileMightContainThisPluginType (fileOrIdentifier))
     {
-      QLibrary lib;
+      PluginLibrary lib;
 
-      lib.setFileName (
-        utils::Utf8String::from_juce_string (fileOrIdentifier).to_qstring ());
-      lib.setLoadHints (
-        QLibrary::ResolveAllSymbolsHint
-#if !defined(__has_feature) || !__has_feature(address_sanitizer)
-        | QLibrary::DeepBindHint
-#endif
-      );
-      if (!lib.load ())
+      if (!lib.load (utils::Utf8String::from_juce_string (fileOrIdentifier)))
         {
           z_warning (
             "Failed to load plugin '{}': {}", fileOrIdentifier,
-            lib.errorString ());
+            lib.error_string ());
           return;
         }
 
@@ -178,8 +170,7 @@ CLAPPluginFormat::findAllTypesForFile (
           return;
         }
 
-      if (!plugin_entry->init (
-            utils::Utf8String::from_juce_string (fileOrIdentifier).c_str ()))
+      if (!plugin_entry->init (fileOrIdentifier.toRawUTF8 ()))
         {
           z_warning ("clap_entry->init() failed for '{}'", fileOrIdentifier);
           return;
