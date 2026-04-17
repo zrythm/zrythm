@@ -186,19 +186,6 @@ private:
   /* param update queues */
   std::unordered_map<clap_id, std::unique_ptr<ClapPluginParam>> params_;
 
-  // Required by ReducingParamQueue::setOrUpdate()
-  struct AppToEngineParamQueueValue
-  {
-    void * cookie;
-    double value;
-
-    void update (const AppToEngineParamQueueValue &v) noexcept
-    {
-      cookie = v.cookie;
-      value = v.value;
-    }
-  };
-
   struct EngineToAppParamQueueValue
   {
     void update (const EngineToAppParamQueueValue &v) noexcept
@@ -222,10 +209,6 @@ private:
     double value = 0;
   };
 
-  clap::helpers::ReducingParamQueue<clap_id, AppToEngineParamQueueValue>
-    appToEngineValueQueue_;
-  clap::helpers::ReducingParamQueue<clap_id, AppToEngineParamQueueValue>
-    appToEngineModQueue_;
   clap::helpers::ReducingParamQueue<clap_id, EngineToAppParamQueueValue>
     engineToAppValueQueue_;
 
@@ -691,6 +674,13 @@ ClapPlugin::prepare_for_processing_impl (
 
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
+  // Pre-allocate the input event list so that generatePluginInputEvents()
+  // never needs to grow the vector on the audio thread. Reserve space for all
+  // parameters plus headroom for MIDI events.
+  pimpl_->evIn_.reserveEvents (
+    zrythm_to_clap_param_.size ()
+    + static_cast<size_t> (get_descriptor ().num_midi_ins_) * 16);
+
   if (
     !pimpl_->plugin_->activate (
       sample_rate.in (units::sample_rate), 1,
@@ -773,10 +763,6 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     static_cast<uint32_t> (pimpl_->audio_out_clap_bufs_.size ());
 
   pimpl_->evOut_.clear ();
-
-  // Sync Zrythm param values -> CLAP input queue
-  sync_params_to_clap ();
-  pimpl_->appToEngineValueQueue_.producerDone ();
 
   pimpl_->generatePluginInputEvents ();
 
@@ -1060,41 +1046,41 @@ ClapPlugin::threadCheckIsMainThread () const noexcept
 void
 ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
 {
-  appToEngineValueQueue_.consume (
-    [this] (clap_id param_id, const AppToEngineParamQueueValue &value) {
+  // Directly read Zrythm parameter values and create CLAP input events,
+  // bypassing the ReducingParamQueue which allocates memory on write and is
+  // only safe to produce from the main thread.
+  //
+  // The event list is pre-allocated in prepare_for_processing_impl() to
+  // avoid heap allocations during push() on the audio thread.
+  //
+  // TODO: also generate CLAP_EVENT_PARAM_MOD events for parameter modulation
+  // (e.g., polyphonic aftertouch, per-voice automation).
+  for (const auto &[zrythm_param, clap_id_val] : owner_.zrythm_to_clap_param_)
+    {
+      auto it = params_.find (clap_id_val);
+      if (it == params_.end ())
+        continue;
+
+      const auto * clap_param = it->second.get ();
+      const auto   range = zrythm_param->range ();
+      const float  zrythm_value = zrythm_param->currentValue ();
+      const double clap_value = range.convertFrom0To1 (zrythm_value);
+
       clap_event_param_value ev{};
       ev.header.time = 0;
       ev.header.type = CLAP_EVENT_PARAM_VALUE;
       ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
       ev.header.flags = 0;
       ev.header.size = sizeof (ev);
-      ev.param_id = param_id;
-      ev.cookie = value.cookie;
+      ev.param_id = clap_id_val;
+      ev.cookie = clap_param->info ().cookie;
       ev.port_index = 0;
       ev.key = -1;
       ev.channel = -1;
       ev.note_id = -1;
-      ev.value = value.value;
+      ev.value = clap_value;
       evIn_.push (&ev.header);
-    });
-
-  appToEngineModQueue_.consume (
-    [this] (clap_id param_id, const AppToEngineParamQueueValue &value) {
-      clap_event_param_mod ev{};
-      ev.header.time = 0;
-      ev.header.type = CLAP_EVENT_PARAM_MOD;
-      ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-      ev.header.flags = 0;
-      ev.header.size = sizeof (ev);
-      ev.param_id = param_id;
-      ev.cookie = value.cookie;
-      ev.port_index = 0;
-      ev.key = -1;
-      ev.channel = -1;
-      ev.note_id = -1;
-      ev.amount = value.value;
-      evIn_.push (&ev.header);
-    });
+    }
 
   // fill MIDI events from the MIDI input port
   if (owner_.get_descriptor ().num_midi_ins_ > 0)
@@ -1361,26 +1347,6 @@ ClapPlugin::create_parameters_from_clap_plugin ()
           zrythm_param->set_automatable (
             (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
         }
-    }
-}
-
-void
-ClapPlugin::sync_params_to_clap ()
-{
-  for (const auto &[zrythm_param, clap_id_val] : zrythm_to_clap_param_)
-    {
-      const auto zrythm_value = zrythm_param->currentValue ();
-      auto       it = pimpl_->params_.find (clap_id_val);
-      if (it == pimpl_->params_.end ())
-        continue;
-
-      const auto * clap_param = it->second.get ();
-      const auto   range = zrythm_param->range ();
-      // Convert normalized [0,1] Zrythm value to CLAP real value
-      const double clap_value = range.convertFrom0To1 (zrythm_value);
-
-      pimpl_->appToEngineValueQueue_.setOrUpdate (
-        clap_id_val, { clap_param->info ().cookie, clap_value });
     }
 }
 

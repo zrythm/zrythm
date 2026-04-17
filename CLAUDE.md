@@ -222,6 +222,11 @@ Zrythm makes extensive use of modern C++ features:
 - Use JUCE audio and MIDI buffer classes where it makes sense
 - Implement proper thread safety
 
+**Realtime Safety (`[[clang::nonblocking]]`):**
+- Functions annotated with `[[clang::nonblocking]]` are real-time-safe contexts. When RealtimeSanitizer (RTSan) is enabled via `-fsanitize=realtime`, Clang treats calls within these functions as real-time context and flags any blocking operations (malloc, mutex locks, etc.)
+- Audio processing functions (like `process_impl()`) and their callees must never allocate, lock mutexes, or call blocking APIs
+- If a function is marked `[[clang::nonblocking]]`, ALL code paths within it must be non-blocking — this is enforced by RTSan at runtime
+
 ### Qt/QML Integration
 
 **GUI Development:**

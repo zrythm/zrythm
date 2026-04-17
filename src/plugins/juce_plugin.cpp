@@ -473,21 +473,27 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
         }
     }
 
-  // Sync parameters to JUCE
-  sync_parameters_to_juce ();
-
-  // Process audio through JUCE plugin
+  // Sync parameters to JUCE and process audio.
+  //
+  // JUCE's VST3Parameter::setValue() internally calls
+  // MessageManager::isThisTheMessageThread() which acquires a std::mutex to
+  // read the message thread ID. This is a JUCE bug — the check could be
+  // lock-free (e.g. using an atomic). The mutex is held only for a thread-ID
+  // comparison (~nanoseconds), so priority inversion risk is negligible, but
+  // RTSan correctly flags it. processBlock() calls into third-party plugin
+  // code which may also perform RTSan-flagged operations (allocations, mutex
+  // locks, etc.) that we cannot control.
   juce::AudioBuffer<float> temp_buffer_with_offset (
     juce_audio_buffer_.getArrayOfWritePointers (),
     juce_audio_buffer_.getNumChannels (), local_offset.in<int> (units::samples),
     nframes.in<int> (units::samples));
   {
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
-    // RTSan violations are outside our control here.
     // TODO: add option to keep this enabled (we might want to test our own
-    // CLAP plugins in the future)
+    // plugins in the future)
     __rtsan::ScopedDisabler d;
 #endif
+    sync_parameters_to_juce ();
     juce_plugin_->processBlock (temp_buffer_with_offset, juce_midi_buffer_);
   }
 

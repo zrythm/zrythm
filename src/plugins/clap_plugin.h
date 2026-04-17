@@ -159,7 +159,6 @@ private:
   void create_ports_from_clap_plugin ();
   void create_parameters_from_clap_plugin ();
   void rebuild_clap_param_map ();
-  void sync_params_to_clap ();
   void sync_params_from_clap ();
 
   /**
@@ -200,10 +199,10 @@ private:
    *
    * Only written by rebuild_clap_param_map() on the main thread before
    * activation. Read on the audio thread during process_impl()
-   * (sync_params_to_clap, sync_params_from_clap) and on the main thread via
-   * timer (flush_clap_params_to_zrythm). Safe because audio processing starts
-   * after prepare_for_processing_impl(), which is called after the map is
-   * built.
+   * (generatePluginInputEvents, sync_params_from_clap) and on the main thread
+   * via timer (flush_clap_params_to_zrythm). Safe because audio processing
+   * starts after prepare_for_processing_impl(), which is called after the map
+   * is built.
    */
   std::unordered_map<clap_id, dsp::ProcessorParameter *> clap_to_zrythm_param_;
 
