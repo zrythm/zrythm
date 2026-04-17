@@ -282,6 +282,16 @@ CLAPPluginFormat::recursiveFileSearch (
           isPlugin = true;
           results.add (f.getFullPathName ());
         }
+#ifdef Q_OS_MACOS
+      // On macOS, CLAP plugins are directory bundles (.clap/)
+      else if (
+        f.hasFileExtension (".clap") && f.isDirectory ()
+        && fileMightContainThisPluginType (f.getFullPathName ()))
+        {
+          isPlugin = true;
+          results.add (f.getFullPathName ());
+        }
+#endif
 
       if (recursive && (!isPlugin) && f.isDirectory ())
         recursiveFileSearch (results, f, true);
