@@ -194,6 +194,7 @@ foreach(plugin_info ${plugins})
             COMMAND ${CMAKE_COMMAND} -E copy_directory
               "$<TARGET_BUNDLE_DIR:${pl_underscored_name}_plugin_CLAP>"
               "${CLAP_OUTPUT_DIR}/${pl_name}.clap"
+            COMMAND codesign -f -s - "${CLAP_OUTPUT_DIR}/${pl_name}.clap"
           )
         else()
           add_custom_command(TARGET ${pl_underscored_name}_plugin_CLAP POST_BUILD
