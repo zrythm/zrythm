@@ -6,9 +6,11 @@
 #include "utils/debug.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
+#include "utils/threads.h"
 
 #include <QStandardPaths>
 
+#include <spdlog/pattern_formatter.h>
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/ringbuffer_sink.h>
 #include <spdlog/sinks/rotating_file_sink.h>
@@ -96,9 +98,33 @@ to_spdlog_level (LogLevel level)
   std::unreachable ();
 }
 
+namespace
+{
+class ThreadNameFormatter : public spdlog::custom_flag_formatter
+{
+public:
+  void format (
+    const spdlog::details::log_msg &,
+    const std::tm &,
+    spdlog::memory_buf_t &dest) override
+  {
+    thread_local const std::string name = get_current_thread_name ();
+    dest.append (name.data (), name.data () + name.size ());
+  }
+
+  std::unique_ptr<spdlog::custom_flag_formatter> clone () const override
+  {
+    return std::make_unique<ThreadNameFormatter> ();
+  }
+};
+} // namespace
+
 static void
 set_sink_pattern (auto &sink, bool with_date)
 {
+  auto formatter = std::make_unique<spdlog::pattern_formatter> ();
+  formatter->add_flag<ThreadNameFormatter> ('@');
+
 #ifdef _WIN32
 #  define FUNCTION_AND_LINE_NO_PART "%s:%!():%#"
 #else
@@ -106,19 +132,21 @@ set_sink_pattern (auto &sink, bool with_date)
 #endif
 
 #define TIMESTAMP_PART "%H:%M:%S.%f"
-#define FINAL_PART "[%t] [%^%l%$] [" FUNCTION_AND_LINE_NO_PART "] %v"
+#define FINAL_PART "[%@] [%^%l%$] [" FUNCTION_AND_LINE_NO_PART "] %v"
   if (with_date)
     {
-      sink->set_pattern ("[%Y-%m-%d " TIMESTAMP_PART "] " FINAL_PART);
+      formatter->set_pattern ("[%Y-%m-%d " TIMESTAMP_PART "] " FINAL_PART);
     }
   else
     {
-      sink->set_pattern ("[" TIMESTAMP_PART "] " FINAL_PART);
+      formatter->set_pattern ("[" TIMESTAMP_PART "] " FINAL_PART);
     }
 
 #undef FUNCTION_AND_LINE_NO_PART
 #undef TIMESTAMP_PART
 #undef FINAL_PART
+
+  sink->set_formatter (std::move (formatter));
 }
 
 static std::filesystem::path

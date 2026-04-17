@@ -37,6 +37,7 @@ target_sources(zrythm_utils_lib
     rt_thread_id.cpp
     utf8_string.cpp
     symap.cpp
+    threads.cpp
     uuid_identifiable_object.cpp
     # vamp.cpp
     version.cpp
@@ -98,6 +99,7 @@ target_sources(zrythm_utils_lib
       utf8_string.h
       symap.h
       thread_safe_fftw.h
+      threads.h
       traits.h
       types.h
       units.h
