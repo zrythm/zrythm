@@ -21,6 +21,19 @@ namespace zrythm::plugins
  * @brief DSP processing plugin.
  *
  * Can be external or internal.
+ *
+ * ## Plugin State Persistence
+ *
+ * All plugin types serialize their state as base64-encoded data within the
+ * project JSON file via their `to_json`/`from_json` functions. There are no
+ * separate state files on disk — JSON serialization is the sole persistence
+ * mechanism.
+ *
+ * Each plugin subclass includes a "state" key in its `to_json()` output
+ * containing the base64-encoded plugin state. During `from_json()`, the state
+ * is deserialized first and stored in a temporary member (e.g.,
+ * `state_to_apply_`), then applied after the plugin instance is fully
+ * initialized. No filesystem paths or state directories are involved.
  */
 class Plugin
     : public QObject,
@@ -49,13 +62,6 @@ class Plugin
 
   Q_DISABLE_COPY_MOVE (Plugin)
 public:
-  /**
-   * @brief Returns the parent path where the plugin should save its state
-   * directory in (or load it).
-   */
-  using StateDirectoryParentPathProvider =
-    std::function<std::filesystem::path ()>;
-
   enum class InstantiationStatus : std::uint8_t
   {
     Pending,    ///< Instantiation underway
@@ -205,15 +211,6 @@ public:
 
   // ============================================================================
 
-  std::filesystem::path get_state_directory () const
-  {
-    return state_dir_parent_path_provider_ ()
-           / std::filesystem::path (
-             type_safe::get (get_uuid ())
-               .toString (QUuid::WithoutBraces)
-               .toStdString ());
-  }
-
   /**
    * Returns whether the plugin is enabled (not bypassed).
    */
@@ -232,27 +229,6 @@ public:
   // ============================================================================
   // Implementation Interface
   // ============================================================================
-
-public:
-  /**
-   * Saves the state inside the standard state directory.
-   *
-   * @param abs_state_dir If passed, the state will be savedinside this
-   * directory instead of the plugin's state directory. Used when saving
-   * presets.
-   *
-   * @throw ZrythmException If the state could not be saved.
-   */
-  virtual void
-  save_state (std::optional<std::filesystem::path> abs_state_dir) = 0;
-
-  /**
-   * Load the state from the default directory or from @p abs_state_dir if given.
-   *
-   * @throw ZrythmException If the state could not be saved.
-   */
-  virtual void
-  load_state (std::optional<std::filesystem::path> abs_state_dir) = 0;
 
 private:
   virtual void prepare_for_processing_impl (
@@ -294,10 +270,7 @@ protected:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (
-    ProcessorBaseDependencies        dependencies,
-    StateDirectoryParentPathProvider state_path_provider,
-    QObject *                        parent);
+  Plugin (ProcessorBaseDependencies dependencies, QObject * parent);
 
   /**
    * @brief To be called by implementations to generate the default bypass
@@ -323,12 +296,6 @@ protected:
   /** Set to true if instantiation failed and the plugin will be treated as
    * disabled. */
   bool instantiation_failed_ = false;
-
-  /**
-   * @brief Plugins should create a state directory with their UUID as the
-   * directory name under the path provided by this.
-   */
-  StateDirectoryParentPathProvider state_dir_parent_path_provider_;
 
   // ============================================================================
   // DSP Caches

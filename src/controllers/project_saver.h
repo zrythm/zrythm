@@ -127,18 +127,6 @@ private:
    * @throw ZrythmException If the backup dir cannot be created.
    */
   static void set_and_create_next_available_backup_dir ();
-
-  /**
-   * Cleans up unnecessary plugin state dirs from the main project.
-   *
-   * @param main_project The main project.
-   * @param project_dir The project directory being saved to.
-   * @param is_backup Whether this is for a backup.
-   */
-  static void cleanup_plugin_state_dirs (
-    const structure::project::Project &main_project,
-    const std::filesystem::path       &project_dir,
-    bool                               is_backup);
 };
 
 }

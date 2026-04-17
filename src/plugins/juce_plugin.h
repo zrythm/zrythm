@@ -36,15 +36,14 @@ public:
    * @brief Constructor for JucePlugin.
    *
    * @param dependencies Processor dependencies
-   * @param state_path_provider Function to provide state directory path
-   * @param format_manager JUCE format manager for plugin creation
+   * @param create_plugin_instance_async_func Function to create plugin instance
    * @param sample_rate_provider Function to provide current sample rate
    * @param buffer_size_provider Function to provide current buffer size
+   * @param top_level_window_provider Factory for creating plugin host windows
    * @param parent Parent QObject
    */
   JucePlugin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    StateDirectoryParentPathProvider              state_path_provider,
     CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
     std::function<units::sample_rate_t ()> sample_rate_provider,
     std::function<units::sample_u32_t ()>  buffer_size_provider,
@@ -56,9 +55,6 @@ public:
   // ============================================================================
   // Plugin Interface Implementation
   // ============================================================================
-
-  void save_state (std::optional<std::filesystem::path> abs_state_dir) override;
-  void load_state (std::optional<std::filesystem::path> abs_state_dir) override;
 
   units::sample_u32_t get_single_playback_latency () const override;
 

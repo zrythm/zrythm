@@ -17,13 +17,12 @@ namespace zrythm::plugins
 
 JucePlugin::JucePlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  StateDirectoryParentPathProvider              state_path_provider,
   CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
   std::function<units::sample_rate_t ()> sample_rate_provider,
   std::function<units::sample_u32_t ()>  buffer_size_provider,
   PluginHostWindowFactory                top_level_window_provider,
   QObject *                              parent)
-    : Plugin (dependencies, std::move (state_path_provider), parent),
+    : Plugin (dependencies, parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
       sample_rate_provider_ (std::move (sample_rate_provider)),
@@ -592,92 +591,6 @@ JucePlugin::flush_juce_to_zrythm_queue ()
         {
           mapping.zrythm_param->setBaseValue (mapping.juce_param->getValue ());
         }
-    }
-}
-
-void
-JucePlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
-{
-  if (!juce_plugin_)
-    return;
-
-  if (!abs_state_dir)
-    {
-      abs_state_dir = get_state_directory ();
-    }
-
-  try
-    {
-      // Create state directory if it doesn't exist
-      std::filesystem::create_directories (*abs_state_dir);
-
-      // Save JUCE plugin state
-      juce::MemoryBlock state_data;
-      juce_plugin_->getStateInformation (state_data);
-
-      const std::filesystem::path state_file =
-        *abs_state_dir / "juce_plugin_state.dat";
-      QFile file (state_file);
-      if (!file.open (QFile::OpenModeFlag::WriteOnly))
-        {
-          throw std::runtime_error (
-            fmt::format (
-              "Failed to open state file for writing at {}", state_file));
-        }
-      auto bytes_written = file.write (
-        static_cast<const char *> (state_data.getData ()),
-        static_cast<qint64> (state_data.getSize ()));
-      if (bytes_written == -1)
-        {
-          throw std::runtime_error (
-            fmt::format ("Failed to write state file at {}", state_file));
-        }
-
-      // do we need to save parameter values separately?
-    }
-  catch (const std::exception &e)
-    {
-      z_error ("Failed to save JUCE plugin state: {}", e.what ());
-    }
-}
-
-void
-JucePlugin::load_state (std::optional<std::filesystem::path> abs_state_dir)
-{
-  if (!juce_plugin_)
-    return;
-
-  if (!abs_state_dir)
-    {
-      abs_state_dir = get_state_directory ();
-    }
-
-  try
-    {
-      // Load JUCE plugin state
-      const std::filesystem::path state_file =
-        *abs_state_dir / "juce_plugin_state.dat";
-      if (std::filesystem::exists (state_file))
-        {
-          auto contents = utils::io::read_file_contents (state_file);
-          juce_plugin_->setStateInformation (
-            contents.constData (), static_cast<int> (contents.size ()));
-        }
-
-      // do we need to load parameter values separately?
-
-      // Push Zrythm base values to JUCE
-      for (const auto &mapping : parameter_mappings_)
-        {
-          if (mapping.juce_param && mapping.zrythm_param)
-            {
-              mapping.juce_param->setValue (mapping.zrythm_param->baseValue ());
-            }
-        }
-    }
-  catch (const std::exception &e)
-    {
-      z_error ("Failed to load JUCE plugin state: {}", e.what ());
     }
 }
 

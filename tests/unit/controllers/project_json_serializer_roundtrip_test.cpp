@@ -292,7 +292,6 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = project_port_registry,
       .param_registry_ = project_param_registry },
-    [project_dir = this->project_dir] () { return project_dir / "plugins"; },
     nullptr);
   auto * plugin = plugin_ref.get_object_as<plugins::InternalPluginBase> ();
   plugin->set_configuration (config);

@@ -270,17 +270,6 @@ protected:
     auto loaded_plugin_it = loaded_plugins.begin ();
     ASSERT_NE (loaded_plugin_it, loaded_plugins.end ());
 
-    std::visit (
-      [this] (auto &&pl) {
-        auto state_dir = pl->get_state_directory ();
-        EXPECT_FALSE (state_dir.empty ())
-          << "get_state_directory() returned empty path";
-        EXPECT_TRUE (
-          state_dir.string ().find (project_dir_.string ()) != std::string::npos)
-          << "State directory should be under project dir: " << state_dir;
-      },
-      *loaded_plugin_it);
-
     // === Step 4b: Verify param count consistency (no duplication) ===
     const size_t loaded_param_count = std::visit (
       [] (auto &&pl) { return pl->get_parameters ().size (); },

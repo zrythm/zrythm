@@ -36,18 +36,15 @@ public:
   using AudioThreadChecker = std::function<bool ()>;
 
   /**
-   * @brief Constructor for JucePlugin.
+   * @brief Constructor for ClapPlugin.
    *
    * @param dependencies Processor dependencies
-   * @param state_path_provider Function to provide state directory path
-   * @param format_manager JUCE format manager for plugin creation
-   * @param sample_rate_provider Function to provide current sample rate
-   * @param buffer_size_provider Function to provide current buffer size
+   * @param audio_thread_checker Function to check if caller is audio thread
+   * @param host_window_factory Factory for creating plugin host windows
    * @param parent Parent QObject
    */
   ClapPlugin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    StateDirectoryParentPathProvider              state_path_provider,
     AudioThreadChecker                            audio_thread_checker,
     PluginHostWindowFactory                       host_window_factory,
     QObject *                                     parent = nullptr);
@@ -114,9 +111,6 @@ public:
   // ============================================================================
 
   units::sample_u32_t get_single_playback_latency () const override;
-
-  void save_state (std::optional<std::filesystem::path> abs_state_dir) override;
-  void load_state (std::optional<std::filesystem::path> abs_state_dir) override;
 
 protected:
   void prepare_for_processing_impl (

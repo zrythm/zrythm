@@ -24,21 +24,15 @@ public:
    * @brief Constructor for InternalPluginBase.
    *
    * @param dependencies Processor dependencies
-   * @param state_path_provider Function to provide state directory path
    * @param parent Parent QObject
    */
   InternalPluginBase (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    StateDirectoryParentPathProvider              state_path_provider,
     QObject *                                     parent = nullptr);
 
   ~InternalPluginBase () override;
 
 protected:
-  // Plugin interface implementation
-  void save_state (std::optional<std::filesystem::path> abs_state_dir) override;
-  void load_state (std::optional<std::filesystem::path> abs_state_dir) override;
-
   void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;

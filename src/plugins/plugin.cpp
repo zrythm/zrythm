@@ -10,10 +10,8 @@ namespace zrythm::plugins
 
 Plugin::Plugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  StateDirectoryParentPathProvider              state_path_provider,
   QObject *                                     parent)
-    : QObject (parent), zrythm::dsp::ProcessorBase (dependencies, u8"Plugin"),
-      state_dir_parent_path_provider_ (std::move (state_path_provider))
+    : QObject (parent), zrythm::dsp::ProcessorBase (dependencies, u8"Plugin")
 {
   QObject::connect (
     this, &Plugin::instantiationFinished, this, [this] (bool successful) {

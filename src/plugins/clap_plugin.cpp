@@ -260,11 +260,10 @@ private:
 
 ClapPlugin::ClapPlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  StateDirectoryParentPathProvider              state_path_provider,
   AudioThreadChecker                            audio_thread_checker,
   PluginHostWindowFactory                       host_window_factory,
   QObject *                                     parent)
-    : Plugin (dependencies, std::move (state_path_provider), parent),
+    : Plugin (dependencies, parent),
       ClapHostBase (
         "Zrythm",
         "Alexandros Theodotou",
@@ -864,64 +863,6 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
   sync_params_from_clap ();
 
   // TODO: send plugin to sleep if possible
-}
-
-void
-ClapPlugin::save_state (std::optional<std::filesystem::path> abs_state_dir)
-{
-  if (pimpl_->plugin_->canUseState ())
-    {
-      if (!abs_state_dir)
-        {
-          abs_state_dir = get_state_directory ();
-        }
-
-      const std::filesystem::path state_file = *abs_state_dir / "clap_state.dat";
-
-      z_debug ("writing {}'s state to {}", get_name (), state_file);
-      auto state_data = save_state_to_byte_array ();
-
-      // Create state directory if it doesn't exist
-      std::filesystem::create_directories (*abs_state_dir);
-
-      QFile file (state_file);
-      if (!file.open (QFile::OpenModeFlag::WriteOnly))
-        {
-          throw std::runtime_error (
-            fmt::format (
-              "Failed to open state file for writing at {}", state_file));
-        }
-      auto bytes_written = file.write (state_data);
-      if (bytes_written == -1)
-        {
-          throw std::runtime_error (
-            fmt::format ("Failed to write state file at {}", state_file));
-        }
-    }
-}
-
-void
-ClapPlugin::load_state (std::optional<std::filesystem::path> abs_state_dir)
-{
-  if (pimpl_->plugin_->canUseState ())
-    {
-      if (!abs_state_dir)
-        {
-          abs_state_dir = get_state_directory ();
-        }
-
-      // Load CLAP plugin state
-      const std::filesystem::path state_file = *abs_state_dir / "clap_state.dat";
-      if (!std::filesystem::exists (state_file))
-        {
-          z_warning ("no state file found at {}", state_file);
-          return;
-        }
-
-      auto state_data = utils::io::read_file_contents (state_file);
-      z_debug ("loading {}'s state from {}", get_name (), state_file);
-      apply_state_from_byte_array (state_data);
-    }
 }
 
 units::sample_u32_t

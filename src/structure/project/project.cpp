@@ -119,13 +119,6 @@ Project::Project (
               dsp::ProcessorBase::ProcessorBaseDependencies{
                 .port_registry_ = *port_registry_,
                 .param_registry_ = *param_registry_ },
-            .state_dir_path_provider_ =
-              [this] () {
-                return project_directory_path_provider_ (false)
-                       / structure::project::ProjectPathProvider::get_path (
-                         zrythm::structure::project::ProjectPathProvider::
-                           ProjectPath::PluginStates);
-              },
             .create_plugin_instance_async_func_ =
               [plugin_format_manager] (
                 const juce::PluginDescription &description,
@@ -501,16 +494,9 @@ struct PluginBuilderForDeserialization
   {
     if constexpr (std::derived_from<T, plugins::InternalPluginBase>)
       {
-        return std::make_unique<T> (
-          plugins::Plugin::ProcessorBaseDependencies{
-            .port_registry_ = project_.get_port_registry (),
-            .param_registry_ = project_.get_param_registry () },
-          [&project = project_] () {
-            return project.project_directory_path_provider_ (false)
-                   / structure::project::ProjectPathProvider::get_path (
-                     structure::project::ProjectPathProvider::ProjectPath::
-                       PluginStates);
-          });
+        return std::make_unique<T> (plugins::Plugin::ProcessorBaseDependencies{
+          .port_registry_ = project_.get_port_registry (),
+          .param_registry_ = project_.get_param_registry () });
       }
     else if constexpr (std::is_same_v<T, plugins::ClapPlugin>)
       {
@@ -518,12 +504,6 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [&project = project_] () {
-            return project.project_directory_path_provider_ (false)
-                   / structure::project::ProjectPathProvider::get_path (
-                     structure::project::ProjectPathProvider::ProjectPath::
-                       PluginStates);
-          },
           [&project = project_] () {
             return project.audio_engine_->graph_dispatcher ()
               .is_processing_thread ();
@@ -536,12 +516,6 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [&project = project_] () {
-            return project.project_directory_path_provider_ (false)
-                   / structure::project::ProjectPathProvider::get_path (
-                     structure::project::ProjectPathProvider::ProjectPath::
-                       PluginStates);
-          },
           [&project = project_] (
             const juce::PluginDescription &description,
             double initialSampleRate, int initialBufferSize,

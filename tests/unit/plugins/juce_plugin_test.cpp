@@ -197,9 +197,8 @@ private:
     plugin_ = std::make_unique<JucePlugin> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] () { return std::filesystem::path{ "/tmp/test_state" }; }, func,
-      [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
-      createMockTopLevelWindowProvider ());
+      func, [this] () { return sample_rate_; },
+      [this] () { return buffer_size_; }, createMockTopLevelWindowProvider ());
   }
 };
 
@@ -389,8 +388,6 @@ TEST_F (JucePluginTest, StateSavingLoading)
   EXPECT_CALL (*mock_plugin_, getStateInformation (::testing::_))
     .WillOnce ([&test_state] (juce::MemoryBlock &block) { block = test_state; });
 
-  EXPECT_CALL (*mock_plugin_, setStateInformation (::testing::_, 15)).Times (1);
-
   // Setup async callback expectation
   setupJucePlugin (true);
 
@@ -408,9 +405,43 @@ TEST_F (JucePluginTest, StateSavingLoading)
       QCoreApplication::processEvents ();
     }
 
-  // Test state saving/loading
-  plugin_->save_state (std::nullopt);
-  plugin_->load_state (std::nullopt);
+  // Serialize to JSON - this should capture the JUCE plugin state via
+  // getStateInformation() and encode it as base64
+  nlohmann::json json;
+  to_json (json, *plugin_);
+
+  // Verify the state key exists and contains encoded data
+  ASSERT_TRUE (json.contains ("state"));
+  const auto &state_str = json["state"].get<std::string> ();
+  EXPECT_FALSE (state_str.empty ());
+
+  // Verify round-trip: deserialize the state into a new plugin and check
+  // that setStateInformation is called with the correct data
+  auto mock = std::make_unique<MockAudioPluginInstance> ();
+  EXPECT_CALL (*mock, getName ())
+    .WillRepeatedly (::testing::Return ("Test Plugin"));
+  EXPECT_CALL (*mock, releaseResources ()).Times (1);
+  EXPECT_CALL (*mock, setStateInformation (::testing::_, 15))
+    .WillOnce ([] (const void * data, int size) {
+      ASSERT_EQ (size, 15);
+      EXPECT_EQ (
+        std::string (static_cast<const char *> (data), size), "test state data");
+    });
+
+  auto deserialized_plugin = std::make_unique<JucePlugin> (
+    dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    [&mock] (
+      const juce::PluginDescription &, double, int,
+      std::function<void (
+        std::unique_ptr<juce::AudioPluginInstance>, const juce::String &)>
+        callback) { callback (std::move (mock), ""); },
+    [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
+    createMockTopLevelWindowProvider ());
+
+  // Deserialize - this should decode the base64 state and call
+  // setStateInformation
+  from_json (json, *deserialized_plugin);
 }
 
 TEST_F (JucePluginTest, EditorManagement)
@@ -746,7 +777,6 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   auto deserialized_plugin = std::make_unique<JucePlugin> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; },
     [] (
       const juce::PluginDescription &, double, int,
       std::function<void (
@@ -920,7 +950,6 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
   auto deserialized_plugin = std::make_unique<JucePlugin> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; },
     [&mock] (
       const juce::PluginDescription &, double, int,
       std::function<void (

@@ -48,7 +48,6 @@ public:
   {
     plugins::PluginRegistry                      &plugin_registry_;
     dsp::ProcessorBase::ProcessorBaseDependencies processor_base_dependencies_;
-    plugins::Plugin::StateDirectoryParentPathProvider state_dir_path_provider_;
     plugins::JucePlugin::CreatePluginInstanceAsyncFunc
                                            create_plugin_instance_async_func_;
     std::function<units::sample_rate_t ()> sample_rate_provider_;
@@ -97,7 +96,6 @@ private:
           {
             return dependencies_.plugin_registry_.create_object<PluginT> (
               dependencies_.processor_base_dependencies_,
-              dependencies_.state_dir_path_provider_,
               dependencies_.audio_thread_checker_,
               dependencies_.top_level_window_provider_);
           }
@@ -105,14 +103,12 @@ private:
           std::derived_from<PluginT, plugins::InternalPluginBase>)
           {
             return dependencies_.plugin_registry_.create_object<PluginT> (
-              dependencies_.processor_base_dependencies_,
-              dependencies_.state_dir_path_provider_);
+              dependencies_.processor_base_dependencies_);
           }
         else
           {
             return dependencies_.plugin_registry_.create_object<PluginT> (
               dependencies_.processor_base_dependencies_,
-              dependencies_.state_dir_path_provider_,
               dependencies_.create_plugin_instance_async_func_,
               dependencies_.sample_rate_provider_,
               dependencies_.buffer_size_provider_,

@@ -15,11 +15,8 @@ namespace zrythm::plugins
 class TestPlugin : public Plugin
 {
 public:
-  TestPlugin (
-    ProcessorBaseDependencies        dependencies,
-    StateDirectoryParentPathProvider state_path_provider,
-    QObject *                        parent = nullptr)
-      : Plugin (dependencies, std::move (state_path_provider), parent)
+  TestPlugin (ProcessorBaseDependencies dependencies, QObject * parent = nullptr)
+      : Plugin (dependencies, parent)
   {
     auto bypass_ref = generate_default_bypass_param ();
     add_parameter (bypass_ref);
@@ -40,18 +37,6 @@ public:
     Q_EMIT instantiationFinished (successful, error);
   }
 
-  void save_state (std::optional<std::filesystem::path> abs_state_dir) override
-  {
-    save_state_called_ = true;
-    last_save_state_dir_ = abs_state_dir;
-  }
-
-  void load_state (std::optional<std::filesystem::path> abs_state_dir) override
-  {
-    load_state_called_ = true;
-    last_load_state_dir_ = abs_state_dir;
-  }
-
   void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override
@@ -68,15 +53,11 @@ public:
     last_time_info_ = time_info;
   }
 
-  bool                                 save_state_called_ = false;
-  bool                                 load_state_called_ = false;
-  bool                                 prepare_called_ = false;
-  bool                                 process_called_ = false;
-  std::optional<std::filesystem::path> last_save_state_dir_;
-  std::optional<std::filesystem::path> last_load_state_dir_;
-  units::sample_rate_t                 last_sample_rate_;
-  units::sample_u32_t                  last_max_block_length_;
-  dsp::graph::EngineProcessTimeInfo    last_time_info_{
+  bool                              prepare_called_ = false;
+  bool                              process_called_ = false;
+  units::sample_rate_t              last_sample_rate_;
+  units::sample_u32_t               last_max_block_length_;
+  dsp::graph::EngineProcessTimeInfo last_time_info_{
     .g_start_frame_ = units::samples (0),
     .g_start_frame_w_offset_ = units::samples (0),
     .local_offset_ = units::samples (0),
@@ -93,10 +74,9 @@ protected:
     param_registry_ =
       std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
 
-    plugin_ = std::make_unique<TestPlugin> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] () { return std::filesystem::path{ "/tmp/test_state" }; });
+    plugin_ = std::make_unique<
+      TestPlugin> (dsp::ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
@@ -354,55 +334,6 @@ TEST_F (PluginTest, GenerateDefaultParameters)
   EXPECT_EQ (gain->range ().type_, dsp::ParameterRange::Type::GainAmplitude);
 }
 
-TEST_F (PluginTest, GetStateDirectory)
-{
-  // Set configuration
-  auto descriptor = std::make_unique<PluginDescriptor> ();
-  descriptor->name_ = u8"Test Plugin";
-  PluginConfiguration config;
-  config.descr_ = std::move (descriptor);
-  plugin_->set_configuration (config);
-
-  auto state_dir = plugin_->get_state_directory ();
-  EXPECT_TRUE (
-    state_dir.string ().find ("/tmp/test_state") != std::string::npos);
-  EXPECT_TRUE (
-    state_dir.string ().find (
-      type_safe::get (plugin_->get_uuid ())
-        .toString (QUuid::WithoutBraces)
-        .toStdString ())
-    != std::string::npos);
-}
-
-TEST_F (PluginTest, SaveAndLoadState)
-{
-  // Set configuration
-  auto descriptor = std::make_unique<PluginDescriptor> ();
-  descriptor->name_ = u8"Test Plugin";
-  PluginConfiguration config;
-  config.descr_ = std::move (descriptor);
-  plugin_->set_configuration (config);
-
-  // Test save state
-  plugin_->save_state (std::nullopt);
-  EXPECT_TRUE (plugin_->save_state_called_);
-  EXPECT_FALSE (plugin_->last_save_state_dir_.has_value ());
-
-  // Test save state with custom directory
-  std::filesystem::path custom_dir{ "/custom/state/dir" };
-  plugin_->save_state (custom_dir);
-  EXPECT_EQ (plugin_->last_save_state_dir_, custom_dir);
-
-  // Test load state
-  plugin_->load_state (std::nullopt);
-  EXPECT_TRUE (plugin_->load_state_called_);
-  EXPECT_FALSE (plugin_->last_load_state_dir_.has_value ());
-
-  // Test load state with custom directory
-  plugin_->load_state (custom_dir);
-  EXPECT_EQ (plugin_->last_load_state_dir_, custom_dir);
-}
-
 TEST_F (PluginTest, JsonSerializationRoundtrip)
 {
   // Set configuration
@@ -423,8 +354,7 @@ TEST_F (PluginTest, JsonSerializationRoundtrip)
   // Create new plugin from JSON
   TestPlugin deserialized (
     dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; });
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
   from_json (j, deserialized);
 
   // Verify state

@@ -97,9 +97,6 @@ TEST_F (ProjectSaverTest, MakeProjectDirs)
     structure::project::ProjectPathProvider::ProjectPath::ExportsDir,
     structure::project::ProjectPathProvider::ProjectPath::ExportStemsDir,
     structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir,
-    structure::project::ProjectPathProvider::ProjectPath::PluginStates,
-    structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_COPIES,
-    structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_LINKS,
   };
 
   for (auto dir_type : expected_dirs)

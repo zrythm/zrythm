@@ -39,7 +39,7 @@ protected:
     auto ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      [] () { return std::filesystem::path (); }, nullptr);
+      nullptr);
     grp.append_plugin (ref);
     return ref;
   }

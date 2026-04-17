@@ -81,7 +81,7 @@ protected:
     auto ref = plugin_registry_->create_object<plugins::InternalPluginBase> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      [] { return std::filesystem::path ("/tmp"); }, nullptr);
+      nullptr);
     auto * pl = ref.get_object_as<plugins::InternalPluginBase> ();
     pl->set_configuration (config);
 

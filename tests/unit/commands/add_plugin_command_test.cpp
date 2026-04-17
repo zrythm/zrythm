@@ -39,7 +39,7 @@ protected:
       plugins::InternalPluginBase> (
       dsp::ProcessorBase::ProcessorBaseDependencies{
         .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+      nullptr);
   }
 
   static auto
@@ -85,12 +85,12 @@ TEST_F (AddPluginCommandTest, RedoAddsPluginAtIndex)
     plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+    nullptr);
   auto dummy_plugin2 = plugin_registry_.create_object<
     plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+    nullptr);
 
   plugin_group_->append_plugin (dummy_plugin1);
   plugin_group_->append_plugin (dummy_plugin2);
@@ -170,7 +170,7 @@ TEST_F (AddPluginCommandTest, MultiplePluginsSameGroup)
     plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+    nullptr);
 
   AddPluginCommand command1 (*plugin_group_, test_plugin_ref_);
   AddPluginCommand command2 (*plugin_group_, second_plugin_ref);
@@ -204,7 +204,7 @@ TEST_F (AddPluginCommandTest, AddPluginAtIndexBeyondEnd)
   auto dummy_plugin = plugin_registry_.create_object<plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+    nullptr);
 
   plugin_group_->append_plugin (dummy_plugin);
 
@@ -226,7 +226,7 @@ TEST_F (AddPluginCommandTest, AddPluginAtStart)
   auto dummy_plugin = plugin_registry_.create_object<plugins::InternalPluginBase> (
     dsp::ProcessorBase::ProcessorBaseDependencies{
       .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    [] () { return std::filesystem::path{ "/tmp/test_state" }; }, nullptr);
+    nullptr);
 
   plugin_group_->append_plugin (dummy_plugin);
 

@@ -18,13 +18,6 @@
 namespace zrythm::controllers
 {
 
-inline auto
-plugin_state_dir_projection (const plugins::PluginPtrVariant &pl_var)
-{
-  return std::visit (
-    [] (auto &&pl) { return pl->get_state_directory (); }, pl_var);
-}
-
 void
 ProjectSaver::make_project_dirs (const std::filesystem::path &project_directory)
 {
@@ -33,10 +26,7 @@ ProjectSaver::make_project_dirs (const std::filesystem::path &project_directory)
     { structure::project::ProjectPathProvider::ProjectPath::BackupsDir,
       structure::project::ProjectPathProvider::ProjectPath::ExportsDir,
       structure::project::ProjectPathProvider::ProjectPath::ExportStemsDir,
-      structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir,
-      structure::project::ProjectPathProvider::ProjectPath::PluginStates,
-      structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_COPIES,
-      structure::project::ProjectPathProvider::ProjectPath::PLUGIN_EXT_LINKS })
+      structure::project::ProjectPathProvider::ProjectPath::AudioFilePoolDir })
     {
       const auto dir =
         project_directory
@@ -309,72 +299,6 @@ ProjectSaver::autosave_cb (void * data)
   return 0;
 }
 
-void
-ProjectSaver::cleanup_plugin_state_dirs (
-  const structure::project::Project &main_project,
-  const std::filesystem::path       &project_dir,
-  bool                               is_backup)
-{
-  z_debug ("cleaning plugin state dirs{}...", is_backup ? " for backup" : "");
-
-  std::vector<plugins::PluginPtrVariant> plugins;
-  for (
-    const auto &pl_var :
-    main_project.get_plugin_registry ().get_hash_map () | std::views::values)
-    {
-      plugins.push_back (pl_var);
-    }
-// TODO: if backup, add the backup's values too
-#if 0
-  for (
-    const auto &pl_var :
-    project_.get_plugin_registry ().get_hash_map () | std::views::values)
-    {
-      plugins.push_back (pl_var);
-    }
-#endif
-
-  for (const auto &[i, pl_var] : utils::views::enumerate (plugins))
-    {
-      z_debug ("plugin {}: {}", i, plugin_state_dir_projection (pl_var));
-    }
-
-  auto plugin_states_path =
-    project_dir
-    / structure::project::ProjectPathProvider::get_path (
-      zrythm::structure::project::ProjectPathProvider::ProjectPath::PluginStates);
-
-  try
-    {
-      QDir srcdir (
-        utils::Utf8String::from_path (plugin_states_path).to_qstring ());
-      const auto entries =
-        srcdir.entryInfoList (QDir::Files | QDir::NoDotAndDotDot);
-
-      for (const auto &filename : entries)
-        {
-          const auto filename_str =
-            utils::Utf8String::from_qstring (filename.fileName ()).to_path ();
-          const auto full_path = plugin_states_path / filename_str;
-
-          bool found = std::ranges::contains (
-            plugins, filename_str, plugin_state_dir_projection);
-          if (!found)
-            {
-              z_debug ("removing unused plugin state in {}", full_path);
-              utils::io::rmdir (full_path, true);
-            }
-        }
-    }
-  catch (const ZrythmException &e)
-    {
-      z_critical ("Failed to open directory: {}", e.what ());
-      return;
-    }
-
-  z_debug ("cleaned plugin state directories");
-}
-
 QFuture<QString>
 ProjectSaver::save (
   const structure::project::Project        &project,
@@ -438,35 +362,6 @@ ProjectSaver::save (
     project.pool_->write_to_disk (is_backup);
   };
 
-  const auto write_plugin_states_task = [&project, is_backup, path] () {
-    if (is_backup)
-      {
-        throw std::runtime_error ("unimplemented");
-
-        /* copy plugin states */
-        auto prj_pl_states_dir =
-          path
-          / structure::project::ProjectPathProvider::get_path (
-            zrythm::structure::project::ProjectPathProvider::ProjectPath::
-              PluginsDir);
-        auto prj_backup_pl_states_dir =
-          path /* FIXME: this should be the backup path, not the main path */
-          / structure::project::ProjectPathProvider::get_path (
-            zrythm::structure::project::ProjectPathProvider::ProjectPath::
-              PluginsDir);
-        utils::io::copy_dir (
-          prj_backup_pl_states_dir, prj_pl_states_dir, false, true);
-      }
-
-    if (!is_backup)
-      {
-        /* cleanup unused plugin states */
-        cleanup_plugin_state_dirs (project, path, is_backup);
-      }
-
-    /* TODO verify all plugin states exist */
-  };
-
   const auto build_json_task =
     [&project, &ui_state, &undo_stack, app_version, title] () {
       z_debug ("serializing project to json...");
@@ -524,7 +419,6 @@ ProjectSaver::save (
 
   return QtConcurrent::run (create_dirs_task)
     .then (engine, write_pool_task)
-    .then (engine, write_plugin_states_task)
     .then (engine, build_json_task)
     .then (QtFuture::Launch::Async, validate_json_task)
     .then (QtFuture::Launch::Sync, write_json_task)

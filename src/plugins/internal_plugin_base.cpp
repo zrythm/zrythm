@@ -8,9 +8,8 @@ namespace zrythm::plugins
 
 InternalPluginBase::InternalPluginBase (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  StateDirectoryParentPathProvider              state_path_provider,
   QObject *                                     parent)
-    : Plugin (dependencies, std::move (state_path_provider), parent)
+    : Plugin (dependencies, parent)
 {
   // Connect to configuration changes
   connect (
@@ -46,20 +45,6 @@ void
 InternalPluginBase::on_ui_visibility_changed ()
 {
   // TODO
-}
-
-void
-InternalPluginBase::save_state (
-  std::optional<std::filesystem::path> abs_state_dir)
-{
-  // Minimal implementation - do nothing for dummy plugin
-}
-
-void
-InternalPluginBase::load_state (
-  std::optional<std::filesystem::path> abs_state_dir)
-{
-  // Minimal implementation - do nothing for dummy plugin
 }
 
 void

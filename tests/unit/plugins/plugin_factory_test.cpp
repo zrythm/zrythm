@@ -101,8 +101,6 @@ protected:
       .plugin_registry_ = *plugin_registry_,
       .processor_base_dependencies_{
                                     .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      .state_dir_path_provider_ =
-        [] () { return std::filesystem::path{ "/tmp/test_state" }; },
       .create_plugin_instance_async_func_ = create_mock_async_func (),
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
@@ -317,11 +315,6 @@ TEST_F (PluginFactoryTest, FactoryDependenciesUsed)
 
   EXPECT_NE (plugin, nullptr);
 
-  // Verify plugin has expected state directory path provider
-  auto state_dir = plugin->get_state_directory ();
-  EXPECT_TRUE (
-    state_dir.string ().find ("/tmp/test_state") != std::string::npos);
-
   // Verify plugin is in registry
   EXPECT_TRUE (plugin_registry_->contains (plugin->get_uuid ()));
 }
@@ -382,8 +375,6 @@ TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
     .plugin_registry_ = *plugin_registry_,
     .processor_base_dependencies_{
                                   .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    .state_dir_path_provider_ =
-      [] () { return std::filesystem::path{ "/tmp/test_state" }; },
     .create_plugin_instance_async_func_ = create_mock_async_func (),
     .sample_rate_provider_ =
       [custom_sample_rate] () { return custom_sample_rate; },
