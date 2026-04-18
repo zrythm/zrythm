@@ -284,7 +284,11 @@ ClapPlugin::ClapPlugin (
   gain_id_ = gain_ref.id ();
 }
 
-ClapPlugin::~ClapPlugin () = default;
+ClapPlugin::~ClapPlugin ()
+{
+  if (pimpl_ && pimpl_->library_.is_loaded ())
+    unload_current_plugin ();
+}
 
 void
 ClapPlugin::on_configuration_changed (
