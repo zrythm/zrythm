@@ -3,6 +3,7 @@
 
 #include "dsp/processor_base.h"
 #include "utils/dsp.h"
+#include "utils/raii_utils.h"
 
 namespace zrythm::dsp
 {
@@ -90,6 +91,9 @@ ProcessorBase::prepare_for_processing (
         node, sample_rate, max_block_length);
     }
 
+  processing_caches_->change_tracker_.prepare (
+    processing_caches_->live_params_.size ());
+
   custom_prepare_for_processing (node, sample_rate, max_block_length);
 }
 
@@ -139,14 +143,21 @@ ProcessorBase::process_block (
       time_nfo.nframes_ = nframes;
     }
 
-  // process all parameters first
-  for (const auto &param : processing_caches_->live_params_)
+  // process all parameters first and detect changes
+  const ScopedBool processing_guard (processing_caches_->is_processing_);
+  for (
+    const auto &[i, param] :
+    std::views::enumerate (processing_caches_->live_params_))
     {
       param->process_block (time_nfo, transport, tempo_map);
+      processing_caches_->change_tracker_.record_if_changed (i, param);
     }
 
   // do processor logic
   custom_process_block (time_nfo, transport, tempo_map);
+
+  // clear changes for next cycle
+  processing_caches_->change_tracker_.clear ();
 
   // clear input ports for next cycle
   for (const auto &in_port_var : processing_caches_->live_input_ports_)

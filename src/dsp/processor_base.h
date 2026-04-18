@@ -21,6 +21,66 @@ namespace zrythm::dsp
  */
 class ProcessorBase : public dsp::graph::IProcessable
 {
+public:
+  /**
+   * @brief Tracks parameter value changes across processing cycles.
+   *
+   * Built during the existing parameter loop in process_block() — no extra
+   * passes. prev_values_ starts at -1.f (sentinel, since normalized values
+   * are [0,1]) so the first cycle naturally marks all params as changed.
+   *
+   * Only valid to read during custom_process_block(); cleared afterward.
+   */
+  struct ParameterChangeTracker
+  {
+    struct Change
+    {
+      size_t index;
+      float  base_value;
+      float  automated_value;
+      float  modulated_value;
+    };
+
+    /** Returns the changes accumulated during the current cycle. */
+    const auto &changes () const { return changes_; }
+
+  private:
+    friend class ProcessorBase;
+
+    /** Changes accumulated during the current cycle's parameter loop. */
+    std::vector<Change> changes_;
+
+    /** Previous cycle's modulated values, parallel to live_params_. */
+    std::vector<float> prev_values_;
+
+    /** Resets state for a new parameter count (called from
+     * prepare_for_processing()). */
+    void prepare (size_t count)
+    {
+      prev_values_.assign (count, -1.f);
+      changes_.clear ();
+      changes_.reserve (count);
+    }
+
+    /** Compares current modulated value against previous cycle; records a
+     * Change if different. Called once per parameter per process_block(). */
+    void record_if_changed (size_t i, dsp::ProcessorParameter * param)
+    {
+      float modulated = param->currentValue ();
+      if (prev_values_[i] != modulated)
+        {
+          changes_.push_back (
+            { i, param->baseValue (), param->valueAfterAutomationApplied (),
+              modulated });
+          prev_values_[i] = modulated;
+        }
+    }
+
+    /** Clears the change list after custom_process_block() returns. */
+    void clear () { changes_.clear (); }
+  };
+
+private:
   struct BaseProcessingCache
   {
     units::sample_rate_t sample_rate_;
@@ -29,6 +89,17 @@ class ProcessorBase : public dsp::graph::IProcessable
     std::vector<dsp::ProcessorParameter *> live_params_;
     std::vector<dsp::PortPtrVariant>       live_input_ports_;
     std::vector<dsp::PortPtrVariant>       live_output_ports_;
+
+    ParameterChangeTracker change_tracker_;
+
+    /**
+     * @brief True while inside process_block(), false otherwise.
+     *
+     * Used to enforce that change_tracker_ is only accessed during
+     * custom_process_block(). Set at the start of process_block() and
+     * cleared before returning.
+     */
+    bool is_processing_ = false;
   };
 
 public:
@@ -56,6 +127,18 @@ public:
   auto &get_input_ports () const { return input_ports_; }
   auto &get_output_ports () const { return output_ports_; }
   auto &get_parameters () const { return params_; }
+
+  /**
+   * @brief Returns the change tracker.
+   *
+   * Only valid to call during custom_process_block() (while is_processing_
+   * is true).
+   */
+  const ParameterChangeTracker &change_tracker () const noexcept
+  {
+    assert (processing_caches_ && processing_caches_->is_processing_);
+    return processing_caches_->change_tracker_;
+  }
 
   // ============================================================================
   // IProcessable Interface
