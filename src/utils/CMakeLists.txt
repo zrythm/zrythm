@@ -91,6 +91,7 @@ target_sources(zrythm_utils_lib
       playback_cache_scheduler.h
       qsettings_backend.h
       qt.h
+      raii_utils.h
       ranges.h
       resampler.h
       ring_buffer.h
