@@ -1664,6 +1664,20 @@ ClapPlugin::save_state_to_byte_array () const
   return state_data;
 }
 
+std::string
+ClapPlugin::save_state_impl () const
+{
+  auto data = save_state_to_byte_array ();
+  return data.toBase64 ().toStdString ();
+}
+
+void
+ClapPlugin::load_state_impl (const std::string &base64_state)
+{
+  state_to_apply_ =
+    QByteArray::fromBase64 (QByteArray::fromStdString (base64_state));
+}
+
 void
 ClapPlugin::apply_state_from_byte_array (const QByteArray &data)
 {
@@ -1690,11 +1704,9 @@ void
 to_json (nlohmann::json &j, const ClapPlugin &p)
 {
   to_json (j, static_cast<const Plugin &> (p));
-  auto state_data = p.save_state_to_byte_array ();
-  if (!state_data.isEmpty ())
-    {
-      j[ClapPlugin::kStateKey] = state_data.toBase64 ().toStdString ();
-    }
+  auto state = p.save_state_impl ();
+  if (!state.empty ())
+    j[ClapPlugin::kStateKey] = std::move (state);
 }
 
 void
@@ -1703,11 +1715,7 @@ from_json (const nlohmann::json &j, ClapPlugin &p)
   // State must be deserialized first, because the Plugin deserialization
   // may cause an instantiation
   if (j.contains (ClapPlugin::kStateKey))
-    {
-      auto state_str = j[ClapPlugin::kStateKey].get<std::string> ();
-      p.state_to_apply_ =
-        QByteArray::fromBase64 (QByteArray::fromStdString (state_str));
-    }
+    p.load_state_impl (j[ClapPlugin::kStateKey].get<std::string> ());
 
   from_json (j, static_cast<Plugin &> (p));
 }

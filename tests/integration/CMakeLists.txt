@@ -3,7 +3,7 @@
 
 add_executable(zrythm_integration_tests
   bundled_plugins_scan_test.cpp
-  plugin_param_state_test.cpp
+  plugin_integration_test.cpp
   project_serialization_roundtrip_test.cpp
 )
 

@@ -162,6 +162,18 @@ Plugin::init_param_caches ()
   bypass_param_rt_ = bypassParameter ();
 }
 
+std::string
+Plugin::save_state () const
+{
+  return save_state_impl ();
+}
+
+void
+Plugin::load_state (const std::string &base64_state)
+{
+  load_state_impl (base64_state);
+}
+
 void
 to_json (nlohmann::json &j, const Plugin &p)
 {

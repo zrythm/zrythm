@@ -66,6 +66,9 @@ protected:
   void
   process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept override;
 
+  std::string save_state_impl () const override;
+  void        load_state_impl (const std::string &base64_state) override;
+
 private Q_SLOTS:
   /**
    * @brief Handle configuration changes.

@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include <QCoreApplication>
@@ -24,6 +25,19 @@ public:
     int     argc = 0;
     char ** argv = nullptr;
     app_ = std::make_unique<QCoreApplication> (argc, argv);
+  }
+
+  /**
+   * @brief Processes QCoreApplication events until @p cond returns true;
+   *
+   */
+  static void process_events_until_true (const std::function<bool ()> &cond)
+  {
+    constexpr auto max_calls = 100;
+    for (int i = 0; i < max_calls && !cond (); ++i)
+      {
+        QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+      }
   }
 
 private:

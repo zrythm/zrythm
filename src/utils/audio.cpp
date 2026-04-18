@@ -1,11 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/dsp.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
+#include "utils/units.h"
 
 #if defined(__FreeBSD__)
 #  include <sys/sysctl.h>
@@ -297,6 +300,28 @@ AudioBuffer::normalize_peak ()
       utils::float_ranges::normalize (
         write_ptr, write_ptr, static_cast<size_t> (getNumSamples ()));
     }
+}
+
+bool
+buffer_has_audio (
+  const juce::AudioSampleBuffer &buffer,
+  size_t                         offset,
+  size_t                         num_frames,
+  float                          threshold)
+{
+  assert (
+    units::samples (offset + num_frames)
+    <= units::samples (buffer.getNumSamples ()));
+  for (const auto &ch : std::views::iota (0, buffer.getNumChannels ()))
+    {
+      const auto * samples = buffer.getReadPointer (ch);
+      for (const auto i : std::views::iota (offset, offset + num_frames))
+        {
+          if (std::abs (samples[i]) > threshold)
+            return true;
+        }
+    }
+  return false;
 }
 
 } // namespace zrythm::utils::audio

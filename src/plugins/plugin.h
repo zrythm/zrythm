@@ -230,6 +230,21 @@ public:
   // Implementation Interface
   // ============================================================================
 
+public:
+  /**
+   * @brief Serializes the plugin's internal state to a base64-encoded string.
+   *
+   * @return Base64-encoded state, or empty string if no state is available.
+   */
+  std::string save_state () const;
+
+  /**
+   * @brief Queues a previously saved state to be applied to the plugin.
+   *
+   * The state will be applied during the next processing cycle.
+   */
+  void load_state (const std::string &base64_state);
+
 private:
   virtual void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
@@ -252,6 +267,9 @@ private:
     dsp::graph::EngineProcessTimeInfo time_nfo,
     const dsp::ITransport            &transport,
     const dsp::TempoMap              &tempo_map) noexcept;
+
+  virtual std::string save_state_impl () const = 0;
+  virtual void        load_state_impl (const std::string &base64_state) = 0;
 
   // ============================================================================
 

@@ -151,6 +151,16 @@ public:
   void normalize_peak ();
 };
 
+/**
+ * Returns true if any sample in the given JUCE buffer exceeds @p threshold.
+ */
+bool
+buffer_has_audio (
+  const juce::AudioSampleBuffer &buffer,
+  size_t                         offset,
+  size_t                         num_frames,
+  float                          threshold = 1e-6f);
+
 }; // namespace zrythm::utils::audio
 
 // TODO

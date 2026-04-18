@@ -181,6 +181,9 @@ private:
    */
   QByteArray save_state_to_byte_array () const;
 
+  std::string save_state_impl () const override;
+  void        load_state_impl (const std::string &base64_state) override;
+
   /**
    * @brief Applies state from a QByteArray to the CLAP plugin.
    */

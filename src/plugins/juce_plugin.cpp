@@ -641,32 +641,41 @@ JucePlugin::hide_editor ()
   editor_visible_ = false;
 }
 
+std::string
+JucePlugin::save_state_impl () const
+{
+  if (!juce_plugin_)
+    return {};
+
+  juce::MemoryBlock state_data;
+  juce_plugin_->getStateInformation (state_data);
+  return state_data.toBase64Encoding ().toStdString ();
+}
+
+void
+JucePlugin::load_state_impl (const std::string &base64_state)
+{
+  state_to_apply_.emplace ();
+  state_to_apply_->fromBase64Encoding (base64_state);
+}
+
 void
 to_json (nlohmann::json &j, const JucePlugin &p)
 {
   to_json (j, static_cast<const Plugin &> (p));
-  if (p.juce_plugin_)
-    {
-      juce::MemoryBlock state_data;
-      p.juce_plugin_->getStateInformation (state_data);
-      auto encoded = state_data.toBase64Encoding ();
-      j[JucePlugin::kStateKey] = encoded.toStdString ();
-    }
+  auto state = p.save_state ();
+  if (!state.empty ())
+    j[JucePlugin::kStateKey] = std::move (state);
 }
+
 void
 from_json (const nlohmann::json &j, JucePlugin &p)
 {
-  // Note that state must be deserialized first, because the Plugin
-  // deserialization may cause an instantiation
+  // State must be deserialized first, because the Plugin deserialization
+  // may cause an instantiation
   if (j.contains (JucePlugin::kStateKey))
-    {
-      std::string state_str;
-      j[JucePlugin::kStateKey].get_to (state_str);
-      p.state_to_apply_.emplace ();
-      p.state_to_apply_->fromBase64Encoding (state_str);
-    }
+    p.load_state (j[JucePlugin::kStateKey].get<std::string> ());
 
-  // Now that we have the state, continue deserializing base Plugin...
   from_json (j, static_cast<Plugin &> (p));
 }
 

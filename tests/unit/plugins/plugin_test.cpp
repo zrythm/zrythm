@@ -53,6 +53,9 @@ public:
     last_time_info_ = time_info;
   }
 
+  std::string save_state_impl () const override { return {}; }
+  void        load_state_impl (const std::string &) override { }
+
   bool                              prepare_called_ = false;
   bool                              process_called_ = false;
   units::sample_rate_t              last_sample_rate_;
