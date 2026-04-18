@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -13,6 +14,9 @@
 #include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
+#include "utils/qt.h"
+
+#include <QTimer>
 
 namespace zrythm::plugins
 {
@@ -245,6 +249,14 @@ public:
    */
   void load_state (const std::string &base64_state);
 
+  /**
+   * @brief Flushes plugin-reported parameter values to Zrythm params.
+   *
+   * Called on the main thread by a timer (~20ms). Exchanges pending_value
+   * atomics and calls setBaseValue() for any non-sentinel values.
+   */
+  void flush_plugin_values ();
+
 private:
   virtual void prepare_for_processing_impl (
     units::sample_rate_t sample_rate,
@@ -341,6 +353,61 @@ protected:
   dsp::ProcessorParameter *     bypass_param_rt_{};
 
   // ============================================================================
+  // Parameter Synchronization
+  // ============================================================================
+
+  /**
+   * @brief Per-parameter state for bidirectional plugin sync.
+   */
+  struct ParamSync
+  {
+    struct Entry
+    {
+      /**
+       * One-shot feedback guard: set when the plugin reports a value.
+       * On the next audio cycle, if the computed value matches, the send
+       * is skipped and the guard is consumed (reset to -1.f).
+       * Audio thread only.
+       */
+      float last_from_plugin = -1.f;
+
+      /**
+       * Cross-thread bridge: audio thread stores normalized value with
+       * release ordering; main thread exchanges with -1.f using acq_rel.
+       * -1.f means no pending value.
+       */
+      std::atomic<float> pending_value{ -1.f };
+
+      Entry () = default;
+      Entry (const Entry &) = delete;
+      Entry &operator= (const Entry &) = delete;
+      Entry (Entry &&other) noexcept
+          : last_from_plugin (other.last_from_plugin),
+            pending_value (other.pending_value.load (std::memory_order_relaxed))
+      {
+      }
+      Entry &operator= (Entry &&other) noexcept
+      {
+        if (this != &other)
+          {
+            last_from_plugin = other.last_from_plugin;
+            pending_value.store (
+              other.pending_value.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
+          }
+        return *this;
+      }
+    };
+
+    /** Parallel to ProcessorBase's live_params_. */
+    std::vector<Entry> entries;
+
+    void prepare (size_t count) { entries.resize (count); }
+  };
+
+  ParamSync param_sync_;
+
+  // ============================================================================
 
 private:
   /** Setting this plugin was instantiated with. */
@@ -360,6 +427,13 @@ private:
    * @brief Flag to error out if set_configuration() is called more than once.
    */
   bool set_configuration_called_{};
+
+  /**
+   * @brief Timer that flushes plugin→host param changes on the main thread.
+   * Started in custom_prepare_for_processing(), stopped in
+   * custom_release_resources().
+   */
+  utils::QObjectUniquePtr<QTimer> param_flush_timer_;
 };
 
 class CarlaNativePlugin;

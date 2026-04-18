@@ -4,7 +4,6 @@
 #pragma once
 
 #include "plugins/plugin.h"
-#include "utils/mpmc_queue.h"
 
 #include <QTimer>
 
@@ -159,13 +158,6 @@ private:
   void create_ports_from_clap_plugin ();
   void create_parameters_from_clap_plugin ();
   void rebuild_clap_param_map ();
-  void sync_params_from_clap ();
-
-  /**
-   * @brief Flushes queued CLAP param changes to Zrythm params on the main
-   * thread.
-   */
-  void flush_clap_params_to_zrythm ();
 
   void scanParams ();
 
@@ -202,8 +194,7 @@ private:
    *
    * Only written by rebuild_clap_param_map() on the main thread before
    * activation. Read on the audio thread during process_impl()
-   * (generatePluginInputEvents, sync_params_from_clap) and on the main thread
-   * via timer (flush_clap_params_to_zrythm). Safe because audio processing
+   * (generatePluginInputEvents). Safe because audio processing
    * starts after prepare_for_processing_impl(), which is called after the map
    * is built.
    */
@@ -218,20 +209,14 @@ private:
   std::unordered_map<dsp::ProcessorParameter *, clap_id> zrythm_to_clap_param_;
 
   /**
-   * @brief Pending CLAP param changes to apply on the main thread.
-   * Each entry is {clap_id, normalized_value}.
+   * @brief Mapping from CLAP param ID to parameter index (parallel to
+   * get_parameters()).
+   *
+   * Same thread-safety contract as clap_to_zrythm_param_. Used by
+   * handlePluginOutputEvents() to write plugin-reported values to
+   * param_sync_.
    */
-  struct ClapParamChange
-  {
-    clap_id id;
-    float   normalized_value;
-  };
-  MPMCQueue<ClapParamChange> clap_to_zrythm_queue_;
-
-  /**
-   * @brief Timer that flushes CLAP param changes to Zrythm on the main thread.
-   */
-  utils::QObjectUniquePtr<QTimer> clap_param_flush_timer_;
+  std::unordered_map<clap_id, size_t> clap_id_to_param_index_;
 };
 
 } // namespace zrythm::plugins

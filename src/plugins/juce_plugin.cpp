@@ -27,7 +27,6 @@ JucePlugin::JucePlugin (
         std::move (create_plugin_instance_async_func)),
       sample_rate_provider_ (std::move (sample_rate_provider)),
       buffer_size_provider_ (std::move (buffer_size_provider)),
-      juce_param_flush_timer_ (utils::make_qobject_unique<QTimer> (this)),
       top_level_window_provider_ (std::move (top_level_window_provider))
 {
   // Connect to configuration changes
@@ -39,11 +38,6 @@ JucePlugin::JucePlugin (
   connect (
     this, &Plugin::uiVisibleChanged, this,
     &JucePlugin::on_ui_visibility_changed);
-
-  // Connect param flush timer once; started when mappings are built
-  connect (juce_param_flush_timer_.get (), &QTimer::timeout, this, [this] () {
-    flush_juce_to_zrythm_queue ();
-  });
 
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
@@ -74,12 +68,11 @@ JucePlugin::on_configuration_changed (
   // Reinitialize plugin with new configuration
   if (juce_plugin_)
     {
-      juce_param_flush_timer_->stop ();
       juce_plugin_->releaseResources ();
       juce_plugin_.reset ();
       parameter_mappings_.clear ();
       juce_param_index_to_mapping_.clear ();
-      juce_to_zrythm_queue_.clear ();
+      zrythm_param_index_to_mapping_.clear ();
     }
 
   initialize_juce_plugin_async (generateNewPluginPortsAndParams);
@@ -160,13 +153,15 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
 
           if (generateNewPluginPortsAndParams)
             {
-              // Fresh plugin: queue all param indices so the initial JUCE values
-              // (after setStateInformation) get flushed to Zrythm params.
+              // Fresh plugin: sync JUCE's current values (after
+              // setStateInformation) to Zrythm params directly — we're on the
+              // message thread.
               for (const auto &mapping : parameter_mappings_)
                 {
-                  juce_to_zrythm_queue_.push_back (mapping.juce_param_index);
+                  if (mapping.juce_param && mapping.zrythm_param)
+                    mapping.zrythm_param->setBaseValue (
+                      mapping.juce_param->getValue ());
                 }
-              flush_juce_to_zrythm_queue ();
             }
           else
             {
@@ -278,7 +273,7 @@ JucePlugin::create_parameters_from_juce_plugin ()
   // Clear existing mappings
   parameter_mappings_.clear ();
   juce_param_index_to_mapping_.clear ();
-  juce_to_zrythm_queue_.clear ();
+  zrythm_param_index_to_mapping_.clear ();
 
   for (const auto &param : processor.getParameters ())
     {
@@ -290,6 +285,7 @@ JucePlugin::create_parameters_from_juce_plugin ()
       // Try to find an existing Zrythm param with the same unique ID
       // (happens during deserialization — params already restored from JSON)
       dsp::ProcessorParameter * zrythm_param = nullptr;
+      size_t                    zrythm_param_index = 0;
       for (const auto &param_ref : get_parameters ())
         {
           auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
@@ -298,6 +294,7 @@ JucePlugin::create_parameters_from_juce_plugin ()
               zrythm_param = p;
               break;
             }
+          ++zrythm_param_index;
         }
 
       if (zrythm_param == nullptr)
@@ -329,6 +326,7 @@ JucePlugin::create_parameters_from_juce_plugin ()
           zrythm_param =
             zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
           zrythm_param->set_automatable (param->isAutomatable ());
+          zrythm_param_index = get_parameters ().size () - 1;
         }
 
       // Store mapping (always, even for existing params)
@@ -337,21 +335,15 @@ JucePlugin::create_parameters_from_juce_plugin ()
         .juce_param = param,
         .zrythm_param = zrythm_param,
         .juce_param_index = juce_idx,
-        .juce_param_listener =
-          std::make_unique<JuceParamListener> (juce_to_zrythm_queue_, *this)
+        .zrythm_param_index = zrythm_param_index,
+        .juce_param_listener = std::make_unique<JuceParamListener> (*this)
       };
       param->addListener (mapping.juce_param_listener.get ());
+      const size_t mapping_index = parameter_mappings_.size ();
       parameter_mappings_.emplace_back (std::move (mapping));
-      juce_param_index_to_mapping_[juce_idx] = parameter_mappings_.size () - 1;
+      juce_param_index_to_mapping_[juce_idx] = mapping_index;
+      zrythm_param_index_to_mapping_[zrythm_param_index] = mapping_index;
     }
-
-  // Ensure the queue can hold all params changing simultaneously
-  // (use 2x to avoid drops when the audio thread pushes faster than the
-  // timer drains)
-  juce_to_zrythm_queue_.reserve (parameter_mappings_.size () * 2);
-
-  // Start timer to flush JUCE -> Zrythm param changes on the message thread
-  juce_param_flush_timer_->start (std::chrono::milliseconds (20));
 }
 
 units::sample_u32_t
@@ -473,7 +465,7 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
         }
     }
 
-  // Sync parameters to JUCE and process audio.
+  // Sync changed parameters to JUCE and process audio.
   //
   // JUCE's VST3Parameter::setValue() internally calls
   // MessageManager::isThisTheMessageThread() which acquires a std::mutex to
@@ -493,7 +485,7 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     // plugins in the future)
     __rtsan::ScopedDisabler d;
 #endif
-    sync_parameters_to_juce ();
+    sync_changed_params_to_juce ();
     juce_plugin_->processBlock (temp_buffer_with_offset, juce_midi_buffer_);
   }
 
@@ -531,22 +523,33 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 }
 
 void
-JucePlugin::sync_parameters_to_juce () noexcept
+JucePlugin::sync_changed_params_to_juce () noexcept
 {
   if (!juce_plugin_)
     return;
 
-  for (const auto &mapping : parameter_mappings_)
+  const auto &changes = change_tracker ().changes ();
+  for (const auto &change : changes)
     {
-      if ((mapping.juce_param != nullptr) && (mapping.zrythm_param != nullptr))
+      auto it = zrythm_param_index_to_mapping_.find (change.index);
+      if (it == zrythm_param_index_to_mapping_.end ())
+        continue;
+
+      const auto &mapping = parameter_mappings_[it->second];
+      if (!mapping.juce_param)
+        continue;
+
+      // Feedback prevention: skip if this value originated from the plugin
+      auto &entry = param_sync_.entries[change.index];
+      if (
+        utils::math::floats_equal (
+          change.modulated_value, entry.last_from_plugin))
         {
-          const float value = mapping.zrythm_param->currentValue ();
-          if (
-            !utils::math::floats_equal (value, mapping.juce_param->getValue ()))
-            {
-              mapping.juce_param->setValue (value);
-            }
+          entry.last_from_plugin = -1.f;
+          continue;
         }
+
+      mapping.juce_param->setValue (change.modulated_value);
     }
 }
 
@@ -555,23 +558,31 @@ JucePlugin::JuceParamListener::parameterValueChanged (
   int   parameterIndex,
   float newValue)
 {
-  // TODO: Potential feedback loop — if JUCE fires this listener in response
-  // to sync_parameters_to_juce() calling setValue() on the audio thread, the
-  // message-thread flush will call setBaseValue() again with a potentially
-  // quantized/normalized value, causing drift. Consider adding a round-trip
-  // tolerance check or a "syncing" flag to suppress callbacks during
-  // Zrythm->JUCE sync.
-  queue_.push_back (parameterIndex);
+  auto it = parent_.juce_param_index_to_mapping_.find (parameterIndex);
+  if (it == parent_.juce_param_index_to_mapping_.end ())
+    return;
+
+  const auto &mapping = parent_.parameter_mappings_[it->second];
+  if (!mapping.zrythm_param)
+    return;
+
+  const size_t param_index = mapping.zrythm_param_index;
+  auto        &entry = parent_.param_sync_.entries[param_index];
+  entry.pending_value.store (newValue, std::memory_order_release);
+
   if (
     juce::MessageManager::getInstanceWithoutCreating ()
       ->isThisTheMessageThread ())
     {
-      // On the message thread: flush immediately for low-latency UI updates.
-      parent_.flush_juce_to_zrythm_queue ();
+      // Message thread (e.g., UI interaction): flush immediately for
+      // low-latency updates.
+      parent_.flush_plugin_values ();
     }
   else
     {
-      // On audio thread or other: deferred to the message thread via QTimer.
+      // Audio thread (during processBlock): set feedback guard for the
+      // next cycle's sync_changed_params_to_juce().
+      entry.last_from_plugin = newValue;
     }
 }
 
@@ -580,24 +591,6 @@ JucePlugin::JuceParamListener::parameterGestureChanged (
   int  parameterIndex,
   bool gestureIsStarting)
 {
-}
-
-void
-JucePlugin::flush_juce_to_zrythm_queue ()
-{
-  int param_index;
-  while (juce_to_zrythm_queue_.pop_front (param_index))
-    {
-      auto it = juce_param_index_to_mapping_.find (param_index);
-      if (it == juce_param_index_to_mapping_.end ())
-        continue;
-
-      const auto &mapping = parameter_mappings_[it->second];
-      if (mapping.juce_param && mapping.zrythm_param)
-        {
-          mapping.zrythm_param->setBaseValue (mapping.juce_param->getValue ());
-        }
-    }
 }
 
 void

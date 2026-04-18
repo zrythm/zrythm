@@ -56,8 +56,6 @@
 #include <clap/helpers/host.hxx>
 #include <clap/helpers/plugin-proxy.hh>
 #include <clap/helpers/plugin-proxy.hxx>
-#include <clap/helpers/reducing-param-queue.hh>
-#include <clap/helpers/reducing-param-queue.hxx>
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
 #  include <sanitizer/rtsan_interface.h>
 #endif
@@ -112,6 +110,8 @@ public:
   void setPluginState (PluginState state);
 
   /* clap host callbacks */
+
+  /** Scans a single parameter by index and stores it in params_. */
   void             scanParam (int32_t index);
   ClapPluginParam &checkValidParamId (
     const std::string_view &function,
@@ -128,9 +128,41 @@ public:
     return (flags & (CLAP_PARAM_RESCAN_ALL | CLAP_PARAM_RESCAN_INFO)) != 0u;
   }
 
-  void paramFlushOnMainThread ();
-  void handlePluginOutputEvents ();
-  void generatePluginInputEvents ();
+  /**
+   * @brief Performs a CLAP paramsFlush when the plugin is inactive.
+   *
+   * Sends all current base values via generateAllParamInputEvents(), calls
+   * paramsFlush on the plugin, then drains any output values through
+   * param_sync_. Main thread only.
+   */
+  void paramFlushOnMainThread () [[clang::blocking]];
+
+  /**
+   * @brief Processes CLAP output events from the plugin's last process() call.
+   *
+   * For param value events, stores the normalized value in param_sync_ for
+   * cross-thread bridging and sets the feedback guard. Audio thread.
+   */
+  void handlePluginOutputEvents () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Generates CLAP param value events for changed parameters only.
+   *
+   * Uses ParameterChangeTracker to iterate only params that changed this
+   * cycle, with feedback prevention via ParamSync. Audio thread only.
+   */
+  void generateChangedParamInputEvents () noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Generates CLAP param value events for all parameters.
+   *
+   * Sends current base values for all mapped params. Main thread only
+   * (used by paramFlush when plugin is inactive).
+   */
+  void generateAllParamInputEvents () [[clang::blocking]];
+
+  /** @brief Generates CLAP MIDI events from the MIDI input port. */
+  void generateMidiInputEvents () noexcept [[clang::nonblocking]];
 
   void setup_audio_ports_for_processing (units::sample_u32_t block_size);
 
@@ -186,32 +218,6 @@ private:
   /* param update queues */
   std::unordered_map<clap_id, std::unique_ptr<ClapPluginParam>> params_;
 
-  struct EngineToAppParamQueueValue
-  {
-    void update (const EngineToAppParamQueueValue &v) noexcept
-    {
-      if (v.has_value)
-        {
-          has_value = true;
-          value = v.value;
-        }
-
-      if (v.has_gesture)
-        {
-          has_gesture = true;
-          is_begin = v.is_begin;
-        }
-    }
-
-    bool   has_value = false;
-    bool   has_gesture = false;
-    bool   is_begin = false;
-    double value = 0;
-  };
-
-  clap::helpers::ReducingParamQueue<clap_id, EngineToAppParamQueueValue>
-    engineToAppValueQueue_;
-
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
 
@@ -221,8 +227,6 @@ private:
   bool scheduleProcess_ = true;
 
   bool scheduleParamFlush_ = false;
-
-  std::unordered_map<clap_id, bool> isAdjustingParameter_;
 
   const char * guiApi_ = nullptr;
   bool         isGuiCreated_ = false;
@@ -256,8 +260,7 @@ ClapPlugin::ClapPlugin (
         std::make_unique<ClapPluginImpl> (
           *this,
           std::move (audio_thread_checker),
-          std::move (host_window_factory))),
-      clap_param_flush_timer_ (utils::make_qobject_unique<QTimer> (this))
+          std::move (host_window_factory)))
 {
   is_main_thread = true;
 
@@ -270,11 +273,6 @@ ClapPlugin::ClapPlugin (
   connect (
     this, &Plugin::uiVisibleChanged, this,
     &ClapPlugin::on_ui_visibility_changed);
-
-  // Connect param flush timer once; started when param map is built
-  connect (clap_param_flush_timer_.get (), &QTimer::timeout, this, [this] () {
-    flush_clap_params_to_zrythm ();
-  });
 
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
@@ -678,9 +676,10 @@ ClapPlugin::prepare_for_processing_impl (
 
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
-  // Pre-allocate the input event list so that generatePluginInputEvents()
-  // never needs to grow the vector on the audio thread. Reserve space for all
-  // parameters plus headroom for MIDI events.
+  // Pre-allocate the input event list so that
+  // generateChangedParamInputEvents() never needs to grow the vector on the
+  // audio thread. Reserve space for all parameters plus headroom for MIDI
+  // events.
   pimpl_->evIn_.reserveEvents (
     zrythm_to_clap_param_.size ()
     + static_cast<size_t> (get_descriptor ().num_midi_ins_) * 16);
@@ -768,7 +767,8 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 
   pimpl_->evOut_.clear ();
 
-  pimpl_->generatePluginInputEvents ();
+  pimpl_->generateChangedParamInputEvents ();
+  pimpl_->generateMidiInputEvents ();
 
   if (pimpl_->isPluginSleeping ())
     {
@@ -848,9 +848,6 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 
   pimpl_->evOut_.clear ();
   pimpl_->evIn_.clear ();
-
-  pimpl_->engineToAppValueQueue_.producerDone ();
-  sync_params_from_clap ();
 
   // TODO: send plugin to sleep if possible
 }
@@ -977,9 +974,9 @@ ClapPlugin::unload_current_plugin ()
 {
   assert (is_main_thread);
 
-  clap_param_flush_timer_->stop ();
   clap_to_zrythm_param_.clear ();
   zrythm_to_clap_param_.clear ();
+  clap_id_to_param_index_.clear ();
 
   Q_EMIT pluginLoadedChanged (false);
 
@@ -1048,17 +1045,59 @@ ClapPlugin::threadCheckIsMainThread () const noexcept
 }
 
 void
-ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
+ClapPlugin::ClapPluginImpl::generateChangedParamInputEvents () noexcept
 {
-  // Directly read Zrythm parameter values and create CLAP input events,
-  // bypassing the ReducingParamQueue which allocates memory on write and is
-  // only safe to produce from the main thread.
-  //
-  // The event list is pre-allocated in prepare_for_processing_impl() to
-  // avoid heap allocations during push() on the audio thread.
-  //
-  // TODO: also generate CLAP_EVENT_PARAM_MOD events for parameter modulation
-  // (e.g., polyphonic aftertouch, per-voice automation).
+  // Audio thread: send only changed params with feedback prevention.
+  for (const auto &change : owner_.change_tracker ().changes ())
+    {
+      auto &entry = owner_.param_sync_.entries[change.index];
+
+      // Feedback prevention: skip if value came from the plugin
+      if (
+        utils::math::floats_equal (
+          change.modulated_value, entry.last_from_plugin))
+        {
+          entry.last_from_plugin = -1.f;
+          continue;
+        }
+
+      // Find CLAP ID for this param
+      const auto &param_ref = owner_.get_parameters ()[change.index];
+      auto *      param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+      auto        it = owner_.zrythm_to_clap_param_.find (param);
+      if (it == owner_.zrythm_to_clap_param_.end ())
+        continue;
+
+      const clap_id clap_id_val = it->second;
+      auto          clap_it = params_.find (clap_id_val);
+      if (clap_it == params_.end ())
+        continue;
+
+      const auto * clap_param = clap_it->second.get ();
+      const auto   range = param->range ();
+      const double clap_value = range.convertFrom0To1 (change.modulated_value);
+
+      clap_event_param_value ev{};
+      ev.header.time = 0;
+      ev.header.type = CLAP_EVENT_PARAM_VALUE;
+      ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+      ev.header.flags = 0;
+      ev.header.size = sizeof (ev);
+      ev.param_id = clap_id_val;
+      ev.cookie = clap_param->info ().cookie;
+      ev.port_index = 0;
+      ev.key = -1;
+      ev.channel = -1;
+      ev.note_id = -1;
+      ev.value = clap_value;
+      evIn_.push (&ev.header);
+    }
+}
+
+void
+ClapPlugin::ClapPluginImpl::generateAllParamInputEvents ()
+{
+  // Main thread path (paramFlush): send all base values.
   for (const auto &[zrythm_param, clap_id_val] : owner_.zrythm_to_clap_param_)
     {
       auto it = params_.find (clap_id_val);
@@ -1067,7 +1106,7 @@ ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
 
       const auto * clap_param = it->second.get ();
       const auto   range = zrythm_param->range ();
-      const float  zrythm_value = zrythm_param->currentValue ();
+      const float  zrythm_value = zrythm_param->baseValue ();
       const double clap_value = range.convertFrom0To1 (zrythm_value);
 
       clap_event_param_value ev{};
@@ -1085,8 +1124,12 @@ ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
       ev.value = clap_value;
       evIn_.push (&ev.header);
     }
+}
 
-  // fill MIDI events from the MIDI input port
+void
+ClapPlugin::ClapPluginImpl::generateMidiInputEvents () noexcept
+{
+  // Fill MIDI events from the MIDI input port
   if (owner_.get_descriptor ().num_midi_ins_ > 0)
     {
       for (const auto &ev : owner_.midi_in_port_->midi_events_.active_events_)
@@ -1105,55 +1148,32 @@ ClapPlugin::ClapPluginImpl::generatePluginInputEvents ()
 }
 
 void
-ClapPlugin::ClapPluginImpl::handlePluginOutputEvents ()
+ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
 {
   for (uint32_t i = 0; i < evOut_.size (); ++i)
     {
       auto * h = evOut_.get (i);
       switch (h->type)
         {
-        case CLAP_EVENT_PARAM_GESTURE_BEGIN:
-          {
-            const auto * ev =
-              reinterpret_cast<const clap_event_param_gesture *> (h); // NOLINT
-            bool &isAdj = isAdjustingParameter_[ev->param_id];
-
-            if (isAdj)
-              throw std::logic_error ("The plugin sent BEGIN_ADJUST twice");
-            isAdj = true;
-
-            EngineToAppParamQueueValue v;
-            v.has_gesture = true;
-            v.is_begin = true;
-            engineToAppValueQueue_.setOrUpdate (ev->param_id, v);
-            break;
-          }
-
-        case CLAP_EVENT_PARAM_GESTURE_END:
-          {
-            const auto * ev =
-              reinterpret_cast<const clap_event_param_gesture *> (h); // NOLINT
-            bool &isAdj = isAdjustingParameter_[ev->param_id];
-
-            if (!isAdj)
-              throw std::logic_error (
-                "The plugin sent END_ADJUST without a preceding BEGIN_ADJUST");
-            isAdj = false;
-            EngineToAppParamQueueValue v;
-            v.has_gesture = true;
-            v.is_begin = false;
-            engineToAppValueQueue_.setOrUpdate (ev->param_id, v);
-            break;
-          }
-
         case CLAP_EVENT_PARAM_VALUE:
           {
             const auto * ev =
               reinterpret_cast<const clap_event_param_value *> (h); // NOLINT
-            EngineToAppParamQueueValue v;
-            v.has_value = true;
-            v.value = ev->value;
-            engineToAppValueQueue_.setOrUpdate (ev->param_id, v);
+            auto it = owner_.clap_id_to_param_index_.find (ev->param_id);
+            if (it == owner_.clap_id_to_param_index_.end ())
+              break;
+
+            const size_t param_index = it->second;
+            const auto  &param_ref = owner_.get_parameters ()[param_index];
+            auto *       zrythm_param =
+              param_ref.get_object_as<dsp::ProcessorParameter> ();
+            const auto  range = zrythm_param->range ();
+            const float normalized =
+              range.convertTo0To1 (static_cast<float> (ev->value));
+
+            auto &entry = owner_.param_sync_.entries[param_index];
+            entry.pending_value.store (normalized, std::memory_order_release);
+            entry.last_from_plugin = normalized;
             break;
           }
         default:
@@ -1350,42 +1370,12 @@ ClapPlugin::create_parameters_from_clap_plugin ()
             zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
           zrythm_param->set_automatable (
             (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
+
+          // Override the initial value with the plugin's live value
+          const auto normalized_live = zrythm_param->range ().convertTo0To1 (
+            static_cast<float> (clap_param->value ()));
+          zrythm_param->setBaseValue (normalized_live);
         }
-    }
-}
-
-void
-ClapPlugin::sync_params_from_clap ()
-{
-  pimpl_->engineToAppValueQueue_.consume (
-    [this] (clap_id param_id, const auto &value) {
-      if (!value.has_value)
-        return;
-
-      auto it = clap_to_zrythm_param_.find (param_id);
-      if (it == clap_to_zrythm_param_.end ())
-        return;
-
-      auto *      zrythm_param = it->second;
-      const auto  range = zrythm_param->range ();
-      const float normalized =
-        range.convertTo0To1 (static_cast<float> (value.value));
-      clap_to_zrythm_queue_.push_back (
-        { .id = param_id, .normalized_value = normalized });
-    });
-}
-
-void
-ClapPlugin::flush_clap_params_to_zrythm ()
-{
-  ClapParamChange change;
-  while (clap_to_zrythm_queue_.pop_front (change))
-    {
-      auto it = clap_to_zrythm_param_.find (change.id);
-      if (it == clap_to_zrythm_param_.end ())
-        continue;
-
-      it->second->setBaseValue (change.normalized_value);
     }
 }
 
@@ -1394,25 +1384,25 @@ ClapPlugin::rebuild_clap_param_map ()
 {
   clap_to_zrythm_param_.clear ();
   zrythm_to_clap_param_.clear ();
+  clap_id_to_param_index_.clear ();
   for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
     {
       const auto target_id = dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (
           std::to_string (clap_id_val)));
-      for (const auto &param_ref : get_parameters ())
+      for (
+        const auto &[i, param_ref] : std::views::enumerate (get_parameters ()))
         {
           auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
           if (p->get_unique_id () == target_id)
             {
               clap_to_zrythm_param_[clap_id_val] = p;
               zrythm_to_clap_param_[p] = clap_id_val;
+              clap_id_to_param_index_[clap_id_val] = static_cast<size_t> (i);
               break;
             }
         }
     }
-
-  // Start timer to flush CLAP -> Zrythm param changes on the message thread
-  clap_param_flush_timer_->start (std::chrono::milliseconds (20));
 }
 
 void
@@ -1568,14 +1558,14 @@ ClapPlugin::ClapPluginImpl::paramFlushOnMainThread ()
   evIn_.clear ();
   evOut_.clear ();
 
-  generatePluginInputEvents ();
+  generateAllParamInputEvents ();
 
   if (plugin_->canUseParams ())
     plugin_->paramsFlush (evIn_.clapInputEvents (), evOut_.clapOutputEvents ());
   handlePluginOutputEvents ();
 
   evOut_.clear ();
-  engineToAppValueQueue_.producerDone ();
+  owner_.flush_plugin_values ();
 }
 
 void

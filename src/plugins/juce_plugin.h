@@ -4,9 +4,6 @@
 #pragma once
 
 #include "plugins/plugin.h"
-#include "utils/mpmc_queue.h"
-
-#include <QTimer>
 
 #include <juce_wrapper.h>
 
@@ -101,18 +98,13 @@ private:
   void create_parameters_from_juce_plugin ();
 
   /**
-   * @brief Update parameter values from Zrythm to JUCE.
+   * @brief Send changed parameter values from Zrythm to JUCE.
    *
-   * Meant to be called during processing right before processing the actual
-   * JUCE plugin to set the latest values to JUCE.
+   * Uses change_tracker() to only send params that changed since the last
+   * cycle, with feedback prevention via param_sync_ last_from_plugin guards.
+   * Called on the audio thread during process_impl().
    */
-  void sync_parameters_to_juce () noexcept [[clang::nonblocking]];
-
-  /**
-   * @brief Consumes queued JUCE param changes and updates Zrythm params.
-   * Called on the message thread via juce_param_flush_timer_.
-   */
-  void flush_juce_to_zrythm_queue () [[clang::blocking]];
+  void sync_changed_params_to_juce () noexcept [[clang::nonblocking]];
 
   /**
    * @brief Show the plugin's editor window.
@@ -148,10 +140,7 @@ private:
   class JuceParamListener : public juce::AudioProcessorParameter::Listener
   {
   public:
-    JuceParamListener (MPMCQueue<int> &queue, JucePlugin &parent)
-        : queue_ (queue), parent_ (parent)
-    {
-    }
+    JuceParamListener (JucePlugin &parent) : parent_ (parent) { }
 
     void parameterValueChanged (int parameterIndex, float newValue)
       [[clang::blocking]] override;
@@ -159,8 +148,7 @@ private:
       [[clang::blocking]] override;
 
   private:
-    MPMCQueue<int> &queue_;
-    JucePlugin     &parent_;
+    JucePlugin &parent_;
   };
 
   // Parameter mapping between JUCE and Zrythm
@@ -169,6 +157,7 @@ private:
     juce::AudioProcessorParameter *    juce_param;
     dsp::ProcessorParameter *          zrythm_param;
     int                                juce_param_index;
+    size_t                             zrythm_param_index;
     std::unique_ptr<JuceParamListener> juce_param_listener;
   };
 
@@ -181,16 +170,11 @@ private:
   std::unordered_map<int, size_t> juce_param_index_to_mapping_;
 
   /**
-   * @brief Lock-free queue for JUCE -> Zrythm param change indices.
-   * JuceParamListener pushes indices; flush_juce_to_zrythm_queue() consumes.
+   * @brief Maps Zrythm param index (position in get_parameters()) -> position
+   * in parameter_mappings_. Used by sync_changed_params_to_juce() to find
+   * the JUCE param for each changed Zrythm param.
    */
-  MPMCQueue<int> juce_to_zrythm_queue_;
-
-  /**
-   * @brief Timer that flushes the JUCE -> Zrythm queue on the message thread.
-   * Started when mappings are built; calls flush_juce_to_zrythm_queue().
-   */
-  utils::QObjectUniquePtr<QTimer> juce_param_flush_timer_;
+  std::unordered_map<size_t, size_t> zrythm_param_index_to_mapping_;
 
   // Audio/MIDI buffer management
   std::vector<float *> input_channels_;

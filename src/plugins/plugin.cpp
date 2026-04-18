@@ -5,14 +5,21 @@
 
 #include "plugins/plugin.h"
 
+#include <QTimer>
+
 namespace zrythm::plugins
 {
 
 Plugin::Plugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
   QObject *                                     parent)
-    : QObject (parent), zrythm::dsp::ProcessorBase (dependencies, u8"Plugin")
+    : QObject (parent), zrythm::dsp::ProcessorBase (dependencies, u8"Plugin"),
+      param_flush_timer_ (utils::make_qobject_unique<QTimer> (this))
 {
+  QObject::connect (
+    param_flush_timer_.get (), &QTimer::timeout, this,
+    &Plugin::flush_plugin_values);
+
   QObject::connect (
     this, &Plugin::instantiationFinished, this, [this] (bool successful) {
       instantiation_status_ =
@@ -85,7 +92,9 @@ Plugin::custom_prepare_for_processing (
   units::sample_u32_t           max_block_length)
 {
   init_param_caches ();
+  param_sync_.prepare (get_parameters ().size ());
   prepare_for_processing_impl (sample_rate, max_block_length);
+  param_flush_timer_->start (std::chrono::milliseconds (20));
 }
 
 void
@@ -109,6 +118,8 @@ Plugin::custom_process_block (
 void
 Plugin::custom_release_resources ()
 {
+  param_flush_timer_->stop ();
+  param_sync_.entries.clear ();
   release_resources_impl ();
 }
 
@@ -175,6 +186,23 @@ Plugin::load_state (const std::string &base64_state)
 }
 
 void
+Plugin::flush_plugin_values ()
+{
+  for (
+    size_t i = 0;
+    i < param_sync_.entries.size () && i < get_parameters ().size (); ++i)
+    {
+      auto &entry = param_sync_.entries[i];
+      float val = entry.pending_value.exchange (-1.f, std::memory_order_acq_rel);
+      if (val >= 0.f)
+        {
+          const auto &param_ref = get_parameters ()[i];
+          auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+          param->setBaseValue (val);
+        }
+    }
+}
+void
 to_json (nlohmann::json &j, const Plugin &p)
 {
   to_json (j, static_cast<const Plugin::UuidIdentifiableObject &> (p));
@@ -230,4 +258,4 @@ from_json (const nlohmann::json &j, Plugin &p)
 
 Plugin::~Plugin () = default;
 
-} // namespace zrythm::gui::old_dsp::plugins
+} // namespace zrythm::plugins

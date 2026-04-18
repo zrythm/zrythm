@@ -67,7 +67,7 @@ public:
     void record_if_changed (size_t i, dsp::ProcessorParameter * param)
     {
       float modulated = param->currentValue ();
-      if (prev_values_[i] != modulated)
+      if (!utils::math::floats_equal (prev_values_[i], modulated))
         {
           changes_.push_back (
             { i, param->baseValue (), param->valueAfterAutomationApplied (),

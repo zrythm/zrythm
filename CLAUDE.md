@@ -208,6 +208,7 @@ Zrythm makes extensive use of modern C++ features:
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
+- Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
 
 ### Unit Safety
 
@@ -295,6 +296,10 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 - Logging can be enabled in tests by calling `init_logging(LoggerType::Test)` (from `src/utils/logger.h`)
+
+## Searching Documentation
+
+When you need to search external library/framework documentation (Qt, JUCE, etc.), use the `context7` tools (`resolve-library-id` then `query-docs`) rather than web search.
 
 ## Common Tasks for AI Agents
 
