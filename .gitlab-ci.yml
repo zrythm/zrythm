@@ -454,7 +454,7 @@ build:mac-arm:
 build:windows:
   extends: .windows-template
   stage: build
-  timeout: 2h # release build takes >1h
+  timeout: 3h # release build takes >2h
   needs:
     - job: configure:windows
       artifacts: true
