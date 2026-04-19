@@ -3,6 +3,7 @@
 
 #include "controllers/project_saver.h"
 #include "gui/backend/project_session.h"
+#include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
 #include "utils/io_utils.h"
 
@@ -75,6 +76,8 @@ ProjectSession::ProjectSession (
 {
   project_->setParent (this);
 }
+
+ProjectSession::~ProjectSession () = default;
 
 QString
 ProjectSession::title () const

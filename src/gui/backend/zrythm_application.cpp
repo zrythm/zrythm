@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
+#include "dsp/juce_hardware_audio_interface.h"
+#include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "utils/backtrace.h"
@@ -13,20 +15,20 @@
 
 #include <QFontDatabase>
 #include <QIcon>
+#include <QLocalSocket>
+#include <QProcess>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlProperty>
 #include <QQuickStyle>
 #include <QTimer>
+#include <QTranslator>
 
 // FIXME: temporarily disabled - engine-process not currently used
 // #include "engine-process/ipc_message.h"
 #include "zrythm_application.h"
 #include <backward.hpp>
-
-using namespace zrythm::gui;
-using namespace Qt::StringLiterals;
 
 #ifdef __linux__
 // see the following:
@@ -39,11 +41,51 @@ dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
 }
 #endif
 
+using namespace zrythm::gui;
+using namespace Qt::StringLiterals;
+
+class ZrythmApplication::Impl
+{
+public:
+  std::unique_ptr<backward::SignalHandling> signal_handling_;
+  std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
+    juce_message_handler_initializer_;
+
+  utils::QObjectUniquePtr<utils::AppSettings> app_settings_;
+
+  QLocalSocket * socket_ = nullptr;
+
+  std::unique_ptr<DirectoryManager>                     dir_manager_;
+  utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
+  utils::QObjectUniquePtr<ThemeManager>                 theme_manager_;
+  utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
+  utils::QObjectUniquePtr<ProjectManager>               project_manager_;
+  utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
+  utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
+
+  utils::QObjectUniquePtr<zrythm::gui::old_dsp::plugins::PluginManager>
+    plugin_manager_;
+
+  QProcess * engine_process_ = nullptr;
+
+  utils::QObjectUniquePtr<QTimer> juce_dispatch_timer_;
+
+  QQmlApplicationEngine * qml_engine_ = nullptr;
+
+  QTranslator * translator_ = nullptr;
+
+  std::shared_ptr<gui::backend::DeviceManager> device_manager_;
+
+  std::unique_ptr<dsp::IHardwareAudioInterface> hw_audio_interface_;
+
+  std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
+};
+
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
-    : QApplication (argc, argv)
+    : QApplication (argc, argv), impl_ (std::make_unique<Impl> ())
 {
   // install signal handlers
-  signal_handling_ = utils::Backtrace::init_signal_handlers ();
+  impl_->signal_handling_ = utils::Backtrace::init_signal_handlers ();
 
   /* app info */
   setApplicationName (u"Zrythm"_s);
@@ -60,20 +102,21 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   // Register meta-types
   qRegisterMetaType<utils::ExpandableTickRange> ();
-  app_settings_ = utils::make_qobject_unique<utils::AppSettings> (
+  impl_->app_settings_ = utils::make_qobject_unique<utils::AppSettings> (
     std::unique_ptr<utils::ISettingsBackend> (new utils::QSettingsBackend),
     this);
-  dir_manager_ = std::make_unique<DirectoryManager> (
-    [&] () {
-      return utils::Utf8String::from_qstring (app_settings_->zrythm_user_path ())
+  auto * app_settings = impl_->app_settings_.get ();
+  impl_->dir_manager_ = std::make_unique<DirectoryManager> (
+    [app_settings] () {
+      return utils::Utf8String::from_qstring (app_settings->zrythm_user_path ())
         .to_path ();
     },
-    [&] () {
+    [] () {
       return utils::Utf8String::
         from_qstring (utils::AppSettings::get_default_zrythm_user_path ())
           .to_path ();
     },
-    [&] () {
+    [] () {
       return utils::Utf8String::from_qstring (applicationDirPath ()).to_path ();
     });
   utils::init_logging (utils::LoggerType::GUI);
@@ -84,16 +127,17 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   // Create control room after command-line parsing to avoid leaking
   // AudioBuffers when --help/--version calls std::exit()
-  control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
+  impl_
+    ->control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
     [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
       static boost::unordered_flat_map<
         structure::tracks::TrackUuid, structure::tracks::TrackPtrVariant>
         dummy_tracks;
-      if (!project_manager_)
+      if (!impl_->project_manager_)
         {
           return dummy_tracks;
         }
-      auto * project_session = project_manager_->activeSession ();
+      auto * project_session = impl_->project_manager_->activeSession ();
       if (project_session == nullptr)
         {
           return dummy_tracks;
@@ -103,7 +147,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
     this);
 
   // Initialize JUCE
-  juce_message_handler_initializer_ =
+  impl_->juce_message_handler_initializer_ =
     std::make_unique<juce::ScopedJuceInitialiser_GUI> ();
 
 #ifdef __linux__
@@ -111,25 +155,26 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // notify(). This avoids dispatching JUCE messages multiple times on the same
   // frame which
   // can cause crashes.
-  juce_dispatch_timer_ = utils::make_qobject_unique<QTimer> (this);
-  QObject::connect (juce_dispatch_timer_.get (), &QTimer::timeout, this, [] () {
-    // We need to do this on GNU/Linux otherwise plugin UIs appear blank.
-    juce::detail::dispatchNextMessageOnSystemQueue (true);
-  });
-  juce_dispatch_timer_->start (0);
+  impl_->juce_dispatch_timer_ = utils::make_qobject_unique<QTimer> (this);
+  QObject::connect (
+    impl_->juce_dispatch_timer_.get (), &QTimer::timeout, this, [] () {
+      // We need to do this on GNU/Linux otherwise plugin UIs appear blank.
+      juce::detail::dispatchNextMessageOnSystemQueue (true);
+    });
+  impl_->juce_dispatch_timer_->start (0);
 #endif
 
-  alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
-  theme_manager_ = utils::make_qobject_unique<ThemeManager> (this);
-  project_manager_ =
-    utils::make_qobject_unique<ProjectManager> (*app_settings_, this);
-  translation_manager_ =
-    utils::make_qobject_unique<TranslationManager> (*app_settings_, this);
-  file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
-  plugin_manager_ = utils::make_qobject_unique<
+  impl_->alert_manager_ = utils::make_qobject_unique<AlertManager> (this);
+  impl_->theme_manager_ = utils::make_qobject_unique<ThemeManager> (this);
+  impl_->project_manager_ =
+    utils::make_qobject_unique<ProjectManager> (*impl_->app_settings_, this);
+  impl_->translation_manager_ = utils::make_qobject_unique<TranslationManager> (
+    *impl_->app_settings_, this);
+  impl_->file_system_model_ = utils::make_qobject_unique<FileSystemModel> (this);
+  impl_->plugin_manager_ = utils::make_qobject_unique<
     zrythm::gui::old_dsp::plugins::PluginManager> (
     [this] (const auto protocol) {
-      return plugins::PluginProtocolPaths (*app_settings_)
+      return plugins::PluginProtocolPaths (*impl_->app_settings_)
         .get_for_protocol (protocol);
     },
     this);
@@ -197,39 +242,40 @@ void
 ZrythmApplication::setup_control_room ()
 {
   {
-    auto * control_room = control_room_.get ();
-    control_room->setDimOutput (app_settings_->monitorDimEnabled ());
+    auto * control_room = impl_->control_room_.get ();
+    auto * app_settings = impl_->app_settings_.get ();
+    control_room->setDimOutput (app_settings->monitorDimEnabled ());
     QObject::connect (
       control_room, &engine::session::ControlRoom::dimOutputChanged,
-      app_settings_.get (), &utils::AppSettings::set_monitorDimEnabled);
+      app_settings, &utils::AppSettings::set_monitorDimEnabled);
 
     control_room->muteVolume ()->setBaseValue (
       control_room->muteVolume ()->range ().convertTo0To1 (
-        app_settings_->monitorMuteVolume ()));
+        app_settings->monitorMuteVolume ()));
     QObject::connect (
       control_room->muteVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      app_settings_.get (), [&] (float value) {
-        app_settings_->set_monitorMuteVolume (
+      app_settings, [app_settings, control_room] (float value) {
+        app_settings->set_monitorMuteVolume (
           control_room->muteVolume ()->range ().convertFrom0To1 (value));
       });
 
     control_room->listenVolume ()->setBaseValue (
       control_room->listenVolume ()->range ().convertTo0To1 (
-        app_settings_->monitorListenVolume ()));
+        app_settings->monitorListenVolume ()));
     QObject::connect (
       control_room->listenVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      app_settings_.get (), [&] (float value) {
-        app_settings_->set_monitorListenVolume (
+      app_settings, [app_settings, control_room] (float value) {
+        app_settings->set_monitorListenVolume (
           control_room->listenVolume ()->range ().convertFrom0To1 (value));
       });
 
     control_room->dimVolume ()->setBaseValue (
       control_room->dimVolume ()->range ().convertTo0To1 (
-        app_settings_->monitorDimVolume ()));
+        app_settings->monitorDimVolume ()));
     QObject::connect (
       control_room->dimVolume (), &dsp::ProcessorParameter::baseValueChanged,
-      app_settings_.get (), [&] (float value) {
-        app_settings_->set_monitorDimVolume (
+      app_settings, [app_settings, control_room] (float value) {
+        app_settings->set_monitorDimVolume (
           control_room->dimVolume ()->range ().convertFrom0To1 (value));
       });
 
@@ -237,29 +283,29 @@ ZrythmApplication::setup_control_room ()
       auto * monitor_fader = control_room->monitorFader ();
       monitor_fader->gain ()->setBaseValue (
         monitor_fader->gain ()->range ().convertTo0To1 (
-          app_settings_->monitorVolume ()));
+          app_settings->monitorVolume ()));
       QObject::connect (
         monitor_fader->gain (), &dsp::ProcessorParameter::baseValueChanged,
-        app_settings_.get (), [&] (float value) {
-          app_settings_->set_monitorVolume (
+        app_settings, [app_settings, monitor_fader] (float value) {
+          app_settings->set_monitorVolume (
             monitor_fader->gain ()->range ().convertFrom0To1 (value));
         });
 
       monitor_fader->monoToggle ()->setBaseValue (
-        app_settings_->monitorMonoEnabled () ? 1.f : 0.f);
+        app_settings->monitorMonoEnabled () ? 1.f : 0.f);
       QObject::connect (
         monitor_fader->monoToggle (), &dsp::ProcessorParameter::baseValueChanged,
-        app_settings_.get (), [&] (float value) {
-          app_settings_->set_monitorMonoEnabled (
+        app_settings, [app_settings, monitor_fader] (float value) {
+          app_settings->set_monitorMonoEnabled (
             monitor_fader->monoToggle ()->range ().is_toggled (value));
         });
 
       monitor_fader->mute ()->setBaseValue (
-        app_settings_->monitorMuteEnabled () ? 1.f : 0.f);
+        app_settings->monitorMuteEnabled () ? 1.f : 0.f);
       QObject::connect (
         monitor_fader->mute (), &dsp::ProcessorParameter::baseValueChanged,
-        app_settings_.get (), [&] (float value) {
-          app_settings_->set_monitorMuteEnabled (
+        app_settings, [app_settings, monitor_fader] (float value) {
+          app_settings->set_monitorMuteEnabled (
             monitor_fader->mute ()->range ().is_toggled (value));
         });
     }
@@ -267,25 +313,25 @@ ZrythmApplication::setup_control_room ()
     {
       auto * metronome = control_room->metronome ();
       metronome->setVolume (
-        static_cast<float> (app_settings_->metronomeVolume ()));
+        static_cast<float> (app_settings->metronomeVolume ()));
       QObject::connect (
-        metronome, &dsp::Metronome::volumeChanged, app_settings_.get (),
-        [&] (float value) {
-          app_settings_->set_metronomeVolume (static_cast<double> (value));
+        metronome, &dsp::Metronome::volumeChanged, app_settings,
+        [app_settings] (float value) {
+          app_settings->set_metronomeVolume (static_cast<double> (value));
         });
       QObject::connect (
-        app_settings_.get (), &utils::AppSettings::metronomeVolumeChanged,
-        metronome, [&] (double value) {
+        app_settings, &utils::AppSettings::metronomeVolumeChanged, metronome,
+        [metronome] (double value) {
           metronome->setVolume (static_cast<float> (value));
         });
 
-      metronome->setEnabled (app_settings_->metronomeEnabled ());
+      metronome->setEnabled (app_settings->metronomeEnabled ());
       QObject::connect (
-        metronome, &dsp::Metronome::enabledChanged, app_settings_.get (),
+        metronome, &dsp::Metronome::enabledChanged, app_settings,
         &utils::AppSettings::set_metronomeEnabled);
       QObject::connect (
-        app_settings_.get (), &utils::AppSettings::metronomeEnabledChanged,
-        metronome, &dsp::Metronome::setEnabled);
+        app_settings, &utils::AppSettings::metronomeEnabledChanged, metronome,
+        &dsp::Metronome::setEnabled);
     }
   }
 }
@@ -300,7 +346,7 @@ ZrythmApplication::setup_device_manager ()
       utils::Utf8String::from_qstring (data_dir).to_path ()
       / u8"device_setup.xml")
       .to_juce_file ();
-  device_manager_ = std::make_shared<gui::backend::DeviceManager> (
+  impl_->device_manager_ = std::make_shared<gui::backend::DeviceManager> (
     [filepath] () -> std::unique_ptr<juce::XmlElement> {
       auto xml = juce::parseXML (filepath);
       if (xml)
@@ -326,11 +372,11 @@ ZrythmApplication::setup_device_manager ()
           z_warning ("Failed to write device setup file: {}", filepath);
         }
     });
-  device_manager_->initialize (2, 2, true);
+  impl_->device_manager_->initialize (2, 2, true);
 
   // Create hardware audio interface wrapper
-  hw_audio_interface_ =
-    dsp::JuceHardwareAudioInterface::create (device_manager_);
+  impl_->hw_audio_interface_ =
+    dsp::JuceHardwareAudioInterface::create (impl_->device_manager_);
 }
 
 void
@@ -362,7 +408,7 @@ ZrythmApplication::setup_ui ()
 
   // note: this is the system palette - different from qtquick palette
   // it's just used to set the window frame color
-  setPalette (theme_manager_->palette_);
+  setPalette (impl_->theme_manager_->palette_);
 
   // Set font scaling TODO (if needed)
   // QSettings settings;
@@ -398,7 +444,7 @@ ZrythmApplication::setup_ui ()
   }
 
   // icon theme
-  const auto icon_theme_name = app_settings_->icon_theme ();
+  const auto icon_theme_name = impl_->app_settings_->icon_theme ();
   z_info ("Setting icon theme to '{}'", icon_theme_name);
   QIcon::setThemeName (icon_theme_name);
 
@@ -416,7 +462,7 @@ ZrythmApplication::setup_ui ()
 #endif
 
   // Create and show the main window
-  qml_engine_ = new QQmlApplicationEngine (this);
+  impl_->qml_engine_ = new QQmlApplicationEngine (this);
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
   // ${RESOURCE_PREFIX} from CMakeLists.txt
@@ -431,10 +477,10 @@ ZrythmApplication::setup_ui ()
   // ${RESOURCE_PREFIX}/${URI}
   // const QUrl url (u"qrc:/qt/qml/Zrythm/DemoView.qml"_s);
   const QUrl url (u"qrc:/qt/qml/Zrythm/Greeter.qml"_s);
-  qml_engine_->load (url);
+  impl_->qml_engine_->load (url);
   // qml_engine_->loadFromModule ("Zrythm", "greeter");
 
-  if (!qml_engine_->rootObjects ().isEmpty ())
+  if (!impl_->qml_engine_->rootObjects ().isEmpty ())
     {
       z_debug ("QML file loaded successfully");
 
@@ -448,7 +494,7 @@ ZrythmApplication::setup_ui ()
         QUrl (QStringLiteral ("qrc:/qt/qml/ZrythmStyle/Style.qml")),
         "ZrythmStyle", 1, 0, "Style");
       QQmlComponent component (
-        qml_engine_, QUrl ("qrc:/qt/qml/ZrythmStyle/Style.qml"),
+        impl_->qml_engine_, QUrl ("qrc:/qt/qml/ZrythmStyle/Style.qml"),
         QQmlComponent::PreferSynchronous);
       auto * obj = component.create ();
       auto palette = QQmlProperty::read (obj, "colorPalette").value<QPalette> ();
@@ -465,7 +511,7 @@ ZrythmApplication::setup_ui ()
 void
 ZrythmApplication::onEngineOutput ()
 {
-  QByteArray output = engine_process_->readAllStandardOutput ();
+  QByteArray output = impl_->engine_process_->readAllStandardOutput ();
   z_info (
     "\n[ === Engine output === ]\n{}\n[ === End engine output === ]",
     output.toStdString ());
@@ -494,8 +540,8 @@ ZrythmApplication::launch_engine_process ()
 {
   return; // skip for now
 
-  engine_process_ = new QProcess (this);
-  engine_process_->setProcessChannelMode (QProcess::MergedChannels);
+  impl_->engine_process_ = new QProcess (this);
+  impl_->engine_process_->setProcessChannelMode (QProcess::MergedChannels);
   std::filesystem::path path;
   const auto            path_from_env =
     QProcessEnvironment::systemEnvironment ().value (u"ZRYTHM_ENGINE_PATH"_s);
@@ -515,20 +561,23 @@ ZrythmApplication::launch_engine_process ()
 
   // Connect the readyReadStandardOutput signal to the new slot
   connect (
-    engine_process_, &QProcess::readyReadStandardOutput, this,
+    impl_->engine_process_, &QProcess::readyReadStandardOutput, this,
     &ZrythmApplication::onEngineOutput);
 
-  engine_process_->start (utils::Utf8String::from_path (path).to_qstring ());
-  if (engine_process_->waitForStarted ())
+  impl_->engine_process_->start (
+    utils::Utf8String::from_path (path).to_qstring ());
+  if (impl_->engine_process_->waitForStarted ())
     {
       z_info (
-        "Started engine process with PID: {}", engine_process_->processId ());
-      z_info ("To debug, run: gdb -p {}", engine_process_->processId ());
+        "Started engine process with PID: {}",
+        impl_->engine_process_->processId ());
+      z_info ("To debug, run: gdb -p {}", impl_->engine_process_->processId ());
     }
   else
     {
       z_warning (
-        "Failed to start engine process: {}", engine_process_->errorString ());
+        "Failed to start engine process: {}",
+        impl_->engine_process_->errorString ());
     }
 }
 
@@ -540,29 +589,107 @@ ZrythmApplication::onAboutToQuit ()
 
 ZrythmApplication::~ZrythmApplication ()
 {
-  device_manager_->closeAudioDevice ();
+  impl_->device_manager_->closeAudioDevice ();
 
   // make sure the project manager & its project are deleted first to avoid
   // holding shared resources there while other members get deallocated
-  project_manager_.reset ();
+  impl_->project_manager_.reset ();
 
-  if (socket_ != nullptr)
+  if (impl_->socket_ != nullptr)
     {
-      if (socket_->state () == QLocalSocket::ConnectedState)
+      if (impl_->socket_->state () == QLocalSocket::ConnectedState)
         {
-          socket_->disconnectFromServer ();
+          impl_->socket_->disconnectFromServer ();
         }
-      socket_->close ();
+      impl_->socket_->close ();
     }
-  if (engine_process_ != nullptr)
+  if (impl_->engine_process_ != nullptr)
     {
-      engine_process_->terminate ();
-      engine_process_->waitForFinished ();
-      if (engine_process_->state () != QProcess::NotRunning)
+      impl_->engine_process_->terminate ();
+      impl_->engine_process_->waitForFinished ();
+      if (impl_->engine_process_->state () != QProcess::NotRunning)
         {
-          engine_process_->kill ();
+          impl_->engine_process_->kill ();
         }
     }
 
   Zrythm::deleteInstance ();
+}
+
+zrythm::gui::ThemeManager *
+ZrythmApplication::themeManager () const
+{
+  return impl_->theme_manager_.get ();
+}
+
+zrythm::utils::AppSettings *
+ZrythmApplication::appSettings () const
+{
+  return impl_->app_settings_.get ();
+}
+
+zrythm::gui::ProjectManager *
+ZrythmApplication::projectManager () const
+{
+  return impl_->project_manager_.get ();
+}
+
+zrythm::gui::old_dsp::plugins::PluginManager *
+ZrythmApplication::pluginManager () const
+{
+  return impl_->plugin_manager_.get ();
+}
+
+zrythm::gui::AlertManager *
+ZrythmApplication::alertManager () const
+{
+  return impl_->alert_manager_.get ();
+}
+
+zrythm::gui::TranslationManager *
+ZrythmApplication::translationManager () const
+{
+  return impl_->translation_manager_.get ();
+}
+
+zrythm::gui::backend::DeviceManager *
+ZrythmApplication::deviceManager () const
+{
+  return impl_->device_manager_.get ();
+}
+
+zrythm::gui::FileSystemModel *
+ZrythmApplication::fileSystemModel () const
+{
+  return impl_->file_system_model_.get ();
+}
+
+engine::session::ControlRoom *
+ZrythmApplication::controlRoom () const
+{
+  return impl_->control_room_.get ();
+}
+
+DirectoryManager &
+ZrythmApplication::get_directory_manager () const
+{
+  return *impl_->dir_manager_;
+}
+
+QQmlApplicationEngine *
+ZrythmApplication::get_qml_engine () const
+{
+  return impl_->qml_engine_;
+}
+
+std::shared_ptr<gui::backend::DeviceManager>
+ZrythmApplication::get_device_manager () const
+{
+  return impl_->device_manager_;
+}
+
+dsp::IHardwareAudioInterface &
+ZrythmApplication::hw_audio_interface () const
+{
+  return *impl_->hw_audio_interface_;
 }

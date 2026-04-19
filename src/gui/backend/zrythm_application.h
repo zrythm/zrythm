@@ -1,9 +1,8 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
 
 #pragma once
 
-#include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/control_room.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
@@ -14,19 +13,22 @@
 #include "gui/backend/project_manager.h"
 #include "gui/backend/translation_manager.h"
 #include "utils/app_settings.h"
-#include "utils/directory_manager.h"
 #include "utils/qt.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
-#include <QLocalSocket>
-#include <QProcess>
 #include <QQmlApplicationEngine>
-#include <QTranslator>
 
-namespace backward
+class DirectoryManager;
+
+namespace zrythm::dsp
 {
-class SignalHandling;
+class IHardwareAudioInterface;
+}
+
+namespace zrythm::engine::session
+{
+class MidiMappings;
 }
 
 namespace zrythm::gui
@@ -71,65 +73,26 @@ public:
   void setup_ipc ();
   void launch_engine_process ();
 
-  zrythm::gui::ThemeManager * themeManager () const
-  {
-    return theme_manager_.get ();
-  }
-  zrythm::utils::AppSettings * appSettings () const
-  {
-    return app_settings_.get ();
-  }
-  zrythm::gui::ProjectManager * projectManager () const
-  {
-    return project_manager_.get ();
-  }
-  old_dsp::plugins::PluginManager * pluginManager () const
-  {
-    return plugin_manager_.get ();
-  }
-  zrythm::gui::AlertManager * alertManager () const
-  {
-    return alert_manager_.get ();
-  }
-  zrythm::gui::TranslationManager * translationManager () const
-  {
-    return translation_manager_.get ();
-  }
-  zrythm::gui::backend::DeviceManager * deviceManager () const
-  {
-    return device_manager_.get ();
-  }
-  zrythm::gui::FileSystemModel * fileSystemModel () const
-  {
-    return file_system_model_.get ();
-  }
+  zrythm::gui::ThemeManager *           themeManager () const;
+  zrythm::utils::AppSettings *          appSettings () const;
+  zrythm::gui::ProjectManager *         projectManager () const;
+  old_dsp::plugins::PluginManager *     pluginManager () const;
+  zrythm::gui::AlertManager *           alertManager () const;
+  zrythm::gui::TranslationManager *     translationManager () const;
+  zrythm::gui::backend::DeviceManager * deviceManager () const;
+  zrythm::gui::FileSystemModel *        fileSystemModel () const;
 
-  engine::session::ControlRoom * controlRoom () const
-  {
-    return control_room_.get ();
-  }
+  engine::session::ControlRoom * controlRoom () const;
 
-  DirectoryManager &get_directory_manager () const { return *dir_manager_; }
-
-  QQmlApplicationEngine * get_qml_engine () const { return qml_engine_; }
-
-  std::shared_ptr<gui::backend::DeviceManager> get_device_manager () const
-  {
-    return device_manager_;
-  }
-
-  dsp::IHardwareAudioInterface &hw_audio_interface () const
-  {
-    return *hw_audio_interface_;
-  }
+  DirectoryManager                            &get_directory_manager () const;
+  QQmlApplicationEngine *                      get_qml_engine () const;
+  std::shared_ptr<gui::backend::DeviceManager> get_device_manager () const;
+  dsp::IHardwareAudioInterface                &hw_audio_interface () const;
 
 private:
   void setup_command_line_options ();
-
   void post_exec_initialization ();
-
   void setup_device_manager ();
-
   void setup_control_room ();
 
 private Q_SLOTS:
@@ -140,60 +103,8 @@ public:
   QCommandLineParser cmd_line_parser_;
 
 private:
-  std::unique_ptr<backward::SignalHandling> signal_handling_;
-  std::unique_ptr<juce::ScopedJuceInitialiser_GUI>
-    juce_message_handler_initializer_;
-
-  utils::QObjectUniquePtr<utils::AppSettings> app_settings_;
-
-  /**
-   * @brief Socket for communicating with the engine process.
-   */
-  QLocalSocket * socket_ = nullptr;
-
-  std::unique_ptr<DirectoryManager>                     dir_manager_;
-  utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
-  utils::QObjectUniquePtr<ThemeManager>                 theme_manager_;
-  utils::QObjectUniquePtr<TranslationManager>           translation_manager_;
-  utils::QObjectUniquePtr<ProjectManager>               project_manager_;
-  utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
-  utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
-
-  /**
-   * Manages plugins (loading, instantiating, etc.)
-   */
-  utils::QObjectUniquePtr<zrythm::gui::old_dsp::plugins::PluginManager>
-    plugin_manager_;
-
-  /**
-   * @brief Engine process handle.
-   */
-  QProcess * engine_process_ = nullptr;
-
-  /**
-   * @brief Timer for dispatching JUCE messages on the main thread.
-   *
-   * We use a QTimer with 0ms interval instead of dispatching from notify()
-   * to avoid dispatching JUCE messages multiple times on the same frame which
-   * can cause crashes.
-   */
-  utils::QObjectUniquePtr<QTimer> juce_dispatch_timer_;
-
-  QQmlApplicationEngine * qml_engine_ = nullptr;
-
-  QTranslator * translator_ = nullptr;
-
-  std::shared_ptr<gui::backend::DeviceManager> device_manager_;
-
-  /**
-   * @brief Hardware audio interface wrapper.
-   *
-   * Must be destroyed after device_manager_.
-   */
-  std::unique_ptr<dsp::IHardwareAudioInterface> hw_audio_interface_;
-
-  /** MIDI bindings (TODO). */
-  std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
+  class Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 } // namespace zrythm::gui

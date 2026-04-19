@@ -73,8 +73,8 @@ target_link_libraries(zrythm_gui_lib
 target_precompile_headers(zrythm_gui_lib
   PUBLIC
     # This needs to be included first otherwise partial template specializations fail
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils/format_qt.h>
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/backend/zrythm.h>)
+    $<$<COMPILE_LANGUAGE:CXX>:"utils/format_qt.h">
+    $<$<COMPILE_LANGUAGE:CXX>:"gui/backend/backend/zrythm.h">)
 
 # add resource file with icon
 if(WIN32)

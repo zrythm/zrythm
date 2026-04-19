@@ -57,6 +57,14 @@ target_include_directories(zrythm_test_helpers_lib
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_precompile_headers(zrythm_test_helpers_lib
+  PUBLIC
+    $<$<COMPILE_LANGUAGE:CXX>:<gtest/gtest.h>>
+    $<$<COMPILE_LANGUAGE:CXX>:<gmock/gmock.h>>
+    $<$<COMPILE_LANGUAGE:CXX>:<QSignalSpy>>
+    $<$<COMPILE_LANGUAGE:CXX>:"dsp/tempo_map.h">
+)
+
 set_target_properties(zrythm_test_helpers_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )

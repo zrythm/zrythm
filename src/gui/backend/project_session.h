@@ -10,13 +10,17 @@
 #include "actions/plugin_operator.h"
 #include "actions/track_creator.h"
 #include "controllers/transport_controller.h"
-#include "gui/dsp/quantize_options.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
 #include "undo/undo_stack.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
+
+namespace zrythm::gui::old_dsp
+{
+class QuantizeOptions;
+}
 
 namespace zrythm::gui
 {
@@ -69,6 +73,8 @@ public:
   ProjectSession (
     utils::AppSettings                                    &app_settings,
     utils::QObjectUniquePtr<structure::project::Project> &&project);
+
+  ~ProjectSession () override;
 
   QString                       title () const;
   void                          setTitle (const QString &title);

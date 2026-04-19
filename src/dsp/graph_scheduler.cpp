@@ -35,6 +35,8 @@
 namespace zrythm::dsp::graph
 {
 
+using namespace std::chrono_literals;
+
 struct GraphScheduler::ThreadSet
 {
   using GraphThreadPtr = std::unique_ptr<GraphThread>;

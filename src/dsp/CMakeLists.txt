@@ -47,6 +47,7 @@ target_sources(zrythm_dsp_lib
     processor_base.cpp
     snap_grid.cpp
     stretcher.cpp
+    tempo_map.cpp
     tempo_map_qml_adapter.cpp
     timeline_data_cache.cpp
     transport.cpp

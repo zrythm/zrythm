@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -8,13 +8,12 @@
 #include <cmath>
 #include <cstdint>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 
 #include "utils/units.h"
 
-#include <nlohmann/json.hpp>
-
-using namespace std::literals;
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp
 {
@@ -57,7 +56,8 @@ public:
     double        bpm{};   ///< Tempo in BPM
     CurveType     curve{}; ///< Curve type from this event to the next
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE (TempoEvent, tick, bpm, curve)
+    friend void to_json (nlohmann::json &j, const TempoEvent &e);
+    friend void from_json (const nlohmann::json &j, TempoEvent &e);
   };
 
   /// Time signature event definition
@@ -88,11 +88,8 @@ public:
       return numerator != other.numerator || denominator != other.denominator;
     }
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE (
-      TimeSignatureEvent,
-      tick,
-      numerator,
-      denominator)
+    friend void to_json (nlohmann::json &j, const TimeSignatureEvent &e);
+    friend void from_json (const nlohmann::json &j, TimeSignatureEvent &e);
   };
 
   /// Musical position representation
@@ -632,8 +629,8 @@ public:
   void set_default_bpm (double bpm) { default_tempo_.bpm = bpm; }
   void set_default_time_signature (int numerator, int denominator)
   {
-    default_tempo_.numerator = numerator;
-    default_tempo_.denominator = denominator;
+    default_time_sig_.numerator = numerator;
+    default_time_sig_.denominator = denominator;
   }
 
 private:
@@ -735,19 +732,10 @@ private:
   /// Clear all time signature events
   void clear_time_signature_events () { time_sig_events_.clear (); }
 
-  static constexpr auto kTempoChangesKey = "tempoChanges"sv;
-  static constexpr auto kTimeSignaturesKey = "timeSignatures"sv;
-  friend void to_json (nlohmann::json &j, const FixedPpqTempoMap &tempo_map)
-  {
-    j[kTimeSignaturesKey] = tempo_map.time_sig_events_;
-    j[kTempoChangesKey] = tempo_map.events_;
-  }
-  friend void from_json (const nlohmann::json &j, FixedPpqTempoMap &tempo_map)
-  {
-    j.at (kTimeSignaturesKey).get_to (tempo_map.time_sig_events_);
-    j.at (kTempoChangesKey).get_to (tempo_map.events_);
-    tempo_map.rebuild_cumulative_times ();
-  }
+  static constexpr std::string_view kTempoChangesKey = "tempoChanges";
+  static constexpr std::string_view kTimeSignaturesKey = "timeSignatures";
+  friend void to_json (nlohmann::json &j, const FixedPpqTempoMap &tempo_map);
+  friend void from_json (const nlohmann::json &j, FixedPpqTempoMap &tempo_map);
 
 private:
   units::precise_sample_rate_t sample_rate_; ///< Current sample rate
@@ -775,4 +763,6 @@ private:
  * @see FixedPpqTempoMap.
  */
 using TempoMap = FixedPpqTempoMap<units::PPQ>;
+
+extern template class FixedPpqTempoMap<units::PPQ>;
 }

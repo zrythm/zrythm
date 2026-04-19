@@ -261,9 +261,9 @@ private:
     return b ? TimeFormat::Absolute : TimeFormat::Musical;
   }
 
-  static constexpr auto kMode = "mode"sv;
-  static constexpr auto kValue = "value"sv;
-  friend void           to_json (nlohmann::json &j, const AtomicPosition &pos);
+  static constexpr std::string_view kMode = "mode";
+  static constexpr std::string_view kValue = "value";
+  friend void to_json (nlohmann::json &j, const AtomicPosition &pos);
   friend void from_json (const nlohmann::json &j, AtomicPosition &pos);
 
 private:
