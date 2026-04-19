@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "zrythm-config.h"
+
 #include "dsp/graph_pruner.h"
 #include "dsp/graph_renderer.h"
 #include "gui/backend/project_exporter.h"
@@ -10,6 +12,9 @@
 
 #include <QQmlEngine>
 #include <QtConcurrentRun>
+
+using namespace zrythm;
+using namespace std::chrono_literals;
 
 gui::qquick::QFutureQmlWrapper *
 ProjectExporter::exportAudio (

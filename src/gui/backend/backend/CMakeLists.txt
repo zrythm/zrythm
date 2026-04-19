@@ -3,8 +3,9 @@
 
 target_sources(zrythm_gui_lib
   PRIVATE
-    clipboard.cpp
-    file_manager.cpp
+    # Unused
+    # clipboard.cpp
+    # file_manager.cpp
     theme_manager.h
     theme_manager.cpp
     zrythm.h

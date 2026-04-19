@@ -17,8 +17,8 @@ class ProjectExporter : public QObject
   QML_SINGLETON
 
 public:
-  Q_INVOKABLE static gui::qquick::QFutureQmlWrapper * exportAudio (
-    structure::project::Project * project,
-    const QString                &exportDirectory,
-    const QString                &projectTitle);
+  Q_INVOKABLE static zrythm::gui::qquick::QFutureQmlWrapper * exportAudio (
+    zrythm::structure::project::Project * project,
+    const QString                        &exportDirectory,
+    const QString                        &projectTitle);
 };

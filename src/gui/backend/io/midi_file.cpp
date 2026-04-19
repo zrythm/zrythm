@@ -8,6 +8,9 @@
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
+namespace zrythm
+{
+
 MidiFile::MidiFile (Format format) : format_ (format), for_reading_ (false) { }
 
 MidiFile::MidiFile (const std::filesystem::path &path) : for_reading_ (true)
@@ -330,4 +333,5 @@ MidiFile::export_midi_lane_to_sequence (
       // own_events->write_to_midi_file (mf, midi_track_pos);
     }
 #endif
+}
 }

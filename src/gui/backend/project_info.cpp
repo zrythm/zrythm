@@ -14,7 +14,7 @@ ProjectInfo::ProjectInfo (const std::filesystem::path &path, QObject * parent)
     {
       name_ = utils::Utf8String::from_path (path.filename ()).to_qstring ();
       const auto time_since_epoch =
-        fs::last_write_time (path).time_since_epoch ();
+        std::filesystem::last_write_time (path).time_since_epoch ();
       const auto secs_since_epoch =
         std::chrono::duration_cast<std::chrono::seconds> (time_since_epoch)
           .count ();
@@ -25,7 +25,7 @@ ProjectInfo::ProjectInfo (const std::filesystem::path &path, QObject * parent)
 bool
 ProjectInfo::exists () const
 {
-  return fs::exists (path_) && !fs::is_directory (path_);
+  return std::filesystem::exists (path_) && !std::filesystem::is_directory (path_);
 }
 
 QString

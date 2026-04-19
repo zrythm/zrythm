@@ -14,6 +14,7 @@
 
 namespace zrythm::dsp
 {
+using namespace std::string_view_literals;
 
 /**
  * @brief Snap/grid information.

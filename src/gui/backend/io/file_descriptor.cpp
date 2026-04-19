@@ -9,7 +9,8 @@
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 
-using namespace zrythm;
+namespace zrythm::legacy
+{
 
 FileDescriptor::FileDescriptor (const std::filesystem::path &_abs_path)
     : type_ (get_type_from_path (_abs_path))
@@ -87,7 +88,7 @@ FileDescriptor::get_type_from_path (const std::filesystem::path &file)
   const auto ext = utils::Utf8String::from_path (utils::io::file_get_ext (file));
   FileType type = FileType::Other;
 
-  if (fs::is_directory (file))
+  if (std::filesystem::is_directory (file))
     type = FileType::Directory;
   else if (ext.empty ())
     type = FileType::Other;
@@ -234,4 +235,5 @@ FileDescriptor::get_icon_name () const
     default:
       return {};
     }
+}
 }

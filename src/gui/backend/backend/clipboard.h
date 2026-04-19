@@ -10,6 +10,9 @@
  * @addtogroup gui_backend
  */
 
+namespace zrythm::legacy
+{
+
 /**
  * Clipboard struct.
  */
@@ -80,3 +83,4 @@ public:
 /**
  * @}
  */
+}

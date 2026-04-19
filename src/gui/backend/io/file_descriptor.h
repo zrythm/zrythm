@@ -1,12 +1,14 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __AUDIO_SUPPORTED_FILE_H__
-#define __AUDIO_SUPPORTED_FILE_H__
+#pragma once
 
 #include <memory>
 
 #include "utils/utf8_string.h"
+
+namespace zrythm::legacy
+{
 
 /**
  * @addtogroup utils
@@ -126,4 +128,4 @@ public:
  * @}
  */
 
-#endif
+}

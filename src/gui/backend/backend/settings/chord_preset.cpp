@@ -3,6 +3,8 @@
 
 #include "gui/backend/backend/settings/chord_preset.h"
 
+using namespace zrythm;
+
 ChordPreset::ChordPreset (QObject * parent) : QObject (parent) { }
 
 ChordPreset::ChordPreset (const ChordPreset::NameT &name, QObject * parent)

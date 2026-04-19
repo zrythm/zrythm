@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/project_saver.h"
+#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"

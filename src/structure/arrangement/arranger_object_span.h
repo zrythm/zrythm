@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/uuid_identifiable_object.h"
 
@@ -12,7 +14,7 @@ namespace zrythm::structure::arrangement
 /**
  * Flag used in some functions.
  */
-enum class ResizeType : basic_enum_base_type_t
+enum class ResizeType : std::uint8_t
 {
   Normal,
   Loop,

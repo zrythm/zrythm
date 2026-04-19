@@ -27,7 +27,7 @@ ThemeManager::ThemeManager (QObject * parent) : QObject (parent)
   auto themes_dir =
     dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ().get_dir (
       IDirectoryManager::DirectoryType::USER_THEMES);
-  if (!fs::is_directory (themes_dir))
+  if (!std::filesystem::is_directory (themes_dir))
     {
       return;
     }

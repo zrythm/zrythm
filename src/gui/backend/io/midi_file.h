@@ -9,7 +9,9 @@
 
 #include <juce_audio_basics/juce_audio_basics.h>
 
-namespace zrythm::structure
+namespace zrythm
+{
+namespace structure
 {
 namespace arrangement
 {
@@ -185,3 +187,4 @@ private:
 /**
  * @}
  */
+}
