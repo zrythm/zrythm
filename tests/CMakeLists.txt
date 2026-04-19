@@ -7,6 +7,13 @@ endif()
 
 include(GoogleTest)
 function(zrythm_discover_tests TARGET_NAME)
+  # Disable per-target QT_TESTCASE_SOURCEDIR/BUILDDIR so that test targets with
+  # identical precompiled header content can reuse each other's PCH via
+  # REUSE_FROM (the compiler rejects PCH reuse when macros differ).
+  # No tests use QFINDTESTDATA() so these values are unused.
+  set_target_properties(${TARGET_NAME} PROPERTIES
+    QT_SKIP_DEFAULT_TESTCASE_DIRS TRUE
+  )
   # see https://discourse.cmake.org/t/googletest-crash-when-using-cmake-xcode-arm64/5766/11
   if(XCODE)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
@@ -55,6 +62,10 @@ target_link_libraries(zrythm_test_helpers_lib
 target_include_directories(zrythm_test_helpers_lib
   INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_compile_definitions(zrythm_test_helpers_lib
+  INTERFACE
+    TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
 )
 
 target_precompile_headers(zrythm_test_helpers_lib

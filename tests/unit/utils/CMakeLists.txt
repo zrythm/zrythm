@@ -50,8 +50,5 @@ target_link_libraries(zrythm_utils_unit_tests PRIVATE
   httplib::httplib
   zrythm_test_helpers_lib
 )
-target_compile_definitions(zrythm_utils_unit_tests PRIVATE
-  TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
-)
 
 zrythm_discover_tests(zrythm_utils_unit_tests)

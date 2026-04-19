@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/scenes/clip_slot.h"
+#include "structure/scenes/scene.h"
 #include "structure/tracks/track_collection.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>

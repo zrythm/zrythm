@@ -138,5 +138,6 @@ qt_add_qml_module(zrythm_utils_lib
   VERSION 1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmUtils
 )
+target_precompile_headers(zrythm_utils_libplugin REUSE_FROM zrythm_utils_lib)
 
 add_library(zrythm::utils_lib ALIAS zrythm_utils_lib)

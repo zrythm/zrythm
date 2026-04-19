@@ -21,4 +21,6 @@ target_link_libraries(zrythm_controllers_unit_tests PRIVATE
   zrythm_test_helpers_lib
 )
 
+target_precompile_headers(zrythm_controllers_unit_tests REUSE_FROM zrythm_structure_project_unit_tests)
+
 zrythm_discover_tests(zrythm_controllers_unit_tests)

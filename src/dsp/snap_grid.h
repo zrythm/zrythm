@@ -230,28 +230,8 @@ private:
   static constexpr auto kSnapToGridKey = "snapToGrid"sv;
   static constexpr auto kKeepOffsetKey = "keepOffset"sv;
   static constexpr auto kSnapToEventsKey = "snapToEvents"sv;
-  friend void           to_json (nlohmann::json &j, const SnapGrid &p)
-  {
-    j = nlohmann::json{
-      { kSnapNoteLengthKey, p.snap_note_length_         },
-      { kSnapNoteTypeKey,   p.snap_note_type_           },
-      { kSnapAdaptiveKey,   p.snap_adaptive_            },
-      { kLengthTypeKey,     p.length_type_              },
-      { kSnapToGridKey,     p.snap_to_grid_             },
-      { kKeepOffsetKey,     p.snap_to_grid_keep_offset_ },
-      { kSnapToEventsKey,   p.snap_to_events_           }
-    };
-  }
-  friend void from_json (const nlohmann::json &j, SnapGrid &p)
-  {
-    j.at (kSnapNoteLengthKey).get_to (p.snap_note_length_);
-    j.at (kSnapNoteTypeKey).get_to (p.snap_note_type_);
-    j.at (kSnapAdaptiveKey).get_to (p.snap_adaptive_);
-    j.at (kLengthTypeKey).get_to (p.length_type_);
-    j.at (kSnapToGridKey).get_to (p.snap_to_grid_);
-    j.at (kKeepOffsetKey).get_to (p.snap_to_grid_keep_offset_);
-    j.at (kSnapToEventsKey).get_to (p.snap_to_events_);
-  }
+  friend void           to_json (nlohmann::json &j, const SnapGrid &p);
+  friend void           from_json (const nlohmann::json &j, SnapGrid &p);
 
   bool get_prev_or_next_snap_point (
     double  pivot_ticks,

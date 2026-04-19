@@ -104,3 +104,4 @@ qt_add_qml_module(zrythm_structure_tracks_lib
     TARGET zrythm_plugins_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmTracks
 )
+target_precompile_headers(zrythm_structure_tracks_libplugin REUSE_FROM zrythm_structure_tracks_lib)

@@ -7,6 +7,8 @@
 #include "dsp/snap_grid.h"
 #include "utils/algorithms.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 
@@ -357,6 +359,32 @@ SnapGrid::clear_callbacks ()
 {
   event_callback_.reset ();
   last_object_length_provider_ = [] () { return 0.0; };
+}
+
+void
+to_json (nlohmann::json &j, const SnapGrid &p)
+{
+  j = nlohmann::json{
+    { SnapGrid::kSnapNoteLengthKey, p.snap_note_length_         },
+    { SnapGrid::kSnapNoteTypeKey,   p.snap_note_type_           },
+    { SnapGrid::kSnapAdaptiveKey,   p.snap_adaptive_            },
+    { SnapGrid::kLengthTypeKey,     p.length_type_              },
+    { SnapGrid::kSnapToGridKey,     p.snap_to_grid_             },
+    { SnapGrid::kKeepOffsetKey,     p.snap_to_grid_keep_offset_ },
+    { SnapGrid::kSnapToEventsKey,   p.snap_to_events_           }
+  };
+}
+
+void
+from_json (const nlohmann::json &j, SnapGrid &p)
+{
+  j.at (SnapGrid::kSnapNoteLengthKey).get_to (p.snap_note_length_);
+  j.at (SnapGrid::kSnapNoteTypeKey).get_to (p.snap_note_type_);
+  j.at (SnapGrid::kSnapAdaptiveKey).get_to (p.snap_adaptive_);
+  j.at (SnapGrid::kLengthTypeKey).get_to (p.length_type_);
+  j.at (SnapGrid::kSnapToGridKey).get_to (p.snap_to_grid_);
+  j.at (SnapGrid::kKeepOffsetKey).get_to (p.snap_to_grid_keep_offset_);
+  j.at (SnapGrid::kSnapToEventsKey).get_to (p.snap_to_events_);
 }
 
 } // namespace zrythm::dsp

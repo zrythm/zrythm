@@ -40,11 +40,7 @@ set_target_properties(zrythm_actions_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-target_precompile_headers(zrythm_actions_lib
-  PUBLIC
-    # This needs to be included first otherwise QString formatters fail to compile (partial template instantiation mixup with pch)
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/../utils/format_qt.h>
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/track_operator.h>)
+target_precompile_headers(zrythm_actions_lib REUSE_FROM zrythm_undo_lib)
 
 target_link_libraries(zrythm_actions_lib
   PUBLIC
@@ -68,3 +64,4 @@ qt_add_qml_module(zrythm_actions_lib
     TARGET zrythm_undo_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmActions
 )
+target_precompile_headers(zrythm_actions_libplugin REUSE_FROM zrythm_undo_lib)

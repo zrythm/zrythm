@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_processor.h"
 

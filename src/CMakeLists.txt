@@ -43,6 +43,7 @@ qt_add_qml_module(zrythm_gui_lib
     TARGET zrythm_actions_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmGui
 )
+target_precompile_headers(zrythm_gui_libplugin REUSE_FROM zrythm_actions_lib)
 
 add_subdirectory(gui)
 add_subdirectory(engine)
@@ -70,11 +71,7 @@ target_link_libraries(zrythm_gui_lib
     zrythm::all_compile_options
     Qt6::CanvasPainter
 )
-target_precompile_headers(zrythm_gui_lib
-  PUBLIC
-    # This needs to be included first otherwise partial template specializations fail
-    $<$<COMPILE_LANGUAGE:CXX>:"utils/format_qt.h">
-)
+target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_actions_lib)
 
 # add resource file with icon
 if(WIN32)
@@ -85,12 +82,7 @@ endif()
 
 target_sources(zrythm PRIVATE main.cpp)
 target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
-target_precompile_headers(zrythm
-  PUBLIC
-    # This needs to be included first otherwise partial template specializations fail
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/utils/format_qt.h>
-    $<$<COMPILE_LANGUAGE:CXX>:fmt/std.h>
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/zrythm_application.h>)
+target_precompile_headers(zrythm REUSE_FROM zrythm_gui_lib)
 
 if(OS_GNU)
   add_dependencies(zrythm appdata-xml desktop-file)

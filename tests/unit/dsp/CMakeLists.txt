@@ -62,8 +62,5 @@ target_link_libraries(zrythm_dsp_unit_tests PRIVATE
   zrythm_dsp_lib
   zrythm_test_helpers_lib
 )
-target_compile_definitions(zrythm_dsp_unit_tests PRIVATE
-  TEST_WAV_FILE_PATH="${CMAKE_SOURCE_DIR}/tests/test.wav"
-)
 
 zrythm_discover_tests(zrythm_dsp_unit_tests)

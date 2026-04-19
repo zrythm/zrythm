@@ -78,6 +78,7 @@ qt_add_qml_module(zrythm_plugins_lib
     TARGET zrythm_dsp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmPlugins
 )
+target_precompile_headers(zrythm_plugins_libplugin REUSE_FROM zrythm_plugins_lib)
 
 add_subdirectory(plugin-scanner)
 # add_subdirectory(lv2apply)
