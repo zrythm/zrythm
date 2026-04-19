@@ -9,6 +9,7 @@
 
 namespace zrythm::dsp
 {
+using namespace std::string_view_literals;
 
 /**
  * @class Playhead
