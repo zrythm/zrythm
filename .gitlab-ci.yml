@@ -416,7 +416,7 @@ build:gnu/linux:
     expire_in: "1 day"
     reports:
       junit: ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
-  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  coverage: '/Percentage Coverage:\s+(\d+\.\d+)%$/'
 
 build:mac-arm:
   extends: .mac-arm-template
