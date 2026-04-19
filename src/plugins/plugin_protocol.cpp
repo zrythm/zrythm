@@ -74,10 +74,7 @@ Protocol::is_supported (ProtocolType protocol)
   if (protocol == ProtocolType::LADSPA || protocol == ProtocolType::DSSI)
     return false;
 #endif
-#ifndef CARLA_HAVE_CLAP_SUPPORT
-  if (protocol == ProtocolType::CLAP)
-    return false;
-#endif
+
   return true;
 }
 

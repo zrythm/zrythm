@@ -46,6 +46,7 @@ TEST (PluginProtocolTest, SupportDetection)
 {
   // Test platform-specific support
   EXPECT_TRUE (Protocol::is_supported (Protocol::ProtocolType::LV2));
+  EXPECT_TRUE (Protocol::is_supported (Protocol::ProtocolType::CLAP));
 
 #ifdef __APPLE__
   EXPECT_TRUE (Protocol::is_supported (Protocol::ProtocolType::AudioUnit));
@@ -57,9 +58,5 @@ TEST (PluginProtocolTest, SupportDetection)
   EXPECT_FALSE (Protocol::is_supported (Protocol::ProtocolType::LADSPA));
 #else
   EXPECT_TRUE (Protocol::is_supported (Protocol::ProtocolType::LADSPA));
-#endif
-
-#ifndef CARLA_HAVE_CLAP_SUPPORT
-  EXPECT_FALSE (Protocol::is_supported (Protocol::ProtocolType::CLAP));
 #endif
 }
