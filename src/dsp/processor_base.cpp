@@ -4,6 +4,7 @@
 #include "dsp/processor_base.h"
 #include "utils/dsp.h"
 #include "utils/raii_utils.h"
+#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -147,7 +148,7 @@ ProcessorBase::process_block (
   const ScopedBool processing_guard (processing_caches_->is_processing_);
   for (
     const auto &[i, param] :
-    std::views::enumerate (processing_caches_->live_params_))
+    utils::views::enumerate (processing_caches_->live_params_))
     {
       param->process_block (time_nfo, transport, tempo_map);
       processing_caches_->change_tracker_.record_if_changed (i, param);

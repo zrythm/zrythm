@@ -35,10 +35,11 @@ public:
   {
     struct Change
     {
-      size_t index;
-      float  base_value;
-      float  automated_value;
-      float  modulated_value;
+      size_t                    index{};
+      float                     base_value{};
+      float                     automated_value{};
+      float                     modulated_value{};
+      dsp::ProcessorParameter * param{};
     };
 
     /** Returns the changes accumulated during the current cycle. */
@@ -71,7 +72,7 @@ public:
         {
           changes_.push_back (
             { i, param->baseValue (), param->valueAfterAutomationApplied (),
-              modulated });
+              modulated, param });
           prev_values_[i] = modulated;
         }
     }

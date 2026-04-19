@@ -215,7 +215,7 @@ private:
   /**
    * @brief Number of preroll frames remaining in the current process cycle.
    */
-  units::sample_u64_t remaining_preroll_frames_{};
+  units::sample_u64_t remaining_preroll_frames_;
 
   /** Synchronization with main process callback. */
   moodycamel::LightweightSemaphore callback_start_sem_{ 0 };

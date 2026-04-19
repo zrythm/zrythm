@@ -217,6 +217,14 @@ private:
    * param_sync_.
    */
   std::unordered_map<clap_id, size_t> clap_id_to_param_index_;
+
+  /**
+   * @brief Cached raw pointers parallel to get_parameters().
+   *
+   * Populated by rebuild_clap_param_map() on the main thread.
+   * Read on the audio thread to avoid UUID registry lookups.
+   */
+  std::vector<dsp::ProcessorParameter *> param_index_to_ptr_;
 };
 
 } // namespace zrythm::plugins

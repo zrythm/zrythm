@@ -55,8 +55,8 @@ class Transport : public QObject, public dsp::ITransport
     bool punchEnabled READ punchEnabled WRITE setPunchEnabled NOTIFY
       punchEnabledChanged)
   Q_PROPERTY (
-    PlayState playState READ getPlayState WRITE setPlayState NOTIFY
-      playStateChanged)
+    zrythm::dsp::ITransport::PlayState playState READ getPlayState WRITE
+      setPlayState NOTIFY playStateChanged)
   Q_PROPERTY (zrythm::dsp::PlayheadQmlWrapper * playhead READ playhead CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::AtomicPositionQmlAdapter * cuePosition READ cuePosition CONSTANT)

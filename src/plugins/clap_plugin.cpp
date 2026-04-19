@@ -977,6 +977,7 @@ ClapPlugin::unload_current_plugin ()
   clap_to_zrythm_param_.clear ();
   zrythm_to_clap_param_.clear ();
   clap_id_to_param_index_.clear ();
+  param_index_to_ptr_.clear ();
 
   Q_EMIT pluginLoadedChanged (false);
 
@@ -1062,9 +1063,8 @@ ClapPlugin::ClapPluginImpl::generateChangedParamInputEvents () noexcept
         }
 
       // Find CLAP ID for this param
-      const auto &param_ref = owner_.get_parameters ()[change.index];
-      auto *      param = param_ref.get_object_as<dsp::ProcessorParameter> ();
-      auto        it = owner_.zrythm_to_clap_param_.find (param);
+      auto * param = change.param;
+      auto   it = owner_.zrythm_to_clap_param_.find (param);
       if (it == owner_.zrythm_to_clap_param_.end ())
         continue;
 
@@ -1164,9 +1164,9 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
               break;
 
             const size_t param_index = it->second;
-            const auto  &param_ref = owner_.get_parameters ()[param_index];
-            auto *       zrythm_param =
-              param_ref.get_object_as<dsp::ProcessorParameter> ();
+            auto *       zrythm_param = owner_.param_index_to_ptr_[param_index];
+            if (zrythm_param == nullptr)
+              break;
             const auto  range = zrythm_param->range ();
             const float normalized =
               range.convertTo0To1 (static_cast<float> (ev->value));
@@ -1385,6 +1385,8 @@ ClapPlugin::rebuild_clap_param_map ()
   clap_to_zrythm_param_.clear ();
   zrythm_to_clap_param_.clear ();
   clap_id_to_param_index_.clear ();
+  param_index_to_ptr_.clear ();
+  param_index_to_ptr_.resize (get_parameters ().size (), nullptr);
   for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
     {
       const auto target_id = dsp::ProcessorParameter::UniqueId (
@@ -1399,6 +1401,7 @@ ClapPlugin::rebuild_clap_param_map ()
               clap_to_zrythm_param_[clap_id_val] = p;
               zrythm_to_clap_param_[p] = clap_id_val;
               clap_id_to_param_index_[clap_id_val] = static_cast<size_t> (i);
+              param_index_to_ptr_[i] = p;
               break;
             }
         }
