@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "juce_wrapper.h"
 #include <fmt/format.h>
+#include <juce_core/juce_core.h>
 
 // Formatter for juce::String
 template <>

@@ -58,9 +58,9 @@
 
 #include <QUrl>
 
-#include "juce_wrapper.h"
 #include <fmt/format.h>
 #include <fmt/std.h>
+#include <juce_core/juce_core.h>
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER
 #  include "CoreFoundation/CoreFoundation.h"

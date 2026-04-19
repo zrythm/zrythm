@@ -8,7 +8,7 @@
 
 #include "helpers/scoped_qcoreapplication.h"
 
-#include <juce_wrapper.h>
+#include <juce_events/juce_events.h>
 
 namespace zrythm::test_helpers
 {

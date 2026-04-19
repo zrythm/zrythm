@@ -42,7 +42,7 @@
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include "juce_wrapper.h"
+#include <juce_audio_processors/juce_audio_processors.h>
 
 namespace zrythm::plugins::discovery
 

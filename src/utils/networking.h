@@ -4,10 +4,13 @@
 #pragma once
 
 #include <filesystem>
+#include <functional>
+#include <future>
+#include <memory>
+#include <string>
+#include <variant>
 
 #include "utils/utf8_string.h"
-
-#include "juce_wrapper.h"
 
 /**
  * @brief Networking utilities.
@@ -36,6 +39,13 @@ public:
 
 public:
   URL (const std::string &url);
+
+  ~URL ();
+
+  URL (const URL &) = delete;
+  URL &operator= (const URL &) = delete;
+  URL (URL &&) noexcept;
+  URL &operator= (URL &&) noexcept;
 
   /**
    * Returns the contents of the page synchronously.
@@ -67,8 +77,8 @@ public:
   get_page_contents_async (int timeout_ms, GetContentsAsyncCallback callback);
 
 private:
-  juce::URL                url_;
-  GetContentsAsyncCallback get_contents_callback_;
+  class Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }

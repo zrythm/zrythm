@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "zrythm-config.h"
+
 #include "plugins/plugin_descriptor.h"
 #include "utils/bidirectional_map.h"
 #include "utils/serialization.h"

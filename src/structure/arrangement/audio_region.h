@@ -8,7 +8,7 @@
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/fadeable_object.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::structure::arrangement
 {

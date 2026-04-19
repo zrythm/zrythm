@@ -8,8 +8,7 @@
 #include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/types.h"
 
-#include "gtest/gtest.h"
-#include <juce_wrapper.h>
+#include <gtest/gtest.h>
 
 namespace zrythm::structure::tracks
 {

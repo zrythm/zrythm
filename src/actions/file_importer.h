@@ -7,7 +7,7 @@
 #include "actions/track_creator.h"
 #include "structure/scenes/scene.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_formats/juce_audio_formats.h>
 
 namespace zrythm::actions
 {

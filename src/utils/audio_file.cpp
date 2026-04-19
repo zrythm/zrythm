@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2023-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2023-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio_file.h"
@@ -8,12 +8,45 @@
 #include "utils/resampler.h"
 
 #include <fmt/std.h>
+#include <juce_audio_formats/juce_audio_formats.h>
 
 namespace zrythm::utils::audio
 {
 
+struct AudioFile::Impl
+{
+  std::filesystem::path                    filepath_;
+  AudioFileMetadata                        metadata_;
+  bool                                     for_writing_ = false;
+  std::unique_ptr<juce::AudioFormatReader> reader_;
+  std::unique_ptr<juce::AudioFormatWriter> writer_;
+
+  /**
+   * Ensures there is an opened file.
+   *
+   * @throw ZrythmException on error.
+   */
+  void ensure_file_is_open ();
+};
+
+AudioFile::AudioFile () = default;
+
+AudioFile::AudioFile (std::filesystem::path filepath, bool for_writing)
+    : impl_ (std::make_unique<Impl> ())
+{
+  impl_->filepath_ = std::move (filepath);
+  impl_->for_writing_ = for_writing;
+}
+
+AudioFile::AudioFile (AudioFile &&other) noexcept = default;
+
+AudioFile &
+AudioFile::operator= (AudioFile &&other) noexcept = default;
+
+AudioFile::~AudioFile () = default;
+
 void
-AudioFile::ensure_file_is_open ()
+AudioFile::Impl::ensure_file_is_open ()
 {
   if (for_writing_ && writer_ != nullptr)
     return;
@@ -69,34 +102,36 @@ AudioFile::ensure_file_is_open ()
 AudioFileMetadata
 AudioFile::read_metadata ()
 {
-  if (metadata_.filled)
-    return metadata_;
+  if (impl_->metadata_.filled)
+    return impl_->metadata_;
 
-  ensure_file_is_open ();
+  impl_->ensure_file_is_open ();
 
   /* obtain metadata */
-  metadata_.channels = static_cast<int> (reader_->numChannels);
-  metadata_.num_frames = reader_->lengthInSamples;
-  metadata_.samplerate = (int) reader_->sampleRate;
-  metadata_.bit_depth = static_cast<int> (reader_->bitsPerSample);
-  metadata_.bit_rate =
-    metadata_.bit_depth * metadata_.channels * metadata_.samplerate;
-  metadata_.length =
-    metadata_.samplerate > 0
-      ? (metadata_.num_frames * 1000) / metadata_.samplerate
+  impl_->metadata_.channels = static_cast<int> (impl_->reader_->numChannels);
+  impl_->metadata_.num_frames = impl_->reader_->lengthInSamples;
+  impl_->metadata_.samplerate = (int) impl_->reader_->sampleRate;
+  impl_->metadata_.bit_depth = static_cast<int> (impl_->reader_->bitsPerSample);
+  impl_->metadata_.bit_rate =
+    impl_->metadata_.bit_depth * impl_->metadata_.channels
+    * impl_->metadata_.samplerate;
+  impl_->metadata_.length =
+    impl_->metadata_.samplerate > 0
+      ? (impl_->metadata_.num_frames * 1000) / impl_->metadata_.samplerate
       : 0;
-  if (reader_->metadataValues.containsKey ("bpm"))
-    metadata_.bpm =
-      reader_->metadataValues.getValue ("bpm", "").getFloatValue ();
-  else if (reader_->metadataValues.containsKey ("beatsperminute"))
-    metadata_.bpm =
-      reader_->metadataValues.getValue ("beatsperminute", "").getFloatValue ();
-  else if (reader_->metadataValues.containsKey ("tempo"))
-    metadata_.bpm =
-      reader_->metadataValues.getValue ("tempo", "").getFloatValue ();
+  if (impl_->reader_->metadataValues.containsKey ("bpm"))
+    impl_->metadata_.bpm =
+      impl_->reader_->metadataValues.getValue ("bpm", "").getFloatValue ();
+  else if (impl_->reader_->metadataValues.containsKey ("beatsperminute"))
+    impl_->metadata_.bpm =
+      impl_->reader_->metadataValues.getValue ("beatsperminute", "")
+        .getFloatValue ();
+  else if (impl_->reader_->metadataValues.containsKey ("tempo"))
+    impl_->metadata_.bpm =
+      impl_->reader_->metadataValues.getValue ("tempo", "").getFloatValue ();
 
-  metadata_.filled = true;
-  return metadata_;
+  impl_->metadata_.filled = true;
+  return impl_->metadata_;
 }
 
 void
@@ -110,24 +145,27 @@ AudioFile::read_samples_interleaved (
 
   start_from = in_parts ? start_from : 0;
   num_frames_to_read =
-    in_parts ? num_frames_to_read : static_cast<size_t> (metadata_.num_frames);
+    in_parts
+      ? num_frames_to_read
+      : static_cast<size_t> (impl_->metadata_.num_frames);
 
   zrythm::utils::audio::AudioBuffer buffer (
-    metadata_.channels, static_cast<int> (num_frames_to_read));
-  bool success = reader_->read (
+    impl_->metadata_.channels, static_cast<int> (num_frames_to_read));
+  bool success = impl_->reader_->read (
     &buffer, 0, static_cast<int> (num_frames_to_read),
     static_cast<int64_t> (start_from), true, true);
   if (!success)
     {
       throw ZrythmException (
         fmt::format (
-          "Failed to read frames at {} from file '{}'", start_from, filepath_));
+          "Failed to read frames at {} from file '{}'", start_from,
+          impl_->filepath_));
     }
 
   buffer.interleave_samples ();
   float_ranges::copy (
     samples, buffer.getReadPointer (0),
-    num_frames_to_read * static_cast<size_t> (metadata_.channels));
+    num_frames_to_read * static_cast<size_t> (impl_->metadata_.channels));
 }
 
 void
@@ -139,19 +177,20 @@ AudioFile::read_full (
 
   /* read frames in file's sample rate */
   zrythm::utils::audio::AudioBuffer interleaved_buffer (
-    1, metadata_.channels * static_cast<int> (metadata_.num_frames));
+    1,
+    impl_->metadata_.channels * static_cast<int> (impl_->metadata_.num_frames));
 
   read_samples_interleaved (
     false, interleaved_buffer.getWritePointer (0), 0,
-    static_cast<size_t> (metadata_.num_frames));
+    static_cast<size_t> (impl_->metadata_.num_frames));
   interleaved_buffer.deinterleave_samples (
-    static_cast<size_t> (metadata_.channels));
+    static_cast<size_t> (impl_->metadata_.channels));
 
-  if (samplerate.has_value () && samplerate != metadata_.samplerate)
+  if (samplerate.has_value () && samplerate != impl_->metadata_.samplerate)
     {
       /* resample to project's sample rate */
       Resampler r (
-        interleaved_buffer, metadata_.samplerate,
+        interleaved_buffer, impl_->metadata_.samplerate,
         static_cast<double> (*samplerate), Resampler::Quality::VeryHigh);
       while (!r.is_done ())
         {
@@ -165,4 +204,4 @@ AudioFile::read_full (
     }
 }
 
-} //  namespace zrythm::utils::io
+} //  namespace zrythm::utils::audio

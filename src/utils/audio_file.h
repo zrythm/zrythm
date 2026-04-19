@@ -4,7 +4,6 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 
 #include "utils/audio.h"
 
@@ -44,7 +43,7 @@ struct AudioFileMetadata
 class AudioFile
 {
 public:
-  AudioFile () = default;
+  AudioFile ();
 
   /**
    * @brief Creates a new instance of an AudioFile for the given path.
@@ -52,13 +51,12 @@ public:
    * @param filepath Path to the file.
    * @param for_writing Whether to create the file for writing.
    */
-  AudioFile (std::filesystem::path filepath, bool for_writing = false)
-      : filepath_ (std::move (filepath)), for_writing_ (for_writing)
-  {
-  }
+  AudioFile (std::filesystem::path filepath, bool for_writing = false);
 
-  AudioFile (AudioFile &&other) noexcept = default;
-  AudioFile &operator= (AudioFile &&other) noexcept = default;
+  AudioFile (AudioFile &&other) noexcept;
+  AudioFile &operator= (AudioFile &&other) noexcept;
+
+  ~AudioFile ();
 
   /**
    * Reads the metadata for the specified file.
@@ -102,23 +100,8 @@ public:
     std::optional<size_t>              samplerate);
 
 private:
-  /**
-   * Ensures there is an opened file.
-   *
-   * @throw ZrythmException on error.
-   */
-  void ensure_file_is_open ();
-
-public:
-  /** Absolute path. */
-  std::filesystem::path filepath_;
-
-  AudioFileMetadata metadata_;
-
-  std::unique_ptr<juce::AudioFormatReader> reader_;
-  std::unique_ptr<juce::AudioFormatWriter> writer_;
-
-  bool for_writing_ = false;
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }; // namespace zrythm::utils::audio

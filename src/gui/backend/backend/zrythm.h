@@ -15,8 +15,6 @@
 #include "utils/symap.h"
 #include "utils/version.h"
 
-#include "juce_wrapper.h"
-
 /**
  * @addtogroup general
  *

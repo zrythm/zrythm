@@ -3,6 +3,7 @@
 
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port_all.h"
+#include "utils/dsp.h"
 #include "utils/format_qt.h"
 
 #include <fmt/format.h>

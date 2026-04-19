@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <juce_wrapper.h>
+#include <juce_audio_processors_headless/juce_audio_processors_headless.h>
 
 namespace zrythm::plugins
 {

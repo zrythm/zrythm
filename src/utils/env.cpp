@@ -9,8 +9,8 @@
 
 #include "utils/env.h"
 
-#include "juce_wrapper.h"
 #include <fmt/format.h>
+#include <juce_core/juce_core.h>
 
 /**
  * Returns an int for the given environment variable

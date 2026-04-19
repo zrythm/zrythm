@@ -1,17 +1,8 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/dsp_context.h"
-#include "utils/logger.h"
 
-DspContextRAII::DspContextRAII ()
-{
-  z_debug ("Starting DSP context...");
+DspContextRAII::DspContextRAII () noexcept = default;
 
-  ctx_ = std::make_unique<juce::ScopedNoDenormals> ();
-}
-
-DspContextRAII::~DspContextRAII ()
-{
-  z_debug ("Destroying DSP context...");
-}
+DspContextRAII::~DspContextRAII () noexcept = default;

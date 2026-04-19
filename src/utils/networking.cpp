@@ -9,13 +9,29 @@
 #include "utils/logger.h"
 #include "utils/networking.h"
 
+#include <juce_core/juce_core.h>
+
 namespace zrythm::networking
 {
 
-URL::URL (const std::string &url) : url_ (url)
+class URL::Impl
 {
-  z_debug ("creating URL {}", url_.toString (true));
+public:
+  explicit Impl (const std::string &url) : url_ (url) { }
+
+  juce::URL url_;
+};
+
+URL::URL (const std::string &url) : impl_ (std::make_unique<Impl> (url))
+{
+  z_debug ("creating URL {}", impl_->url_.toString (true));
 }
+
+URL::~URL () = default;
+
+URL::URL (URL &&) noexcept = default;
+URL &
+URL::operator= (URL &&) noexcept = default;
 
 URL::MultiPartMimeObject::MultiPartMimeObject (
   const std::string           name,
@@ -28,27 +44,29 @@ URL::MultiPartMimeObject::MultiPartMimeObject (
 std::string
 URL::get_page_contents (int timeout)
 {
-  z_debug ("getting page contents for {}...", url_.toString (true));
+  z_debug ("getting page contents for {}...", impl_->url_.toString (true));
 
   auto options =
     juce::URL::InputStreamOptions (juce::URL::ParameterHandling::inAddress)
       .withConnectionTimeoutMs (timeout)
       .withExtraHeaders ("User-Agent: zrythm-daw/" PACKAGE_VERSION "\r\n");
 
-  if (auto stream = url_.createInputStream (options))
+  if (auto stream = impl_->url_.createInputStream (options))
     {
       auto res = stream->readEntireStreamAsString ();
       if (res.isEmpty ())
         {
           throw ZrythmException (
             fmt::format (
-              "Failed to get page contents for {}.", url_.toString (true)));
+              "Failed to get page contents for {}.",
+              impl_->url_.toString (true)));
         }
       return utils::Utf8String::from_juce_string (res).str ();
     }
 
   throw ZrythmException (
-    fmt::format ("Failed to create input stream for {}.", url_.toString (true)));
+    fmt::format (
+      "Failed to create input stream for {}.", impl_->url_.toString (true)));
 }
 
 utils::Utf8String
@@ -60,7 +78,7 @@ URL::post_json_no_auth (
   z_debug ("sending data...");
 
   juce::String juce_str (json_str);
-  auto         url = url_.withDataToUpload (
+  auto         url = impl_->url_.withDataToUpload (
     "data", "",
     juce::MemoryBlock (juce_str.toRawUTF8 (), juce_str.getNumBytesAsUTF8 ()),
     "application/json");

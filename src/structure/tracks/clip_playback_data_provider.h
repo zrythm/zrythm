@@ -8,7 +8,7 @@
 #include "structure/tracks/track_fwd.h"
 
 #include <farbot/RealtimeObject.hpp>
-#include <juce_wrapper.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::structure::tracks
 {

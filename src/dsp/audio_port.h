@@ -8,7 +8,7 @@
 #include "utils/monotonic_time_provider.h"
 #include "utils/ring_buffer.h"
 
-#include "juce_wrapper.h"
+#include <juce_audio_basics/juce_audio_basics.h>
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::dsp

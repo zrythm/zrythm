@@ -4,11 +4,12 @@
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "engine/session/control_room.h"
+#include "utils/dsp.h"
 
 #include <QFile>
 
 #include <boost/unordered/unordered_flat_map.hpp>
-#include <juce_wrapper.h>
+#include <juce_audio_formats/juce_audio_formats.h>
 
 using namespace Qt::StringLiterals;
 

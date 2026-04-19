@@ -8,8 +8,6 @@
 #include "utils/audio.h"
 #include "utils/types.h"
 
-#include "juce_wrapper.h"
-
 /**
  * @addtogroup utils
  *

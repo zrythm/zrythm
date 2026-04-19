@@ -29,6 +29,7 @@
 #include <algorithm>
 
 #include "dsp/engine.h"
+#include "utils/dsp.h"
 
 namespace zrythm::dsp
 {

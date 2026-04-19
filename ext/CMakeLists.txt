@@ -48,6 +48,7 @@ if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
   )
 endif()
 target_include_directories(juce_lib
+  SYSTEM
   INTERFACE "${juce_SOURCE_DIR}/modules"
   # FIXME should be private
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ladspa"

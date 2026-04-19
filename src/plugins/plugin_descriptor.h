@@ -11,8 +11,8 @@
 
 #include <QObject>
 
-#include "juce_wrapper.h"
 #include <boost/describe.hpp>
+#include <juce_audio_processors_headless/juce_audio_processors_headless.h>
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::plugins

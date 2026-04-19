@@ -77,18 +77,19 @@ FileAudioSource::init_from_file (
   assert (samplerate_ > units::sample_rate (0));
 
   /* read metadata */
-  AudioFile file (full_path);
+  AudioFile                       file (full_path);
+  utils::audio::AudioFileMetadata md;
   try
     {
-      file.read_metadata ();
+      md = file.read_metadata ();
     }
   catch (ZrythmException &e)
     {
       throw ZrythmException (
         fmt::format ("Failed to read metadata from file '{}'", full_path));
     }
-  bit_depth_ = utils::audio::bit_depth_int_to_enum (file.metadata_.bit_depth);
-  bpm_ = file.metadata_.bpm;
+  bit_depth_ = utils::audio::bit_depth_int_to_enum (md.bit_depth);
+  bpm_ = md.bpm;
 
   try
     {

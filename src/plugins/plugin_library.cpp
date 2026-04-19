@@ -7,7 +7,7 @@
 #include <QtSystemDetection>
 
 #ifdef Q_OS_MACOS
-#  include <juce_wrapper.h>
+#  include <juce_core/juce_core.h>
 #endif
 
 namespace zrythm::plugins

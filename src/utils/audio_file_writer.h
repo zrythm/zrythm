@@ -9,7 +9,8 @@
 
 #include <QPromise>
 
-#include "juce_wrapper.h"
+#include <juce_audio_basics/juce_audio_basics.h>
+#include <juce_audio_formats/juce_audio_formats.h>
 
 namespace zrythm::utils
 {

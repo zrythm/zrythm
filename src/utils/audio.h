@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <span>
 
-#include "juce_wrapper.h"
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::utils::audio
 {

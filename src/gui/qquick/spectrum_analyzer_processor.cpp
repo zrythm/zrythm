@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "gui/qquick/spectrum_analyzer_processor.h"
+#include "utils/dsp.h"
 
 namespace zrythm::gui::qquick
 {

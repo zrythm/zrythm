@@ -7,7 +7,7 @@
 #include "utils/dsp.h"
 #include "utils/io_utils.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
 #  include <sanitizer/rtsan_interface.h>
 #endif

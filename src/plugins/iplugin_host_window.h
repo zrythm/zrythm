@@ -5,7 +5,10 @@
 
 #include <QtGui/qwindowdefs.h>
 
-#include <juce_wrapper.h>
+namespace juce
+{
+class Component;
+}
 
 namespace zrythm::plugins
 {

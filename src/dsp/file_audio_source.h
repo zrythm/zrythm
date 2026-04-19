@@ -10,6 +10,8 @@
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
+#include <juce_audio_formats/juce_audio_formats.h>
+
 namespace zrythm::dsp
 {
 

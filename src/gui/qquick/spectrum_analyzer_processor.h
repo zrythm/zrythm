@@ -11,7 +11,7 @@
 #include <QVector>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-#include <juce_wrapper.h>
+#include <juce_dsp/juce_dsp.h>
 #include <kiss_fft.h>
 
 namespace zrythm::gui::qquick

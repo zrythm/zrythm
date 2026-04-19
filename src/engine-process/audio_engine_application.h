@@ -8,7 +8,7 @@
 #include <QLocalSocket>
 
 #include "engine-process/ipc_message.h"
-#include "juce_wrapper.h"
+#include <juce_gui_basics/juce_gui_basics.h>
 
 using namespace Qt::StringLiterals;
 

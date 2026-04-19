@@ -1,12 +1,9 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __UTILS_DSP_CONTEXT_H__
-#define __UTILS_DSP_CONTEXT_H__
+#pragma once
 
-#include "zrythm-config.h"
-
-#include "juce_wrapper.h"
+#include <juce_dsp/juce_dsp.h>
 
 /**
  * RAII class for managing a DSP context (disabling denormals, etc.).
@@ -17,11 +14,9 @@
 class DspContextRAII
 {
 public:
-  DspContextRAII ();
-  ~DspContextRAII ();
+  DspContextRAII () noexcept [[clang::nonblocking]];
+  ~DspContextRAII () noexcept [[clang::nonblocking]];
 
 private:
-  std::unique_ptr<juce::ScopedNoDenormals> ctx_;
+  juce::ScopedNoDenormals ctx_;
 };
-
-#endif // __UTILS_DSP_CONTEXT_H__

@@ -1,8 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "zrythm-config.h"
+
 #include "utils/directory_manager.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 TEST (DirectoryManagerTest, TestingDirCreation)
 {

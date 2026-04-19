@@ -7,6 +7,7 @@
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_renderer.h"
+#include "utils/dsp.h"
 #include "utils/views.h"
 
 namespace zrythm::structure::arrangement

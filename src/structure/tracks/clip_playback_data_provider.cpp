@@ -3,6 +3,7 @@
 
 #include "structure/arrangement/region_renderer.h"
 #include "structure/tracks/clip_playback_data_provider.h"
+#include "utils/dsp.h"
 
 namespace zrythm::structure::tracks
 {

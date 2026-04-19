@@ -12,11 +12,7 @@
 #include "utils/units.h"
 
 #include <crill/spin_mutex.h>
-
-namespace juce
-{
-class MidiMessageSequence;
-}
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::dsp
 {

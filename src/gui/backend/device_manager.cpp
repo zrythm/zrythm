@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
 
 #include "gui/backend/device_manager.h"
+
+#include <juce_audio_utils/juce_audio_utils.h>
 
 namespace zrythm::gui::backend
 {

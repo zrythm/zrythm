@@ -8,7 +8,7 @@
 #include "dsp/hardware_audio_interface.h"
 #include "utils/rt_thread_id.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::dsp
 {

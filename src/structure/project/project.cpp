@@ -14,7 +14,7 @@
 #include "utils/app_settings.h"
 #include "utils/logger.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 namespace zrythm::structure::project
 {

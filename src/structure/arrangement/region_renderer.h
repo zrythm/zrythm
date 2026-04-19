@@ -6,7 +6,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/units.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::structure::arrangement
 {

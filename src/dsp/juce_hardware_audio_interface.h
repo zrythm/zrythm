@@ -10,7 +10,7 @@
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/iaudio_callback.h"
 
-#include <juce_wrapper.h>
+#include <juce_audio_devices/juce_audio_devices.h>
 
 namespace zrythm::dsp
 {

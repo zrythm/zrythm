@@ -40,6 +40,8 @@
 using namespace Qt::StringLiterals;
 using namespace std::chrono_literals;
 
+#include "zrythm-config.h"
+
 #include "plugins/out_of_process_scanner.h"
 #include "utils/format_juce.h"
 
