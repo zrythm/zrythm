@@ -1393,7 +1393,7 @@ ClapPlugin::rebuild_clap_param_map ()
         utils::Utf8String::from_utf8_encoded_string (
           std::to_string (clap_id_val)));
       for (
-        const auto &[i, param_ref] : std::views::enumerate (get_parameters ()))
+        const auto &[i, param_ref] : utils::views::enumerate (get_parameters ()))
         {
           auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
           if (p->get_unique_id () == target_id)
