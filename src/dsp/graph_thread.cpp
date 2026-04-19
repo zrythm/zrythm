@@ -125,7 +125,7 @@ GraphThread::on_reached_terminal_node ()
        * be "on the way" to become idle. */
       while (
         scheduler_.idle_thread_cnt_.load ()
-        != static_cast<int> (scheduler_.threads_.size ()))
+        != static_cast<int> (scheduler_.num_threads ()))
         {
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
           __rtsan::ScopedDisabler d;
@@ -199,14 +199,13 @@ GraphThread::run_worker () noexcept
                 "[{}]: no node to run. just increased idle thread count and waiting for work "
                 "(current idle threads {})",
                 id_, idle_thread_cnt);
-              if (
-                idle_thread_cnt
-                > static_cast<int> (scheduler->threads_.size ())) [[unlikely]]
+              if (idle_thread_cnt > static_cast<int> (scheduler->num_threads ()))
+                [[unlikely]]
                 {
                   z_error (
                     "[{}]: idle thread count {} is greater than the number of threads "
                     "{}. this should never occur",
-                    id_, idle_thread_cnt, scheduler->threads_.size ());
+                    id_, idle_thread_cnt, scheduler->num_threads ());
                 }
             }
 
@@ -279,7 +278,7 @@ GraphThread::run ()
       /* Wait until all worker threads are active */
       while (
         graph->idle_thread_cnt_.load ()
-        != static_cast<int> (graph->threads_.size ()))
+        != static_cast<int> (graph->num_threads ()))
         {
           yield ();
         }
@@ -303,11 +302,10 @@ GraphThread::run ()
   DspContextRAII dsp_context_raii;
 
   z_info (
-    "Worker thread {} created (num threads {})", id_,
-    scheduler_.threads_.size ());
+    "Worker thread {} created (num threads {})", id_, scheduler_.num_threads ());
 
   /* wait for all threads to get created */
-  if (id_ < static_cast<int> (scheduler_.threads_.size ()) - 1)
+  if (id_ < static_cast<int> (scheduler_.num_threads ()) - 1)
     {
       yield ();
     }

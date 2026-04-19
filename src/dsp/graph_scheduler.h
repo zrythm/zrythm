@@ -30,7 +30,6 @@
 #include "utils/mpmc_queue.h"
 #include "utils/rt_thread_id.h"
 
-#include <boost/unordered/concurrent_flat_set.hpp>
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
 #include <moodycamel/lightweightsemaphore.h>
@@ -59,7 +58,6 @@ class GraphThread;
 class GraphScheduler
 {
   friend class GraphThread;
-  using GraphThreadPtr = std::unique_ptr<GraphThread>;
   static constexpr int MAX_GRAPH_THREADS = 128;
 
 public:
@@ -195,8 +193,9 @@ private:
   void release_node_resources ();
 
 private:
-  boost::concurrent_flat_set<GraphThreadPtr> threads_;
-  GraphThreadPtr                             main_thread_;
+  struct ThreadSet;
+  std::unique_ptr<ThreadSet> thread_set_;
+  [[nodiscard]] size_t num_threads () const noexcept [[clang::nonblocking]];
 
   /**
    * @brief Time info for the current process cycle.

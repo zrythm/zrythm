@@ -30,8 +30,24 @@
 #include "utils/audio.h"
 #include "utils/env.h"
 
+#include <boost/unordered/concurrent_flat_set.hpp>
+
 namespace zrythm::dsp::graph
 {
+
+struct GraphScheduler::ThreadSet
+{
+  using GraphThreadPtr = std::unique_ptr<GraphThread>;
+  boost::concurrent_flat_set<GraphThreadPtr> threads_;
+  GraphThreadPtr                             main_thread_;
+  std::atomic<size_t>                        num_threads_{ 0 };
+};
+
+size_t
+GraphScheduler::num_threads () const noexcept [[clang::nonblocking]]
+{
+  return thread_set_->num_threads_.load (std::memory_order_relaxed);
+}
 
 GraphScheduler::GraphScheduler (
   RunOnMainThreadFunc                 run_on_main_thread_func,
@@ -39,7 +55,8 @@ GraphScheduler::GraphScheduler (
   units::sample_u32_t                 max_block_length,
   bool                                realtime_threads,
   std::optional<juce::AudioWorkgroup> thread_workgroup)
-    : thread_workgroup_ (std::move (thread_workgroup)),
+    : thread_set_ (std::make_unique<ThreadSet> ()),
+      thread_workgroup_ (std::move (thread_workgroup)),
       sample_rate_ (sample_rate), max_block_length_ (max_block_length),
       run_on_main_thread_func_ (std::move (run_on_main_thread_func))
 {
@@ -133,13 +150,16 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
       z_debug ("creating {} threads", num_threads.value ());
       for (int i = 0; i < num_threads.value (); ++i)
         {
-          threads_.insert (
+          thread_set_->threads_.insert (
             std::make_unique<GraphThread> (i, false, *this, thread_workgroup_));
         }
 
       /* and the main thread */
-      main_thread_ =
+      thread_set_->main_thread_ =
         std::make_unique<GraphThread> (-1, true, *this, thread_workgroup_);
+
+      thread_set_->num_threads_.store (
+        thread_set_->threads_.size (), std::memory_order_relaxed);
     }
   catch (const std::exception &e)
     {
@@ -182,7 +202,7 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
   };
 
   // start them sequentially
-  threads_.cvisit_all ([&] (auto &thread) {
+  thread_set_->threads_.cvisit_all ([&] (auto &thread) {
     start_thread (thread);
 
     // wait for this thread to initialize before starting the next one
@@ -192,15 +212,16 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
         std::this_thread::sleep_for (10us);
       }
   });
-  start_thread (main_thread_);
+  start_thread (thread_set_->main_thread_);
 
   /* wait for all threads to go idle */
-  while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))
+  while (
+    idle_thread_cnt_.load () != static_cast<int> (thread_set_->threads_.size ()))
     {
       /* wait for all threads to go idle */
       z_info (
         "waiting for all {} threads to go idle after creation (current idle {})...",
-        threads_.size (), idle_thread_cnt_.load ());
+        thread_set_->threads_.size (), idle_thread_cnt_.load ());
       std::this_thread::sleep_for (10us);
     }
 }
@@ -211,15 +232,16 @@ GraphScheduler::terminate_threads ()
   z_info ("terminating graph...");
 
   /* Flag threads to terminate */
-  threads_.cvisit_all ([&] (auto &thread) {
+  thread_set_->threads_.cvisit_all ([&] (auto &thread) {
     thread->signalThreadShouldExit ();
   });
-  main_thread_->signalThreadShouldExit ();
+  thread_set_->main_thread_->signalThreadShouldExit ();
 
   /* wait for all threads to go idle */
   constexpr auto max_tries = 100;
   auto           tries = 0;
-  while (idle_thread_cnt_.load () != static_cast<int> (threads_.size ()))
+  while (
+    idle_thread_cnt_.load () != static_cast<int> (thread_set_->threads_.size ()))
     {
       z_info ("waiting for threads to go idle...");
       std::this_thread::sleep_for (1ms);
@@ -230,10 +252,11 @@ GraphScheduler::terminate_threads ()
   /* wake-up sleeping threads */
   int tc = idle_thread_cnt_.load ();
   assert (tc >= 0);
-  assert (tc <= static_cast<int> (threads_.size ()));
-  if (tc != static_cast<int> (threads_.size ()))
+  assert (tc <= static_cast<int> (thread_set_->threads_.size ()));
+  if (tc != static_cast<int> (thread_set_->threads_.size ()))
     {
-      z_warning ("expected {} idle threads, found {}", threads_.size (), tc);
+      z_warning (
+        "expected {} idle threads, found {}", thread_set_->threads_.size (), tc);
     }
   for (const auto _ : std::views::iota (0, tc))
     {
@@ -244,14 +267,15 @@ GraphScheduler::terminate_threads ()
   callback_start_sem_.signal ();
 
   /* join threads - wait indefinitely to ensure complete termination */
-  threads_.cvisit_all ([&] (auto &thread) {
+  thread_set_->threads_.cvisit_all ([&] (auto &thread) {
     thread->waitForThreadToExit (-1);
   });
-  main_thread_->waitForThreadToExit (-1);
+  thread_set_->main_thread_->waitForThreadToExit (-1);
 
   /* Clear threads only after all threads have been joined */
-  threads_.clear ();
-  main_thread_.reset ();
+  thread_set_->threads_.clear ();
+  thread_set_->main_thread_.reset ();
+  thread_set_->num_threads_.store (0, std::memory_order_relaxed);
 
   z_info ("graph terminated");
 }
@@ -262,7 +286,7 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
   // this is not ideal performance-wise, but this method is called rarely and
   // the result is cached in DspGraphDispatcher
   bool found{};
-  threads_.cvisit_while ([&] (auto &thread) {
+  thread_set_->threads_.cvisit_while ([&] (auto &thread) {
     if (thread_id == thread->rt_thread_id_.load ())
       {
         found = true;
@@ -275,7 +299,8 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
       return true;
     }
 
-  return main_thread_ && thread_id == main_thread_->rt_thread_id_.load ();
+  return thread_set_->main_thread_
+         && thread_id == thread_set_->main_thread_->rt_thread_id_.load ();
 }
 
 void
@@ -327,7 +352,7 @@ GraphScheduler::release_node_resources ()
 
 GraphScheduler::~GraphScheduler ()
 {
-  if (main_thread_ || !threads_.empty ())
+  if (thread_set_->main_thread_ || !thread_set_->threads_.empty ())
     {
       z_info ("terminating graph");
       terminate_threads ();
