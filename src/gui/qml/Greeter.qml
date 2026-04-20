@@ -33,6 +33,7 @@ ApplicationWindow {
     }) as ProjectWindow;
     newWindow.closing.connect(function () {
       root.show();
+      root.currentProjectWindow = null;
     });
     newWindow.show();
     currentProjectWindow = newWindow;

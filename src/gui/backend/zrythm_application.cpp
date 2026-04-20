@@ -53,7 +53,7 @@ public:
 
   utils::QObjectUniquePtr<utils::AppSettings> app_settings_;
 
-  QLocalSocket * socket_ = nullptr;
+  utils::QObjectUniquePtr<QLocalSocket> socket_;
 
   std::unique_ptr<DirectoryManager>                     dir_manager_;
   utils::QObjectUniquePtr<AlertManager>                 alert_manager_;
@@ -66,13 +66,13 @@ public:
   utils::QObjectUniquePtr<zrythm::gui::old_dsp::plugins::PluginManager>
     plugin_manager_;
 
-  QProcess * engine_process_ = nullptr;
+  utils::QObjectUniquePtr<QProcess> engine_process_;
 
   utils::QObjectUniquePtr<QTimer> juce_dispatch_timer_;
 
-  QQmlApplicationEngine * qml_engine_ = nullptr;
+  utils::QObjectUniquePtr<QQmlApplicationEngine> qml_engine_;
 
-  QTranslator * translator_ = nullptr;
+  utils::QObjectUniquePtr<QTranslator> translator_;
 
   std::shared_ptr<gui::backend::DeviceManager> device_manager_;
 
@@ -462,7 +462,7 @@ ZrythmApplication::setup_ui ()
 #endif
 
   // Create and show the main window
-  impl_->qml_engine_ = new QQmlApplicationEngine (this);
+  impl_->qml_engine_ = utils::make_qobject_unique<QQmlApplicationEngine> (this);
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
   // ${RESOURCE_PREFIX} from CMakeLists.txt
@@ -561,7 +561,7 @@ ZrythmApplication::launch_engine_process ()
 
   // Connect the readyReadStandardOutput signal to the new slot
   connect (
-    impl_->engine_process_, &QProcess::readyReadStandardOutput, this,
+    impl_->engine_process_.get (), &QProcess::readyReadStandardOutput, this,
     &ZrythmApplication::onEngineOutput);
 
   impl_->engine_process_->start (
@@ -591,11 +591,11 @@ ZrythmApplication::~ZrythmApplication ()
 {
   impl_->device_manager_->closeAudioDevice ();
 
-  // make sure the project manager & its project are deleted first to avoid
-  // holding shared resources there while other members get deallocated
+  // Delete the project manager first to release project resources (engine,
+  // tracks, etc.) before tearing down infrastructure.
   impl_->project_manager_.reset ();
 
-  if (impl_->socket_ != nullptr)
+  if (impl_->socket_)
     {
       if (impl_->socket_->state () == QLocalSocket::ConnectedState)
         {
@@ -603,7 +603,7 @@ ZrythmApplication::~ZrythmApplication ()
         }
       impl_->socket_->close ();
     }
-  if (impl_->engine_process_ != nullptr)
+  if (impl_->engine_process_)
     {
       impl_->engine_process_->terminate ();
       impl_->engine_process_->waitForFinished ();
@@ -679,7 +679,7 @@ ZrythmApplication::get_directory_manager () const
 QQmlApplicationEngine *
 ZrythmApplication::get_qml_engine () const
 {
-  return impl_->qml_engine_;
+  return impl_->qml_engine_.get ();
 }
 
 std::shared_ptr<gui::backend::DeviceManager>
