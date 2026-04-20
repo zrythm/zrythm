@@ -1404,12 +1404,17 @@ if(WIN32)
 elseif(APPLE)
   set(CPACK_SYSTEM_NAME "MacOS")
   set(CPACK_PACKAGE_ICON "${ZRYTHM_ICNS_FILE_PATH}")
+else()
+  set(CPACK_PACKAGE_ICON "org.zrythm.Zrythm.svg")
 endif()
 
 # -- Generator-specific options --
 
 # Archive generator (GNU/Linux)
 set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+
+# AppImage generator (GNU/Linux)
+set(CPACK_APPIMAGE_DESKTOP_FILE "org.zrythm.Zrythm.desktop")
 
 # DragNDrop generator (MacOS)
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)

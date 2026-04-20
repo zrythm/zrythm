@@ -405,12 +405,14 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata" --rerun-failed --output-on-failure
     - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - cpack -G AppImage -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
   artifacts:
     paths:
       - package-${BUILD_TYPE}/*.tar.xz*
+      - package-${BUILD_TYPE}/*.AppImage*
       - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
     when: always # Not ideal, see GitLab.com #18744
     expire_in: "1 day"
@@ -573,6 +575,11 @@ deploy:installers:
     - gnuLinuxArtifact=$(find package-Release -name "*.tar.xz" | head -n 1)
     - if [ -n "$gnuLinuxArtifact" ]; then
       python3 scripts/deploy_file_to_s3.py --prefix "packages/gnu-linux-cpack" "$gnuLinuxArtifact";
+      fi
+    # Deploy Linux AppImage
+    - gnuLinuxAppImageArtifact=$(find package-Release -name "*.AppImage" | head -n 1)
+    - if [ -n "$gnuLinuxAppImageArtifact" ]; then
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/gnu-linux-cpack" "$gnuLinuxAppImageArtifact";
       fi
     - python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V"
   dependencies:

@@ -147,7 +147,7 @@ foreach(LANG ${locales_list})
   foreach(FORMAT devhelp html singlehtml latex epub)
     set(NAME ${FORMAT}-manual-${LANG})
     set(OUTPUT_DIR ${SPHINX_BUILDDIR}/${LANG}/${FORMAT})
-    
+
     add_custom_target(${NAME}
       BYPRODUCTS ${OUTPUT_DIR}
       # COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
@@ -167,7 +167,11 @@ foreach(LANG ${locales_list})
     endif()
 
     if(ZRYTHM_USER_MANUAL)
-      install(DIRECTORY ${OUTPUT_DIR} DESTINATION ${CMAKE_INSTALL_DOCDIR})
+      install(CODE "
+        if(EXISTS \"${OUTPUT_DIR}\")
+          file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}\" TYPE DIRECTORY FILES \"${OUTPUT_DIR}\")
+        endif()
+      ")
     endif()
   endforeach()
 endforeach()
@@ -195,7 +199,7 @@ add_custom_target(manual_gettext_gen_pot
 foreach(LANG ${locales_list})
   if(NOT ${LANG} STREQUAL "en")
     set(PO_FILE ${CMAKE_CURRENT_SOURCE_DIR}/locale/${LANG}/LC_MESSAGES/zrythm-manual.po)
-    
+
     add_custom_target(${LANG}-intl-update
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/locale/${LANG}/LC_MESSAGES
       COMMAND ${MSGUNIQ_EXECUTABLE} --use-first --output=${PO_FILE} ${PO_FILE} || true
@@ -206,7 +210,7 @@ foreach(LANG ${locales_list})
         -d ${CMAKE_CURRENT_SOURCE_DIR}/locale
       DEPENDS manual_gettext_gen_pot
     )
-    
+
     list(APPEND SPHINX_INTL_UPDATE_TARGETS ${LANG}-intl-update)
   endif()
 endforeach()

@@ -8,7 +8,7 @@ Version=1.0
 Comment=highly automated and intuitive digital audio workstation
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=daw;audio;midi;music;
-Exec=@CMAKE_INSTALL_FULL_BINDIR@/zrythm_launch
+Exec=zrythm
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=org.zrythm.Zrythm
 Type=Application
