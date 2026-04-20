@@ -240,7 +240,7 @@ if(OS_GNU)
 endif()
 
 # Templates
-install(DIRECTORY DESTINATION ${zrythm_datadir}/templates)
+install(DIRECTORY DESTINATION ${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/templates)
 
 # CSS themes
 # add_subdirectory(css-themes)
