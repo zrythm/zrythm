@@ -1395,6 +1395,9 @@ cpack_add_component(Runtime
   # GROUP Zrythm
 )
 set(CPACK_COMPONENTS_ALL "Runtime")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(CPACK_STRIP_FILES ON)
+endif()
 
 if(WIN32)
   if(MAGICK_EXECUTABLE)
@@ -1415,6 +1418,7 @@ set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
 # AppImage generator (GNU/Linux)
 set(CPACK_APPIMAGE_DESKTOP_FILE "org.zrythm.Zrythm.desktop")
+set(CPACK_APPIMAGE_COMPRESSOR "xz")
 
 # DragNDrop generator (MacOS)
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
