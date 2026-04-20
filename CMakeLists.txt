@@ -1327,31 +1327,21 @@ else()
       COMPONENT Runtime
       NAMELINK_COMPONENT Development
   )
-  install(
-    DIRECTORY ${QT6_PREFIX_PATH}/plugins/
-    DESTINATION plugins
-    COMPONENT Runtime
+  qt_generate_deploy_qml_app_script(
+    TARGET zrythm
+    OUTPUT_SCRIPT deploy_qml_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+    DEPLOY_USER_QML_MODULES_ON_UNSUPPORTED_PLATFORM
   )
-  install(
-    DIRECTORY ${QT6_PREFIX_PATH}/lib/
-    TYPE LIB
-    COMPONENT Runtime
-    FILES_MATCHING
-    PATTERN "*.so*"
-    PATTERN "cmake" EXCLUDE
-    PATTERN "pkgconfig" EXCLUDE
-    PATTERN "objects-*" EXCLUDE
-  )
-  install(
-    DIRECTORY ${QT6_PREFIX_PATH}/qml/
-    DESTINATION qml
-    COMPONENT Runtime
-    PATTERN "*"
-    PATTERN "Qt5Compat" EXCLUDE
-    PATTERN "objects-*" EXCLUDE
-    PATTERN "*.a" EXCLUDE
-    PATTERN "*.prl" EXCLUDE
-  )
+  install(SCRIPT ${deploy_qml_script})
+  # Deploy Wayland platform plugin (not auto-detected by Qt on XCB builds)
+  if(EXISTS "${QT6_PREFIX_PATH}/plugins/platforms/libqwayland.so")
+    install(
+      FILES "${QT6_PREFIX_PATH}/plugins/platforms/libqwayland.so"
+      DESTINATION plugins/platforms
+      COMPONENT Runtime
+    )
+  endif()
   if(compiler_is_gcc)
     # bundle libstdc++
     execute_process(
@@ -1418,7 +1408,6 @@ set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
 
 # AppImage generator (GNU/Linux)
 set(CPACK_APPIMAGE_DESKTOP_FILE "org.zrythm.Zrythm.desktop")
-set(CPACK_APPIMAGE_COMPRESSOR "xz")
 
 # DragNDrop generator (MacOS)
 set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
