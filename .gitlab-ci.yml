@@ -405,7 +405,7 @@ build:gnu/linux:
       --overwrite MemoryCheckCommandOptions="--undef-value-errors=no --exit-on-first-error=yes --error-exitcode=1"
       -T memcheck -E "appstream-util-validate-appdata" --rerun-failed --output-on-failure
     - cpack -G TXZ -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
-    - cpack -G AppImage -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
+    - APPIMAGE_EXTRACT_AND_RUN=1 cpack -G AppImage -C ${BUILD_TYPE} --config ${BUILDDIR}-${BUILD_TYPE}/CPackConfig.cmake --verbose -B package-${BUILD_TYPE}
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
