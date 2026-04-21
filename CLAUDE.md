@@ -42,6 +42,15 @@ ctest --test-dir builddir_cmake -N
 ./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests --gtest_filter=TempoMapTest.testCaseName
 ```
 
+### Packaging
+
+For testing changes in packaged builds:
+
+```bash
+cpack -G AppImage -C Debug -B builddir_cmake
+# Output: builddir_cmake/Zrythm-<version>-Linux.AppImage
+```
+
 ### Code Quality
 
 ```bash
@@ -54,6 +63,61 @@ pre-commit run --all-files
 # Run clang-tidy (requires compile_commands.json)
 clang-tidy src/file.cpp -p builddir_cmake
 ```
+
+---
+
+## Project Overview
+
+Zrythm is a highly automated and intuitive digital audio workstation (DAW) written in C++23 using Qt/QML and JUCE. It's free software tailored for both professionals and beginners.
+
+**Key Technologies:**
+- **Language**: C++23
+- **UI Framework**: Qt6 (QML/QuickControls2)
+- **Audio Framework**: JUCE 8
+
+### Project Structure
+
+```
+zrythm/
+├── src/                 # Main source code
+│   ├── main.cpp        # Application entry point
+│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/backend/legacy_actions are legacy unused code kept for reference)
+│   ├── dsp/            # Digital signal processing
+│   ├── engine/         # Core audio engine
+│   ├── plugins/        # Audio plugin hosting-related code
+│   ├── structure/      # Project building blocks (tracks, objects, etc.)
+│   └── utils/          # Utility functions
+├── ext/                # Vendored dependencies
+├── tests/              # Tests (only unit/, integration/ and benchmarks/ are active; other directories are legacy unused code kept for reference)
+│   └── unit/           # Unit tests location
+├── data/               # Application data (themes, samples, etc.)
+└── i18n/               # Internationalization files
+```
+
+### Dependencies
+
+Zrythm uses CPM (CMake Package Manager) for dependency management. Key dependencies include:
+- **JUCE**: Audio framework
+- **Qt6**: GUI framework (requires a recent version — see `CMakeLists.txt` for the minimum)
+- **spdlog**: Logging
+- **fmt**: String formatting
+- **nlohmann_json**: JSON parsing
+- **rubberband**: Audio time-stretching
+- **googletest**: Testing framework
+- **googlebenchmark**: Benchmarking framework
+- **au**: Type-safe units
+
+Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetched to `.cache/CPM/` (safe to delete, will re-fetch).
+
+### Build System Notes
+
+- **Binary Output**: `builddir_cmake/products/bin/`
+- **Tests**: Enable with `-DZRYTHM_TESTS=ON`, `-DZRYTHM_BENCHMARKS=ON`, or `-DZRYTHM_GUI_TESTS=ON` during CMake configuration
+- **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build builddir_cmake`, `ctest --test-dir builddir_cmake`)
+
+---
+
+## Git & CI
 
 ### Git Workflow
 
@@ -84,65 +148,6 @@ glab issue update <id> -R https://gitlab.zrythm.org/zrythm/zrythm --label "label
 ```
 
 ---
-
-## Project Overview
-
-Zrythm is a highly automated and intuitive digital audio workstation (DAW) written in C++23 using Qt/QML and JUCE. It's free software tailored for both professionals and beginners.
-
-**Key Technologies:**
-- **Language**: C++23
-- **UI Framework**: Qt6 (QML/QuickControls2)
-- **Audio Framework**: JUCE 8
-
-## Project Structure
-
-```
-zrythm/
-├── src/                 # Main source code
-│   ├── main.cpp        # Application entry point
-│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/backend/legacy_actions are legacy unused code kept for reference)
-│   ├── dsp/            # Digital signal processing
-│   ├── engine/         # Core audio engine
-│   ├── plugins/        # Audio plugin hosting-related code
-│   ├── structure/      # Project building blocks (tracks, objects, etc.)
-│   └── utils/          # Utility functions
-├── ext/                # Vendored dependencies
-├── tests/              # Tests (only unit/, integration/ and benchmarks/ are active; other directories are legacy unused code kept for reference)
-│   └── unit/           # Unit tests location
-├── data/               # Application data (themes, samples, etc.)
-└── i18n/               # Internationalization files
-```
-
-## Dependencies and Testing
-
-### Key Dependencies
-
-Zrythm uses CPM (CMake Package Manager) for dependency management. Key dependencies include:
-- **JUCE**: Audio framework
-- **Qt6**: GUI framework
-- **spdlog**: Logging
-- **fmt**: String formatting
-- **nlohmann_json**: JSON parsing
-- **rubberband**: Audio time-stretching
-- **googletest**: Testing framework
-- **googlebenchmark**: Benchmarking framework
-- **au**: Type-safe units
-
-Dependencies are defined in [`package-lock.cmake`](package-lock.cmake).
-
-### Testing Framework
-
-**Test Structure:**
-- Unit tests located in [`tests/unit/`](tests/unit/)
-- Integration tests located in [`tests/integration/`](tests/integration/)
-- Benchmarks located in [`tests/benchmarks/`](tests/benchmarks/) (when `ZRYTHM_BENCHMARKS=ON`)
-- GUI tests (when `ZRYTHM_GUI_TESTS=ON`)
-
-**Test Frameworks:**
-- googletest for unit testing
-- gmock for mocking
-- googlebenchmark for performance benchmarks
-- QTest for Qt utilities
 
 ## Architecture Documentation
 
@@ -180,17 +185,11 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 - [scenes_architecture.md](doc/dev/scenes_architecture.md): Scene system design
 - [plugin_group_architecture.md](doc/dev/plugin_group_architecture.md): Plugin grouping
 
-## Key Code Patterns
+---
 
-### Build System
+## Code Guidelines
 
-- **Qt Version**: Requires Qt 6.10.0 or later
-- **Dependencies**: Fetched via CPM to `.cache/CPM/` (safe to delete, will re-fetch)
-- **Binary Output**: `builddir_cmake/products/bin/`
-- **Tests**: Enable with `-DZRYTHM_TESTS=ON` during CMake configuration
-- **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build builddir_cmake`, `ctest --test-dir builddir_cmake`)
-
-### C++23 Features
+### C++23
 
 Zrythm makes extensive use of modern C++ features:
 - Concepts and constraints
@@ -247,14 +246,11 @@ Zrythm makes extensive use of modern C++ features:
 - Never use dead-expression tricks (e.g., `root.selectionModel.selection; // binding`) to create binding dependencies — they are unreliable in packaged builds where the QML engine may optimize away the statement
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
 
-### Packaging
+### External Documentation
 
-For testing changes in packaged builds:
+When you need to search external library/framework documentation (Qt, JUCE, etc.), use the `context7` tools (`resolve-library-id` then `query-docs`) rather than web search.
 
-```bash
-cpack -G AppImage -C Debug -B builddir_cmake
-# Output: builddir_cmake/Zrythm-<version>-Linux.AppImage
-```
+---
 
 ## Key Classes
 
@@ -293,16 +289,18 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 [Track](src/structure/tracks/track.h) is the base class of all track types.
 
+---
+
 ## Unit Tests
 
-- Use gtest
-- Use gmock where mocking is needed
+- Use gtest and gmock
+- Use QTest for Qt utilities
 - Unit tests go under `tests/unit/` with a structure corresponding to the source file path (example: `tests/unit/dsp/tempo_map_test.cpp`)
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
 - Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
 
-### Reusable Utilities
+### Test Utilities
 
 - [ScopedQCoreApplication](tests/helpers/scoped_qcoreapplication.h) (only needed when using QSignalSpy or other facilities that require an active Qt application)
 - [ScopedJuceQApplication](tests/helpers/scoped_juce_qapplication.h): Inherits from ScopedQCoreApplication and also runs the JUCE message loop inside Qt's event loop. Only to be used when we can't avoid dependence on JUCE's message loop.
@@ -310,35 +308,16 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
 - Logging can be enabled in tests by calling `init_logging(LoggerType::Test)` (from `src/utils/logger.h`)
 
-## Searching Documentation
+---
 
-When you need to search external library/framework documentation (Qt, JUCE, etc.), use the `context7` tools (`resolve-library-id` then `query-docs`) rather than web search.
+## Common Practices
 
-## Common Tasks for AI Agents
+- Always read the current state of a file before attempting changes
+- Follow existing patterns for similar functionality when adding new features
+- Ensure proper licensing headers (SPDX) on all new files
+- Run formatting and linting before committing
 
-### Adding New Features
-
-1. **Identify appropriate location** in the source tree
-2. **Follow existing patterns** for similar functionality
-3. **Add comprehensive tests** for new code
-4. **Update documentation** if needed
-5. **Ensure proper licensing** headers
-
-### Modifying Existing Code
-
-1. **Maintain API compatibility** when possible
-2. **Update tests** to reflect changes
-3. **Run formatting** before committing
-4. **Verify build** on all supported platforms
-5. **Always read the current state of a file** before attempting changes
-
-### Bug Fixes
-
-1. **Reproduce the issue** with minimal test case
-2. **Add regression test** to prevent recurrence
-3. **Document the fix** in code comments
-4. **Commit with sign-off**: Use `git commit -s` to add DCO sign-off
-5. **Consider backporting** to stable branches if applicable
+---
 
 ## License and Copyright
 
