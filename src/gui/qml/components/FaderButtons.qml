@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -50,6 +50,14 @@ ColumnLayout {
     icon.color: checked ? "#ff0000" : palette.buttonText
     icon.source: ResourceManager.getIconUrl("zrythm-dark", "media-record.svg")
     visible: root.track.recordableTrackMixin !== null
+
+    Binding {
+      property: "recording"
+      restoreMode: Binding.RestoreNone
+      target: root.track.recordableTrackMixin
+      value: recordButton.checked
+      when: root.track.recordableTrackMixin !== null
+    }
 
     ToolTip {
       text: qsTr("Record")

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -52,12 +52,22 @@ Item {
   ProcessorParameterOperator {
     id: paramOp
 
-    Component.onCompleted: {
-      if (root.balanceParameter && root.undoStack) {
-        paramOp.processorParameter = root.balanceParameter;
-        paramOp.undoStack = root.undoStack;
-      }
-    }
+  }
+
+  Binding {
+    property: "processorParameter"
+    restoreMode: Binding.RestoreNone
+    target: paramOp
+    value: root.balanceParameter
+    when: root.balanceParameter !== null
+  }
+
+  Binding {
+    property: "undoStack"
+    restoreMode: Binding.RestoreNone
+    target: paramOp
+    value: root.undoStack
+    when: root.undoStack !== null
   }
 
   Rectangle {
@@ -122,13 +132,13 @@ Item {
       return palette.text.alpha(intensity);
     }
     height: parent.height
+    visible: false
     width: 1
 
     anchors {
       horizontalCenter: parent.horizontalCenter
       top: parent.top
     }
-    visible:false
   }
 
   // Current value indicator

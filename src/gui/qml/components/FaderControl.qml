@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -68,12 +68,22 @@ Item {
   ProcessorParameterOperator {
     id: paramOp
 
-    Component.onCompleted: {
-      if (root.faderGain && root.undoStack) {
-        paramOp.processorParameter = root.faderGain;
-        paramOp.undoStack = root.undoStack;
-      }
-    }
+  }
+
+  Binding {
+    property: "processorParameter"
+    restoreMode: Binding.RestoreNone
+    target: paramOp
+    value: root.faderGain
+    when: root.faderGain !== null
+  }
+
+  Binding {
+    property: "undoStack"
+    restoreMode: Binding.RestoreNone
+    target: paramOp
+    value: root.undoStack
+    when: root.undoStack !== null
   }
 
   Rectangle {
@@ -125,8 +135,8 @@ Item {
     bottomRightRadius: root.bgRadius
     color: QmlUtils.adjustOpacity(palette.highlightedText, 0.8)
     height: parent.height * root.currentModulatedValue
-    width: 3
     visible: root.currentModulatedValue != root.faderValue
+    width: 3
 
     anchors {
       bottom: parent.bottom
