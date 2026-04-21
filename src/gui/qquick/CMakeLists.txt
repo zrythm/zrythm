@@ -13,6 +13,7 @@ target_sources(zrythm_gui_lib
       grid_line_computer.h
       meter_processor.h
       qfuture_qml_wrapper.h
+      plugin_inspector_controller.h
       qml_utils.h
       ruler_grid_canvas_item.h
       ruler_grid_canvas_renderer.h
@@ -28,6 +29,7 @@ target_sources(zrythm_gui_lib
     fade_overlay_canvas_renderer.cpp
     grid_line_computer.cpp
     meter_processor.cpp
+    plugin_inspector_controller.cpp
     qml_utils.cpp
     ruler_grid_canvas_item.cpp
     ruler_grid_canvas_renderer.cpp

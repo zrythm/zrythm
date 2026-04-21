@@ -20,9 +20,13 @@ ColumnLayout {
   required property Tracklist tracklist
   required property UndoStack undoStack
 
-  function showPluginInspector(plugin: Plugin) {
-    root.selectedPlugin = plugin;
-    tabBar.currentIndex = 1;
+  Connections {
+    function onInspectorRequested(plugin) {
+      root.selectedPlugin = plugin;
+      tabBar.currentIndex = 1;
+    }
+
+    target: PluginInspectorController
   }
 
   TabBar {
@@ -70,6 +74,10 @@ ColumnLayout {
         track: trackInspectorLoader.track
         trackSelectionModel: root.trackSelectionModel
         undoStack: root.undoStack
+
+        onPluginClicked: function (plugin: Plugin) {
+          root.selectedPlugin = plugin;
+        }
       }
 
       Connections {

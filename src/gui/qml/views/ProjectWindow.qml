@@ -363,7 +363,7 @@ ApplicationWindow {
           visible: root.appSettings.bottomPanelVisible
 
           onPluginClicked: function (plugin: Plugin) {
-            leftDock.showPluginInspector(plugin);
+            PluginInspectorController.showInspector(plugin);
           }
         }
       }
@@ -389,6 +389,7 @@ ApplicationWindow {
 
       PlaybackCacheActivityAggregator {
         id: cacheActivityAggregator
+
         collection: root.project.tracklist.collection
       }
 

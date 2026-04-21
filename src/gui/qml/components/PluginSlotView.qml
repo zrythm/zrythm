@@ -29,6 +29,8 @@ Control {
   required property Track track
   required property TrackSelectionModel trackSelectionModel
 
+  signal pluginClicked(Plugin plugin)
+
   function gatherSelectedPlugins() {
     const plugins = [];
     const groupModel = root.pluginGroup;
@@ -100,6 +102,19 @@ Control {
       }
     }
 
+    MenuSeparator {
+    }
+
+    MenuItem {
+      enabled: root.plugin !== null
+      text: qsTr("Properties")
+
+      onTriggered: {
+        if (root.plugin) {
+          PluginInspectorController.showInspector(root.plugin);
+        }
+      }
+    }
   }
 
   SelectionTracker {
@@ -108,8 +123,6 @@ Control {
     modelIndex: root.pluginModelIndex
     selectionModel: root.pluginSelectionModel
   }
-
-  signal pluginClicked(Plugin plugin)
 
   TapHandler {
     acceptedButtons: Qt.LeftButton
