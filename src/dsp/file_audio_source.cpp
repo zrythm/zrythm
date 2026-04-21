@@ -5,9 +5,11 @@
 #include <utility>
 
 #include "dsp/file_audio_source.h"
+#include "dsp/panning.h"
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/debug.h"
+#include "utils/dsp.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 
@@ -46,6 +48,7 @@ FileAudioSource::FileAudioSource (
   name_ = name;
   bit_depth_ = bit_depth;
   ch_frames_ = buf;
+  convert_mono_to_stereo ();
   bpm_ = current_bpm;
 }
 
@@ -95,6 +98,7 @@ FileAudioSource::init_from_file (
     {
       /* read frames into project's samplerate */
       file.read_full (ch_frames_, samplerate_.in (units::sample_rate));
+      convert_mono_to_stereo ();
     }
   catch (ZrythmException &e)
     {
@@ -173,6 +177,27 @@ FileAudioSource::expand_with_frames (const utils::audio::AudioBuffer &frames)
     ch_frames_.getNumChannels (),
     ch_frames_.getNumSamples () + frames.getNumSamples (), true, false);
   replace_frames (frames, prev_end);
+}
+
+void
+FileAudioSource::convert_mono_to_stereo ()
+{
+  if (ch_frames_.getNumChannels () != 1)
+    {
+      return;
+    }
+
+  const auto [left_gain, _] =
+    calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
+  const auto num_samples = ch_frames_.getNumSamples ();
+
+  ch_frames_.setSize (2, num_samples, true);
+
+  auto * left = ch_frames_.getWritePointer (0);
+  auto * right = ch_frames_.getWritePointer (1);
+
+  utils::float_ranges::mul_k2 (left, left_gain, num_samples);
+  utils::float_ranges::copy (right, left, num_samples);
 }
 
 // ========================================================================

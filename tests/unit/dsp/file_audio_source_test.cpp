@@ -4,6 +4,7 @@
 #include <filesystem>
 
 #include "dsp/file_audio_source.h"
+#include "dsp/panning.h"
 #include "utils/audio.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
@@ -52,6 +53,36 @@ protected:
           }
       }
 
+    test_mono_wav = temp_dir / "test_mono.wav";
+    {
+      juce::File                          mono_file (test_mono_wav.string ());
+      std::unique_ptr<juce::OutputStream> mono_out =
+        std::make_unique<juce::FileOutputStream> (mono_file);
+      if (dynamic_cast<juce::FileOutputStream &> (*mono_out).openedOk ())
+        {
+          mono_out->setPosition (0);
+          dynamic_cast<juce::FileOutputStream &> (*mono_out).truncate ();
+          juce::AudioFormatWriterOptions options;
+          options =
+            options.withSampleRate (44100)
+              .withNumChannels (1)
+              .withBitsPerSample (16)
+              .withQualityOptionIndex (0);
+          auto writer = format.createWriterFor (mono_out, options);
+          if (writer)
+            {
+              juce::AudioBuffer<float> buffer (1, 44100);
+              float *                  ch = buffer.getWritePointer (0);
+              for (int i = 0; i < 44100; ++i)
+                {
+                  ch[i] = 1.0f;
+                }
+              writer->writeFromAudioSampleBuffer (
+                buffer, 0, buffer.getNumSamples ());
+            }
+        }
+    }
+
     project_sample_rate = units::sample_rate (44100);
     current_bpm = 120.0;
   }
@@ -64,6 +95,7 @@ protected:
   std::unique_ptr<QTemporaryDir> temp_dir_obj;
   std::filesystem::path          temp_dir;
   std::filesystem::path          test_wav;
+  std::filesystem::path          test_mono_wav;
   units::sample_rate_t           project_sample_rate;
   FileAudioSource::bpm_t         current_bpm;
 };
@@ -93,6 +125,46 @@ TEST_F (FileAudioSourceTest, CreateFromBuffer)
   EXPECT_EQ (src.get_num_frames (), 100);
   EXPECT_EQ (src.get_bit_depth (), FileAudioSource::BitDepth::BIT_DEPTH_32);
   EXPECT_EQ (src.get_name (), "buffer_test");
+}
+
+TEST_F (FileAudioSourceTest, MonoBufferConvertedToStereo)
+{
+  utils::audio::AudioBuffer mono_buf (1, 100);
+  float *                   left = mono_buf.getWritePointer (0);
+  for (int i = 0; i < 100; ++i)
+    {
+      left[i] = 1.0f;
+    }
+
+  FileAudioSource src (
+    mono_buf, FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate,
+    current_bpm, u8"mono_test", nullptr);
+
+  EXPECT_EQ (src.get_num_channels (), 2);
+  EXPECT_EQ (src.get_num_frames (), 100);
+
+  const auto [expected_left_gain, expected_right_gain] =
+    calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
+  const auto &result = src.get_samples ();
+  for (int i = 0; i < 100; ++i)
+    {
+      EXPECT_NEAR (result.getReadPointer (0)[i], expected_left_gain, 0.0001f);
+      EXPECT_NEAR (result.getReadPointer (1)[i], expected_right_gain, 0.0001f);
+    }
+}
+
+TEST_F (FileAudioSourceTest, MonoFileConvertedToStereo)
+{
+  FileAudioSource src (test_mono_wav, project_sample_rate, current_bpm, nullptr);
+
+  EXPECT_EQ (src.get_num_channels (), 2);
+  EXPECT_EQ (src.get_num_frames (), 44100);
+
+  const auto [expected_left_gain, expected_right_gain] =
+    calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
+  const auto &result = src.get_samples ();
+  EXPECT_NEAR (result.getReadPointer (0)[0], expected_left_gain, 0.0001f);
+  EXPECT_NEAR (result.getReadPointer (1)[0], expected_right_gain, 0.0001f);
 }
 
 TEST_F (FileAudioSourceTest, CreateFromInterleaved)

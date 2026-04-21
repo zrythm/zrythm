@@ -197,6 +197,8 @@ private:
     const FileAudioSource &other,
     utils::ObjectCloneType clone_type);
 
+  void convert_mono_to_stereo ();
+
   static constexpr auto kNameKey = "name"sv;
   static constexpr auto kBpmKey = "bpm"sv;
   friend void to_json (nlohmann::json &j, const FileAudioSource &clip);
