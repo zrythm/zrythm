@@ -59,7 +59,7 @@ clang-tidy src/file.cpp -p builddir_cmake
 
 - **Repository**: This project uses a self-hosted GitLab instance at https://gitlab.zrythm.org/zrythm/zrythm
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
-- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details and keep summaries concise
+- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
@@ -243,6 +243,19 @@ Zrythm makes extensive use of modern C++ features:
   4. The target object slot, or a lambda
 - In QML JavaScript, prefer `let` and `const` over `var` when declaring variables if possible
 
+**QML Property Bindings:**
+- Never use dead-expression tricks (e.g., `root.selectionModel.selection; // binding`) to create binding dependencies — they are unreliable in packaged builds where the QML engine may optimize away the statement
+- Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
+
+### Packaging
+
+For testing changes in packaged builds:
+
+```bash
+cpack -G AppImage -C Debug -B builddir_cmake
+# Output: builddir_cmake/Zrythm-<version>-Linux.AppImage
+```
+
 ## Key Classes
 
 ### UUID-Identifiable Objects
@@ -341,4 +354,4 @@ When you need to search external library/framework documentation (Qt, JUCE, etc.
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-04-02*
+*This document is maintained by the Zrythm development team. Last updated: 2026-04-21*
