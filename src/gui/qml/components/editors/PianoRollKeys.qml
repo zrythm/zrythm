@@ -4,10 +4,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
-import ZrythmStyle
 
 // Keys on the left side of the MIDI editor
 Item {

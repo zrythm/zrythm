@@ -30,9 +30,6 @@ ColumnLayout {
     id: fileListView
 
     property var selectedFile
-    readonly property var selectionModel: ItemSelectionModel {
-      model: fileListView.model
-    }
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -105,6 +102,9 @@ ColumnLayout {
           }
         }
       }
+    }
+    selectionModel: ItemSelectionModel {
+      model: fileListView.model
     }
   }
 

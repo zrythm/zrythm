@@ -48,7 +48,7 @@ ColumnLayout {
       rightPadding: 0
       text: root.directionUpward ? "▲" : "▼"
 
-      onClicked: menuLoader.item.open()
+      onClicked: (menuLoader.item as Menu).open()
 
       ToolTip {
         id: arrowButtonTooltip
