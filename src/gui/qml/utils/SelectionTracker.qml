@@ -1,22 +1,31 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQml
 
 // A helper that binds to a selection model and listens for selection changes and updates the selection state of the given model index
-QtObject {
+Item {
   id: root
 
-  property bool isSelected: {
-    if (root.selectionModel && root.selectionModel.model) {
-      root.selectionModel.selection; // binding
-      return root.selectionModel.isSelected(root.modelIndex);
-    }
-    else {
-      return false;
-    }
-  }
+  property bool isSelected: false
   required property var modelIndex
   required property ItemSelectionModel selectionModel
+
+  function updateSelection() {
+    if (root.selectionModel && root.selectionModel.model)
+      root.isSelected = root.selectionModel.isSelected(root.modelIndex);
+    else
+      root.isSelected = false;
+  }
+
+  Component.onCompleted: updateSelection()
+  onModelIndexChanged: updateSelection()
+
+  Connections {
+    function onSelectionChanged() {
+      root.updateSelection();
+    }
+
+    target: root.selectionModel
+  }
 }
