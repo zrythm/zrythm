@@ -7,27 +7,27 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobre o Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Licenciado sob a licença GNU AGPLv3.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Ver Licença</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Política de Marca Registrada</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Notas de Terceiros</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
@@ -423,7 +423,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
         <source>Solo</source>
-        <translation type="unfinished">Solo</translation>
+        <translation>Solo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
@@ -1582,7 +1582,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
-        <translation type="unfinished">Projeto salvo.</translation>
+        <translation>Recarga do projeto necessária</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
@@ -2195,7 +2195,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
         <source>Stereo?</source>
-        <translation type="unfinished">Entrada Estéreo</translation>
+        <translation type="unfinished">Estéreo</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
@@ -3258,7 +3258,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
         <source>Solo</source>
-        <translation type="unfinished">Solo</translation>
+        <translation>Solo</translation>
     </message>
 </context>
 <context>
@@ -3282,7 +3282,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="23"/>
         <source>Tempo</source>
-        <translation type="unfinished">Tempo</translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
@@ -3395,8 +3395,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Import File...</source>
-        <translation type="unfinished">
-Mais 1 arquivo...</translation>
+        <translation>Importar arquivo...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="56"/>
