@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar Tudo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Testar</translation>
     </message>
 </context>
 <context>
@@ -479,7 +479,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation>%sZrythm depende de doações e compras para manter o desenvolvimento%s. Se você gosta do software, considere %sdoar%s ou %s comprar um instalador%s.</translation>
+        <translation>Zrythm depende de doações e compras para sustentar o desenvolvimento. Se você curte o software, por favor considere %1doar%2 ou %3comprar um instalador%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="96"/>
@@ -510,7 +510,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation>Se essa é a sua primeira vez usando o Zrythm, sugerimos que você passe pela seção de &apos;Getting Started&apos; no %s manual do usuário%s.</translation>
+        <translation>Se essa é a sua primeira vez usando o Zrythm, sugerimos que você passe pela seção de &apos;Começando&apos; no %1manual do usuário%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
@@ -531,12 +531,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
-        <translation>Continuar</translation>
+        <translation type="unfinished">Continuar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Progresso</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="310"/>
