@@ -55,7 +55,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiera</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
@@ -516,7 +516,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
         <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfiguration</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="265"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Enheter</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -3226,7 +3226,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktart</translation>
     </message>
 </context>
 <context>
