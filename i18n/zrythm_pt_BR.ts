@@ -536,7 +536,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
         <source>Progress</source>
-        <translation>Progresso</translation>
+        <translation type="unfinished">Progresso</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="310"/>
@@ -768,7 +768,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
         <source>Open a Project…</source>
-        <translation type="unfinished">Abrir um projeto</translation>
+        <translation>Abrir um projeto…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
@@ -1328,7 +1328,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
         <source>Failed to save the project</source>
-        <translation>Falha ao salvar projeto</translation>
+        <translation>Falha ao salvar o projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
@@ -1338,7 +1338,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation>Falha ao criar a pasta de backup %s</translation>
+        <translation>Falha ao criar pasta de backup</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
@@ -1432,12 +1432,12 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation>Não é possível redimensionar %s - as seleções contêm objetos em loop</translation>
+        <translation>Não é possível fazer redimensionamento de {} - as seleções contêm objetos em loop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation>Não é possível redimensionar %s - as seleções contêm objetos que não podem ser colocados em loop</translation>
+        <translation>Não é possível fazer redimensionamento de {} - as seleções contêm objetos que não podem ser colocados em loop</translation>
     </message>
     <message>
         <source>Create timeline selections</source>
@@ -1512,7 +1512,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
-        <translation>Redimensionar seleções do arranjador - %s</translation>
+        <translation>Redimensionar seleções do arranjador - {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
@@ -1592,7 +1592,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
-        <translation>Criar</translation>
+        <translation>Criar {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
@@ -1607,7 +1607,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
-        <translation>Excluir %d plugins</translation>
+        <translation>Excluir {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
@@ -1617,7 +1617,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
-        <translation>Mover %d plugins</translation>
+        <translation>Mover {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
@@ -1627,7 +1627,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
-        <translation>Copiar %d plugins</translation>
+        <translation>Copiar {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
