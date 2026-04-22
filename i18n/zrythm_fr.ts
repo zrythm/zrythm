@@ -7,7 +7,7 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished">À propos de Zrythm</translation>
+        <translation>À propos de Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
@@ -837,7 +837,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation>Afficher l&apos;automation</translation>
+        <translation>Afficher les valeurs d&apos;automation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
