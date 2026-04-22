@@ -7,17 +7,17 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>O Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Licencjonowane na warunkach licencji GNU AGPLv3.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Wyświetl Licencje</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
@@ -27,12 +27,12 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacje o Rozwiązaniach Firm Trzecich</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm i logo Zrythm to znaki handlowe należące do Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaznacz wszystko</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
