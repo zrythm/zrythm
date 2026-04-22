@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm und das Zrythm-Logo sind Trademarks von Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -3389,7 +3389,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktangabe</translation>
     </message>
 </context>
 <context>

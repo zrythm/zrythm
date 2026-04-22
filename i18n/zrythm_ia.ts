@@ -5117,14 +5117,14 @@ Select a format to export as</source>
     <name>resources/ui/shortcuts.ui:99</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projecto</translation>
     </message>
 </context>
 <context>
     <name>resources/ui/header.ui:92</name>
     <message>
         <source>Project</source>
-        <translation type="unfinished"></translation>
+        <translation>Projecto</translation>
     </message>
 </context>
 <context>

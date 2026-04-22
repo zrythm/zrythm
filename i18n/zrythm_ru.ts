@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm и логотип Zrythm являются товарными знаками, принадлежащие Александру Теодотоу.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделить всё (Select All)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,17 +55,17 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать (Copy)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить (Paste)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить (Delete)</translation>
     </message>
 </context>
 <context>
@@ -428,7 +428,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить (Mute)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
@@ -665,7 +665,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
         <source>Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -901,7 +901,7 @@
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="138"/>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="220"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить (Mute)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="157"/>
@@ -1289,7 +1289,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
         <source>Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Маркеры (Markers)</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
@@ -3003,7 +3003,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила (Amount)</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3346,7 +3346,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Тактовый размер (Time Signature)</translation>
     </message>
 </context>
 <context>
@@ -3497,7 +3497,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="111"/>
         <source>Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Инспектор таймлайна</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="122"/>
@@ -17254,7 +17254,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет (None)</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="39"/>

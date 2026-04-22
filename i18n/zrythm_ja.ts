@@ -2956,7 +2956,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>量</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3288,7 +3288,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>拍子記号</translation>
     </message>
 </context>
 <context>

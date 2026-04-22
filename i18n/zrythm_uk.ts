@@ -7,7 +7,7 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm і логотип Zrythm є торговими знаками Александроса Теодоту.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Виділити все/Select All</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопіювати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставити</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Пристрої</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -745,7 +745,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
 </context>
 <context>
@@ -1369,7 +1369,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
         <source>Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Маркери</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
@@ -3176,7 +3176,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Сума</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3350,7 +3350,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
         <source>Adaptive Snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивне прив&apos;язування</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
@@ -3426,18 +3426,18 @@ Support this project at {}
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Триплет</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>Пунктирний</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
         <source>Keep Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберегти зсув</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
@@ -3519,7 +3519,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Тактовий підпис</translation>
     </message>
 </context>
 <context>
@@ -13992,7 +13992,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Жодного</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="39"/>

@@ -464,7 +464,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="78"/>
         <source>About Flatpak</source>
-        <translation type="unfinished"></translation>
+        <translation>Quant a Flatpak</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="76"/>
@@ -474,7 +474,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Donacions</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
@@ -516,7 +516,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
         <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuració</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="265"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositius</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -793,7 +793,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>Pantalla completa</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
@@ -2979,7 +2979,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Quantitat</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3224,7 +3224,7 @@ Support this project at {}
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>Amb punts</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
@@ -3311,7 +3311,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Indicació de compàs</translation>
     </message>
 </context>
 <context>

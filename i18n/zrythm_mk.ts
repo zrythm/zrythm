@@ -474,7 +474,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Донирај</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
