@@ -22,7 +22,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation>Política de Marca Registrada</translation>
+        <translation>Política de Marca Comercial</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
@@ -32,12 +32,12 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm e o logotipo do Zrythm são marcas comerciais de Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
@@ -47,7 +47,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Voltar</translation>
     </message>
 </context>
 <context>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Colar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
@@ -119,7 +119,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="182"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Esconder automação</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="206"/>
@@ -367,7 +367,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="141"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cores do tema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="144"/>
@@ -387,7 +387,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="171"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="174"/>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de canal</translation>
     </message>
 </context>
 <context>
@@ -474,12 +474,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Faça uma doação</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>%sZrythm depende de doações e compras para manter o desenvolvimento%s. Se você gosta do software, considere %sdoar%s ou %s comprar um instalador%s.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="96"/>
@@ -505,18 +505,18 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="163"/>
         <source>Read the Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Leia o manual</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se essa é a sua primeira vez usando o Zrythm, sugerimos que você passe pela seção de &apos;Getting Started&apos; no %s manual do usuário%s.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
         <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuração</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="265"/>
@@ -526,12 +526,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="247"/>
         <source>‹</source>
-        <translation type="unfinished"></translation>
+        <translation>‹</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation>Continuar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
