@@ -467,7 +467,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyAudioChannel)
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   verifyBasicAudioChannelConnections (*track_processor);
@@ -490,7 +490,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsForEmptyMidiChannel)
   });
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *midi_channel_, track_output);
+      graph_, *midi_channel_, track_output);
   });
 
   verifyBasicMidiChannelConnections (*track_processor);
@@ -522,7 +522,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -570,7 +570,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *midi_channel_, track_output);
+      graph_, *midi_channel_, track_output);
   });
 
   // Get plugin objects
@@ -621,7 +621,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Verify basic connections
@@ -666,7 +666,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Verify basic connections
@@ -703,7 +703,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -750,7 +750,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -803,7 +803,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
 
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
   });
 
   // Get plugin objects
@@ -842,7 +842,26 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithEmptyTrackProcessorOutputs
   // This should not crash, though it won't make useful connections
   EXPECT_NO_THROW ({
     ChannelSubgraphBuilder::add_connections (
-      graph_, *port_registry_, *audio_channel_, track_output);
+      graph_, *audio_channel_, track_output);
+  });
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  AddConnectionsForAudioChannelWithMidiTrackProcessorOutputNoPlugins)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Midi, 1);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  EXPECT_NO_THROW ({
+    ChannelSubgraphBuilder::add_connections (
+      graph_, *audio_channel_, track_output);
   });
 }
 
@@ -863,7 +882,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsThrowsWhenOutputsNotInGraph)
   EXPECT_THROW (
     {
       ChannelSubgraphBuilder::add_connections (
-        graph_, *port_registry_, *audio_channel_, track_output);
+        graph_, *audio_channel_, track_output);
     },
     std::invalid_argument);
 }

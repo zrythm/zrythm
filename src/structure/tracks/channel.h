@@ -151,7 +151,6 @@ private:
   static constexpr auto kInsertsKey = "inserts"sv;
   static constexpr auto kPreFaderSendsKey = "preFaderSends"sv;
   static constexpr auto kPostFaderSendsKey = "postFaderSends"sv;
-  static constexpr auto kPrefaderProcessorKey = "prefaderProcessor"sv;
   static constexpr auto kFaderKey = "fader"sv;
 
   friend void to_json (nlohmann::json &j, const Channel &c);
@@ -163,8 +162,13 @@ private:
   }
 
 private:
+  dsp::ProcessorBase::ProcessorBaseDependencies local_processor_deps ();
+
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
   plugins::PluginRegistry                      &plugin_registry_;
+
+  dsp::PortRegistry               local_port_registry_;
+  dsp::ProcessorParameterRegistry local_param_registry_;
 
   NameProvider name_provider_;
 

@@ -665,18 +665,14 @@ from_json (const nlohmann::json &j, Track &track)
   if (track.modulators_)
     {
       j.at (Track::kModulatorsKey).get_to (*track.modulators_);
+      const auto &macro_procs_json = j.at (Track::kModulatorMacroProcessorsKey);
+      const auto  count = std::min (
+        macro_procs_json.size (), track.modulator_macro_processors_.size ());
       for (
         const auto &[index, macro_proc_json] :
-        utils::views::enumerate (j.at (Track::kModulatorMacroProcessorsKey)))
+        utils::views::enumerate (macro_procs_json | std::views::take (count)))
         {
-          auto macro_proc = utils::make_qobject_unique<
-            dsp::ModulatorMacroProcessor> (
-            dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-              .port_registry_ = track.base_dependencies_.port_registry_,
-              .param_registry_ = track.base_dependencies_.param_registry_ },
-            index, &track);
-          from_json (macro_proc_json, *macro_proc);
-          track.modulator_macro_processors_.push_back (std::move (macro_proc));
+          from_json (macro_proc_json, *track.modulator_macro_processors_[index]);
         }
     }
   if (track.lanes_)

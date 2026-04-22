@@ -331,10 +331,7 @@ protected:
     // Compare original and resave JSON registries
     const auto resave_json = nlohmann::json::parse (
       ProjectSaver::get_existing_uncompressed_text (resave_dir));
-    // Skip port/param registry comparison — track-level macro ports and
-    // params are duplicated on resave (separate bug, not in scope).
-    test_helpers::expect_registries_match (
-      original_json, resave_json, { "portRegistry", "paramRegistry" });
+    test_helpers::expect_registries_match (original_json, resave_json);
   }
 };
 

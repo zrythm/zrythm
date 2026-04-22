@@ -34,7 +34,8 @@ Channel::Channel (
   dsp::Fader::ShouldBeMutedCallback             should_be_muted_cb,
   QObject *                                     parent)
     : QObject (parent), dependencies_ (processor_dependencies),
-      plugin_registry_ (plugin_registry),
+      plugin_registry_ (plugin_registry), local_port_registry_ (this),
+      local_param_registry_ (local_port_registry_, this),
       name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
       midi_fx_ (
@@ -72,19 +73,19 @@ Channel::Channel (
   if (signal_type_ == PortType::Audio)
     {
       audio_prefader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (dependencies (), this);
+        ChannelAudioPassthroughProcessor> (local_processor_deps (), this);
       audio_prefader_->set_name (u8"Audio Pre-Fader");
       audio_postfader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (dependencies (), this);
+        ChannelAudioPassthroughProcessor> (local_processor_deps (), this);
       audio_postfader_->set_name (u8"Audio Post-Fader");
     }
   else if (signal_type_ == PortType::Midi)
     {
       midi_prefader_ = utils::make_qobject_unique<
-        ChannelMidiPassthroughProcessor> (dependencies (), this);
+        ChannelMidiPassthroughProcessor> (local_processor_deps (), this);
       midi_prefader_->set_name (u8"MIDI Pre-Fader");
       midi_postfader_ = utils::make_qobject_unique<
-        ChannelMidiPassthroughProcessor> (dependencies (), this);
+        ChannelMidiPassthroughProcessor> (local_processor_deps (), this);
       midi_postfader_->set_name (u8"MIDI Post-Fader");
     }
 
@@ -95,6 +96,15 @@ Channel::Channel (
   postfader_sends_.emplace_back (
     utils::make_qobject_unique<ChannelSend> (
       dependencies (), signal_type_, 0, false, this));
+}
+
+dsp::ProcessorBase::ProcessorBaseDependencies
+Channel::local_processor_deps ()
+{
+  return dsp::ProcessorBase::ProcessorBaseDependencies{
+    .port_registry_ = local_port_registry_,
+    .param_registry_ = local_param_registry_,
+  };
 }
 
 void
@@ -186,14 +196,6 @@ to_json (nlohmann::json &j, const Channel &c)
   j[Channel::kPreFaderSendsKey] = c.prefader_sends_;
   j[Channel::kPostFaderSendsKey] = c.postfader_sends_;
   j[Channel::kInstrumentsKey] = *c.instruments_;
-  if (c.midi_prefader_)
-    {
-      j[Channel::kPrefaderProcessorKey] = *c.midi_prefader_;
-    }
-  else if (c.audio_prefader_)
-    {
-      j[Channel::kPrefaderProcessorKey] = *c.audio_prefader_;
-    }
   j[Channel::kFaderKey] = c.fader_;
 }
 
@@ -220,17 +222,6 @@ from_json (const nlohmann::json &j, Channel &c)
         c.dependencies (), c.signal_type_, index, false);
       from_json (send_json, *send);
       c.postfader_sends_.at (index) = std::move (send);
-    }
-  if (j.contains (Channel::kPrefaderProcessorKey))
-    {
-      if (c.midi_prefader_)
-        {
-          j.at (Channel::kPrefaderProcessorKey).get_to (*c.midi_prefader_);
-        }
-      else if (c.audio_prefader_)
-        {
-          j.at (Channel::kPrefaderProcessorKey).get_to (*c.audio_prefader_);
-        }
     }
   // TODO:  fader
   // c.prefader_ = utils::make_qobject_unique<Fader> (&c);

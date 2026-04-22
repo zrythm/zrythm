@@ -877,17 +877,9 @@
             "$ref": "#/definitions/channelSend"
           }
         },
-        "prefaderProcessor": {
-          "$ref": "#/definitions/processorBase",
-          "description": "Pre-fader passthrough processor"
-        },
         "fader": {
           "$ref": "#/definitions/fader",
           "description": "Channel fader"
-        },
-        "postfaderProcessor": {
-          "$ref": "#/definitions/processorBase",
-          "description": "Post-fader passthrough processor"
         }
       }
     },

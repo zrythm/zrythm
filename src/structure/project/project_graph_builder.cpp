@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/fader.h"
@@ -128,9 +128,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     return graph.add_node_for_processable (processable);
   };
 
-  const auto connect_ports = [&] (auto * src, auto * dest) {
-    dsp::add_connection_for_ports (graph, src, dest);
-  };
+  const auto connect_ports =
+    [&] (
+      const dsp::FinalPortSubclass auto &src,
+      const dsp::FinalPortSubclass auto &dest) {
+      tracks::ChannelSubgraphBuilder::add_connection_for_ports (
+        graph, src, dest);
+    };
 
   // add engine monitor output
   {
@@ -321,7 +325,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
               if (auto * ch = tr->channel ())
                 {
                   structure::tracks::ChannelSubgraphBuilder::add_connections (
-                    graph, tr->get_port_registry (), *ch,
+                    graph, *ch,
                     tr->get_track_processor ()->get_output_ports ().front ());
 
                   // connect to target track
@@ -336,19 +340,18 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                             == dsp::PortType::Audio)
                             {
                               connect_ports (
-                                &ch->get_audio_post_fader ()
-                                   .get_audio_out_port (),
-                                &output_track->get_track_processor ()
-                                   ->get_stereo_in_port ());
+                                ch->get_audio_post_fader ().get_audio_out_port (),
+                                output_track->get_track_processor ()
+                                  ->get_stereo_in_port ());
                             }
                           else if (
                             output_track->input_signal_type ()
                             == dsp::PortType::Midi)
                             {
                               connect_ports (
-                                &ch->get_midi_post_fader ().get_midi_out_port (0),
-                                &output_track->get_track_processor ()
-                                   ->get_midi_in_port ());
+                                ch->get_midi_post_fader ().get_midi_out_port (0),
+                                output_track->get_track_processor ()
+                                  ->get_midi_in_port ());
                             }
                         },
                         route_target.value ().get_object ());
@@ -361,8 +364,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       auto &monitor_fader_in =
                         monitor_fader_->get_stereo_in_port ();
                       connect_ports (
-                        &ch->get_audio_post_fader ().get_audio_out_port (),
-                        &monitor_fader_in);
+                        ch->get_audio_post_fader ().get_audio_out_port (),
+                        monitor_fader_in);
                     }
                   // Connect all track outputs to master processor:
                   // 1. track faders are checked for

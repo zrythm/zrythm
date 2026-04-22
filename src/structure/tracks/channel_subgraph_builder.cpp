@@ -1,7 +1,6 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_all.h"
 #include "structure/tracks/channel_subgraph_builder.h"
 
 namespace zrythm::structure::tracks
@@ -50,7 +49,6 @@ ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
 void
 ChannelSubgraphBuilder::add_connections (
   dsp::graph::Graph           &graph,
-  dsp::PortRegistry           &port_registry,
   Channel                     &ch,
   const dsp::PortUuidReference track_processor_output)
 {
@@ -64,16 +62,17 @@ ChannelSubgraphBuilder::add_connections (
     }
 
   const auto connect_ports =
-    [&] (const dsp::Port::Uuid src_id, const dsp::Port::Uuid &dest_id) {
-      dsp::add_connection_for_ports (
-        graph, port_registry.find_by_id_or_throw (src_id),
-        port_registry.find_by_id_or_throw (dest_id));
+    [&] (
+      const dsp::FinalPortSubclass auto &src,
+      const dsp::FinalPortSubclass auto &dest) {
+      add_connection_for_ports (graph, src, dest);
     };
 
   auto *                                fader = ch.fader ();
   std::optional<dsp::PortUuidReference> processor_midi_out_ref;
   std::optional<dsp::PortUuidReference> processor_audio_out_ref;
-  if (ch.is_audio ())
+  const auto track_proc_out_var = track_processor_output.get_object ();
+  if (std::holds_alternative<dsp::AudioPort *> (track_proc_out_var))
     {
       processor_audio_out_ref = track_processor_output;
     }
@@ -98,7 +97,7 @@ ChannelSubgraphBuilder::add_connections (
           std::array<dsp::PortUuidReference, 1> processor_outputs{
             track_processor_output
           };
-          bool connection_made = dsp::connect_like_ports (
+          bool connection_made = connect_like_ports (
             graph, processor_outputs, pl->get_input_ports ());
 
           // if no connection was made (plugin had no matching inputs), connect
@@ -135,25 +134,21 @@ ChannelSubgraphBuilder::add_connections (
                     {
                       // 1:1 connection
                       connect_ports (
-                        src_audio_outs.front ()->get_uuid (),
-                        dest_audio_ins.front ()->get_uuid ());
+                        *src_audio_outs.front (), *dest_audio_ins.front ());
                     }
                   else if (num_src_outs == 1)
                     {
                       // 1:N connection - mono to stereo/multi
                       for (auto * in_port : dest_audio_ins)
                         {
-                          connect_ports (
-                            src_audio_outs.front ()->get_uuid (),
-                            in_port->get_uuid ());
+                          connect_ports (*src_audio_outs.front (), *in_port);
                         }
                     }
                   else if (num_dest_ins == 1)
                     {
                       // N:1 connection - stereo/multi to mono
                       connect_ports (
-                        src_audio_outs.front ()->get_uuid (),
-                        dest_audio_ins.front ()->get_uuid ());
+                        *src_audio_outs.front (), *dest_audio_ins.front ());
                     }
                   else
                     {
@@ -162,9 +157,7 @@ ChannelSubgraphBuilder::add_connections (
                         const auto &[src_audio_out, dest_audio_in] :
                         std::views::zip (src_audio_outs, dest_audio_ins))
                         {
-                          connect_ports (
-                            src_audio_out->get_uuid (),
-                            dest_audio_in->get_uuid ());
+                          connect_ports (*src_audio_out, *dest_audio_in);
                         }
                     }
                 }
@@ -183,8 +176,7 @@ ChannelSubgraphBuilder::add_connections (
                   auto * midi_out = src_midi_outs.front ();
                   for (auto * midi_in : dest_midi_ins)
                     {
-                      connect_ports (
-                        midi_out->get_uuid (), midi_in->get_uuid ());
+                      connect_ports (*midi_out, *midi_in);
                     }
                 }
             };
@@ -202,8 +194,8 @@ ChannelSubgraphBuilder::add_connections (
             {
               auto &prefader = ch.get_audio_pre_fader ();
               connect_ports (
-                processor_audio_out_ref->id (),
-                prefader.get_audio_in_port ().get_uuid ());
+                *processor_audio_out_ref->get_object_as<dsp::AudioPort> (),
+                prefader.get_audio_in_port ());
             }
         }
       else if (channel_output_type == dsp::PortType::Midi)
@@ -212,8 +204,8 @@ ChannelSubgraphBuilder::add_connections (
             {
               auto &prefader = ch.get_midi_pre_fader ();
               connect_ports (
-                processor_midi_out_ref->id (),
-                prefader.get_midi_in_port (0).get_uuid ());
+                *processor_midi_out_ref->get_object_as<dsp::MidiPort> (),
+                prefader.get_midi_in_port (0));
             }
         }
     }
@@ -235,8 +227,7 @@ ChannelSubgraphBuilder::add_connections (
             const auto &[pl_audio_out, prefader_audio_in] :
             std::views::zip (pl_audio_outs, prefader_audio_ins))
             {
-              connect_ports (
-                pl_audio_out->get_uuid (), prefader_audio_in->get_uuid ());
+              connect_ports (*pl_audio_out, *prefader_audio_in);
               connections_made = true;
             }
 
@@ -267,8 +258,7 @@ ChannelSubgraphBuilder::add_connections (
             const auto &[pl_midi_out, prefader_midi_in] :
             std::views::zip (pl_midi_outs, prefader_midi_ins))
             {
-              connect_ports (
-                pl_midi_out->get_uuid (), prefader_midi_in->get_uuid ());
+              connect_ports (*pl_midi_out, *prefader_midi_in);
               connections_made = true;
             }
 
@@ -310,16 +300,13 @@ ChannelSubgraphBuilder::add_connections (
   if (channel_output_type == dsp::PortType::Audio)
     {
       auto       &prefader = ch.get_audio_pre_fader ();
-      const auto &prefader_outs = prefader.get_output_ports ();
       const auto &fader_in = fader->get_stereo_in_port ();
-      connect_ports (prefader_outs.front ().id (), fader_in.get_uuid ());
+      connect_ports (prefader.get_audio_out_port (), fader_in);
     }
   else if (channel_output_type == dsp::PortType::Midi)
     {
       auto &prefader = ch.get_midi_pre_fader ();
-      connect_ports (
-        prefader.get_midi_out_port (0).get_uuid (),
-        fader->get_input_ports ().front ().id ());
+      connect_ports (prefader.get_midi_out_port (0), fader->get_midi_in_port ());
     }
 
   // connect sends
@@ -331,28 +318,30 @@ ChannelSubgraphBuilder::add_connections (
         {
           // connect prefader output to send input
           connect_ports (
-            ch.get_midi_pre_fader ().get_midi_out_port (0).get_uuid (),
-            send->get_midi_in_port ().get_uuid ());
+            ch.get_midi_pre_fader ().get_midi_out_port (0),
+            send->get_midi_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
               connect_ports (
-                send->get_midi_out_port ().get_uuid (), dest->id ());
+                send->get_midi_out_port (),
+                *dest->get_object_as<dsp::MidiPort> ());
             }
         }
       else if (send->is_audio ())
         {
           // connect prefader output to send input
           connect_ports (
-            ch.get_audio_pre_fader ().get_audio_out_port ().get_uuid (),
-            send->get_stereo_in_port ().get_uuid ());
+            ch.get_audio_pre_fader ().get_audio_out_port (),
+            send->get_stereo_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
               connect_ports (
-                send->get_stereo_out_port ().get_uuid (), dest->id ());
+                send->get_stereo_out_port (),
+                *dest->get_object_as<dsp::AudioPort> ());
             }
         }
     }
@@ -363,29 +352,28 @@ ChannelSubgraphBuilder::add_connections (
       if (send->is_midi ())
         {
           // connect fader output to send input
-          connect_ports (
-            fader->get_output_ports ().front ().id (),
-            send->get_midi_in_port ().get_uuid ());
+          connect_ports (fader->get_midi_out_port (), send->get_midi_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
               connect_ports (
-                send->get_midi_out_port ().get_uuid (), dest->id ());
+                send->get_midi_out_port (),
+                *dest->get_object_as<dsp::MidiPort> ());
             }
         }
       else if (send->is_audio ())
         {
           // connect fader output to send input
           connect_ports (
-            fader->get_output_ports ().front ().id (),
-            send->get_stereo_in_port ().get_uuid ());
+            fader->get_stereo_out_port (), send->get_stereo_in_port ());
 
           // connect send output to destination port (if set)
           if (auto dest = send->destination_port ())
             {
               connect_ports (
-                send->get_stereo_out_port ().get_uuid (), dest->id ());
+                send->get_stereo_out_port (),
+                *dest->get_object_as<dsp::AudioPort> ());
             }
         }
     }
@@ -394,14 +382,14 @@ ChannelSubgraphBuilder::add_connections (
   if (channel_output_type == dsp::PortType::Midi)
     {
       connect_ports (
-        fader->get_output_ports ().front ().id (),
-        ch.get_midi_post_fader ().get_midi_in_port (0).get_uuid ());
+        fader->get_midi_out_port (),
+        ch.get_midi_post_fader ().get_midi_in_port (0));
     }
   else if (channel_output_type == dsp::PortType::Audio)
     {
       connect_ports (
-        fader->get_output_ports ().front ().id (),
-        ch.get_audio_post_fader ().get_audio_in_port ().get_uuid ());
+        fader->get_stereo_out_port (),
+        ch.get_audio_post_fader ().get_audio_in_port ());
     }
 }
 }
