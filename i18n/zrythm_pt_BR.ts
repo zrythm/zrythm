@@ -536,7 +536,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
         <source>Progress</source>
-        <translation type="unfinished">Progresso</translation>
+        <translation>Progresso</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="310"/>
@@ -660,7 +660,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Editar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
@@ -670,7 +670,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Visualizar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
@@ -680,12 +680,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparência</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
@@ -695,7 +695,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cores do tema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -740,12 +740,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobre o Zrythm</translation>
     </message>
 </context>
 <context>
@@ -753,22 +753,22 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar painel esquerdo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar painel direito</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Abrir um projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
@@ -1328,7 +1328,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao salvar projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
@@ -1338,7 +1338,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao criar a pasta de backup %s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
@@ -1432,12 +1432,12 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível redimensionar %s - as seleções contêm objetos em loop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível redimensionar %s - as seleções contêm objetos que não podem ser colocados em loop</translation>
     </message>
     <message>
         <source>Create timeline selections</source>
@@ -1512,7 +1512,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar seleções do arranjador - %s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
@@ -1592,7 +1592,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
@@ -1607,7 +1607,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Excluir %d plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
@@ -1617,7 +1617,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover %d plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
@@ -1627,7 +1627,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar %d plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
