@@ -22,7 +22,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Zasady Dotyczące Znaków Towarowych</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
@@ -47,7 +47,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Powrót</translation>
     </message>
 </context>
 <context>
@@ -55,17 +55,17 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiuj</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Wklej</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Usuń</translation>
     </message>
 </context>
 <context>

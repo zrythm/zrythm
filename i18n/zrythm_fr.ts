@@ -832,12 +832,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
         <source>Listen Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Écouter les notes</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher l&apos;automation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
@@ -3069,7 +3069,7 @@ Définition&#xa0;: {} bits</translation>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
         <source>MIDI output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie MIDI</translation>
     </message>
     <message>
         <location filename="../src/commands/add_arranger_object_command.h" line="23"/>

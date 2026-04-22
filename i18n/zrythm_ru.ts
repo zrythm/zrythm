@@ -443,7 +443,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки канала</translation>
     </message>
 </context>
 <context>
@@ -680,7 +680,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Система</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
@@ -837,7 +837,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать значения автоматизации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
@@ -1144,7 +1144,7 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Remove Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить плагин</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
@@ -1159,7 +1159,7 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Свойства</translation>
     </message>
 </context>
 <context>
@@ -2180,7 +2180,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
         <source>{} Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Выход</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
@@ -2987,7 +2987,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспериментальная функция</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="489"/>
@@ -3065,7 +3065,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/commands/rename_track_command.h" line="19"/>
         <source>Rename Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Переименовать дорожку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>

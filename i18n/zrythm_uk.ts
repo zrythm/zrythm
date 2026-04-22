@@ -37,7 +37,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Копіювати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
@@ -47,7 +47,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Назад</translation>
     </message>
 </context>
 <context>
@@ -160,7 +160,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
         <source>Mixer</source>
-        <translation>Міксер</translation>
+        <translation>Мікшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
@@ -200,7 +200,7 @@
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
         <source>Start Playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Почати відтворення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
@@ -210,7 +210,7 @@
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="83"/>
         <source>Stop Playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Зупинити &amp;відтворення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="91"/>
@@ -261,7 +261,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="340"/>
         <source>Mixer</source>
-        <translation>Міксер</translation>
+        <translation>Мікшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="346"/>
@@ -342,17 +342,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="114"/>
         <source>Open</source>
-        <translation>ВІДЧИНЕНО</translation>
+        <translation>Відкритий</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="119"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Редагувати</translation>
+        <translation>З&amp;міни</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="127"/>
         <source>&amp;View</source>
-        <translation>&amp;Переглянути</translation>
+        <translation>&amp;Перегляд</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="130"/>
@@ -367,7 +367,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="141"/>
         <source>Theme Color</source>
-        <translation>Колір теми</translation>
+        <translation>Кольори теми</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="144"/>
@@ -387,7 +387,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="171"/>
         <source>&amp;Help</source>
-        <translation>&amp;Довідка</translation>
+        <translation>Д&amp;овідка</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="174"/>
@@ -474,7 +474,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation>Пожертвуйте</translation>
+        <translation>Пожертви</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
@@ -516,7 +516,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
         <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
-        <translation>Конфігурація</translation>
+        <translation>конфігурація</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="265"/>
@@ -531,7 +531,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
-        <translation>Продовжити</translation>
+        <translation>Продовжуйте</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
@@ -596,12 +596,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="497"/>
         <source>Create Project</source>
-        <translation>Створити проект</translation>
+        <translation>Створити проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="513"/>
         <source>Creating Project</source>
-        <translation>Створення проекту</translation>
+        <translation>Створити проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="526"/>
@@ -655,7 +655,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкрити</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
@@ -680,7 +680,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Система</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
@@ -753,12 +753,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
         <source>Toggle Left Panel</source>
-        <translation>Перемкнути ліву панель</translation>
+        <translation>Перемикнути ліву панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
         <source>Toggle Right Panel</source>
-        <translation>Перемкнути праву панель</translation>
+        <translation>Перемикнути праву панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
@@ -797,7 +797,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
-        <translation>Повний екран</translation>
+        <translation>На весь екран</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
@@ -807,7 +807,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
         <source>Keyboard Shortcuts</source>
-        <translation>Комбінації клавіш</translation>
+        <translation>Сполучення клавіш</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
@@ -942,7 +942,7 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="254"/>
         <source>Device Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування пристрою</translation>
     </message>
 </context>
 <context>
@@ -1220,7 +1220,7 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Remove Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Зніміть плагін</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
@@ -1235,7 +1235,7 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Властивості</translation>
     </message>
 </context>
 <context>
@@ -1394,7 +1394,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation>Не вдалося створити каталог резервного копіювання</translation>
+        <translation>Не вдалося створити вихідну теку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
@@ -1617,7 +1617,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
-        <translation>Відключити</translation>
+        <translation>Відʼєднати</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
@@ -1682,7 +1682,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
-        <translation>Видалити плагін</translation>
+        <translation>Видалити розширення</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
@@ -1833,7 +1833,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
         <source>Delete {} Tracks</source>
-        <translation>Видалити {} треків</translation>
+        <translation>Видалити всі треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
@@ -1935,12 +1935,12 @@ Use the newer backup?</source>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
-        <translation>Змінити колір</translation>
+        <translation>Зміна кольору</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
-        <translation>Змінити значок</translation>
+        <translation>Змінити іконку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
@@ -2016,7 +2016,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
         <source>Edit tracks</source>
-        <translation>Редагувати треки</translation>
+        <translation>Редагувати трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
@@ -2026,7 +2026,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
-        <translation>Перемістити трек</translation>
+        <translation>Пересунути доріжку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
@@ -2164,7 +2164,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="210"/>
         <source>Connect</source>
-        <translation>Підключитися</translation>
+        <translation>З’єднатись</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="226"/>
@@ -3118,7 +3118,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/utils/exceptions.cpp" line="32"/>
         <source>Details</source>
-        <translation>Подробиці</translation>
+        <translation>Деталі</translation>
     </message>
     <message>
         <location filename="../src/utils/logger.cpp" line="170"/>
@@ -3130,7 +3130,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="455"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation>Мова для вибраної мови ({}) недоступна. Спочатку встановіть один і перезапустіть {}</translation>
+        <translation>Локаль для вибраної вами мови (%s) недоступна. Спочатку встановіть один і перезапустіть %s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="461"/>
@@ -3146,7 +3146,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation>Експериментальна функція</translation>
+        <translation>Експериментальні функції</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="489"/>
@@ -3202,7 +3202,7 @@ Bit depth: {} bits</source>
         <location filename="../src/commands/add_track_command.h" line="22"/>
         <location filename="../src/actions/track_creator.cpp" line="31"/>
         <source>Add Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати трек</translation>
     </message>
     <message>
         <location filename="../src/commands/route_track_command.h" line="27"/>
@@ -3238,7 +3238,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/commands/rename_track_command.h" line="19"/>
         <source>Rename Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейменувати трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
@@ -3345,7 +3345,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
         <source>Snap to Grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив&apos;язати до сітки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
@@ -3457,7 +3457,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
         <source>Link to snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Посилання на Snap</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
@@ -3472,7 +3472,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
         <source>Custom Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Інший період</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
@@ -3506,7 +3506,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
         <source>More Options...</source>
-        <translation>Більше параметрів...</translation>
+        <translation>Інші опції...</translation>
     </message>
 </context>
 <context>
@@ -3692,7 +3692,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="21"/>
         <source>Redo multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторити декілька</translation>
     </message>
     <message>
         <source>%1 %2</source>
@@ -13676,27 +13676,27 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="399"/>
         <source>Chromatic</source>
-        <translation type="unfinished"></translation>
+        <translation>Хроматичний</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="400"/>
         <source>Major</source>
-        <translation type="unfinished"></translation>
+        <translation>Майор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="401"/>
         <source>Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>незначний</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="402"/>
         <source>Ionian</source>
-        <translation type="unfinished"></translation>
+        <translation>іонійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="403"/>
         <source>Dorian</source>
-        <translation type="unfinished"></translation>
+        <translation>Доріан</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="404"/>
@@ -13716,7 +13716,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="407"/>
         <source>Aeolian</source>
-        <translation type="unfinished"></translation>
+        <translation>Еоловий</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="408"/>
@@ -13726,17 +13726,17 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="409"/>
         <source>Melodic Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Мелодичний мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="410"/>
         <source>Harmonic Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонічний мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="411"/>
         <source>Whole Tone</source>
-        <translation type="unfinished"></translation>
+        <translation>Цілий тон</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="412"/>
@@ -13751,12 +13751,12 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="414"/>
         <source>Octatonic Half Whole</source>
-        <translation type="unfinished"></translation>
+        <translation>Октатонічний Половина цілого</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="415"/>
         <source>Octatonic Whole Half</source>
-        <translation type="unfinished"></translation>
+        <translation>Октатонічний Ціла половина</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="416"/>
@@ -13766,7 +13766,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="417"/>
         <source>Harmonic Major</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонічний мажор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="418"/>
@@ -14058,17 +14058,17 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
         <source>Open project</source>
-        <translation>Відкритий проект</translation>
+        <translation>Відкрити проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
         <source>Create new project</source>
-        <translation>створити новий проект</translation>
+        <translation>Створено новий проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
         <source>Create new project with template</source>
-        <translation>Створіть новий проект із шаблоном</translation>
+        <translation>Створити новий проект із шаблону</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
