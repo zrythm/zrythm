@@ -65,7 +65,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
         <source>Delete</source>
-        <translation type="unfinished">削除</translation>
+        <translation>削除</translation>
     </message>
 </context>
 <context>
@@ -86,7 +86,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
         <source>Zoom In</source>
-        <translation type="unfinished">ズーム イン</translation>
+        <translation>ズームイン</translation>
     </message>
 </context>
 <context>
