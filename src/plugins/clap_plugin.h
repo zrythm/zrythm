@@ -105,6 +105,19 @@ public:
   bool implementsState () const noexcept override { return true; }
   void stateMarkDirty () noexcept override;
 
+  // clap_host_preset_load
+  bool implementsPresetLoad () const noexcept override { return true; }
+  void presetLoadLoaded (
+    uint32_t     locationKind,
+    const char * location,
+    const char * loadKey) noexcept override;
+  void presetLoadOnError (
+    uint32_t     locationKind,
+    const char * location,
+    const char * loadKey,
+    int32_t      osError,
+    const char * msg) noexcept override;
+
   // ============================================================================
   // Plugin Interface Implementation
   // ============================================================================

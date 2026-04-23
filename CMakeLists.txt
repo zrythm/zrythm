@@ -822,8 +822,8 @@ CPMUsePackageLock(package-lock.cmake)
 CPMGetPackage(nlohmann_json)
 CPMGetPackage(nlohmann_json_schema_validator)
 
-# CPMGetPackage(clap)
-# CPMGetPackage(clap-helpers)
+CPMGetPackage(clap)
+CPMGetPackage(clap-helpers)
 CPMGetPackage(clap-juce-extensions)
 
 add_subdirectory(ext)

@@ -19,14 +19,30 @@ CPMDeclarePackage(nlohmann_json
     "JSON_ImplicitConversions ON"
     "JSON_SystemInclude ON"
 )
-# clap and clap-helpers are provided transitively by clap-juce-extensions below
-# CPMDeclarePackage(clap ...)
-# CPMDeclarePackage(clap-helpers ...)
+# clap
+CPMDeclarePackage(clap
+  NAME clap
+  VERSION 1.2.7
+  GIT_TAG 29ffcc273be7c7c651f6c9953b99e69700e2387a
+  GITHUB_REPOSITORY free-audio/clap
+  SYSTEM YES
+  EXCLUDE_FROM_ALL YES
+)
+# clap-helpers
+CPMDeclarePackage(clap-helpers
+  NAME clap-helpers
+  VERSION 0.3
+  GIT_TAG d0ddaf0b581e083a1f615d6509f1af907a5ce82c
+  GITHUB_REPOSITORY alex-tee/clap-helpers
+  SYSTEM YES
+  EXCLUDE_FROM_ALL YES
+)
+# clap-juce-extensions
 CPMDeclarePackage(clap-juce-extensions
   NAME clap-juce-extensions
   VERSION 0.1
-  GIT_TAG e1f67893cc409a40c1154fa2e78c97046da24ce0
-  GITHUB_REPOSITORY free-audio/clap-juce-extensions
+  GIT_TAG 36c0a14ab03918d4258eaba2ea40a3fadb992da6
+  GITHUB_REPOSITORY alex-tee/clap-juce-extensions
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
 )

@@ -641,6 +641,33 @@ ClapPlugin::timerSupportUnregisterTimer (clap_id timerId) noexcept
 }
 
 void
+ClapPlugin::presetLoadLoaded (
+  uint32_t     locationKind,
+  const char * location,
+  const char * loadKey) noexcept
+{
+  assert (is_main_thread);
+  z_info (
+    "CLAP preset loaded: location_kind={} location='{}' load_key='{}'",
+    locationKind, location, loadKey);
+}
+
+void
+ClapPlugin::presetLoadOnError (
+  uint32_t     locationKind,
+  const char * location,
+  const char * loadKey,
+  int32_t      osError,
+  const char * msg) noexcept
+{
+  assert (is_main_thread);
+  z_warning (
+    "CLAP preset load error: location_kind={} location='{}' load_key='{}' "
+    "os_error={} msg='{}'",
+    locationKind, location, loadKey, osError, msg);
+}
+
+void
 ClapPlugin::stateMarkDirty () noexcept
 {
   assert (is_main_thread);
