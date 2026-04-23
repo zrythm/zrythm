@@ -168,11 +168,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // add_node_for_processable (*hw_in_processor);
 
   /* add each track */
-  for (const auto &cur_tr : tracklist->collection ()->get_track_span ())
+  for (const auto &cur_tr : tracklist->collection ()->tracks ())
     {
       std::visit (
         [&] (auto &&tr) {
-          z_return_if_fail (tr);
           using TrackT = base_type<decltype (tr)>;
 
           if constexpr (structure::tracks::ProcessableTrack<TrackT>)
@@ -211,7 +210,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 graph, *channel);
             }
         },
-        cur_tr);
+        cur_tr.get_object ());
     }
 
     /* ========================
@@ -305,10 +304,10 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 
   /* connect tracks */
   const auto * master_track = tracklist->singletonTracks ()->masterTrack ();
-  for (const auto &cur_tr : tracklist->collection ()->get_track_span ())
+  for (const auto &cur_tr : tracklist->collection ()->tracks ())
     {
       std::visit (
-        [&] (auto &tr) {
+        [&] (const auto &tr) {
           using TrackT = base_type<decltype (tr)>;
 
           // only processable tracks are part of the graph (essentially every
@@ -391,7 +390,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 }
             }
         },
-        cur_tr);
+        cur_tr.get_object ());
     }
 
   // add additional custom connections from the PortConnectionsManager

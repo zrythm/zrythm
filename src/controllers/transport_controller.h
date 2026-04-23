@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include "dsp/snap_grid.h"
-#include "dsp/transport.h"
-
 #include <QtQmlIntegration>
+
+namespace zrythm::dsp
+{
+class Transport;
+class SnapGrid;
+}
 
 namespace zrythm::controllers
 {
@@ -26,10 +29,7 @@ public:
   explicit TransportController (
     dsp::Transport &transport,
     dsp::SnapGrid  &snap_grid,
-    QObject *       parent = nullptr)
-      : QObject (parent), transport_ (transport), snap_grid_ (snap_grid)
-  {
-  }
+    QObject *       parent = nullptr);
 
   /**
    * @brief Moves the playhead backward to the previous snap point.
@@ -42,10 +42,6 @@ public:
   Q_INVOKABLE void moveForward () [[clang::blocking]];
 
 private:
-  /** Millisec to allow moving further backward when very close to the
-   * calculated backward position. */
-  static constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
-
   dsp::Transport &transport_;
   dsp::SnapGrid  &snap_grid_;
 };

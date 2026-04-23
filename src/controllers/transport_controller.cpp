@@ -2,9 +2,24 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/transport_controller.h"
+#include "dsp/snap_grid.h"
+#include "dsp/transport.h"
 
 namespace zrythm::controllers
 {
+
+namespace
+{
+constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
+}
+
+TransportController::TransportController (
+  dsp::Transport &transport,
+  dsp::SnapGrid  &snap_grid,
+  QObject *       parent)
+    : QObject (parent), transport_ (transport), snap_grid_ (snap_grid)
+{
+}
 
 void
 TransportController::moveBackward ()
