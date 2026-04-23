@@ -141,10 +141,17 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
           // restoration and overwrite deserialized Zrythm values.
           if (state_to_apply_.has_value ())
             {
+              z_debug (
+                "JUCE: applying saved state ({} bytes)",
+                state_to_apply_->getSize ());
               juce_plugin_->setStateInformation (
                 state_to_apply_->getData (),
                 static_cast<int> (state_to_apply_->getSize ()));
               state_to_apply_.reset ();
+            }
+          else
+            {
+              z_debug ("JUCE: no saved state to apply");
             }
 
           // Always build parameter mappings: when deserializing, this matches
@@ -165,17 +172,28 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
             }
           else
             {
-              // Deserialization: Zrythm params already have correct values from
-              // JSON. Push base values to JUCE so the plugin starts with the
-              // right state.
+              // Deserialization: the state blob is the authoritative source.
+              // Read back JUCE parameter values (which reflect the loaded
+              // state) and update Zrythm's baseValues to match.
+              int updated = 0;
               for (const auto &mapping : parameter_mappings_)
                 {
                   if (mapping.juce_param && mapping.zrythm_param)
                     {
-                      mapping.juce_param->setValue (
-                        mapping.zrythm_param->baseValue ());
+                      const auto old_base = mapping.zrythm_param->baseValue ();
+                      const auto new_val = mapping.juce_param->getValue ();
+                      if (!utils::math::floats_near (old_base, new_val, 0.001f))
+                        {
+                          mapping.zrythm_param->setBaseValue (new_val);
+                          ++updated;
+                          z_trace (
+                            "JUCE: state-load updated param '{}' "
+                            "old={:.4f} new={:.4f}",
+                            mapping.zrythm_param->label (), old_base, new_val);
+                        }
                     }
                 }
+              z_debug ("JUCE: state-load read back {} params", updated);
             }
 
           juce_initialized_ = true;

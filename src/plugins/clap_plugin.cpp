@@ -131,8 +131,7 @@ public:
   /**
    * @brief Performs a CLAP paramsFlush when the plugin is inactive.
    *
-   * Sends all current base values via generateAllParamInputEvents(), calls
-   * paramsFlush on the plugin, then drains any output values through
+   * Calls paramsFlush on the plugin, then drains any output values through
    * param_sync_. Main thread only.
    */
   void paramFlushOnMainThread () [[clang::blocking]];
@@ -221,19 +220,23 @@ private:
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
 
-  bool scheduleRestart_ = false;
-  bool scheduleDeactivate_ = false;
+  // TODO: scheduleRestart_ is stored but never checked — wire into
+  // process_impl() to handle the CLAP host requestRestart() callback.
+  std::atomic_bool scheduleRestart_{ false };
+  std::atomic_bool scheduleDeactivate_{ false };
 
-  bool scheduleProcess_ = true;
+  std::atomic_bool scheduleProcess_{ true };
 
-  bool scheduleParamFlush_ = false;
+  std::atomic_bool scheduleParamFlush_{ false };
 
   const char * guiApi_ = nullptr;
   bool         isGuiCreated_ = false;
   bool         isGuiVisible_ = false;
   bool         isGuiFloating_ = false;
 
-  bool scheduleMainThreadCallback_ = false;
+  // TODO: scheduleMainThreadCallback_ is stored but never checked — wire
+  // into the main thread event loop to handle the CLAP requestCallback().
+  std::atomic_bool scheduleMainThreadCallback_{ false };
 
   // work-around the fact that stopProcessing() requires being called by an
   // audio thread for whatever reason
@@ -767,9 +770,9 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     return;
 
   // Do we want to deactivate the plugin?
-  if (pimpl_->scheduleDeactivate_)
+  if (pimpl_->scheduleDeactivate_.load (std::memory_order_acquire))
     {
-      pimpl_->scheduleDeactivate_ = false;
+      pimpl_->scheduleDeactivate_.store (false, std::memory_order_release);
       if (pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing)
         pimpl_->plugin_->stopProcessing ();
       pimpl_->setPluginState (ClapPluginImpl::ActiveAndReadyToDeactivate);
@@ -799,12 +802,14 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 
   if (pimpl_->isPluginSleeping ())
     {
-      if (!pimpl_->scheduleProcess_ && pimpl_->evIn_.empty ())
+      if (
+        !pimpl_->scheduleProcess_.load (std::memory_order_acquire)
+        && pimpl_->evIn_.empty ())
         // The plugin is sleeping, there is no request to wake it up and there
         // are no events to process
         return;
 
-      pimpl_->scheduleProcess_ = false;
+      pimpl_->scheduleProcess_.store (false, std::memory_order_release);
       if (!pimpl_->plugin_->startProcessing ())
         {
           // the plugin failed to start processing
@@ -987,8 +992,64 @@ ClapPlugin::load_plugin (
   // Apply any pending state from JSON deserialization
   if (state_to_apply_.has_value ())
     {
+      z_debug (
+        "CLAP: applying saved state ({} bytes)", state_to_apply_->size ());
+
       apply_state_from_byte_array (*state_to_apply_);
       state_to_apply_.reset ();
+
+      // Per the CLAP spec, plugins may defer parameter updates until the
+      // next paramsFlush() after state load. Flush to ensure parameter
+      // values are current before reading them back.
+      if (pimpl_->plugin_->canUseParams ())
+        {
+          pimpl_->evIn_.clear ();
+          pimpl_->evOut_.clear ();
+          pimpl_->plugin_->paramsFlush (
+            pimpl_->evIn_.clapInputEvents (),
+            pimpl_->evOut_.clapOutputEvents ());
+          // Discard output events — the flush is only to trigger internal
+          // plugin state resolution, not to process output parameter values.
+          pimpl_->evOut_.clear ();
+        }
+
+      // Per the CLAP spec, the plugin is responsible for persisting its
+      // parameter values via its state. Read back the parameter values (which
+      // reflect the loaded state) and update Zrythm's baseValues to match.
+      if (pimpl_->plugin_->canUseParams ())
+        {
+          int updated = 0;
+          for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
+            {
+              double value = 0;
+              if (!pimpl_->plugin_->paramsGetValue (clap_id_val, &value))
+                continue;
+
+              auto it = clap_to_zrythm_param_.find (clap_id_val);
+              if (it == clap_to_zrythm_param_.end ())
+                continue;
+
+              auto *     zrythm_param = it->second;
+              const auto old_base = zrythm_param->baseValue ();
+              const auto range = zrythm_param->range ();
+              const auto normalized =
+                range.convertTo0To1 (static_cast<float> (value));
+              if (!utils::math::floats_near (old_base, normalized, 0.001f))
+                {
+                  zrythm_param->setBaseValue (normalized);
+                  ++updated;
+                  z_trace (
+                    "CLAP: get_value updated '{}' "
+                    "old={:.4f} new={:.4f}",
+                    zrythm_param->label (), old_base, normalized);
+                }
+            }
+          z_debug ("CLAP: get_value updated {} params", updated);
+        }
+    }
+  else
+    {
+      z_debug ("CLAP: no saved state to apply");
     }
 
   Q_EMIT pluginLoadedChanged (true);
@@ -1212,19 +1273,19 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
 void
 ClapPlugin::requestRestart () noexcept
 {
-  pimpl_->scheduleRestart_ = true;
+  pimpl_->scheduleRestart_.store (true, std::memory_order_release);
 }
 
 void
 ClapPlugin::requestProcess () noexcept
 {
-  pimpl_->scheduleProcess_ = true;
+  pimpl_->scheduleProcess_.store (true, std::memory_order_release);
 }
 
 void
 ClapPlugin::requestCallback () noexcept
 {
-  pimpl_->scheduleMainThreadCallback_ = true;
+  pimpl_->scheduleMainThreadCallback_.store (true, std::memory_order_release);
 }
 
 void
@@ -1583,7 +1644,7 @@ ClapPlugin::ClapPluginImpl::paramFlushOnMainThread ()
 
   assert (!isPluginActive ());
 
-  scheduleParamFlush_ = false;
+  scheduleParamFlush_.store (false, std::memory_order_release);
 
   evIn_.clear ();
   evOut_.clear ();
@@ -1592,6 +1653,8 @@ ClapPlugin::ClapPluginImpl::paramFlushOnMainThread ()
 
   if (plugin_->canUseParams ())
     plugin_->paramsFlush (evIn_.clapInputEvents (), evOut_.clapOutputEvents ());
+
+  z_trace ("CLAP: paramFlushOnMainThread got {} output events", evOut_.size ());
   handlePluginOutputEvents ();
 
   evOut_.clear ();
@@ -1603,12 +1666,11 @@ ClapPlugin::paramsRequestFlush () noexcept
 {
   if (!pimpl_->isPluginActive () && threadCheckIsMainThread ())
     {
-      // Perform the flush immediately
       pimpl_->paramFlushOnMainThread ();
       return;
     }
 
-  pimpl_->scheduleParamFlush_ = true;
+  pimpl_->scheduleParamFlush_.store (true, std::memory_order_release);
 }
 
 double

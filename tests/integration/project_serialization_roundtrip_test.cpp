@@ -28,9 +28,57 @@
 #include "helpers/qt_helpers.h"
 
 #include <gtest/gtest.h>
+#include <juce_core/juce_core.h>
 
 namespace zrythm::controllers
 {
+
+/**
+ * @brief Decodes a base64 Faust plugin state blob into path→value pairs.
+ *
+ * The Faust JUCE architecture writes state as repeated
+ * writeString(path) + writeFloat(value) pairs.
+ */
+static std::map<std::string, float>
+decode_faust_state (const QByteArray &raw_state)
+{
+  std::map<std::string, float> result;
+  juce::MemoryInputStream      stream (
+    raw_state.constData (), static_cast<size_t> (raw_state.size ()), false);
+  while (!stream.isExhausted ())
+    {
+      auto path = stream.readString ().toStdString ();
+      if (path.empty ())
+        break;
+      auto value = stream.readFloat ();
+      result[path] = value;
+    }
+  return result;
+}
+
+/**
+ * @brief Extracts and decodes the Faust plugin state from the project JSON.
+ *
+ * Only works for CLAP plugins where the state blob contains the raw Faust
+ * format (writeString + writeFloat pairs). VST3 state blobs use the VST3
+ * SDK's opaque serialization and cannot be decoded this way.
+ */
+static std::map<std::string, float>
+get_faust_state_from_json (const nlohmann::json &project_json)
+{
+  const auto &plugin_reg =
+    project_json["projectData"]["registries"]["pluginRegistry"];
+  if (plugin_reg.empty ())
+    return {};
+  const auto &plugin_json = plugin_reg[0];
+  if (!plugin_json.contains ("state"))
+    return {};
+
+  const auto b64 =
+    QString::fromStdString (plugin_json["state"].get<std::string> ());
+  const auto raw = QByteArray::fromBase64 (b64.toUtf8 ());
+  return decode_faust_state (raw);
+}
 
 /**
  * @brief Owning wrapper that holds a project together with its UI state and
@@ -158,7 +206,7 @@ protected:
           << *expected_param_count << " actual=" << original_param_count;
       }
 
-    // Set non-default values on all params and capture snapshots
+    // Capture param snapshots for roundtrip verification.
     struct ParamSnapshot
     {
       dsp::ProcessorParameter::Uuid uuid;
@@ -172,15 +220,25 @@ protected:
     // on first load) before we set our custom values.
     process_a_few_cycles (*original_bundle->project);
 
+    // Find the Frequency parameter (the only Faust DSP param) and set it
+    // to a known non-default value.
+    constexpr float           test_value = 0.75f;
+    dsp::ProcessorParameter * freq_param = nullptr;
+    dsp::ParameterRange       freq_range{};
     std::visit (
       [&] (auto &&pl) {
         for (const auto &param_ref : pl->get_parameters ())
           {
             auto * param =
               param_ref.template get_object_as<dsp::ProcessorParameter> ();
-            param->setBaseValue (0.75f);
-            original_param_values.push_back (
-              { param->get_uuid (), param->label (), 0.75f });
+            if (param->label ().contains (u8"Frequency"))
+              {
+                freq_param = param;
+                freq_range = param->range ();
+                param->setBaseValue (test_value);
+                original_param_values.push_back (
+                  { param->get_uuid (), param->label (), test_value });
+              }
           }
       },
       *original_plugin_it);
@@ -211,7 +269,7 @@ protected:
     const auto original_json = nlohmann::json::parse (
       ProjectSaver::get_existing_uncompressed_text (project_dir_));
 
-    // === Step 2b: Verify state data is present in the serialized JSON ===
+    // === Step 2b: Verify state data is present and contains correct values ===
     {
       const auto &plugin_reg =
         original_json["projectData"]["registries"]["pluginRegistry"];
@@ -226,6 +284,29 @@ protected:
           EXPECT_TRUE (plugin_json.contains ("state"))
             << "Plugin JSON should contain 'state' key for format: "
             << static_cast<int> (descriptor.protocol_);
+
+          // For CLAP: the state blob is the raw Faust format
+          // (writeString+writeFloat). Decode and verify parameter values.
+          // For VST3: the state blob is the VST3 SDK's opaque serialization —
+          // just verify it exists (binary consistency is checked by
+          // expect_registries_match below).
+          if (descriptor.protocol_ == plugins::Protocol::ProtocolType::CLAP)
+            {
+              auto saved_state = get_faust_state_from_json (original_json);
+              EXPECT_FALSE (saved_state.empty ())
+                << "Faust state blob should contain at least one parameter";
+              if (freq_param != nullptr)
+                {
+                  for (const auto &[path, value] : saved_state)
+                    {
+                      const float normalized = freq_range.convertTo0To1 (value);
+                      EXPECT_NEAR (normalized, test_value, 0.001f)
+                        << "State blob parameter '" << path << "' plain value "
+                        << value << " (normalized=" << normalized
+                        << ") should match the test value " << test_value;
+                    }
+                }
+            }
         }
     }
 
@@ -401,6 +482,209 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithClapPlugin)
   // the JUCE bypass parameter as a separate CLAP param, so we get 3 params
   // (bypass + gain + Frequency) instead of 4 like VST3.
   save_load_save_roundtrip_with_plugin (*descriptor, 3);
+}
+
+/**
+ * @brief Verifies that the plugin state blob is preserved on reload when it
+ * diverges from the host's baseValue.
+ *
+ * When the host's baseValue for a parameter diverges from the plugin's state
+ * blob, a save-reload cycle must preserve the plugin's state blob. The host
+ * must apply the state blob as the source of truth rather than overwriting it
+ * with its own baseValue.
+ *
+ * Strategy: save with Frequency=0.75, modify the JSON baseValue to 0.25,
+ * reload, process, then verify the resaved state blob still has 0.75.
+ */
+TEST_F (
+  ProjectSerializationRoundtripTest,
+  ClapStatePreservedOnReloadWithDivergedValue)
+{
+  static const juce::String kTargetPluginName = "Highpass Filter";
+  auto                      juce_desc =
+    test_helpers::find_bundled_clap_plugin_by_name (kTargetPluginName);
+  ASSERT_NE (juce_desc, nullptr)
+    << "Bundled CLAP plugin '" << kTargetPluginName << "' not found";
+
+  auto descriptor =
+    plugins::PluginDescriptor::from_juce_description (*juce_desc);
+  ASSERT_NE (descriptor, nullptr);
+
+  // === Step 1: Create project, set Frequency to 0.75, save ===
+  auto bundle = std::make_unique<ProjectBundle> ();
+  bundle->project = create_minimal_project ();
+  ASSERT_NE (bundle->project, nullptr);
+  bundle->project->add_default_tracks ();
+  bundle->ui_state = utils::make_qobject_unique<
+    structure::project::ProjectUiState> (*bundle->project, *app_settings_);
+  bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [proj = bundle->project.get ()] (
+      const std::function<void ()> &action, bool recalculate_graph) {
+      proj->engine ()->execute_function_with_paused_processing_synchronously (
+        action, recalculate_graph);
+    },
+    nullptr);
+
+  bool instantiation_finished = false;
+  auto handler = [&instantiation_finished] (plugins::PluginUuidReference) {
+    instantiation_finished = true;
+  };
+
+  auto * tracklist = bundle->project->tracklist ();
+  auto   track_creator = std::make_unique<actions::TrackCreator> (
+    *bundle->undo_stack, *bundle->project->track_factory_,
+    *tracklist->collection (), *tracklist->trackRouting (),
+    *tracklist->singletonTracks (), bundle->project.get ());
+
+  auto importer = std::make_unique<actions::PluginImporter> (
+    *bundle->undo_stack, *bundle->project->plugin_factory_, *track_creator,
+    std::move (handler), bundle->project.get ());
+
+  importer->importPluginToNewTrack (&*descriptor);
+
+  for (int i = 0; i < 100 && !instantiation_finished; ++i)
+    QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+  ASSERT_TRUE (instantiation_finished);
+
+  process_a_few_cycles (*bundle->project);
+
+  constexpr float     correct_value = 0.75f;
+  constexpr float     stale_value = 0.25f;
+  dsp::ParameterRange freq_range{};
+
+  auto &plugin_reg = bundle->project->get_plugin_registry ().get_hash_map ();
+  ASSERT_EQ (plugin_reg.size (), 1);
+  auto plugin_it = plugin_reg.begin ();
+  std::visit (
+    [&] (auto &&pl) {
+      for (const auto &param_ref : pl->get_parameters ())
+        {
+          auto * param =
+            param_ref.template get_object_as<dsp::ProcessorParameter> ();
+          if (param->label ().contains (u8"Frequency"))
+            {
+              freq_range = param->range ();
+              param->setBaseValue (correct_value);
+            }
+        }
+    },
+    plugin_it->second);
+
+  process_a_few_cycles (*bundle->project);
+
+  auto save_future = ProjectSaver::save (
+    *bundle->project, *bundle->ui_state, *bundle->undo_stack, TEST_APP_VERSION,
+    project_dir_, false);
+  test_helpers::waitForFutureWithEvents (save_future);
+  ASSERT_TRUE (save_future.isFinished ());
+
+  bundle->project->engine ()->set_running (false);
+  importer.reset ();
+  track_creator.reset ();
+  bundle.reset ();
+
+  // === Step 2: Verify saved state blob has correct_value ===
+  auto project_file_path =
+    project_dir_
+    / structure::project::ProjectPathProvider::get_path (
+      structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
+  auto saved_json = nlohmann::json::parse (
+    ProjectSaver::get_existing_uncompressed_text (project_dir_));
+
+  auto original_state = get_faust_state_from_json (saved_json);
+  ASSERT_FALSE (original_state.empty ());
+  for (const auto &[path, value] : original_state)
+    {
+      float normalized = freq_range.convertTo0To1 (value);
+      EXPECT_NEAR (normalized, correct_value, 0.01f)
+        << "Original state blob should have correct_value";
+    }
+
+  // === Step 3: Modify baseValue in JSON to create a divergence ===
+  auto &param_reg = saved_json["projectData"]["registries"]["paramRegistry"];
+  bool  modified = false;
+  for (auto &param_json : param_reg)
+    {
+      if (
+        param_json.contains ("label")
+        && param_json["label"].get<std::string> ().find ("Frequency")
+             != std::string::npos)
+        {
+          float original = param_json["baseValue"].get<float> ();
+          ASSERT_NEAR (original, correct_value, 0.01f)
+            << "Frequency baseValue should be correct_value before modification";
+          param_json["baseValue"] = stale_value;
+          modified = true;
+          break;
+        }
+    }
+  ASSERT_TRUE (modified) << "Could not find Frequency parameter to modify";
+
+  // Write tampered JSON back (compressed)
+  {
+    const auto       json_str = saved_json.dump (2);
+    std::string_view json_sv (json_str);
+    QByteArray       src_data (
+      json_sv.data (), static_cast<qsizetype> (json_sv.size ()));
+    char * compressed_json{};
+    size_t compressed_size{};
+    ProjectSaver::compress (&compressed_json, &compressed_size, src_data);
+    auto tampered_path =
+      project_dir_
+      / structure::project::ProjectPathProvider::get_path (
+        structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
+    utils::io::set_file_contents (
+      tampered_path, compressed_json, compressed_size);
+    free (compressed_json);
+  }
+
+  // === Step 4: Reload from tampered JSON ===
+  auto load_result = ProjectLoader::load_from_directory (project_dir_);
+  load_result.waitForFinished ();
+  ASSERT_FALSE (load_result.isCanceled ());
+
+  auto reload_bundle = std::make_unique<ProjectBundle> ();
+  reload_bundle->project = create_minimal_project ();
+  reload_bundle->ui_state =
+    utils::make_qobject_unique<structure::project::ProjectUiState> (
+      *reload_bundle->project, *app_settings_);
+  reload_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [proj = reload_bundle->project.get ()] (
+      const std::function<void ()> &action, bool recalculate_graph) {
+      proj->engine ()->execute_function_with_paused_processing_synchronously (
+        action, recalculate_graph);
+    },
+    nullptr);
+
+  ProjectLoader::deserialize (
+    load_result.result ().json, *reload_bundle->project,
+    *reload_bundle->ui_state, *reload_bundle->undo_stack);
+
+  // Process so the audio thread runs and the host has a chance to apply
+  // baseValues
+  EXPECT_NO_FATAL_FAILURE ({ process_a_few_cycles (*reload_bundle->project); });
+
+  // === Step 5: Save reloaded project and verify state blob ===
+  auto verify_dir = project_dir_ / "verify";
+  auto verify_future = ProjectSaver::save (
+    *reload_bundle->project, *reload_bundle->ui_state,
+    *reload_bundle->undo_stack, TEST_APP_VERSION, verify_dir, false);
+  test_helpers::waitForFutureWithEvents (verify_future);
+  ASSERT_TRUE (verify_future.isFinished ());
+
+  auto verify_json = nlohmann::json::parse (
+    ProjectSaver::get_existing_uncompressed_text (verify_dir));
+  auto final_state = get_faust_state_from_json (verify_json);
+  ASSERT_FALSE (final_state.empty ());
+
+  for (const auto &[path, value] : final_state)
+    {
+      float normalized = freq_range.convertTo0To1 (value);
+      EXPECT_NEAR (normalized, correct_value, 0.001f)
+        << "State blob should preserve correct_value (" << correct_value
+        << "), not stale_value (" << stale_value
+        << "). Plugin state blob should be the source of truth over the host's baseValue.";
+    }
 }
 
 } // namespace zrythm::controllers

@@ -56,12 +56,7 @@ public:
 
     /** Resets state for a new parameter count (called from
      * prepare_for_processing()). */
-    void prepare (size_t count)
-    {
-      prev_values_.assign (count, -1.f);
-      changes_.clear ();
-      changes_.reserve (count);
-    }
+    void prepare (size_t count);
 
     /** Compares current modulated value against previous cycle; records a
      * Change if different. Called once per parameter per process_block(). */

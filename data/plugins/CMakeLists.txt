@@ -172,7 +172,7 @@ foreach(plugin_info ${plugins})
           CLAP_CHECKING_LEVEL "Maximal"
           CLAP_PROCESS_EVENTS_RESOLUTION_SAMPLES 0
           CLAP_ALWAYS_SPLIT_BLOCK 0
-          CLAP_USE_JUCE_PARAMETER_RANGES OFF
+          CLAP_USE_JUCE_PARAMETER_RANGES ALL
         )
         set_target_properties(${pl_underscored_name}_plugin PROPERTIES
           JUCE_COPY_PLUGIN_AFTER_BUILD TRUE

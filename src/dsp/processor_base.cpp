@@ -3,11 +3,20 @@
 
 #include "dsp/processor_base.h"
 #include "utils/dsp.h"
+#include "utils/logger.h"
 #include "utils/raii_utils.h"
 #include "utils/views.h"
 
 namespace zrythm::dsp
 {
+
+void
+ProcessorBase::ParameterChangeTracker::prepare (size_t count)
+{
+  prev_values_.assign (count, -1.f);
+  changes_.clear ();
+  changes_.reserve (count);
+}
 
 ProcessorBase::ProcessorBase (
   ProcessorBaseDependencies dependencies,
@@ -122,7 +131,13 @@ ProcessorBase::process_block (
   const dsp::ITransport            &transport,
   const dsp::TempoMap              &tempo_map) noexcept
 {
-  assert (processing_caches_ != nullptr);
+  if (processing_caches_ == nullptr)
+    {
+      z_warning (
+        "processing_caches_ is null — prepare_for_processing() not called?");
+      assert (false);
+      return;
+    }
 
   // correct invalid time info
   if (
