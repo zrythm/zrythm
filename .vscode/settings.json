@@ -5,7 +5,7 @@
     "-DQT_QML_GENERATE_QMLLS_INI=ON",
     "-DCMAKE_C_COMPILER=clang",
     "-DCMAKE_CXX_COMPILER=clang++",
-    // "-DCMAKE_CXX_FLAGS=-ftime-trace",
+    "-DCMAKE_CXX_FLAGS=-ftime-trace",
     "-DCMAKE_LINKER_TYPE=MOLD",
     "-DCPM_DOWNLOAD_ALL=ON",
     "-DCPM_SOURCE_CACHE=${workspaceFolder}/.cache/CPM",
