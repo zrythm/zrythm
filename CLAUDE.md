@@ -189,6 +189,10 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 
 ## Code Guidelines
 
+### General
+
+- **Never remove unrelated code when making edits.** This includes comments, blank lines, and any code not directly related to the change. Only modify what is necessary for the task.
+
 ### C++23
 
 Zrythm makes extensive use of modern C++ features:
