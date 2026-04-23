@@ -335,8 +335,8 @@ CPMDeclarePackage(au
 # Boost
 CPMDeclarePackage(Boost
   NAME Boost
-  VERSION 1.88.0
-  GIT_TAG 199ef13d6034c85232431130142159af3adfce22
+  VERSION 1.91.0
+  GIT_TAG 1a80576db6b70828803819fb6925132193bc5d0e
   GITHUB_REPOSITORY boostorg/boost
   GIT_SHALLOW TRUE
   GIT_SUBMODULES
@@ -366,7 +366,6 @@ CPMDeclarePackage(Boost
     libs/predef
     libs/preprocessor
     libs/smart_ptr
-    libs/static_assert
     libs/stl_interfaces
     libs/throw_exception
     libs/tuple
