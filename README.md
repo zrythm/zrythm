@@ -83,7 +83,7 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 
 #### GNU/Linux
 
-1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) 6.10.0 or later.
+1. Install [CMake](https://cmake.org/), [Ninja](https://ninja-build.org/) and [Qt](https://www.qt.io/) (see [CMakeLists.txt](CMakeLists.txt) for required version).
 2. Open a terminal and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Run `cmake --build builddir --config Release`.
@@ -91,14 +91,14 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 
 #### macOS
 
-1. Install Xcode, CMake and Qt 6.10.0 or later.
+1. Install Xcode, CMake and Qt.
 2. Open a terminal and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G Xcode -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Open the Xcode project inside `builddir` and build it.
 
 #### Windows
 
-1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt 6.10.0 or later.
+1. Install Visual Studio 2022 (CMake ships with Visual Studio, but you have to install the "Desktop development with C++" package), and Qt.
 2. Open Developer Powershell for Visual Studio 2022 and go to the root of Zrythm's source code.
 3. Run `cmake -B builddir -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=<path to your Qt prefix>`.
 4. Open the Visual Studio solution inside `builddir` and build it.
@@ -146,5 +146,3 @@ us to spend more time working on the project.
 - [paypal.me/zrythmdaw](https://paypal.me/zrythmdaw)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
-- Litecoin (LTC): `ltc1qpva5up8vu8k03r8vncrfhu5apkd7p4cgy4355a`
-- Monero (XMR): `87YVi6nqwDhAQwfAuB8a7UeD6wrr81PJG4yBxkkGT3Ri5ng9D1E91hdbCCQsi3ZzRuXiX3aRWesS95S8ij49YMBKG3oEfnr`
