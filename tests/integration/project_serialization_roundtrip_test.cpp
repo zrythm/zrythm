@@ -14,12 +14,11 @@
 #include "actions/track_creator.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
-#include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
-#include "plugins/plugin_factory.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 
+#include <QElapsedTimer>
 #include <QSignalSpy>
 
 #include "helpers/bundled_plugin_finder.h"
@@ -105,7 +104,10 @@ protected:
   static constexpr utils::Version TEST_APP_VERSION{ 2, 0, {} };
 
   /**
-   * @brief Starts the engine, waits for a few processing cycles, then stops it.
+   * @brief Starts the engine, pumps events for long enough for JUCE timers
+   * to fire (40ms period), then stops it.
+   *
+   * Verifies that at least one processing cycle completed (no crash).
    */
   void process_a_few_cycles (structure::project::Project &project)
   {
@@ -114,9 +116,16 @@ protected:
     project.engine ()->activate ();
     project.engine ()->graph_dispatcher ().recalc_graph (false);
     project.engine ()->set_running (true);
-    const auto initial_count = mock_hw->process_call_count ();
-    while (mock_hw->process_call_count () - initial_count < 10)
+
+    const auto    initial_count = mock_hw->process_call_count ();
+    QElapsedTimer timer;
+    timer.start ();
+    while (timer.elapsed () < 200)
       QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+
+    EXPECT_GE (mock_hw->process_call_count () - initial_count, 1u)
+      << "Engine should have processed at least one cycle";
+
     project.engine ()->set_running (false);
     project.engine ()->deactivate ();
   }

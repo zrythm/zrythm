@@ -1255,6 +1255,7 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
             auto *       zrythm_param = owner_.param_index_to_ptr_[param_index];
             if (zrythm_param == nullptr)
               break;
+            assert (param_index < owner_.param_sync_.entries.size ());
             const auto  range = zrythm_param->range ();
             const float normalized =
               range.convertTo0To1 (static_cast<float> (ev->value));
