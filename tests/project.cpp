@@ -15,7 +15,7 @@
 #include "structure/tracks/tempo_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/io_utils.h"
 
 #include "helpers/jack.h"

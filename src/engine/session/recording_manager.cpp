@@ -17,7 +17,7 @@
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/math_utils.h"
 #include "utils/midi.h"
@@ -429,13 +429,19 @@ RecordingManager::handle_recording (
               auto re = event_obj_pool_.acquire ();
               re->init (RecordingEvent::Type::Audio, *tr, time_nfo);
               utils::float_ranges::copy (
-                &re->lbuf_[time_nfo.local_offset_.in (units::samples)],
-                &stereo_ports->first[time_nfo.local_offset_.in (units::samples)],
-                time_nfo.nframes_.in (units::samples));
+                std::span{ re->lbuf_ }.subspan (
+                  time_nfo.local_offset_.in (units::samples),
+                  time_nfo.nframes_.in (units::samples)),
+                stereo_ports->first.subspan (
+                  time_nfo.local_offset_.in (units::samples),
+                  time_nfo.nframes_.in (units::samples)));
               utils::float_ranges::copy (
-                &re->rbuf_[time_nfo.local_offset_.in (units::samples)],
-                &stereo_ports->second[time_nfo.local_offset_.in (units::samples)],
-                time_nfo.nframes_.in (units::samples));
+                std::span{ re->rbuf_ }.subspan (
+                  time_nfo.local_offset_.in (units::samples),
+                  time_nfo.nframes_.in (units::samples)),
+                stereo_ports->second.subspan (
+                  time_nfo.local_offset_.in (units::samples),
+                  time_nfo.nframes_.in (units::samples)));
               event_queue_.push_back (re);
             }
         }

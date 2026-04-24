@@ -7,7 +7,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
 #include "structure/tracks/track_processor.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
 #include "utils/views.h"
@@ -834,12 +834,13 @@ TrackProcessor::custom_process_block (
           const auto &out_buf = stereo_out->buffers ();
 
           utils::float_ranges::product (
-            out_buf->getWritePointer (
-              0, time_nfo.local_offset_.in<int> (units::samples)),
-            in_buf->getReadPointer (
-              0, time_nfo.local_offset_.in<int> (units::samples)),
-            input_gain_id_ ? input_gain () : 1.f,
-            time_nfo.nframes_.in (units::samples));
+            { out_buf->getWritePointer (
+                0, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            { in_buf->getReadPointer (
+                0, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            input_gain_id_ ? input_gain () : 1.f);
 
           const auto &src_right_buf =
             (mono_id_ && mono ())
@@ -848,10 +849,11 @@ TrackProcessor::custom_process_block (
               : in_buf->getWritePointer (
                   1, time_nfo.local_offset_.in<int> (units::samples));
           utils::float_ranges::product (
-            out_buf->getWritePointer (
-              1, time_nfo.local_offset_.in<int> (units::samples)),
-            src_right_buf, input_gain_id_ ? input_gain () : 1.f,
-            time_nfo.nframes_.in<size_t> (units::samples));
+            { out_buf->getWritePointer (
+                1, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in<size_t> (units::samples) },
+            { src_right_buf, time_nfo.nframes_.in<size_t> (units::samples) },
+            input_gain_id_ ? input_gain () : 1.f);
         }
     }
   else if (is_midi ())

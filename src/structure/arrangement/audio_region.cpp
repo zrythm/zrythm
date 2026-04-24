@@ -3,7 +3,7 @@
 
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/debug.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 

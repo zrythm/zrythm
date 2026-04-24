@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <utility>
 
 #include "dsp/audio_callback.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::dsp
 {
@@ -26,11 +27,13 @@ AudioCallback::process_audio (
   int                   num_output_channels,
   int                   num_samples) noexcept
 {
-  // Clear output buffers
+  assert (num_samples >= 0);
+  const auto samples = static_cast<size_t> (num_samples);
+
   for (const auto ch : std::views::iota (0, num_output_channels))
     {
       auto * ch_data = output_channel_data[ch];
-      utils::float_ranges::fill (ch_data, 0.f, num_samples);
+      utils::float_ranges::fill ({ ch_data, samples }, 0.f);
     }
 
   process_cb_ (

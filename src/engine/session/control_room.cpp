@@ -4,7 +4,7 @@
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "engine/session/control_room.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 #include <QFile>
 
@@ -111,12 +111,12 @@ ControlRoom::ControlRoom (
       if (have_listened)
         {
           /* dim signal */
+          const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+          const auto sub_nframes = time_nfo.nframes_.in (units::samples);
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.first[time_nfo.local_offset_.in (units::samples)],
-            dim_amp, time_nfo.nframes_.in (units::samples));
+            stereo_bufs.first.subspan (sub_offset, sub_nframes), dim_amp);
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.second[time_nfo.local_offset_.in (units::samples)],
-            dim_amp, time_nfo.nframes_.in (units::samples));
+            stereo_bufs.second.subspan (sub_offset, sub_nframes), dim_amp);
 
           /* add listened signal */
           /* TODO add "listen" buffer on fader struct and add listened
@@ -134,17 +134,19 @@ ControlRoom::ControlRoom (
                         {
                           auto * f = t->channel ()->fader ();
                           utils::float_ranges::product (
-                            &stereo_bufs.first[time_nfo.local_offset_.in (
-                              units::samples)],
-                            f->get_stereo_out_port ().buffers ()->getReadPointer (
-                              0, time_nfo.local_offset_.in<int> (units::samples)),
-                            listen_amp, time_nfo.nframes_.in (units::samples));
+                            stereo_bufs.first.subspan (sub_offset, sub_nframes),
+                            { f->get_stereo_out_port ().buffers ()->getReadPointer (
+                                0,
+                                time_nfo.local_offset_.in<int> (units::samples)),
+                              sub_nframes },
+                            listen_amp);
                           utils::float_ranges::product (
-                            &stereo_bufs.second[time_nfo.local_offset_.in (
-                              units::samples)],
-                            f->get_stereo_out_port ().buffers ()->getReadPointer (
-                              1, time_nfo.local_offset_.in<int> (units::samples)),
-                            listen_amp, time_nfo.nframes_.in (units::samples));
+                            stereo_bufs.second.subspan (sub_offset, sub_nframes),
+                            { f->get_stereo_out_port ().buffers ()->getReadPointer (
+                                1,
+                                time_nfo.local_offset_.in<int> (units::samples)),
+                              sub_nframes },
+                            listen_amp);
                         }
                     }
                 },
@@ -155,12 +157,12 @@ ControlRoom::ControlRoom (
       /* apply dim if enabled */
       if (dim_output_)
         {
+          const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+          const auto sub_nframes = time_nfo.nframes_.in (units::samples);
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.first[time_nfo.local_offset_.in (units::samples)],
-            dim_amp, time_nfo.nframes_.in (units::samples));
+            stereo_bufs.first.subspan (sub_offset, sub_nframes), dim_amp);
           utils::float_ranges::mul_k2 (
-            &stereo_bufs.second[time_nfo.local_offset_.in (units::samples)],
-            dim_amp, time_nfo.nframes_.in (units::samples));
+            stereo_bufs.second.subspan (sub_offset, sub_nframes), dim_amp);
         }
     });
 }

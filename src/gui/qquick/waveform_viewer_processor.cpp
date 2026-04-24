@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/qquick/waveform_viewer_processor.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::gui::qquick
 {
@@ -56,7 +56,9 @@ WaveformViewerProcessor::process_audio ()
   if (frames_read < buffer_size_)
     {
       utils::float_ranges::fill (
-        &left_buffer_[frames_read], 0.f, buffer_size_ - frames_read);
+        std::span (left_buffer_)
+          .subspan (frames_read, buffer_size_ - frames_read),
+        0.f);
     }
 
   frames_read = port_obj_->audio_ring_buffers ().at (1).peek_multiple (
@@ -64,14 +66,18 @@ WaveformViewerProcessor::process_audio ()
   if (frames_read < buffer_size_)
     {
       utils::float_ranges::fill (
-        &right_buffer_[frames_read], 0.f, buffer_size_ - frames_read);
+        std::span (right_buffer_)
+          .subspan (frames_read, buffer_size_ - frames_read),
+        0.f);
     }
 
   // Create mono mix
   utils::float_ranges::product (
-    mono_buffer_.data (), left_buffer_.data (), 0.5f, buffer_size_);
+    std::span (mono_buffer_).first (buffer_size_),
+    std::span (left_buffer_).first (buffer_size_), 0.5f);
   utils::float_ranges::mix_product (
-    mono_buffer_.data (), right_buffer_.data (), 0.5f, buffer_size_);
+    std::span (mono_buffer_).first (buffer_size_),
+    std::span (right_buffer_).first (buffer_size_), 0.5f);
 
   // Calculate peak values for display points
   const size_t samples_per_point = buffer_size_ / display_points_;

@@ -3,7 +3,7 @@
 
 #include "dsp/panning.h"
 #include "dsp/port_all.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 #include <fmt/format.h>
 
@@ -228,11 +228,11 @@ AudioPort::process_block (
               /* this limiting wastes around 50% of port processing so only do
                * it if we exceed maxf */
               utils::float_ranges::clip (
-                buf_->getWritePointer (
-                  static_cast<int> (ch),
-                  time_nfo.local_offset_.in<int> (units::samples)),
-                -max_allowed_peak, max_allowed_peak,
-                time_nfo.nframes_.in (units::samples));
+                { buf_->getWritePointer (
+                    static_cast<int> (ch),
+                    time_nfo.local_offset_.in<int> (units::samples)),
+                  time_nfo.nframes_.in (units::samples) },
+                -max_allowed_peak, max_allowed_peak);
             }
         }
     }

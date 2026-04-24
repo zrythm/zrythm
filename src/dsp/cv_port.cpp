@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/cv_port.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::dsp
 {
@@ -14,7 +14,7 @@ CVPort::CVPort (utils::Utf8String label, PortFlow flow)
 void
 CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 {
-  utils::float_ranges::fill (&buf_[offset], 0.f, nframes);
+  utils::float_ranges::fill (std::span (buf_).subspan (offset, nframes), 0.f);
 }
 
 void
@@ -53,6 +53,8 @@ CVPort::process_block (
   const dsp::ITransport            &transport,
   const dsp::TempoMap              &tempo_map) noexcept
 {
+  const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+  const auto sub_nframes = time_nfo.nframes_.in (units::samples);
   for (const auto &[src_port, conn] : port_sources ())
     {
       if (!conn->enabled_)
@@ -64,16 +66,15 @@ CVPort::process_block (
       if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
         {
           utils::float_ranges::add2 (
-            &buf_[time_nfo.local_offset_.in (units::samples)],
-            &src_port->buf_[time_nfo.local_offset_.in (units::samples)],
-            time_nfo.nframes_.in (units::samples));
+            std::span (buf_).subspan (sub_offset, sub_nframes),
+            std::span (src_port->buf_).subspan (sub_offset, sub_nframes));
         }
       else
         {
           utils::float_ranges::mix_product (
-            &buf_[time_nfo.local_offset_.in (units::samples)],
-            &src_port->buf_[time_nfo.local_offset_.in (units::samples)],
-            multiplier, time_nfo.nframes_.in (units::samples));
+            std::span (buf_).subspan (sub_offset, sub_nframes),
+            std::span (src_port->buf_).subspan (sub_offset, sub_nframes),
+            multiplier);
         }
     } /* foreach source */
 

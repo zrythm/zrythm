@@ -19,7 +19,7 @@
 #include "structure/tracks/master_track.h"
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/tempo_track.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/utf8_string.h"
 

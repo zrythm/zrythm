@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio_file.h"
-#include "utils/dsp.h"
 #include "utils/exceptions.h"
+#include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/resampler.h"
 
@@ -163,9 +163,10 @@ AudioFile::read_samples_interleaved (
     }
 
   buffer.interleave_samples ();
-  float_ranges::copy (
-    samples, buffer.getReadPointer (0),
-    num_frames_to_read * static_cast<size_t> (impl_->metadata_.channels));
+  const auto total_samples =
+    num_frames_to_read * static_cast<size_t> (impl_->metadata_.channels);
+  utils::float_ranges::copy (
+    { samples, total_samples }, { buffer.getReadPointer (0), total_samples });
 }
 
 void

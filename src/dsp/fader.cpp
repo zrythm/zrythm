@@ -8,7 +8,7 @@
 #include "dsp/midi_event.h"
 #include "dsp/panning.h"
 #include "dsp/port.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/math_utils.h"
 #include "utils/midi.h"
 
@@ -403,24 +403,28 @@ Fader::custom_process_block (
       if (mono_compat_enabled)
         {
           utils::float_ranges::make_mono (
-            out_buf->getWritePointer (
-              0, time_nfo.local_offset_.in<int> (units::samples)),
-            out_buf->getWritePointer (
-              1, time_nfo.local_offset_.in<int> (units::samples)),
-            time_nfo.nframes_.in (units::samples), false);
+            { out_buf->getWritePointer (
+                0, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            { out_buf->getWritePointer (
+                1, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            false);
         }
 
       /* swap phase if need */
       if (swap_phase)
         {
           utils::float_ranges::mul_k2 (
-            out_buf->getWritePointer (
-              0, time_nfo.local_offset_.in<int> (units::samples)),
-            -1.f, time_nfo.nframes_.in (units::samples));
+            { out_buf->getWritePointer (
+                0, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            -1.f);
           utils::float_ranges::mul_k2 (
-            out_buf->getWritePointer (
-              1, time_nfo.local_offset_.in<int> (units::samples)),
-            -1.f, time_nfo.nframes_.in (units::samples));
+            { out_buf->getWritePointer (
+                1, time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.nframes_.in (units::samples) },
+            -1.f);
         }
 
       // hard-limit output if requested
@@ -429,9 +433,10 @@ Fader::custom_process_block (
           for (const auto ch : std::views::iota (0, out_buf->getNumChannels ()))
             {
               utils::float_ranges::clip (
-                out_buf->getWritePointer (
-                  ch, time_nfo.local_offset_.in<int> (units::samples)),
-                -2.f, 2.f, time_nfo.nframes_.in (units::samples));
+                { out_buf->getWritePointer (
+                    ch, time_nfo.local_offset_.in<int> (units::samples)),
+                  time_nfo.nframes_.in (units::samples) },
+                -2.f, 2.f);
             }
         }
     } // endif is_audio()

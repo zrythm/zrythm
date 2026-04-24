@@ -18,7 +18,7 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
 #include "utils/directory_manager.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 #include "utils/math_utils.h"
@@ -1105,7 +1105,7 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
   for (size_t i = 0; i < max_variant_ins; i++)
     {
       zero_inbufs_[i].resize (engine.block_length_);
-      utils::float_ranges::fill (zero_inbufs_[i].data (), 1e-20f, engine.block_length_);
+      utils::float_ranges::fill ({zero_inbufs_[i].data (), engine.block_length_}, 1e-20f);
       inbufs_[i] = zero_inbufs_[i].data ();
     }
 
@@ -1115,7 +1115,7 @@ CarlaNativePlugin::update_buffer_size_and_sample_rate ()
   for (size_t i = 0; i < max_variant_outs; i++)
     {
       zero_outbufs_[i].resize (engine.block_length_);
-      utils::float_ranges::fill (zero_outbufs_[i].data (), 1e-20f, engine.block_length_);
+      utils::float_ranges::fill ({zero_outbufs_[i].data (), engine.block_length_}, 1e-20f);
       outbufs_[i] = zero_outbufs_[i].data ();
     }
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/channel_send.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/math_utils.h"
 
 #include <fmt/format.h>

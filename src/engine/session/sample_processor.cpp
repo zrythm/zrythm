@@ -19,7 +19,7 @@
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/debug.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 
@@ -154,14 +154,15 @@ SampleProcessor::process_block (
           z_return_if_fail_cmp (
             sp.offset_ + len, <=, (unsigned_frame_t) sp.buf_->getNumSamples ());
           utils::float_ranges::mix_product (
-            fader_out_buf->getWritePointer (
-              0, static_cast<int> (fader_buf_offset)),
-            sp.buf_->getReadPointer (0), sp.volume_, len);
+            {fader_out_buf->getWritePointer (
+              0, static_cast<int> (fader_buf_offset)), len},
+            {sp.buf_->getReadPointer (0), len},
+            sp.volume_);
           utils::float_ranges::mix_product (
-            fader_out_buf->getWritePointer (
-              1, static_cast<int> (fader_buf_offset)),
-            sp.buf_->getReadPointer (sp.buf_->getNumChannels () > 1 ? 1 : 0),
-            sp.volume_, len);
+            {fader_out_buf->getWritePointer (
+              1, static_cast<int> (fader_buf_offset)), len},
+            {sp.buf_->getReadPointer (sp.buf_->getNumChannels () > 1 ? 1 : 0), len},
+            sp.volume_);
           sp.offset_ += len;
         };
 
@@ -265,15 +266,15 @@ SampleProcessor::process_block (
                   if (audio_data_l && audio_data_r)
                     {
                       utils::float_ranges::mix_product (
-                        fader_out_buf->getWritePointer (
-                          0, static_cast<int> (cycle_offset)),
-                        &audio_data_l[cycle_offset], fader_->get_current_amp (),
-                        nframes);
+                        {fader_out_buf->getWritePointer (
+                          0, static_cast<int> (cycle_offset)), nframes},
+                        {&audio_data_l[cycle_offset], nframes},
+                        fader_->get_current_amp ());
                       utils::float_ranges::mix_product (
-                        fader_out_buf->getWritePointer (
-                          1, static_cast<int> (cycle_offset)),
-                        &audio_data_r[cycle_offset], fader_->get_current_amp (),
-                        nframes);
+                        {fader_out_buf->getWritePointer (
+                          1, static_cast<int> (cycle_offset)), nframes},
+                        {&audio_data_r[cycle_offset], nframes},
+                        fader_->get_current_amp ());
                     }
                 }
             },

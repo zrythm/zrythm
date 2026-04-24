@@ -3,7 +3,7 @@
 
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port_all.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/format_qt.h"
 
 #include <fmt/format.h>
@@ -70,26 +70,27 @@ ModulatorMacroProcessor::custom_process_block (
   /* if there are inputs, multiply by the knob value */
   if (!processing_caches_->cv_in_->port_sources ().empty ())
     {
+      const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+      const auto sub_nframes = time_nfo.nframes_.in (units::samples);
       utils::float_ranges::copy (
-        &processing_caches_->cv_out_
-           ->buf_[time_nfo.local_offset_.in (units::samples)],
-        &processing_caches_->cv_in_
-           ->buf_[time_nfo.local_offset_.in (units::samples)],
-        time_nfo.nframes_.in (units::samples));
+        std::span (processing_caches_->cv_out_->buf_)
+          .subspan (sub_offset, sub_nframes),
+        std::span (processing_caches_->cv_in_->buf_)
+          .subspan (sub_offset, sub_nframes));
       utils::float_ranges::mul_k2 (
-        &processing_caches_->cv_out_
-           ->buf_[time_nfo.local_offset_.in (units::samples)],
-        processing_caches_->macro_param_->currentValue (),
-        time_nfo.nframes_.in (units::samples));
+        std::span (processing_caches_->cv_out_->buf_)
+          .subspan (sub_offset, sub_nframes),
+        processing_caches_->macro_param_->currentValue ());
     }
   /* else if there are no inputs, set the knob value as the output */
   else
     {
       utils::float_ranges::fill (
-        &processing_caches_->cv_out_
-           ->buf_[time_nfo.local_offset_.in (units::samples)],
-        processing_caches_->macro_param_->currentValue (),
-        time_nfo.nframes_.in (units::samples));
+        std::span (processing_caches_->cv_out_->buf_)
+          .subspan (
+            time_nfo.local_offset_.in (units::samples),
+            time_nfo.nframes_.in (units::samples)),
+        processing_caches_->macro_param_->currentValue ());
     }
 }
 

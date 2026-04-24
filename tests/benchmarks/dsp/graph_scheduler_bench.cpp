@@ -5,7 +5,7 @@
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
 #include "dsp/tempo_map.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 #include "../tests/unit/dsp/graph_helpers.h"
 #include <benchmark/benchmark.h>
@@ -78,18 +78,18 @@ protected:
     ON_CALL (*proc, process_block (_, _, _))
       .WillByDefault ([] (auto, auto &, auto &) {
         // Simulate typical DSP operations on a small buffer
-        constexpr size_t buffer_size = 64;
-        float            buffer[buffer_size];
+        // constexpr size_t buffer_size = 64;
+        std::array<float, 64> buffer{};
 
         // Fill with test signal
-        zrythm::utils::float_ranges::fill (buffer, 0.5f, buffer_size);
+        zrythm::utils::float_ranges::fill (buffer, 0.5f);
 
         // Apply common DSP operations
-        zrythm::utils::float_ranges::mul_k2 (buffer, 0.8f, buffer_size);
-        zrythm::utils::float_ranges::clip (buffer, -1.0f, 1.0f, buffer_size);
+        zrythm::utils::float_ranges::mul_k2 (buffer, 0.8f);
+        zrythm::utils::float_ranges::clip (buffer, -1.0f, 1.0f);
 
         // Get peak for metering
-        float peak = zrythm::utils::float_ranges::abs_max (buffer, buffer_size);
+        float peak = zrythm::utils::float_ranges::abs_max (buffer);
         benchmark::DoNotOptimize (peak);
       });
 

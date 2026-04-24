@@ -12,8 +12,8 @@ add_executable(zrythm_utils_unit_tests
   datetime_test.cpp
   debouncer_test.cpp
   directory_manager_test.cpp
-  dsp_test.cpp
   expandable_tick_range_test.cpp
+  float_ranges_test.cpp
   hash_test.cpp
   icloneable_test.cpp
   io_test.cpp

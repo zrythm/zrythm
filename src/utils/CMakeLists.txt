@@ -16,12 +16,12 @@ target_sources(zrythm_utils_lib
     datetime.cpp
     debouncer.cpp
     directory_manager.cpp
-    dsp.cpp
     dsp_context.cpp
     env.cpp
     exceptions.cpp
     expandable_tick_range.cpp
     file_path_list.cpp
+    float_ranges.cpp
     gtest_wrapper.cpp
     hash.cpp
     io_utils.cpp
@@ -60,13 +60,13 @@ target_sources(zrythm_utils_lib
       datetime.h
       debouncer.h
       directory_manager.h
-      dsp.h
       dsp_context.h
       enum_utils.h
       env.h
       exceptions.h
       expandable_tick_range.h
       file_path_list.h
+      float_ranges.h
       format.h
       format_boost.h
       format_juce.h

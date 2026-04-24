@@ -7,7 +7,7 @@
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_renderer.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/views.h"
 
 namespace zrythm::structure::arrangement
@@ -405,7 +405,8 @@ RegionRenderer::handle_automation_region_range (
           if (start_idx < values.size () && end_idx > start_idx)
             {
               utils::float_ranges::fill (
-                &values[start_idx], ap->value (), end_idx - start_idx);
+                std::span (values).subspan (start_idx, end_idx - start_idx),
+                ap->value ());
             }
         }
     }
@@ -466,7 +467,7 @@ RegionRenderer::serialize_to_automation_values (
     static_cast<size_t> (region_length_samples.in (units::samples)));
 
   // Initialize with default value (-1.0)
-  utils::float_ranges::fill (values.data (), -1, values.size ());
+  utils::float_ranges::fill (values, -1);
 
   if constexpr (REGION_SERIALIZER_DEBUG)
     {

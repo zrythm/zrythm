@@ -3,7 +3,7 @@
 
 #include "structure/arrangement/region_renderer.h"
 #include "structure/tracks/clip_playback_data_provider.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::structure::tracks
 {
@@ -567,10 +567,12 @@ ClipPlaybackDataProvider::process_audio_events (
 
                 // Copy left channel
                 utils::float_ranges::add2 (
-                  &left_buffer[output_start_idx_samples],
-                  audio_buffer.getReadPointer (
-                    0, current_internal_buffer_offset.in<int> (units::samples)),
-                  actual_samples_to_copy.in (units::samples));
+                  left_buffer.subspan (
+                    output_start_idx_samples,
+                    actual_samples_to_copy.in (units::samples)),
+                  { audio_buffer.getReadPointer (
+                      0, current_internal_buffer_offset.in<int> (units::samples)),
+                    actual_samples_to_copy.in<size_t> (units::samples) });
 
                 // Copy right channel
                 if (
@@ -578,11 +580,13 @@ ClipPlaybackDataProvider::process_audio_events (
                   && right_buffer.size () > output_start_idx_samples)
                   {
                     utils::float_ranges::add2 (
-                      &right_buffer[output_start_idx_samples],
-                      audio_buffer.getReadPointer (
-                        1,
-                        current_internal_buffer_offset.in<int> (units::samples)),
-                      actual_samples_to_copy.in (units::samples));
+                      right_buffer.subspan (
+                        output_start_idx_samples,
+                        actual_samples_to_copy.in (units::samples)),
+                      { audio_buffer.getReadPointer (
+                          1, current_internal_buffer_offset.in<int> (
+                               units::samples)),
+                        actual_samples_to_copy.in<size_t> (units::samples) });
                   }
               }
           }

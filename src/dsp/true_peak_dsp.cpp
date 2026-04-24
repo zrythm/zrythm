@@ -26,7 +26,7 @@
 #include <cstdlib>
 
 #include "dsp/true_peak_dsp.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 #include <zita-resampler/resampler.h>
 
@@ -192,7 +192,7 @@ TruePeakDsp::init (float samplerate)
   g_ = 0.502f;
 
   std::array<float, 8192> zero{};
-  utils::float_ranges::fill (zero.data (), 0.f, zero.size ());
+  utils::float_ranges::fill (zero, 0.f);
   impl_->src_.inp_count = 8192;
   impl_->src_.inp_data = zero.data ();
   impl_->src_.out_count = 32768;

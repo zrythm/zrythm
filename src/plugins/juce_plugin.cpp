@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "plugins/juce_plugin.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/io_utils.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
@@ -443,10 +443,11 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
               if (total_port_chs + i == ch)
                 {
                   utils::float_ranges::copy (
-                    &input_channels_[ch][local_offset.in (units::samples)],
-                    port->buffers ()->getReadPointer (
-                      i, local_offset.in<int> (units::samples)),
-                    nframes.in (units::samples));
+                    { &input_channels_[ch][local_offset.in (units::samples)],
+                      nframes.in (units::samples) },
+                    { port->buffers ()->getReadPointer (
+                        i, local_offset.in<int> (units::samples)),
+                      nframes.in (units::samples) });
                 }
             }
           total_port_chs += port->num_channels ();
@@ -459,9 +460,10 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
     ++ch)
     {
       utils::float_ranges::fill (
-        &juce_audio_buffer_.getWritePointer (
-          ch)[local_offset.in (units::samples)],
-        0.0f, nframes.in (units::samples));
+        { &juce_audio_buffer_.getWritePointer (
+            ch)[local_offset.in (units::samples)],
+          nframes.in (units::samples) },
+        0.0f);
     }
 
   // Clear MIDI buffer
@@ -518,10 +520,11 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
               if (total_port_chs + i == ch)
                 {
                   utils::float_ranges::copy (
-                    port->buffers ()->getWritePointer (
-                      i, local_offset.in<int> (units::samples)),
-                    &output_channels_[ch][local_offset.in (units::samples)],
-                    nframes.in (units::samples));
+                    { port->buffers ()->getWritePointer (
+                        i, local_offset.in<int> (units::samples)),
+                      nframes.in (units::samples) },
+                    { &output_channels_[ch][local_offset.in (units::samples)],
+                      nframes.in (units::samples) });
                 }
             }
           total_port_chs += port->num_channels ();

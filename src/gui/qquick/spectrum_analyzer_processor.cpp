@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "gui/qquick/spectrum_analyzer_processor.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::gui::qquick
 {
@@ -65,7 +65,7 @@ SpectrumAnalyzerProcessor::process_audio ()
     {
       // Not enough data, pad with zeros
       utils::float_ranges::fill (
-        &left_buffer[frames_read], 0.f, fft_size_ - frames_read);
+        { &left_buffer[frames_read], fft_size_ - frames_read }, 0.f);
     }
 
   frames_read =
@@ -76,15 +76,21 @@ SpectrumAnalyzerProcessor::process_audio ()
   if (frames_read < fft_size_)
     {
       utils::float_ranges::fill (
-        &right_buffer[frames_read], 0.f, fft_size_ - frames_read);
+        { &right_buffer[frames_read], fft_size_ - frames_read }, 0.f);
     }
 
   // Combine channels (mono mix)
   // This essentially does: mono = (left + right) / 2
   utils::float_ranges::product (
-    mono_buffer_.data (), left_buffer, 0.5f, fft_size_);
+    std::span (mono_buffer_).first (fft_size_),
+    std::span{ left_buffer, static_cast<size_t> (buffer_.getNumSamples ()) }
+      .first (fft_size_),
+    0.5f);
   utils::float_ranges::mix_product (
-    mono_buffer_.data (), right_buffer, 0.5f, fft_size_);
+    std::span (mono_buffer_).first (fft_size_),
+    std::span{ right_buffer, static_cast<size_t> (buffer_.getNumSamples ()) }
+      .first (fft_size_),
+    0.5f);
 
   // Apply Hanning window
   windowing_func_->multiplyWithWindowingTable (mono_buffer_.data (), fft_size_);
@@ -154,8 +160,7 @@ SpectrumAnalyzerProcessor::setFftSize (int size)
     {
       fft_size_ = size_unsigned;
       spectrum_data_.resize (size / 2);
-      utils::float_ranges::fill (
-        spectrum_data_.data (), 0.f, spectrum_data_.size ());
+      utils::float_ranges::fill (spectrum_data_, 0.f);
       buffer_.setSize (2, size);
       mono_buffer_.resize (fft_size_);
       fft_in_.resize (fft_size_);

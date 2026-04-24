@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <mutex>
 #include <utility>
 
@@ -9,7 +10,7 @@
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/debug.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 
@@ -190,14 +191,16 @@ FileAudioSource::convert_mono_to_stereo ()
   const auto [left_gain, _] =
     calculate_panning (PanLaw::Minus3dB, PanAlgorithm::SquareRoot, 0.5f);
   const auto num_samples = ch_frames_.getNumSamples ();
+  assert (num_samples >= 0);
+  const auto samples = static_cast<size_t> (num_samples);
 
   ch_frames_.setSize (2, num_samples, true);
 
   auto * left = ch_frames_.getWritePointer (0);
   auto * right = ch_frames_.getWritePointer (1);
 
-  utils::float_ranges::mul_k2 (left, left_gain, num_samples);
-  utils::float_ranges::copy (right, left, num_samples);
+  utils::float_ranges::mul_k2 ({ left, samples }, left_gain);
+  utils::float_ranges::copy ({ right, samples }, { left, samples });
 }
 
 // ========================================================================

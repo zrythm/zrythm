@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/processor_base.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/raii_utils.h"
 #include "utils/views.h"
@@ -238,10 +238,11 @@ ProcessorBase::custom_process_block (
     const auto &[in_port, out_port] :
     std::views::zip (cv_in_ports, cv_out_ports))
     {
+      const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+      const auto sub_nframes = time_nfo.nframes_.in (units::samples);
       utils::float_ranges::copy (
-        &out_port->buf_[time_nfo.local_offset_.in (units::samples)],
-        &in_port->buf_[time_nfo.local_offset_.in (units::samples)],
-        time_nfo.nframes_.in (units::samples));
+        std::span (out_port->buf_).subspan (sub_offset, sub_nframes),
+        std::span (in_port->buf_).subspan (sub_offset, sub_nframes));
     }
 }
 

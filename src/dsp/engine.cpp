@@ -27,9 +27,10 @@
  */
 
 #include <algorithm>
+#include <cassert>
 
 #include "dsp/engine.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 
 namespace zrythm::dsp
 {
@@ -62,6 +63,8 @@ AudioEngine::AudioEngine (
             float * const *       outputChannelData,
             int                   numOutputChannels,
             int                   numSamples) {
+            assert (numSamples >= 0);
+            const auto samples = static_cast<size_t> (numSamples);
             juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
               load_measurer_
             };
@@ -79,14 +82,14 @@ AudioEngine::AudioEngine (
                 if (numOutputChannels > 0)
                   {
                     utils::float_ranges::copy (
-                      outputChannelData[0],
-                      monitor_out_.buffers ()->getReadPointer (0), numSamples);
+                      { outputChannelData[0], samples },
+                      { monitor_out_.buffers ()->getReadPointer (0), samples });
                   }
                 if (numOutputChannels > 1)
                   {
                     utils::float_ranges::copy (
-                      outputChannelData[1],
-                      monitor_out_.buffers ()->getReadPointer (1), numSamples);
+                      { outputChannelData[1], samples },
+                      { monitor_out_.buffers ()->getReadPointer (1), samples });
                   }
               }
           },

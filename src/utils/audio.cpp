@@ -5,7 +5,7 @@
 
 #include "utils/audio.h"
 #include "utils/audio_file.h"
-#include "utils/dsp.h"
+#include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/units.h"
@@ -287,7 +287,7 @@ AudioBuffer::invert_phase ()
   for (const auto i : std::views::iota (0, getNumChannels ()))
     {
       utils::float_ranges::mul_k2 (
-        getWritePointer (i), -1.f, static_cast<size_t> (getNumSamples ()));
+        { getWritePointer (i), static_cast<size_t> (getNumSamples ()) }, -1.f);
     }
 }
 
@@ -298,7 +298,8 @@ AudioBuffer::normalize_peak ()
     {
       auto * write_ptr = getWritePointer (i);
       utils::float_ranges::normalize (
-        write_ptr, write_ptr, static_cast<size_t> (getNumSamples ()));
+        { write_ptr, static_cast<size_t> (getNumSamples ()) },
+        { write_ptr, static_cast<size_t> (getNumSamples ()) });
     }
 }
 
