@@ -134,10 +134,7 @@ Project::Project (
             .buffer_size_provider_ =
               [this] () { return audio_engine_->get_block_length (); },
             .top_level_window_provider_ = plugin_host_window_provider_,
-            .audio_thread_checker_ =
-              [this] () {
-                return audio_engine_->graph_dispatcher ().is_processing_thread ();
-              } },
+          },
           this)),
       track_factory_ (
         std::make_unique<structure::tracks::TrackFactory> (
@@ -504,10 +501,6 @@ struct PluginBuilderForDeserialization
           plugins::Plugin::ProcessorBaseDependencies{
             .port_registry_ = project_.get_port_registry (),
             .param_registry_ = project_.get_param_registry () },
-          [&project = project_] () {
-            return project.audio_engine_->graph_dispatcher ()
-              .is_processing_thread ();
-          },
           project_.plugin_host_window_provider_);
       }
     else

@@ -39,11 +39,6 @@ public:
     QObject *                    handler_context_{};
   };
 
-  /**
-   * @brief Function that returns whether the caller is an audio DSP thread.
-   */
-  using AudioThreadChecker = std::function<bool ()>;
-
   struct CommonFactoryDependencies
   {
     plugins::PluginRegistry                      &plugin_registry_;
@@ -53,7 +48,6 @@ public:
     std::function<units::sample_rate_t ()> sample_rate_provider_;
     std::function<units::sample_u32_t ()>  buffer_size_provider_;
     plugins::PluginHostWindowFactory       top_level_window_provider_;
-    AudioThreadChecker                     audio_thread_checker_;
   };
 
   PluginFactory () = delete;
@@ -96,7 +90,6 @@ private:
           {
             return dependencies_.plugin_registry_.create_object<PluginT> (
               dependencies_.processor_base_dependencies_,
-              dependencies_.audio_thread_checker_,
               dependencies_.top_level_window_provider_);
           }
         else if constexpr (

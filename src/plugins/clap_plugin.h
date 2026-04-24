@@ -30,21 +30,14 @@ class ClapPlugin : public Plugin, public ClapHostBase
 
 public:
   /**
-   * @brief Function that returns whether the caller is an audio DSP thread.
-   */
-  using AudioThreadChecker = std::function<bool ()>;
-
-  /**
    * @brief Constructor for ClapPlugin.
    *
    * @param dependencies Processor dependencies
-   * @param audio_thread_checker Function to check if caller is audio thread
    * @param host_window_factory Factory for creating plugin host windows
    * @param parent Parent QObject
    */
   ClapPlugin (
     dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    AudioThreadChecker                            audio_thread_checker,
     PluginHostWindowFactory                       host_window_factory,
     QObject *                                     parent = nullptr);
   Q_DISABLE_COPY_MOVE (ClapPlugin)

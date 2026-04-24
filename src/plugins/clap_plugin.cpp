@@ -45,6 +45,7 @@
 #include "plugins/plugin_library.h"
 #include "utils/format_qt.h"
 #include "utils/io_utils.h"
+#include "utils/raii_utils.h"
 #include "utils/views.h"
 
 #include <QFile>
@@ -63,6 +64,8 @@
 namespace zrythm::plugins
 {
 thread_local bool is_main_thread = false;
+// Set by process_impl() for both real-time audio and offline rendering.
+thread_local bool is_audio_thread = false;
 
 using ClapPluginProxy = clap::helpers::PluginProxy<
   clap::helpers::MisbehaviourHandler::Terminate,
@@ -73,12 +76,8 @@ class ClapPlugin::ClapPluginImpl
   friend class ClapPlugin;
 
 public:
-  ClapPluginImpl (
-    ClapPlugin             &owner,
-    AudioThreadChecker      audio_thread_checker,
-    PluginHostWindowFactory host_window_factory)
-      : owner_ (owner), audio_thread_checker_ (std::move (audio_thread_checker)),
-        host_window_factory_ (std::move (host_window_factory))
+  ClapPluginImpl (ClapPlugin &owner, PluginHostWindowFactory host_window_factory)
+      : owner_ (owner), host_window_factory_ (std::move (host_window_factory))
   {
   }
 
@@ -170,8 +169,7 @@ public:
   void eventLoopSetFdNotifierFlags (int fd, int flags);
 
 private:
-  ClapPlugin        &owner_;
-  AudioThreadChecker audio_thread_checker_;
+  ClapPlugin &owner_;
 
   PluginLibrary library_;
 
@@ -250,7 +248,6 @@ private:
 
 ClapPlugin::ClapPlugin (
   dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  AudioThreadChecker                            audio_thread_checker,
   PluginHostWindowFactory                       host_window_factory,
   QObject *                                     parent)
     : Plugin (dependencies, parent),
@@ -260,10 +257,7 @@ ClapPlugin::ClapPlugin (
         "https://www.zrythm.org",
         PACKAGE_VERSION),
       pimpl_ (
-        std::make_unique<ClapPluginImpl> (
-          *this,
-          std::move (audio_thread_checker),
-          std::move (host_window_factory)))
+        std::make_unique<ClapPluginImpl> (*this, std::move (host_window_factory)))
 {
   is_main_thread = true;
 
@@ -741,6 +735,9 @@ ClapPlugin::release_resources_impl ()
 
   if (pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing)
     {
+      // Pretend to be the audio thread — stopProcessing() is called here
+      // from the main thread during release_resources, but the CLAP plugin
+      // expects it from the audio thread.
       AtomicBoolRAII audio_thread_check{ pimpl_->force_audio_thread_check_ };
       pimpl_->plugin_->stopProcessing ();
     }
@@ -754,13 +751,10 @@ ClapPlugin::release_resources_impl ()
 void
 ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
 {
+  ScopedBool audio_thread_guard{ is_audio_thread };
+
   pimpl_->process_.frames_count = time_info.nframes_.in (units::samples);
   pimpl_->process_.steady_time = -1;
-
-  // This can get called during offline rendering
-  AtomicBoolRAII audio_thread_check{ pimpl_->force_audio_thread_check_ };
-
-  assert (threadCheckIsAudioThread ());
 
   if (!pimpl_->plugin_)
     return;
@@ -1125,7 +1119,7 @@ ClapPlugin::threadCheckIsAudioThread () const noexcept
       return true;
     }
 
-  return pimpl_->audio_thread_checker_ ();
+  return is_audio_thread;
 }
 bool
 ClapPlugin::threadCheckIsMainThread () const noexcept

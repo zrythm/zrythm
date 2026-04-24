@@ -184,7 +184,6 @@ protected:
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
       .top_level_window_provider_ = create_mock_window_provider (),
-      .audio_thread_checker_ = [] () { return false; }
     };
 
     return std::make_unique<plugins::PluginFactory> (std::move (factory_deps));
