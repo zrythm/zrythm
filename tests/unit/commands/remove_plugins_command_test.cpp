@@ -422,4 +422,68 @@ TEST_F (
     }
 }
 
+TEST_F (RemovePluginsCommandTest, RedoClosesPluginWindow)
+{
+  auto   ref = create_and_append_plugin (*group_);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  RemovePluginsCommand cmd (
+    {
+      RemovePluginsCommand::PluginRemoveInfo{
+                                             .plugin_ref = ref,
+                                             .source_group = group_.get (),
+                                             .source_atl = nullptr }
+  });
+
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (RemovePluginsCommandTest, RedoAfterReopenClosesPluginWindow)
+{
+  auto   ref = create_and_append_plugin (*group_);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+
+  RemovePluginsCommand cmd (
+    {
+      RemovePluginsCommand::PluginRemoveInfo{
+                                             .plugin_ref = ref,
+                                             .source_group = group_.get (),
+                                             .source_atl = nullptr }
+  });
+
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  cmd.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (RemovePluginsCommandTest, RedoSkipsAlreadyClosedWindows)
+{
+  auto   ref = create_and_append_plugin (*group_);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  ASSERT_FALSE (plugin->uiVisible ());
+
+  RemovePluginsCommand cmd (
+    {
+      RemovePluginsCommand::PluginRemoveInfo{
+                                             .plugin_ref = ref,
+                                             .source_group = group_.get (),
+                                             .source_atl = nullptr }
+  });
+
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+  EXPECT_EQ (group_->rowCount (), 0);
+}
+
 } // namespace zrythm::commands

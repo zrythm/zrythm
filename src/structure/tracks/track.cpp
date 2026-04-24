@@ -520,15 +520,18 @@ Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
       channel_->get_plugins (plugins);
     }
 
-  const auto count = modulators_->rowCount ();
-  for (const auto i : std::views::iota (0, count))
+  if (modulators_)
     {
-      auto element = modulators_->element_at_idx (i);
-      if (element.canConvert<plugins::Plugin *> ())
+      const auto count = modulators_->rowCount ();
+      for (const auto i : std::views::iota (0, count))
         {
-          plugins.push_back (
-            plugins::plugin_base_to_ptr_variant (
-              element.value<plugins::Plugin *> ()));
+          auto element = modulators_->element_at_idx (i);
+          if (element.canConvert<plugins::Plugin *> ())
+            {
+              plugins.push_back (
+                plugins::plugin_base_to_ptr_variant (
+                  element.value<plugins::Plugin *> ()));
+            }
         }
     }
 }

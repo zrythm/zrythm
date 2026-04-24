@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/delete_tracks_command.h"
+#include "plugins/internal_plugin_base.h"
+#include "plugins/plugin_all.h"
 #include "structure/tracks/folder_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
@@ -47,6 +49,18 @@ protected:
     soloed_tracks_exist_getter_,
   };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
+
+  plugins::PluginUuidReference
+  create_and_append_plugin_to_channel (structure::tracks::Track &track)
+  {
+    auto * channel = track.channel ();
+    auto   ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+      nullptr);
+    channel->inserts ()->append_plugin (ref);
+    return ref;
+  }
 };
 
 TEST_F (DeleteTracksCommandTest, DeleteSingleTrack)
@@ -305,6 +319,49 @@ TEST_F (DeleteTracksCommandTest, DeleteEmptyRefsIsNoop)
 
   cmd.undo ();
   EXPECT_EQ (collection_->track_count (), 0);
+}
+
+TEST_F (DeleteTracksCommandTest, RedoClosesPluginWindows)
+{
+  auto track_ref =
+    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto * track = structure::tracks::from_variant (track_ref.get_object ());
+  auto   plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  collection_->add_track (track_ref);
+  ASSERT_EQ (collection_->track_count (), 1);
+
+  DeleteTracksCommand cmd (*collection_, { track_ref });
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (DeleteTracksCommandTest, RedoAfterReopenClosesPluginWindows)
+{
+  auto track_ref =
+    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto * track = structure::tracks::from_variant (track_ref.get_object ());
+  auto   plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  plugin->setUiVisible (true);
+
+  collection_->add_track (track_ref);
+
+  DeleteTracksCommand cmd (*collection_, { track_ref });
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  cmd.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  cmd.redo ();
+  EXPECT_FALSE (plugin->uiVisible ());
 }
 
 } // namespace zrythm::commands

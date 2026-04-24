@@ -55,6 +55,17 @@ RemovePluginsCommand::redo ()
   std::ranges::sort (
     sorted_infos, std::ranges::greater (), &PluginRemoveInfo::index_in_source);
 
+  // Close plugin windows before removal
+  for (const auto &info : sorted_infos)
+    {
+      auto * plugin =
+        plugins::plugin_ptr_variant_to_base (info.plugin_ref.get_object ());
+      if (plugin->uiVisible ())
+        {
+          plugin->setUiVisible (false);
+        }
+    }
+
   // Remove all plugins (descending order)
   for (auto &info : sorted_infos)
     {
