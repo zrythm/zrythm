@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "utils/format_qt.h"
 #include "utils/isettings_backend.h"
-#include "utils/logger.h"
 #include "utils/qt.h"
 #include "utils/utf8_string.h"
 
@@ -14,6 +12,12 @@
 #include <QtQmlIntegration/qqmlintegration.h>
 
 using namespace Qt::StringLiterals;
+
+namespace zrythm::utils::detail
+{
+void
+log_setting_change (const char * name, const QVariant &value);
+}
 
 #define DEFINE_SETTING_PROPERTY(ptype, name, default_value) \
 \
@@ -35,7 +39,7 @@ public: \
       backend_->value (QStringLiteral (#name), default_value).value<ptype> (); \
     if (utils::values_equal_for_qproperty_type (current_value, value)) \
       return; \
-    z_debug ("setting '{}' to '{}'", #name, value); \
+    detail::log_setting_change (#name, QVariant::fromValue (value)); \
     backend_->setValue (QStringLiteral (#name), value); \
     Q_EMIT name##Changed (value); \
   } \

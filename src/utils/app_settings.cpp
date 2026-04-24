@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/app_settings.h"
+#include "utils/format_qt.h"
+#include "utils/logger.h"
 
 namespace zrythm::utils
 {
@@ -10,5 +12,14 @@ AppSettings::AppSettings (
   QObject *                         parent)
     : QObject (parent), backend_ (std::move (backend))
 {
+}
+
+namespace detail
+{
+void
+log_setting_change (const char * name, const QVariant &value)
+{
+  z_debug ("setting '{}' to '{}'", name, value);
+}
 }
 }

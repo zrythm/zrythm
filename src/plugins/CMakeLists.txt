@@ -53,7 +53,6 @@ set_target_properties(zrythm_plugins_lib PROPERTIES
 
 target_precompile_headers(zrythm_plugins_lib
   PUBLIC
-    $<$<COMPILE_LANGUAGE:CXX>:utils/format_qt.h>
     $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/plugin_group.h>
     $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/plugin_scan_manager.h>
 )

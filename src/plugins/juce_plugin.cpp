@@ -5,6 +5,7 @@
 
 #include "plugins/juce_plugin.h"
 #include "utils/float_ranges.h"
+#include "utils/format_qt.h"
 #include "utils/io_utils.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>

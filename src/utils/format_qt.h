@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QString>
 #include <QUuid>
+#include <QVariant>
 
 #include <fmt/format.h>
 
@@ -77,6 +78,18 @@ format_qstr (const QString &format, Args &&... args)
     fmt::vformat (
       std::string_view (format.toUtf8 ()), fmt::make_format_args (args...)));
 }
+
+// Formatter for QVariant
+template <> struct fmt::formatter<QVariant> : fmt::formatter<std::string_view>
+{
+  auto format (const QVariant &v, fmt::format_context &ctx) const
+    -> format_context::iterator
+  {
+    return fmt::formatter<std::string_view>::format (
+      v.toString ().toUtf8 (), ctx);
+  }
+};
+static_assert (fmt::formattable<QVariant>);
 
 // Formatter for QUuid
 inline auto
