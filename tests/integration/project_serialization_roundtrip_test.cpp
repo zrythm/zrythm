@@ -186,10 +186,7 @@ protected:
     importer->importPluginToNewTrack (&descriptor);
 
     // Wait for instantiation to complete
-    for (int i = 0; i < 100 && !instantiation_finished; ++i)
-      {
-        QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
-      }
+    process_events_until_true ([&] () { return instantiation_finished; });
     EXPECT_TRUE (instantiation_finished)
       << "Plugin instantiation did not complete";
 
@@ -551,8 +548,7 @@ TEST_F (
 
   importer->importPluginToNewTrack (&*descriptor);
 
-  for (int i = 0; i < 100 && !instantiation_finished; ++i)
-    QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+  process_events_until_true ([&] () { return instantiation_finished; });
   ASSERT_TRUE (instantiation_finished);
 
   process_a_few_cycles (*bundle->project);

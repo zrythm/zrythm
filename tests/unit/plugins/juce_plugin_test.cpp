@@ -82,7 +82,7 @@ public:
 
 class JucePluginTest
     : public ::testing::Test,
-      private test_helpers::ScopedJuceQApplication
+      public test_helpers::ScopedJuceQApplication
 {
 protected:
   void SetUp () override
@@ -223,11 +223,7 @@ TEST_F (JucePluginTest, AsyncInstantiationSuccess)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   EXPECT_TRUE (instantiation_finished);
   EXPECT_TRUE (successful);
@@ -269,11 +265,7 @@ TEST_F (JucePluginTest, AsyncInstantiationFailure)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   EXPECT_TRUE (instantiation_finished);
   EXPECT_FALSE (successful);
@@ -321,11 +313,7 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Prepare for processing
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
@@ -358,11 +346,9 @@ TEST_F (JucePluginTest, ParameterMapping)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
+
+  EXPECT_TRUE (instantiation_finished);
 
   // Test parameter mapping
   EXPECT_EQ (plugin_->get_parameters ().size (), 3);
@@ -399,11 +385,7 @@ TEST_F (JucePluginTest, StateSavingLoading)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Serialize to JSON - this should capture the JUCE plugin state via
   // getStateInformation() and encode it as base64
@@ -474,11 +456,7 @@ TEST_F (JucePluginTest, EditorManagement)
 
   plugin_->set_configuration (*config_);
 
-  // Process events until instantiation completes
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Test editor management
   plugin_->setUiVisible (true);
@@ -508,10 +486,7 @@ TEST_F (JucePluginTest, MidiProcessing)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -555,10 +530,7 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Test parameter synchronization from host to plugin
   auto params = plugin_->get_parameters ();
@@ -619,10 +591,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -685,10 +654,7 @@ TEST_F (JucePluginTest, AdvancedParameterTypes)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Verify parameter types are correctly mapped
   auto params = plugin_->get_parameters ();
@@ -754,10 +720,7 @@ TEST_F (JucePluginTest, SerializationPreservesState)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Set some state
   plugin_->setProgramIndex (5);
@@ -811,10 +774,9 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   from_json (json, *deserialized_plugin);
 
   // Wait for instantiation
-  while (!deserialized_plugin_instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () {
+    return deserialized_plugin_instantiation_finished;
+  });
 
   // Verify state was preserved
   EXPECT_EQ (deserialized_plugin->programIndex (), 5);
@@ -907,10 +869,7 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   // Set parameter values
   auto params = plugin_->get_parameters ();
@@ -1006,10 +965,9 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
   EXPECT_TRUE (found_choice);
 
   // Wait for instantiation so we can verify the JUCE state is restored
-  while (!deserialized_plugin_instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () {
+    return deserialized_plugin_instantiation_finished;
+  });
 }
 
 TEST_F (JucePluginTest, AudioSignalPassThrough)
@@ -1030,10 +988,7 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -1134,10 +1089,7 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
 
   plugin_->set_configuration (*config_);
 
-  while (!instantiation_finished)
-    {
-      QCoreApplication::processEvents ();
-    }
+  process_events_until_true ([&] () { return instantiation_finished; });
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
