@@ -131,6 +131,18 @@ Item {
             }
           }
         }
+
+        RowLayout {
+          Layout.preferredHeight: root.rulerHeight
+          Layout.preferredWidth: root.sceneWidth
+
+          Label {
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            text: "+"
+            verticalAlignment: Text.AlignVCenter
+          }
+        }
       }
 
       Synchronizer {
@@ -219,6 +231,49 @@ Item {
             Layout.preferredHeight: contentHeight
             Layout.preferredWidth: root.sceneWidth
             model: rowsForTrackModel.model
+          }
+        }
+
+        ListView {
+          id: phantomSceneClipSlots
+
+          Layout.preferredHeight: contentHeight
+          Layout.preferredWidth: root.sceneWidth
+          boundsBehavior: Flickable.StopAtBounds
+          model: rowsForTrackModel.model
+
+          delegate: Rectangle {
+            id: phantomClipSlot
+
+            required property Track track
+
+            color: palette.button
+            height: track.fullVisibleHeight
+            radius: Style.textFieldRadius
+            width: root.sceneWidth
+
+            DropArea {
+              anchors.fill: parent
+
+              onDropped: drop => {
+                let uniqueFilePaths = DragUtils.getUniqueFilePaths(drop);
+                if (uniqueFilePaths.length > 0) {
+                  const newScene = root.clipLauncher.addScene();
+                  const newClipSlot = newScene.clipSlots.clipSlotForTrack(phantomClipSlot.track);
+                  root.fileImporter.importFileToClipSlot(uniqueFilePaths[0], phantomClipSlot.track, newScene, newClipSlot);
+                }
+              }
+            }
+
+            TapHandler {
+              onDoubleTapped: {
+                const newScene = root.clipLauncher.addScene();
+                const newClipSlot = newScene.clipSlots.clipSlotForTrack(phantomClipSlot.track);
+                let midiRegion = root.objectCreator.addEmptyMidiRegionToClip(phantomClipSlot.track, newClipSlot) as MidiRegion;
+                root.objectCreator.addMidiNote(midiRegion, 0, 64);
+                root.objectCreator.addMidiNote(midiRegion, 120, 68);
+              }
+            }
           }
         }
       }
