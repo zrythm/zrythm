@@ -604,13 +604,15 @@ Item {
         // Parameter: The object (at the current selection index)'s position in ticks when the drag started
         function calculateSnappedMovementTicks(objectTicksAtDragStart: real): real {
           const unsnappedTicksSinceStart = currentTimelineTicks - startTimelineTicks;
+          let ticksToMove;
           if (root.shouldSnap) {
             const unsnappedObjectTicks = objectTicksAtDragStart + unsnappedTicksSinceStart;
             const snappedObjectTicks = root.calculateSnappedPosition(unsnappedObjectTicks, objectTicksAtDragStart);
-            return snappedObjectTicks - objectTicksAtDragStart;
+            ticksToMove = snappedObjectTicks - objectTicksAtDragStart;
           } else {
-            return unsnappedTicksSinceStart;
+            ticksToMove = unsnappedTicksSinceStart;
           }
+          return Math.max(ticksToMove, -objectTicksAtDragStart);
         }
 
         // Moves the selected objects by the given amount of ticks.
