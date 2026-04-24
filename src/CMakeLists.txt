@@ -19,6 +19,7 @@ target_include_directories(zrythm_gui_lib
     # https://bugreports.qt.io/browse/QTBUG-87221
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/backend
+    ${CMAKE_CURRENT_SOURCE_DIR}/engine/session
 )
 
 # create a plugin so that types get exposed to QML

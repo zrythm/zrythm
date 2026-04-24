@@ -4,7 +4,6 @@
 #pragma once
 
 #include "engine/session/control_room.h"
-#include "engine/session/midi_mapping.h"
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/theme_manager.h"
 #include "gui/backend/device_manager.h"
@@ -24,11 +23,6 @@ class DirectoryManager;
 namespace zrythm::dsp
 {
 class IHardwareAudioInterface;
-}
-
-namespace zrythm::engine::session
-{
-class MidiMappings;
 }
 
 namespace zrythm::gui
