@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/add_plugin_command.h"
 #include "plugins/internal_plugin_base.h"
+#include "plugins/plugin_all.h"
 #include "plugins/plugin_group.h"
 
 #include <gtest/gtest.h>
@@ -306,6 +307,41 @@ TEST_F (AddPluginCommandTest, PluginReferenceMoved)
   // Plugin should still be accessible via the group
   EXPECT_EQ (plugin_group_->rowCount (), 1);
   EXPECT_EQ (get_plugin_id_at_index (*plugin_group_, 0), plugin_id);
+}
+
+TEST_F (AddPluginCommandTest, UndoClosesPluginWindow)
+{
+  auto * plugin =
+    plugins::plugin_ptr_variant_to_base (test_plugin_ref_.get_object ());
+  plugin->setUiVisible (true);
+
+  AddPluginCommand command (*plugin_group_, test_plugin_ref_);
+  command.redo ();
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (AddPluginCommandTest, UndoAfterReopenClosesPluginWindow)
+{
+  auto * plugin =
+    plugins::plugin_ptr_variant_to_base (test_plugin_ref_.get_object ());
+  plugin->setUiVisible (true);
+
+  AddPluginCommand command (*plugin_group_, test_plugin_ref_);
+  command.redo ();
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  command.redo ();
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
 }
 
 } // namespace zrythm::commands

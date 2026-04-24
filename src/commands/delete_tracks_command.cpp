@@ -4,7 +4,6 @@
 #include <ranges>
 
 #include "commands/delete_tracks_command.h"
-#include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 
 namespace zrythm::commands
@@ -40,22 +39,6 @@ DeleteTracksCommand::DeleteTracksCommand (
 void
 DeleteTracksCommand::redo ()
 {
-  // Close plugin windows for all tracks being deleted
-  for (const auto &info : tracks_)
-    {
-      auto * track = structure::tracks::from_variant (info.ref.get_object ());
-      std::vector<plugins::PluginPtrVariant> plugins;
-      track->collect_plugins (plugins);
-      for (const auto &plugin_var : plugins)
-        {
-          auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_var);
-          if (plugin->uiVisible ())
-            {
-              plugin->setUiVisible (false);
-            }
-        }
-    }
-
   // Remove tracks in reverse position order to avoid index shifting
   auto sorted = tracks_ | std::ranges::to<std::vector> ();
   std::ranges::sort (sorted, std::greater{}, &TrackInfo::original_position);

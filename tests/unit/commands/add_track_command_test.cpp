@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/add_track_command.h"
+#include "plugins/internal_plugin_base.h"
+#include "plugins/plugin_all.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 
@@ -54,6 +56,18 @@ protected:
   };
   structure::tracks::TrackUuidReference test_track_ref_{ track_registry_ };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
+
+  plugins::PluginUuidReference
+  create_and_append_plugin_to_channel (structure::tracks::Track &track)
+  {
+    auto * channel = track.channel ();
+    auto   ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
+      dsp::ProcessorBase::ProcessorBaseDependencies{
+        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+      nullptr);
+    channel->inserts ()->append_plugin (ref);
+    return ref;
+  }
 };
 
 // Test initial state after construction
@@ -192,6 +206,43 @@ TEST_F (AddEmptyTrackCommandTest, MultipleTracksSameCollection)
   EXPECT_FALSE (collection_->contains (test_track_ref_.id ()));
   EXPECT_FALSE (collection_->contains (second_track_ref.id ()));
   EXPECT_EQ (collection_->track_count (), 0);
+}
+
+TEST_F (AddEmptyTrackCommandTest, UndoClosesPluginWindows)
+{
+  auto * track = structure::tracks::from_variant (test_track_ref_.get_object ());
+  auto plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  plugin->setUiVisible (true);
+
+  AddEmptyTrackCommand command (*collection_, test_track_ref_);
+  command.redo ();
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+}
+
+TEST_F (AddEmptyTrackCommandTest, UndoAfterReopenClosesPluginWindows)
+{
+  auto * track = structure::tracks::from_variant (test_track_ref_.get_object ());
+  auto plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  plugin->setUiVisible (true);
+
+  AddEmptyTrackCommand command (*collection_, test_track_ref_);
+  command.redo ();
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
+
+  command.redo ();
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (plugin->uiVisible ());
+
+  command.undo ();
+  EXPECT_FALSE (plugin->uiVisible ());
 }
 
 } // namespace zrythm::commands

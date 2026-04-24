@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
 
@@ -215,6 +216,18 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
     return;
 
   const auto track_index = std::distance (tracks_.begin (), track_it);
+
+  auto *                                 track = track_it->get_object_base ();
+  std::vector<plugins::PluginPtrVariant> plugins;
+  track->collect_plugins (plugins);
+  for (const auto &plugin_var : plugins)
+    {
+      auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_var);
+      if (plugin->uiVisible ())
+        {
+          plugin->setUiVisible (false);
+        }
+    }
 
   beginRemoveRows (
     {}, static_cast<int> (track_index), static_cast<int> (track_index));

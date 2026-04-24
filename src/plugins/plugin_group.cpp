@@ -117,6 +117,13 @@ PluginGroup::remove_plugin (const plugins::Plugin::Uuid &plugin_id)
 
   const auto index = std::ranges::distance (pimpl_->devices_.begin (), it);
   auto       ret = std::get<1> (*it);
+
+  auto * plugin = ret.get_object_base ();
+  if (plugin->uiVisible ())
+    {
+      plugin->setUiVisible (false);
+    }
+
   beginRemoveRows ({}, static_cast<int> (index), static_cast<int> (index));
   pimpl_->devices_.erase (it);
   endRemoveRows ();
