@@ -41,7 +41,6 @@
 
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
-#include "plugins/clap_plugin_param.h"
 #include "plugins/plugin_library.h"
 #include "utils/format_qt.h"
 #include "utils/io_utils.h"
@@ -81,6 +80,14 @@ public:
   {
   }
 
+  struct ClapParamAdapter
+  {
+    clap_id                   id;
+    clap_param_info           info;
+    dsp::ProcessorParameter * zrythm_param = nullptr;
+    size_t                    param_index = 0;
+  };
+
   enum PluginState
   {
     // The plugin is inactive, only the main thread uses it
@@ -110,14 +117,9 @@ public:
 
   /* clap host callbacks */
 
-  /** Scans a single parameter by index and stores it in params_. */
-  void             scanParam (int32_t index);
-  ClapPluginParam &checkValidParamId (
-    const std::string_view &function,
-    const std::string_view &param_name,
-    clap_id                 param_id);
-  void        checkValidParamValue (const ClapPluginParam &param, double value);
-  double      getParamValue (const clap_param_info &info);
+  [[nodiscard]] bool
+         checkValidParamValue (const ClapParamAdapter &param, double value);
+  double getParamValue (const clap_param_info &info);
   static bool clapParamsRescanMayValueChange (uint32_t flags)
   {
     return (flags & (CLAP_PARAM_RESCAN_ALL | CLAP_PARAM_RESCAN_VALUES)) != 0u;
@@ -213,7 +215,7 @@ private:
   clap_process             process_{};
 
   /* param update queues */
-  std::unordered_map<clap_id, std::unique_ptr<ClapPluginParam>> params_;
+  std::unordered_map<clap_id, ClapParamAdapter> clap_params_;
 
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
@@ -705,7 +707,7 @@ ClapPlugin::prepare_for_processing_impl (
   // audio thread. Reserve space for all parameters plus headroom for MIDI
   // events.
   pimpl_->evIn_.reserveEvents (
-    zrythm_to_clap_param_.size ()
+    zrythm_to_clap_.size ()
     + static_cast<size_t> (get_descriptor ().num_midi_ins_) * 16);
 
   if (
@@ -975,12 +977,7 @@ ClapPlugin::load_plugin (
     {
       create_ports_from_clap_plugin ();
     }
-  scanParams ();
-  if (generate_new_ports)
-    {
-      create_parameters_from_clap_plugin ();
-    }
-  rebuild_clap_param_map ();
+  paramsRescan (CLAP_PARAM_RESCAN_ALL);
   // scanQuickControls ();
 
   // Apply any pending state from JSON deserialization
@@ -1013,17 +1010,16 @@ ClapPlugin::load_plugin (
       if (pimpl_->plugin_->canUseParams ())
         {
           int updated = 0;
-          for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
+          for (auto &[clap_id_val, adapter] : pimpl_->clap_params_)
             {
               double value = 0;
               if (!pimpl_->plugin_->paramsGetValue (clap_id_val, &value))
                 continue;
 
-              auto it = clap_to_zrythm_param_.find (clap_id_val);
-              if (it == clap_to_zrythm_param_.end ())
+              auto * zrythm_param = adapter.zrythm_param;
+              if (zrythm_param == nullptr)
                 continue;
 
-              auto *     zrythm_param = it->second;
               const auto old_base = zrythm_param->baseValue ();
               const auto range = zrythm_param->range ();
               const auto normalized =
@@ -1056,10 +1052,8 @@ ClapPlugin::unload_current_plugin ()
 {
   assert (is_main_thread);
 
-  clap_to_zrythm_param_.clear ();
-  zrythm_to_clap_param_.clear ();
-  clap_id_to_param_index_.clear ();
-  param_index_to_ptr_.clear ();
+  pimpl_->clap_params_.clear ();
+  zrythm_to_clap_.clear ();
 
   Q_EMIT pluginLoadedChanged (false);
 
@@ -1146,16 +1140,16 @@ ClapPlugin::ClapPluginImpl::generateChangedParamInputEvents () noexcept
 
       // Find CLAP ID for this param
       auto * param = change.param;
-      auto   it = owner_.zrythm_to_clap_param_.find (param);
-      if (it == owner_.zrythm_to_clap_param_.end ())
+      auto   it = owner_.zrythm_to_clap_.find (param);
+      if (it == owner_.zrythm_to_clap_.end ())
         continue;
 
       const clap_id clap_id_val = it->second;
-      auto          clap_it = params_.find (clap_id_val);
-      if (clap_it == params_.end ())
+      auto          adapter_it = clap_params_.find (clap_id_val);
+      if (adapter_it == clap_params_.end ())
         continue;
 
-      const auto * clap_param = clap_it->second.get ();
+      const auto  &adapter = adapter_it->second;
       const auto   range = param->range ();
       const double clap_value = range.convertFrom0To1 (change.modulated_value);
 
@@ -1166,7 +1160,7 @@ ClapPlugin::ClapPluginImpl::generateChangedParamInputEvents () noexcept
       ev.header.flags = 0;
       ev.header.size = sizeof (ev);
       ev.param_id = clap_id_val;
-      ev.cookie = clap_param->info ().cookie;
+      ev.cookie = adapter.info.cookie;
       ev.port_index = 0;
       ev.key = -1;
       ev.channel = -1;
@@ -1180,13 +1174,13 @@ void
 ClapPlugin::ClapPluginImpl::generateAllParamInputEvents ()
 {
   // Main thread path (paramFlush): send all base values.
-  for (const auto &[zrythm_param, clap_id_val] : owner_.zrythm_to_clap_param_)
+  for (const auto &[zrythm_param, clap_id_val] : owner_.zrythm_to_clap_)
     {
-      auto it = params_.find (clap_id_val);
-      if (it == params_.end ())
+      auto it = clap_params_.find (clap_id_val);
+      if (it == clap_params_.end ())
         continue;
 
-      const auto * clap_param = it->second.get ();
+      const auto  &adapter = it->second;
       const auto   range = zrythm_param->range ();
       const float  zrythm_value = zrythm_param->baseValue ();
       const double clap_value = range.convertFrom0To1 (zrythm_value);
@@ -1198,7 +1192,7 @@ ClapPlugin::ClapPluginImpl::generateAllParamInputEvents ()
       ev.header.flags = 0;
       ev.header.size = sizeof (ev);
       ev.param_id = clap_id_val;
-      ev.cookie = clap_param->info ().cookie;
+      ev.cookie = adapter.info.cookie;
       ev.port_index = 0;
       ev.key = -1;
       ev.channel = -1;
@@ -1241,14 +1235,16 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
           {
             const auto * ev =
               reinterpret_cast<const clap_event_param_value *> (h); // NOLINT
-            auto it = owner_.clap_id_to_param_index_.find (ev->param_id);
-            if (it == owner_.clap_id_to_param_index_.end ())
+            auto it = clap_params_.find (ev->param_id);
+            if (it == clap_params_.end ())
               break;
 
-            const size_t param_index = it->second;
-            auto *       zrythm_param = owner_.param_index_to_ptr_[param_index];
+            const auto &adapter = it->second;
+            auto *      zrythm_param = adapter.zrythm_param;
             if (zrythm_param == nullptr)
               break;
+
+            const size_t param_index = adapter.param_index;
             assert (param_index < owner_.param_sync_.entries.size ());
             const auto  range = zrythm_param->range ();
             const float normalized =
@@ -1306,6 +1302,7 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
       break;
     case CLAP_LOG_PLUGIN_MISBEHAVING:
       z_warning ("[CLAP plugin misbehaving] {}", message);
+      break;
     case CLAP_LOG_ERROR:
     default:
       z_error ("{}", message);
@@ -1393,105 +1390,6 @@ ClapPlugin::create_ports_from_clap_plugin ()
 }
 
 void
-ClapPlugin::create_parameters_from_clap_plugin ()
-{
-  assert (is_main_thread);
-
-  for (const auto &[clap_id, clap_param] : pimpl_->params_)
-    {
-      const auto &info = clap_param->info ();
-      const auto  unique_id = dsp::ProcessorParameter::UniqueId (
-        utils::Utf8String::from_utf8_encoded_string (std::to_string (clap_id)));
-
-      // Try to find an existing Zrythm param with the same unique ID
-      // (happens during deserialization with params already restored from JSON)
-      dsp::ProcessorParameter * zrythm_param = nullptr;
-      for (const auto &param_ref : get_parameters ())
-        {
-          auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
-          if (p->get_unique_id () == unique_id)
-            {
-              zrythm_param = p;
-              break;
-            }
-        }
-
-      if (zrythm_param == nullptr)
-        {
-          // No existing param — create a new one
-          dsp::ParameterRange range{
-            dsp::ParameterRange::Type::Linear,
-            static_cast<float> (info.min_value),
-            static_cast<float> (info.max_value), 0.f,
-            static_cast<float> (info.default_value)
-          };
-
-          if (info.flags & CLAP_PARAM_IS_STEPPED)
-            {
-              if (info.flags & CLAP_PARAM_IS_BYPASS)
-                {
-                  range =
-                    dsp::ParameterRange::make_toggle (info.default_value > 0.5);
-                }
-              else
-                {
-                  range = dsp::ParameterRange{
-                    dsp::ParameterRange::Type::Integer,
-                    static_cast<float> (info.min_value),
-                    static_cast<float> (info.max_value), 0.f,
-                    static_cast<float> (info.default_value)
-                  };
-                }
-            }
-
-          auto zrythm_param_ref =
-            dependencies ().param_registry_.create_object<dsp::ProcessorParameter> (
-              dependencies ().port_registry_, unique_id, range,
-              utils::Utf8String::from_utf8_encoded_string (info.name));
-          add_parameter (zrythm_param_ref);
-          zrythm_param =
-            zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
-          zrythm_param->set_automatable (
-            (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
-
-          // Override the initial value with the plugin's live value
-          const auto normalized_live = zrythm_param->range ().convertTo0To1 (
-            static_cast<float> (clap_param->value ()));
-          zrythm_param->setBaseValue (normalized_live);
-        }
-    }
-}
-
-void
-ClapPlugin::rebuild_clap_param_map ()
-{
-  clap_to_zrythm_param_.clear ();
-  zrythm_to_clap_param_.clear ();
-  clap_id_to_param_index_.clear ();
-  param_index_to_ptr_.clear ();
-  param_index_to_ptr_.resize (get_parameters ().size (), nullptr);
-  for (const auto &[clap_id_val, clap_param] : pimpl_->params_)
-    {
-      const auto target_id = dsp::ProcessorParameter::UniqueId (
-        utils::Utf8String::from_utf8_encoded_string (
-          std::to_string (clap_id_val)));
-      for (
-        const auto &[i, param_ref] : utils::views::enumerate (get_parameters ()))
-        {
-          auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
-          if (p->get_unique_id () == target_id)
-            {
-              clap_to_zrythm_param_[clap_id_val] = p;
-              zrythm_to_clap_param_[p] = clap_id_val;
-              clap_id_to_param_index_[clap_id_val] = static_cast<size_t> (i);
-              param_index_to_ptr_[i] = p;
-              break;
-            }
-        }
-    }
-}
-
-void
 ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
   units::sample_u32_t block_size)
 {
@@ -1522,28 +1420,22 @@ ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
   setup_for_direction (false);
 }
 
-void
+bool
 ClapPlugin::ClapPluginImpl::checkValidParamValue (
-  const ClapPluginParam &param,
-  double                 value)
+  const ClapParamAdapter &adapter,
+  double                  value)
 {
   assert (is_main_thread);
 
-  if (!param.isValueValid (value))
+  if (adapter.info.min_value > value || value > adapter.info.max_value)
     {
-      std::ostringstream msg;
-      msg << "Invalid value for param. ";
-      param.printInfo (msg);
-      msg << "; value: " << value;
-      // std::cerr << msg.str() << std::endl;
-      throw std::invalid_argument (msg.str ());
+      z_warning (
+        "Invalid value for param id: {}, name: '{}'; value: {}", adapter.id,
+        adapter.info.name, value);
+      return false;
     }
-}
 
-void
-ClapPlugin::scanParams ()
-{
-  paramsRescan (CLAP_PARAM_RESCAN_ALL);
+  return true;
 }
 
 void
@@ -1559,9 +1451,19 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
   z_warn_if_fail (
     !pimpl_->isPluginActive () || !(flags & CLAP_PARAM_RESCAN_ALL));
 
-  // 2. scan the params.
+  // 2. Build a lookup from ProcessorParameter* to its index in
+  //    get_parameters(). This avoids repeated O(n) linear scans.
+  std::unordered_map<dsp::ProcessorParameter *, size_t> param_index_map;
+  for (
+    const auto &[idx, param_ref] : utils::views::enumerate (get_parameters ()))
+    {
+      param_index_map[param_ref.get_object_as<dsp::ProcessorParameter> ()] =
+        static_cast<size_t> (idx);
+    }
+
+  // 3. scan the params.
   auto                        count = pimpl_->plugin_->paramsCount ();
-  std::unordered_set<clap_id> paramIds (count * 2);
+  std::unordered_set<clap_id> param_ids (count * 2);
 
   for (const auto i : std::views::iota (0u, count))
     {
@@ -1570,56 +1472,182 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
 
       assert (info.id != CLAP_INVALID_ID);
 
-      auto it = pimpl_->params_.find (info.id);
-
       // check that the parameter is not declared twice
-      assert (!paramIds.contains (info.id));
-      paramIds.insert (info.id);
+      assert (!param_ids.contains (info.id));
+      param_ids.insert (info.id);
 
-      if (it == pimpl_->params_.end ())
+      auto it = pimpl_->clap_params_.find (info.id);
+
+      if (it == pimpl_->clap_params_.end ())
         {
           assert ((flags & CLAP_PARAM_RESCAN_ALL) != 0u);
 
-          double value = pimpl_->getParamValue (info);
-          auto   param = std::make_unique<ClapPluginParam> (info, value, this);
-          pimpl_->checkValidParamValue (*param, value);
-          pimpl_->params_.insert_or_assign (info.id, std::move (param));
+          double                           value = pimpl_->getParamValue (info);
+          ClapPluginImpl::ClapParamAdapter adapter{
+            .id = info.id, .info = info, .zrythm_param = nullptr, .param_index = 0
+          };
+          const bool value_valid = pimpl_->checkValidParamValue (adapter, value);
+
+          // Look up or create a ProcessorParameter
+          const auto unique_id = dsp::ProcessorParameter::UniqueId (
+            utils::Utf8String::from_utf8_encoded_string (
+              std::to_string (info.id)));
+
+          dsp::ProcessorParameter * zrythm_param = nullptr;
+          for (const auto &param_ref : get_parameters ())
+            {
+              auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
+              if (p->get_unique_id () == unique_id)
+                {
+                  zrythm_param = p;
+                  break;
+                }
+            }
+
+          if (zrythm_param == nullptr)
+            {
+              dsp::ParameterRange range{
+                dsp::ParameterRange::Type::Linear,
+                static_cast<float> (info.min_value),
+                static_cast<float> (info.max_value), 0.f,
+                static_cast<float> (info.default_value)
+              };
+
+              if (info.flags & CLAP_PARAM_IS_STEPPED)
+                {
+                  if (info.flags & CLAP_PARAM_IS_BYPASS)
+                    {
+                      range = dsp::ParameterRange::make_toggle (
+                        info.default_value > 0.5);
+                    }
+                  else
+                    {
+                      range = dsp::ParameterRange{
+                        dsp::ParameterRange::Type::Integer,
+                        static_cast<float> (info.min_value),
+                        static_cast<float> (info.max_value), 0.f,
+                        static_cast<float> (info.default_value)
+                      };
+                    }
+                }
+
+              auto zrythm_param_ref =
+                dependencies ()
+                  .param_registry_.create_object<dsp::ProcessorParameter> (
+                    dependencies ().port_registry_, unique_id, range,
+                    utils::Utf8String::from_utf8_encoded_string (info.name));
+              add_parameter (zrythm_param_ref);
+              zrythm_param =
+                zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
+              zrythm_param->set_automatable (
+                (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
+
+              // Update index map for the newly added parameter
+              param_index_map[zrythm_param] = get_parameters ().size () - 1;
+
+              if (value_valid)
+                {
+                  const auto normalized_live =
+                    zrythm_param->range ().convertTo0To1 (
+                      static_cast<float> (value));
+                  zrythm_param->setBaseValue (normalized_live);
+                }
+            }
+
+          adapter.zrythm_param = zrythm_param;
+          auto index_it = param_index_map.find (zrythm_param);
+          assert (index_it != param_index_map.end ());
+          adapter.param_index = index_it->second;
+
+          pimpl_->clap_params_.insert_or_assign (info.id, adapter);
+          zrythm_to_clap_[zrythm_param] = info.id;
         }
       else
         {
-          // update param info
-          if (!it->second->isInfoEqualTo (info))
+          auto &adapter = it->second;
+
+          // Check if param info changed
+          const auto &old_info = adapter.info;
+          bool        info_changed = !(
+            old_info.cookie == info.cookie
+            && old_info.default_value == info.default_value
+            && old_info.max_value == info.max_value
+            && old_info.min_value == info.min_value
+            && old_info.flags == info.flags && old_info.id == info.id
+            && std::strncmp (old_info.name, info.name, sizeof (info.name)) == 0
+            && std::strncmp (old_info.module, info.module, sizeof (info.module))
+                 == 0);
+
+          if (info_changed)
             {
               z_warn_if_fail (pimpl_->clapParamsRescanMayInfoChange (flags));
+              constexpr uint32_t critical_flags =
+                CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE_ID
+                | CLAP_PARAM_IS_AUTOMATABLE_PER_KEY
+                | CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL
+                | CLAP_PARAM_IS_AUTOMATABLE_PER_PORT | CLAP_PARAM_IS_MODULATABLE
+                | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
+                | CLAP_PARAM_IS_MODULATABLE_PER_KEY
+                | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
+                | CLAP_PARAM_IS_MODULATABLE_PER_PORT | CLAP_PARAM_IS_READONLY
+                | CLAP_PARAM_REQUIRES_PROCESS;
               assert (
                 ((flags & CLAP_PARAM_RESCAN_ALL) != 0u)
-                || it->second->isInfoCriticallyDifferentTo (info));
-              it->second->setInfo (info);
+                || ((old_info.flags & critical_flags)
+                      == (info.flags & critical_flags)
+                    && old_info.min_value == info.min_value
+                    && old_info.max_value == info.max_value));
+              adapter.info = info;
             }
 
+          // Check if value changed and sync to ProcessorParameter
           double value = pimpl_->getParamValue (info);
-          if (it->second->value () != value)
+          if (adapter.zrythm_param != nullptr)
             {
-              assert (pimpl_->clapParamsRescanMayValueChange (flags));
-
-              // update param value
-              pimpl_->checkValidParamValue (*it->second, value);
-              it->second->setValue (value);
-              it->second->setModulation (value);
+              if (pimpl_->checkValidParamValue (adapter, value))
+                {
+                  const auto range = adapter.zrythm_param->range ();
+                  const auto current_normalized =
+                    adapter.zrythm_param->baseValue ();
+                  const auto new_normalized =
+                    range.convertTo0To1 (static_cast<float> (value));
+                  if (!utils::math::floats_near (
+                        current_normalized, new_normalized, 0.0001f))
+                    {
+                      assert (pimpl_->clapParamsRescanMayValueChange (flags));
+                      adapter.zrythm_param->setBaseValue (new_normalized);
+                    }
+                }
             }
         }
     }
 
   // remove parameters which are gone
-  for (auto it = pimpl_->params_.begin (); it != pimpl_->params_.end ();)
+  for (
+    auto it = pimpl_->clap_params_.begin (); it != pimpl_->clap_params_.end ();)
     {
-      if (paramIds.contains (it->first))
+      if (param_ids.contains (it->first))
         ++it;
       else
         {
           assert ((flags & CLAP_PARAM_RESCAN_ALL) != 0u);
-          it = pimpl_->params_.erase (it);
+          if (it->second.zrythm_param != nullptr)
+            {
+              zrythm_to_clap_.erase (it->second.zrythm_param);
+            }
+          it = pimpl_->clap_params_.erase (it);
         }
+    }
+
+  // Defensive: rebuild param_index for all remaining adapters in case
+  // get_parameters() ordering ever changes.
+  for (auto &[clap_id_val, adapter] : pimpl_->clap_params_)
+    {
+      if (adapter.zrythm_param == nullptr)
+        continue;
+      auto index_it = param_index_map.find (adapter.zrythm_param);
+      if (index_it != param_index_map.end ())
+        adapter.param_index = index_it->second;
     }
 
   if ((flags & CLAP_PARAM_RESCAN_ALL) != 0u)

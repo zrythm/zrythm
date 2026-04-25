@@ -8,7 +8,6 @@ target_sources(zrythm_plugins_lib
     # carla_native_plugin.cpp
     CLAPPluginFormat.cpp
     clap_plugin.cpp
-    clap_plugin_param.cpp
     internal_plugin_base.cpp
     juce_plugin.cpp
     out_of_process_scanner.cpp
@@ -28,7 +27,6 @@ target_sources(zrythm_plugins_lib
       # carla_native_plugin.h
       CLAPPluginFormat.h
       clap_plugin.h
-      clap_plugin_param.h
       internal_plugin_base.h
       iplugin_host_window.h
       juce_plugin.h

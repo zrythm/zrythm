@@ -162,10 +162,6 @@ private:
   void unload_current_plugin ();
 
   void create_ports_from_clap_plugin ();
-  void create_parameters_from_clap_plugin ();
-  void rebuild_clap_param_map ();
-
-  void scanParams ();
 
   void show_editor ();
   void hide_editor ();
@@ -195,42 +191,15 @@ private:
   std::optional<QByteArray> state_to_apply_;
 
   /**
-   * @brief Mapping from CLAP param ID to Zrythm ProcessorParameter pointer.
-   * Populated by rebuild_clap_param_map().
-   *
-   * Only written by rebuild_clap_param_map() on the main thread before
-   * activation. Read on the audio thread during process_impl()
-   * (generatePluginInputEvents). Safe because audio processing
-   * starts after prepare_for_processing_impl(), which is called after the map
-   * is built.
-   */
-  std::unordered_map<clap_id, dsp::ProcessorParameter *> clap_to_zrythm_param_;
-
-  /**
    * @brief Reverse mapping from Zrythm ProcessorParameter pointer to CLAP
    * param ID.
    *
-   * Same thread-safety contract as clap_to_zrythm_param_.
+   * Populated incrementally during paramsRescan() on the main thread.
+   * Read on the audio thread during process_impl(). Safe because audio
+   * processing starts after prepare_for_processing_impl(), which is called
+   * after the map is built.
    */
-  std::unordered_map<dsp::ProcessorParameter *, clap_id> zrythm_to_clap_param_;
-
-  /**
-   * @brief Mapping from CLAP param ID to parameter index (parallel to
-   * get_parameters()).
-   *
-   * Same thread-safety contract as clap_to_zrythm_param_. Used by
-   * handlePluginOutputEvents() to write plugin-reported values to
-   * param_sync_.
-   */
-  std::unordered_map<clap_id, size_t> clap_id_to_param_index_;
-
-  /**
-   * @brief Cached raw pointers parallel to get_parameters().
-   *
-   * Populated by rebuild_clap_param_map() on the main thread.
-   * Read on the audio thread to avoid UUID registry lookups.
-   */
-  std::vector<dsp::ProcessorParameter *> param_index_to_ptr_;
+  std::unordered_map<dsp::ProcessorParameter *, clap_id> zrythm_to_clap_;
 };
 
 } // namespace zrythm::plugins
