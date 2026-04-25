@@ -1402,7 +1402,7 @@ ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
     for (const auto &[i, juce_buf] : utils::views::enumerate (audio_bufs))
       {
         clap_audio_port_info_t nfo;
-        plugin_->audioPortsGet (i, is_input, &nfo);
+        plugin_->audioPortsGet (static_cast<uint32_t> (i), is_input, &nfo);
         juce_buf.setSize (
           static_cast<int> (nfo.channel_count),
           block_size.in<int> (units::samples));
@@ -1591,7 +1591,7 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
                 | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
                 | CLAP_PARAM_IS_MODULATABLE_PER_PORT | CLAP_PARAM_IS_READONLY
                 | CLAP_PARAM_REQUIRES_PROCESS;
-              assert (
+              z_warn_if_fail (
                 ((flags & CLAP_PARAM_RESCAN_ALL) != 0u)
                 || ((old_info.flags & critical_flags)
                       == (info.flags & critical_flags)
