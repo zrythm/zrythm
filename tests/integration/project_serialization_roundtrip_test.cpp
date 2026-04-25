@@ -18,7 +18,6 @@
 #include "structure/project/project_path_provider.h"
 #include "structure/project/project_ui_state.h"
 
-#include <QElapsedTimer>
 #include <QSignalSpy>
 
 #include "helpers/bundled_plugin_finder.h"
@@ -103,13 +102,9 @@ class ProjectSerializationRoundtripTest : public test_helpers::ProjectTestFixtur
 protected:
   static constexpr utils::Version TEST_APP_VERSION{ 2, 0, {} };
 
-  /**
-   * @brief Starts the engine, pumps events for long enough for JUCE timers
-   * to fire (40ms period), then stops it.
-   *
-   * Verifies that at least one processing cycle completed (no crash).
-   */
-  void process_a_few_cycles (structure::project::Project &project)
+  void process_events_with_condition_or_timeout (
+    structure::project::Project          &project,
+    std::optional<std::function<bool ()>> condition)
   {
     auto * mock_hw = dynamic_cast<
       test_helpers::ThreadedMockHardwareAudioInterface *> (hw_interface_.get ());
@@ -117,17 +112,39 @@ protected:
     project.engine ()->graph_dispatcher ().recalc_graph (false);
     project.engine ()->set_running (true);
 
-    const auto    initial_count = mock_hw->process_call_count ();
-    QElapsedTimer timer;
-    timer.start ();
-    while (timer.elapsed () < 200)
-      QCoreApplication::processEvents (QEventLoop::AllEvents, 50);
+    const auto initial_count = mock_hw->process_call_count ();
+    if (condition.has_value ())
+      {
+        process_events_until_true (*condition);
+      }
+    else
+      {
+        process_events_until_timeout ();
+      }
 
     EXPECT_GE (mock_hw->process_call_count () - initial_count, 1u)
       << "Engine should have processed at least one cycle";
 
     project.engine ()->set_running (false);
     project.engine ()->deactivate ();
+  }
+
+  void process_until_true (
+    structure::project::Project  &project,
+    const std::function<bool ()> &condition)
+  {
+    process_events_with_condition_or_timeout (project, condition);
+  }
+
+  /**
+   * @brief Starts the engine, pumps events for long enough for JUCE timers
+   * to fire (40ms period), then stops it.
+   *
+   * Verifies that at least one processing cycle completed (no crash).
+   */
+  void process_until_timeout (structure::project::Project &project)
+  {
+    process_events_with_condition_or_timeout (project, std::nullopt);
   }
 
   /**
@@ -224,7 +241,7 @@ protected:
     // Start the engine and wait for a few processing cycles so the
     // plugin settles (some plugins reflect parameter values back via timers
     // on first load) before we set our custom values.
-    process_a_few_cycles (*original_bundle->project);
+    process_until_timeout (*original_bundle->project);
 
     // Find the Frequency parameter (the only Faust DSP param) and set it
     // to a known non-default value.
@@ -251,7 +268,7 @@ protected:
 
     // Process again so the baseValue changes propagate to the underlying
     // plugin (JUCE/CLAP) before the state blob is captured during save.
-    process_a_few_cycles (*original_bundle->project);
+    process_until_timeout (*original_bundle->project);
 
     // === Step 2: Save the project ===
     auto save_future = ProjectSaver::save (
@@ -268,8 +285,6 @@ protected:
         structure::project::ProjectPathProvider::ProjectPath::ProjectFile);
     EXPECT_TRUE (std::filesystem::exists (project_file_path))
       << "Project file not created: " << project_file_path;
-
-    original_bundle->project->engine ()->set_running (false);
 
     // Capture the original save JSON for later registry comparison
     const auto original_json = nlohmann::json::parse (
@@ -344,14 +359,7 @@ protected:
       load_result.result ().json, *loaded_bundle->project,
       *loaded_bundle->ui_state, *loaded_bundle->undo_stack);
 
-    {
-      // Start processing to verify the loaded plugin works correctly
-      EXPECT_NO_FATAL_FAILURE ({
-        process_a_few_cycles (*loaded_bundle->project);
-      }) << "Processing a plugin after loading a project should not crash";
-    }
-
-    // === Step 4: Verify the plugin was loaded correctly ===
+    // === Step 4: Get loaded plugin reference ===
     auto &loaded_plugin_registry =
       loaded_bundle->project->get_plugin_registry ();
     EXPECT_GE (loaded_plugin_registry.get_hash_map ().size (), 1);
@@ -360,6 +368,44 @@ protected:
       loaded_plugin_registry.get_hash_map () | std::views::values;
     auto loaded_plugin_it = loaded_plugins.begin ();
     ASSERT_NE (loaded_plugin_it, loaded_plugins.end ());
+
+    // === Step 4a: Process and wait for parameter sync to settle ===
+    // All snapshots must have a matching param with the expected value.
+    // When there are no FAUST params to verify (e.g. internal plugins),
+    // just process for a few cycles instead.
+    {
+      EXPECT_NO_FATAL_FAILURE ({
+        if (original_param_values.empty ())
+          {
+            process_until_timeout (*loaded_bundle->project);
+          }
+        else
+          {
+            process_until_true (*loaded_bundle->project, [&] () {
+              return std::visit (
+                [&] (auto &&pl) {
+                  return std::ranges::all_of (
+                    original_param_values, [&] (const auto &snap) {
+                      const auto param_it = std::ranges::find (
+                        pl->get_parameters (), snap.uuid,
+                        [] (const auto &param_ref) {
+                          return param_ref
+                            .template get_object_as<dsp::ProcessorParameter> ()
+                            ->get_uuid ();
+                        });
+                      if (param_it == pl->get_parameters ().end ())
+                        return true;
+                      const auto * param = param_it->template get_object_as<
+                        dsp::ProcessorParameter> ();
+                      return utils::math::floats_near (
+                        param->baseValue (), snap.value, 0.01f);
+                    });
+                },
+                *loaded_plugin_it);
+            });
+          }
+      }) << "Processing a plugin after loading a project should not crash";
+    }
 
     // === Step 4b: Verify param count consistency (no duplication) ===
     const size_t loaded_param_count = std::visit (
@@ -551,7 +597,7 @@ TEST_F (
   process_events_until_true ([&] () { return instantiation_finished; });
   ASSERT_TRUE (instantiation_finished);
 
-  process_a_few_cycles (*bundle->project);
+  process_until_timeout (*bundle->project);
 
   constexpr float     correct_value = 0.75f;
   constexpr float     stale_value = 0.25f;
@@ -575,7 +621,7 @@ TEST_F (
     },
     plugin_it->second);
 
-  process_a_few_cycles (*bundle->project);
+  process_until_timeout (*bundle->project);
 
   auto save_future = ProjectSaver::save (
     *bundle->project, *bundle->ui_state, *bundle->undo_stack, TEST_APP_VERSION,
@@ -667,7 +713,9 @@ TEST_F (
 
   // Process so the audio thread runs and the host has a chance to apply
   // baseValues
-  EXPECT_NO_FATAL_FAILURE ({ process_a_few_cycles (*reload_bundle->project); });
+  EXPECT_NO_FATAL_FAILURE ({
+    process_until_timeout (*reload_bundle->project);
+  });
 
   // === Step 5: Save reloaded project and verify state blob ===
   auto verify_dir = project_dir_ / "verify";
