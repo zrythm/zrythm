@@ -23,26 +23,6 @@ MidiRegion::MidiRegion (
     &MidiRegion::contentChanged);
 }
 
-int
-MidiRegion::minVisiblePitch () const
-{
-  if (get_children_vector ().empty ())
-    return 0;
-
-  auto pitches = get_children_view () | std::views::transform (&MidiNote::pitch);
-  return std::ranges::min (pitches);
-}
-
-int
-MidiRegion::maxVisiblePitch () const
-{
-  if (get_children_vector ().empty ())
-    return 0;
-
-  auto pitches = get_children_view () | std::views::transform (&MidiNote::pitch);
-  return std::ranges::max (pitches);
-}
-
 void
 init_from (
   MidiRegion            &obj,

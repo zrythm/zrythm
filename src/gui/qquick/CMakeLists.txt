@@ -12,6 +12,8 @@ target_sources(zrythm_gui_lib
       fade_overlay_canvas_renderer.h
       grid_line_computer.h
       meter_processor.h
+      midi_region_canvas_item.h
+      midi_region_canvas_renderer.h
       qfuture_qml_wrapper.h
       plugin_inspector_controller.h
       qml_utils.h
@@ -29,6 +31,8 @@ target_sources(zrythm_gui_lib
     fade_overlay_canvas_renderer.cpp
     grid_line_computer.cpp
     meter_processor.cpp
+    midi_region_canvas_item.cpp
+    midi_region_canvas_renderer.cpp
     plugin_inspector_controller.cpp
     qml_utils.cpp
     ruler_grid_canvas_item.cpp

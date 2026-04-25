@@ -20,8 +20,6 @@ class MidiRegion final : public ArrangerObject, public ArrangerObjectOwner<MidiN
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (MidiRegion, midiNotes, MidiNote)
-  Q_PROPERTY (int minVisiblePitch READ minVisiblePitch NOTIFY contentChanged)
-  Q_PROPERTY (int maxVisiblePitch READ maxVisiblePitch NOTIFY contentChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -38,8 +36,6 @@ public:
   // QML Interface
   // ========================================================================
 
-  int           minVisiblePitch () const;
-  int           maxVisiblePitch () const;
   Q_SIGNAL void contentChanged ();
 
   // ========================================================================
