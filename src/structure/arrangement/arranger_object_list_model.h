@@ -90,7 +90,11 @@ public:
 
   ArrangerObjectListModel (
     ArrangerObjectRefMultiIndexContainer &objects,
-    QObject *                             parent = nullptr);
+    QObject *                             parent = nullptr)
+      : QAbstractListModel (parent), objects_ (objects)
+  {
+    setup_signals (false);
+  }
 
   /**
    * @brief To be used when the parent is also an arranger object.
@@ -100,7 +104,11 @@ public:
    */
   ArrangerObjectListModel (
     ArrangerObjectRefMultiIndexContainer &objects,
-    ArrangerObject                       &parent_arranger_object);
+    ArrangerObject                       &parent_arranger_object)
+      : QAbstractListModel (&parent_arranger_object), objects_ (objects)
+  {
+    setup_signals (true);
+  }
 
   QHash<int, QByteArray> roleNames () const override;
 

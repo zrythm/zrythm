@@ -8,21 +8,6 @@
 namespace zrythm::structure::arrangement
 {
 
-ArrangerObjectListModel::ArrangerObjectListModel (
-  ArrangerObjectRefMultiIndexContainer &objects,
-  QObject *                             parent)
-    : QAbstractListModel (parent), objects_ (objects)
-{
-  setup_signals (false);
-}
-
-ArrangerObjectListModel::ArrangerObjectListModel (
-  ArrangerObjectRefMultiIndexContainer &objects,
-  ArrangerObject                       &parent_arranger_object)
-    : QAbstractListModel (&parent_arranger_object), objects_ (objects)
-{
-  setup_signals (true);
-}
 void
 ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
 {
