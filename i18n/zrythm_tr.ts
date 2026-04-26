@@ -53,38 +53,56 @@
 <context>
     <name>Arranger</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
+        <source>Copy Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="868"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="870"/>
+        <source>Move Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Delete</source>
-        <translation type="unfinished">Sil</translation>
+        <translation type="obsolete">Sil</translation>
     </message>
 </context>
 <context>
     <name>ArrangerObjectBaseView</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
+        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="48"/>
         <source>Test</source>
         <translation type="unfinished">Test</translation>
     </message>
 </context>
 <context>
+    <name>AudioEditorPane</name>
+    <message>
+        <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
+        <source>Zoom In</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AutomationEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="33"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="61"/>
         <source>Zoom In</source>
         <translation type="unfinished"></translation>
     </message>
@@ -143,34 +161,32 @@
 <context>
     <name>BottomDock</name>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="37"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="41"/>
         <source>Select a clip from the timeline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="39"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
         <source>No clip selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="98"/>
         <source>Editor</source>
         <translation>Editör</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="103"/>
         <source>Mixer</source>
         <translation>Karıştırıcı</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
         <source>Modulators</source>
-        <translation>Modulatör</translation>
+        <translation type="vanished">Modulatör</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="101"/>
         <source>Chord Pad</source>
-        <translation>Akor Pedi</translation>
+        <translation type="vanished">Akor Pedi</translation>
     </message>
 </context>
 <context>
@@ -180,17 +196,17 @@
         <translation type="vanished">Zaman çizelgesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="301"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="352"/>
         <source>Arrangement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="306"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="357"/>
         <source>Port Connections</source>
         <translation>Port Bağlantıları</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="311"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="362"/>
         <source>Midi CC Bindings</source>
         <translation>Midi CC kısa yolları</translation>
     </message>
@@ -236,17 +252,17 @@
 <context>
     <name>ClipLauncherView</name>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="86"/>
         <source>Stop Scenes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="123"/>
         <source>Play Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="160"/>
         <source>Switch Playback to Timeline</source>
         <translation type="unfinished"></translation>
     </message>
@@ -396,15 +412,265 @@
     </message>
 </context>
 <context>
+    <name>DropAreaBase</name>
+    <message>
+        <location filename="../src/gui/qml/components/basic/DropAreaBase.qml" line="38"/>
+        <source>Drop files and plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DspLoadIndicator</name>
     <message>
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>DSP Load:</source>
+        <source>DSP Load: %1%
+XRun Count: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExportDialog</name>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="35"/>
+        <source>Export As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>XRun Count:</source>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="45"/>
+        <source>Export</source>
+        <translation type="unfinished">_Dışa Aktar</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="59"/>
+        <source>Exporting audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="74"/>
+        <source>Audio</source>
+        <translation type="unfinished">Ses</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="78"/>
+        <source>MIDI</source>
+        <translation type="unfinished">MIDI</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="104"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="214"/>
+        <source>Export Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="107"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="341"/>
+        <source>Track title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="108"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="342"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="114"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="348"/>
+        <source>Enter title...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="125"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="359"/>
+        <source>Artist name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="126"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="360"/>
+        <source>Artist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="132"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="366"/>
+        <source>Enter artist...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="144"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="377"/>
+        <source>Music genre</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="145"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="378"/>
+        <source>Genre</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="151"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="384"/>
+        <source>Enter genre...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="162"/>
+        <source>Audio file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="163"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="396"/>
+        <source>Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="172"/>
+        <source>Audio bit depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
+        <source>Bit Depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
+        <source>Apply dithering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="183"/>
+        <source>Dither</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="191"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="414"/>
+        <source>Pattern for generated filenames</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
+        <source>Filename Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="424"/>
+        <source>Whether to export the selected tracks as a single mixdown file or each track in its own file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="202"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="425"/>
+        <source>Mixdown or Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Mixdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="217"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="440"/>
+        <source>Only events inside this time range will be exported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
+        <source>Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Song Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Loop</source>
+        <translation type="unfinished">Döngü</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Custom</source>
+        <translation type="unfinished">Özel eklenti</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="227"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="450"/>
+        <source>Set custom start and end positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="228"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="451"/>
+        <source>Custom Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
+        <source>Track Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="535"/>
+        <source>Export destination and file info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
+        <source>Output will be saved to: /path/to/export/file.wav</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="338"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="437"/>
+        <source>Export MIDI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="395"/>
+        <source>MIDI file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="405"/>
+        <source>Export MIDI lanes as separate tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="406"/>
+        <source>Export Lanes as Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="541"/>
+        <source>Output will be saved to: /path/to/export/file.mid</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -416,32 +682,32 @@
         <translation type="unfinished">Mono uyumluluk</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="55"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="63"/>
         <source>Record</source>
         <translation type="unfinished">Kaydet</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="79"/>
         <source>Solo</source>
         <translation type="unfinished">Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="102"/>
         <source>Mute</source>
         <translation type="unfinished">Sesi Kapat</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="132"/>
         <source>Listen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="147"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="155"/>
         <source>Swap phase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="173"/>
         <source>Channel settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,95 +728,93 @@
 <context>
     <name>Greeter</name>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="78"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="84"/>
         <source>About Flatpak</source>
         <translation>Flatpak hakkında</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="76"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
         <translation>Yalnızca Flatpak aracılığıyla yüklenen ses eklentileri desteklenir.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="88"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="94"/>
         <source>Donate</source>
         <translation>Bağış yap</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="86"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="92"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
         <translation>Zrythm, gelişimini sürdürmek için bağışlara ve satın alımlara güvenmektedir. Yazılımı beğendiyseniz, lütfen %1bağış yapmayı%2 veya %3bir yükleyici satın almayı%2 düşünün.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="96"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="102"/>
         <source>All Ready!</source>
         <translation>Her şey hazır!</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="99"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="105"/>
         <source>Proceed to Configuration</source>
         <translation>Yapılandırmaya Geçin</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="133"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="155"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="139"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>Welcome</source>
         <translation>Hoş geldiniz</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="153"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="159"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
         <translation>Zrythm dijital ses iş istasyonuna hoş geldiniz. Başlamak için bir sonraki sayfaya geçin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="163"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="169"/>
         <source>Read the Manual</source>
         <translation>Kılavuzu Okuyun</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="167"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
         <translation>Zrythm&apos;i ilk kez kullanıyorsanız, %1kullanım kılavuzundaki%2 &apos;Başlarken&apos; bölümünü incelemenizi öneririz.</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="220"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="257"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="224"/>
         <source>Configuration</source>
         <translation>Yapılandırma</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="265"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="249"/>
         <source>Initial Configuration</source>
         <translation>İlk Yapılandırma</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="247"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="538"/>
         <source>‹</source>
         <translation>‹</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="233"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="237"/>
         <source>Continue</source>
         <translation>Devam et</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="293"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="277"/>
         <source>Progress</source>
         <translation>İlerleme</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="310"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="287"/>
         <source>Scanning Plugins</source>
         <translation>Eklentiler Taranıyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="328"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="305"/>
         <source>Scanning:</source>
         <translation>Taranıyor:</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="346"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="369"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="324"/>
         <source>Open a Project</source>
         <translation>Bir Proje Aç</translation>
     </message>
@@ -559,57 +823,57 @@
         <translation type="vanished">Tercihler</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="392"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="360"/>
         <source>About Zrythm</source>
         <translation>Zrythm Hakkında</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="352"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="330"/>
         <source>Create New Project...</source>
         <translation>Yeni Proje Oluştur...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="358"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="336"/>
         <source>Open From Path...</source>
         <translation>Yoldan Aç...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="382"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="350"/>
         <source>Device Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="455"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="407"/>
         <source>Create New Project</source>
         <translation>Yeni Proje Oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="417"/>
         <source>Project Name</source>
         <translation>Proje Adı</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="466"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="418"/>
         <source>Untitled Project</source>
         <translation>Adsız Proje</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="497"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="449"/>
         <source>Create Project</source>
         <translation>Proje Oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="513"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
         <source>Creating Project</source>
         <translation>Proje Oluşturma</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="526"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="478"/>
         <source>Creating Project...</source>
         <translation>Proje Oluşturma...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="548"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Project Loading Failed</source>
         <translation>Proje Yükleme Başarısız</translation>
     </message>
@@ -630,120 +894,156 @@
 <context>
     <name>LeftDock</name>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="41"/>
         <source>Track Inspector</source>
         <translation>Kayıt İnceleyici</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="36"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="49"/>
         <source>Plugin Inspector</source>
         <translation>Eklenti İnceleyici</translation>
     </message>
 </context>
 <context>
+    <name>LoadController</name>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="14"/>
+        <source>Open…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="21"/>
+        <source>Open Project</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="34"/>
+        <source>Loading project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainMenuBar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="18"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="22"/>
         <source>&amp;File</source>
         <translation type="unfinished">&amp;File</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="21"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished">New Long Long Long Long Long Long Long Long Long Name</translation>
+        <translation type="obsolete">New Long Long Long Long Long Long Long Long Long Name</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
         <source>Open</source>
-        <translation type="unfinished">Açık</translation>
+        <translation type="obsolete">Açık</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="37"/>
+        <source>Export…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="46"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">&amp;Edit</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="49"/>
         <source>Undo</source>
         <translation type="unfinished">Geri al</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="54"/>
         <source>&amp;View</source>
         <translation type="unfinished">&amp;View</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="57"/>
         <source>Language</source>
         <translation type="unfinished">Dil</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
         <source>Appearance</source>
         <translation type="unfinished">Görünüm</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="104"/>
         <source>Switch Light/Dark Theme</source>
         <translation type="unfinished">Aydınlık/Karanlık Temaya Değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="112"/>
         <source>Theme Color</source>
         <translation type="unfinished">Tema Rengi</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="116"/>
         <source>Zrythm Orange</source>
         <translation type="unfinished">Zrythm Turuncu</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="108"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="124"/>
         <source>Celestial Blue</source>
         <translation type="unfinished">Gök Mavisi</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="117"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="133"/>
         <source>Jonquil Yellow</source>
         <translation type="unfinished">Jonquil Sarısı</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="126"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="142"/>
         <source>Spring Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="135"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="151"/>
         <source>Munsell Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="144"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="160"/>
         <source>Gunmetal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="168"/>
+        <source>Electric Purple</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="182"/>
+        <source>Debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="187"/>
+        <source>Show Cache Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="197"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="200"/>
         <source>Audio/MIDI Setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="209"/>
         <source>&amp;Help</source>
         <translation type="unfinished">&amp;Help</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="212"/>
         <source>About Zrythm</source>
         <translation type="unfinished">Zrythm Hakkında</translation>
     </message>
@@ -751,68 +1051,63 @@
 <context>
     <name>MainToolbar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="41"/>
         <source>Toggle Left Panel</source>
         <translation>Sol Paneli Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="96"/>
         <source>Toggle Right Panel</source>
         <translation>Sağ Paneli Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="104"/>
         <source>Menu</source>
         <translation>Menü</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="113"/>
         <source>Open a Project…</source>
         <translation>Bir Proje Aç…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="119"/>
         <source>Create New Project…</source>
         <translation>Yeni Proje Oluştur…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Save</source>
-        <translation>Kaydet</translation>
+        <translation type="vanished">Kaydet</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Save As…</source>
-        <translation>Farklı Kaydet…</translation>
+        <translation type="vanished">Farklı Kaydet…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="160"/>
         <source>Export As…</source>
-        <translation>Dışarıya Farklı Aktar…</translation>
+        <translation type="vanished">Dışarıya Farklı Aktar…</translation>
     </message>
     <message>
         <source>Export Graph…</source>
         <translation type="vanished">Grafiği Dışarı Aktar…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
-        <translation>Tam Ekran</translation>
+        <translation type="vanished">Tam Ekran</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Preferences</source>
         <translation>Tercihler</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="138"/>
         <source>Keyboard Shortcuts</source>
         <translation>Klavye Kısayolları</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
-        <translation>About Zrythm Long Long Long Long Long Long Long</translation>
+        <translation type="vanished">About Zrythm Long Long Long Long Long Long Long</translation>
     </message>
 </context>
 <context>
@@ -823,29 +1118,42 @@
     </message>
 </context>
 <context>
+    <name>MetronomeSplitButton</name>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="19"/>
+        <source>Metronome Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="20"/>
+        <source>Metronome</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MidiEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="35"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="37"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="46"/>
         <source>Listen Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="55"/>
         <source>Show Automation Values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="81"/>
         <source>Zoom In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="157"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="155"/>
         <source>Velocity</source>
         <translation type="unfinished">Hız</translation>
     </message>
@@ -1210,30 +1518,95 @@
 <context>
     <name>MuteButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="17"/>
+        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="16"/>
         <source>Mute</source>
         <translation>Sesi Kapat</translation>
     </message>
 </context>
 <context>
+    <name>PluginBrowserPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="134"/>
+        <source>Vendor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginInspectorPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="26"/>
+        <source>Plugin Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="32"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
+        <source>Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
+        <source>Enabled</source>
+        <translation type="unfinished">Etkinleştirildi</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Hide UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Show UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="71"/>
+        <source>Gain</source>
+        <translation type="unfinished">Ses kontrolü</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="101"/>
+        <source>Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="154"/>
+        <source>Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginSlotList</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotList.qml" line="41"/>
+        <source>Drop plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PluginSlotView</name>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="85"/>
         <source>Remove Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
-        <source>Add Plugin</source>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <source>Remove %1 Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="96"/>
         <source>Show Plugin UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="110"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1296,6 +1669,21 @@
         <source>About Zrythm</source>
         <translation type="vanished">Zrythm Hakkında</translation>
     </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="26"/>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="39"/>
+        <source>Fullscreen</source>
+        <translation type="unfinished">Tam Ekran</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="407"/>
+        <source>Cache: %1 pending · %2 complete</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -1337,17 +1725,14 @@
         <translation type="vanished">Seçim yapıştırılamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="74"/>
         <source>Home</source>
-        <translation>Ana sayfa</translation>
+        <translation type="vanished">Ana sayfa</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="83"/>
         <source>Desktop</source>
-        <translation>Masaüstü</translation>
+        <translation type="vanished">Masaüstü</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="326"/>
         <location filename="../src/gui/backend/plugin_collections.cpp" line="57"/>
         <source>Delete</source>
         <translation>Sil</translation>
@@ -1357,49 +1742,46 @@
         <translation type="vanished">Eklentiler yapıştırılamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
+        <location filename="../src/gui/backend/project_manager.cpp" line="146"/>
         <source>&lt;no track&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
+        <location filename="../src/controllers/project_saver.cpp" line="147"/>
         <source>Failed to create backup directory {}</source>
         <translation>Yedek dizin oluşturulamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
+        <location filename="../src/structure/project/project.cpp" line="318"/>
         <source>Markers</source>
         <translation type="unfinished">İşaretçiler</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
+        <location filename="../src/controllers/project_saver.cpp" line="171"/>
         <source>Unable to read file at {}: {}</source>
         <translation>{}: {} konumundaki dosya okunamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="761"/>
+        <location filename="../src/controllers/project_saver.cpp" line="186"/>
         <source>Unable to decompress project file at {}</source>
         <translation>{} dizinindeki dosya ayıklanamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
+        <location filename="../src/controllers/project_saver.cpp" line="289"/>
         <source>Failed to save the project</source>
         <translation>Proje kaydedilemedi</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
         <source>Failed to compress project file</source>
-        <translation>Proje sıkıştırılamadı</translation>
+        <translation type="vanished">Proje sıkıştırılamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation>Yedek dizin oluşturulamadı</translation>
+        <translation type="vanished">Yedek dizin oluşturulamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
         <source>Failed to copy plugin states</source>
-        <translation>Eklenti durumu kopyalanamadı</translation>
+        <translation type="vanished">Eklenti durumu kopyalanamadı</translation>
     </message>
     <message>
         <source>Failed to deserialize v1 project file</source>
@@ -1490,34 +1872,28 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Ses dosyası yapıştırılamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="33"/>
         <source>Arranger selections contain an undeletable object</source>
-        <translation>Düzenleyici seçimleri silinemeyen bir nesne içermekte</translation>
+        <translation type="vanished">Düzenleyici seçimleri silinemeyen bir nesne içermekte</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="242"/>
         <source>Arranger selections contain an object that cannot be duplicated</source>
-        <translation>Düzenleyici seçimleri kopyalanamayan bir nesne içermekte</translation>
+        <translation type="vanished">Düzenleyici seçimleri kopyalanamayan bir nesne içermekte</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="293"/>
         <source>Cannot rename selected object(s)</source>
-        <translation>Seçini nesne(ler) yeniden adlandırılamaz</translation>
+        <translation type="vanished">Seçini nesne(ler) yeniden adlandırılamaz</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="408"/>
         <source>Attempted to resize unresizable objects</source>
-        <translation>Boyutu değiştirileme nesneler değiştirilmeye çalışıldı</translation>
+        <translation type="vanished">Boyutu değiştirileme nesneler değiştirilmeye çalışıldı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation>Yeniden boyutlandırma {} gerçekleştirilemiyor - seçimler döngülü nesneler içeriyor</translation>
+        <translation type="vanished">Yeniden boyutlandırma {} gerçekleştirilemiyor - seçimler döngülü nesneler içeriyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation>Yeniden boyutlandırma {} gerçekleştirilemiyor - seçimler döngülenemez nesneler içeriyor</translation>
+        <translation type="vanished">Yeniden boyutlandırma {} gerçekleştirilemiyor - seçimler döngülenemez nesneler içeriyor</translation>
     </message>
     <message>
         <source>Create timeline selections</source>
@@ -1540,554 +1916,447 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">MIDI seçimleri oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2232"/>
-        <source>Create arranger objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2234"/>
         <source>Delete arranger selections</source>
-        <translation>Aranjör seçimlerini sil</translation>
+        <translation type="vanished">Aranjör seçimlerini sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2236"/>
         <source>Duplicate arranger selections</source>
-        <translation>Aranjör seçimlerini çoğalt</translation>
+        <translation type="vanished">Aranjör seçimlerini çoğalt</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2238"/>
         <source>Move arranger selections</source>
-        <translation>Aranjör seçimlerini taşı</translation>
+        <translation type="vanished">Aranjör seçimlerini taşı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2240"/>
         <source>Link arranger selections</source>
-        <translation>Aranjör seçimlerini bağla</translation>
+        <translation type="vanished">Aranjör seçimlerini bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2242"/>
         <source>Record arranger selections</source>
-        <translation>Aranjör seçimlerini kaydet</translation>
+        <translation type="vanished">Aranjör seçimlerini kaydet</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2244"/>
         <source>Edit arranger selections</source>
-        <translation>Aranjör seçimlerini düzenle</translation>
+        <translation type="vanished">Aranjör seçimlerini düzenle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2246"/>
         <source>Automation fill</source>
-        <translation>Doldurma otomasyonu</translation>
+        <translation type="vanished">Doldurma otomasyonu</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2248"/>
         <source>Split arranger selections</source>
-        <translation>Aranjör seçimlerini böl</translation>
+        <translation type="vanished">Aranjör seçimlerini böl</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2250"/>
         <source>Merge arranger selections</source>
-        <translation>Aranjör seçimlerini birleştir</translation>
+        <translation type="vanished">Aranjör seçimlerini birleştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
-        <translation>Aranjör seçimlerini yeniden boyutlandır - {}</translation>
+        <translation type="vanished">Aranjör seçimlerini yeniden boyutlandır - {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
         <source>Quantize arranger selections</source>
-        <translation>Aranjör seçimlerini kuantize et</translation>
+        <translation type="vanished">Aranjör seçimlerini kuantize et</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="244"/>
         <source>Connect sidechain</source>
-        <translation>Yanzincir bağla</translation>
+        <translation type="vanished">Yanzincir bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="246"/>
         <source>Connect stereo</source>
-        <translation>Stereo bağla</translation>
+        <translation type="vanished">Stereo bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="248"/>
         <source>Connect MIDI</source>
-        <translation>MIDI bağla</translation>
+        <translation type="vanished">MIDI bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
-        <translation>Bağlantıyı kes</translation>
+        <translation type="vanished">Bağlantıyı kes</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
         <source>Change amount</source>
-        <translation>Miktarı değiştir</translation>
+        <translation type="vanished">Miktarı değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="254"/>
         <source>Change ports</source>
-        <translation>Portları değiştir</translation>
+        <translation type="vanished">Portları değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="256"/>
         <source>Channel send connection</source>
-        <translation>Kanal gönderme bağlantısı</translation>
+        <translation type="vanished">Kanal gönderme bağlantısı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="86"/>
         <source>Change chords</source>
-        <translation>Akorları değiştir</translation>
+        <translation type="vanished">Akorları değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="128"/>
         <source>MIDI mapping enable</source>
-        <translation>MIDI haritalama etkin</translation>
+        <translation type="vanished">MIDI haritalama etkin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="130"/>
         <source>MIDI mapping disable</source>
-        <translation>MIDI haritalama devre dışı</translation>
+        <translation type="vanished">MIDI haritalama devre dışı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="132"/>
         <source>MIDI mapping bind</source>
-        <translation>MIDI haritalama bağla</translation>
+        <translation type="vanished">MIDI haritalama bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="134"/>
         <source>MIDI mapping unbind</source>
-        <translation>MIDI haritalama bağı çöz</translation>
+        <translation type="vanished">MIDI haritalama bağı çöz</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
-        <translation>Proje Yeniden Yükleme Gerekli</translation>
+        <translation type="vanished">Proje Yeniden Yükleme Gerekli</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
-        <translation>Eklenti yükleme davranışı değişiklikleri yalnızca projeyi kaydedip yeniden yükledikten sonra etkili olacaktır</translation>
+        <translation type="vanished">Eklenti yükleme davranışı değişiklikleri yalnızca projeyi kaydedip yeniden yükledikten sonra etkili olacaktır</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
-        <translation>Oluştur {}</translation>
+        <translation type="vanished">Oluştur {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
         <source>Create {} {}s</source>
-        <translation>Oluştur {} {}</translation>
+        <translation type="vanished">Oluştur {} {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
-        <translation>Eklentiyi sil</translation>
+        <translation type="vanished">Eklentiyi sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
-        <translation>Eklentileri Sil {}</translation>
+        <translation type="vanished">Eklentileri Sil {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
         <source>Move {}</source>
-        <translation>Taşı {}</translation>
+        <translation type="vanished">Taşı {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
-        <translation>Eklentileri taşı {}</translation>
+        <translation type="vanished">Eklentileri taşı {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
         <source>Copy {}</source>
-        <translation>Kopyala {}</translation>
+        <translation type="vanished">Kopyala {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
-        <translation>Eklentileri Kopyala {}</translation>
+        <translation type="vanished">Eklentileri Kopyala {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
         <source>Paste {}</source>
-        <translation>Yapıştır {}</translation>
+        <translation type="vanished">Yapıştır {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1216"/>
         <source>Paste {} Plugins</source>
-        <translation>Eklentileri Yapıştır {}</translation>
+        <translation type="vanished">Eklentileri Yapıştır {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1222"/>
         <source>Change Status for {}</source>
-        <translation>Durumu değiştir {}</translation>
+        <translation type="vanished">Durumu değiştir {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1228"/>
         <source>Change Status for {} Plugins</source>
-        <translation>Eklentiler için Durumu Değiştir {}</translation>
+        <translation type="vanished">Eklentiler için Durumu Değiştir {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1232"/>
         <source>Change Load Behavior for {}</source>
-        <translation>Yükleme Davranışını Değiştir {}</translation>
+        <translation type="vanished">Yükleme Davranışını Değiştir {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="92"/>
         <source>Set {} to {}</source>
-        <translation>{} öğesini {} olarak ayarlayın</translation>
+        <translation type="vanished">{} öğesini {} olarak ayarlayın</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
         <source>Connect ports</source>
-        <translation>Portları bağla</translation>
+        <translation type="vanished">Portları bağla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
         <source>Disconnect ports</source>
-        <translation>Portların bağlantısını kes</translation>
+        <translation type="vanished">Portların bağlantısını kes</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="132"/>
         <source>Enable port connection</source>
-        <translation>Port bağlantısını etkinleştir</translation>
+        <translation type="vanished">Port bağlantısını etkinleştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="134"/>
         <source>Disable port connection</source>
-        <translation>Port bağlantısını kes</translation>
+        <translation type="vanished">Port bağlantısını kes</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="136"/>
         <source>Change port connection</source>
-        <translation>Port bağlantısını değiştir</translation>
+        <translation type="vanished">Port bağlantısını değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="468"/>
         <source>Insert silence</source>
-        <translation>Sessizlik ekle</translation>
+        <translation type="vanished">Sessizlik ekle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="470"/>
         <source>Delete range</source>
-        <translation>Aralığı sil</translation>
+        <translation type="vanished">Aralığı sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation>Parçalar kopyalanamıyor: seçim kopyalanamayan bir parça içeriyor</translation>
+        <translation type="vanished">Parçalar kopyalanamıyor: seçim kopyalanamayan bir parça içeriyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="198"/>
         <source>Cannot delete tracks: selection contains an undeletable track</source>
-        <translation>Parçalar silinemiyor: seçim silinemeyen bir parça içeriyor</translation>
+        <translation type="vanished">Parçalar silinemiyor: seçim silinemeyen bir parça içeriyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="300"/>
         <source>No tracks selected</source>
-        <translation>Seçili parça bulunmuyor</translation>
+        <translation type="vanished">Seçili parça bulunmuyor</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/track_factory.h" line="43"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="461"/>
+        <location filename="../src/structure/tracks/track.cpp" line="574"/>
         <source>{} Track</source>
         <translation>{} Parça</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1676"/>
         <source>Copy Track inside</source>
-        <translation>İçindeki Parçayı Kopyala</translation>
+        <translation type="vanished">İçindeki Parçayı Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1678"/>
         <source>Copy Track</source>
-        <translation>Parçayı Kopyala</translation>
+        <translation type="vanished">Parçayı Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Copy {} Tracks inside</source>
-        <translation>{} İçindeki Parçaları Kopyala</translation>
+        <translation type="vanished">{} İçindeki Parçaları Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1687"/>
         <source>Copy {} Tracks</source>
-        <translation>{} Parçalarını Kopyala</translation>
+        <translation type="vanished">{} Parçalarını Kopyala</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1694"/>
         <source>Create {} Track</source>
-        <translation>{} Parçasını Oluştur</translation>
+        <translation type="vanished">{} Parçasını Oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1699"/>
         <source>Create {} {} Tracks</source>
-        <translation>{} {} Parçalarını Oluştur</translation>
+        <translation type="vanished">{} {} Parçalarını Oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1705"/>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="17"/>
         <source>Delete Track</source>
         <translation>Parçayı Sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="18"/>
+        <source>Delete Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Delete {} Tracks</source>
-        <translation>{} Parçalarını Sil</translation>
+        <translation type="vanished">{} Parçalarını Sil</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
         <source>Solo Track</source>
-        <translation>Parçayı Solo Yap</translation>
+        <translation type="vanished">Parçayı Solo Yap</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1721"/>
         <source>Unsolo Track</source>
-        <translation>Parçayı Solo Yapmayı Durdur</translation>
+        <translation type="vanished">Parçayı Solo Yapmayı Durdur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1724"/>
         <source>Solo Lane</source>
-        <translation>Solo Çizgisi</translation>
+        <translation type="vanished">Solo Çizgisi</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1726"/>
         <source>Unsolo Lane</source>
-        <translation>Solo Olmayan Çizgi</translation>
+        <translation type="vanished">Solo Olmayan Çizgi</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1729"/>
         <source>Mute Track</source>
-        <translation>Parçayı Sessize Al</translation>
+        <translation type="vanished">Parçayı Sessize Al</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1731"/>
         <source>Unmute Track</source>
-        <translation>Parça Sesini Aç</translation>
+        <translation type="vanished">Parça Sesini Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1734"/>
         <source>Mute Lane</source>
-        <translation>Şeridi Sessize Al</translation>
+        <translation type="vanished">Şeridi Sessize Al</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1736"/>
         <source>Unmute Lane</source>
-        <translation>Şeridin Sesini Aç</translation>
+        <translation type="vanished">Şeridin Sesini Aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1739"/>
         <source>Listen Track</source>
-        <translation>Parçayı Dinle</translation>
+        <translation type="vanished">Parçayı Dinle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1741"/>
         <source>Unlisten Track</source>
-        <translation>Parçayı Dinleme</translation>
+        <translation type="vanished">Parçayı Dinleme</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1744"/>
         <source>Enable Track</source>
-        <translation>Parçayı Etkinleştir</translation>
+        <translation type="vanished">Parçayı Etkinleştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1746"/>
         <source>Disable Track</source>
-        <translation>Parçayı Devre Dışı Bırak</translation>
+        <translation type="vanished">Parçayı Devre Dışı Bırak</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1749"/>
         <source>Fold Track</source>
-        <translation>Parçayı Katla</translation>
+        <translation type="vanished">Parçayı Katla</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1751"/>
         <source>Unfold Track</source>
-        <translation>Parçayı Katlamayı Durdur</translation>
+        <translation type="vanished">Parçayı Katlamayı Durdur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1754"/>
         <source>Change Fader from {:.1f} to {:.1f}</source>
-        <translation>Fader&apos;ı {:.1f} ile {:.1f} arasında değiştirin</translation>
+        <translation type="vanished">Fader&apos;ı {:.1f} ile {:.1f} arasında değiştirin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1758"/>
         <source>Change Pan from {:.1f} to {:.1f}</source>
-        <translation>Pan&apos;ı {:.1f} ile {:.1f} arasında değiştirin</translation>
+        <translation type="vanished">Pan&apos;ı {:.1f} ile {:.1f} arasında değiştirin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1761"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1817"/>
         <source>Change direct out</source>
-        <translation>Doğrudan çıkışı değiştir</translation>
+        <translation type="vanished">Doğrudan çıkışı değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1763"/>
         <source>Rename track</source>
-        <translation>Parçayı yeniden adlandır</translation>
+        <translation type="vanished">Parçayı yeniden adlandır</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1765"/>
         <source>Rename lane</source>
-        <translation>Çizgiyi yeniden adlandır</translation>
+        <translation type="vanished">Çizgiyi yeniden adlandır</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
-        <translation>Renk değiştir</translation>
+        <translation type="vanished">Renk değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
-        <translation>İkonu değiştir</translation>
+        <translation type="vanished">İkonu değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
         <source>Change comment</source>
-        <translation>Yorumu değiştir</translation>
+        <translation type="vanished">Yorumu değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1773"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1815"/>
         <source>Change MIDI fader mode</source>
-        <translation>MIDI’yi fader modundan değiştir</translation>
+        <translation type="vanished">MIDI’yi fader modundan değiştir</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1782"/>
         <source>Solo {} Tracks</source>
-        <translation>Şu Parçaları Solola {}</translation>
+        <translation type="vanished">Şu Parçaları Solola {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1785"/>
         <source>Unsolo {} Tracks</source>
-        <translation>Şu Parçaları Sololama {}</translation>
+        <translation type="vanished">Şu Parçaları Sololama {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1788"/>
         <source>Mute {} Tracks</source>
-        <translation>Şu Parçaları Sessize Al {}</translation>
+        <translation type="vanished">Şu Parçaları Sessize Al {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1791"/>
         <source>Unmute {} Tracks</source>
-        <translation>Şu Parçaları Sessize Alma {}</translation>
+        <translation type="vanished">Şu Parçaları Sessize Alma {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1795"/>
         <source>Listen {} Tracks</source>
-        <translation>Şu Parçaları Dinle {}</translation>
+        <translation type="vanished">Şu Parçaları Dinle {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1798"/>
         <source>Unlisten {} Tracks</source>
-        <translation>Şu Parçaları Dinleme {}</translation>
+        <translation type="vanished">Şu Parçaları Dinleme {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1802"/>
         <source>Enable {} Tracks</source>
-        <translation>Şu Parçaları Etkinleştir {}</translation>
+        <translation type="vanished">Şu Parçaları Etkinleştir {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1805"/>
         <source>Disable {} Tracks</source>
-        <translation>Şu Parçaları Etkinleştirme {}</translation>
+        <translation type="vanished">Şu Parçaları Etkinleştirme {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1808"/>
         <source>Fold {} Tracks</source>
-        <translation>Şu Parçaları Katla {}</translation>
+        <translation type="vanished">Şu Parçaları Katla {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1811"/>
         <source>Unfold {} Tracks</source>
-        <translation>Şu Parçaları Katlama {}</translation>
+        <translation type="vanished">Şu Parçaları Katlama {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1819"/>
         <source>Solo lanes</source>
-        <translation>Solo çizgiler</translation>
+        <translation type="vanished">Solo çizgiler</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1821"/>
         <source>Mute lanes</source>
-        <translation>Sessiz çizgiler</translation>
+        <translation type="vanished">Sessiz çizgiler</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
         <source>Edit tracks</source>
-        <translation>Parçaları düzenle</translation>
+        <translation type="vanished">Parçaları düzenle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
         <source>Move Track inside</source>
-        <translation>Parçayı içeri taşı</translation>
+        <translation type="vanished">Parçayı içeri taşı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
-        <translation>Parçayı Taşı</translation>
+        <translation type="vanished">Parçayı Taşı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
         <source>Move {} Tracks inside</source>
-        <translation>Parçayı İçeri Taşı {}</translation>
+        <translation type="vanished">Parçayı İçeri Taşı {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1843"/>
         <source>Move {} Tracks</source>
-        <translation>Parçaları Taşı {}</translation>
+        <translation type="vanished">Parçaları Taşı {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1848"/>
         <source>Pin Track</source>
-        <translation>Parçayı Sabitle</translation>
+        <translation type="vanished">Parçayı Sabitle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1853"/>
         <source>Pin {} Tracks</source>
-        <translation>Parçaları Sabitle {}</translation>
+        <translation type="vanished">Parçaları Sabitle {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1858"/>
         <source>Unpin Track</source>
-        <translation>Parçayı Sabitlemeyi Durdur</translation>
+        <translation type="vanished">Parçayı Sabitlemeyi Durdur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1863"/>
         <source>Unpin {} Tracks</source>
-        <translation>Parçalarını Sabitlemeyi Durdur{}</translation>
+        <translation type="vanished">Parçalarını Sabitlemeyi Durdur{}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="191"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation>BPM&apos;yi {:.2f}&apos;den {:.2f}&apos;ye değiştirin</translation>
+        <translation type="vanished">BPM&apos;yi {:.2f}&apos;den {:.2f}&apos;ye değiştirin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="195"/>
         <source>Change beats per bar from {} to {}</source>
-        <translation>Çubuk başına vuruş sayısını {} ile {} arasında değiştirin</translation>
+        <translation type="vanished">Çubuk başına vuruş sayısını {} ile {} arasında değiştirin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="199"/>
         <source>Change beat unit from {} to {}</source>
-        <translation>Ritim birimini {}&apos;den {}&apos;e değiştirin</translation>
+        <translation type="vanished">Ritim birimini {}&apos;den {}&apos;e değiştirin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="27"/>
-        <location filename="../src/gui/backend/backend/project.cpp" line="569"/>
+        <location filename="../src/structure/project/project.cpp" line="290"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="29"/>
         <source>Chords</source>
         <translation>Akorlar</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="74"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <source>_Rename</source>
         <translation>_Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="79"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <source>_Delete</source>
         <translation>_Sil</translation>
     </message>
@@ -2262,45 +2531,45 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation>Broken Dreams</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="222"/>
         <source>{} Output</source>
         <translation>{} Çıktı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="108"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="118"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="314"/>
         <source>Failed to instantiate plugin</source>
         <translation>Eklenti somutlaştırılamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Stereo?</source>
         <translation>Stereo?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Are the outputs stereo?</source>
         <translation>Çıktı stereo mudur?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Yes</source>
         <translation>_Evet</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_No</source>
         <translation>_Hayır</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="374"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="387"/>
         <source>Auto-route?</source>
         <translation>Oto-yönlendir?</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Cancel</source>
         <translation>_İptal Et</translation>
     </message>
@@ -2309,17 +2578,17 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Nesne düzenlenemedi</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="100"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="110"/>
         <source>Failed to create plugin</source>
         <translation>Eklenti oluşturulamadı</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="302"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="311"/>
         <source>Invalid positions - skipping function</source>
         <translation>Geçersiz konumlar - fonksiyon geçiliyor</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="537"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="546"/>
         <source>Failed to apply plugin</source>
         <translation>Eklenti uygulanamadı</translation>
     </message>
@@ -2420,9 +2689,8 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Harici uygulamada düzenle</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="135"/>
         <source>_OK</source>
-        <translation>_Tamam</translation>
+        <translation type="vanished">_Tamam</translation>
     </message>
     <message>
         <source>Edit the file at &lt;u&gt;%s&lt;/u&gt;, then press OK</source>
@@ -2569,46 +2837,42 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Pulseaudio Arka Uç Testi Başarısız</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="327"/>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation>Dışa aktarılan ses 0 dB&apos;den daha yüksek segmentler içeriyor (maksimum algılanan %.1f dB).</translation>
+        <translation type="vanished">Dışa aktarılan ses 0 dB&apos;den daha yüksek segmentler içeriyor (maksimum algılanan %.1f dB).</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="714"/>
         <source>Failed to create audio track</source>
-        <translation>Ses parçası oluşturulamadı</translation>
+        <translation type="vanished">Ses parçası oluşturulamadı</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="739"/>
         <source>Invalid time range</source>
-        <translation>Geçersiz zaman aralığı</translation>
+        <translation type="vanished">Geçersiz zaman aralığı</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="760"/>
         <source>Failed to export</source>
-        <translation>Dışarı aktarılamadı</translation>
+        <translation type="vanished">Dışarı aktarılamadı</translation>
     </message>
     <message>
         <source>Prefader Swap Phase</source>
         <translation type="vanished">Prefader Değiştirme Aşaması</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="47"/>
+        <location filename="../src/dsp/fader.cpp" line="47"/>
         <source>Fader Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="135"/>
+        <location filename="../src/dsp/fader.cpp" line="135"/>
         <source>Fader Swap Phase</source>
         <translation>Fader Değiştirme Aşaması</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="147"/>
+        <location filename="../src/dsp/fader.cpp" line="147"/>
         <source>Fader input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="160"/>
+        <location filename="../src/dsp/fader.cpp" line="160"/>
         <source>Fader output</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2625,7 +2889,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Prefader Dengesi</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="60"/>
+        <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
         <translation>Fader Dengesi</translation>
     </message>
@@ -2634,7 +2898,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Prefader Sessize Al</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="74"/>
+        <location filename="../src/dsp/fader.cpp" line="74"/>
         <source>Fader Mute</source>
         <translation>Fader Sessize Al</translation>
     </message>
@@ -2643,7 +2907,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Prefader Solo</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="88"/>
+        <location filename="../src/dsp/fader.cpp" line="88"/>
         <source>Fader Solo</source>
         <translation>Fader Solo</translation>
     </message>
@@ -2652,7 +2916,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Prefader Dinle</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="102"/>
+        <location filename="../src/dsp/fader.cpp" line="102"/>
         <source>Fader Listen</source>
         <translation>Fader Dinle</translation>
     </message>
@@ -2661,7 +2925,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Prefader Mono Uyumlu</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="120"/>
+        <location filename="../src/dsp/fader.cpp" line="120"/>
         <source>Fader Mono Compat</source>
         <translation>Fader Mono Uyumlu</translation>
     </message>
@@ -2702,7 +2966,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Ch MIDI Pre-Fader girişi</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="179"/>
+        <location filename="../src/dsp/fader.cpp" line="179"/>
         <source>Ch MIDI Fader in</source>
         <translation>Ch MIDI Fader girişi</translation>
     </message>
@@ -2711,7 +2975,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Ch MIDI Pre-Fader çıkışı</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="192"/>
+        <location filename="../src/dsp/fader.cpp" line="192"/>
         <source>Ch MIDI Fader out</source>
         <translation>Ch MIDI Fader çıkışı</translation>
     </message>
@@ -2728,33 +2992,33 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Parça katlanamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="610"/>
+        <location filename="../src/structure/project/project.cpp" line="323"/>
         <source>start</source>
         <translation>başlangıç</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="625"/>
+        <location filename="../src/structure/project/project.cpp" line="336"/>
         <source>end</source>
         <translation>bitiş</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="648"/>
+        <location filename="../src/structure/project/project.cpp" line="357"/>
         <source>Master</source>
         <translation>Master</translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="22"/>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="26"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="24"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="28"/>
         <source>Macro {}</source>
         <translation>Makro {}</translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="40"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="42"/>
         <source>Macro {} CV In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="52"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="54"/>
         <source>Macro {} CV Out</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2767,7 +3031,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Makro CV Dışında {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="598"/>
+        <location filename="../src/structure/project/project.cpp" line="313"/>
         <source>Modulators</source>
         <translation>Modülatörler</translation>
     </message>
@@ -2945,7 +3209,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Parçalar kopyalanamadı</translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="43"/>
+        <location filename="../src/utils/exceptions.cpp" line="50"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
@@ -2966,7 +3230,7 @@ Daha yeni yedek kullanılsın mı?</translation>
         <translation type="vanished">Parçalar taşınamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="187"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="188"/>
         <source>&lt;b&gt;{}&lt;/b&gt;
 Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
@@ -2979,42 +3243,36 @@ Kanal(lar): {} | Bit hızı: {:L}.{} kb/s
 Bit derinliği: {} bit</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="205"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="206"/>
         <source>Failed reading metadata for {}</source>
         <translation>{} için meta veriler okunamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="72"/>
         <source>Unsupported file type %s</source>
-        <translation>Desteklenmeyen dosya türü %s</translation>
+        <translation type="vanished">Desteklenmeyen dosya türü %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="85"/>
         <source>The MIDI file at %s contains no data</source>
-        <translation>%s adresindeki MIDI dosyası veri içermiyor</translation>
+        <translation type="vanished">%s adresindeki MIDI dosyası veri içermiyor</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="104"/>
         <source>This MIDI file contains %d tracks. It cannot be dropped into an existing track</source>
-        <translation>Bu MIDI dosyası %d parça içeriyor. Mevcut bir parçanın içine bırakılamaz</translation>
+        <translation type="vanished">Bu MIDI dosyası %d parça içeriyor. Mevcut bir parçanın içine bırakılamaz</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="119"/>
         <source>Failed to get track from hash %u</source>
-        <translation>%u hash&apos;inden parça alınamadı</translation>
+        <translation type="vanished">%u hash&apos;inden parça alınamadı</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="151"/>
         <source>Failed to create an audio region for file %s: %s</source>
-        <translation>%s dosyası için bir ses bölgesi oluşturulamadı: %s</translation>
+        <translation type="vanished">%s dosyası için bir ses bölgesi oluşturulamadı: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="172"/>
         <source>Failed to create a MIDI region for file %s: %s</source>
-        <translation>%s dosyası için bir MIDI bölgesi oluşturulamadı: %s</translation>
+        <translation type="vanished">%s dosyası için bir MIDI bölgesi oluşturulamadı: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/midi_file.cpp" line="123"/>
+        <location filename="../src/gui/backend/io/midi_file.cpp" line="126"/>
         <source>Untitled Track {}</source>
         <translation>İsimsiz Parça {}</translation>
     </message>
@@ -3068,21 +3326,22 @@ Bit derinliği: {} bit</translation>
         <translation type="vanished">&apos;{}&apos; eklentisi için başlatma başarısız oldu. Devre dışı bırakılıyor...</translation>
     </message>
     <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="40"/>
         <source>Enabled</source>
-        <translation type="vanished">Etkinleştirildi</translation>
+        <translation>Etkinleştirildi</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="34"/>
+        <location filename="../src/plugins/plugin.cpp" line="37"/>
         <source>Bypass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="37"/>
+        <location filename="../src/plugins/plugin.cpp" line="40"/>
         <source>Enables or disables the plugin</source>
         <translation>Eklentiyi etkinleştirir veya devre dışı bırakır</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="50"/>
+        <location filename="../src/plugins/plugin.cpp" line="53"/>
         <source>Gain</source>
         <translation>Ses kontrolü</translation>
     </message>
@@ -3091,67 +3350,62 @@ Bit derinliği: {} bit</translation>
         <translation type="vanished">Eklenti ses kontrolü</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="373"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
         <source>Add to project</source>
         <translation>Projeye ekle</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="388"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="413"/>
         <source>Add to project (bridged UI)</source>
         <translation>Projeye ekle (Eşikli UI)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="423"/>
         <source>Add to project (bridged full)</source>
         <translation>Projeye ekle (Eşik full)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="434"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="459"/>
         <source>Add to collection</source>
         <translation>Koleksiyona ekle</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="460"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="485"/>
         <source>Remove from collection</source>
         <translation>Koleksiyondan kaldır</translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Details</source>
         <translation>Detaylar</translation>
     </message>
     <message>
-        <location filename="../src/utils/logger.cpp" line="170"/>
         <source>%s has encountered an error
 </source>
-        <translation>%s bir hata ile karşılaştı
+        <translation type="vanished">%s bir hata ile karşılaştı
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="455"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation>Seçtiğiniz dil için bir yerel ayar ({}) mevcut değil. Lütfen önce bir tane yükleyin ve yeniden başlatın {}</translation>
+        <translation type="vanished">Seçtiğiniz dil için bir yerel ayar ({}) mevcut değil. Lütfen önce bir tane yükleyin ve yeniden başlatın {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="461"/>
         <source>A locale for the language you have selected is not available. Please enable one first using the steps below and try again.
 1. Uncomment any locale starting with the language code &lt;b&gt;{}&lt;/b&gt; in &lt;b&gt;/etc/locale.gen&lt;/b&gt; (needs root privileges)
 2. Run &lt;b&gt;locale-gen&lt;/b&gt; as root
 3. Restart {}</source>
-        <translation>Seçtiğiniz dil için bir yerel ayar ({}) mevcut değil. Lütfen önce bir tane yükleyin ve yeniden başlatın {}
+        <translation type="vanished">Seçtiğiniz dil için bir yerel ayar ({}) mevcut değil. Lütfen önce bir tane yükleyin ve yeniden başlatın {}
 1. &lt;b&gt;/etc/locale.gen&lt;/b&gt; dosyasında &lt;b&gt;{&lt;/b&gt; dil koduyla başlayan herhangi bir yerel ayarın açıklamasını kaldırın (root izni gerekir)
 2. &lt;b&gt;locale-gen&lt;/b&gt; &apos;i root olarak çalıştırın
 3. Yeniden başlatın {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation>Deneysel Özellik</translation>
+        <translation type="vanished">Deneysel Özellik</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="489"/>
         <source>BPM and time signature automation is an experimental feature. Using it may corrupt your project.</source>
-        <translation>BPM ve zaman imzası otomasyonu deneysel bir özelliktir. Kullanılması projenizi bozabilir.</translation>
+        <translation type="vanished">BPM ve zaman imzası otomasyonu deneysel bir özelliktir. Kullanılması projenizi bozabilir.</translation>
     </message>
     <message>
         <source>Error - Backtrace:
@@ -3174,74 +3428,49 @@ Bit derinliği: {} bit</translation>
         <translation type="vanished">Kaval bu platformda desteklenmemektedir</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="30"/>
         <source>Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="67"/>
         <source>MIDI input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="75"/>
         <source>MIDI output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
-        <source>Add Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
-        <source>Add Clip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_track_command.h" line="22"/>
-        <location filename="../src/actions/track_creator.cpp" line="31"/>
+        <location filename="../src/actions/track_creator.cpp" line="30"/>
         <source>Add Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/route_track_command.h" line="27"/>
-        <source>Route Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/change_parameter_value_command.h" line="21"/>
         <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
         <source>Change &apos;%1&apos; value to %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/change_track_color_command.h" line="19"/>
-        <source>Change Track Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
+        <location filename="../src/commands/move_arranger_objects_command.cpp" line="15"/>
         <source>Move Objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/move_plugin_command.h" line="27"/>
+        <location filename="../src/commands/move_plugins_command.cpp" line="15"/>
         <source>Move Plugin</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../src/commands/relocate_arranger_object_command.h" line="22"/>
-        <source>Relocate Object</source>
-        <translation type="unfinished"></translation>
+    <message numerus="yes">
+        <location filename="../src/commands/move_plugins_command.cpp" line="16"/>
+        <source>Move %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../src/commands/rename_track_command.h" line="19"/>
-        <source>Rename Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="202"/>
         <source>{}-{}
 {}
 
@@ -3267,11 +3496,113 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 
 </translation>
     </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="56"/>
+        <source>Unsupported audio format: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="65"/>
+        <source>Failed to create parent directories for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="77"/>
+        <source>Failed to open output file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="88"/>
+        <source>Failed to create audio writer for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="119"/>
+        <source>Failed to write audio data to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="128"/>
+        <source>Writing audio file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/graph_renderer.cpp" line="172"/>
+        <source>Rendering to audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/move_tracks_command.cpp" line="16"/>
+        <source>Move Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/remove_plugins_command.cpp" line="13"/>
+        <source>Remove Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/commands/remove_plugins_command.cpp" line="14"/>
+        <source>Remove %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/commands/resize_arranger_objects_command.cpp" line="13"/>
+        <source>Resize Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="68"/>
+        <source>Verifying directory...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="80"/>
+        <source>Reading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="88"/>
+        <source>Parsing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="96"/>
+        <source>Extracting metadata...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="103"/>
+        <source>Load complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="165"/>
+        <source>Delete %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="215"/>
+        <source>Copy %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/plugin_importer.cpp" line="82"/>
+        <source>Import %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tests/unit/commands/change_qobject_property_command_test.cpp" line="152"/>
+        <source>Change %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecordButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="22"/>
+        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="21"/>
         <source>Record</source>
         <translation>Kaydet</translation>
     </message>
@@ -3279,39 +3610,46 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>RightDock</name>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="24"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="25"/>
         <source>Plugin Browser</source>
         <translation>Eklenti Görüntüleyici</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="32"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="33"/>
         <source>File Browser</source>
         <translation>Dosya Görüntüleyici</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="40"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="41"/>
         <source>Monitor Section</source>
         <translation>Monitör Bölümü</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="48"/>
         <source>Chord Preset Browser</source>
-        <translation>Akor Önayar Görüntüleyici</translation>
+        <translation type="vanished">Akor Önayar Görüntüleyici</translation>
     </message>
 </context>
 <context>
-    <name>S:</name>
+    <name>SaveController</name>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="73"/>
-        <source></source>
-        <comment>Home directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="13"/>
+        <source>Save</source>
+        <translation type="unfinished">Kaydet</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="82"/>
-        <source></source>
-        <comment>Desktop directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="25"/>
+        <source>Save As…</source>
+        <translation type="unfinished">Farklı Kaydet…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="32"/>
+        <source>Save Project As</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="43"/>
+        <source>Saving project...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3333,154 +3671,154 @@ Bu projeyi {} adresinden destekleyebilirsiniz
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="73"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="74"/>
         <source>Snap/Grid Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="79"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="80"/>
         <source>Position Snap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="90"/>
         <source>Snap to Grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="104"/>
         <source>Adaptive Snap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="119"/>
         <source>Snap Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/128</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="161"/>
         <source>Note Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Normal</source>
         <translation type="unfinished">Normal</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Triplet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Dotted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="191"/>
         <source>Keep Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="206"/>
         <source>Snap to Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="221"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="222"/>
         <source>Default Object Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="231"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="232"/>
         <source>Length Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Link to snap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Last object</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Custom</source>
         <translation type="unfinished">Özel eklenti</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="264"/>
         <source>Custom Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="308"/>
         <source>Custom Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="338"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="339"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3488,7 +3826,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>SoloButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
+        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="20"/>
         <source>Solo</source>
         <translation>Solo</translation>
     </message>
@@ -3496,7 +3834,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>SpectrumAnalyzer</name>
     <message>
-        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="98"/>
+        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="100"/>
         <source>Master Output Spectrum</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3504,7 +3842,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>SplitButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
+        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="56"/>
         <source>More Options...</source>
         <translation>Daha Fazla Seçenek...</translation>
     </message>
@@ -3523,9 +3861,77 @@ Bu projeyi {} adresinden destekleyebilirsiniz
     </message>
 </context>
 <context>
+    <name>TempoObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="21"/>
+        <source>Set Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="38"/>
+        <source>Curve</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="41"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="126"/>
+        <source>Constant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="47"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="130"/>
+        <source>Linear</source>
+        <translation type="unfinished">Doğrusal</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="95"/>
+        <source>Edit Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="101"/>
+        <source>BPM:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="117"/>
+        <source>Curve:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TimeSignatureObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="21"/>
+        <source>Set Beats Per Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="38"/>
+        <source>Set Beat Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="96"/>
+        <source>Edit Time Signature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="102"/>
+        <source>Beats per bar:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="116"/>
+        <source>Beat unit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Timeline</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="54"/>
+        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="55"/>
         <source>Custom Marker</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3566,30 +3972,79 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>TrackInspectorPage</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="79"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="34"/>
+        <source>Track Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="40"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="55"/>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="77"/>
+        <source>Choose Track Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="86"/>
+        <source>Notes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="138"/>
         <source>Instrument</source>
         <translation type="unfinished">Enstrüman</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="100"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="150"/>
         <source>Inserts</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TrackRouteControl</name>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="36"/>
+        <source>Prerouted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="88"/>
+        <source>Unroute</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>TrackView</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="379"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <source>Delete %1 Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="70"/>
+        <source>Delete Track</source>
+        <translation type="unfinished">Parçayı Sil</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="607"/>
         <source>Scales</source>
         <translation>Ölçekler</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="413"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="641"/>
         <source>Show lanes</source>
         <translation>Çizgileri göster</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="430"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="658"/>
         <source>Show automation</source>
         <translation>Otomasyonu göster</translation>
     </message>
@@ -3604,12 +4059,11 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>TracklistDropArea</name>
     <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="23"/>
         <source>Test</source>
-        <translation type="unfinished">Test</translation>
+        <translation type="obsolete">Test</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
+        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="13"/>
         <source>Drop files and plugins here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3707,7 +4161,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>WaveformViewer</name>
     <message>
-        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="117"/>
+        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="119"/>
         <source>Master Output Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8808,307 +9262,307 @@ Daha yeni yedek kullanılsın mı?</translation>
 <context>
     <name>zrythm::dsp::MusicalScale</name>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="399"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
         <source>Chromatic</source>
         <translation type="unfinished">Kromatik</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
         <source>Major</source>
         <translation type="unfinished">Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
         <source>Minor</source>
         <translation type="unfinished">Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
         <source>Ionian</source>
         <translation type="unfinished">İyonyan</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
         <source>Dorian</source>
         <translation type="unfinished">Doryan</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
         <source>Phrygian</source>
         <translation type="unfinished">Frigyen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
         <source>Lydian</source>
         <translation type="unfinished">Lidyan</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
         <source>Mixolydian</source>
         <translation type="unfinished">Miksolidyen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
         <source>Aeolian</source>
         <translation type="unfinished">Aeoliyen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
         <source>Locrian</source>
         <translation type="unfinished">Lokriyen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
         <source>Melodic Minor</source>
         <translation type="unfinished">Melodik Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
         <source>Harmonic Minor</source>
         <translation type="unfinished">Harmonik Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
         <source>Whole Tone</source>
         <translation type="unfinished">Tam Ton</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
         <source>Major Pentatonic</source>
         <translation type="unfinished">Pentatonik Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
         <source>Minor Pentatonic</source>
         <translation type="unfinished">Pentatonik Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
         <source>Octatonic Half Whole</source>
         <translation type="unfinished">Oktatonik Yarım Tam</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
         <source>Octatonic Whole Half</source>
         <translation type="unfinished">Oktatonik Tam Yarım</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
         <source>Acoustic</source>
         <translation type="unfinished">Akustik</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
         <source>Harmonic Major</source>
         <translation type="unfinished">Harmonik Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
         <source>Phrygian Dominant</source>
         <translation type="unfinished">Frigyen Dominant</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
         <source>Major Locrian</source>
         <translation type="unfinished">Lokriyen Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
         <source>Algerian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
         <source>Augmented</source>
         <translation type="unfinished">Artırılmış</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
         <source>Double Harmonic</source>
         <translation type="unfinished">Çift Harmonik</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
         <source>Chinese</source>
         <translation type="unfinished">Çince</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
         <source>Diminished</source>
         <translation type="unfinished">Azaltılmış</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
         <source>Dominant Diminished</source>
         <translation type="unfinished">Dominant Azaltılmış</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
         <source>Egyptian</source>
         <translation type="unfinished">Mısırlı</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
         <source>Eight Tone Spanish</source>
         <translation type="unfinished">İspanyol Sekiz Ton</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
         <source>Enigmatic</source>
         <translation type="unfinished">Enigmatik</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
         <source>Geez</source>
         <translation type="unfinished">Tanrım</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
         <source>Hindu</source>
         <translation type="unfinished">Hint</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
         <source>Hirajoshi</source>
         <translation type="unfinished">Hirajoshi</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
         <source>Hungarian Gypsy</source>
         <translation type="unfinished">Macar Çingene</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
         <source>Insen</source>
         <translation type="unfinished">Insen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
         <source>Neapolitan Major</source>
         <translation type="unfinished">Napoliten Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
         <source>Neapolitan Minor</source>
         <translation type="unfinished">Napoliten Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
         <source>Oriental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
         <source>Romanian Minor</source>
         <translation type="unfinished">Roman Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
         <source>Altered</source>
         <translation type="unfinished">Değiştirimiş</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
         <source>Maqam</source>
         <translation type="unfinished">Maqam</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
         <source>Yo</source>
         <translation type="unfinished">Yo</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
         <source>Bebop Locrian</source>
         <translation type="unfinished">Lokriyen Bebop</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
         <source>Bebop Dominant</source>
         <translation type="unfinished">Dominant Bebop</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
         <source>Bebop Major</source>
         <translation type="unfinished">Bebop Majör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
         <source>Super Locrian</source>
         <translation type="unfinished">Süper Lokriyen</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
         <source>Enigmatic Minor</source>
         <translation type="unfinished">Enikmatik Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
         <source>Composite</source>
         <translation type="unfinished">Kompozit</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
         <source>Bhairav</source>
         <translation type="unfinished">Bhairav</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
         <source>Hungarian Minor</source>
         <translation type="unfinished">Macar Minör</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
         <source>Persian</source>
         <translation type="unfinished">Pers</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
         <source>Iwato</source>
         <translation type="unfinished">Iwato</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
         <source>Kumoi</source>
         <translation type="unfinished">Kumoi</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
         <source>Pelog</source>
         <translation type="unfinished">Pelog</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
         <source>Prometheus</source>
         <translation type="unfinished">Prometheus</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
         <source>Prometheus Neapolitan</source>
         <translation type="unfinished">Prometheus Napoliten</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
         <source>Prometheus Liszt</source>
         <translation type="unfinished">Prometheus Liszt</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
         <source>Balinese</source>
         <translation type="unfinished">Bali</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
         <source>RagaTodi</source>
         <translation type="unfinished">RagaTodi</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
         <source>Japanese 1</source>
         <translation type="unfinished">Japon 1</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="460"/>
         <source>Japanese 2</source>
         <translation type="unfinished">Japon 2</translation>
     </message>
@@ -9116,7 +9570,7 @@ Daha yeni yedek kullanılsın mı?</translation>
 <context>
     <name>zrythm::dsp::SnapGrid</name>
     <message>
-        <location filename="../src/dsp/snap_grid.cpp" line="173"/>
+        <location filename="../src/dsp/snap_grid.cpp" line="87"/>
         <source>Adaptive</source>
         <translation type="unfinished">Adaptif</translation>
     </message>
@@ -9124,39 +9578,69 @@ Daha yeni yedek kullanılsın mı?</translation>
 <context>
     <name>zrythm::engine::session</name>
     <message>
-        <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished">Yok</translation>
+        <translation type="obsolete">Yok</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="39"/>
         <source>1 bar</source>
-        <translation type="unfinished">1 bar</translation>
+        <translation type="obsolete">1 bar</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="40"/>
         <source>2 bars</source>
-        <translation type="unfinished">2 bar</translation>
+        <translation type="obsolete">2 bar</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="41"/>
         <source>4 bars</source>
-        <translation type="unfinished">4 bar</translation>
+        <translation type="obsolete">4 bar</translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectManager</name>
     <message>
-        <location filename="../src/gui/backend/project_manager.cpp" line="228"/>
         <source>Failed to load project</source>
-        <translation>Proje yüklenemedi</translation>
+        <translation type="vanished">Proje yüklenemedi</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="293"/>
+        <source>Loading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="345"/>
+        <source>Creating project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="363"/>
+        <source>Deserializing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
+        <source>Setting up project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
+        <source>Rebuilding audio graph...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="399"/>
+        <source>Starting engine...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
+        <source>Project loaded</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectTemplatesModel</name>
     <message>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="28"/>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="63"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
         <translation>Boş proje</translation>
     </message>
@@ -9190,22 +9674,22 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 </translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="392"/>
         <source>Open project</source>
         <translation>Projeyi aç</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="393"/>
         <source>Create new project</source>
         <translation>Yeni proje oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
         <source>Create new project with template</source>
         <translation>Şablonla yeni proje oluştur</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>
         <source>Use dummy audio/midi engine</source>
         <translation>Sahte ses/midi motoru kullan</translation>
     </message>
@@ -9213,7 +9697,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>zrythm::plugins::PluginScanManager</name>
     <message>
-        <location filename="../src/plugins/plugin_scan_manager.cpp" line="127"/>
+        <location filename="../src/plugins/plugin_scan_manager.cpp" line="128"/>
         <source>Scanning...</source>
         <translation type="unfinished">Taranıyor...</translation>
     </message>
@@ -9228,9 +9712,8 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>zrythm::structure::tracks::TrackLane</name>
     <message>
-        <location filename="../src/structure/tracks/track_lane.h" line="56"/>
         <source>Lane {}</source>
-        <translation type="unfinished">Çizgi {}</translation>
+        <translation type="obsolete">Çizgi {}</translation>
     </message>
 </context>
 <context>
@@ -9264,7 +9747,7 @@ Bu projeyi {} adresinden destekleyebilirsiniz
 <context>
     <name>zrythm::utils::exceptions::ZrythmException</name>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Error</source>
         <translation type="unfinished">Hata</translation>
     </message>

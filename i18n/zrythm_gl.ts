@@ -53,38 +53,56 @@
 <context>
     <name>Arranger</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
+        <source>Copy Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="868"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="870"/>
+        <source>Move Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Delete</source>
-        <translation type="unfinished">Eliminar</translation>
+        <translation type="obsolete">Eliminar</translation>
     </message>
 </context>
 <context>
     <name>ArrangerObjectBaseView</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
+        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="48"/>
         <source>Test</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
+    <name>AudioEditorPane</name>
+    <message>
+        <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
+        <source>Zoom In</source>
+        <translation type="unfinished">Ampliar Vista</translation>
+    </message>
+</context>
+<context>
     <name>AutomationEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="33"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="61"/>
         <source>Zoom In</source>
         <translation type="unfinished">Ampliar Vista</translation>
     </message>
@@ -143,34 +161,32 @@
 <context>
     <name>BottomDock</name>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="37"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="41"/>
         <source>Select a clip from the timeline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="39"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
         <source>No clip selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="98"/>
         <source>Editor</source>
         <translation type="unfinished">Editor</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="103"/>
         <source>Mixer</source>
         <translation type="unfinished">Mesturador</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
         <source>Modulators</source>
-        <translation type="unfinished">Moduladores</translation>
+        <translation type="obsolete">Moduladores</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="101"/>
         <source>Chord Pad</source>
-        <translation type="unfinished">Pad de Acordes</translation>
+        <translation type="obsolete">Pad de Acordes</translation>
     </message>
 </context>
 <context>
@@ -180,17 +196,17 @@
         <translation type="obsolete">Intervalo de Tempo</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="301"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="352"/>
         <source>Arrangement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="306"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="357"/>
         <source>Port Connections</source>
         <translation type="unfinished">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="311"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="362"/>
         <source>Midi CC Bindings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -236,17 +252,17 @@
 <context>
     <name>ClipLauncherView</name>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="86"/>
         <source>Stop Scenes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="123"/>
         <source>Play Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="160"/>
         <source>Switch Playback to Timeline</source>
         <translation type="unfinished"></translation>
     </message>
@@ -396,15 +412,265 @@
     </message>
 </context>
 <context>
+    <name>DropAreaBase</name>
+    <message>
+        <location filename="../src/gui/qml/components/basic/DropAreaBase.qml" line="38"/>
+        <source>Drop files and plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DspLoadIndicator</name>
     <message>
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>DSP Load:</source>
+        <source>DSP Load: %1%
+XRun Count: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExportDialog</name>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="35"/>
+        <source>Export As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>XRun Count:</source>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="45"/>
+        <source>Export</source>
+        <translation type="unfinished">Exportar</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="59"/>
+        <source>Exporting audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="74"/>
+        <source>Audio</source>
+        <translation type="unfinished">Audio</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="78"/>
+        <source>MIDI</source>
+        <translation type="unfinished">MIDI</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="104"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="214"/>
+        <source>Export Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="107"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="341"/>
+        <source>Track title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="108"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="342"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="114"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="348"/>
+        <source>Enter title...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="125"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="359"/>
+        <source>Artist name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="126"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="360"/>
+        <source>Artist</source>
+        <translation type="unfinished">Artista</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="132"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="366"/>
+        <source>Enter artist...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="144"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="377"/>
+        <source>Music genre</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="145"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="378"/>
+        <source>Genre</source>
+        <translation type="unfinished">Xénero</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="151"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="384"/>
+        <source>Enter genre...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="162"/>
+        <source>Audio file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="163"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="396"/>
+        <source>Format</source>
+        <translation type="unfinished">Formato</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="172"/>
+        <source>Audio bit depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
+        <source>Bit Depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
+        <source>Apply dithering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="183"/>
+        <source>Dither</source>
+        <translation type="unfinished">Dither</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="191"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="414"/>
+        <source>Pattern for generated filenames</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
+        <source>Filename Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="424"/>
+        <source>Whether to export the selected tracks as a single mixdown file or each track in its own file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="202"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="425"/>
+        <source>Mixdown or Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Mixdown</source>
+        <translation type="unfinished">Mestura</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="217"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="440"/>
+        <source>Only events inside this time range will be exported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
+        <source>Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Song Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Loop</source>
+        <translation type="unfinished">Bucle</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Custom</source>
+        <translation type="unfinished">Personalizado</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="227"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="450"/>
+        <source>Set custom start and end positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="228"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="451"/>
+        <source>Custom Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
+        <source>Track Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="535"/>
+        <source>Export destination and file info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
+        <source>Output will be saved to: /path/to/export/file.wav</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="338"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="437"/>
+        <source>Export MIDI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="395"/>
+        <source>MIDI file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="405"/>
+        <source>Export MIDI lanes as separate tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="406"/>
+        <source>Export Lanes as Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="541"/>
+        <source>Output will be saved to: /path/to/export/file.mid</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -416,32 +682,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="55"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="63"/>
         <source>Record</source>
         <translation type="unfinished">Gravar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="79"/>
         <source>Solo</source>
         <translation type="unfinished">Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="102"/>
         <source>Mute</source>
         <translation type="unfinished">Silenciar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="132"/>
         <source>Listen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="147"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="155"/>
         <source>Swap phase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="173"/>
         <source>Channel settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,95 +728,93 @@
 <context>
     <name>Greeter</name>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="78"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="84"/>
         <source>About Flatpak</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="76"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="88"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="94"/>
         <source>Donate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="86"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="92"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="96"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="102"/>
         <source>All Ready!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="99"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="105"/>
         <source>Proceed to Configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="133"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="155"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="139"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>Welcome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="153"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="159"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="163"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="169"/>
         <source>Read the Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="167"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="220"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="257"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="224"/>
         <source>Configuration</source>
         <translation>Configuración</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="265"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="249"/>
         <source>Initial Configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="247"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="538"/>
         <source>‹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="233"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="237"/>
         <source>Continue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="293"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="277"/>
         <source>Progress</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="310"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="287"/>
         <source>Scanning Plugins</source>
         <translation type="unfinished">Escaneando plugins</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="328"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="305"/>
         <source>Scanning:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="346"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="369"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="324"/>
         <source>Open a Project</source>
         <translation type="unfinished">Abrir un proxecto</translation>
     </message>
@@ -559,57 +823,57 @@
         <translation type="obsolete">Preferencias</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="392"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="360"/>
         <source>About Zrythm</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="352"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="330"/>
         <source>Create New Project...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="358"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="336"/>
         <source>Open From Path...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="382"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="350"/>
         <source>Device Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="455"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="407"/>
         <source>Create New Project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="417"/>
         <source>Project Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="466"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="418"/>
         <source>Untitled Project</source>
         <translation type="unfinished">Proxecto Sen Título</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="497"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="449"/>
         <source>Create Project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="513"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
         <source>Creating Project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="526"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="478"/>
         <source>Creating Project...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="548"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Project Loading Failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -630,120 +894,148 @@
 <context>
     <name>LeftDock</name>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="41"/>
         <source>Track Inspector</source>
         <translation type="unfinished">Inspeccionar pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="36"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="49"/>
         <source>Plugin Inspector</source>
         <translation type="unfinished">Inspeccionar Plugin</translation>
     </message>
 </context>
 <context>
+    <name>LoadController</name>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="14"/>
+        <source>Open…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="21"/>
+        <source>Open Project</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="34"/>
+        <source>Loading project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainMenuBar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="18"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="22"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="21"/>
-        <source>New Long Long Long Long Long Long Long Long Long Name</source>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="37"/>
+        <source>Export…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
-        <source>Open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="46"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="49"/>
         <source>Undo</source>
         <translation type="unfinished">Desfacer</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="54"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="57"/>
         <source>Language</source>
         <translation type="unfinished">Idioma</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
         <source>Appearance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="104"/>
         <source>Switch Light/Dark Theme</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="112"/>
         <source>Theme Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="116"/>
         <source>Zrythm Orange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="108"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="124"/>
         <source>Celestial Blue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="117"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="133"/>
         <source>Jonquil Yellow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="126"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="142"/>
         <source>Spring Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="135"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="151"/>
         <source>Munsell Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="144"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="160"/>
         <source>Gunmetal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="168"/>
+        <source>Electric Purple</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="182"/>
+        <source>Debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="187"/>
+        <source>Show Cache Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="197"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="200"/>
         <source>Audio/MIDI Setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="209"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="212"/>
         <source>About Zrythm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -751,63 +1043,42 @@
 <context>
     <name>MainToolbar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="41"/>
         <source>Toggle Left Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="96"/>
         <source>Toggle Right Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="104"/>
         <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="113"/>
         <source>Open a Project…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="119"/>
         <source>Create New Project…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Save</source>
-        <translation type="unfinished">Gardar</translation>
+        <translation type="obsolete">Gardar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
-        <source>Save As…</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="160"/>
-        <source>Export As…</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
-        <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Preferences</source>
         <translation type="unfinished">Preferencias</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="138"/>
         <source>Keyboard Shortcuts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
-        <source>About Zrythm Long Long Long Long Long Long Long</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -819,29 +1090,42 @@
     </message>
 </context>
 <context>
+    <name>MetronomeSplitButton</name>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="19"/>
+        <source>Metronome Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="20"/>
+        <source>Metronome</source>
+        <translation type="unfinished">Metrónomo</translation>
+    </message>
+</context>
+<context>
     <name>MidiEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="35"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="37"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="46"/>
         <source>Listen Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="55"/>
         <source>Show Automation Values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="81"/>
         <source>Zoom In</source>
         <translation type="unfinished">Ampliar Vista</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="157"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="155"/>
         <source>Velocity</source>
         <translation type="unfinished">Intensidade (Vel.)</translation>
     </message>
@@ -1022,30 +1306,95 @@
 <context>
     <name>MuteButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="17"/>
+        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="16"/>
         <source>Mute</source>
         <translation type="unfinished">Silenciar</translation>
     </message>
 </context>
 <context>
+    <name>PluginBrowserPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="134"/>
+        <source>Vendor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginInspectorPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="26"/>
+        <source>Plugin Properties</source>
+        <translation type="unfinished">Propiedades do plugin</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="32"/>
+        <source>Name</source>
+        <translation type="unfinished">Nome</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
+        <source>Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
+        <source>Enabled</source>
+        <translation type="unfinished">Activado</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Hide UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Show UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="71"/>
+        <source>Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="101"/>
+        <source>Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="154"/>
+        <source>Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginSlotList</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotList.qml" line="41"/>
+        <source>Drop plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PluginSlotView</name>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="85"/>
         <source>Remove Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
-        <source>Add Plugin</source>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <source>Remove %1 Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="96"/>
         <source>Show Plugin UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="110"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1055,6 +1404,21 @@
     <message>
         <source>Undo</source>
         <translation type="obsolete">Desfacer</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="26"/>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="39"/>
+        <source>Fullscreen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="407"/>
+        <source>Cache: %1 pending · %2 complete</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1097,17 +1461,6 @@
         <translation type="obsolete">Imposible pegar as seleccións</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="74"/>
-        <source>Home</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="83"/>
-        <source>Desktop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="326"/>
         <location filename="../src/gui/backend/plugin_collections.cpp" line="57"/>
         <source>Delete</source>
         <translation type="unfinished">Eliminar</translation>
@@ -1117,49 +1470,38 @@
         <translation type="obsolete">Erro ao escribir o ficheiro: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
+        <location filename="../src/gui/backend/project_manager.cpp" line="146"/>
         <source>&lt;no track&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
+        <location filename="../src/controllers/project_saver.cpp" line="147"/>
         <source>Failed to create backup directory {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
+        <location filename="../src/structure/project/project.cpp" line="318"/>
         <source>Markers</source>
         <translation type="unfinished">Marcadores</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
+        <location filename="../src/controllers/project_saver.cpp" line="171"/>
         <source>Unable to read file at {}: {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="761"/>
+        <location filename="../src/controllers/project_saver.cpp" line="186"/>
         <source>Unable to decompress project file at {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
+        <location filename="../src/controllers/project_saver.cpp" line="289"/>
         <source>Failed to save the project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
         <source>Failed to compress project file</source>
-        <translation type="unfinished">Erro ao descomprimir o ficheiro do proxecto %s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
-        <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
-        <source>Failed to copy plugin states</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Erro ao descomprimir o ficheiro do proxecto %s</translation>
     </message>
     <message>
         <source>Failed to deserialize v1 project file</source>
@@ -1226,36 +1568,6 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Erro ao reiniciar o esquema %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="33"/>
-        <source>Arranger selections contain an undeletable object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="242"/>
-        <source>Arranger selections contain an object that cannot be duplicated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="293"/>
-        <source>Cannot rename selected object(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="408"/>
-        <source>Attempted to resize unresizable objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
-        <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
-        <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Create timeline selections</source>
         <translation type="obsolete">Soltar Selección</translation>
     </message>
@@ -1276,554 +1588,251 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2232"/>
-        <source>Create arranger objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2234"/>
         <source>Delete arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2236"/>
         <source>Duplicate arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2238"/>
         <source>Move arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2240"/>
         <source>Link arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2242"/>
         <source>Record arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2244"/>
         <source>Edit arranger selections</source>
-        <translation type="unfinished">Editar obxecto(s) do organizador</translation>
+        <translation type="obsolete">Editar obxecto(s) do organizador</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2246"/>
         <source>Automation fill</source>
-        <translation type="unfinished">Automatización</translation>
+        <translation type="obsolete">Automatización</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2248"/>
         <source>Split arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2250"/>
         <source>Merge arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
-        <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
         <source>Quantize arranger selections</source>
-        <translation type="unfinished">Soltar Selección</translation>
+        <translation type="obsolete">Soltar Selección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="244"/>
         <source>Connect sidechain</source>
-        <translation type="unfinished">Colección</translation>
+        <translation type="obsolete">Colección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="246"/>
         <source>Connect stereo</source>
-        <translation type="unfinished">Colección</translation>
+        <translation type="obsolete">Colección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="248"/>
         <source>Connect MIDI</source>
-        <translation type="unfinished">Colección</translation>
+        <translation type="obsolete">Colección</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
-        <translation type="unfinished">Eliminar conexión</translation>
+        <translation type="obsolete">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
         <source>Change amount</source>
-        <translation type="unfinished">Cambiar Panorama</translation>
+        <translation type="obsolete">Cambiar Panorama</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="254"/>
         <source>Change ports</source>
-        <translation type="unfinished">Cambiar Fader</translation>
+        <translation type="obsolete">Cambiar Fader</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="256"/>
         <source>Channel send connection</source>
-        <translation type="unfinished">Eliminar conexión</translation>
+        <translation type="obsolete">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="86"/>
         <source>Change chords</source>
-        <translation type="unfinished">Cambiar Fader</translation>
+        <translation type="obsolete">Cambiar Fader</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="128"/>
-        <source>MIDI mapping enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="130"/>
-        <source>MIDI mapping disable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="132"/>
-        <source>MIDI mapping bind</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="134"/>
-        <source>MIDI mapping unbind</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
-        <translation type="unfinished">Proxecto gardado.</translation>
+        <translation type="obsolete">Proxecto gardado.</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
-        <translation type="unfinished">Algúns cambios só terán efecto despois de reiniciar Zrythm</translation>
+        <translation type="obsolete">Algúns cambios só terán efecto despois de reiniciar Zrythm</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
-        <source>Create {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
-        <source>Create {} {}s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
-        <translation type="unfinished">Borrar Plugin</translation>
+        <translation type="obsolete">Borrar Plugin</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
-        <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
-        <source>Move {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
-        <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
-        <source>Copy {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
-        <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
-        <source>Paste {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1216"/>
-        <source>Paste {} Plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1222"/>
-        <source>Change Status for {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1228"/>
-        <source>Change Status for {} Plugins</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1232"/>
-        <source>Change Load Behavior for {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="92"/>
-        <source>Set {} to {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
-        <source>Connect ports</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
-        <source>Disconnect ports</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="132"/>
         <source>Enable port connection</source>
-        <translation type="unfinished">Eliminar conexión</translation>
+        <translation type="obsolete">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="134"/>
         <source>Disable port connection</source>
-        <translation type="unfinished">Eliminar conexión</translation>
+        <translation type="obsolete">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="136"/>
         <source>Change port connection</source>
-        <translation type="unfinished">Eliminar conexión</translation>
+        <translation type="obsolete">Eliminar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="468"/>
         <source>Insert silence</source>
-        <translation type="unfinished">Insercións</translation>
+        <translation type="obsolete">Insercións</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="470"/>
         <source>Delete range</source>
-        <translation type="unfinished">Borrar Pista</translation>
+        <translation type="obsolete">Borrar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
-        <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="198"/>
-        <source>Cannot delete tracks: selection contains an undeletable track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="300"/>
         <source>No tracks selected</source>
-        <translation type="unfinished">Sen porto seleccionado</translation>
+        <translation type="obsolete">Sen porto seleccionado</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/track_factory.h" line="43"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="461"/>
+        <location filename="../src/structure/tracks/track.cpp" line="574"/>
         <source>{} Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1676"/>
         <source>Copy Track inside</source>
-        <translation type="unfinished">Pista a Solo</translation>
+        <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1678"/>
         <source>Copy Track</source>
-        <translation type="unfinished">Pista a Solo</translation>
+        <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
-        <source>Copy {} Tracks inside</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1687"/>
-        <source>Copy {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1694"/>
-        <source>Create {} Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1699"/>
-        <source>Create {} {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1705"/>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="17"/>
         <source>Delete Track</source>
         <translation type="unfinished">Borrar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
-        <source>Delete {} Tracks</source>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="18"/>
+        <source>Delete Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
         <source>Solo Track</source>
-        <translation type="unfinished">Pista a Solo</translation>
+        <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1721"/>
         <source>Unsolo Track</source>
-        <translation type="unfinished">Pista a Non Solo</translation>
+        <translation type="obsolete">Pista a Non Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1724"/>
         <source>Solo Lane</source>
-        <translation type="unfinished">Pista a Solo</translation>
+        <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1726"/>
         <source>Unsolo Lane</source>
-        <translation type="unfinished">Pista a Non Solo</translation>
+        <translation type="obsolete">Pista a Non Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1729"/>
         <source>Mute Track</source>
-        <translation type="unfinished">Silenciar Pista</translation>
+        <translation type="obsolete">Silenciar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1731"/>
         <source>Unmute Track</source>
-        <translation type="unfinished">Non Silenciar Pista</translation>
+        <translation type="obsolete">Non Silenciar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1734"/>
         <source>Mute Lane</source>
-        <translation type="unfinished">Silenciar Pista</translation>
+        <translation type="obsolete">Silenciar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1736"/>
         <source>Unmute Lane</source>
-        <translation type="unfinished">Non Silenciar</translation>
+        <translation type="obsolete">Non Silenciar</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1739"/>
         <source>Listen Track</source>
-        <translation type="unfinished">Marcar/Desmarcar Pista</translation>
+        <translation type="obsolete">Marcar/Desmarcar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1741"/>
         <source>Unlisten Track</source>
-        <translation type="unfinished">Marcar/Desmarcar Pista</translation>
+        <translation type="obsolete">Marcar/Desmarcar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1744"/>
         <source>Enable Track</source>
-        <translation type="unfinished">Marcar/Desmarcar Pista</translation>
+        <translation type="obsolete">Marcar/Desmarcar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1746"/>
         <source>Disable Track</source>
-        <translation type="unfinished">Borrar Pista</translation>
+        <translation type="obsolete">Borrar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1749"/>
         <source>Fold Track</source>
-        <translation type="unfinished">Pista a Solo</translation>
+        <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1751"/>
         <source>Unfold Track</source>
-        <translation type="unfinished">Pista a Non Solo</translation>
+        <translation type="obsolete">Pista a Non Solo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1754"/>
-        <source>Change Fader from {:.1f} to {:.1f}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1758"/>
-        <source>Change Pan from {:.1f} to {:.1f}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1761"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1817"/>
         <source>Change direct out</source>
-        <translation type="unfinished">Cambiar Fader</translation>
+        <translation type="obsolete">Cambiar Fader</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1763"/>
         <source>Rename track</source>
-        <translation type="unfinished">Conxelar pista</translation>
+        <translation type="obsolete">Conxelar pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1765"/>
         <source>Rename lane</source>
-        <translation type="unfinished">nome_rexión</translation>
+        <translation type="obsolete">nome_rexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
-        <translation type="unfinished">Cambiar Fader</translation>
+        <translation type="obsolete">Cambiar Fader</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
-        <translation type="unfinished">Cambiar Panorama</translation>
+        <translation type="obsolete">Cambiar Panorama</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
         <source>Change comment</source>
-        <translation type="unfinished">Cambiar Panorama</translation>
+        <translation type="obsolete">Cambiar Panorama</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1773"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1815"/>
         <source>Change MIDI fader mode</source>
-        <translation type="unfinished">Saída Midi do Fader</translation>
+        <translation type="obsolete">Saída Midi do Fader</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1782"/>
-        <source>Solo {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1785"/>
-        <source>Unsolo {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1788"/>
-        <source>Mute {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1791"/>
-        <source>Unmute {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1795"/>
-        <source>Listen {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1798"/>
-        <source>Unlisten {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1802"/>
-        <source>Enable {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1805"/>
-        <source>Disable {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1808"/>
-        <source>Fold {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1811"/>
-        <source>Unfold {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1819"/>
-        <source>Solo lanes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1821"/>
-        <source>Mute lanes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
-        <source>Edit tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
         <source>Move Track inside</source>
-        <translation type="unfinished">Mover Pista</translation>
+        <translation type="obsolete">Mover Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
-        <translation type="unfinished">Mover Pista</translation>
+        <translation type="obsolete">Mover Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
-        <source>Move {} Tracks inside</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1843"/>
-        <source>Move {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1848"/>
         <source>Pin Track</source>
-        <translation type="unfinished">Marcar/Desmarcar Pista</translation>
+        <translation type="obsolete">Marcar/Desmarcar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1853"/>
-        <source>Pin {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1858"/>
         <source>Unpin Track</source>
-        <translation type="unfinished">Marcar/Desmarcar Pista</translation>
+        <translation type="obsolete">Marcar/Desmarcar Pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1863"/>
-        <source>Unpin {} Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="191"/>
-        <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="195"/>
-        <source>Change beats per bar from {} to {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="199"/>
-        <source>Change beat unit from {} to {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="27"/>
-        <location filename="../src/gui/backend/backend/project.cpp" line="569"/>
+        <location filename="../src/structure/project/project.cpp" line="290"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="29"/>
         <source>Chords</source>
         <translation type="unfinished">Acordes</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="74"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <source>_Rename</source>
         <translation type="unfinished">nome_rexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="79"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <source>_Delete</source>
         <translation type="unfinished">_Eliminar</translation>
     </message>
@@ -1998,45 +2007,45 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="222"/>
         <source>{} Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="108"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="118"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="314"/>
         <source>Failed to instantiate plugin</source>
         <translation type="unfinished">Activar/Desactivar conexión</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Stereo?</source>
         <translation type="unfinished">Entrada Estéreo</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Are the outputs stereo?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Yes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_No</source>
         <translation type="unfinished">Non</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="374"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="387"/>
         <source>Auto-route?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Cancel</source>
         <translation type="unfinished">_Cancelar</translation>
     </message>
@@ -2045,17 +2054,17 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Erro ao escribir o ficheiro: %s</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="100"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="110"/>
         <source>Failed to create plugin</source>
         <translation type="unfinished">Erro ao escribir o ficheiro: %s</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="302"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="311"/>
         <source>Invalid positions - skipping function</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="537"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="546"/>
         <source>Failed to apply plugin</source>
         <translation type="unfinished">Erro ao abrir o ficheiro: %s</translation>
     </message>
@@ -2104,9 +2113,8 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Saída Directa</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="135"/>
         <source>_OK</source>
-        <translation type="unfinished">_OK</translation>
+        <translation type="obsolete">_OK</translation>
     </message>
     <message>
         <source>Backend Initialization Failed</source>
@@ -2205,46 +2213,34 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">O backend de audio que empregar.</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="327"/>
-        <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/engine/session/exporter.cpp" line="714"/>
         <source>Failed to create audio track</source>
-        <translation type="unfinished">Erro ao escribir o ficheiro: %s</translation>
+        <translation type="obsolete">Erro ao escribir o ficheiro: %s</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="739"/>
         <source>Invalid time range</source>
-        <translation type="unfinished">Erro ao abrir o ficheiro: %s</translation>
-    </message>
-    <message>
-        <location filename="../src/engine/session/exporter.cpp" line="760"/>
-        <source>Failed to export</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Erro ao abrir o ficheiro: %s</translation>
     </message>
     <message>
         <source>Prefader Swap Phase</source>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="47"/>
+        <location filename="../src/dsp/fader.cpp" line="47"/>
         <source>Fader Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="135"/>
+        <location filename="../src/dsp/fader.cpp" line="135"/>
         <source>Fader Swap Phase</source>
         <translation type="unfinished">Balance</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="147"/>
+        <location filename="../src/dsp/fader.cpp" line="147"/>
         <source>Fader input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="160"/>
+        <location filename="../src/dsp/fader.cpp" line="160"/>
         <source>Fader output</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2261,7 +2257,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="60"/>
+        <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
         <translation type="unfinished">Balance</translation>
     </message>
@@ -2270,7 +2266,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="74"/>
+        <location filename="../src/dsp/fader.cpp" line="74"/>
         <source>Fader Mute</source>
         <translation type="unfinished">Saída do Fader da Canle</translation>
     </message>
@@ -2279,7 +2275,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="88"/>
+        <location filename="../src/dsp/fader.cpp" line="88"/>
         <source>Fader Solo</source>
         <translation type="unfinished">Volume</translation>
     </message>
@@ -2288,7 +2284,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="102"/>
+        <location filename="../src/dsp/fader.cpp" line="102"/>
         <source>Fader Listen</source>
         <translation type="unfinished">Saída do Fader da Canle</translation>
     </message>
@@ -2297,7 +2293,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Envío Pre-Fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="120"/>
+        <location filename="../src/dsp/fader.cpp" line="120"/>
         <source>Fader Mono Compat</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2338,7 +2334,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Entrada MIDI pre-fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="179"/>
+        <location filename="../src/dsp/fader.cpp" line="179"/>
         <source>Ch MIDI Fader in</source>
         <translation type="unfinished">Entrada do Fader da Canle MIDI</translation>
     </message>
@@ -2347,7 +2343,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Saída MIDI pre-fader</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="192"/>
+        <location filename="../src/dsp/fader.cpp" line="192"/>
         <source>Ch MIDI Fader out</source>
         <translation type="unfinished">Saída Midi do Fader</translation>
     </message>
@@ -2364,38 +2360,38 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Non se pode establecer a ruta</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="610"/>
+        <location filename="../src/structure/project/project.cpp" line="323"/>
         <source>start</source>
         <translation type="unfinished">Iniciar</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="625"/>
+        <location filename="../src/structure/project/project.cpp" line="336"/>
         <source>end</source>
         <translation type="unfinished">Finalizar</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="648"/>
+        <location filename="../src/structure/project/project.cpp" line="357"/>
         <source>Master</source>
         <translation type="unfinished">Máster</translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="22"/>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="26"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="24"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="28"/>
         <source>Macro {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="40"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="42"/>
         <source>Macro {} CV In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="52"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="54"/>
         <source>Macro {} CV Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="598"/>
+        <location filename="../src/structure/project/project.cpp" line="313"/>
         <source>Modulators</source>
         <translation type="unfinished">Moduladores</translation>
     </message>
@@ -2509,7 +2505,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Pista a Solo</translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="43"/>
+        <location filename="../src/utils/exceptions.cpp" line="50"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2526,7 +2522,7 @@ Empregar a copia de seguridade máis recente?</translation>
         <translation type="obsolete">Erro ao abrir o ficheiro: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="187"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="188"/>
         <source>&lt;b&gt;{}&lt;/b&gt;
 Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
@@ -2535,42 +2531,20 @@ Bit depth: {} bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="205"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="206"/>
         <source>Failed reading metadata for {}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="72"/>
         <source>Unsupported file type %s</source>
-        <translation type="unfinished">Tipo de arquivo non soportado %s</translation>
+        <translation type="obsolete">Tipo de arquivo non soportado %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="85"/>
-        <source>The MIDI file at %s contains no data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="104"/>
-        <source>This MIDI file contains %d tracks. It cannot be dropped into an existing track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="119"/>
         <source>Failed to get track from hash %u</source>
-        <translation type="unfinished">Erro ao reiniciar o esquema %s</translation>
+        <translation type="obsolete">Erro ao reiniciar o esquema %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="151"/>
-        <source>Failed to create an audio region for file %s: %s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="172"/>
-        <source>Failed to create a MIDI region for file %s: %s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/io/midi_file.cpp" line="123"/>
+        <location filename="../src/gui/backend/io/midi_file.cpp" line="126"/>
         <source>Untitled Track {}</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2604,21 +2578,22 @@ Bit depth: {} bits</source>
         <translation type="unfinished">nome_rexión</translation>
     </message>
     <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="40"/>
         <source>Enabled</source>
-        <translation type="obsolete">Activado</translation>
+        <translation type="unfinished">Activado</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="34"/>
+        <location filename="../src/plugins/plugin.cpp" line="37"/>
         <source>Bypass</source>
         <translation type="unfinished">Bypass</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="37"/>
+        <location filename="../src/plugins/plugin.cpp" line="40"/>
         <source>Enables or disables the plugin</source>
         <translation type="unfinished">Activar/Desactivar conexión</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="50"/>
+        <location filename="../src/plugins/plugin.cpp" line="53"/>
         <source>Gain</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2627,62 +2602,33 @@ Bit depth: {} bits</source>
         <translation type="obsolete">Plugin</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="373"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
         <source>Add to project</source>
         <translation type="unfinished">Engadir ao proxecto</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="388"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="413"/>
         <source>Add to project (bridged UI)</source>
         <translation type="unfinished">Engadir ao proxecto (IU ponteada)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="423"/>
         <source>Add to project (bridged full)</source>
         <translation type="unfinished">Engadir ao proxecto (ponteada ao completo)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="434"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="459"/>
         <source>Add to collection</source>
         <translation type="unfinished">Engadir ao proxecto</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="460"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="485"/>
         <source>Remove from collection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/utils/logger.cpp" line="170"/>
-        <source>%s has encountered an error
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="455"/>
-        <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="461"/>
-        <source>A locale for the language you have selected is not available. Please enable one first using the steps below and try again.
-1. Uncomment any locale starting with the language code &lt;b&gt;{}&lt;/b&gt; in &lt;b&gt;/etc/locale.gen&lt;/b&gt; (needs root privileges)
-2. Run &lt;b&gt;locale-gen&lt;/b&gt; as root
-3. Restart {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="488"/>
-        <source>Experimental Feature</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="489"/>
-        <source>BPM and time signature automation is an experimental feature. Using it may corrupt your project.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2692,74 +2638,50 @@ Bit depth: {} bits</source>
 </translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="30"/>
         <source>Amount</source>
         <translation>Cantidade</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="67"/>
         <source>MIDI input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="75"/>
         <source>MIDI output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
-        <source>Add Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
-        <source>Add Clip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_track_command.h" line="22"/>
-        <location filename="../src/actions/track_creator.cpp" line="31"/>
+        <location filename="../src/actions/track_creator.cpp" line="30"/>
         <source>Add Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/route_track_command.h" line="27"/>
-        <source>Route Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/change_parameter_value_command.h" line="21"/>
         <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
         <source>Change &apos;%1&apos; value to %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/change_track_color_command.h" line="19"/>
-        <source>Change Track Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
+        <location filename="../src/commands/move_arranger_objects_command.cpp" line="15"/>
         <source>Move Objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/move_plugin_command.h" line="27"/>
+        <location filename="../src/commands/move_plugins_command.cpp" line="15"/>
         <source>Move Plugin</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../src/commands/relocate_arranger_object_command.h" line="22"/>
-        <source>Relocate Object</source>
-        <translation type="unfinished"></translation>
+    <message numerus="yes">
+        <location filename="../src/commands/move_plugins_command.cpp" line="16"/>
+        <source>Move %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../src/commands/rename_track_command.h" line="19"/>
-        <source>Rename Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="202"/>
         <source>{}-{}
 {}
 
@@ -2774,11 +2696,114 @@ Support this project at {}
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="56"/>
+        <source>Unsupported audio format: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="65"/>
+        <source>Failed to create parent directories for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="77"/>
+        <source>Failed to open output file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="88"/>
+        <source>Failed to create audio writer for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="119"/>
+        <source>Failed to write audio data to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="128"/>
+        <source>Writing audio file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/graph_renderer.cpp" line="172"/>
+        <source>Rendering to audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/move_tracks_command.cpp" line="16"/>
+        <source>Move Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/remove_plugins_command.cpp" line="13"/>
+        <source>Remove Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/commands/remove_plugins_command.cpp" line="14"/>
+        <source>Remove %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/commands/resize_arranger_objects_command.cpp" line="13"/>
+        <source>Resize Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="68"/>
+        <source>Verifying directory...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="80"/>
+        <source>Reading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="88"/>
+        <source>Parsing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="96"/>
+        <source>Extracting metadata...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="103"/>
+        <source>Load complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="165"/>
+        <source>Delete %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="215"/>
+        <source>Copy %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/plugin_importer.cpp" line="82"/>
+        <source>Import %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tests/unit/commands/change_qobject_property_command_test.cpp" line="152"/>
+        <source>Change %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecordButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="22"/>
+        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="21"/>
         <source>Record</source>
         <translation type="unfinished">Gravar</translation>
     </message>
@@ -2786,39 +2811,42 @@ Support this project at {}
 <context>
     <name>RightDock</name>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="24"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="25"/>
         <source>Plugin Browser</source>
         <translation type="unfinished">Navegador de Plugins</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="32"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="33"/>
         <source>File Browser</source>
         <translation type="unfinished">Navegador de ficheiros</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="40"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="41"/>
         <source>Monitor Section</source>
         <translation type="unfinished">Entrada do Fader do Monitor</translation>
     </message>
-    <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="48"/>
-        <source>Chord Preset Browser</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>S:</name>
+    <name>SaveController</name>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="73"/>
-        <source></source>
-        <comment>Home directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="13"/>
+        <source>Save</source>
+        <translation type="unfinished">Gardar</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="82"/>
-        <source></source>
-        <comment>Desktop directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="25"/>
+        <source>Save As…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="32"/>
+        <source>Save Project As</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="43"/>
+        <source>Saving project...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2840,154 +2868,154 @@ Support this project at {}
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="73"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="74"/>
         <source>Snap/Grid Settings</source>
         <translation type="unfinished">Axuste/Opcións da grade</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="79"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="80"/>
         <source>Position Snap</source>
         <translation type="unfinished">Posición</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="90"/>
         <source>Snap to Grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="104"/>
         <source>Adaptive Snap</source>
         <translation type="unfinished">Grade Adaptativa</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="119"/>
         <source>Snap Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/128</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="161"/>
         <source>Note Type</source>
         <translation type="unfinished">Tipo de nota</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Normal</source>
         <translation type="unfinished">normal</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Triplet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Dotted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="191"/>
         <source>Keep Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="206"/>
         <source>Snap to Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="221"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="222"/>
         <source>Default Object Length</source>
         <translation type="unfinished">Largura do obxecto da liña de tempo</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="231"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="232"/>
         <source>Length Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Link to snap</source>
         <translation type="unfinished">Duración de nota á que axustar</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Last object</source>
         <translation type="unfinished">Cargando o proxecto</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Custom</source>
         <translation type="unfinished">Personalizado</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="264"/>
         <source>Custom Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="308"/>
         <source>Custom Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="338"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="339"/>
         <source>Close</source>
         <translation type="unfinished">Pechar</translation>
     </message>
@@ -2995,7 +3023,7 @@ Support this project at {}
 <context>
     <name>SoloButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
+        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="20"/>
         <source>Solo</source>
         <translation type="unfinished">Solo</translation>
     </message>
@@ -3003,7 +3031,7 @@ Support this project at {}
 <context>
     <name>SpectrumAnalyzer</name>
     <message>
-        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="98"/>
+        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="100"/>
         <source>Master Output Spectrum</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3011,7 +3039,7 @@ Support this project at {}
 <context>
     <name>SplitButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
+        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="56"/>
         <source>More Options...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3030,9 +3058,77 @@ Support this project at {}
     </message>
 </context>
 <context>
+    <name>TempoObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="21"/>
+        <source>Set Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="38"/>
+        <source>Curve</source>
+        <translation type="unfinished">Curvatura</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="41"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="126"/>
+        <source>Constant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="47"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="130"/>
+        <source>Linear</source>
+        <translation type="unfinished">Lineal</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="95"/>
+        <source>Edit Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="101"/>
+        <source>BPM:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="117"/>
+        <source>Curve:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TimeSignatureObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="21"/>
+        <source>Set Beats Per Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="38"/>
+        <source>Set Beat Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="96"/>
+        <source>Edit Time Signature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="102"/>
+        <source>Beats per bar:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="116"/>
+        <source>Beat unit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Timeline</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="54"/>
+        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="55"/>
         <source>Custom Marker</source>
         <translation type="unfinished">Marcador Personalizado</translation>
     </message>
@@ -3073,30 +3169,79 @@ Support this project at {}
 <context>
     <name>TrackInspectorPage</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="79"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="34"/>
+        <source>Track Properties</source>
+        <translation type="unfinished">Propiedades da Pista</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="40"/>
+        <source>Name</source>
+        <translation type="unfinished">Nome</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="55"/>
+        <source>Color</source>
+        <translation type="unfinished">Cor</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="77"/>
+        <source>Choose Track Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="86"/>
+        <source>Notes</source>
+        <translation type="unfinished">Nota</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="138"/>
         <source>Instrument</source>
         <translation type="unfinished">Instrumento</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="100"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="150"/>
         <source>Inserts</source>
         <translation type="unfinished">Insercións</translation>
     </message>
 </context>
 <context>
+    <name>TrackRouteControl</name>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="36"/>
+        <source>Prerouted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="88"/>
+        <source>Unroute</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TrackView</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="379"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <source>Delete %1 Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="70"/>
+        <source>Delete Track</source>
+        <translation type="unfinished">Borrar Pista</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="607"/>
         <source>Scales</source>
         <translation type="unfinished">Escala</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="413"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="641"/>
         <source>Show lanes</source>
         <translation type="unfinished">Amosar estaxes da pista</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="430"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="658"/>
         <source>Show automation</source>
         <translation type="unfinished">Amosar estaxes de automatización</translation>
     </message>
@@ -3104,12 +3249,7 @@ Support this project at {}
 <context>
     <name>TracklistDropArea</name>
     <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="23"/>
-        <source>Test</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
+        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="13"/>
         <source>Drop files and plugins here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3203,7 +3343,7 @@ Support this project at {}
 <context>
     <name>WaveformViewer</name>
     <message>
-        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="117"/>
+        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="119"/>
         <source>Master Output Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14755,307 +14895,307 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::dsp::MusicalScale</name>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="399"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
         <source>Chromatic</source>
         <translation type="unfinished">Cromática</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
         <source>Major</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
         <source>Minor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
         <source>Ionian</source>
         <translation type="unfinished">Xónica (Maior)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
         <source>Dorian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
         <source>Phrygian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
         <source>Lydian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
         <source>Mixolydian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
         <source>Aeolian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
         <source>Locrian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
         <source>Melodic Minor</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
         <source>Harmonic Minor</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
         <source>Whole Tone</source>
         <translation type="unfinished">Alternar Panel Superior</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
         <source>Major Pentatonic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
         <source>Minor Pentatonic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
         <source>Octatonic Half Whole</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
         <source>Octatonic Whole Half</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
         <source>Acoustic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
         <source>Harmonic Major</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
         <source>Phrygian Dominant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
         <source>Major Locrian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
         <source>Algerian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
         <source>Augmented</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
         <source>Double Harmonic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
         <source>Chinese</source>
         <translation type="unfinished">Chinés [zh]</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
         <source>Diminished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
         <source>Dominant Diminished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
         <source>Egyptian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
         <source>Eight Tone Spanish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
         <source>Enigmatic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
         <source>Geez</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
         <source>Hindu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
         <source>Hirajoshi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
         <source>Hungarian Gypsy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
         <source>Insen</source>
         <translation type="unfinished">Insercións</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
         <source>Neapolitan Major</source>
         <translation type="unfinished">Xónica (Maior)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
         <source>Neapolitan Minor</source>
         <translation type="unfinished">Eólica (Menor Natural)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
         <source>Oriental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
         <source>Romanian Minor</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
         <source>Altered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
         <source>Maqam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
         <source>Yo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
         <source>Bebop Locrian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
         <source>Bebop Dominant</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
         <source>Bebop Major</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
         <source>Super Locrian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
         <source>Enigmatic Minor</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
         <source>Composite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
         <source>Bhairav</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
         <source>Hungarian Minor</source>
         <translation type="unfinished">Menor Harmónica</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
         <source>Persian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
         <source>Iwato</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
         <source>Kumoi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
         <source>Pelog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
         <source>Prometheus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
         <source>Prometheus Neapolitan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
         <source>Prometheus Liszt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
         <source>Balinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
         <source>RagaTodi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
         <source>Japanese 1</source>
         <translation type="unfinished">Xaponés [ja]</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="460"/>
         <source>Japanese 2</source>
         <translation type="unfinished">Xaponés [ja]</translation>
     </message>
@@ -15063,7 +15203,7 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::dsp::SnapGrid</name>
     <message>
-        <location filename="../src/dsp/snap_grid.cpp" line="173"/>
+        <location filename="../src/dsp/snap_grid.cpp" line="87"/>
         <source>Adaptive</source>
         <translation type="unfinished">Grade Adaptativa</translation>
     </message>
@@ -15071,39 +15211,53 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::engine::session</name>
     <message>
-        <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished">Ningún</translation>
-    </message>
-    <message>
-        <location filename="../src/engine/session/transport.h" line="39"/>
-        <source>1 bar</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/engine/session/transport.h" line="40"/>
-        <source>2 bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/engine/session/transport.h" line="41"/>
-        <source>4 bars</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ningún</translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectManager</name>
     <message>
-        <location filename="../src/gui/backend/project_manager.cpp" line="228"/>
-        <source>Failed to load project</source>
+        <location filename="../src/gui/backend/project_manager.cpp" line="293"/>
+        <source>Loading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="345"/>
+        <source>Creating project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="363"/>
+        <source>Deserializing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
+        <source>Setting up project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
+        <source>Rebuilding audio graph...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="399"/>
+        <source>Starting engine...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
+        <source>Project loaded</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectTemplatesModel</name>
     <message>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="28"/>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="63"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
         <translation type="unfinished"></translation>
     </message>
@@ -15111,22 +15265,22 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::gui::ZrythmApplication</name>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="392"/>
         <source>Open project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="393"/>
         <source>Create new project</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
         <source>Create new project with template</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>
         <source>Use dummy audio/midi engine</source>
         <translation type="unfinished"></translation>
     </message>
@@ -15134,16 +15288,8 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::plugins::PluginScanManager</name>
     <message>
-        <location filename="../src/plugins/plugin_scan_manager.cpp" line="127"/>
+        <location filename="../src/plugins/plugin_scan_manager.cpp" line="128"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>zrythm::structure::tracks::TrackLane</name>
-    <message>
-        <location filename="../src/structure/tracks/track_lane.h" line="56"/>
-        <source>Lane {}</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -15178,7 +15324,7 @@ Apoia este proxecto en https://liberapay.com/Zrythm
 <context>
     <name>zrythm::utils::exceptions::ZrythmException</name>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>

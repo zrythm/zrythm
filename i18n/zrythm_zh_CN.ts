@@ -53,38 +53,56 @@
 <context>
     <name>Arranger</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
         <translation>粘帖</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
+        <source>Copy Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="868"/>
+        <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="870"/>
+        <source>Move Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Delete</source>
-        <translation type="unfinished">删除</translation>
+        <translation type="obsolete">删除</translation>
     </message>
 </context>
 <context>
     <name>ArrangerObjectBaseView</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
+        <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="48"/>
         <source>Test</source>
         <translation type="unfinished">测试</translation>
     </message>
 </context>
 <context>
+    <name>AudioEditorPane</name>
+    <message>
+        <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
+        <source>Zoom In</source>
+        <translation type="unfinished">放大</translation>
+    </message>
+</context>
+<context>
     <name>AutomationEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="33"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
+        <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="61"/>
         <source>Zoom In</source>
         <translation type="unfinished">放大</translation>
     </message>
@@ -143,34 +161,32 @@
 <context>
     <name>BottomDock</name>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="37"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="41"/>
         <source>Select a clip from the timeline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="39"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
         <source>No clip selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="98"/>
         <source>Editor</source>
         <translation>编辑器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
+        <location filename="../src/gui/qml/components/BottomDock.qml" line="103"/>
         <source>Mixer</source>
         <translation>混音器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
         <source>Modulators</source>
-        <translation>调制器</translation>
+        <translation type="vanished">调制器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/BottomDock.qml" line="101"/>
         <source>Chord Pad</source>
-        <translation>和弦打击垫</translation>
+        <translation type="vanished">和弦打击垫</translation>
     </message>
 </context>
 <context>
@@ -180,17 +196,17 @@
         <translation type="vanished">时间线</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="301"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="352"/>
         <source>Arrangement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="306"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="357"/>
         <source>Port Connections</source>
         <translation>端口连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/CenterDock.qml" line="311"/>
+        <location filename="../src/gui/qml/components/CenterDock.qml" line="362"/>
         <source>Midi CC Bindings</source>
         <translation>Midi CC 绑定</translation>
     </message>
@@ -236,17 +252,17 @@
 <context>
     <name>ClipLauncherView</name>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="86"/>
         <source>Stop Scenes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="123"/>
         <source>Play Scene</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
+        <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="160"/>
         <source>Switch Playback to Timeline</source>
         <translation type="unfinished"></translation>
     </message>
@@ -396,15 +412,265 @@
     </message>
 </context>
 <context>
+    <name>DropAreaBase</name>
+    <message>
+        <location filename="../src/gui/qml/components/basic/DropAreaBase.qml" line="38"/>
+        <source>Drop files and plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DspLoadIndicator</name>
     <message>
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>DSP Load:</source>
+        <source>DSP Load: %1%
+XRun Count: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExportDialog</name>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="35"/>
+        <source>Export As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
-        <source>XRun Count:</source>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="45"/>
+        <source>Export</source>
+        <translation type="unfinished">导出</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="59"/>
+        <source>Exporting audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="74"/>
+        <source>Audio</source>
+        <translation type="unfinished">音频</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="78"/>
+        <source>MIDI</source>
+        <translation type="unfinished">MIDI</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="104"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="214"/>
+        <source>Export Audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="107"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="341"/>
+        <source>Track title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="108"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="342"/>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="114"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="348"/>
+        <source>Enter title...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="125"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="359"/>
+        <source>Artist name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="126"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="360"/>
+        <source>Artist</source>
+        <translation type="unfinished">艺术家</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="132"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="366"/>
+        <source>Enter artist...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="144"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="377"/>
+        <source>Music genre</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="145"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="378"/>
+        <source>Genre</source>
+        <translation type="unfinished">流派</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="151"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="384"/>
+        <source>Enter genre...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="162"/>
+        <source>Audio file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="163"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="396"/>
+        <source>Format</source>
+        <translation type="unfinished">格式</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="172"/>
+        <source>Audio bit depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
+        <source>Bit Depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
+        <source>Apply dithering</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="183"/>
+        <source>Dither</source>
+        <translation type="unfinished">抖动</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="191"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="414"/>
+        <source>Pattern for generated filenames</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
+        <source>Filename Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="424"/>
+        <source>Whether to export the selected tracks as a single mixdown file or each track in its own file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="202"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="425"/>
+        <source>Mixdown or Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Mixdown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
+        <source>Stems</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="217"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="440"/>
+        <source>Only events inside this time range will be exported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
+        <source>Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Song Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Loop</source>
+        <translation type="unfinished">循环</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
+        <source>Custom</source>
+        <translation type="unfinished">自定义</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="227"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="450"/>
+        <source>Set custom start and end positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="228"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="451"/>
+        <source>Custom Time Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
+        <source>Track Selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="535"/>
+        <source>Export destination and file info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
+        <source>Output will be saved to: /path/to/export/file.wav</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="338"/>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="437"/>
+        <source>Export MIDI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="395"/>
+        <source>MIDI file format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="405"/>
+        <source>Export MIDI lanes as separate tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="406"/>
+        <source>Export Lanes as Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ExportDialog.qml" line="541"/>
+        <source>Output will be saved to: /path/to/export/file.mid</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -416,32 +682,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="55"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="63"/>
         <source>Record</source>
         <translation type="unfinished">录制</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="79"/>
         <source>Solo</source>
         <translation type="unfinished">独奏</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="102"/>
         <source>Mute</source>
         <translation type="unfinished">静音</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="132"/>
         <source>Listen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="147"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="155"/>
         <source>Swap phase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
+        <location filename="../src/gui/qml/components/FaderButtons.qml" line="173"/>
         <source>Channel settings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -462,95 +728,93 @@
 <context>
     <name>Greeter</name>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="78"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="84"/>
         <source>About Flatpak</source>
         <translation>关于 Flatpak</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="76"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="82"/>
         <source>Only audio plugins installed via Flatpak are supported.</source>
         <translation>仅支持通过Flatpak安装的音频插件。</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="88"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="94"/>
         <source>Donate</source>
         <translation>捐赠</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="86"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="92"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
         <translation>Zrythm 依靠捐赠和购买来维持开发。如果你喜欢这款软件，请考虑 %1捐赠%2 或 %3购买安装包%2。</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="96"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="102"/>
         <source>All Ready!</source>
         <translation>一切就绪!</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="99"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="105"/>
         <source>Proceed to Configuration</source>
         <translation>开始配置</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="133"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="155"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="139"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>Welcome</source>
         <translation>欢迎</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="153"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="159"/>
         <source>Welcome to the Zrythm digital audio workstation. Move to the next page to get started.</source>
         <translation>欢迎使用 Zrythm 数字音频工作站。点击下一页开始使用。</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="163"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="169"/>
         <source>Read the Manual</source>
         <translation>阅读手册</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="161"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="167"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
         <translation>如果您是首次使用 Zrythm，我们建议您过一遍 %1用户手册%2 的“入门”一节。</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="220"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="257"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="224"/>
         <source>Configuration</source>
         <translation>配置</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="265"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="249"/>
         <source>Initial Configuration</source>
         <translation>初始配置</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="247"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="538"/>
         <source>‹</source>
         <translation>‹</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="233"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="237"/>
         <source>Continue</source>
         <translation>继续</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="293"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="277"/>
         <source>Progress</source>
         <translation>进度</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="310"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="287"/>
         <source>Scanning Plugins</source>
         <translation>扫描插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="328"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="305"/>
         <source>Scanning:</source>
         <translation>扫描中：</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="346"/>
-        <location filename="../src/gui/qml/Greeter.qml" line="369"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="324"/>
         <source>Open a Project</source>
         <translation>打开工程</translation>
     </message>
@@ -559,57 +823,57 @@
         <translation type="vanished">首选项</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="392"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="360"/>
         <source>About Zrythm</source>
         <translation>关于 Zrythm</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="352"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="330"/>
         <source>Create New Project...</source>
         <translation>新建工程...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="358"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="336"/>
         <source>Open From Path...</source>
         <translation>从路径打开工程...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="382"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="350"/>
         <source>Device Selector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="455"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="407"/>
         <source>Create New Project</source>
         <translation>新建工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="417"/>
         <source>Project Name</source>
         <translation>工程名称</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="466"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="418"/>
         <source>Untitled Project</source>
         <translation>未命名工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="497"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="449"/>
         <source>Create Project</source>
         <translation>新建工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="513"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="465"/>
         <source>Creating Project</source>
         <translation>正在创建工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="526"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="478"/>
         <source>Creating Project...</source>
         <translation>正在创建工程...</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/Greeter.qml" line="548"/>
+        <location filename="../src/gui/qml/Greeter.qml" line="501"/>
         <source>Project Loading Failed</source>
         <translation>工程加载失败</translation>
     </message>
@@ -630,120 +894,156 @@
 <context>
     <name>LeftDock</name>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="28"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="41"/>
         <source>Track Inspector</source>
         <translation>轨道检查器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/LeftDock.qml" line="36"/>
+        <location filename="../src/gui/qml/components/LeftDock.qml" line="49"/>
         <source>Plugin Inspector</source>
         <translation>插件检查器</translation>
     </message>
 </context>
 <context>
+    <name>LoadController</name>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="14"/>
+        <source>Open…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="21"/>
+        <source>Open Project</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/LoadController.qml" line="34"/>
+        <source>Loading project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainMenuBar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="18"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="22"/>
         <source>&amp;File</source>
         <translation type="unfinished">文件(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="21"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished">新长长长长长长长长长名称</translation>
+        <translation type="obsolete">新长长长长长长长长长名称</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
         <source>Open</source>
-        <translation type="unfinished">打开</translation>
+        <translation type="obsolete">打开</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="37"/>
+        <source>Export…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="46"/>
         <source>&amp;Edit</source>
         <translation type="unfinished">编辑(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="49"/>
         <source>Undo</source>
         <translation type="unfinished">撤销</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="54"/>
         <source>&amp;View</source>
         <translation type="unfinished">视图(&amp;V)</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="57"/>
         <source>Language</source>
         <translation type="unfinished">语言</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>
         <source>System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
         <source>Appearance</source>
         <translation type="unfinished">外观</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="104"/>
         <source>Switch Light/Dark Theme</source>
         <translation type="unfinished">切换浅色/深色主题</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="112"/>
         <source>Theme Color</source>
         <translation type="unfinished">主题颜色</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="116"/>
         <source>Zrythm Orange</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="108"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="124"/>
         <source>Celestial Blue</source>
         <translation type="unfinished">天蓝色</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="117"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="133"/>
         <source>Jonquil Yellow</source>
         <translation type="unfinished">黄水仙色</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="126"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="142"/>
         <source>Spring Green</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="135"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="151"/>
         <source>Munsell Red</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="144"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="160"/>
         <source>Gunmetal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="168"/>
+        <source>Electric Purple</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="182"/>
+        <source>Debug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="187"/>
+        <source>Show Cache Activity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="197"/>
         <source>Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="200"/>
         <source>Audio/MIDI Setup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="209"/>
         <source>&amp;Help</source>
         <translation type="unfinished">帮助(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
+        <location filename="../src/gui/qml/components/MainMenuBar.qml" line="212"/>
         <source>About Zrythm</source>
         <translation type="unfinished">关于 Zrythm</translation>
     </message>
@@ -751,68 +1051,63 @@
 <context>
     <name>MainToolbar</name>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="41"/>
         <source>Toggle Left Panel</source>
         <translation>开关左侧面板</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="96"/>
         <source>Toggle Right Panel</source>
         <translation>开关右侧面板</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="104"/>
         <source>Menu</source>
         <translation>菜单</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="113"/>
         <source>Open a Project…</source>
         <translation>打开工程…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="119"/>
         <source>Create New Project…</source>
         <translation>新建工程…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="141"/>
         <source>Save</source>
-        <translation>保存</translation>
+        <translation type="vanished">保存</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="149"/>
         <source>Save As…</source>
-        <translation>另存为…</translation>
+        <translation type="vanished">另存为…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="160"/>
         <source>Export As…</source>
-        <translation>导出为…</translation>
+        <translation type="vanished">导出为…</translation>
     </message>
     <message>
         <source>Export Graph…</source>
         <translation type="vanished">导出图表…</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
-        <translation>全屏</translation>
+        <translation type="vanished">全屏</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
         <source>Preferences</source>
         <translation>首选项</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
+        <location filename="../src/gui/qml/components/MainToolbar.qml" line="138"/>
         <source>Keyboard Shortcuts</source>
         <translation>键盘快捷键</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
         <source>About Zrythm Long Long Long Long Long Long Long</source>
-        <translation>关于 Zrythm 长长长长长长长</translation>
+        <translation type="vanished">关于 Zrythm 长长长长长长长</translation>
     </message>
 </context>
 <context>
@@ -823,29 +1118,42 @@
     </message>
 </context>
 <context>
+    <name>MetronomeSplitButton</name>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="19"/>
+        <source>Metronome Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/MetronomeSplitButton.qml" line="20"/>
+        <source>Metronome</source>
+        <translation type="unfinished">节拍器</translation>
+    </message>
+</context>
+<context>
     <name>MidiEditorPane</name>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="35"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="37"/>
         <source>Drum Notation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="46"/>
         <source>Listen Notes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="55"/>
         <source>Show Automation Values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="81"/>
         <source>Zoom In</source>
         <translation type="unfinished">放大</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="157"/>
+        <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="155"/>
         <source>Velocity</source>
         <translation type="unfinished">力度</translation>
     </message>
@@ -1154,30 +1462,95 @@
 <context>
     <name>MuteButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="17"/>
+        <location filename="../src/gui/qml/components/basic/MuteButton.qml" line="16"/>
         <source>Mute</source>
         <translation>静音</translation>
     </message>
 </context>
 <context>
+    <name>PluginBrowserPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginBrowserPage.qml" line="134"/>
+        <source>Vendor</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginInspectorPage</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="26"/>
+        <source>Plugin Properties</source>
+        <translation type="unfinished">插件属性</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="32"/>
+        <source>Name</source>
+        <translation type="unfinished">名称</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
+        <source>Category</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
+        <source>Enabled</source>
+        <translation type="unfinished">已启用</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Hide UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
+        <source>Show UI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="71"/>
+        <source>Gain</source>
+        <translation type="unfinished">增益</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="101"/>
+        <source>Parameters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="154"/>
+        <source>Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginSlotList</name>
+    <message>
+        <location filename="../src/gui/qml/components/PluginSlotList.qml" line="41"/>
+        <source>Drop plugins here</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PluginSlotView</name>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="85"/>
         <source>Remove Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
-        <source>Add Plugin</source>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="75"/>
+        <source>Remove %1 Plugins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="96"/>
         <source>Show Plugin UI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
+        <location filename="../src/gui/qml/components/PluginSlotView.qml" line="110"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1240,6 +1613,21 @@
         <source>About Zrythm</source>
         <translation type="vanished">关于 Zrythm</translation>
     </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="26"/>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="39"/>
+        <source>Fullscreen</source>
+        <translation type="unfinished">全屏</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/views/ProjectWindow.qml" line="407"/>
+        <source>Cache: %1 pending · %2 complete</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -1281,17 +1669,14 @@
         <translation type="vanished">无法粘贴所选</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="74"/>
         <source>Home</source>
-        <translation>主页</translation>
+        <translation type="vanished">主页</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="83"/>
         <source>Desktop</source>
-        <translation>桌面</translation>
+        <translation type="vanished">桌面</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="326"/>
         <location filename="../src/gui/backend/plugin_collections.cpp" line="57"/>
         <source>Delete</source>
         <translation>删除</translation>
@@ -1301,49 +1686,46 @@
         <translation type="vanished">无法粘贴插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
+        <location filename="../src/gui/backend/project_manager.cpp" line="146"/>
         <source>&lt;no track&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
+        <location filename="../src/controllers/project_saver.cpp" line="147"/>
         <source>Failed to create backup directory {}</source>
         <translation>无法创建备份目录{}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
+        <location filename="../src/structure/project/project.cpp" line="318"/>
         <source>Markers</source>
         <translation type="unfinished">标记</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
+        <location filename="../src/controllers/project_saver.cpp" line="171"/>
         <source>Unable to read file at {}: {}</source>
         <translation>无法在 {}: {} 读取文件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="761"/>
+        <location filename="../src/controllers/project_saver.cpp" line="186"/>
         <source>Unable to decompress project file at {}</source>
         <translation>无法在 {} 解压工程文件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
+        <location filename="../src/controllers/project_saver.cpp" line="289"/>
         <source>Failed to save the project</source>
         <translation>无法保存工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
         <source>Failed to compress project file</source>
-        <translation>无法压缩工程文件</translation>
+        <translation type="vanished">无法压缩工程文件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation>无法创建备份目录</translation>
+        <translation type="vanished">无法创建备份目录</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
         <source>Failed to copy plugin states</source>
-        <translation>无法复制插件状态</translation>
+        <translation type="vanished">无法复制插件状态</translation>
     </message>
     <message>
         <source>Failed to deserialize v1 project file</source>
@@ -1434,34 +1816,28 @@ Use the newer backup?</source>
         <translation type="vanished">无法粘贴轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="33"/>
         <source>Arranger selections contain an undeletable object</source>
-        <translation>编曲选区包含不可删除的对象</translation>
+        <translation type="vanished">编曲选区包含不可删除的对象</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="242"/>
         <source>Arranger selections contain an object that cannot be duplicated</source>
-        <translation>编曲选区包含不可复制的对象</translation>
+        <translation type="vanished">编曲选区包含不可复制的对象</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="293"/>
         <source>Cannot rename selected object(s)</source>
-        <translation>无法重命名选定的对象</translation>
+        <translation type="vanished">无法重命名选定的对象</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="408"/>
         <source>Attempted to resize unresizable objects</source>
-        <translation>尝试调整不可调整大小的对象</translation>
+        <translation type="vanished">尝试调整不可调整大小的对象</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation>无法执行 {} 调整大小 - 选择包含循环对象</translation>
+        <translation type="vanished">无法执行 {} 调整大小 - 选择包含循环对象</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation>无法执行 {} 调整大小 - 选择包含不可循环对象</translation>
+        <translation type="vanished">无法执行 {} 调整大小 - 选择包含不可循环对象</translation>
     </message>
     <message>
         <source>Create timeline selections</source>
@@ -1484,554 +1860,447 @@ Use the newer backup?</source>
         <translation type="vanished">创建 MIDI 选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2232"/>
-        <source>Create arranger objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2234"/>
         <source>Delete arranger selections</source>
-        <translation>删除编曲选区</translation>
+        <translation type="vanished">删除编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2236"/>
         <source>Duplicate arranger selections</source>
-        <translation>复制编曲选区</translation>
+        <translation type="vanished">复制编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2238"/>
         <source>Move arranger selections</source>
-        <translation>移动编曲选区</translation>
+        <translation type="vanished">移动编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2240"/>
         <source>Link arranger selections</source>
-        <translation>连接编曲选区</translation>
+        <translation type="vanished">连接编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2242"/>
         <source>Record arranger selections</source>
-        <translation>记录编曲选区</translation>
+        <translation type="vanished">记录编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2244"/>
         <source>Edit arranger selections</source>
-        <translation>编辑编曲选区</translation>
+        <translation type="vanished">编辑编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2246"/>
         <source>Automation fill</source>
-        <translation>自动填充</translation>
+        <translation type="vanished">自动填充</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2248"/>
         <source>Split arranger selections</source>
-        <translation>分割编曲选区</translation>
+        <translation type="vanished">分割编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2250"/>
         <source>Merge arranger selections</source>
-        <translation>合并编曲选区</translation>
+        <translation type="vanished">合并编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
-        <translation>调整编曲选区尺寸 - {}</translation>
+        <translation type="vanished">调整编曲选区尺寸 - {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
         <source>Quantize arranger selections</source>
-        <translation>量化编曲选区</translation>
+        <translation type="vanished">量化编曲选区</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="244"/>
         <source>Connect sidechain</source>
-        <translation>连接侧链</translation>
+        <translation type="vanished">连接侧链</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="246"/>
         <source>Connect stereo</source>
-        <translation>连接立体声</translation>
+        <translation type="vanished">连接立体声</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="248"/>
         <source>Connect MIDI</source>
-        <translation>连接 MIDI</translation>
+        <translation type="vanished">连接 MIDI</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
-        <translation>断开连接</translation>
+        <translation type="vanished">断开连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
         <source>Change amount</source>
-        <translation>更改数量</translation>
+        <translation type="vanished">更改数量</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="254"/>
         <source>Change ports</source>
-        <translation>更改端口</translation>
+        <translation type="vanished">更改端口</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="256"/>
         <source>Channel send connection</source>
-        <translation>通道发送连接</translation>
+        <translation type="vanished">通道发送连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/chord_action.cpp" line="86"/>
         <source>Change chords</source>
-        <translation>修改和弦</translation>
+        <translation type="vanished">修改和弦</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="128"/>
         <source>MIDI mapping enable</source>
-        <translation>MIDI 映射启用</translation>
+        <translation type="vanished">MIDI 映射启用</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="130"/>
         <source>MIDI mapping disable</source>
-        <translation>MIDI 映射禁用</translation>
+        <translation type="vanished">MIDI 映射禁用</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="132"/>
         <source>MIDI mapping bind</source>
-        <translation>MIDI 映射绑定</translation>
+        <translation type="vanished">MIDI 映射绑定</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/midi_mapping_action.cpp" line="134"/>
         <source>MIDI mapping unbind</source>
-        <translation>MIDI 映射解绑</translation>
+        <translation type="vanished">MIDI 映射解绑</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
-        <translation>需要重新加载工程</translation>
+        <translation type="vanished">需要重新加载工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
         <source>Plugin load behavior changes will only take effect after you save and re-load the project</source>
-        <translation>插件加载行为的更改将在您保存并重新加载工程后生效</translation>
+        <translation type="vanished">插件加载行为的更改将在您保存并重新加载工程后生效</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
-        <translation>创建 {}</translation>
+        <translation type="vanished">创建 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
         <source>Create {} {}s</source>
-        <translation>创建 {} 个 {}</translation>
+        <translation type="vanished">创建 {} 个 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
-        <translation>删除插件</translation>
+        <translation type="vanished">删除插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
-        <translation>删除 {} 个插件</translation>
+        <translation type="vanished">删除 {} 个插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
         <source>Move {}</source>
-        <translation>移动 {}</translation>
+        <translation type="vanished">移动 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
-        <translation>移动 {} 个插件</translation>
+        <translation type="vanished">移动 {} 个插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
         <source>Copy {}</source>
-        <translation>复制 {}</translation>
+        <translation type="vanished">复制 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
-        <translation>复制 {} 个插件</translation>
+        <translation type="vanished">复制 {} 个插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
         <source>Paste {}</source>
-        <translation>粘贴 {}</translation>
+        <translation type="vanished">粘贴 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1216"/>
         <source>Paste {} Plugins</source>
-        <translation>粘贴 {} 个插件</translation>
+        <translation type="vanished">粘贴 {} 个插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1222"/>
         <source>Change Status for {}</source>
-        <translation>更改 {} 的状态</translation>
+        <translation type="vanished">更改 {} 的状态</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1228"/>
         <source>Change Status for {} Plugins</source>
-        <translation>更改 {} 个插件的状态</translation>
+        <translation type="vanished">更改 {} 个插件的状态</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1232"/>
         <source>Change Load Behavior for {}</source>
-        <translation>更改 {} 的加载行为</translation>
+        <translation type="vanished">更改 {} 的加载行为</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_action.cpp" line="92"/>
         <source>Set {} to {}</source>
-        <translation>将 {} 设置为 {}</translation>
+        <translation type="vanished">将 {} 设置为 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="128"/>
         <source>Connect ports</source>
-        <translation>连接端口</translation>
+        <translation type="vanished">连接端口</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="130"/>
         <source>Disconnect ports</source>
-        <translation>断开端口连接</translation>
+        <translation type="vanished">断开端口连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="132"/>
         <source>Enable port connection</source>
-        <translation>启用端口连接</translation>
+        <translation type="vanished">启用端口连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="134"/>
         <source>Disable port connection</source>
-        <translation>禁用端口连接</translation>
+        <translation type="vanished">禁用端口连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/port_connection_action.cpp" line="136"/>
         <source>Change port connection</source>
-        <translation>改变端口连接</translation>
+        <translation type="vanished">改变端口连接</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="468"/>
         <source>Insert silence</source>
-        <translation>插入静默</translation>
+        <translation type="vanished">插入静默</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/range_action.cpp" line="470"/>
         <source>Delete range</source>
-        <translation>删除区间</translation>
+        <translation type="vanished">删除区间</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="189"/>
         <source>Cannot copy tracks: selection contains an uncopyable track</source>
-        <translation>无法复制轨道：选中了不可复制的轨道</translation>
+        <translation type="vanished">无法复制轨道：选中了不可复制的轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="198"/>
         <source>Cannot delete tracks: selection contains an undeletable track</source>
-        <translation>无法删除轨道：选中了不可删除的轨道</translation>
+        <translation type="vanished">无法删除轨道：选中了不可删除的轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="300"/>
         <source>No tracks selected</source>
-        <translation>未选择轨道</translation>
+        <translation type="vanished">未选择轨道</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/track_factory.h" line="43"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="461"/>
+        <location filename="../src/structure/tracks/track.cpp" line="574"/>
         <source>{} Track</source>
         <translation>{} 轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1676"/>
         <source>Copy Track inside</source>
-        <translation>复制内部轨道</translation>
+        <translation type="vanished">复制内部轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1678"/>
         <source>Copy Track</source>
-        <translation>复制轨道</translation>
+        <translation type="vanished">复制轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1684"/>
         <source>Copy {} Tracks inside</source>
-        <translation>复制 {} 条内部轨道</translation>
+        <translation type="vanished">复制 {} 条内部轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1687"/>
         <source>Copy {} Tracks</source>
-        <translation>复制 {} 条轨道</translation>
+        <translation type="vanished">复制 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1694"/>
         <source>Create {} Track</source>
-        <translation>创建 {} 轨道</translation>
+        <translation type="vanished">创建 {} 轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1699"/>
         <source>Create {} {} Tracks</source>
-        <translation>创建 {} 个 {} 轨道</translation>
+        <translation type="vanished">创建 {} 个 {} 轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1705"/>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="17"/>
         <source>Delete Track</source>
         <translation>删除轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
+        <location filename="../src/commands/delete_tracks_command.cpp" line="18"/>
+        <source>Delete Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Delete {} Tracks</source>
-        <translation>删除 {} 条轨道</translation>
+        <translation type="vanished">删除 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
         <source>Solo Track</source>
-        <translation>轨道独奏</translation>
+        <translation type="vanished">轨道独奏</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1721"/>
         <source>Unsolo Track</source>
-        <translation>取消轨道独奏</translation>
+        <translation type="vanished">取消轨道独奏</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1724"/>
         <source>Solo Lane</source>
-        <translation>轨道通道独奏</translation>
+        <translation type="vanished">轨道通道独奏</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1726"/>
         <source>Unsolo Lane</source>
-        <translation>取消轨道通道独奏</translation>
+        <translation type="vanished">取消轨道通道独奏</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1729"/>
         <source>Mute Track</source>
-        <translation>静音轨道</translation>
+        <translation type="vanished">静音轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1731"/>
         <source>Unmute Track</source>
-        <translation>取消轨道静音</translation>
+        <translation type="vanished">取消轨道静音</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1734"/>
         <source>Mute Lane</source>
-        <translation>静音轨道通道</translation>
+        <translation type="vanished">静音轨道通道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1736"/>
         <source>Unmute Lane</source>
-        <translation>取消轨道通道静音</translation>
+        <translation type="vanished">取消轨道通道静音</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1739"/>
         <source>Listen Track</source>
-        <translation>监听轨道</translation>
+        <translation type="vanished">监听轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1741"/>
         <source>Unlisten Track</source>
-        <translation>取消监听轨道</translation>
+        <translation type="vanished">取消监听轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1744"/>
         <source>Enable Track</source>
-        <translation>启用轨道</translation>
+        <translation type="vanished">启用轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1746"/>
         <source>Disable Track</source>
-        <translation>禁用轨道</translation>
+        <translation type="vanished">禁用轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1749"/>
         <source>Fold Track</source>
-        <translation>折叠轨道</translation>
+        <translation type="vanished">折叠轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1751"/>
         <source>Unfold Track</source>
-        <translation>展开轨道</translation>
+        <translation type="vanished">展开轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1754"/>
         <source>Change Fader from {:.1f} to {:.1f}</source>
-        <translation>将推子从 {:.1f} 更改为 {:.1f}</translation>
+        <translation type="vanished">将推子从 {:.1f} 更改为 {:.1f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1758"/>
         <source>Change Pan from {:.1f} to {:.1f}</source>
-        <translation>将声像从 {:.1f} 更改为 {:.1f}</translation>
+        <translation type="vanished">将声像从 {:.1f} 更改为 {:.1f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1761"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1817"/>
         <source>Change direct out</source>
-        <translation>更改直接输出</translation>
+        <translation type="vanished">更改直接输出</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1763"/>
         <source>Rename track</source>
-        <translation>重命名轨道</translation>
+        <translation type="vanished">重命名轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1765"/>
         <source>Rename lane</source>
-        <translation>重命名轨道通道</translation>
+        <translation type="vanished">重命名轨道通道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
-        <translation>修改颜色</translation>
+        <translation type="vanished">修改颜色</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
-        <translation>修改图标</translation>
+        <translation type="vanished">修改图标</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
         <source>Change comment</source>
-        <translation>修改注解</translation>
+        <translation type="vanished">修改注解</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1773"/>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1815"/>
         <source>Change MIDI fader mode</source>
-        <translation>更改 MIDI 音量控制器模式</translation>
+        <translation type="vanished">更改 MIDI 音量控制器模式</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1782"/>
         <source>Solo {} Tracks</source>
-        <translation>独奏 {} 条轨道</translation>
+        <translation type="vanished">独奏 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1785"/>
         <source>Unsolo {} Tracks</source>
-        <translation>取消独奏 {} 条轨道</translation>
+        <translation type="vanished">取消独奏 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1788"/>
         <source>Mute {} Tracks</source>
-        <translation>静音 {} 条轨道</translation>
+        <translation type="vanished">静音 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1791"/>
         <source>Unmute {} Tracks</source>
-        <translation>取消静音 {} 条轨道</translation>
+        <translation type="vanished">取消静音 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1795"/>
         <source>Listen {} Tracks</source>
-        <translation>监听 {} 条轨道</translation>
+        <translation type="vanished">监听 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1798"/>
         <source>Unlisten {} Tracks</source>
-        <translation>取消监听 {} 条轨道</translation>
+        <translation type="vanished">取消监听 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1802"/>
         <source>Enable {} Tracks</source>
-        <translation>启用 {} 条轨道</translation>
+        <translation type="vanished">启用 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1805"/>
         <source>Disable {} Tracks</source>
-        <translation>禁用 {} 条轨道</translation>
+        <translation type="vanished">禁用 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1808"/>
         <source>Fold {} Tracks</source>
-        <translation>折叠 {} 条轨道</translation>
+        <translation type="vanished">折叠 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1811"/>
         <source>Unfold {} Tracks</source>
-        <translation>展开 {} 条轨道</translation>
+        <translation type="vanished">展开 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1819"/>
         <source>Solo lanes</source>
-        <translation>独奏轨道通道</translation>
+        <translation type="vanished">独奏轨道通道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1821"/>
         <source>Mute lanes</source>
-        <translation>静音轨道通道</translation>
+        <translation type="vanished">静音轨道通道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
         <source>Edit tracks</source>
-        <translation>编辑轨道</translation>
+        <translation type="vanished">编辑轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
         <source>Move Track inside</source>
-        <translation>移动内部轨道</translation>
+        <translation type="vanished">移动内部轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
-        <translation>移动轨道</translation>
+        <translation type="vanished">移动轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
         <source>Move {} Tracks inside</source>
-        <translation>移动 {} 条内部轨道</translation>
+        <translation type="vanished">移动 {} 条内部轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1843"/>
         <source>Move {} Tracks</source>
-        <translation>移动 {} 条轨道</translation>
+        <translation type="vanished">移动 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1848"/>
         <source>Pin Track</source>
-        <translation>固定轨道</translation>
+        <translation type="vanished">固定轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1853"/>
         <source>Pin {} Tracks</source>
-        <translation>固定 {} 条轨道</translation>
+        <translation type="vanished">固定 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1858"/>
         <source>Unpin Track</source>
-        <translation>取消固定轨道</translation>
+        <translation type="vanished">取消固定轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1863"/>
         <source>Unpin {} Tracks</source>
-        <translation>取消固定 {} 条轨道</translation>
+        <translation type="vanished">取消固定 {} 条轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="191"/>
         <source>Change BPM from {:.2f} to {:.2f}</source>
-        <translation>将 BPM 从 {:.2f} 更改为 {:.2f}</translation>
+        <translation type="vanished">将 BPM 从 {:.2f} 更改为 {:.2f}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="195"/>
         <source>Change beats per bar from {} to {}</source>
-        <translation>将每小节拍数从 {} 更改为 {}</translation>
+        <translation type="vanished">将每小节拍数从 {} 更改为 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/actions/transport_action.cpp" line="199"/>
         <source>Change beat unit from {} to {}</source>
-        <translation>将拍长从 {} 更改为 {}</translation>
+        <translation type="vanished">将拍长从 {} 更改为 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="27"/>
-        <location filename="../src/gui/backend/backend/project.cpp" line="569"/>
+        <location filename="../src/structure/project/project.cpp" line="290"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="29"/>
         <source>Chords</source>
         <translation>和弦</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="74"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="102"/>
         <source>_Rename</source>
         <translation>重命名(_R)</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <location filename="../src/gui/backend/backend/settings/chord_preset.cpp" line="79"/>
+        <location filename="../src/gui/backend/backend/settings/chord_preset_pack.cpp" line="107"/>
         <source>_Delete</source>
         <translation>删除(_D)</translation>
     </message>
@@ -2206,45 +2475,45 @@ Use the newer backup?</source>
         <translation>破碎的梦</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="222"/>
         <source>{} Output</source>
         <translation>{} 输出</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="108"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="118"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="314"/>
         <source>Failed to instantiate plugin</source>
         <translation>无法实例化插件</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Stereo?</source>
         <translation>是否为立体声？</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="350"/>
         <source>Are the outputs stereo?</source>
         <translation>输出是否为立体声？</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Yes</source>
         <translation>是(_Y)</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="340"/>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="353"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_No</source>
         <translation>否(_N)</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="374"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="387"/>
         <source>Auto-route?</source>
         <translation>是否自动路由？</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="378"/>
+        <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="391"/>
         <source>_Cancel</source>
         <translation>取消(_C)</translation>
     </message>
@@ -2253,17 +2522,17 @@ Use the newer backup?</source>
         <translation type="vanished">无法编辑对象</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="100"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="110"/>
         <source>Failed to create plugin</source>
         <translation>无法创建插件</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="302"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="311"/>
         <source>Invalid positions - skipping function</source>
         <translation>无效位置 - 跳过功能</translation>
     </message>
     <message>
-        <location filename="../src/structure/arrangement/audio_function.cpp" line="537"/>
+        <location filename="../src/structure/arrangement/audio_function.cpp" line="546"/>
         <source>Failed to apply plugin</source>
         <translation>无法应用插件</translation>
     </message>
@@ -2364,9 +2633,8 @@ Use the newer backup?</source>
         <translation type="vanished">在外部应用中编辑</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="135"/>
         <source>_OK</source>
-        <translation>_OK</translation>
+        <translation type="vanished">_OK</translation>
     </message>
     <message>
         <source>Edit the file at &lt;u&gt;%s&lt;/u&gt;, then press OK</source>
@@ -2513,46 +2781,42 @@ Use the newer backup?</source>
         <translation type="vanished">Pulseaudio 后端测试失败</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="327"/>
         <source>The exported audio contains segments louder than 0 dB (max detected %.1f dB).</source>
-        <translation>导出的音频包含超过 0 dB 的片段 (检测到最大电平为 %.1f dB).</translation>
+        <translation type="vanished">导出的音频包含超过 0 dB 的片段 (检测到最大电平为 %.1f dB).</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="714"/>
         <source>Failed to create audio track</source>
-        <translation>无法创建音轨</translation>
+        <translation type="vanished">无法创建音轨</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="739"/>
         <source>Invalid time range</source>
-        <translation>无效时间范围</translation>
+        <translation type="vanished">无效时间范围</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/exporter.cpp" line="760"/>
         <source>Failed to export</source>
-        <translation>导出失败</translation>
+        <translation type="vanished">导出失败</translation>
     </message>
     <message>
         <source>Prefader Swap Phase</source>
         <translation type="vanished">推子前相位交换</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="47"/>
+        <location filename="../src/dsp/fader.cpp" line="47"/>
         <source>Fader Gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="135"/>
+        <location filename="../src/dsp/fader.cpp" line="135"/>
         <source>Fader Swap Phase</source>
         <translation>推子后相位交换</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="147"/>
+        <location filename="../src/dsp/fader.cpp" line="147"/>
         <source>Fader input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="160"/>
+        <location filename="../src/dsp/fader.cpp" line="160"/>
         <source>Fader output</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2569,7 +2833,7 @@ Use the newer backup?</source>
         <translation type="vanished">推子前平衡</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="60"/>
+        <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
         <translation>推子后平衡</translation>
     </message>
@@ -2578,7 +2842,7 @@ Use the newer backup?</source>
         <translation type="vanished">推子前静音</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="74"/>
+        <location filename="../src/dsp/fader.cpp" line="74"/>
         <source>Fader Mute</source>
         <translation>推子后静音</translation>
     </message>
@@ -2587,7 +2851,7 @@ Use the newer backup?</source>
         <translation type="vanished">推子前独奏</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="88"/>
+        <location filename="../src/dsp/fader.cpp" line="88"/>
         <source>Fader Solo</source>
         <translation>推子后独奏</translation>
     </message>
@@ -2596,7 +2860,7 @@ Use the newer backup?</source>
         <translation type="vanished">推子前监听</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="102"/>
+        <location filename="../src/dsp/fader.cpp" line="102"/>
         <source>Fader Listen</source>
         <translation>推子后监听</translation>
     </message>
@@ -2605,7 +2869,7 @@ Use the newer backup?</source>
         <translation type="vanished">推子前单声道兼容</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="120"/>
+        <location filename="../src/dsp/fader.cpp" line="120"/>
         <source>Fader Mono Compat</source>
         <translation>推子后单声道兼容</translation>
     </message>
@@ -2646,7 +2910,7 @@ Use the newer backup?</source>
         <translation type="vanished">通道 MIDI 推子前输入</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="179"/>
+        <location filename="../src/dsp/fader.cpp" line="179"/>
         <source>Ch MIDI Fader in</source>
         <translation>通道 MIDI 推子后输入</translation>
     </message>
@@ -2655,7 +2919,7 @@ Use the newer backup?</source>
         <translation type="vanished">通道 MIDI 推子前输出</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/fader.cpp" line="192"/>
+        <location filename="../src/dsp/fader.cpp" line="192"/>
         <source>Ch MIDI Fader out</source>
         <translation>通道 MIDI 推子后输出</translation>
     </message>
@@ -2672,33 +2936,33 @@ Use the newer backup?</source>
         <translation type="vanished">无法折叠轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="610"/>
+        <location filename="../src/structure/project/project.cpp" line="323"/>
         <source>start</source>
         <translation>开始</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="625"/>
+        <location filename="../src/structure/project/project.cpp" line="336"/>
         <source>end</source>
         <translation>结束</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="648"/>
+        <location filename="../src/structure/project/project.cpp" line="357"/>
         <source>Master</source>
         <translation>总轨</translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="22"/>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="26"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="24"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="28"/>
         <source>Macro {}</source>
         <translation>宏控制 {}</translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="40"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="42"/>
         <source>Macro {} CV In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/modulator_macro_processor.cpp" line="52"/>
+        <location filename="../src/dsp/modulator_macro_processor.cpp" line="54"/>
         <source>Macro {} CV Out</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2711,7 +2975,7 @@ Use the newer backup?</source>
         <translation type="vanished">宏控制 CV 输出 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/project.cpp" line="598"/>
+        <location filename="../src/structure/project/project.cpp" line="313"/>
         <source>Modulators</source>
         <translation>调制器</translation>
     </message>
@@ -2889,7 +3153,7 @@ Use the newer backup?</source>
         <translation type="vanished">无法复制轨道</translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="43"/>
+        <location filename="../src/utils/exceptions.cpp" line="50"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
@@ -2910,7 +3174,7 @@ Use the newer backup?</source>
         <translation type="vanished">无法移动轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="187"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="188"/>
         <source>&lt;b&gt;{}&lt;/b&gt;
 Sample rate: {}
 Length: {}s {} ms | BPM: {:.1f}
@@ -2919,42 +3183,36 @@ Bit depth: {} bits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="205"/>
+        <location filename="../src/gui/backend/io/file_descriptor.cpp" line="206"/>
         <source>Failed reading metadata for {}</source>
         <translation>读取 {} 的元数据失败</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="72"/>
         <source>Unsupported file type %s</source>
-        <translation>不支持的文件类型%s</translation>
+        <translation type="vanished">不支持的文件类型%s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="85"/>
         <source>The MIDI file at %s contains no data</source>
-        <translation>%s 处的 MIDI 文件不包含数据</translation>
+        <translation type="vanished">%s 处的 MIDI 文件不包含数据</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="104"/>
         <source>This MIDI file contains %d tracks. It cannot be dropped into an existing track</source>
-        <translation>此 MIDI 文件包含 %d 个轨道。无法将其拖放到现有轨道中</translation>
+        <translation type="vanished">此 MIDI 文件包含 %d 个轨道。无法将其拖放到现有轨道中</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="119"/>
         <source>Failed to get track from hash %u</source>
-        <translation>无法从 hash %u 获取轨道</translation>
+        <translation type="vanished">无法从 hash %u 获取轨道</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="151"/>
         <source>Failed to create an audio region for file %s: %s</source>
-        <translation>无法为文件 %s 创建音频区域: %s</translation>
+        <translation type="vanished">无法为文件 %s 创建音频区域: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/file_import.cpp" line="172"/>
         <source>Failed to create a MIDI region for file %s: %s</source>
-        <translation>无法为文件 %s 创建 MIDI 区域: %s</translation>
+        <translation type="vanished">无法为文件 %s 创建 MIDI 区域: %s</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/io/midi_file.cpp" line="123"/>
+        <location filename="../src/gui/backend/io/midi_file.cpp" line="126"/>
         <source>Untitled Track {}</source>
         <translation>未命名轨道 {}</translation>
     </message>
@@ -3008,21 +3266,22 @@ Bit depth: {} bits</source>
         <translation type="vanished">插件 &apos;{}&apos; 实例化失败，正在禁用...</translation>
     </message>
     <message>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="40"/>
         <source>Enabled</source>
-        <translation type="vanished">已启用</translation>
+        <translation>已启用</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="34"/>
+        <location filename="../src/plugins/plugin.cpp" line="37"/>
         <source>Bypass</source>
         <translation type="unfinished">避开</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="37"/>
+        <location filename="../src/plugins/plugin.cpp" line="40"/>
         <source>Enables or disables the plugin</source>
         <translation>启用/禁用插件</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin.cpp" line="50"/>
+        <location filename="../src/plugins/plugin.cpp" line="53"/>
         <source>Gain</source>
         <translation>增益</translation>
     </message>
@@ -3031,63 +3290,46 @@ Bit depth: {} bits</source>
         <translation type="vanished">插件增益</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="373"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
         <source>Add to project</source>
         <translation>添加到工程</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="388"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="413"/>
         <source>Add to project (bridged UI)</source>
         <translation>添加到工程（桥接UI）</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="398"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="423"/>
         <source>Add to project (bridged full)</source>
         <translation>添加到工程（桥接完整）</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="434"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="459"/>
         <source>Add to collection</source>
         <translation>添加到收藏夹</translation>
     </message>
     <message>
-        <location filename="../src/plugins/plugin_descriptor.cpp" line="460"/>
+        <location filename="../src/plugins/plugin_descriptor.cpp" line="485"/>
         <source>Remove from collection</source>
         <translation>从收藏夹中移除</translation>
     </message>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Details</source>
         <translation>详细信息</translation>
     </message>
     <message>
-        <location filename="../src/utils/logger.cpp" line="170"/>
-        <source>%s has encountered an error
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="455"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation>您选择的语言 ({}) 的区域设置不可用。请先安装该语言的区域设置，然后重新启动 {}</translation>
+        <translation type="vanished">您选择的语言 ({}) 的区域设置不可用。请先安装该语言的区域设置，然后重新启动 {}</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="461"/>
-        <source>A locale for the language you have selected is not available. Please enable one first using the steps below and try again.
-1. Uncomment any locale starting with the language code &lt;b&gt;{}&lt;/b&gt; in &lt;b&gt;/etc/locale.gen&lt;/b&gt; (needs root privileges)
-2. Run &lt;b&gt;locale-gen&lt;/b&gt; as root
-3. Restart {}</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation>实验性功能</translation>
+        <translation type="vanished">实验性功能</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/ui.cpp" line="489"/>
         <source>BPM and time signature automation is an experimental feature. Using it may corrupt your project.</source>
-        <translation>BPM 和拍号自动化是实验性功能。使用它可能会损坏您的工程。</translation>
+        <translation type="vanished">BPM 和拍号自动化是实验性功能。使用它可能会损坏您的工程。</translation>
     </message>
     <message>
         <source>Error - Backtrace:
@@ -3100,74 +3342,49 @@ Bit depth: {} bits</source>
         <translation type="vanished">当前平台不支持管道功能</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="30"/>
         <source>Amount</source>
         <translation>数量</translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="67"/>
         <source>MIDI input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
+        <location filename="../src/structure/tracks/channel_send.cpp" line="75"/>
         <source>MIDI output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
-        <source>Add Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
-        <source>Add Clip</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/add_track_command.h" line="22"/>
-        <location filename="../src/actions/track_creator.cpp" line="31"/>
+        <location filename="../src/actions/track_creator.cpp" line="30"/>
         <source>Add Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/route_track_command.h" line="27"/>
-        <source>Route Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/change_parameter_value_command.h" line="21"/>
         <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
         <source>Change &apos;%1&apos; value to %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/change_track_color_command.h" line="19"/>
-        <source>Change Track Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
+        <location filename="../src/commands/move_arranger_objects_command.cpp" line="15"/>
         <source>Move Objects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/commands/move_plugin_command.h" line="27"/>
+        <location filename="../src/commands/move_plugins_command.cpp" line="15"/>
         <source>Move Plugin</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../src/commands/relocate_arranger_object_command.h" line="22"/>
-        <source>Relocate Object</source>
-        <translation type="unfinished"></translation>
+    <message numerus="yes">
+        <location filename="../src/commands/move_plugins_command.cpp" line="16"/>
+        <source>Move %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../src/commands/rename_track_command.h" line="19"/>
-        <source>Rename Track</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="202"/>
         <source>{}-{}
 {}
 
@@ -3182,11 +3399,113 @@ Support this project at {}
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="56"/>
+        <source>Unsupported audio format: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="65"/>
+        <source>Failed to create parent directories for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="77"/>
+        <source>Failed to open output file: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="88"/>
+        <source>Failed to create audio writer for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="119"/>
+        <source>Failed to write audio data to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/utils/audio_file_writer.cpp" line="128"/>
+        <source>Writing audio file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/dsp/graph_renderer.cpp" line="172"/>
+        <source>Rendering to audio...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/move_tracks_command.cpp" line="16"/>
+        <source>Move Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/commands/remove_plugins_command.cpp" line="13"/>
+        <source>Remove Plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/commands/remove_plugins_command.cpp" line="14"/>
+        <source>Remove %n Plugin(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../src/commands/resize_arranger_objects_command.cpp" line="13"/>
+        <source>Resize Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="68"/>
+        <source>Verifying directory...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="80"/>
+        <source>Reading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="88"/>
+        <source>Parsing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="96"/>
+        <source>Extracting metadata...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/controllers/project_loader.cpp" line="103"/>
+        <source>Load complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="165"/>
+        <source>Delete %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/arranger_object_selection_operator.cpp" line="215"/>
+        <source>Copy %1 Objects</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/actions/plugin_importer.cpp" line="82"/>
+        <source>Import %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tests/unit/commands/change_qobject_property_command_test.cpp" line="152"/>
+        <source>Change %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecordButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="22"/>
+        <location filename="../src/gui/qml/components/basic/RecordButton.qml" line="21"/>
         <source>Record</source>
         <translation type="unfinished">录制</translation>
     </message>
@@ -3194,39 +3513,46 @@ Support this project at {}
 <context>
     <name>RightDock</name>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="24"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="25"/>
         <source>Plugin Browser</source>
         <translation type="unfinished">插件浏览器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="32"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="33"/>
         <source>File Browser</source>
         <translation type="unfinished">文件浏览器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="40"/>
+        <location filename="../src/gui/qml/components/RightDock.qml" line="41"/>
         <source>Monitor Section</source>
         <translation type="unfinished">监视器部分</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/RightDock.qml" line="48"/>
         <source>Chord Preset Browser</source>
-        <translation>和弦预设浏览器</translation>
+        <translation type="vanished">和弦预设浏览器</translation>
     </message>
 </context>
 <context>
-    <name>S:</name>
+    <name>SaveController</name>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="73"/>
-        <source></source>
-        <comment>Home directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="13"/>
+        <source>Save</source>
+        <translation type="unfinished">保存</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/backend/file_manager.cpp" line="82"/>
-        <source></source>
-        <comment>Desktop directory</comment>
-        <translation></translation>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="25"/>
+        <source>Save As…</source>
+        <translation type="unfinished">另存为…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="32"/>
+        <source>Save Project As</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/SaveController.qml" line="43"/>
+        <source>Saving project...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3248,154 +3574,154 @@ Support this project at {}
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="73"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="74"/>
         <source>Snap/Grid Settings</source>
         <translation type="unfinished">Snap/Grid 选项</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="79"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="80"/>
         <source>Position Snap</source>
         <translation type="unfinished">位置</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="90"/>
         <source>Snap to Grid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="104"/>
         <source>Adaptive Snap</source>
         <translation type="unfinished">适应性</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="119"/>
         <source>Snap Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>Bar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/4</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/16</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/32</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/64</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="148"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="293"/>
         <source>1/128</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="161"/>
         <source>Note Type</source>
         <translation type="unfinished">note类型</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Normal</source>
         <translation type="unfinished">正常</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Triplet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="178"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="325"/>
         <source>Dotted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="191"/>
         <source>Keep Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="206"/>
         <source>Snap to Events</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="221"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="222"/>
         <source>Default Object Length</source>
         <translation type="unfinished">时间线对象长度</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="231"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="232"/>
         <source>Length Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Link to snap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Last object</source>
         <translation type="unfinished">上个项目</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="249"/>
         <source>Custom</source>
         <translation type="unfinished">自定义</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="264"/>
         <source>Custom Length</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="308"/>
         <source>Custom Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="338"/>
+        <location filename="../src/gui/qml/components/SnapGridButton.qml" line="339"/>
         <source>Close</source>
         <translation type="unfinished">关闭</translation>
     </message>
@@ -3403,7 +3729,7 @@ Support this project at {}
 <context>
     <name>SoloButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
+        <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="20"/>
         <source>Solo</source>
         <translation>独奏</translation>
     </message>
@@ -3411,7 +3737,7 @@ Support this project at {}
 <context>
     <name>SpectrumAnalyzer</name>
     <message>
-        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="98"/>
+        <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="100"/>
         <source>Master Output Spectrum</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3419,7 +3745,7 @@ Support this project at {}
 <context>
     <name>SplitButton</name>
     <message>
-        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
+        <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="56"/>
         <source>More Options...</source>
         <translation>更多选项...</translation>
     </message>
@@ -3438,9 +3764,77 @@ Support this project at {}
     </message>
 </context>
 <context>
+    <name>TempoObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="21"/>
+        <source>Set Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="38"/>
+        <source>Curve</source>
+        <translation type="unfinished">弯曲度</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="41"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="126"/>
+        <source>Constant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="47"/>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="130"/>
+        <source>Linear</source>
+        <translation type="unfinished">线性</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="95"/>
+        <source>Edit Tempo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="101"/>
+        <source>BPM:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TempoObjectView.qml" line="117"/>
+        <source>Curve:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TimeSignatureObjectView</name>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="21"/>
+        <source>Set Beats Per Bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="38"/>
+        <source>Set Beat Unit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="96"/>
+        <source>Edit Time Signature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="102"/>
+        <source>Beats per bar:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/arranger/TimeSignatureObjectView.qml" line="116"/>
+        <source>Beat unit:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Timeline</name>
     <message>
-        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="54"/>
+        <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="55"/>
         <source>Custom Marker</source>
         <translation type="unfinished">自定义标记</translation>
     </message>
@@ -3481,30 +3875,79 @@ Support this project at {}
 <context>
     <name>TrackInspectorPage</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="79"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="34"/>
+        <source>Track Properties</source>
+        <translation type="unfinished">音轨属性</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="40"/>
+        <source>Name</source>
+        <translation type="unfinished">名称</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="55"/>
+        <source>Color</source>
+        <translation type="unfinished">颜色</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="77"/>
+        <source>Choose Track Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="86"/>
+        <source>Notes</source>
+        <translation type="unfinished">Note</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="138"/>
         <source>Instrument</source>
         <translation type="unfinished">乐器</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="100"/>
+        <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="150"/>
         <source>Inserts</source>
         <translation type="unfinished">插入</translation>
     </message>
 </context>
 <context>
+    <name>TrackRouteControl</name>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="36"/>
+        <source>Prerouted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackRouteControl.qml" line="88"/>
+        <source>Unroute</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TrackView</name>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="379"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <source>Delete %1 Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="64"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="70"/>
+        <source>Delete Track</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="607"/>
         <source>Scales</source>
         <translation>音阶</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="413"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="641"/>
         <source>Show lanes</source>
         <translation>显示轨道通道</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TrackView.qml" line="430"/>
+        <location filename="../src/gui/qml/components/TrackView.qml" line="658"/>
         <source>Show automation</source>
         <translation>显示自动化</translation>
     </message>
@@ -3519,12 +3962,11 @@ Support this project at {}
 <context>
     <name>TracklistDropArea</name>
     <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="23"/>
         <source>Test</source>
-        <translation type="unfinished">测试</translation>
+        <translation type="obsolete">测试</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
+        <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="13"/>
         <source>Drop files and plugins here</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3618,7 +4060,7 @@ Support this project at {}
 <context>
     <name>WaveformViewer</name>
     <message>
-        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="117"/>
+        <location filename="../src/gui/qml/components/WaveformViewer.qml" line="119"/>
         <source>Master Output Visualizer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -16057,307 +16499,307 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::dsp::MusicalScale</name>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="399"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
         <source>Chromatic</source>
         <translation type="unfinished">半音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="400"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
         <source>Major</source>
         <translation type="unfinished">大调</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="401"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
         <source>Minor</source>
         <translation type="unfinished">小调</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="402"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
         <source>Ionian</source>
         <translation type="unfinished">自然大调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="403"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
         <source>Dorian</source>
         <translation type="unfinished">多利亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="404"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
         <source>Phrygian</source>
         <translation type="unfinished">弗里吉亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="405"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
         <source>Lydian</source>
         <translation type="unfinished">利底亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="406"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
         <source>Mixolydian</source>
         <translation type="unfinished">混合利底亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="407"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
         <source>Aeolian</source>
         <translation type="unfinished">伊奥利亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="408"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
         <source>Locrian</source>
         <translation type="unfinished">洛克里亚音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="409"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
         <source>Melodic Minor</source>
         <translation type="unfinished">旋律小调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="410"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
         <source>Harmonic Minor</source>
         <translation type="unfinished">和声小调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="411"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
         <source>Whole Tone</source>
         <translation type="unfinished">全音音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="412"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
         <source>Major Pentatonic</source>
         <translation type="unfinished">大调五声音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="413"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
         <source>Minor Pentatonic</source>
         <translation type="unfinished">小调五声音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="414"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
         <source>Octatonic Half Whole</source>
         <translation type="unfinished">八音半全音</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="415"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
         <source>Octatonic Whole Half</source>
         <translation type="unfinished">八分音符整半</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="416"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
         <source>Acoustic</source>
         <translation type="unfinished">乐器原声的</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="417"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
         <source>Harmonic Major</source>
         <translation type="unfinished">和声大调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="418"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
         <source>Phrygian Dominant</source>
         <translation type="unfinished">属弗里吉亚调</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="419"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
         <source>Major Locrian</source>
         <translation type="unfinished">洛克里亚调式</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="420"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
         <source>Algerian</source>
         <translation type="unfinished">阿尔及利亚调式</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="421"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
         <source>Augmented</source>
         <translation type="unfinished">增音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="422"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
         <source>Double Harmonic</source>
         <translation type="unfinished">双和声式</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="423"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
         <source>Chinese</source>
         <translation type="unfinished">中国音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="424"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
         <source>Diminished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="425"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
         <source>Dominant Diminished</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="426"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
         <source>Egyptian</source>
         <translation type="unfinished">埃及音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="427"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
         <source>Eight Tone Spanish</source>
         <translation type="unfinished">西班牙八音音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="428"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
         <source>Enigmatic</source>
         <translation type="unfinished">神秘音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="429"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
         <source>Geez</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="430"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
         <source>Hindu</source>
         <translation type="unfinished">印度调式</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="431"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
         <source>Hirajoshi</source>
         <translation type="unfinished">日本平调式(Hirajoshi)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="432"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
         <source>Hungarian Gypsy</source>
         <translation type="unfinished">匈牙利吉卜赛(Hungarian Gypsy)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="433"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
         <source>Insen</source>
         <translation type="unfinished">日本 Insen 音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="434"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
         <source>Neapolitan Major</source>
         <translation type="unfinished">意大利那不勒斯大调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="435"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
         <source>Neapolitan Minor</source>
         <translation type="unfinished">意大利那不勒斯小调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="436"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
         <source>Oriental</source>
         <translation type="unfinished">东方音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="437"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
         <source>Romanian Minor</source>
         <translation type="unfinished">罗马尼亚小调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="438"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
         <source>Altered</source>
         <translation type="unfinished">变形音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="439"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
         <source>Maqam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="440"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
         <source>Yo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="441"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
         <source>Bebop Locrian</source>
         <translation type="unfinished">波普洛克利亚音阶(Bebop Locrian)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="442"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
         <source>Bebop Dominant</source>
         <translation type="unfinished">波普属音阶(Bebop Dominant)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="443"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
         <source>Bebop Major</source>
         <translation type="unfinished">波普大调音阶(Bebop Major)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="444"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
         <source>Super Locrian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="445"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
         <source>Enigmatic Minor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="446"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
         <source>Composite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="447"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
         <source>Bhairav</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="448"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
         <source>Hungarian Minor</source>
         <translation type="unfinished">匈牙利小调音阶</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="449"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
         <source>Persian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="450"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
         <source>Iwato</source>
         <translation type="unfinished">岩户</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="451"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
         <source>Kumoi</source>
         <translation type="unfinished">云居/云井(Kumoi)</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="452"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
         <source>Pelog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="453"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
         <source>Prometheus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="454"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
         <source>Prometheus Neapolitan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="455"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
         <source>Prometheus Liszt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="456"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
         <source>Balinese</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="457"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
         <source>RagaTodi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="458"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
         <source>Japanese 1</source>
         <translation type="unfinished">日本 1</translation>
     </message>
     <message>
-        <location filename="../src/dsp/musical_scale.cpp" line="459"/>
+        <location filename="../src/dsp/musical_scale.cpp" line="460"/>
         <source>Japanese 2</source>
         <translation type="unfinished">日本 2</translation>
     </message>
@@ -16365,7 +16807,7 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::dsp::SnapGrid</name>
     <message>
-        <location filename="../src/dsp/snap_grid.cpp" line="173"/>
+        <location filename="../src/dsp/snap_grid.cpp" line="87"/>
         <source>Adaptive</source>
         <translation type="unfinished"></translation>
     </message>
@@ -16373,39 +16815,69 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::engine::session</name>
     <message>
-        <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished">无</translation>
+        <translation type="obsolete">无</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="39"/>
         <source>1 bar</source>
-        <translation type="unfinished">1 小节</translation>
+        <translation type="obsolete">1 小节</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="40"/>
         <source>2 bars</source>
-        <translation type="unfinished">2 小节</translation>
+        <translation type="obsolete">2 小节</translation>
     </message>
     <message>
-        <location filename="../src/engine/session/transport.h" line="41"/>
         <source>4 bars</source>
-        <translation type="unfinished">4 小节</translation>
+        <translation type="obsolete">4 小节</translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectManager</name>
     <message>
-        <location filename="../src/gui/backend/project_manager.cpp" line="228"/>
         <source>Failed to load project</source>
-        <translation>无法加载工程</translation>
+        <translation type="vanished">无法加载工程</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="293"/>
+        <source>Loading project file...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="345"/>
+        <source>Creating project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="363"/>
+        <source>Deserializing project data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
+        <source>Setting up project...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
+        <source>Rebuilding audio graph...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="399"/>
+        <source>Starting engine...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
+        <source>Project loaded</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>zrythm::gui::ProjectTemplatesModel</name>
     <message>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="28"/>
-        <location filename="../src/gui/backend/project_templates_model.cpp" line="63"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
+        <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
         <translation>空白工程</translation>
     </message>
@@ -16413,22 +16885,22 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::gui::ZrythmApplication</name>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="392"/>
         <source>Open project</source>
         <translation>打开工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="393"/>
         <source>Create new project</source>
         <translation>新建工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
         <source>Create new project with template</source>
         <translation>使用模板新建工程</translation>
     </message>
     <message>
-        <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
+        <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>
         <source>Use dummy audio/midi engine</source>
         <translation>使用虚拟音频/ MIDI 引擎</translation>
     </message>
@@ -16436,7 +16908,7 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::plugins::PluginScanManager</name>
     <message>
-        <location filename="../src/plugins/plugin_scan_manager.cpp" line="127"/>
+        <location filename="../src/plugins/plugin_scan_manager.cpp" line="128"/>
         <source>Scanning...</source>
         <translation type="unfinished">搜索中...</translation>
     </message>
@@ -16451,9 +16923,8 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::structure::tracks::TrackLane</name>
     <message>
-        <location filename="../src/structure/tracks/track_lane.h" line="56"/>
         <source>Lane {}</source>
-        <translation type="unfinished">轨道通道 {}</translation>
+        <translation type="obsolete">轨道通道 {}</translation>
     </message>
 </context>
 <context>
@@ -16487,7 +16958,7 @@ Support this project at https://liberapay.com/Zrythm
 <context>
     <name>zrythm::utils::exceptions::ZrythmException</name>
     <message>
-        <location filename="../src/utils/exceptions.cpp" line="32"/>
+        <location filename="../src/utils/exceptions.cpp" line="39"/>
         <source>Error</source>
         <translation type="unfinished">错误</translation>
     </message>

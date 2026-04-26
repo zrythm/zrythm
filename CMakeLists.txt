@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 cmake_minimum_required(VERSION 3.24)
@@ -1223,6 +1223,14 @@ if(NOT XCODE)
     TS_FILE_DIR i18n
     MERGE_QT_TRANSLATIONS
     QT_TRANSLATION_CATALOGS qtbase
+  )
+  set_property(TARGET zrythm PROPERTY QT_EXCLUDE_SOURCES_FROM_TRANSLATION
+    "${CMAKE_CURRENT_BINARY_DIR}/attributions_sbom.txt"
+    "${CMAKE_SOURCE_DIR}/ext/*"
+    "${CMAKE_SOURCE_DIR}/.cache/CPM/*"
+    "${CMAKE_SOURCE_DIR}/src/gui/resources/icons/*"
+    "${CMAKE_SOURCE_DIR}/LICENSES/*"
+    "${CMAKE_SOURCE_DIR}/TRADEMARKS.md"
   )
 endif()
 
