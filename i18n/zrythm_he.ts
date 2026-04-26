@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm והלוגו של Zrythm הם סימנים מסחריים של Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -470,7 +470,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>תרום</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>

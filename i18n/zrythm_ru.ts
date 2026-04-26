@@ -7,32 +7,32 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished">Про Zrythm</translation>
+        <translation>О Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Лицензировано под GNU AGPLv3.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Посмотреть лицензию</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Товарно-знаковая политика</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Уведомления третьих лиц</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm и логотип Zrythm являются товарными знаками, принадлежащие Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделить всё (Select All)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,17 +55,17 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать (Copy)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставить (Paste)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить (Delete)</translation>
     </message>
 </context>
 <context>
@@ -238,12 +238,12 @@
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
         <source>Stop Scenes</source>
-        <translation type="unfinished"></translation>
+        <translation>Остановить сцены</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
         <source>Play Scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Проиграть сцену</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
@@ -428,7 +428,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить (Mute)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки канала</translation>
     </message>
 </context>
 <context>
@@ -561,7 +561,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="392"/>
         <source>About Zrythm</source>
-        <translation>Про Zrythm</translation>
+        <translation>О Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="352"/>
@@ -576,7 +576,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="382"/>
         <source>Device Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбор устройств</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="455"/>
@@ -624,7 +624,7 @@
     <message>
         <location filename="../src/gui/qml/components/basic/Knob.qml" line="97"/>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Привязать MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -665,7 +665,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
         <source>Undo</source>
-        <translation type="unfinished"></translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
@@ -680,7 +680,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Системный</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Устройства</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -832,12 +832,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
         <source>Listen Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Прослушать ноты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать значения автоматизации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
@@ -870,7 +870,7 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="72"/>
         <source>%1 muted</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 заглушено</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="76"/>
@@ -885,7 +885,7 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="101"/>
         <source>%1 listened</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 прослушано</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="105"/>
@@ -901,7 +901,7 @@
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="138"/>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="220"/>
         <source>Mute</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить (Mute)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="157"/>
@@ -932,7 +932,7 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="223"/>
         <source>Mute output</source>
-        <translation type="unfinished"></translation>
+        <translation>Заглушить вывод</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="238"/>
@@ -942,7 +942,7 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="254"/>
         <source>Device Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки устройств</translation>
     </message>
 </context>
 <context>
@@ -1144,22 +1144,22 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Remove Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить плагин</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Add Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить плагин</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
         <source>Show Plugin UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать интерфейс плагина</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Свойства</translation>
     </message>
 </context>
 <context>
@@ -1279,7 +1279,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
         <source>&lt;no track&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;нет дорожки&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
@@ -1289,7 +1289,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
         <source>Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Маркеры (Markers)</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
@@ -2170,7 +2170,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="428"/>
         <source>No Thank You</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет, спасибо</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="441"/>
@@ -2180,7 +2180,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="209"/>
         <source>{} Output</source>
-        <translation type="unfinished"></translation>
+        <translation>{} Выход</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="301"/>
@@ -2191,7 +2191,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
         <source>Stereo?</source>
-        <translation type="unfinished">Стерео Вход</translation>
+        <translation>Стерео?</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
@@ -2868,7 +2868,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/io/midi_file.cpp" line="123"/>
         <source>Untitled Track {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Безымянная дорожка {}</translation>
     </message>
     <message>
         <source>Default bank</source>
@@ -2987,7 +2987,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation type="unfinished"></translation>
+        <translation>Экспериментальные функции</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="489"/>
@@ -3003,7 +3003,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Сила (Amount)</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3018,7 +3018,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
         <source>Add Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить объект</translation>
     </message>
     <message>
         <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
@@ -3029,7 +3029,7 @@ Bit depth: {} bits</source>
         <location filename="../src/commands/add_track_command.h" line="22"/>
         <location filename="../src/actions/track_creator.cpp" line="31"/>
         <source>Add Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить дорожку</translation>
     </message>
     <message>
         <location filename="../src/commands/route_track_command.h" line="27"/>
@@ -3045,7 +3045,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/commands/change_track_color_command.h" line="19"/>
         <source>Change Track Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить цвет дорожки</translation>
     </message>
     <message>
         <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
@@ -3065,7 +3065,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/commands/rename_track_command.h" line="19"/>
         <source>Rename Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Переименовать дорожку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
@@ -3188,60 +3188,60 @@ Support this project at {}
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Такт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/1</source>
-        <translation type="unfinished"></translation>
+        <translation>1/1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/2</source>
-        <translation type="unfinished"></translation>
+        <translation>1/2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/4</source>
-        <translation type="unfinished"></translation>
+        <translation>1/4</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/8</source>
-        <translation type="unfinished"></translation>
+        <translation>1/8</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/16</source>
-        <translation type="unfinished"></translation>
+        <translation>1/16</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/32</source>
-        <translation type="unfinished"></translation>
+        <translation>1/32</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/64</source>
-        <translation type="unfinished"></translation>
+        <translation>1/64</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/128</source>
-        <translation type="unfinished"></translation>
+        <translation>1/128</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
         <source>Note Type</source>
-        <translation type="unfinished">тип ноты</translation>
+        <translation>Тип ноты</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
@@ -3346,7 +3346,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Тактовый размер (Time Signature)</translation>
     </message>
 </context>
 <context>
@@ -3438,7 +3438,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
         <source>Drop files and plugins here</source>
-        <translation type="unfinished"></translation>
+        <translation>Перетащите файлы и плагины сюда</translation>
     </message>
 </context>
 <context>
@@ -3461,8 +3461,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Import File...</source>
-        <translation type="unfinished">
-Еще 1 файл...</translation>
+        <translation>Импортировать файл...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="56"/>
@@ -3497,7 +3496,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="111"/>
         <source>Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Инспектор таймлайна</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="122"/>
@@ -17254,7 +17253,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет (None)</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="39"/>

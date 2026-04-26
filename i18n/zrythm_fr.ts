@@ -7,7 +7,7 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished">À propos de Zrythm</translation>
+        <translation>À propos de Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm et le logo Zrythm sont des marques déposées d&apos;Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Tout sélectionner</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copier</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Coller</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Périphériques</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -832,12 +832,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
         <source>Listen Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Écouter les notes</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les valeurs d&apos;automation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
@@ -3059,7 +3059,7 @@ Définition&#xa0;: {} bits</translation>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Quantité</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
@@ -3069,7 +3069,7 @@ Définition&#xa0;: {} bits</translation>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
         <source>MIDI output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie MIDI</translation>
     </message>
     <message>
         <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
@@ -3402,7 +3402,7 @@ Pour supporter ce projet&#xa0;: https://liberapay.com/Zrythm et pour supporter l
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Signature temporelle</translation>
     </message>
 </context>
 <context>

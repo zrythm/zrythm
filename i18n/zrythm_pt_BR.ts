@@ -7,47 +7,47 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobre o Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Licenciado sob a licença GNU AGPLv3.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Ver Licença</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Política de Marca Comercial</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Notas de Terceiros</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm e o logotipo do Zrythm são marcas comerciais de Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Copiar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecionar Tudo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Voltar</translation>
     </message>
 </context>
 <context>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Colar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Testar</translation>
     </message>
 </context>
 <context>
@@ -119,7 +119,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="182"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Esconder automação</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="206"/>
@@ -367,7 +367,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="141"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cores do tema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="144"/>
@@ -387,7 +387,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="171"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="174"/>
@@ -423,7 +423,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
         <source>Solo</source>
-        <translation type="unfinished">Solo</translation>
+        <translation>Solo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurações de canal</translation>
     </message>
 </context>
 <context>
@@ -474,12 +474,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>Faça uma doação</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
         <source>Zrythm relies on donations and purchases to sustain development. If you enjoy the software, please consider %1donating%2 or %3buying an installer%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm depende de doações e compras para sustentar o desenvolvimento. Se você curte o software, por favor considere %1doar%2 ou %3comprar um instalador%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="96"/>
@@ -505,18 +505,18 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="163"/>
         <source>Read the Manual</source>
-        <translation type="unfinished"></translation>
+        <translation>Leia o manual</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="161"/>
         <source>If this is your first time using Zrythm, we suggest going through the &apos;Getting Started&apos; section in the %1user manual%2.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se essa é a sua primeira vez usando o Zrythm, sugerimos que você passe pela seção de &apos;Começando&apos; no %1manual do usuário%2.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="220"/>
         <location filename="../src/gui/qml/Greeter.qml" line="257"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuração</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="265"/>
@@ -526,17 +526,17 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="247"/>
         <source>‹</source>
-        <translation type="unfinished"></translation>
+        <translation>‹</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Continuar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
         <source>Progress</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Progresso</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="310"/>
@@ -660,7 +660,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Editar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
@@ -670,7 +670,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Visualizar</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
@@ -680,12 +680,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Sistema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
         <source>Appearance</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparência</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
@@ -695,7 +695,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
         <source>Theme Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Cores do tema</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
@@ -740,12 +740,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
         <source>&amp;Help</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ajuda</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Sobre o Zrythm</translation>
     </message>
 </context>
 <context>
@@ -753,22 +753,22 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
         <source>Toggle Left Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar painel esquerdo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
         <source>Toggle Right Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Alternar painel direito</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="124"/>
         <source>Open a Project…</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir um projeto…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="130"/>
@@ -1328,7 +1328,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="864"/>
         <source>Failed to save the project</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao salvar o projeto</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="969"/>
@@ -1338,7 +1338,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao criar pasta de backup</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
@@ -1432,12 +1432,12 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="418"/>
         <source>Cannot perform {} resize - selections contain looped objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível fazer redimensionamento de {} - as seleções contêm objetos em loop</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="429"/>
         <source>Cannot perform {} resize - selections contain unloopable objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Não é possível fazer redimensionamento de {} - as seleções contêm objetos que não podem ser colocados em loop</translation>
     </message>
     <message>
         <source>Create timeline selections</source>
@@ -1512,7 +1512,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2254"/>
         <source>Resize arranger selections - {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Redimensionar seleções do arranjador - {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2257"/>
@@ -1582,7 +1582,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="728"/>
         <source>Project Reload Needed</source>
-        <translation type="unfinished">Projeto salvo.</translation>
+        <translation>Recarga do projeto necessária</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="729"/>
@@ -1592,7 +1592,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1165"/>
         <source>Create {}</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar {}</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1170"/>
@@ -1607,7 +1607,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
         <source>Delete {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Excluir {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1186"/>
@@ -1617,7 +1617,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1192"/>
         <source>Move {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1198"/>
@@ -1627,7 +1627,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1204"/>
         <source>Copy {} Plugins</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar {} Plugins</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1210"/>
@@ -2195,7 +2195,7 @@ Usar o backup mais recente?</translation>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
         <source>Stereo?</source>
-        <translation type="unfinished">Entrada Estéreo</translation>
+        <translation type="unfinished">Estéreo</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/plugin_configuration_manager.cpp" line="337"/>
@@ -3258,7 +3258,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/basic/SoloButton.qml" line="21"/>
         <source>Solo</source>
-        <translation type="unfinished">Solo</translation>
+        <translation>Solo</translation>
     </message>
 </context>
 <context>
@@ -3282,7 +3282,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="23"/>
         <source>Tempo</source>
-        <translation type="unfinished">Tempo</translation>
+        <translation>Tempo</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
@@ -3395,8 +3395,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="49"/>
         <source>Import File...</source>
-        <translation type="unfinished">
-Mais 1 arquivo...</translation>
+        <translation>Importar arquivo...</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="56"/>

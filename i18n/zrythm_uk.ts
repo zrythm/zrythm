@@ -7,47 +7,47 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ліцензовано за ліцензією GNU AGPLv3.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Переглянути ліцензію</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Політика щодо торговельних марок</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Повідомлення третіх сторін</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm і логотип Zrythm є торговими знаками Александроса Теодоту.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Копіювати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Виділити все/Select All</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Назад</translation>
     </message>
 </context>
 <context>
@@ -55,17 +55,17 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="342"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Скопіювати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="348"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Вставити</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="354"/>
         <source>Delete</source>
-        <translation type="unfinished">Видалити</translation>
+        <translation>Видалити</translation>
     </message>
 </context>
 <context>
@@ -73,7 +73,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="38"/>
         <source>Test</source>
-        <translation type="unfinished">Тест</translation>
+        <translation>Тест</translation>
     </message>
 </context>
 <context>
@@ -81,12 +81,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="33"/>
         <source>Drum Notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Нотація барабанів</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="56"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Збільшити</translation>
+        <translation>Збільшити масштаб</translation>
     </message>
 </context>
 <context>
@@ -132,12 +132,12 @@
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="32"/>
         <source>Reset</source>
-        <translation type="unfinished">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="40"/>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив’язка MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -145,12 +145,12 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="37"/>
         <source>Select a clip from the timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Виберіть кліп на часовій шкалі</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="39"/>
         <source>No clip selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Кліп не вибрано</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="86"/>
@@ -160,7 +160,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="91"/>
         <source>Mixer</source>
-        <translation>Міксер</translation>
+        <translation>Мікшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="96"/>
@@ -182,7 +182,7 @@
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="301"/>
         <source>Arrangement</source>
-        <translation type="unfinished"></translation>
+        <translation>Композиція</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/CenterDock.qml" line="306"/>
@@ -200,37 +200,37 @@
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
         <source>Start Playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Почати відтворення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="80"/>
         <source> (Right-click for quantization options)</source>
-        <translation type="unfinished"></translation>
+        <translation> (Клацніть правою кнопкою миші, щоб переглянути параметри квантування)</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="83"/>
         <source>Stop Playback</source>
-        <translation type="unfinished"></translation>
+        <translation>Зупинити &amp;відтворення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="91"/>
         <source>Launch Quantization</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск квантування</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="94"/>
         <source>Launch Immediately</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустити негайно</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="100"/>
         <source>Launch on Next Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск на наступному рядку</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLaunchButton.qml" line="106"/>
         <source>Launch on Next Beat</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск на наступному такті</translation>
     </message>
 </context>
 <context>
@@ -238,17 +238,17 @@
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="69"/>
         <source>Stop Scenes</source>
-        <translation type="unfinished"></translation>
+        <translation>Зупинити сцени</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="106"/>
         <source>Play Scene</source>
-        <translation type="unfinished"></translation>
+        <translation>Відтворити сцену</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/ClipLauncherView.qml" line="131"/>
         <source>Switch Playback to Timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемикання відтворення на часову шкалу</translation>
     </message>
 </context>
 <context>
@@ -261,7 +261,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="340"/>
         <source>Mixer</source>
-        <translation>Міксер</translation>
+        <translation>Мікшер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="346"/>
@@ -327,7 +327,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="98"/>
         <source>Redo Multiple</source>
-        <translation>Повторити декілька</translation>
+        <translation>Повторити Декілька</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="107"/>
@@ -342,17 +342,17 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="114"/>
         <source>Open</source>
-        <translation>ВІДЧИНЕНО</translation>
+        <translation>Відкритий</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="119"/>
         <source>&amp;Edit</source>
-        <translation>&amp;Редагувати</translation>
+        <translation>З&amp;міни</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="127"/>
         <source>&amp;View</source>
-        <translation>&amp;Переглянути</translation>
+        <translation>&amp;Перегляд</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="130"/>
@@ -367,7 +367,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="141"/>
         <source>Theme Color</source>
-        <translation>Колір теми</translation>
+        <translation>Кольори теми</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="144"/>
@@ -387,7 +387,7 @@
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="171"/>
         <source>&amp;Help</source>
-        <translation>&amp;Довідка</translation>
+        <translation>Д&amp;овідка</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/DemoView.qml" line="174"/>
@@ -400,12 +400,12 @@
     <message>
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
         <source>DSP Load:</source>
-        <translation type="unfinished"></translation>
+        <translation>Навантаження DSP:</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/DspLoadIndicator.qml" line="26"/>
         <source>XRun Count:</source>
-        <translation type="unfinished"></translation>
+        <translation>Кількість XRun:</translation>
     </message>
 </context>
 <context>
@@ -413,37 +413,37 @@
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="38"/>
         <source>Mono compatibility</source>
-        <translation type="unfinished">Моно сумісність</translation>
+        <translation>Моносумісність</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="55"/>
         <source>Record</source>
-        <translation type="unfinished">Запис</translation>
+        <translation>Запису</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="71"/>
         <source>Solo</source>
-        <translation type="unfinished">Соло</translation>
+        <translation>Соло</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="94"/>
         <source>Mute</source>
-        <translation type="unfinished">Вимкнути звук</translation>
+        <translation>Вимкнути звук</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="124"/>
         <source>Listen</source>
-        <translation type="unfinished">Слухати</translation>
+        <translation>Слухати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="147"/>
         <source>Swap phase</source>
-        <translation type="unfinished"></translation>
+        <translation>Фаза обміну</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderButtons.qml" line="165"/>
         <source>Channel settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування каналу</translation>
     </message>
 </context>
 <context>
@@ -451,12 +451,12 @@
     <message>
         <location filename="../src/gui/qml/components/FaderControl.qml" line="36"/>
         <source>Reset</source>
-        <translation type="unfinished">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/FaderControl.qml" line="44"/>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив’язка MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -474,7 +474,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="88"/>
         <source>Donate</source>
-        <translation>Пожертвуйте</translation>
+        <translation>Пожертвувати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="86"/>
@@ -531,7 +531,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="233"/>
         <source>Continue</source>
-        <translation>Продовжити</translation>
+        <translation>Продовжуйте</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="293"/>
@@ -576,7 +576,7 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="382"/>
         <source>Device Selector</source>
-        <translation type="unfinished"></translation>
+        <translation>Вибір пристрою</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="455"/>
@@ -596,12 +596,12 @@
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="497"/>
         <source>Create Project</source>
-        <translation>Створити проект</translation>
+        <translation>Створити Проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="513"/>
         <source>Creating Project</source>
-        <translation>Створення проекту</translation>
+        <translation>Створиння Проєкту</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="526"/>
@@ -619,12 +619,12 @@
     <message>
         <location filename="../src/gui/qml/components/basic/Knob.qml" line="89"/>
         <source>Reset</source>
-        <translation type="unfinished">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/basic/Knob.qml" line="97"/>
         <source>Bind MIDI CC</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив’язка MIDI CC</translation>
     </message>
 </context>
 <context>
@@ -645,107 +645,107 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="18"/>
         <source>&amp;File</source>
-        <translation type="unfinished">&amp;Файл</translation>
+        <translation>&amp;Файл</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="21"/>
         <source>New Long Long Long Long Long Long Long Long Long Name</source>
-        <translation type="unfinished">Нове Довге Ім&apos;я</translation>
+        <translation>Нове Довге Довге Довге Довге Довге Довге Довге Довге Ім&apos;я</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="25"/>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкрити</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="30"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Редагувати</translation>
+        <translation>&amp;Редагувати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="33"/>
         <source>Undo</source>
-        <translation type="unfinished">Скасувати</translation>
+        <translation>Відмінити</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="38"/>
         <source>&amp;View</source>
-        <translation type="unfinished">&amp;Переглянути</translation>
+        <translation>&amp;Переглянути</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
         <source>Language</source>
-        <translation type="unfinished">Мова</translation>
+        <translation>Мова</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
         <source>System</source>
-        <translation type="unfinished"></translation>
+        <translation>Система</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="84"/>
         <source>Appearance</source>
-        <translation type="unfinished">Зовнішній вигляд</translation>
+        <translation>Зовнішній вигляд</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="88"/>
         <source>Switch Light/Dark Theme</source>
-        <translation type="unfinished">Перемикайте світлу/темну тему</translation>
+        <translation>Перемикайте світлу/темну тему</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="96"/>
         <source>Theme Color</source>
-        <translation type="unfinished">Колір теми</translation>
+        <translation>Колір теми</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="100"/>
         <source>Zrythm Orange</source>
-        <translation type="unfinished">Zrythm Помаранчевий</translation>
+        <translation>Zrythm Помаранчевий</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="108"/>
         <source>Celestial Blue</source>
-        <translation type="unfinished">Небесна блакить</translation>
+        <translation>Небесна блакить</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="117"/>
         <source>Jonquil Yellow</source>
-        <translation type="unfinished">Jonquil Жовтий</translation>
+        <translation>Жовтий Джонквіл</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="126"/>
         <source>Spring Green</source>
-        <translation type="unfinished"></translation>
+        <translation>Весняна зелень</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="135"/>
         <source>Munsell Red</source>
-        <translation type="unfinished"></translation>
+        <translation>Манселл Ред</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="144"/>
         <source>Gunmetal</source>
-        <translation type="unfinished"></translation>
+        <translation>Гвинтовий метал</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="155"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>Пристрої</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="158"/>
         <source>Audio/MIDI Setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування аудіо/MIDI</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="167"/>
         <source>&amp;Help</source>
-        <translation type="unfinished">&amp;Довідка</translation>
+        <translation>&amp;Допомога</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="170"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Про Zrythm</translation>
     </message>
 </context>
 <context>
@@ -753,12 +753,12 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="38"/>
         <source>Toggle Left Panel</source>
-        <translation>Перемкнути ліву панель</translation>
+        <translation>Перемикнути ліву панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="107"/>
         <source>Toggle Right Panel</source>
-        <translation>Перемкнути праву панель</translation>
+        <translation>Перемикнути праву панель</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="115"/>
@@ -797,7 +797,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="169"/>
         <source>Fullscreen</source>
-        <translation>Повний екран</translation>
+        <translation>На весь екран</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="182"/>
@@ -807,7 +807,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="190"/>
         <source>Keyboard Shortcuts</source>
-        <translation>Комбінації клавіш</translation>
+        <translation>Сполучення клавіш</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainToolbar.qml" line="198"/>
@@ -827,27 +827,27 @@
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Нотація барабанів</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="44"/>
         <source>Listen Notes</source>
-        <translation type="unfinished"></translation>
+        <translation>Нотатки для прослуховування</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="53"/>
         <source>Show Automation Values</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати значення автоматизації</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="76"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Збільшити</translation>
+        <translation>Збільшити масштаб</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/MidiEditorPane.qml" line="157"/>
         <source>Velocity</source>
-        <translation type="unfinished">Швидкість</translation>
+        <translation>Швидкість</translation>
     </message>
 </context>
 <context>
@@ -855,94 +855,94 @@
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="35"/>
         <source>%1 soloed</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 соло</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="39"/>
         <source>Currently soloed tracks</source>
-        <translation type="unfinished">Сольні наразі доріжки</translation>
+        <translation>Поточні сольні треки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="58"/>
         <source>Unsolo all tracks</source>
-        <translation type="unfinished">Прибрати соло всіх доріжок/Unsolo all tracks</translation>
+        <translation>Unsolo всі треки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="72"/>
         <source>%1 muted</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 вимкнено звук</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="76"/>
         <source>Currently muted tracks</source>
-        <translation type="unfinished">Наразі приглушені доріжки</translation>
+        <translation>Наразі вимкнено звук треків</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="87"/>
         <source>Unmute all tracks</source>
-        <translation type="unfinished">Увімкнути всі доріжки</translation>
+        <translation>Увімкнути звук у всіх треках</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="101"/>
         <source>%1 listened</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 прослухав</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="105"/>
         <source>Currently listened tracks</source>
-        <translation type="unfinished">Наразі прослухані доріжки</translation>
+        <translation>Треки, які зараз прослуховуються</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="116"/>
         <source>Unlisten all tracks</source>
-        <translation type="unfinished">Скасувати список усіх доріжок</translation>
+        <translation>Скасувати прослуховування всіх треків</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="138"/>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="220"/>
         <source>Mute</source>
-        <translation type="unfinished">Вимкнути звук</translation>
+        <translation>Вимкнути звук</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="157"/>
         <source>Listen</source>
-        <translation type="unfinished">Слухати</translation>
+        <translation>Слухати</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="175"/>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="209"/>
         <source>Dim</source>
-        <translation type="unfinished">Зниж</translation>
+        <translation>Зниж</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="198"/>
         <source>Mono</source>
-        <translation type="unfinished">Моно</translation>
+        <translation>Моно</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="201"/>
         <source>Sum to mono</source>
-        <translation type="unfinished"></translation>
+        <translation>Підсумовування до моно</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="212"/>
         <source>Dim output</source>
-        <translation type="unfinished"></translation>
+        <translation>Димний вихід</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="223"/>
         <source>Mute output</source>
-        <translation type="unfinished"></translation>
+        <translation>Вимкнути звук виходу</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="238"/>
         <source>Monitor</source>
-        <translation type="unfinished">Монітор</translation>
+        <translation>Монітор</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MonitorSection.qml" line="254"/>
         <source>Device Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Налаштування Пристрою</translation>
     </message>
 </context>
 <context>
@@ -1220,22 +1220,22 @@
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Remove Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Зніміть плагін</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="33"/>
         <source>Add Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати плагін</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="45"/>
         <source>Show Plugin UI</source>
-        <translation type="unfinished"></translation>
+        <translation>Показати інтерфейс плагіна</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginSlotView.qml" line="59"/>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Властивості</translation>
     </message>
 </context>
 <context>
@@ -1359,7 +1359,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="43"/>
         <source>&lt;no track&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;немає треку&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="516"/>
@@ -1369,7 +1369,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="603"/>
         <source>Markers</source>
-        <translation type="unfinished"></translation>
+        <translation>Маркери</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="744"/>
@@ -1394,7 +1394,7 @@
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1157"/>
         <source>Failed to create backup directory</source>
-        <translation>Не вдалося створити каталог резервного копіювання</translation>
+        <translation>Не вдалося створити вихідну теку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/project.cpp" line="1231"/>
@@ -1542,7 +1542,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2232"/>
         <source>Create arranger objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Створення об&apos;єктів аранжування</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/arranger_selections_action.cpp" line="2234"/>
@@ -1617,7 +1617,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="250"/>
         <source>Disconnect</source>
-        <translation>Відключити</translation>
+        <translation>Відʼєднати</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/channel_send_action.cpp" line="252"/>
@@ -1682,7 +1682,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1175"/>
         <source>Delete Plugin</source>
-        <translation>Видалити плагін</translation>
+        <translation>Видалити розширення</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/mixer_selections_action.cpp" line="1180"/>
@@ -1833,7 +1833,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1710"/>
         <source>Delete {} Tracks</source>
-        <translation>Видалити {} треків</translation>
+        <translation>Видалити всі треки</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1719"/>
@@ -1924,7 +1924,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1763"/>
         <source>Rename track</source>
-        <translation>Перейменувати трек</translation>
+        <translation>Перейменувати Трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1765"/>
@@ -1935,12 +1935,12 @@ Use the newer backup?</source>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1767"/>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1813"/>
         <source>Change color</source>
-        <translation>Змінити колір</translation>
+        <translation>Зміна кольору</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1769"/>
         <source>Change icon</source>
-        <translation>Змінити значок</translation>
+        <translation>Змінити іконку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1771"/>
@@ -2016,7 +2016,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1823"/>
         <source>Edit tracks</source>
-        <translation>Редагувати треки</translation>
+        <translation>Редагувати трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1831"/>
@@ -2026,7 +2026,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1832"/>
         <source>Move Track</source>
-        <translation>Перемістити трек</translation>
+        <translation>Пересунути доріжку</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/actions/tracklist_selections_action.cpp" line="1839"/>
@@ -2164,7 +2164,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="210"/>
         <source>Connect</source>
-        <translation>Підключитися</translation>
+        <translation>З’єднатись</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/backend/settings/chord_preset_pack_manager.cpp" line="226"/>
@@ -2595,7 +2595,7 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/structure/tracks/fader.cpp" line="47"/>
         <source>Fader Gain</source>
-        <translation type="unfinished"></translation>
+        <translation>Підсилення фейдера</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/fader.cpp" line="135"/>
@@ -2605,12 +2605,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/structure/tracks/fader.cpp" line="147"/>
         <source>Fader input</source>
-        <translation type="unfinished"></translation>
+        <translation>Вхід фейдера</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/fader.cpp" line="160"/>
         <source>Fader output</source>
-        <translation type="unfinished"></translation>
+        <translation>Вихід фейдера</translation>
     </message>
     <message>
         <source>Prefader Volume</source>
@@ -2751,12 +2751,12 @@ Use the newer backup?</source>
     <message>
         <location filename="../src/dsp/modulator_macro_processor.cpp" line="40"/>
         <source>Macro {} CV In</source>
-        <translation type="unfinished"></translation>
+        <translation>Макрос {} резюме вхід</translation>
     </message>
     <message>
         <location filename="../src/dsp/modulator_macro_processor.cpp" line="52"/>
         <source>Macro {} CV Out</source>
-        <translation type="unfinished"></translation>
+        <translation>Макрос {} CV вихід</translation>
     </message>
     <message>
         <source>Macro CV In {}</source>
@@ -3074,7 +3074,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/plugins/plugin.cpp" line="34"/>
         <source>Bypass</source>
-        <translation type="unfinished">Обхід</translation>
+        <translation>Байпас</translation>
     </message>
     <message>
         <location filename="../src/plugins/plugin.cpp" line="37"/>
@@ -3118,7 +3118,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/utils/exceptions.cpp" line="32"/>
         <source>Details</source>
-        <translation>Подробиці</translation>
+        <translation>Деталі</translation>
     </message>
     <message>
         <location filename="../src/utils/logger.cpp" line="170"/>
@@ -3130,7 +3130,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="455"/>
         <source>A locale for the language you have selected ({}) is not available. Please install one first and restart {}</source>
-        <translation>Мова для вибраної мови ({}) недоступна. Спочатку встановіть один і перезапустіть {}</translation>
+        <translation>Локаль для вибраної вами мови (%s) недоступна. Спочатку встановіть один і перезапустіть %s</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="461"/>
@@ -3146,7 +3146,7 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="488"/>
         <source>Experimental Feature</source>
-        <translation>Експериментальна функція</translation>
+        <translation>Експериментальні функції</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/ui.cpp" line="489"/>
@@ -3176,69 +3176,69 @@ Bit depth: {} bits</source>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="29"/>
         <source>Amount</source>
-        <translation type="unfinished"></translation>
+        <translation>Сума</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="56"/>
         <source>MIDI input</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI-вхід</translation>
     </message>
     <message>
         <location filename="../src/structure/tracks/channel_send.cpp" line="64"/>
         <source>MIDI output</source>
-        <translation type="unfinished"></translation>
+        <translation>MIDI-вихід</translation>
     </message>
     <message>
         <location filename="../src/commands/add_arranger_object_command.h" line="23"/>
         <source>Add Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../src/commands/add_region_to_clip_slot_command.h" line="22"/>
         <source>Add Clip</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати кліп</translation>
     </message>
     <message>
         <location filename="../src/commands/add_track_command.h" line="22"/>
         <location filename="../src/actions/track_creator.cpp" line="31"/>
         <source>Add Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати Трек</translation>
     </message>
     <message>
         <location filename="../src/commands/route_track_command.h" line="27"/>
         <source>Route Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Маршрут</translation>
     </message>
     <message>
         <location filename="../src/commands/change_parameter_value_command.h" line="21"/>
         <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
         <source>Change &apos;%1&apos; value to %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Змінити значення &apos;%1&apos; на %2</translation>
     </message>
     <message>
         <location filename="../src/commands/change_track_color_command.h" line="19"/>
         <source>Change Track Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Змінити колір доріжки</translation>
     </message>
     <message>
         <location filename="../src/commands/move_arranger_objects_command.h" line="23"/>
         <source>Move Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Переміщення об&apos;єктів</translation>
     </message>
     <message>
         <location filename="../src/commands/move_plugin_command.h" line="27"/>
         <source>Move Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемістити плагін</translation>
     </message>
     <message>
         <location filename="../src/commands/relocate_arranger_object_command.h" line="22"/>
         <source>Relocate Object</source>
-        <translation type="unfinished"></translation>
+        <translation>Перемістити об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../src/commands/rename_track_command.h" line="19"/>
         <source>Rename Track</source>
-        <translation type="unfinished"></translation>
+        <translation>Перейменувати трек</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="102"/>
@@ -3254,15 +3254,15 @@ Write comments and bugs to {}
 Support this project at {}
 
 </source>
-        <translation type="unfinished">{}-{}
+        <translation>{}-{}
 {}
 
-{} не надає АБСОЛЮТНО ЖОДНИХ ГАРАНТІЙ!
+{} поставляється БЕЗ ЖОДНОЇ ГАРАНТІЇ!
 
-Це безкоштовне програмне забезпечення, і ви можете поширювати його
-за певних умов. Подробиці див. у файлі «КОПІЮВАННЯ».
+Це безкоштовне програмне забезпечення, і ви можете розповсюджувати його
+за певних умов. Детальніше дивіться у файлі «COPYING».
 
-Пишіть коментарі та помилки до {}
+Надсилайте коментарі та повідомлення про помилки на {}
 Підтримайте цей проект на {}
 
 </translation>
@@ -3319,170 +3319,170 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="29"/>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Вимк</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="38"/>
         <source>%1 - Last object</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 – Останній об’єкт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="41"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="52"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="73"/>
         <source>Snap/Grid Settings</source>
-        <translation type="unfinished">Параметри прив&apos;язки/сітки / Snap/Grid options</translation>
+        <translation>Налаштування прив&apos;язки/сітки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="79"/>
         <source>Position Snap</source>
-        <translation type="unfinished">Позиція</translation>
+        <translation>Прив’язка положення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="89"/>
         <source>Snap to Grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив&apos;язати до сітки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="103"/>
         <source>Adaptive Snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Адаптивне прив&apos;язування</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="118"/>
         <source>Snap Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Довжина закріплення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>Bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Бар</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/1</source>
-        <translation type="unfinished"></translation>
+        <translation>1/1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/2</source>
-        <translation type="unfinished"></translation>
+        <translation>1/2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/4</source>
-        <translation type="unfinished"></translation>
+        <translation>1/4</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/8</source>
-        <translation type="unfinished"></translation>
+        <translation>1/8</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/16</source>
-        <translation type="unfinished"></translation>
+        <translation>1/16</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/32</source>
-        <translation type="unfinished"></translation>
+        <translation>1/32</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/64</source>
-        <translation type="unfinished"></translation>
+        <translation>1/64</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="147"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="292"/>
         <source>1/128</source>
-        <translation type="unfinished"></translation>
+        <translation>1/128</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="160"/>
         <source>Note Type</source>
-        <translation type="unfinished">тип ноти</translation>
+        <translation>Тип примітки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Normal</source>
-        <translation type="unfinished">Нормальна</translation>
+        <translation>Звичайний</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Triplet</source>
-        <translation type="unfinished"></translation>
+        <translation>Триплет</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="177"/>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="324"/>
         <source>Dotted</source>
-        <translation type="unfinished"></translation>
+        <translation>Пунктирний</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="190"/>
         <source>Keep Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберегти зсув</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="205"/>
         <source>Snap to Events</source>
-        <translation type="unfinished"></translation>
+        <translation>Прив’язати до подій</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="221"/>
         <source>Default Object Length</source>
-        <translation type="unfinished">Банк за замовчуванням</translation>
+        <translation>Довжина об&apos;єкта за замовчуванням</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="231"/>
         <source>Length Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип довжини</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
         <source>Link to snap</source>
-        <translation type="unfinished"></translation>
+        <translation>Посилання до Snap</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
         <source>Last object</source>
-        <translation type="unfinished">Завантаження проєкту</translation>
+        <translation>Останній Об&apos;єкт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="248"/>
         <source>Custom</source>
-        <translation type="unfinished">Спеціальний маркер</translation>
+        <translation>Користувацька</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="263"/>
         <source>Custom Length</source>
-        <translation type="unfinished"></translation>
+        <translation>Інший період</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="307"/>
         <source>Custom Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Власний тип</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/SnapGridButton.qml" line="338"/>
         <source>Close</source>
-        <translation type="unfinished">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -3498,7 +3498,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/SpectrumAnalyzer.qml" line="98"/>
         <source>Master Output Spectrum</source>
-        <translation type="unfinished"></translation>
+        <translation>Спектр головного виходу</translation>
     </message>
 </context>
 <context>
@@ -3506,7 +3506,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/basic/SplitButton.qml" line="55"/>
         <source>More Options...</source>
-        <translation>Більше параметрів...</translation>
+        <translation>Інші опції...</translation>
     </message>
 </context>
 <context>
@@ -3514,12 +3514,12 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="23"/>
         <source>Tempo</source>
-        <translation type="unfinished">Темп</translation>
+        <translation>Темп</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TempoMapLegend.qml" line="30"/>
         <source>Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>Тактовий підпис</translation>
     </message>
 </context>
 <context>
@@ -3527,7 +3527,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/arranger/Timeline.qml" line="54"/>
         <source>Custom Marker</source>
-        <translation type="unfinished">Спеціальний маркер</translation>
+        <translation>Користувацький маркер</translation>
     </message>
 </context>
 <context>
@@ -3568,12 +3568,12 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="79"/>
         <source>Instrument</source>
-        <translation type="unfinished">Інструмент</translation>
+        <translation>Інструмент</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TrackInspectorPage.qml" line="100"/>
         <source>Inserts</source>
-        <translation type="unfinished">Вставки</translation>
+        <translation>Вставки</translation>
     </message>
 </context>
 <context>
@@ -3606,12 +3606,12 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="23"/>
         <source>Test</source>
-        <translation type="unfinished">Тест</translation>
+        <translation>Тест</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistDropArea.qml" line="51"/>
         <source>Drop files and plugins here</source>
-        <translation type="unfinished"></translation>
+        <translation>Перетягніть файли та плагіни сюди</translation>
     </message>
 </context>
 <context>
@@ -3664,17 +3664,17 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="100"/>
         <source>Clip Launcher</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск кліпів</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="111"/>
         <source>Timeline</source>
-        <translation type="unfinished">Хронологія</translation>
+        <translation>Хронологія</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/TracklistHeader.qml" line="122"/>
         <source>BPM &amp; Time Signature</source>
-        <translation type="unfinished"></translation>
+        <translation>BPM та розмір</translation>
     </message>
 </context>
 <context>
@@ -3692,7 +3692,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/UndoSplitButton.qml" line="21"/>
         <source>Redo multiple</source>
-        <translation type="unfinished"></translation>
+        <translation>Повторити декілька</translation>
     </message>
     <message>
         <source>%1 %2</source>
@@ -3709,7 +3709,7 @@ Support this project at {}
     <message>
         <location filename="../src/gui/qml/components/WaveformViewer.qml" line="117"/>
         <source>Master Output Visualizer</source>
-        <translation type="unfinished"></translation>
+        <translation>Візуалізатор головного виводу</translation>
     </message>
 </context>
 <context>
@@ -13676,307 +13676,307 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="399"/>
         <source>Chromatic</source>
-        <translation type="unfinished"></translation>
+        <translation>Хроматичний</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="400"/>
         <source>Major</source>
-        <translation type="unfinished"></translation>
+        <translation>Майор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="401"/>
         <source>Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>незначний</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="402"/>
         <source>Ionian</source>
-        <translation type="unfinished"></translation>
+        <translation>іонійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="403"/>
         <source>Dorian</source>
-        <translation type="unfinished"></translation>
+        <translation>Доріан</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="404"/>
         <source>Phrygian</source>
-        <translation type="unfinished">Фригійський</translation>
+        <translation>Фрігійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="405"/>
         <source>Lydian</source>
-        <translation type="unfinished">Лідійський</translation>
+        <translation>Лідійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="406"/>
         <source>Mixolydian</source>
-        <translation type="unfinished">Міксолідійський</translation>
+        <translation>Міксолідійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="407"/>
         <source>Aeolian</source>
-        <translation type="unfinished"></translation>
+        <translation>Еоловий</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="408"/>
         <source>Locrian</source>
-        <translation type="unfinished">Локрійський</translation>
+        <translation>Локрійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="409"/>
         <source>Melodic Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Мелодичний мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="410"/>
         <source>Harmonic Minor</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонічний мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="411"/>
         <source>Whole Tone</source>
-        <translation type="unfinished"></translation>
+        <translation>Цілий тон</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="412"/>
         <source>Major Pentatonic</source>
-        <translation type="unfinished">Мажорна пентатоніка</translation>
+        <translation>Мажорна пентатоніка</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="413"/>
         <source>Minor Pentatonic</source>
-        <translation type="unfinished">Мінорна пентатоніка</translation>
+        <translation>Мінорна пентатоніка</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="414"/>
         <source>Octatonic Half Whole</source>
-        <translation type="unfinished"></translation>
+        <translation>Октатонічний Половина цілого</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="415"/>
         <source>Octatonic Whole Half</source>
-        <translation type="unfinished"></translation>
+        <translation>Октатонічний Ціла половина</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="416"/>
         <source>Acoustic</source>
-        <translation type="unfinished">Акустичний</translation>
+        <translation>Акустичний</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="417"/>
         <source>Harmonic Major</source>
-        <translation type="unfinished"></translation>
+        <translation>Гармонічний мажор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="418"/>
         <source>Phrygian Dominant</source>
-        <translation type="unfinished">Фригійська домінанта</translation>
+        <translation>Фригійська домінанта</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="419"/>
         <source>Major Locrian</source>
-        <translation type="unfinished">Локрійський мажор</translation>
+        <translation>Локрійський мажор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="420"/>
         <source>Algerian</source>
-        <translation type="unfinished">Алжирський</translation>
+        <translation>Алжирський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="421"/>
         <source>Augmented</source>
-        <translation type="unfinished">Доповнений</translation>
+        <translation>Доповнений</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="422"/>
         <source>Double Harmonic</source>
-        <translation type="unfinished">Подвійна гармоніка</translation>
+        <translation>Подвійна гармоніка</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="423"/>
         <source>Chinese</source>
-        <translation type="unfinished">Китайська</translation>
+        <translation>Китайська</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="424"/>
         <source>Diminished</source>
-        <translation type="unfinished">Зменшено</translation>
+        <translation>Зменшений</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="425"/>
         <source>Dominant Diminished</source>
-        <translation type="unfinished">Зменшена домінанта</translation>
+        <translation>Зменшена домінанта</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="426"/>
         <source>Egyptian</source>
-        <translation type="unfinished">Єгипетська</translation>
+        <translation>Єгипетська</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="427"/>
         <source>Eight Tone Spanish</source>
-        <translation type="unfinished">Восьмитонна іспанська</translation>
+        <translation>Восьмитональна іспанська</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="428"/>
         <source>Enigmatic</source>
-        <translation type="unfinished">Енігматика</translation>
+        <translation>Енігматика</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="429"/>
         <source>Geez</source>
-        <translation type="unfinished">Джіз</translation>
+        <translation>Джіз</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="430"/>
         <source>Hindu</source>
-        <translation type="unfinished">Гінду</translation>
+        <translation>Гінду</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="431"/>
         <source>Hirajoshi</source>
-        <translation type="unfinished">Гіраджоші</translation>
+        <translation>Гіраджоші</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="432"/>
         <source>Hungarian Gypsy</source>
-        <translation type="unfinished">Угорський циган</translation>
+        <translation>Угорський циган</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="433"/>
         <source>Insen</source>
-        <translation type="unfinished">Вставки</translation>
+        <translation>Вставка</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="434"/>
         <source>Neapolitan Major</source>
-        <translation type="unfinished">Неаполітанський мажор</translation>
+        <translation>Неаполітанський мажор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="435"/>
         <source>Neapolitan Minor</source>
-        <translation type="unfinished">Неаполітанський мінор</translation>
+        <translation>Неаполітанський мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="436"/>
         <source>Oriental</source>
-        <translation type="unfinished">Орієнталь</translation>
+        <translation>Орієнталь</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="437"/>
         <source>Romanian Minor</source>
-        <translation type="unfinished">Румунський мінор</translation>
+        <translation>Румунський мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="438"/>
         <source>Altered</source>
-        <translation type="unfinished">Змінено</translation>
+        <translation>Змінений</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="439"/>
         <source>Maqam</source>
-        <translation type="unfinished">Макам</translation>
+        <translation>Макам</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="440"/>
         <source>Yo</source>
-        <translation type="unfinished">Йо</translation>
+        <translation>Йо</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="441"/>
         <source>Bebop Locrian</source>
-        <translation type="unfinished">Локрійський бібоп</translation>
+        <translation>Локрійський бібоп</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="442"/>
         <source>Bebop Dominant</source>
-        <translation type="unfinished">Бібоп домінант</translation>
+        <translation>Бібоп домінант</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="443"/>
         <source>Bebop Major</source>
-        <translation type="unfinished">Бібоп мажор</translation>
+        <translation>Бібоп мажор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="444"/>
         <source>Super Locrian</source>
-        <translation type="unfinished">Суперлокрійський</translation>
+        <translation>Суперлокрійський</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="445"/>
         <source>Enigmatic Minor</source>
-        <translation type="unfinished">Еніґматік мінор</translation>
+        <translation>Еніґматік мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="446"/>
         <source>Composite</source>
-        <translation type="unfinished">Композит</translation>
+        <translation>Композит</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="447"/>
         <source>Bhairav</source>
-        <translation type="unfinished">Бхайрав</translation>
+        <translation>Бхайрав</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="448"/>
         <source>Hungarian Minor</source>
-        <translation type="unfinished">Угорський мінор</translation>
+        <translation>Угорський мінор</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="449"/>
         <source>Persian</source>
-        <translation type="unfinished">Перська</translation>
+        <translation>Перська</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="450"/>
         <source>Iwato</source>
-        <translation type="unfinished">Івато</translation>
+        <translation>Івато</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="451"/>
         <source>Kumoi</source>
-        <translation type="unfinished">Кумой</translation>
+        <translation>Кумой</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="452"/>
         <source>Pelog</source>
-        <translation type="unfinished">Пелоґ</translation>
+        <translation>Пелоґ</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="453"/>
         <source>Prometheus</source>
-        <translation type="unfinished">Прометей</translation>
+        <translation>Прометей</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="454"/>
         <source>Prometheus Neapolitan</source>
-        <translation type="unfinished">Неаполітанський Прометей</translation>
+        <translation>Неаполітанський Прометей</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="455"/>
         <source>Prometheus Liszt</source>
-        <translation type="unfinished">Прометей Лішт</translation>
+        <translation>Прометей Лішт</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="456"/>
         <source>Balinese</source>
-        <translation type="unfinished">Балін&apos;єзе</translation>
+        <translation>Балін&apos;єзе</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="457"/>
         <source>RagaTodi</source>
-        <translation type="unfinished">Раґатоді</translation>
+        <translation>Раґатоді</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="458"/>
         <source>Japanese 1</source>
-        <translation type="unfinished">Японська 1</translation>
+        <translation>Японська 1</translation>
     </message>
     <message>
         <location filename="../src/dsp/musical_scale.cpp" line="459"/>
         <source>Japanese 2</source>
-        <translation type="unfinished">Японська 2</translation>
+        <translation>Японська 2</translation>
     </message>
 </context>
 <context>
@@ -13984,7 +13984,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/dsp/snap_grid.cpp" line="173"/>
         <source>Adaptive</source>
-        <translation type="unfinished">Адаптивний</translation>
+        <translation>Адаптивний</translation>
     </message>
 </context>
 <context>
@@ -13992,22 +13992,22 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/engine/session/transport.h" line="38"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Жодного</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="39"/>
         <source>1 bar</source>
-        <translation type="unfinished">1 такт (1 bar)</translation>
+        <translation>1 такт (1 bar)</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="40"/>
         <source>2 bars</source>
-        <translation type="unfinished">2 такти (2 bar)</translation>
+        <translation>2 такти (2 bar)</translation>
     </message>
     <message>
         <location filename="../src/engine/session/transport.h" line="41"/>
         <source>4 bars</source>
-        <translation type="unfinished">4 такти (4 bar)</translation>
+        <translation>4 такти (4 bar)</translation>
     </message>
 </context>
 <context>
@@ -14058,17 +14058,17 @@ Support this project at {}
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="190"/>
         <source>Open project</source>
-        <translation>Відкритий проект</translation>
+        <translation>Відкрити проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="191"/>
         <source>Create new project</source>
-        <translation>створити новий проект</translation>
+        <translation>Створено новий проєкт</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="193"/>
         <source>Create new project with template</source>
-        <translation>Створіть новий проект із шаблоном</translation>
+        <translation>Створити новий проект із шаблону</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="196"/>
@@ -14081,7 +14081,7 @@ Support this project at {}
     <message>
         <location filename="../src/plugins/plugin_scan_manager.cpp" line="127"/>
         <source>Scanning...</source>
-        <translation type="unfinished">Сканування...</translation>
+        <translation>Сканування...</translation>
     </message>
 </context>
 <context>
@@ -14096,7 +14096,7 @@ Support this project at {}
     <message>
         <location filename="../src/structure/tracks/track_lane.h" line="56"/>
         <source>Lane {}</source>
-        <translation type="unfinished">Пров {}</translation>
+        <translation>Пров {}</translation>
     </message>
 </context>
 <context>
@@ -14104,27 +14104,27 @@ Support this project at {}
     <message>
         <location filename="../src/utils/note_type.cpp" line="19"/>
         <source>bar</source>
-        <translation type="unfinished">1 такт (1 bar)</translation>
+        <translation>бар</translation>
     </message>
     <message>
         <location filename="../src/utils/note_type.cpp" line="20"/>
         <source>beat</source>
-        <translation type="unfinished"></translation>
+        <translation>бити</translation>
     </message>
     <message>
         <location filename="../src/utils/note_type.cpp" line="33"/>
         <source>normal</source>
-        <translation type="unfinished">нормально</translation>
+        <translation>Нормальний</translation>
     </message>
     <message>
         <location filename="../src/utils/note_type.cpp" line="34"/>
         <source>dotted</source>
-        <translation type="unfinished">крапковано</translation>
+        <translation>крапковано</translation>
     </message>
     <message>
         <location filename="../src/utils/note_type.cpp" line="35"/>
         <source>triplet</source>
-        <translation type="unfinished">триплет</translation>
+        <translation>триплет</translation>
     </message>
 </context>
 <context>
@@ -14132,7 +14132,7 @@ Support this project at {}
     <message>
         <location filename="../src/utils/exceptions.cpp" line="32"/>
         <source>Error</source>
-        <translation type="unfinished">Помилка</translation>
+        <translation>Помилка</translation>
     </message>
 </context>
 </TS>

@@ -491,7 +491,7 @@
         <location filename="../src/gui/qml/Greeter.qml" line="133"/>
         <location filename="../src/gui/qml/Greeter.qml" line="155"/>
         <source>Welcome</source>
-        <translation type="unfinished"></translation>
+        <translation>स्वागत है</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="153"/>
@@ -667,7 +667,7 @@
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="41"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>भाषा</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="48"/>
