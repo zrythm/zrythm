@@ -411,8 +411,6 @@ std::string
 midi_get_meta_event_type_name (midi_byte_t type);
 
 /**
- * FIXME NOT TESTED
- *
  * Saves a pointer to the event data in @ref data
  * and returns the size.
  *
