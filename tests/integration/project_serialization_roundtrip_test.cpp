@@ -119,7 +119,14 @@ protected:
       }
     else
       {
+        // First wait for JUCE timers and UI signals to fire (40ms period),
+        // then also wait for at least one audio cycle to complete.
+        // The explicit cycle check is needed under Valgrind where the audio
+        // thread runs much slower and the fixed timeout may not be enough.
         process_events_until_timeout ();
+        process_events_until_true ([mock_hw, initial_count] () {
+          return mock_hw->process_call_count () >= initial_count + 1;
+        });
       }
 
     EXPECT_GE (mock_hw->process_call_count () - initial_count, 1u)
