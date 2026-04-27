@@ -493,11 +493,15 @@ if(compiler_gnulike)
   target_compile_options(_zrythm_warning_flags
     INTERFACE
       -Wformat=2
-      -Wno-missing-field-initializers
       -Wno-unused-parameter
-      -Wno-cast-function-type
       -Wno-attributes
   )
+  if(compiler_is_gcc)
+    target_compile_options(_zrythm_warning_flags
+      INTERFACE
+        -Wno-non-template-friend
+    )
+  endif()
 endif()
 
 if(ZRYTHM_BUILD_WITH_PIPE AND compiler_gnulike)
