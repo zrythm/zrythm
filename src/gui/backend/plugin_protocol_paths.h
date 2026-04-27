@@ -4,6 +4,7 @@
 #pragma once
 
 #include "plugins/plugin_protocol.h"
+#include "utils/app_settings.h"
 #include "utils/file_path_list.h"
 
 namespace zrythm::plugins

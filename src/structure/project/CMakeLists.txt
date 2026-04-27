@@ -56,13 +56,7 @@ set_target_properties(zrythm_structure_project_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-target_precompile_headers(zrythm_structure_project_lib
-  PUBLIC
-    # This needs to be included first otherwise partial template specializations fail
-    $<$<COMPILE_LANGUAGE:CXX>:utils/format_qt.h>
-    $<$<COMPILE_LANGUAGE:CXX>:fmt/std.h>
-    $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/project.h>
-)
+target_precompile_headers(zrythm_structure_project_lib REUSE_FROM zrythm_structure_tracks_lib)
 
 # create a plugin so that types get exposed to QML
 qt_add_qml_module(zrythm_structure_project_lib

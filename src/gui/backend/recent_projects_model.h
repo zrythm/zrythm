@@ -4,6 +4,7 @@
 #pragma once
 
 #include "project_info.h"
+#include "utils/app_settings.h"
 
 #include <QAbstractListModel>
 #include <QQmlEngine>
