@@ -5,8 +5,11 @@
 #include "gui/backend/plugin_collections.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
+#include "utils/format.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
+
+using namespace zrythm;
 
 constexpr const char * PLUGIN_COLLECTIONS_JSON_FILENAME =
   "plugin-collections.json";

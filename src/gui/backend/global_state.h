@@ -12,15 +12,18 @@ class GlobalState : public QObject
   QML_ELEMENT
   QML_SINGLETON
 public:
-  Q_PROPERTY (Zrythm * zrythm READ zrythm CONSTANT FINAL)
+  Q_PROPERTY (::zrythm::Zrythm * zrythm READ zrythm CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::gui::ZrythmApplication * application READ application CONSTANT FINAL)
 
 public:
   GlobalState (QObject * parent = nullptr) : QObject (parent) { }
-  Zrythm *                 zrythm () const { return Zrythm::getInstance (); }
-  gui::ZrythmApplication * application () const
+  ::zrythm::Zrythm * zrythm () const
   {
-    return qobject_cast<gui::ZrythmApplication *> (qApp);
+    return ::zrythm::Zrythm::getInstance ();
+  }
+  zrythm::gui::ZrythmApplication * application () const
+  {
+    return qobject_cast<zrythm::gui::ZrythmApplication *> (qApp);
   }
 };

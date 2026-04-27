@@ -17,6 +17,7 @@
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
+#include "utils/dsp_context.h"
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/float_ranges.h"

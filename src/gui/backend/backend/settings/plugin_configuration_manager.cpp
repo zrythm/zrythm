@@ -7,6 +7,7 @@
 #include "gui/backend/zrythm_application.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/directory_manager.h"
+#include "utils/format.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"

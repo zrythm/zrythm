@@ -41,6 +41,7 @@ dispatchNextMessageOnSystemQueue (bool returnIfNoPendingMessages);
 }
 #endif
 
+using namespace zrythm;
 using namespace zrythm::gui;
 using namespace Qt::StringLiterals;
 

@@ -7,6 +7,8 @@
 #include "utils/rt_thread_id.h"
 #include "utils/utf8_string.h"
 
+using namespace zrythm;
+
 ChordPresetPack::ChordPresetPack (QObject * parent) : QObject (parent) { }
 
 ChordPresetPack::

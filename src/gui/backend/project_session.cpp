@@ -272,7 +272,7 @@ ProjectSession::save ()
   assert (!project_directory_.empty ());
 
   auto future = controllers::ProjectSaver::save (
-    *project_, *ui_state_, *undo_stack_, Zrythm::get_app_version (),
+    *project_, *ui_state_, *undo_stack_, zrythm::Zrythm::get_app_version (),
     project_directory_, false);
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
@@ -287,8 +287,8 @@ ProjectSession::saveAs (const QString &path)
   auto new_path = utils::Utf8String::from_qstring (path).to_path ();
 
   auto future = controllers::ProjectSaver::save (
-    *project_, *ui_state_, *undo_stack_, Zrythm::get_app_version (), new_path,
-    false);
+    *project_, *ui_state_, *undo_stack_, zrythm::Zrythm::get_app_version (),
+    new_path, false);
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
 

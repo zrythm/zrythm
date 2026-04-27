@@ -225,7 +225,7 @@ ProjectManager::createNewProject (
             project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
       auto future = controllers::ProjectSaver::save (
         *session->project (), *session->uiState (), *session->undoStack (),
-        Zrythm::get_app_version (), project_dir_path, false);
+        zrythm::Zrythm::get_app_version (), project_dir_path, false);
       try
         {
           // This will throw on failure

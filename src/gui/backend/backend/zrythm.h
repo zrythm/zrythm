@@ -5,15 +5,25 @@
 
 #include <memory>
 
-#include "engine/session/recording_manager.h"
-#include "gui/backend/backend/settings/chord_preset_pack_manager.h"
-#include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/plugin_manager.h"
-#include "utils/dsp_context.h"
 #include "utils/monotonic_time_provider.h"
 #include "utils/networking.h"
 #include "utils/symap.h"
+#include "utils/types.h"
 #include "utils/version.h"
+
+namespace zrythm
+{
+namespace engine::session
+{
+class RecordingManager;
+}
+} // namespace zrythm
+class ChordPresetPackManager;
+class DspContextRAII;
+class Settings;
+
+namespace zrythm
+{
 
 /**
  * @addtogroup general
@@ -214,7 +224,9 @@ public:
   JUCE_HEAVYWEIGHT_LEAK_DETECTOR (Zrythm)
 };
 
-#define gZrythm (Zrythm::getInstanceWithoutCreating ())
+} // namespace zrythm
+
+#define gZrythm (::zrythm::Zrythm::getInstanceWithoutCreating ())
 
 /**
  * @}
