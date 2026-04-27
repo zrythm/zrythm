@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -94,51 +94,6 @@ ZrythmToolBar {
 
       ToolTip {
         text: qsTr("Toggle Right Panel")
-      }
-    },
-    ToolSeparator {
-    },
-    ToolButton {
-      id: menuButton
-
-      text: qsTr("Menu")
-
-      // icon.source: ResourceManager.getIconUrl("gnome-icon-library", "open-menu-symbolic.svg")
-      onClicked: primaryMenu.open()
-
-      Menu {
-        id: primaryMenu
-
-        Action {
-          text: qsTr("Open a Project…")
-        }
-
-        MenuItem {
-          // Implement new project action
-
-          text: qsTr("Create New Project…")
-
-          onTriggered: {}
-        }
-
-        MenuSeparator {
-        }
-
-        MenuItem {
-          // Open preferences dialog
-
-          text: qsTr("Preferences")
-
-          onTriggered: {}
-        }
-
-        MenuItem {
-          // Show keyboard shortcuts
-
-          text: qsTr("Keyboard Shortcuts")
-
-          onTriggered: {}
-        }
       }
     }
   ]
