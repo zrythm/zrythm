@@ -148,6 +148,9 @@ foreach(plugin_info ${plugins})
         PUBLIC
           MIDICTRL
         )
+        target_link_libraries(${pl_underscored_name}_plugin
+          PRIVATE juce::juce_audio_devices
+        )
       endif()
 
       # Add VST3 to test dependencies
