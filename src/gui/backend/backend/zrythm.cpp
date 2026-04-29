@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
+
+#include "utils/format_qt.h"
 
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"

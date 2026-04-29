@@ -39,10 +39,13 @@
 #include <memory>
 #include <utility>
 
+#include "utils/format_qt.h"
+#include <fmt/std.h>
+
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/plugin_library.h"
-#include "utils/format_qt.h"
+#include "utils/concurrency.h"
 #include "utils/io_utils.h"
 #include "utils/raii_utils.h"
 #include "utils/views.h"
@@ -50,6 +53,7 @@
 #include <QFile>
 #include <QSemaphore>
 #include <QSocketNotifier>
+#include <QThread>
 #include <QTimer>
 
 #include <clap/helpers/event-list.hh>

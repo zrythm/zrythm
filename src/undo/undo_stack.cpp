@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
+
+#include "utils/format_qt.h"
 
 #include "commands/add_arranger_object_command.h"
 #include "commands/add_plugin_command.h"

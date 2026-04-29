@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <fmt/std.h>
+
 #include "dsp/port.h"
 #include "utils/format_boost.h"
 

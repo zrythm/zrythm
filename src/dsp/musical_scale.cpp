@@ -1,8 +1,12 @@
 // SPDX-FileCopyrightText: © 2018-2019, 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
+#include "utils/enum_utils.h"
 #include "utils/utf8_string.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

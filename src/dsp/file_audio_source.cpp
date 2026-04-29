@@ -5,6 +5,8 @@
 #include <mutex>
 #include <utility>
 
+#include <fmt/std.h>
+
 #include "dsp/file_audio_source.h"
 #include "dsp/panning.h"
 #include "utils/audio.h"
@@ -15,7 +17,6 @@
 #include "utils/logger.h"
 
 #include <fmt/format.h>
-#include <fmt/std.h>
 
 namespace zrythm::dsp
 {

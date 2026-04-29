@@ -1,14 +1,14 @@
-// SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include <fmt/std.h>
 
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/zrythm_application.h"
-#include "structure/project/project.h"
 #include "utils/directory_manager.h"
 #include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
-#include "utils/rt_thread_id.h"
 
 using namespace zrythm;
 
@@ -633,7 +633,7 @@ void
 ChordPresetPackManager::delete_preset (const ChordPreset &pset, bool _serialize)
 {
   ChordPresetPack * pack = get_pack_for_preset (pset);
-  if (!pack)
+  if (pack == nullptr)
     return;
 
   pack->delete_preset (pset);

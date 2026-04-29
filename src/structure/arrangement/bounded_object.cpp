@@ -3,6 +3,8 @@
 
 #include "structure/arrangement/bounded_object.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::arrangement
 {
 ArrangerObjectBounds::ArrangerObjectBounds (

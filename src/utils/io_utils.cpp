@@ -34,9 +34,12 @@
 #include <cstring>
 #include <fstream>
 
-#include "utils/exceptions.h"
 #include "utils/format_qt.h"
+
+#include "utils/exceptions.h"
 #include "utils/logger.h"
+
+using zrythm::utils::exceptions::ZrythmException;
 
 #ifdef __linux__
 #  include <sys/ioctl.h>
@@ -51,6 +54,8 @@
 #  include <windows.h>
 #endif
 
+#include <fmt/std.h>
+
 #include "utils/datetime.h"
 #include "utils/format_juce.h"
 #include "utils/io_utils.h"
@@ -59,7 +64,6 @@
 #include <QUrl>
 
 #include <fmt/format.h>
-#include <fmt/std.h>
 #include <juce_core/juce_core.h>
 
 #if defined(__APPLE__) && ZRYTHM_IS_INSTALLER_VER

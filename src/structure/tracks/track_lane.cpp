@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/tracks/track_lane.h"
 #include "utils/format_qt.h"
+
+#include "structure/tracks/track_lane.h"
 
 #include <nlohmann/json.hpp>
 

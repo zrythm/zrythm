@@ -11,6 +11,8 @@
 
 #include <ostream>
 
+#include "utils/format_qt.h"
+
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
 #include "dsp/midi_event.h"

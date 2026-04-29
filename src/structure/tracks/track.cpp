@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
-#include "utils/format_qt.h"
 #include "utils/views.h"
 
 DEFINE_ENUM_FORMATTER (

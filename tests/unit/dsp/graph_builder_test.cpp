@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <ranges>
+
 #include "dsp/graph_builder.h"
+#include "utils/utf8_string.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>

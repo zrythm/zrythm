@@ -41,6 +41,7 @@
 
 #include "plugins/plugin_scan_manager.h"
 #include "utils/format_juce.h"
+#include "utils/logger.h"
 
 using namespace zrythm::plugins;
 using namespace zrythm::plugins::scanner_private;

@@ -1,12 +1,17 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <string_view>
+
 #include "dsp/chord_descriptor.h"
 #include "dsp/midi_event.h"
 #include "utils/gtest_wrapper.h"
+#include "utils/logger.h"
 #include "utils/midi.h"
 
 #include <fmt/format.h>
+
+using namespace std::literals;
 
 namespace zrythm::dsp
 {

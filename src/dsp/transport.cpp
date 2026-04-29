@@ -5,6 +5,9 @@
 #include <utility>
 
 #include "dsp/transport.h"
+#include "utils/logger.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

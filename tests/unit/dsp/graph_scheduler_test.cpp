@@ -1,10 +1,14 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <atomic>
+#include <chrono>
+#include <mutex>
 #include <thread>
 
 #include "dsp/graph_scheduler.h"
 #include "dsp/graph_thread.h"
+#include "utils/utf8_string.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>

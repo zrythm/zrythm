@@ -6,6 +6,7 @@
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::project
 {

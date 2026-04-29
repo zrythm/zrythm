@@ -5,8 +5,7 @@
 
 #include <filesystem>
 
-#include "utils/types.h"
-
+#include "tracks/track_all.h"
 #include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm

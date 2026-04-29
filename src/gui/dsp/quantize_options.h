@@ -15,6 +15,8 @@
 #define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline_)
 #define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor_)
 
+using namespace std::string_view_literals;
+
 namespace zrythm::gui::old_dsp
 {
 
@@ -76,28 +78,8 @@ private:
   static constexpr auto kAmountKey = "amount"sv;
   static constexpr auto kSwingKey = "swing"sv;
   static constexpr auto kRandomizationTicksKey = "randTicks"sv;
-  friend void           to_json (nlohmann::json &j, const QuantizeOptions &p)
-  {
-    j = nlohmann::json{
-      { kNoteLengthKey,         p.note_length_         },
-      { kNoteTypeKey,           p.note_type_           },
-      { kAdjustStartKey,        p.adjust_start_        },
-      { kAdjustEndKey,          p.adjust_end_          },
-      { kAmountKey,             p.amount_              },
-      { kSwingKey,              p.swing_               },
-      { kRandomizationTicksKey, p.randomization_ticks_ },
-    };
-  }
-  friend void from_json (const nlohmann::json &j, QuantizeOptions &p)
-  {
-    j.at (kNoteLengthKey).get_to (p.note_length_);
-    j.at (kNoteTypeKey).get_to (p.note_type_);
-    j.at (kAdjustStartKey).get_to (p.adjust_start_);
-    j.at (kAdjustEndKey).get_to (p.adjust_end_);
-    j.at (kAmountKey).get_to (p.amount_);
-    j.at (kSwingKey).get_to (p.swing_);
-    j.at (kRandomizationTicksKey).get_to (p.randomization_ticks_);
-  }
+  friend void           to_json (nlohmann::json &j, const QuantizeOptions &p);
+  friend void           from_json (const nlohmann::json &j, QuantizeOptions &p);
 
   units::precise_tick_t get_prev_point (units::precise_tick_t pos) const;
   units::precise_tick_t get_next_point (units::precise_tick_t pos) const;

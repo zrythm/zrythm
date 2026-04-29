@@ -3,13 +3,13 @@
 
 #pragma once
 
-#include "zrythm-config.h"
-
 #include <memory>
 
 #include "plugins/plugin_configuration.h"
 
 #include <boost/describe.hpp>
+
+using namespace std::string_view_literals;
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -57,17 +57,7 @@ public:
    * @brief Wrapper over @ref serialize_to_file that ignores exceptions.
    *
    */
-  void serialize_to_file_no_throw ()
-  {
-    try
-      {
-        serialize_to_file ();
-      }
-    catch (const ZrythmException &e)
-      {
-        z_warning ("{}", e.what ());
-      }
-  }
+  void serialize_to_file_no_throw ();
 
   int         get_format_major_version () const { return 7; }
   int         get_format_minor_version () const { return 0; }
@@ -122,14 +112,9 @@ public:
 
 private:
   static constexpr auto kSettingsKey = "settings"sv;
-  friend void to_json (nlohmann::json &j, const PluginConfigurationManager &p)
-  {
-    j[kSettingsKey] = p.settings_;
-  }
-  friend void from_json (const nlohmann::json &j, PluginConfigurationManager &p)
-  {
-    j.at (kSettingsKey).get_to (p.settings_);
-  }
+  friend void to_json (nlohmann::json &j, const PluginConfigurationManager &p);
+  friend void
+  from_json (const nlohmann::json &j, PluginConfigurationManager &p);
 
   static std::filesystem::path get_file_path ();
 

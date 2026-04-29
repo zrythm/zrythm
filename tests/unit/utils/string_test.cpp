@@ -6,6 +6,8 @@
 
 #include <QtEnvironmentVariables>
 
+#include <juce_core/juce_core.h>
+
 using namespace Qt::StringLiterals;
 
 using namespace zrythm::utils;

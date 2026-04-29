@@ -3,17 +3,22 @@
 
 #include <numbers>
 
+#include "utils/format_qt.h"
+#include <fmt/std.h>
+
 #include "dsp/cv_port.h"
 #include "dsp/parameter.h"
 #include "dsp/port_connection.h"
 #include "dsp/tempo_map.h"
+#include "utils/enum_utils.h"
 #include "utils/format_boost.h"
-#include "utils/format_qt.h"
+#include "utils/logger.h"
 
 #include <QSignalSpy>
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

@@ -3,6 +3,8 @@
 
 #include "structure/arrangement/fadeable_object.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::arrangement
 {
 ArrangerObjectFadeRange::ArrangerObjectFadeRange (
@@ -51,5 +53,25 @@ ArrangerObjectFadeRange::ArrangerObjectFadeRange (
   QObject::connect (
     fadeOutCurveOpts (), &dsp::CurveOptionsQmlAdapter::curvinessChanged, this,
     &ArrangerObjectFadeRange::fadePropertiesChanged);
+}
+
+void
+to_json (nlohmann::json &j, const ArrangerObjectFadeRange &object)
+{
+  using T = ArrangerObjectFadeRange;
+  j[T::kFadeInOffsetKey] = object.start_offset_;
+  j[T::kFadeOutOffsetKey] = object.end_offset_;
+  j[T::kFadeInOptsKey] = object.fade_in_opts_;
+  j[T::kFadeOutOptsKey] = object.fade_out_opts_;
+}
+
+void
+from_json (const nlohmann::json &j, ArrangerObjectFadeRange &object)
+{
+  using T = ArrangerObjectFadeRange;
+  j.at (T::kFadeInOffsetKey).get_to (object.start_offset_);
+  j.at (T::kFadeOutOffsetKey).get_to (object.end_offset_);
+  j.at (T::kFadeInOptsKey).get_to (object.fade_in_opts_);
+  j.at (T::kFadeOutOptsKey).get_to (object.fade_out_opts_);
 }
 }

@@ -6,8 +6,7 @@
 
 #include "gui/qquick/fade_overlay_canvas_item.h"
 #include "gui/qquick/fade_overlay_canvas_renderer.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/fadeable_object.h"
+#include "structure/arrangement/arranger_object_all.h"
 
 namespace zrythm::gui::qquick
 {

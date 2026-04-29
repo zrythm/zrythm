@@ -7,6 +7,8 @@
 #include "dsp/curve.h"
 #include "utils/icloneable.h"
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::structure::arrangement
 {
 class ArrangerObjectFadeRange : public QObject
@@ -88,21 +90,10 @@ private:
   static constexpr auto kFadeOutOffsetKey = "fadeOutOffset"sv;
   static constexpr auto kFadeInOptsKey = "fadeInOpts"sv;
   static constexpr auto kFadeOutOptsKey = "fadeOutOpts"sv;
-  friend auto to_json (nlohmann::json &j, const ArrangerObjectFadeRange &object)
-  {
-    j[kFadeInOffsetKey] = object.start_offset_;
-    j[kFadeOutOffsetKey] = object.end_offset_;
-    j[kFadeInOptsKey] = object.fade_in_opts_;
-    j[kFadeOutOptsKey] = object.fade_out_opts_;
-  }
-  friend auto
-  from_json (const nlohmann::json &j, ArrangerObjectFadeRange &object)
-  {
-    j.at (kFadeInOffsetKey).get_to (object.start_offset_);
-    j.at (kFadeOutOffsetKey).get_to (object.end_offset_);
-    j.at (kFadeInOptsKey).get_to (object.fade_in_opts_);
-    j.at (kFadeOutOptsKey).get_to (object.fade_out_opts_);
-  }
+  friend void
+  to_json (nlohmann::json &j, const ArrangerObjectFadeRange &object);
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObjectFadeRange &object);
 
   BOOST_DESCRIBE_CLASS (
     ArrangerObjectFadeRange,

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <filesystem>
+
 #include <QDateTime>
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>

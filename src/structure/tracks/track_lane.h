@@ -98,7 +98,7 @@ public:
   double height () const { return height_; }
   void   setHeight (const double height)
   {
-    if (utils::math::floats_equal (height_, height))
+    if (qFuzzyCompare (height_, height))
       return;
 
     height_ = height;

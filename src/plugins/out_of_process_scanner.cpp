@@ -37,16 +37,23 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-using namespace Qt::StringLiterals;
-using namespace std::chrono_literals;
-
 #include "zrythm-config.h"
 
+#include <chrono>
+#include <string_view>
+
 #include "plugins/out_of_process_scanner.h"
+#include "utils/exceptions.h"
 #include "utils/format_juce.h"
+#include "utils/logger.h"
 
 #include <QCoreApplication>
 #include <QProcessEnvironment>
+
+using namespace Qt::StringLiterals;
+using namespace std::chrono_literals;
+using namespace std::literals;
+using zrythm::utils::exceptions::ZrythmException;
 
 constexpr auto PLUGIN_SCAN_TIMEOUT = 6s;
 

@@ -1,7 +1,12 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+#include <numbers>
+
 #include "dsp/graph_renderer.h"
+#include "dsp/port_all.h"
+#include "utils/utf8_string.h"
 
 #include <QFuture>
 

@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/format_boost.h"
 #include "utils/format_qt.h"
+
+#include "utils/format_boost.h"
 #include "utils/uuid_identifiable_object.h"
 
 #include "./uuid_identifiable_object_test.h"

@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "structure/arrangement/bounded_object.h"
+
+using std::literals::string_view_literals::operator""sv;
 
 namespace zrythm::structure::arrangement
 {
@@ -107,22 +111,10 @@ private:
   static constexpr auto kLoopStartPosKey = "loopStartPosition"sv;
   static constexpr auto kLoopEndPosKey = "loopEndPosition"sv;
   static constexpr auto kTrackBoundsKey = "trackBounds"sv;
-  friend auto to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object)
-  {
-    j[kClipStartPosKey] = object.clip_start_pos_;
-    j[kLoopStartPosKey] = object.loop_start_pos_;
-    j[kLoopEndPosKey] = object.loop_end_pos_;
-    j[kTrackBoundsKey] = object.track_bounds_;
-  }
-  friend auto
-  from_json (const nlohmann::json &j, ArrangerObjectLoopRange &object)
-  {
-    j.at (kClipStartPosKey).get_to (object.clip_start_pos_);
-    j.at (kLoopStartPosKey).get_to (object.loop_start_pos_);
-    j.at (kLoopEndPosKey).get_to (object.loop_end_pos_);
-    j.at (kTrackBoundsKey).get_to (object.track_bounds_);
-    Q_EMIT object.trackBoundsChanged (object.track_bounds_);
-  }
+  friend void
+  to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object);
+  friend void
+  from_json (const nlohmann::json &j, ArrangerObjectLoopRange &object);
 
   friend void init_from (
     ArrangerObjectLoopRange       &obj,

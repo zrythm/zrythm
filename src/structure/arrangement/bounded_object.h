@@ -3,11 +3,20 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "dsp/atomic_position_qml_adapter.h"
 #include "utils/icloneable.h"
 
+#include <boost/describe/class.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+using std::literals::string_view_literals::operator""sv;
+
 namespace zrythm::structure::arrangement
 {
+
+using namespace std::string_view_literals;
 
 /**
  * @brief Adds length functionality to arranger objects.

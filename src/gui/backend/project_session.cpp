@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <fmt/std.h>
+
 #include "controllers/project_saver.h"
 #include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_session.h"

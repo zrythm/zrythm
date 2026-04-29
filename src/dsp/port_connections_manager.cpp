@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <fmt/std.h>
+
 #include "dsp/port_connections_manager.h"
 #include "utils/format.h"
 #include "utils/format_boost.h"

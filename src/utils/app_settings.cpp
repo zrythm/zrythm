@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/app_settings.h"
 #include "utils/format_qt.h"
+
+#include "utils/app_settings.h"
 #include "utils/logger.h"
 
 namespace zrythm::utils

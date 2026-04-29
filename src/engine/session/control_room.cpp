@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "engine/session/control_room.h"
@@ -8,6 +10,7 @@
 
 #include <QFile>
 
+#include "tracks/track_all.h"
 #include <boost/unordered/unordered_flat_map.hpp>
 #include <juce_audio_formats/juce_audio_formats.h>
 

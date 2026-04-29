@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings/chord_preset_pack.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/project/project.h"
-#include "utils/rt_thread_id.h"
-#include "utils/utf8_string.h"
+#include <cassert>
 
-using namespace zrythm;
+#include "gui/backend/backend/settings/chord_preset_pack.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 ChordPresetPack::ChordPresetPack (QObject * parent) : QObject (parent) { }
 
@@ -21,9 +20,9 @@ ChordPresetPack::
 
 void
 init_from (
-  ChordPresetPack       &obj,
-  const ChordPresetPack &other,
-  utils::ObjectCloneType clone_type)
+  ChordPresetPack               &obj,
+  const ChordPresetPack         &other,
+  zrythm::utils::ObjectCloneType clone_type)
 {
   obj.name_ = other.name_;
   obj.is_standard_ = other.is_standard_;
@@ -37,9 +36,17 @@ init_from (
 void
 ChordPresetPack::add_preset (const ChordPreset &pset)
 {
-  auto * clone = utils::clone_qobject (pset, this);
+  auto * clone = zrythm::utils::clone_qobject (pset, this);
   clone->pack_ = this;
   presets_.push_back (clone);
+}
+
+int
+ChordPresetPack::get_preset_index (const ChordPreset &pset) const
+{
+  auto it = std::ranges::find (presets_, &pset);
+  assert (it != presets_.end ());
+  return static_cast<int> (std::distance (presets_.begin (), it));
 }
 
 bool
@@ -86,6 +93,27 @@ ChordPresetPack::setName (const ChordPresetPack::NameT &name)
 
   name_ = name;
   Q_EMIT nameChanged (name_);
+}
+
+void
+to_json (nlohmann::json &j, const ChordPresetPack &pack)
+{
+  j[ChordPresetPack::kNameKey] = pack.name_;
+  j[ChordPresetPack::kPresetsKey] = pack.presets_;
+  j[ChordPresetPack::kIsStandardKey] = pack.is_standard_;
+}
+void
+from_json (const nlohmann::json &j, ChordPresetPack &pack)
+{
+  j.at (ChordPresetPack::kNameKey).get_to (pack.name_);
+  for (const auto &pset : j.at (ChordPresetPack::kPresetsKey))
+    {
+      // TODO: check if this is correct
+      auto * pset_ptr = new ChordPreset (&pack);
+      from_json (pset, *pset_ptr);
+      pack.presets_.push_back (pset_ptr);
+    }
+  j.at (ChordPresetPack::kIsStandardKey).get_to (pack.is_standard_);
 }
 
 #if 0

@@ -4,6 +4,7 @@
 #include "gui/backend/recent_projects_model.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
 
 using namespace zrythm::gui;
 

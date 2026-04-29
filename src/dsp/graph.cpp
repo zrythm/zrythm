@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
+#include "utils/logger.h"
 
 namespace zrythm::dsp::graph
 {

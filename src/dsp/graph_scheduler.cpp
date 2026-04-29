@@ -29,11 +29,15 @@
 #include "dsp/graph_thread.h"
 #include "utils/audio.h"
 #include "utils/env.h"
+#include "utils/exceptions.h"
+#include "utils/logger.h"
 
 #include <boost/unordered/concurrent_flat_set.hpp>
 
 namespace zrythm::dsp::graph
 {
+
+using zrythm::utils::exceptions::ZrythmException;
 
 using namespace std::chrono_literals;
 

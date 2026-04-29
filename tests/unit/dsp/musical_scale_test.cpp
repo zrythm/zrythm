@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/musical_scale.h"
+#include "utils/utf8_string.h"
 
 #include <QSignalSpy>
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 using namespace zrythm::dsp;
 

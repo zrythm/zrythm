@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/backend/settings/chord_preset.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 using namespace zrythm;
 
@@ -53,6 +56,19 @@ ChordPreset::setName (const ChordPreset::NameT &name)
 
   name_ = name;
   Q_EMIT nameChanged (name_);
+}
+
+void
+to_json (nlohmann::json &j, const ChordPreset &preset)
+{
+  j[ChordPreset::kNameKey] = preset.name_;
+  j[ChordPreset::kDescriptorsKey] = preset.descr_;
+}
+void
+from_json (const nlohmann::json &j, ChordPreset &preset)
+{
+  j.at (ChordPreset::kNameKey).get_to (preset.name_);
+  j.at (ChordPreset::kDescriptorsKey).get_to (preset.descr_);
 }
 
 #if 0

@@ -4,6 +4,8 @@
 #pragma once
 
 #include <QCursor>
+#include <QHash>
+#include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 /**

@@ -3,6 +3,7 @@
 
 #include "dsp/cv_port.h"
 #include "utils/float_ranges.h"
+#include "utils/math_utils.h"
 
 namespace zrythm::dsp
 {

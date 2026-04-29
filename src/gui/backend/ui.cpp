@@ -2,6 +2,10 @@
 // SPDX-FileCopyrightText: © 2024 Miró Allard <miro.allard@pm.me>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <string>
+
+#include <fmt/format.h>
+
 #if 0
 void
 ui_set_pointer_cursor (GtkWidget * widget)

@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2020-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/zrythm.h"
+#include <fmt/std.h>
+
 #include "gui/backend/plugin_collections.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
@@ -74,6 +75,23 @@ init_from (
   utils::clone_unique_ptr_container (obj.descriptors_, other.descriptors_);
 }
 
+void
+to_json (nlohmann::json &j, const PluginCollection &p)
+{
+  j = nlohmann::json{
+    { PluginCollection::kNameKey,        p.name_        },
+    { PluginCollection::kDescriptionKey, p.description_ },
+    { PluginCollection::kDescriptorsKey, p.descriptors_ },
+  };
+}
+void
+from_json (const nlohmann::json &j, PluginCollection &p)
+{
+  j.at (PluginCollection::kNameKey).get_to (p.name_);
+  j.at (PluginCollection::kDescriptionKey).get_to (p.description_);
+  j.at (PluginCollection::kDescriptorsKey).get_to (p.descriptors_);
+}
+
 /* ============================================================================ */
 
 std::filesystem::path
@@ -112,7 +130,7 @@ void
 PluginCollections::delete_file ()
 {
   auto path = get_file_path ();
-  if (!fs::exists (path))
+  if (!std::filesystem::exists (path))
     {
       z_info ("Plugin collections file at {} does not exist", path);
       return;
@@ -120,9 +138,9 @@ PluginCollections::delete_file ()
   z_debug ("Deleting plugin collections file at {}", path);
   try
     {
-      fs::remove (path);
+      std::filesystem::remove (path);
     }
-  catch (const fs::filesystem_error &e)
+  catch (const std::filesystem::filesystem_error &e)
     {
       z_warning ("Failed to delete plugin collections file: {}", e.what ());
     }
@@ -133,7 +151,7 @@ PluginCollections::read_or_new ()
 {
   auto ret = std::make_unique<PluginCollections> ();
   auto path = get_file_path ();
-  if (!fs::exists (path))
+  if (!std::filesystem::exists (path))
     {
       z_info ("Plugin collections file at {} does not exist", path);
       return ret;
@@ -180,6 +198,19 @@ PluginCollections::read_or_new ()
 }
 
 void
+PluginCollections::serialize_to_file_no_throw () const
+{
+  try
+    {
+      serialize_to_file ();
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning ("{}", e.what ());
+    }
+}
+
+void
 PluginCollections::add (
   const zrythm::gui::old_dsp::plugins::PluginCollection &collection,
   bool                                                   serialize)
@@ -213,5 +244,16 @@ PluginCollections::remove (PluginCollection &collection, bool serialize)
     {
       serialize_to_file_no_throw ();
     }
+}
+
+void
+to_json (nlohmann::json &j, const PluginCollections &pc)
+{
+  j[PluginCollections::kCollectionsKey] = pc.collections_;
+}
+void
+from_json (const nlohmann::json &j, PluginCollections &pc)
+{
+  j.at (PluginCollections::kCollectionsKey).get_to (pc.collections_);
 }
 }

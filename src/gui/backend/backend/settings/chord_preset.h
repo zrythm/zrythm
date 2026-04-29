@@ -1,24 +1,15 @@
-// SPDX-FileCopyrightText: © 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#ifndef __SETTINGS_CHORD_PRESET_H__
-#define __SETTINGS_CHORD_PRESET_H__
-
-#include "zrythm-config.h"
+#pragma once
 
 #include "dsp/chord_descriptor.h"
 #include "structure/arrangement/chord_editor.h"
-#include "utils/types.h"
+#include "utils/utf8_string.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
 class ChordPresetPack;
-
-/**
- * @addtogroup settings
- *
- * @{
- */
 
 /**
  * A preset of chord descriptors.
@@ -59,16 +50,8 @@ public:
 private:
   static constexpr std::string_view kNameKey = "name";
   static constexpr std::string_view kDescriptorsKey = "descriptors";
-  friend void to_json (nlohmann::json &j, const ChordPreset &preset)
-  {
-    j[kNameKey] = preset.name_;
-    j[kDescriptorsKey] = preset.descr_;
-  }
-  friend void from_json (const nlohmann::json &j, ChordPreset &preset)
-  {
-    j.at (kNameKey).get_to (preset.name_);
-    j.at (kDescriptorsKey).get_to (preset.descr_);
-  }
+  friend void to_json (nlohmann::json &j, const ChordPreset &preset);
+  friend void from_json (const nlohmann::json &j, ChordPreset &preset);
 
 public:
   /** Preset name. */
@@ -86,9 +69,3 @@ operator== (const ChordPreset &lhs, const ChordPreset &rhs)
 {
   return lhs.name_ == rhs.name_ && lhs.descr_ == rhs.descr_;
 }
-
-/**
- * @}
- */
-
-#endif

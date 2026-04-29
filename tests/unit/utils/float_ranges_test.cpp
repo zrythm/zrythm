@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <array>
+#include <cmath>
 
 #include "utils/float_ranges.h"
 #include "utils/gtest_wrapper.h"

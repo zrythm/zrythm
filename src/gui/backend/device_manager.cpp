@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "gui/backend/device_manager.h"
+#include "utils/logger.h"
 
 #include <juce_audio_utils/juce_audio_utils.h>
 

@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <fmt/std.h>
+
 #include "dsp/midi_event.h"
 #include "dsp/midi_port.h"
 #include "utils/format_boost.h"
 #include "utils/icloneable.h"
+#include "utils/logger.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>

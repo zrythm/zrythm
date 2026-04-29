@@ -7,6 +7,7 @@
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "utils/gtest_wrapper.h"
+#include "utils/logger.h"
 
 void
 Settings::init ()

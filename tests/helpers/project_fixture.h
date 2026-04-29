@@ -3,10 +3,6 @@
 
 #pragma once
 
-// clang-format off
-// Needs to be included before project.h
-#include "utils/format_qt.h"
-// clang-format on
 #include "structure/project/project.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"

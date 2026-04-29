@@ -90,6 +90,14 @@ IncludeCategories:
   - Regex:           '^<(assert|errno|inttypes|signal|cstring|cstd.+|sys/.+|cmath|cfloat)\.h>$'
     Priority:        -2
     CaseSensitive:   true
+  # Must be included before other headers that include fmt/format.h to avoid compilation errors
+  - Regex:           '^"utils/format_qt\.h"$'
+    Priority:        1
+    CaseSensitive:   true
+  # Must be included before specific headers (don't know exactly which, but related to project.h)
+  - Regex:           '^<fmt/std.h>$'
+    Priority:        1
+    CaseSensitive:   true
   - Regex:           '^"((actions|commands|controllers|dsp|engine|gui|plugins|structure|undo|utils)/.*|zrythm\.h|zrythm_app\.h|project.*\.h)'
     Priority:        3
     CaseSensitive:   true

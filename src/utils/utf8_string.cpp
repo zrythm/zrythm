@@ -8,6 +8,7 @@
 #include "utils/logger.h"
 #include "utils/utf8_string.h"
 
+#include <juce_core/juce_core.h>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::utils

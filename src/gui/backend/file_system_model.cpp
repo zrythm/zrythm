@@ -1,7 +1,12 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
 
+#include "utils/format_qt.h"
+
 #include "gui/backend/file_system_model.h"
+#include "utils/utf8_string.h"
+
+#include <fmt/format.h>
 
 namespace zrythm::gui
 {

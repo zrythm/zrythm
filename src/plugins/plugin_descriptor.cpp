@@ -5,6 +5,7 @@
 
 #include "plugins/plugin_descriptor.h"
 #include "utils/bidirectional_map.h"
+#include "utils/logger.h"
 #include "utils/serialization.h"
 
 namespace zrythm::plugins

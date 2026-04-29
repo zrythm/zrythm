@@ -5,6 +5,7 @@
 #include "utils/units.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

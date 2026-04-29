@@ -1,14 +1,14 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
 
+#include "utils/format_qt.h"
+#include <fmt/std.h>
+
 #include "dsp/midi_event.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/backend/zrythm.h"
-#include "structure/project/project.h"
 #include "utils/midi.h"
-#include "utils/rt_thread_id.h"
 
 namespace zrythm::engine::session
 {
@@ -56,11 +56,6 @@ MidiMappings::bind_at (
   z_info (
     "bounded MIDI mapping from {} to {}", str,
     dest_port.get_object_as<dsp::ProcessorParameter> ()->label ());
-
-  if (fire_events && ZRYTHM_HAVE_UI)
-    {
-      // EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
-    }
 }
 
 void
@@ -69,11 +64,6 @@ MidiMappings::unbind (int idx, bool fire_events)
   z_return_if_fail (idx >= 0 && idx < static_cast<int> (mappings_.size ()));
 
   mappings_.erase (mappings_.begin () + idx);
-
-  if (fire_events && ZRYTHM_HAVE_UI)
-    {
-      // EVENTS_PUSH (EventType::ET_MIDI_BINDINGS_CHANGED, nullptr);
-    }
 }
 
 int

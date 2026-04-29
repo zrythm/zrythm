@@ -6,6 +6,7 @@
 #include "dsp/graph_thread.h"
 #include "dsp/tempo_map.h"
 #include "utils/float_ranges.h"
+#include "utils/utf8_string.h"
 
 #include "../tests/unit/dsp/graph_helpers.h"
 #include <benchmark/benchmark.h>

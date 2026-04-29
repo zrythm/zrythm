@@ -9,6 +9,7 @@
 
 #include <soxr.h>
 
+using zrythm::utils::exceptions::ZrythmException;
 using namespace zrythm;
 
 class Resampler::Impl

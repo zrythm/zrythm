@@ -4,6 +4,7 @@
 #include "utils/version.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 using namespace zrythm::utils;
 

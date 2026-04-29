@@ -6,12 +6,12 @@
 #include <queue>
 #include <thread>
 
+#include <fmt/std.h>
+
 #include "dsp/audio_pool.h"
 #include "utils/enum_utils.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
-
-#include <fmt/std.h>
 
 namespace zrythm::dsp
 {

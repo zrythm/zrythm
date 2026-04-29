@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "gui/backend/translation_manager.h"
 #include "gui/backend/zrythm_application.h"
 

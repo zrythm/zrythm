@@ -11,19 +11,20 @@
 #include "utils/types.h"
 #include "utils/version.h"
 
-namespace zrythm
-{
-namespace engine::session
-{
-class RecordingManager;
-}
-} // namespace zrythm
+#include <QtQmlIntegration/QtQmlIntegration>
+
+#include <juce_core/juce_core.h>
+
 class ChordPresetPackManager;
 class DspContextRAII;
 class Settings;
 
 namespace zrythm
 {
+namespace engine::session
+{
+class RecordingManager;
+}
 
 /**
  * @addtogroup general

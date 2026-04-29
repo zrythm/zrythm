@@ -3,6 +3,8 @@
 
 #include "structure/tracks/piano_roll_track.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::tracks
 {
 PianoRollTrackMixin::PianoRollTrackMixin (QObject * parent) : QObject (parent)

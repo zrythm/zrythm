@@ -33,10 +33,12 @@
  *
  */
 
+#include "utils/format_qt.h"
+
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/plugin_library.h"
 #include "utils/format_juce.h"
-#include "utils/format_qt.h"
+#include "utils/logger.h"
 
 #include <QtSystemDetection>
 

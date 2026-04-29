@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/graph_node.h"
 #include "dsp/itransport.h"
 #include "dsp/timeline_data_cache.h"
 #include "structure/arrangement/region_renderer.h"

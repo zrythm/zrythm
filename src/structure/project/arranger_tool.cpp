@@ -3,6 +3,8 @@
 
 #include "structure/project/arranger_tool.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::project
 {
 

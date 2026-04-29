@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "dsp/tempo_map.h"
+#include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <juce_audio_devices/juce_audio_devices.h>

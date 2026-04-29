@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cassert>
+#include <ranges>
 #include <utility>
 
 #include "dsp/audio_callback.h"
 #include "utils/float_ranges.h"
+#include "utils/logger.h"
 
 namespace zrythm::dsp
 {

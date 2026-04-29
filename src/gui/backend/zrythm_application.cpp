@@ -3,6 +3,9 @@
 
 #include "zrythm-config.h"
 
+#include "utils/format_qt.h"
+#include <fmt/std.h>
+
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
 #include "gui/backend/backend/zrythm.h"

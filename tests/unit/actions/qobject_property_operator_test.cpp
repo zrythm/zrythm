@@ -1,8 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/qobject_property_operator.h"
 #include "undo/undo_stack.h"
+
+#include <QVariant>
 
 #include "helpers/mock_qobject.h"
 

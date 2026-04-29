@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/format_qt.h"
+
 #include "utils/qt.h"
 
 #include <QCoreApplication>

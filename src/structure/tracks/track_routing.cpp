@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_routing.h"
 

@@ -4,6 +4,8 @@
 #include "plugins/plugin_protocol.h"
 #include "utils/gtest_wrapper.h"
 
+#include <juce_core/juce_core.h>
+
 using namespace zrythm::plugins;
 
 TEST (PluginProtocolTest, StringConversion)

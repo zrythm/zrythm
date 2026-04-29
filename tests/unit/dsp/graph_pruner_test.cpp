@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <memory>
+
 #include "dsp/graph_pruner.h"
+#include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>
 

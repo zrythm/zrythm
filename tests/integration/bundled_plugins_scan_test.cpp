@@ -6,6 +6,7 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/plugin_scan_manager.h"
 #include "utils/file_path_list.h"
+#include "utils/logger.h"
 
 #include <QSignalSpy>
 #include <QStringList>

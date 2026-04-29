@@ -3,6 +3,9 @@
 
 #include "dsp/chord_descriptor.h"
 #include "utils/gtest_wrapper.h"
+#include "utils/utf8_string.h"
+
+#include <nlohmann/json.hpp>
 
 using namespace zrythm::dsp;
 

@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/chord_editor.h"
+#include "utils/logger.h"
+#include "utils/serialization.h"
+#include "utils/utf8_string.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

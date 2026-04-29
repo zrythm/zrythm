@@ -4,6 +4,7 @@
 #include "plugins/plugin_descriptor.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::plugins
 {

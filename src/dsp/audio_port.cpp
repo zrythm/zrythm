@@ -4,6 +4,7 @@
 #include "dsp/panning.h"
 #include "dsp/port_all.h"
 #include "utils/float_ranges.h"
+#include "utils/math_utils.h"
 
 #include <fmt/format.h>
 

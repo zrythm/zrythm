@@ -8,6 +8,8 @@
 
 #include <zstd.h>
 
+using zrythm::utils::exceptions::ZrythmException;
+
 namespace zrythm::utils::compression
 {
 

@@ -4,6 +4,9 @@
 #pragma once
 
 #include "plugins/iplugin_host_window.h"
+#include "utils/utf8_string.h"
+
+#include <juce_gui_basics/juce_gui_basics.h>
 
 namespace zrythm::plugins
 {

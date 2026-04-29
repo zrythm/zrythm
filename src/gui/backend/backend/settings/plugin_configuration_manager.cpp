@@ -1,18 +1,21 @@
 // SPDX-FileCopyrightText: © 2021-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <filesystem>
+
+#include <fmt/std.h>
+
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
-#include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/zrythm_application.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/directory_manager.h"
 #include "utils/format.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 #include <QDateTime>
+
+#include <nlohmann/json.hpp>
 
 using namespace zrythm;
 
@@ -75,7 +78,7 @@ PluginConfigurationManager::read_or_new ()
 {
   auto ret = std::make_unique<PluginConfigurationManager> ();
   auto path = get_file_path ();
-  if (!fs::exists (path))
+  if (!std::filesystem::exists (path))
     {
       z_info ("Plugin settings file at {} does not exist", path);
       return ret;
@@ -138,9 +141,9 @@ PluginConfigurationManager::delete_file ()
     !path.empty () && path.is_absolute () && path.has_parent_path ());
   try
     {
-      fs::remove (path);
+      std::filesystem::remove (path);
     }
-  catch (const fs::filesystem_error &e)
+  catch (const std::filesystem::filesystem_error &e)
     {
       throw ZrythmException (format_str (
         "Failed to remove invalid plugin settings file: {}", e.what ()));
@@ -446,4 +449,28 @@ PluginConfigurationManager::find (
       return nullptr;
     }
   return (*it).get ();
+}
+
+void
+PluginConfigurationManager::serialize_to_file_no_throw ()
+{
+  try
+    {
+      serialize_to_file ();
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning ("{}", e.what ());
+    }
+}
+
+void
+to_json (nlohmann::json &j, const PluginConfigurationManager &p)
+{
+  j[PluginConfigurationManager::kSettingsKey] = p.settings_;
+}
+void
+from_json (const nlohmann::json &j, PluginConfigurationManager &p)
+{
+  j.at (PluginConfigurationManager::kSettingsKey).get_to (p.settings_);
 }

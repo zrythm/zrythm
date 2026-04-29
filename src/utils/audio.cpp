@@ -5,6 +5,7 @@
 
 #include "utils/audio.h"
 #include "utils/audio_file.h"
+#include "utils/exceptions.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
@@ -13,6 +14,8 @@
 #if defined(__FreeBSD__)
 #  include <sys/sysctl.h>
 #endif
+
+using zrythm::utils::exceptions::ZrythmException;
 
 namespace zrythm::utils::audio
 {

@@ -8,6 +8,8 @@
 
 #include <gtest/gtest.h>
 
+using namespace Qt::StringLiterals;
+
 namespace zrythm::structure::tracks
 {
 

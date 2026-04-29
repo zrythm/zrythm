@@ -9,6 +9,7 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/out_of_process_scanner.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
 
 #include <QtConcurrent>
 

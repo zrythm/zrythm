@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/resize_arranger_objects_command.h"
+#include "utils/math_utils.h"
 
 namespace zrythm::commands
 {

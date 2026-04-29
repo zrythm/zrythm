@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/tempo_object_manager.h"
 
 namespace zrythm::structure::arrangement

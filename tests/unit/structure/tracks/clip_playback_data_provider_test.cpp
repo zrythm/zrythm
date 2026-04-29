@@ -3,6 +3,7 @@
 
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/tracks/clip_playback_data_provider.h"

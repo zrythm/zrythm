@@ -8,6 +8,8 @@
 #endif
 #include <thread>
 
+#include <fmt/std.h>
+
 #include <fmt/format.h>
 
 namespace zrythm::utils

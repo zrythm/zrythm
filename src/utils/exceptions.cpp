@@ -1,9 +1,10 @@
 // SPDX-CopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "utils/exceptions.h"
 #include "utils/format.h"
-#include "utils/format_qt.h"
 #include "utils/logger.h"
 
 #include <fmt/format.h>

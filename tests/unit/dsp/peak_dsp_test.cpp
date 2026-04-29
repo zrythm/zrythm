@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+#include <limits>
+#include <ranges>
+
 #include "dsp/peak_dsp.h"
 #include "utils/gtest_wrapper.h"
 

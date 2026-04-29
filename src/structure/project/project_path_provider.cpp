@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/project_path_provider.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::structure::project
 {

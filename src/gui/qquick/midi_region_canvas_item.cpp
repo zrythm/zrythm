@@ -3,7 +3,7 @@
 
 #include "gui/qquick/midi_region_canvas_item.h"
 #include "gui/qquick/midi_region_canvas_renderer.h"
-#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/arranger_object_all.h"
 
 namespace zrythm::gui::qquick
 {

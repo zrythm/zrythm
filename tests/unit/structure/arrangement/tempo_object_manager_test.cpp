@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/arrangement/time_signature_object.h"
@@ -347,8 +348,8 @@ TEST_F (TempoObjectManagerTest, Copying)
   auto copied_time_sig_obj_ref = target_manager->ArrangerObjectOwner<
     TimeSignatureObject>::get_children_vector ()[0];
 
-  auto copied_tempo_ptr = copied_tempo_obj_ref.get_object_as<TempoObject> ();
-  auto copied_time_sig_ptr =
+  auto * copied_tempo_ptr = copied_tempo_obj_ref.get_object_as<TempoObject> ();
+  auto * copied_time_sig_ptr =
     copied_time_sig_obj_ref.get_object_as<TimeSignatureObject> ();
 
   EXPECT_EQ (copied_tempo_ptr->position ()->samples (), 1000);

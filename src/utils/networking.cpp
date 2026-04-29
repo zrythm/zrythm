@@ -11,6 +11,8 @@
 
 #include <juce_core/juce_core.h>
 
+using zrythm::utils::exceptions::ZrythmException;
+
 namespace zrythm::networking
 {
 

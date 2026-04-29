@@ -1,7 +1,13 @@
-// SPDX-FileCopyrightText: © 2018-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/chord_descriptor.h"
 #include "structure/arrangement/piano_roll.h"
+#include "utils/enum_utils.h"
+#include "utils/logger.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

@@ -7,6 +7,8 @@
 #include "utils/gtest_wrapper.h"
 #include "utils/object_pool.h"
 
+#include <QtGlobal>
+
 class TestObject
 {
 public:

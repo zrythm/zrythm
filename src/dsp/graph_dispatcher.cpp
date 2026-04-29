@@ -7,6 +7,7 @@
 #include "dsp/graph_dispatcher.h"
 #include "dsp/graph_export.h"
 #include "dsp/graph_pruner.h"
+#include "utils/logger.h"
 
 namespace zrythm::dsp
 {

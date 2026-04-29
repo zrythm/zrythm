@@ -6,6 +6,7 @@
 
 #include "unit/dsp/atomic_position_helpers.h"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

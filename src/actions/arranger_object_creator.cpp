@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "utils/format_qt.h"
 
 #include "actions/arranger_object_creator.h"
 #include "commands/add_region_to_clip_slot_command.h"

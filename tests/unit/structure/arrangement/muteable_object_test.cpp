@@ -9,6 +9,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

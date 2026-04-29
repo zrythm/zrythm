@@ -31,6 +31,7 @@ target_sources(zrythm_arrangement_lib
     marker.cpp
     midi_note.cpp
     midi_region.cpp
+    muteable_object.cpp
     named_object.cpp
     piano_roll.cpp
     region_renderer.cpp

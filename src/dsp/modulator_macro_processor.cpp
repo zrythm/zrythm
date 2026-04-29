@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port_all.h"
 #include "utils/float_ranges.h"
-#include "utils/format_qt.h"
 
 #include <fmt/format.h>
 

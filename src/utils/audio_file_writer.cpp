@@ -3,12 +3,13 @@
 
 #include <stdexcept>
 
+#include <fmt/std.h>
+
 #include "utils/audio_file_writer.h"
 #include "utils/logger.h"
+#include "utils/utf8_string.h"
 
 #include <QtConcurrentRun>
-
-#include <fmt/std.h>
 
 namespace zrythm::utils
 {

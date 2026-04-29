@@ -3,6 +3,8 @@
 
 #include "dsp/playhead.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 void

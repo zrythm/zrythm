@@ -7,6 +7,7 @@
 #include "dsp/graph_renderer.h"
 #include "dsp/graph_scheduler.h"
 #include "dsp/transport.h"
+#include "utils/audio.h"
 #include "utils/format.h"
 
 #include <QtConcurrentRun>

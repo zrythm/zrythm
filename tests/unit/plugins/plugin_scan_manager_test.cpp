@@ -3,6 +3,7 @@
 
 #include "plugins/plugin_scan_manager.h"
 #include "utils/gtest_wrapper.h"
+#include "utils/logger.h"
 
 #include <QSignalSpy>
 #include <QTest>

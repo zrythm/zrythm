@@ -8,6 +8,7 @@
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/region_renderer.h"
 #include "utils/float_ranges.h"
+#include "utils/math_utils.h"
 #include "utils/views.h"
 
 namespace zrythm::structure::arrangement

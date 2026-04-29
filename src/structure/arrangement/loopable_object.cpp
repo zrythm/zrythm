@@ -3,6 +3,8 @@
 
 #include "structure/arrangement/loopable_object.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::arrangement
 {
 ArrangerObjectLoopRange::ArrangerObjectLoopRange (
@@ -127,5 +129,26 @@ ArrangerObjectLoopRange::get_num_loops (bool count_incomplete) const
     (count_incomplete
      && (full_size - loop_start) % loop_size != units::samples (0));
   return static_cast<int> (full_loops) + (add_one ? 1 : 0);
+}
+
+void
+to_json (nlohmann::json &j, const ArrangerObjectLoopRange &object)
+{
+  using T = ArrangerObjectLoopRange;
+  j[T::kClipStartPosKey] = object.clip_start_pos_;
+  j[T::kLoopStartPosKey] = object.loop_start_pos_;
+  j[T::kLoopEndPosKey] = object.loop_end_pos_;
+  j[T::kTrackBoundsKey] = object.track_bounds_;
+}
+
+void
+from_json (const nlohmann::json &j, ArrangerObjectLoopRange &object)
+{
+  using T = ArrangerObjectLoopRange;
+  j.at (T::kClipStartPosKey).get_to (object.clip_start_pos_);
+  j.at (T::kLoopStartPosKey).get_to (object.loop_start_pos_);
+  j.at (T::kLoopEndPosKey).get_to (object.loop_end_pos_);
+  j.at (T::kTrackBoundsKey).get_to (object.track_bounds_);
+  Q_EMIT object.trackBoundsChanged (object.track_bounds_);
 }
 }

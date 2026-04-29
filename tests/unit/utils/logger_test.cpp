@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/logger.h"
+#include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>
 

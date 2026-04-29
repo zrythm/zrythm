@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "project_info.h"
+#include "utils/utf8_string.h"
 
 using namespace zrythm::gui;
 

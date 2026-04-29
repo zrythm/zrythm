@@ -1,11 +1,8 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/tracks/chord_track.h"
-#include "structure/tracks/marker_track.h"
-#include "structure/tracks/master_track.h"
-#include "structure/tracks/modulator_track.h"
 #include "structure/tracks/singleton_tracks.h"
+#include "structure/tracks/track_all.h"
 
 #include <qsignalspy.h>
 

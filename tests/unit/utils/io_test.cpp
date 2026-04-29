@@ -3,11 +3,13 @@
 
 #include <fstream>
 
+#include "utils/exceptions.h"
 #include "utils/io_utils.h"
 
 #include <gtest/gtest.h>
 
 using namespace zrythm;
+using zrythm::utils::exceptions::ZrythmException;
 
 TEST (IoTest, PathSeparator)
 {

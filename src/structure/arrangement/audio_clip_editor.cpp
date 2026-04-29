@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/audio_clip_editor.h"
+#include "utils/logger.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

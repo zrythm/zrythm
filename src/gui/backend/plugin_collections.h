@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021, 2023-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -12,6 +12,8 @@
  *
  * @{
  */
+
+using namespace std::string_view_literals;
 
 namespace zrythm::gui::old_dsp::plugins
 {
@@ -59,20 +61,8 @@ private:
   static constexpr auto kNameKey = "name"sv;
   static constexpr auto kDescriptionKey = "description"sv;
   static constexpr auto kDescriptorsKey = "descriptors"sv;
-  friend void           to_json (nlohmann::json &j, const PluginCollection &p)
-  {
-    j = nlohmann::json{
-      { kNameKey,        p.name_        },
-      { kDescriptionKey, p.description_ },
-      { kDescriptorsKey, p.descriptors_ },
-    };
-  }
-  friend void from_json (const nlohmann::json &j, PluginCollection &p)
-  {
-    j.at (kNameKey).get_to (p.name_);
-    j.at (kDescriptionKey).get_to (p.description_);
-    j.at (kDescriptorsKey).get_to (p.descriptors_);
-  }
+  friend void           to_json (nlohmann::json &j, const PluginCollection &p);
+  friend void from_json (const nlohmann::json &j, PluginCollection &p);
 
 public:
   /** Name of the collection. */
@@ -110,17 +100,7 @@ public:
    * @brief Wrapper over @ref serialize_to_file that ignores exceptions.
    *
    */
-  void serialize_to_file_no_throw () const
-  {
-    try
-      {
-        serialize_to_file ();
-      }
-    catch (const ZrythmException &e)
-      {
-        z_warning ("{}", e.what ());
-      }
-  }
+  void serialize_to_file_no_throw () const;
 
   std::string get_document_type () const { return "Zrythm Plugin Collections"; }
   int         get_format_major_version () const { return 3; }
@@ -149,14 +129,8 @@ public:
 
 private:
   static constexpr auto kCollectionsKey = "collections"sv;
-  friend void           to_json (nlohmann::json &j, const PluginCollections &pc)
-  {
-    j[kCollectionsKey] = pc.collections_;
-  }
-  friend void from_json (const nlohmann::json &j, PluginCollections &pc)
-  {
-    j.at (kCollectionsKey).get_to (pc.collections_);
-  }
+  friend void to_json (nlohmann::json &j, const PluginCollections &pc);
+  friend void from_json (const nlohmann::json &j, PluginCollections &pc);
 
   /**
    * @brief Deletes the cache file.

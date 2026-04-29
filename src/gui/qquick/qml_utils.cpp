@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include "utils/format_qt.h"
+
 #include "dsp/file_audio_source.h"
 #include "gui/qquick/qml_utils.h"
 #include "structure/arrangement/audio_region.h"

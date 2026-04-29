@@ -5,6 +5,9 @@
 
 #include "utils/file_path_list.h"
 #include "utils/logger.h"
+#include "utils/utf8_string.h"
+
+#include <juce_core/juce_core.h>
 
 using namespace zrythm::utils;
 

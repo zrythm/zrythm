@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+#include <fmt/std.h>
+
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_saver.h"
 #include "structure/project/project.h"

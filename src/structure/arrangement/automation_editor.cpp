@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/automation_editor.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

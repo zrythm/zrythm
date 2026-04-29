@@ -5,6 +5,7 @@
 
 #include <atomic>
 
+#include "dsp/graph_node.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <farbot/RealtimeObject.hpp>

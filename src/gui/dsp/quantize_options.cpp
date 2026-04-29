@@ -7,6 +7,8 @@
 #include "utils/algorithms.h"
 #include "utils/pcg_rand.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::gui::old_dsp
 {
 
@@ -155,6 +157,31 @@ QuantizeOptions::quantize_position (units::precise_tick_t pos)
   auto ret_pos = pos + diff;
 
   return { ret_pos, diff.in (units::ticks) };
+}
+
+void
+to_json (nlohmann::json &j, const QuantizeOptions &p)
+{
+  j = nlohmann::json{
+    { QuantizeOptions::kNoteLengthKey,         p.note_length_         },
+    { QuantizeOptions::kNoteTypeKey,           p.note_type_           },
+    { QuantizeOptions::kAdjustStartKey,        p.adjust_start_        },
+    { QuantizeOptions::kAdjustEndKey,          p.adjust_end_          },
+    { QuantizeOptions::kAmountKey,             p.amount_              },
+    { QuantizeOptions::kSwingKey,              p.swing_               },
+    { QuantizeOptions::kRandomizationTicksKey, p.randomization_ticks_ },
+  };
+}
+void
+from_json (const nlohmann::json &j, QuantizeOptions &p)
+{
+  j.at (QuantizeOptions::kNoteLengthKey).get_to (p.note_length_);
+  j.at (QuantizeOptions::kNoteTypeKey).get_to (p.note_type_);
+  j.at (QuantizeOptions::kAdjustStartKey).get_to (p.adjust_start_);
+  j.at (QuantizeOptions::kAdjustEndKey).get_to (p.adjust_end_);
+  j.at (QuantizeOptions::kAmountKey).get_to (p.amount_);
+  j.at (QuantizeOptions::kSwingKey).get_to (p.swing_);
+  j.at (QuantizeOptions::kRandomizationTicksKey).get_to (p.randomization_ticks_);
 }
 
 } // namespace zrythm::gui::old_dsp

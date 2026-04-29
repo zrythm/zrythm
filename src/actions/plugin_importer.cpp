@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "actions/plugin_importer.h"
 #include "commands/add_plugin_command.h"
 

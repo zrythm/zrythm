@@ -5,6 +5,8 @@
 
 #include "dsp/parameter.h"
 #include "dsp/processor_base.h"
+#include "utils/qt.h"
+#include "utils/utf8_string.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -35,7 +37,7 @@ public:
   // QML Interface
   // ========================================================================
 
-  [[gnu::hot]] bool recording () const
+  bool recording () const
   {
     const auto &recording_param = get_recording_param ();
     return recording_param.range ().is_toggled (recording_param.baseValue ());
@@ -45,7 +47,7 @@ public:
 
   // ========================================================================
 
-  dsp::ProcessorParameter &get_recording_param () const
+  dsp::ProcessorParameter &get_recording_param () const [[clang::blocking]]
   {
     return *recording_id_.get_object_as<dsp::ProcessorParameter> ();
   }

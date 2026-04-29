@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin.h"
+#include "utils/concurrency.h"
+#include "utils/enum_utils.h"
 
 #include <QTimer>
 

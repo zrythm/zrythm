@@ -3,6 +3,8 @@
 
 #include <utility>
 
+#include "utils/format_qt.h"
+
 #include "dsp/engine.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/port_connections_manager.h"
@@ -361,7 +363,6 @@ Project::add_default_tracks ()
 void
 init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type)
 {
-  assert ((QThread::currentThread () == qApp->thread ()));
   z_debug ("cloning project...");
 
   // obj.transport_ = utils::clone_qobject (*other.transport_, &obj);

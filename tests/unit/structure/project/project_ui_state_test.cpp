@@ -12,6 +12,7 @@
 #include "helpers/scoped_juce_qapplication.h"
 
 #include <gtest/gtest.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 namespace zrythm::structure::project
 {

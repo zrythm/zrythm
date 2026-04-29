@@ -5,7 +5,10 @@
 #include <cstring>
 
 #include "dsp/chord_descriptor.h"
+#include "utils/enum_utils.h"
+#include "utils/logger.h"
 #include "utils/midi.h"
+#include "utils/utf8_string.h"
 
 #include <nlohmann/json.hpp>
 

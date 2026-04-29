@@ -5,6 +5,8 @@
 #include "utils/bidirectional_map.h"
 #include "utils/enum_utils.h"
 
+#include <juce_core/juce_core.h>
+
 using namespace zrythm::plugins;
 
 constexpr std::array<std::string_view, 11> plugin_protocol_strings = {

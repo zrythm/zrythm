@@ -1,14 +1,17 @@
 // SPDX-FileCopyrightText: © 2023-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <fmt/std.h>
+
 #include "utils/audio_file.h"
 #include "utils/exceptions.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/resampler.h"
 
-#include <fmt/std.h>
 #include <juce_audio_formats/juce_audio_formats.h>
+
+using zrythm::utils::exceptions::ZrythmException;
 
 namespace zrythm::utils::audio
 {

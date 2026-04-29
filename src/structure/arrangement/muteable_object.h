@@ -73,16 +73,9 @@ private:
 
   static constexpr std::string_view kMutedKey = "muted";
   friend void
-  to_json (nlohmann::json &j, const ArrangerObjectMuteFunctionality &object)
-  {
-    j[kMutedKey] = object.muted_;
-  }
+  to_json (nlohmann::json &j, const ArrangerObjectMuteFunctionality &object);
   friend void
-  from_json (const nlohmann::json &j, ArrangerObjectMuteFunctionality &object)
-  {
-    j.at (kMutedKey).get_to (object.muted_);
-    Q_EMIT object.mutedChanged (object.muted_);
-  }
+  from_json (const nlohmann::json &j, ArrangerObjectMuteFunctionality &object);
 
 private:
   /** Whether muted or not. */
