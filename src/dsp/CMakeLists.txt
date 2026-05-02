@@ -8,6 +8,7 @@ target_sources(zrythm_dsp_lib
     atomic_position.cpp
     atomic_position_qml_adapter.cpp
     audio_callback.cpp
+    audio_input_selection.cpp
     audio_pool.cpp
     audio_port.cpp
     audio_sample_processor.cpp
@@ -59,6 +60,7 @@ target_sources(zrythm_dsp_lib
       atomic_position.h
       atomic_position_qml_adapter.h
       audio_callback.h
+      audio_input_selection.h
       audio_pool.h
       audio_port.h
       chord_descriptor.h

@@ -46,6 +46,44 @@
         "snapGridEditor": {
           "$ref": "#/definitions/snapGrid",
           "description": "Editor (piano roll, chord editor, etc.) snap/grid settings"
+        },
+        "audioInputSelections": {
+          "type": "array",
+          "description": "Audio hardware input selections per track (pruned to live tracks on save)",
+          "items": {
+            "type": "array",
+            "items": [
+              {
+                "$ref": "#/definitions/uuid",
+                "description": "Track UUID"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "deviceName": {
+                    "type": "string",
+                    "description": "Audio device name (empty = no input)"
+                  },
+                  "firstChannel": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255,
+                    "description": "0-based index of the first audio channel"
+                  },
+                  "stereo": {
+                    "type": "boolean",
+                    "description": "Whether to use stereo (true) or mono (false)"
+                  }
+                },
+                "required": [
+                  "deviceName",
+                  "firstChannel",
+                  "stereo"
+                ]
+              }
+            ],
+            "additionalItems": false
+          }
         }
       }
     },
