@@ -3,9 +3,12 @@
 
 #include "structure/project/project.h"
 #include "structure/project/project_ui_state.h"
+#include "structure/tracks/track.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 #include "utils/qt.h"
+
+#include <QSignalSpy>
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_settings_backend.h"
@@ -96,6 +99,21 @@ protected:
       window_factory, *metronome, *monitor_fader);
   }
 
+  // Note: add_default_tracks() creates Chord/Modulator/Marker/Master tracks,
+  // but no Audio track. audioInputSelectionForTrack() works on any track type
+  // so we just grab the first one.
+  static structure::tracks::Track * get_first_track (Project &project)
+  {
+    auto * tracklist = project.tracklist ();
+    auto   span = tracklist->collection ()->get_track_span ();
+    for (const auto &track : span)
+      {
+        return std::visit (
+          [] (auto * t) -> structure::tracks::Track * { return t; }, track);
+      }
+    return nullptr;
+  }
+
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
   std::filesystem::path                            project_dir;
   std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
@@ -183,5 +201,135 @@ TEST_F (ProjectUiStateTest, AllAccessorsNonNull)
   EXPECT_NE (ui_state->timeline (), nullptr);
   EXPECT_NE (ui_state->snapGridTimeline (), nullptr);
   EXPECT_NE (ui_state->snapGridEditor (), nullptr);
+}
+
+// ========================================================================
+// AudioInputSelection tests
+// ========================================================================
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionNullTrackReturnsNull)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * sel = ui_state->audioInputSelectionForTrack (nullptr);
+  EXPECT_EQ (sel, nullptr);
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionDefaultValues)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  ASSERT_NE (track, nullptr);
+
+  auto * sel = ui_state->audioInputSelectionForTrack (track);
+  ASSERT_NE (sel, nullptr);
+  EXPECT_EQ (sel->deviceName (), QString ());
+  EXPECT_EQ (sel->firstChannel (), 0);
+  EXPECT_TRUE (sel->stereo ());
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionLazyCreationReturnsSameObject)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  auto * first = ui_state->audioInputSelectionForTrack (track);
+  auto * second = ui_state->audioInputSelectionForTrack (track);
+  EXPECT_EQ (first, second);
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionSetDeviceName)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto *     track = get_first_track (*project);
+  auto *     sel = ui_state->audioInputSelectionForTrack (track);
+  QSignalSpy spy (sel, &dsp::AudioInputSelection::deviceNameChanged);
+  sel->setDeviceName (u"Test Device"_s);
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_EQ (sel->deviceName (), u"Test Device"_s);
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionSetDeviceNameNoDuplicateSignal)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  auto * sel = ui_state->audioInputSelectionForTrack (track);
+  sel->setDeviceName (u"Test Device"_s);
+  QSignalSpy spy (sel, &dsp::AudioInputSelection::deviceNameChanged);
+  sel->setDeviceName (u"Test Device"_s);
+  EXPECT_EQ (spy.count (), 0);
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionSerializationPrunesStaleEntries)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  auto * sel = ui_state->audioInputSelectionForTrack (track);
+  sel->setDeviceName (u"LiveDevice"_s);
+
+  nlohmann::json j;
+  to_json (j, *ui_state);
+
+  ASSERT_TRUE (j.contains (ProjectUiState::kAudioInputSelectionsKey));
+  const auto &selections = j[ProjectUiState::kAudioInputSelectionsKey];
+  ASSERT_TRUE (selections.is_array ());
+  for (const auto &entry : selections)
+    {
+      ASSERT_EQ (entry.size (), 2);
+      structure::tracks::Track::Uuid uuid;
+      entry[0].get_to (uuid);
+      EXPECT_TRUE (project->get_track_registry ().contains (uuid));
+    }
+}
+
+TEST_F (ProjectUiStateTest, AudioInputSelectionSerializationRoundtrip)
+{
+  project = create_minimal_project ();
+  project->add_default_tracks ();
+  ui_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+
+  auto * track = get_first_track (*project);
+  auto * sel = ui_state->audioInputSelectionForTrack (track);
+  sel->setDeviceName (u"My Device"_s);
+  sel->setFirstChannel (4);
+  sel->setStereo (false);
+
+  nlohmann::json j;
+  to_json (j, *ui_state);
+
+  // Use the same project (same track UUIDs) — in real usage the project
+  // would be deserialized first, restoring original UUIDs.
+  auto restored_state =
+    utils::make_qobject_unique<ProjectUiState> (*project, *app_settings);
+  from_json (j, *restored_state);
+
+  auto * restored_sel = restored_state->audioInputSelectionForTrack (track);
+  ASSERT_NE (restored_sel, nullptr);
+  EXPECT_EQ (restored_sel->deviceName (), u"My Device"_s);
+  EXPECT_EQ (restored_sel->firstChannel (), 4);
+  EXPECT_FALSE (restored_sel->stereo ());
 }
 }
