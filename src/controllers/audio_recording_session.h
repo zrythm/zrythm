@@ -38,7 +38,8 @@ struct RecordingAudioPacket
  * Thread contracts:
  * - write_samples(): audio thread only (single producer)
  * - drain_pending(): timer thread only (single consumer)
- * - finalize(), reset(): any thread (must not overlap with write/drain)
+ * - finalize(): any thread (atomic flag — safe during active writes)
+ * - reset(): any thread (must not overlap with write/drain)
  */
 class AudioRecordingSession
 {
@@ -78,7 +79,8 @@ public:
    * Called from the timer thread. Reads slot indices from the SPSC fifo
    * and copies the slot data into RecordingAudioPacket objects.
    */
-  std::vector<RecordingAudioPacket> drain_pending () [[clang::blocking]];
+  [[nodiscard]] std::vector<RecordingAudioPacket>
+  drain_pending () [[clang::blocking]];
 
   [[nodiscard]] auto state () const
   {
@@ -87,8 +89,12 @@ public:
 
   /**
    * @brief Transitions to Finalizing state, rejecting further writes.
+   *
+   * Safe to call while write_samples() is in progress on another thread —
+   * this only sets an atomic flag. Any in-flight writes will complete
+   * normally; subsequent audio callbacks will see Finalizing and skip.
    */
-  void finalize ();
+  void finalize () noexcept;
 
   /**
    * @brief Resets the session to Armed state for reuse.

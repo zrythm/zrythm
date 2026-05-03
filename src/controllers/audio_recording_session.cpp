@@ -113,7 +113,7 @@ AudioRecordingSession::drain_pending ()
 }
 
 void
-AudioRecordingSession::finalize ()
+AudioRecordingSession::finalize () noexcept
 {
   state_.store (State::Finalizing, std::memory_order_release);
 }
