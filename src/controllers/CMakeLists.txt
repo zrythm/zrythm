@@ -5,6 +5,7 @@ qt_add_library(zrythm_controllers_lib STATIC)
 
 target_sources(zrythm_controllers_lib
   PRIVATE
+    audio_recording_session.cpp
     project_json_serializer.cpp
     project_loader.cpp
     project_saver.cpp
@@ -13,6 +14,7 @@ target_sources(zrythm_controllers_lib
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
+      audio_recording_session.h
       project_json_serializer.h
       project_loader.h
       project_saver.h
