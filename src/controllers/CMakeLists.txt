@@ -9,6 +9,7 @@ target_sources(zrythm_controllers_lib
     project_json_serializer.cpp
     project_loader.cpp
     project_saver.cpp
+    recording_coordinator.cpp
     transport_controller.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -18,6 +19,7 @@ target_sources(zrythm_controllers_lib
       project_json_serializer.h
       project_loader.h
       project_saver.h
+      recording_coordinator.h
       transport_controller.h
 )
 

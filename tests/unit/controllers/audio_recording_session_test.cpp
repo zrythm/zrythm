@@ -148,7 +148,7 @@ TEST_F (AudioRecordingSessionTest, ResetAllowsReuse)
   std::vector<float> r (128, 0.2f);
 
   session_->write_samples (units::samples (0), l, r);
-  session_->drain_pending ();
+  std::ignore = session_->drain_pending ();
   session_->reset ();
 
   session_->write_samples (units::samples (1000), l, r);
