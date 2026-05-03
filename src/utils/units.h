@@ -9,14 +9,17 @@
 namespace zrythm::units
 {
 
-// Define base dimensions for sample and tick
-// Using unique indices based on Unix epoch timestamps for uniqueness
+// Define base dimensions using unique indices based on Unix epoch timestamps
+// for uniqueness
 struct SampleBaseDim : au::base_dim::BaseDimension<1737814550>
 {
-}; // 2025-01-25 13:05:50 UTC
+};
 struct TickBaseDim : au::base_dim::BaseDimension<1737814551>
 {
-}; // 2025-01-25 13:05:51 UTC
+};
+struct ChannelBaseDim : au::base_dim::BaseDimension<1777738085>
+{
+};
 
 // Define sample unit with its own dimension
 struct Sample : au::UnitImpl<au::Dimension<SampleBaseDim>>
@@ -43,6 +46,17 @@ constexpr auto ticks = au::QuantityMaker<Tick>{};
 // Define tick quantity types
 using tick_t = au::QuantityI64<Tick>;
 using precise_tick_t = au::QuantityD<Tick>;
+
+// Define channel count unit with its own dimension
+struct ChannelCount : au::UnitImpl<au::Dimension<ChannelBaseDim>>
+{
+  static constexpr const char label[] = "channel";
+};
+constexpr auto channel = au::SingularNameFor<ChannelCount>{};
+constexpr auto channels = au::QuantityMaker<ChannelCount>{};
+
+// Define channel count quantity types
+using channel_count_t = au::Quantity<ChannelCount, uint8_t>;
 
 // Define PPQ constant (960 ticks per quarter note)
 constexpr tick_t PPQ = ticks (960);
