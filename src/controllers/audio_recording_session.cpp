@@ -26,9 +26,9 @@ struct AudioRecordingSession::Impl
   // distinct from any un-drained slot.
   static constexpr size_t kSlotCount = AudioRecordingSession::kFifoCapacity + 1;
 
-  explicit Impl (units::sample_u32_t max_block_length)
+  explicit Impl (units::sample_u32_t max_block_length_arg)
       : index_buffer (static_cast<int> (AudioRecordingSession::kFifoCapacity)),
-        max_block_length (max_block_length)
+        max_block_length (max_block_length_arg)
   {
     const auto block_size = max_block_length.in (units::samples);
     slots.resize (kSlotCount);
