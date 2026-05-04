@@ -83,6 +83,10 @@ to_json (nlohmann::json &j, const ParameterRange &p)
   j["max"] = p.maxf_;
   j["def"] = p.deff_;
   j["zero"] = p.zerof_;
+  if (p.type_ == ParameterRange::Type::Enumeration)
+    {
+      j["enumLabels"] = p.enum_labels_;
+    }
 }
 
 void
@@ -95,6 +99,29 @@ from_json (const nlohmann::json &j, ParameterRange &p)
   j.at ("def").get_to (p.deff_);
   if (j.contains ("zero"))
     j.at ("zero").get_to (p.zerof_);
+  if (p.type_ == ParameterRange::Type::Enumeration)
+    {
+      if (!j.contains ("enumLabels"))
+        {
+          throw std::runtime_error (
+            "Enumeration parameter missing required 'enumLabels'");
+        }
+      j.at ("enumLabels").get_to (p.enum_labels_);
+      if (p.enum_labels_.empty ())
+        {
+          throw std::runtime_error (
+            "Enumeration parameter has empty enumLabels");
+        }
+      const auto expected_count =
+        static_cast<size_t> (std::round (p.maxf_ - p.minf_ + 1.f));
+      if (p.enum_labels_.size () != expected_count)
+        {
+          throw std::runtime_error (
+            fmt::format (
+              "Enumeration label count ({}) does not match range ({}-{}+1={})",
+              p.enum_labels_.size (), p.minf_, p.maxf_, expected_count));
+        }
+    }
 }
 
 ProcessorParameter::ProcessorParameter (
@@ -103,8 +130,9 @@ ProcessorParameter::ProcessorParameter (
   ParameterRange    range,
   utils::Utf8String label,
   QObject *         parent)
-    : QObject (parent), unique_id_ (std::move (unique_id)), range_ (range),
-      label_ (std::move (label)), base_value_ (range.convertTo0To1 (range.deff_)),
+    : QObject (parent), unique_id_ (std::move (unique_id)),
+      range_ (std::move (range)), label_ (std::move (label)),
+      base_value_ (range_.convertTo0To1 (range_.deff_)),
       modulation_input_uuid_ (
         { port_registry.create_object<
           CVPort> (label_ + u8" Mod In", PortFlow::Input) })
