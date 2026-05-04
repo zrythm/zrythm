@@ -20,11 +20,16 @@ struct AudioRecordingSession::Impl
     farbot::fifo_options::full_empty_failure_mode::return_false_on_full_or_empty,
     farbot::fifo_options::full_empty_failure_mode::return_false_on_full_or_empty>;
 
-  // One extra slot beyond fifo capacity so the writer never wraps into a
-  // slot whose index is still in the fifo.  The fifo limits in-flight
-  // indices to kFifoCapacity, so with +1 the active write slot is always
-  // distinct from any un-drained slot.
-  static constexpr size_t kSlotCount = AudioRecordingSession::kFifoCapacity + 1;
+  // Two extra slots beyond fifo capacity to prevent a data race between the
+  // real-time writer and the non-RT reader.  The reader pops an index from
+  // the fifo (freeing space) then reads the corresponding slot data.  With
+  // only +1 slot, the writer can push into the freed space, advance
+  // next_write_slot by one, and wrap around to the exact slot the reader
+  // just popped but hasn't read yet — a classic race window on platforms
+  // with coarser scheduling (e.g. Windows).  With +2, the writer's next
+  // slot after a push is always one position behind the reader's current
+  // slot, which has already been fully consumed.
+  static constexpr size_t kSlotCount = AudioRecordingSession::kFifoCapacity + 2;
 
   explicit Impl (units::sample_u32_t max_block_length_arg)
       : index_buffer (static_cast<int> (AudioRecordingSession::kFifoCapacity)),
