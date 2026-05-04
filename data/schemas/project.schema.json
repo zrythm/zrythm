@@ -694,6 +694,14 @@
         "zero": {
           "type": "number",
           "description": "Zero position value"
+        },
+        "enumLabels": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "Labels for Enumeration type parameters"
         }
       }
     },

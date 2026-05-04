@@ -8,6 +8,7 @@
 #include "dsp/graph_node.h"
 #include "dsp/midi_port.h"
 #include "utils/math_utils.h"
+#include "utils/traits.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
@@ -104,6 +105,78 @@ public:
     return { Type::GainAmplitude, 0.f, max_val, 0.f, 1.f };
   }
 
+  static ParameterRange make_enumeration (
+    std::vector<utils::Utf8String> labels,
+    size_t                         default_index = 0)
+  {
+    if (labels.empty ())
+      {
+        throw std::invalid_argument (
+          "Enumeration parameter requires at least one label");
+      }
+    if (default_index >= labels.size ())
+      {
+        throw std::invalid_argument (
+          "default_index out of range for enumeration labels");
+      }
+    const auto     count = static_cast<float> (labels.size ());
+    ParameterRange range{
+      Type::Enumeration, 0.f, count - 1.f, 0.f,
+      static_cast<float> (default_index)
+    };
+    range.enum_labels_ = std::move (labels);
+    return range;
+  }
+
+  /**
+   * @brief Returns the number of enum entries.
+   */
+  size_t enum_count () const { return enum_labels_.size (); }
+
+  /**
+   * @brief Converts a normalized value to an enum index.
+   */
+  size_t enum_index (float normalized_val) const
+  {
+    const auto real = convertFrom0To1 (normalized_val);
+    assert (!enum_labels_.empty ());
+    const auto idx = static_cast<size_t> (std::max (std::round (real), 0.f));
+    return std::min (idx, enum_labels_.size () - 1);
+  }
+
+  /**
+   * @brief Returns the normalized value for a given enum index.
+   */
+  float normalized_from_index (size_t index) const
+  {
+    assert (index < enum_labels_.size ());
+    if (enum_labels_.size () == 1)
+      return 0.f;
+    return convertTo0To1 (static_cast<float> (index));
+  }
+
+  /**
+   * @brief Returns the label for a given enum index.
+   */
+  const auto &enum_label (size_t index) const
+  {
+    return enum_labels_.at (index);
+  }
+
+  template <EnumType E> float normalized_from_enum (E value) const
+  {
+    assert (type_ == Type::Enumeration);
+    const auto index = static_cast<size_t> (value);
+    assert (index < enum_labels_.size ());
+    return normalized_from_index (index);
+  }
+
+  template <EnumType E> E enum_value (float normalized_val) const
+  {
+    assert (type_ == Type::Enumeration);
+    return static_cast<E> (enum_index (normalized_val));
+  }
+
   constexpr float clamp_to_range (float val) const
   {
     return std::clamp (val, minf_, maxf_);
@@ -144,6 +217,11 @@ public:
    * @brief Default value.
    */
   float deff_{ 0.f };
+
+  /**
+   * @brief Labels for Enumeration type parameters.
+   */
+  std::vector<utils::Utf8String> enum_labels_;
 
   BOOST_DESCRIBE_CLASS (
     ParameterRange,
@@ -225,7 +303,7 @@ public:
   QString description () const { return description_->to_qstring (); }
   bool    automatable () const { return automatable_; }
 
-  ParameterRange range () const { return range_; }
+  const auto &range () const { return range_; }
 
   float baseValue () const { return base_value_.load (); }
   void  setBaseValue (float newValue) [[clang::blocking]]
@@ -341,6 +419,14 @@ private:
    */
   UniqueId unique_id_;
 
+  /**
+   * @brief Parameter range (min, max, default, etc.).
+   *
+   * This member must not be mutated while the audio engine is active (i.e.,
+   * while process_block() may be called concurrently). It is only written to
+   * during construction and during project deserialization (from_json), both
+   * of which occur while the engine is stopped.
+   */
   ParameterRange range_;
 
   /** Human readable label. */
