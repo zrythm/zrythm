@@ -125,6 +125,8 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
 - **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
+- See [AI_POLICY.md](doc/dev/AI_POLICY.md) for `Assisted-by:` trailers, which must be included in commit messages
+- Use `Fixes #123` for bugfixes, `Implements #123` for new features and the git trailer `GitLab-Work-Item: #123` to specify relations to GitLab issues (work items)
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
 
@@ -191,7 +193,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 
 ### General
 
-- **Never remove unrelated code when making edits.** This includes comments, blank lines, and any code not directly related to the change. Only modify what is necessary for the task.
+- **Never use the Write tool on existing files.** Always use the Edit tool to make targeted changes, preserving all existing comments, blank lines, and formatting. The Write tool may only be used for new files that don't exist yet.
 
 ### C++23
 
@@ -205,6 +207,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `ptr == nullptr` instead of `!ptr` when doing null checks
 - Use `std::numbers` instead of macros for number constants like `M_PI`
 - Use ranges and range-based for-loops instead of C-style for-loops
+- Use `std::span` instead of array pointers and sizes
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
@@ -212,6 +215,7 @@ Zrythm makes extensive use of modern C++ features:
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 - Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
+- Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
 
 ### Unit Safety
 
@@ -239,6 +243,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
+- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers
 - When connecting signals, use the overload that takes:
   1. The source object instance
   2. The source object signal
