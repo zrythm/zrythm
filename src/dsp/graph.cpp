@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include <unordered_map>
 
 #include "dsp/graph.h"
 #include "utils/logger.h"
@@ -10,31 +12,42 @@ namespace zrythm::dsp::graph
 bool
 Graph::is_valid () const
 {
-  std::vector<std::reference_wrapper<GraphNode>> triggers;
-  triggers.reserve (setup_nodes_.trigger_nodes_.size ());
-  for (const auto trigger : setup_nodes_.trigger_nodes_)
+  // Topological sort using Kahn's algorithm (non-destructive).
+  // Track remaining refcounts locally instead of modifying the graph.
+  std::unordered_map<GraphNode *, int> remaining;
+  remaining.reserve (setup_nodes_.graph_nodes_.size ());
+  for (const auto &node : setup_nodes_.graph_nodes_)
     {
-      triggers.push_back (trigger);
+      remaining.emplace (node.get (), node->init_refcount_);
     }
 
-  while (!triggers.empty ())
+  std::vector<std::reference_wrapper<GraphNode>> queue;
+  queue.reserve (setup_nodes_.trigger_nodes_.size ());
+  for (const auto trigger : setup_nodes_.trigger_nodes_)
     {
-      auto trigger = triggers.back ();
-      triggers.pop_back ();
+      queue.push_back (trigger);
+    }
 
-      for (const auto child : trigger.get ().feeds ())
+  while (!queue.empty ())
+    {
+      auto current = queue.back ();
+      queue.pop_back ();
+
+      for (const auto &child : current.get ().feeds ())
         {
-          trigger.get ().remove_feed (child.get ());
-          child.get ().init_refcount_--;
-          if (child.get ().init_refcount_ == 0)
+          if (auto it = remaining.find (&child.get ()); it != remaining.end ())
             {
-              triggers.push_back (child);
+              --it->second;
+              if (it->second == 0)
+                {
+                  queue.push_back (child);
+                }
             }
         }
     }
 
-  return std::ranges::none_of (setup_nodes_.graph_nodes_, [] (const auto &node) {
-    return !node->feeds ().empty () || node->init_refcount_ > 0;
+  return std::ranges::all_of (remaining, [] (const auto &entry) {
+    return entry.second == 0;
   });
 }
 
