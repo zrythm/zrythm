@@ -28,27 +28,26 @@ static constexpr auto mono_param_id = "track_processor_mono_toggle"sv;
 static constexpr auto input_gain_param_id = "track_processor_input_gain"sv;
 static constexpr auto output_gain_param_id = "track_processor_output_gain"sv;
 static constexpr auto monitor_audio_param_id = "track_processor_monitor_audio"sv;
+static constexpr auto recording_param_id = "track_processor_record"sv;
 
 TrackProcessor::TrackProcessor (
   const dsp::TempoMap& tempo_map,
   PortType signal_type,
     TrackNameProvider track_name_provider,
     EnabledProvider enabled_provider,
-    bool                                   generates_midi_events,
-    bool has_midi_cc,
-    bool                                   is_audio_track,
+    Capabilities capabilities,
   ProcessorBaseDependencies              dependencies,
   std::optional<FillEventsCallback>      fill_events_cb,
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func,
-  std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func, QObject * parent)
+  std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func,
+  QObject * parent)
     : QObject(parent), dsp::ProcessorBase (
         dependencies,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} Processor", track_name_provider()))),
       is_midi_ (signal_type == PortType::Midi),
       is_audio_ (signal_type == PortType::Audio),
-      has_piano_roll_port_(generates_midi_events),
-      has_midi_cc_(has_midi_cc),
+      capabilities_ (capabilities),
       enabled_provider_ (std::move(enabled_provider)),
       track_name_provider_ (track_name_provider),
       fill_events_cb_(std::move(fill_events_cb)),
@@ -88,7 +87,7 @@ TrackProcessor::TrackProcessor (
       }
 
       /* set up piano roll port */
-      if (has_piano_roll_port_)
+      if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
         {
           add_input_port (
             dependencies.port_registry_.create_object<dsp::MidiPort> (
@@ -98,7 +97,7 @@ TrackProcessor::TrackProcessor (
           piano_roll.set_symbol (u8"track_processor_piano_roll");
         }
 
-      if (has_midi_cc_)
+      if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
         {
           for (const auto i : std::views::iota (0, 16))
             {
@@ -187,7 +186,7 @@ TrackProcessor::TrackProcessor (
       set_audio_providers_active (ActiveAudioProviders::Timeline, true);
     }
 
-  if (is_audio_track)
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::AudioTrack))
     {
       add_parameter (
         dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
@@ -217,13 +216,25 @@ TrackProcessor::TrackProcessor (
           u8"TP Output Gain"));
       output_gain_id_ = get_parameters ().back ().id ();
 
+      add_parameter (dependencies.param_registry_.create_object<
+                     dsp::ProcessorParameter> (
+        dependencies.port_registry_,
+        dsp::ProcessorParameter::UniqueId (
+          utils::Utf8String::from_utf8_encoded_string (monitor_audio_param_id)),
+        dsp::ParameterRange::make_enumeration ({ u8"Off", u8"On", u8"Auto" }, 2),
+        u8"Monitor mode"));
+      monitor_audio_id_ = get_parameters ().back ().id ();
+    }
+
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::Recording))
+    {
       add_parameter (
         dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
           dependencies.port_registry_,
           dsp::ProcessorParameter::UniqueId (
-            utils::Utf8String::from_utf8_encoded_string (monitor_audio_param_id)),
-          dsp::ParameterRange::make_toggle (false), u8"Monitor audio"));
-      monitor_audio_id_ = get_parameters ().back ().id ();
+            utils::Utf8String::from_utf8_encoded_string (recording_param_id)),
+          dsp::ParameterRange::make_toggle (false), u8"Track record"));
+      recording_id_ = get_parameters ().back ().id ();
     }
 
   // generate MIDI CC caches and set up mappings
@@ -236,6 +247,30 @@ TrackProcessor::get_full_designation_for_port (const dsp::Port &port) const
 {
   return utils::Utf8String::from_utf8_encoded_string (
     fmt::format ("{}/{}", track_name_provider_ (), port.get_label ()));
+}
+
+bool
+TrackProcessor::is_recording_armed () const
+{
+  if (!recording_id_.has_value ())
+    return false;
+  const auto &param = get_recording_param ();
+  return param.range ().isToggled (param.baseValue ());
+}
+
+bool
+TrackProcessor::is_recording_armed_rt () const noexcept
+{
+  if (processing_caches_ == nullptr || !recording_id_.has_value ())
+    return false;
+  const auto &param = *processing_caches_->recording_param_;
+  return param.range ().isToggled (param.currentValue ());
+}
+
+void
+TrackProcessor::set_recording_armed (bool armed)
+{
+  get_recording_param ().setBaseValue (armed ? 1.f : 0.f);
 }
 
 void
@@ -461,7 +496,7 @@ TrackProcessor::handle_recording (
             processing_caches_->audio_ins_rt_.front ()->buffers ();
           auto * l = out_buf->getWritePointer (0);
           auto * r =
-            processing_caches_->mono_param_->range ().is_toggled (
+            processing_caches_->mono_param_->range ().isToggled (
               processing_caches_->mono_param_->currentValue ())
               ? l
               : out_buf->getWritePointer (1);
@@ -479,7 +514,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
   dsp::MidiEventVector     &events,
   const units::sample_u32_t local_offset)
 {
-  assert (has_midi_cc_);
+  assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
 
   using AddEventCallback = std::function<void (
     const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
@@ -576,7 +611,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
 void
 TrackProcessor::set_param_id_caches ()
 {
-  if (has_midi_cc_)
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
     {
       midi_cc_caches_ = std::make_unique<MidiCcCaches> ();
     }
@@ -602,6 +637,10 @@ TrackProcessor::set_param_id_caches ()
       else if (id_str == monitor_audio_param_id)
         {
           monitor_audio_id_ = param_ref.id ();
+        }
+      else if (id_str == recording_param_id)
+        {
+          recording_id_ = param_ref.id ();
         }
       else if (
         auto midi_cc_scan_result =
@@ -646,7 +685,7 @@ TrackProcessor::set_param_id_caches ()
 void
 TrackProcessor::set_midi_mappings ()
 {
-  if (!has_midi_cc_)
+  if (!ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
     return;
 
   cc_mappings_ = std::make_unique<engine::session::MidiMappings> (
@@ -777,7 +816,7 @@ TrackProcessor::custom_process_block (
           std::span (out_buf->getWritePointer (1), out_buf->getNumSamples ())));
     }
   // MIDI clips
-  else if (has_piano_roll_port_)
+  else if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       fill_midi_events (
         time_nfo, transport,
@@ -785,7 +824,7 @@ TrackProcessor::custom_process_block (
     }
 
   // dequeue piano roll contents into MIDI output port
-  if (has_piano_roll_port_)
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       auto &pr = *processing_caches_->piano_roll_rt_;
       pr.midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
@@ -796,7 +835,7 @@ TrackProcessor::custom_process_block (
         time_nfo.nframes_);
     }
 
-  if (has_midi_cc_)
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
     {
       // append midi events from modwheel and pitchbend control ports to
       // MIDI out
@@ -817,18 +856,25 @@ TrackProcessor::custom_process_block (
       };
       const auto mono = [this] () {
         const auto &mono_param = *processing_caches_->mono_param_;
-        return mono_param.range ().is_toggled (mono_param.currentValue ());
-      };
-      const auto monitor_audio = [this] () {
-        const auto &monitor_audio_param = *processing_caches_->monitor_audio_;
-        return monitor_audio_param.range ().is_toggled (
-          monitor_audio_param.currentValue ());
+        return mono_param.range ().isToggled (mono_param.currentValue ());
       };
 
-      // only take into account inputs if track has a "monitor" param (such as
-      // audio tracks) which is enabled, or the track does not have a
-      // "monitor" param (in which case inputs are always taken into account)
-      if (!monitor_audio_id_.has_value () || monitor_audio ())
+      // Monitor audio from input ports to output if:
+      // - this track type doesn't have a monitor param (e.g. MIDI tracks always
+      // pass through), or
+      // - monitor is explicitly On, or
+      // - monitor is Auto and the track is currently armed for recording
+      const bool should_monitor = [this] () -> bool {
+        if (!monitor_audio_id_.has_value ())
+          return true;
+        const auto &param = *processing_caches_->monitor_audio_;
+        const auto  mode = param.range ().template enum_value<MonitorMode> (
+          param.currentValue ());
+        return mode == MonitorMode::On
+               || (mode == MonitorMode::Auto && is_recording_armed_rt ());
+      }();
+
+      if (should_monitor)
         {
           const auto &in_buf = stereo_in->buffers ();
           const auto &out_buf = stereo_out->buffers ();
@@ -947,7 +993,7 @@ TrackProcessor::custom_prepare_for_processing (
       processing_caches_->midi_out_rt_ = &get_midi_out_port ();
     }
 
-  if (has_piano_roll_port_)
+  if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       processing_caches_->piano_roll_rt_ = &get_piano_roll_port ();
     }
@@ -967,6 +1013,10 @@ TrackProcessor::custom_prepare_for_processing (
   if (monitor_audio_id_.has_value ())
     {
       processing_caches_->monitor_audio_ = &get_monitor_audio_param ();
+    }
+  if (recording_id_.has_value ())
+    {
+      processing_caches_->recording_param_ = &get_recording_param ();
     }
 }
 

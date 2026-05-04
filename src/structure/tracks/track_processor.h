@@ -42,6 +42,7 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
     dsp::ProcessorParameter *     input_gain_{};
     dsp::ProcessorParameter *     output_gain_{};
     dsp::ProcessorParameter *     monitor_audio_{};
+    dsp::ProcessorParameter *     recording_param_{};
   };
 
 public:
@@ -103,6 +104,21 @@ public:
 
   using TrackNameProvider = std::function<utils::Utf8String ()>;
 
+  enum class Capabilities : uint8_t
+  {
+    PianoRoll = 1 << 0,
+    MidiCC = 1 << 1,
+    AudioTrack = 1 << 2,
+    Recording = 1 << 3,
+  };
+
+  enum class MonitorMode : uint8_t
+  {
+    Off,
+    On,
+    Auto,
+  };
+
   using MidiEventProviderProcessFunc = std::function<void (
     const dsp::graph::EngineProcessTimeInfo &time_nfo,
     dsp::MidiEventVector                    &output_buffer)>;
@@ -127,18 +143,14 @@ public:
   /**
    * Creates a new track processor for the given track.
    *
-   * @param generates_midi_events Whether this processor requires a "piano roll"
-   * port to generate MIDI events into (midi, instrument and chord tracks should
-   * set this to true).
+   * @param capabilities Flags describing what features this processor supports.
    */
   TrackProcessor (
     const dsp::TempoMap                   &tempo_map,
     PortType                               signal_type,
     TrackNameProvider                      track_name_provider,
     EnabledProvider                        enabled_provider,
-    bool                                   generates_midi_events,
-    bool                                   has_midi_cc,
-    bool                                   is_audio_track,
+    Capabilities                           capabilities,
     ProcessorBaseDependencies              dependencies,
     std::optional<FillEventsCallback>      fill_events_cb = std::nullopt,
     std::optional<TransformMidiInputsFunc> transform_midi_inputs_func =
@@ -147,7 +159,6 @@ public:
               append_midi_inputs_to_outputs_func = std::nullopt,
     QObject * parent = nullptr);
 
-  // note: this should eventually be passed from the constructor
   void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
   {
     handle_recording_cb_ = std::move (handle_rec_cb);
@@ -221,6 +232,16 @@ public:
     return *std::get<dsp::ProcessorParameter *> (
       dependencies ().param_registry_.find_by_id_or_throw (*monitor_audio_id_));
   }
+  dsp::ProcessorParameter &get_recording_param () const
+  {
+    assert (ENUM_BITSET_TEST (capabilities_, Capabilities::Recording));
+    return *std::get<dsp::ProcessorParameter *> (
+      dependencies ().param_registry_.find_by_id_or_throw (*recording_id_));
+  }
+
+  bool is_recording_armed () const;
+  bool is_recording_armed_rt () const noexcept [[clang::nonblocking]];
+  void set_recording_armed (bool armed);
 
   /**
    * @brief
@@ -231,7 +252,7 @@ public:
   dsp::ProcessorParameter &
   get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no)
   {
-    assert (has_midi_cc_);
+    assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
     return *std::get<dsp::ProcessorParameter *> (
       dependencies ().param_registry_.find_by_id_or_throw (
         midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no)));
@@ -370,10 +391,9 @@ private:
 #endif
 
 private:
-  const bool is_midi_;
-  const bool is_audio_;
-  const bool has_piano_roll_port_;
-  const bool has_midi_cc_;
+  const bool         is_midi_;
+  const bool         is_audio_;
+  const Capabilities capabilities_;
 
   const EnabledProvider   enabled_provider_;
   const TrackNameProvider track_name_provider_;
@@ -397,15 +417,14 @@ private:
   std::optional<dsp::ProcessorParameter::Uuid> output_gain_id_;
 
   /**
-   * Whether to monitor the audio output.
+   * Monitor mode for audio tracks: Off, On, or Auto.
    *
-   * This is only used on audio tracks. During recording, if on, the
-   * recorded audio will be passed to the output. If off, the recorded audio
-   * will not be passed to the output.
-   *
-   * When not recording, this will only take effect when paused.
+   * In Auto mode, input monitoring is active only when the track is armed
+   * for recording. This is only created for audio tracks.
    */
   std::optional<dsp::ProcessorParameter::Uuid> monitor_audio_id_;
+
+  std::optional<dsp::ProcessorParameter::Uuid> recording_id_;
 
 #if 0
   /** Mappings to each CC port. */
@@ -489,3 +508,4 @@ private:
 
 ENUM_ENABLE_BITSET (
   zrythm::structure::tracks::TrackProcessor::ActiveMidiEventProviders);
+ENUM_ENABLE_BITSET (zrythm::structure::tracks::TrackProcessor::Capabilities);

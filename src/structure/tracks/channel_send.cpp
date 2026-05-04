@@ -153,9 +153,8 @@ ChannelSend::custom_process_block (
   const auto nframes = time_nfo.nframes_;
 
   // Check if enabled
-  const auto is_enabled =
-    processing_caches_->enabled_param_->range ().is_toggled (
-      processing_caches_->enabled_param_->currentValue ());
+  const auto is_enabled = processing_caches_->enabled_param_->range ().isToggled (
+    processing_caches_->enabled_param_->currentValue ());
 
   if (is_audio ())
     {

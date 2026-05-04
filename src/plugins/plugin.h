@@ -221,13 +221,13 @@ public:
   bool currently_enabled () const
   {
     const auto * bypass = bypassParameter ();
-    return !bypass->range ().is_toggled (bypass->currentValue ());
+    return !bypass->range ().isToggled (bypass->currentValue ());
   }
 
   bool currently_enabled_rt () const noexcept [[clang::nonblocking]]
   {
     const auto * bypass = bypass_param_rt_;
-    return !bypass->range ().is_toggled (bypass->currentValue ());
+    return !bypass->range ().isToggled (bypass->currentValue ());
   }
 
   // ============================================================================

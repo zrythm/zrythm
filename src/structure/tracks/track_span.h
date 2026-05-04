@@ -226,7 +226,7 @@ public:
         if (!track->channel ())
           return false;
         const auto * solo = track->channel ()->fader ()->solo ();
-        return solo->range ().is_toggled (solo->baseValue ());
+        return solo->range ().isToggled (solo->baseValue ());
       },
       var);
   }
@@ -237,7 +237,7 @@ public:
         if (!track->channel ())
           return false;
         const auto * mute = track->channel ()->fader ()->mute ();
-        return mute->range ().is_toggled (mute->baseValue ());
+        return mute->range ().isToggled (mute->baseValue ());
       },
       var);
   }
@@ -248,7 +248,7 @@ public:
         if (!track->channel ())
           return false;
         const auto * listen = track->channel ()->fader ()->listen ();
-        return listen->range ().is_toggled (listen->baseValue ());
+        return listen->range ().isToggled (listen->baseValue ());
       },
       var);
   }

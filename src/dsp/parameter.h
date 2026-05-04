@@ -185,7 +185,7 @@ public:
   Q_INVOKABLE float convertFrom0To1 (float normalized_val) const;
   Q_INVOKABLE float convertTo0To1 (float real_val) const;
 
-  bool is_toggled (float normalized_val) const
+  Q_INVOKABLE bool isToggled (float normalized_val) const
   {
     assert (type_ == ParameterRange::Type::Toggle);
     return utils::math::floats_equal (convertFrom0To1 (normalized_val), 1.f);

@@ -363,9 +363,9 @@ Fader::custom_process_block (
       const auto &swap_phase_param = processing_caches_->swap_phase_param_;
       const float pan = balance_param->range ().convertFrom0To1 (
         balance_param->currentValue ());
-      const bool mono_compat_enabled = mono_compat_param->range ().is_toggled (
+      const bool mono_compat_enabled = mono_compat_param->range ().isToggled (
         mono_compat_param->currentValue ());
-      const bool swap_phase = swap_phase_param->range ().is_toggled (
+      const bool swap_phase = swap_phase_param->range ().isToggled (
         swap_phase_param->currentValue ());
 
       // apply gain

@@ -579,13 +579,13 @@ Control {
 
             RecordButton {
               Layout.preferredHeight: trackSoloButton.height
-              checked: root.track.recordableTrackMixin && root.track.recordableTrackMixin.recording
+              checked: root.track.recordingParam?.range.isToggled(root.track.recordingParam.baseValue) ?? false
               padding: root.buttonPadding
               styleHeight: root.buttonHeight
-              visible: root.track.recordableTrackMixin !== null
+              visible: root.track.recordingParam !== null
 
               onClicked: {
-                root.track.recordableTrackMixin.recording = !root.track.recordableTrackMixin.recording;
+                root.track.recordingParam.baseValue = root.track.recordingParam.range.isToggled(root.track.recordingParam.baseValue) ? 0.0 : 1.0;
               }
             }
           }

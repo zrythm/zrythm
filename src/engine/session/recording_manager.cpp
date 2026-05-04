@@ -249,7 +249,6 @@ RecordingManager::handle_recording (
   z_info (
     "handling recording from {} ({} frames)",
     g_start_frames + ev->local_offset, ev->nframes);
-#endif
 
   /* whether to skip adding track recording events */
   bool skip_adding_track_events = false;
@@ -345,7 +344,7 @@ RecordingManager::handle_recording (
         }
 
 // TODO
-#if 0
+#  if 0
       const auto &ats_in_record_mode = ats_in_record_mode_.at (tr->get_uuid ());
       for (auto at : ats_in_record_mode)
         {
@@ -396,7 +395,7 @@ RecordingManager::handle_recording (
                 }
             }
         }
-#endif
+#  endif
 
       /* ---- end handling start/stop/pause recording events ---- */
 
@@ -455,7 +454,7 @@ RecordingManager::handle_recording (
         return;
 
 // TODO
-#if 0
+#  if 0
       for (auto at : atl->get_automation_tracks_in_record_mode ())
         {
           /* only proceed if automation should be recording */
@@ -472,9 +471,10 @@ RecordingManager::handle_recording (
           re->automation_track_idx_ = at->index_;
           event_queue_.push_back (re);
         }
-#endif
+#  endif
     },
     track_var);
+#endif
 }
 
 void

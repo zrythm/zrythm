@@ -153,7 +153,7 @@ ApplicationWindow {
 
     // Map to track which tracks were automatically armed for recording
     // Key: track object, Value: boolean indicating if recording was set automatically
-    property var automaticallyArmedTracks: ({})
+    property var automaticallyArmedTracks: new Map()
 
     model: root.project.tracklist.collection
 
@@ -175,6 +175,15 @@ ApplicationWindow {
     }
     onSelectionChanged: (selected, deselected) => {
       console.log("Selection changed:", selectedIndexes.length, "items selected");
+
+      if (root.appSettings.trackAutoArm) {
+        // Disarm all previously auto-armed tracks first
+        automaticallyArmedTracks.forEach((value, track) => {
+          track.recordingParam.baseValue = 0.0;
+        });
+        automaticallyArmedTracks.clear();
+      }
+
       if (selectedIndexes.length > 0) {
         const firstTrack = selectedIndexes[0].data(TrackCollection.TrackPtrRole) as Track;
         console.log("first selected object:", firstTrack.name);
@@ -182,30 +191,12 @@ ApplicationWindow {
         selected.forEach(selectedRange => {
           for (let i = selectedRange.topLeft; i <= selectedRange.bottomRight; i++) {
             const track = getTrackFromModelIndex(i);
-            if (track.recordableTrackMixin) {
-              // Auto-arm management
+            if (track.recordingParam) {
               if (root.appSettings.trackAutoArm) {
-                const rec = track.recordableTrackMixin;
-                if (!rec?.recording) {
-                  rec.recording = true;
-                  automaticallyArmedTracks[track] = true;
+                if (!track.recordingParam.range.isToggled(track.recordingParam.baseValue)) {
+                  track.recordingParam.baseValue = 1.0;
+                  automaticallyArmedTracks.set(track, true);
                 }
-              }
-            }
-          }
-        });
-      }
-
-      if (deselected.length > 0) {
-        deselected.forEach(deselectedRange => {
-          for (let i = deselectedRange.topLeft; i <= deselectedRange.bottomRight; i++) {
-            const track = getTrackFromModelIndex(i);
-            if (track.recordableTrackMixin) {
-              // Auto-arm management for deselected tracks
-              if (root.appSettings.trackAutoArm && automaticallyArmedTracks[track]) {
-                const rec = track.recordableTrackMixin;
-                rec.recording = false;
-                delete automaticallyArmedTracks[track];
               }
             }
           }

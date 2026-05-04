@@ -301,7 +301,7 @@ ZrythmApplication::setup_control_room ()
         monitor_fader->monoToggle (), &dsp::ProcessorParameter::baseValueChanged,
         app_settings, [app_settings, monitor_fader] (float value) {
           app_settings->set_monitorMonoEnabled (
-            monitor_fader->monoToggle ()->range ().is_toggled (value));
+            monitor_fader->monoToggle ()->range ().isToggled (value));
         });
 
       monitor_fader->mute ()->setBaseValue (
@@ -310,7 +310,7 @@ ZrythmApplication::setup_control_room ()
         monitor_fader->mute (), &dsp::ProcessorParameter::baseValueChanged,
         app_settings, [app_settings, monitor_fader] (float value) {
           app_settings->set_monitorMuteEnabled (
-            monitor_fader->mute ()->range ().is_toggled (value));
+            monitor_fader->mute ()->range ().isToggled (value));
         });
     }
 

@@ -46,17 +46,14 @@ ColumnLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     checkable: true
-    checked: root.track.recordableTrackMixin ? root.track.recordableTrackMixin.recording : false
+    checked: root.track.recordingParam?.range.isToggled(root.track.recordingParam.baseValue) ?? false
     icon.color: checked ? "#ff0000" : palette.buttonText
     icon.source: ResourceManager.getIconUrl("zrythm-dark", "media-record.svg")
-    visible: root.track.recordableTrackMixin !== null
+    visible: root.track.recordingParam !== null
 
-    Binding {
-      property: "recording"
-      restoreMode: Binding.RestoreNone
-      target: root.track.recordableTrackMixin
-      value: recordButton.checked
-      when: root.track.recordableTrackMixin !== null
+    onClicked: {
+      const param = root.track.recordingParam;
+      param.baseValue = param.range.isToggled(param.baseValue) ? 0.0 : 1.0;
     }
 
     ToolTip {
