@@ -8,8 +8,7 @@
 #include <span>
 #include <vector>
 
-#include "structure/arrangement/arranger_object.h"
-#include "structure/arrangement/arranger_object_fwd.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "utils/units.h"
 
 #include <QPointer>
