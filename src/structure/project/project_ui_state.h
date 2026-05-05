@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -70,7 +70,14 @@ public:
   Q_INVOKABLE dsp::AudioInputSelection *
   audioInputSelectionForTrack (const structure::tracks::Track * track);
 
+  dsp::AudioInputSelection *
+  find_audio_input_selection (const structure::tracks::Track::Uuid &uuid) const;
+
   static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
+
+private:
+  dsp::AudioInputSelection * get_or_create_audio_input_selection (
+    const structure::tracks::Track::Uuid &uuid);
 
 private:
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;

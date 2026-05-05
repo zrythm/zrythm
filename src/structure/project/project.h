@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/audio_input_selection.h"
 #include "dsp/audio_pool.h"
 #include "dsp/engine.h"
 #include "dsp/hardware_audio_interface.h"
@@ -78,6 +79,15 @@ public:
   using PluginRegistry = plugins::PluginRegistry;
   using ProjectDirectoryPathProvider =
     std::function<std::filesystem::path (bool for_backup)>;
+
+  /**
+   * @brief Callback to look up audio input selection for a track.
+   *
+   * Set by ProjectSession after construction. Returns nullptr if no selection
+   * exists for the given track UUID.
+   */
+  using AudioInputSelectionProvider = std::function<dsp::AudioInputSelection *(
+    const structure::tracks::Track::Uuid &)>;
 
 public:
   Project (
@@ -189,6 +199,16 @@ public:
 
   const auto &tempo_map () const { return tempo_map_; }
 
+  void set_audio_input_selection_provider (AudioInputSelectionProvider provider)
+  {
+    audio_input_selection_provider_ = std::move (provider);
+  }
+
+  const auto &audio_input_selection_provider () const
+  {
+    return audio_input_selection_provider_;
+  }
+
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kFileAudioSourceRegistryKey =
@@ -289,6 +309,8 @@ private:
 
   dsp::Fader     &monitor_fader_;
   dsp::Metronome &metronome_;
+
+  AudioInputSelectionProvider audio_input_selection_provider_;
 
   /**
    * @brief Graph dispatcher.

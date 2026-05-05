@@ -4,6 +4,7 @@
 add_executable(zrythm_structure_project_unit_tests
   arranger_tool_test.cpp
   clip_editor_test.cpp
+  project_graph_builder_test.cpp
   project_test.cpp
   project_ui_state_test.cpp
 )

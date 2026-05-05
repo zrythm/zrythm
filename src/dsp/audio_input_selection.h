@@ -5,7 +5,6 @@
 
 #include <string_view>
 
-#include "utils/logger.h"
 #include "utils/qt.h"
 #include "utils/utf8_string.h"
 

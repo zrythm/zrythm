@@ -164,8 +164,11 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // add midi panic processor
   dsp::ProcessorGraphBuilder::add_nodes (graph, *midi_panic_processor);
 
-  /* add the hardware input processor */
-  // add_node_for_processable (*hw_in_processor);
+  /* add the audio input processor */
+  if (auto * aip = engine->audio_input_processor ())
+    {
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *aip);
+    }
 
   /* add each track */
   for (const auto &cur_tr : tracklist->collection ()->tracks ())
@@ -285,22 +288,14 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     mf_out_node->connect_to (*monitor_out_node);
   }
 
-  /* connect the HW input processor */
-#if 0
-  dsp::graph::GraphNode * hw_processor_node =
-    graph.get_nodes ().find_node_for_processable (*hw_in_processor);
-  for (auto &port : hw_in_processor->audio_ports_)
+  /* connect the audio input processor */
+  if (auto * aip = engine->audio_input_processor ())
     {
-      auto node2 = graph.get_nodes ().find_node_for_processable (*port);
-      z_warn_if_fail (node2);
-      hw_processor_node->connect_to (*node2);
+      dsp::ProcessorGraphBuilder::add_connections (graph, *aip);
+      auto * aip_node = graph.get_nodes ().find_node_for_processable (*aip);
+      z_return_if_fail (aip_node);
+      initial_processor_node->connect_to (*aip_node);
     }
-  for (auto &port : hw_in_processor->midi_ports_)
-    {
-      auto node2 = graph.get_nodes ().find_node_for_processable (*port);
-      hw_processor_node->connect_to (*node2);
-    }
-#endif
 
   /* connect tracks */
   const auto * master_track = tracklist->singletonTracks ()->masterTrack ();
@@ -314,11 +309,51 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           // track besides MarkerTrack)
           if constexpr (structure::tracks::ProcessableTrack<TrackT>)
             {
-              {
-                process_track_connections (
-                  tr, graph, *this, *transport, *project,
-                  initial_processor_node, *midi_panic_processor, monitor_fader_);
-              }
+              process_track_connections (
+                tr, graph, *this, *transport, *project, initial_processor_node,
+                *midi_panic_processor, monitor_fader_);
+
+              // connect audio input processor to this track, if configured
+              const auto &sel_provider =
+                project->audio_input_selection_provider ();
+              if (
+                tr->input_signal_type () == dsp::PortType::Audio && sel_provider
+                && engine->audio_input_processor ())
+                {
+                  if (auto * sel = sel_provider (tr->get_uuid ()))
+                    {
+                      if (!sel->deviceName ().isEmpty ())
+                        {
+                          auto * src_port =
+                            engine->audio_input_processor ()->find_output_port (
+                              sel->firstChannel (), sel->stereo ());
+                          if (src_port)
+                            {
+                              auto * src_node =
+                                graph.get_nodes ().find_node_for_processable (
+                                  *src_port);
+                              auto * dst_node =
+                                graph.get_nodes ().find_node_for_processable (
+                                  tr->get_track_processor ()
+                                    ->get_stereo_in_port ());
+                              if (src_node && dst_node)
+                                src_node->connect_to (*dst_node);
+                              else
+                                {
+                                  z_warning (
+                                    "Failed to find graph node for audio input connection (src={}, dst={})",
+                                    src_node != nullptr, dst_node != nullptr);
+                                }
+                            }
+                          else
+                            {
+                              z_warning (
+                                "AudioInputProcessor has no output port for channel {} (stereo: {})",
+                                sel->firstChannel (), sel->stereo ());
+                            }
+                        }
+                    }
+                }
 
               // connect the channel
               if (auto * ch = tr->channel ())

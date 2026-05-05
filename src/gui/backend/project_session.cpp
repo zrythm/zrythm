@@ -78,6 +78,12 @@ ProjectSession::ProjectSession (
           this))
 {
   project_->setParent (this);
+
+  project_->set_audio_input_selection_provider (
+    [this] (const structure::tracks::Track::Uuid &uuid)
+      -> dsp::AudioInputSelection * {
+      return ui_state_->find_audio_input_selection (uuid);
+    });
 }
 
 ProjectSession::~ProjectSession () = default;

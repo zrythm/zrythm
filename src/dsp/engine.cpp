@@ -110,7 +110,6 @@ AudioEngine::AudioEngine (
             callback_running_ = true;
           },
           [this] () {
-            audio_input_processor_.reset ();
             monitor_out_.release_resources ();
             callback_running_ = false;
           }))

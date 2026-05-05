@@ -3,6 +3,7 @@
 
 #include "structure/project/project_ui_state.h"
 #include "utils/app_settings.h"
+#include "utils/logger.h"
 
 namespace zrythm::structure::project
 {
@@ -71,14 +72,10 @@ ProjectUiState::snapGridEditor () const
 }
 
 dsp::AudioInputSelection *
-ProjectUiState::audioInputSelectionForTrack (
-  const structure::tracks::Track * track)
+ProjectUiState::get_or_create_audio_input_selection (
+  const structure::tracks::Track::Uuid &uuid)
 {
-  if (track == nullptr)
-    return nullptr;
-
-  const auto uuid = track->get_uuid ();
-  auto       it = audio_input_selections_.find (uuid);
+  auto it = audio_input_selections_.find (uuid);
   if (it != audio_input_selections_.end ())
     return it->second.get ();
 
@@ -86,6 +83,26 @@ ProjectUiState::audioInputSelectionForTrack (
   auto * raw = sel.get ();
   audio_input_selections_.emplace (uuid, std::move (sel));
   return raw;
+}
+
+dsp::AudioInputSelection *
+ProjectUiState::find_audio_input_selection (
+  const structure::tracks::Track::Uuid &uuid) const
+{
+  auto it = audio_input_selections_.find (uuid);
+  if (it != audio_input_selections_.end ())
+    return it->second.get ();
+  return nullptr;
+}
+
+dsp::AudioInputSelection *
+ProjectUiState::audioInputSelectionForTrack (
+  const structure::tracks::Track * track)
+{
+  if (track == nullptr)
+    return nullptr;
+
+  return get_or_create_audio_input_selection (track->get_uuid ());
 }
 
 void
@@ -102,6 +119,10 @@ to_json (nlohmann::json &j, const ProjectUiState &p)
       if (p.project_.get_track_registry ().contains (uuid))
         {
           selections_json.push_back (nlohmann::json::array ({ uuid, *sel }));
+        }
+      else
+        {
+          z_debug ("pruning audio input selection for removed track {}", uuid);
         }
     }
   if (!selections_json.empty ())
