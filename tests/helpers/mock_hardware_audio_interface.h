@@ -21,9 +21,12 @@ class MockHardwareAudioInterface : public dsp::IHardwareAudioInterface
 {
 public:
   explicit MockHardwareAudioInterface (
-    units::sample_rate_t sample_rate = units::sample_rate (48000),
-    units::sample_u32_t  block_length = units::samples (256))
-      : sample_rate_ (sample_rate), block_length_ (block_length)
+    units::sample_rate_t   sample_rate = units::sample_rate (48000),
+    units::sample_u32_t    block_length = units::samples (256),
+    units::channel_count_t input_channels = units::channels (2),
+    units::channel_count_t output_channels = units::channels (2))
+      : sample_rate_ (sample_rate), block_length_ (block_length),
+        input_channels_ (input_channels), output_channels_ (output_channels)
   {
   }
 
@@ -42,7 +45,7 @@ public:
     callback_ = callback;
     if (callback_ != nullptr)
       {
-        callback_->about_to_start ();
+        callback_->about_to_start (make_device_info ());
       }
   }
 
@@ -57,9 +60,21 @@ public:
   }
 
 private:
-  units::sample_rate_t  sample_rate_;
-  units::sample_u32_t   block_length_;
-  dsp::IAudioCallback * callback_ = nullptr;
+  dsp::AudioDeviceInfo make_device_info () const
+  {
+    return {
+      .sample_rate = sample_rate_,
+      .block_length = block_length_,
+      .input_channel_count = input_channels_,
+      .output_channel_count = output_channels_,
+    };
+  }
+
+  units::sample_rate_t   sample_rate_;
+  units::sample_u32_t    block_length_;
+  units::channel_count_t input_channels_;
+  units::channel_count_t output_channels_;
+  dsp::IAudioCallback *  callback_ = nullptr;
 };
 
 } // namespace zrythm::test_helpers

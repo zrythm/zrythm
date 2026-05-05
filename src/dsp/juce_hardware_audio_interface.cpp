@@ -16,7 +16,16 @@ JuceHardwareAudioInterface::JuceCallbackAdapter::audioDeviceAboutToStart (
 {
   z_info (
     "{} device '{}' about to start", device->getTypeName (), device->getName ());
-  callback_.about_to_start ();
+  callback_.about_to_start (
+    {
+      .sample_rate =
+        units::sample_rate (static_cast<int> (device->getCurrentSampleRate ())),
+      .block_length = units::samples (device->getCurrentBufferSizeSamples ()),
+      .input_channel_count = units::channels (
+        device->getActiveInputChannels ().countNumberOfSetBits ()),
+      .output_channel_count = units::channels (
+        device->getActiveOutputChannels ().countNumberOfSetBits ()),
+    });
 }
 
 void

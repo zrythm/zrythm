@@ -3,10 +3,27 @@
 
 #pragma once
 
+#include <span>
 #include <string_view>
+
+#include "utils/units.h"
 
 namespace zrythm::dsp
 {
+
+/**
+ * @brief Information about an audio device, provided when the device starts.
+ *
+ * Contains the device configuration that callbacks need to prepare for
+ * processing.
+ */
+struct AudioDeviceInfo
+{
+  units::sample_rate_t   sample_rate;
+  units::sample_u32_t    block_length;
+  units::channel_count_t input_channel_count;
+  units::channel_count_t output_channel_count;
+};
 
 /**
  * @brief Pure-abstract audio callback interface.
@@ -22,24 +39,18 @@ public:
 
   /**
    * @brief Called when the audio device wants to process a block of audio data.
-   *
-   * @param input_channel_data Array of pointers to input channel data
-   * @param num_input_channels Number of input channels
-   * @param output_channel_data Array of pointers to output channel data
-   * @param num_output_channels Number of output channels
-   * @param num_samples Number of samples in this block
    */
   virtual void process_audio (
-    const float * const * input_channel_data,
-    int                   num_input_channels,
-    float * const *       output_channel_data,
-    int                   num_output_channels,
-    int                   num_samples) noexcept = 0;
+    std::span<const float * const> input_channels,
+    std::span<float * const>       output_channels,
+    units::sample_u32_t            num_samples) noexcept = 0;
 
   /**
    * @brief Called when the audio device is about to start processing.
+   *
+   * @param info Device configuration (sample rate, buffer size, channel counts).
    */
-  virtual void about_to_start () = 0;
+  virtual void about_to_start (const AudioDeviceInfo &info) = 0;
 
   /**
    * @brief Called when the audio device has stopped.

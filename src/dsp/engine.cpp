@@ -58,13 +58,11 @@ AudioEngine::AudioEngine (
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (
-            const float * const * inputChannelData,
-            int                   numInputChannels,
-            float * const *       outputChannelData,
-            int                   numOutputChannels,
-            int                   numSamples) {
-            assert (numSamples >= 0);
-            const auto samples = static_cast<size_t> (numSamples);
+            std::span<const float * const> inputChannels,
+            std::span<float * const>       outputChannels,
+            units::sample_u32_t            numSamples) {
+            current_hw_input_ = inputChannels;
+
             juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
               load_measurer_
             };
@@ -72,36 +70,47 @@ AudioEngine::AudioEngine (
               this->transport_.playhead ()->playhead ()
             };
 
-            const auto process_status =
-              this->process (guard, units::samples (numSamples));
+            const auto process_status = this->process (guard, numSamples);
+            current_hw_input_ = {};
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
                 // Note: the monitor output ports below require the processing
                 // graph to be operational. We are guarding against other cases
                 // by checking the process() return status
-                if (numOutputChannels > 0)
+                const auto samples = numSamples.in<size_t> (units::samples);
+                if (!outputChannels.empty ())
                   {
                     utils::float_ranges::copy (
-                      { outputChannelData[0], samples },
+                      { outputChannels[0], samples },
                       { monitor_out_.buffers ()->getReadPointer (0), samples });
                   }
-                if (numOutputChannels > 1)
+                if (outputChannels.size () > 1)
                   {
                     utils::float_ranges::copy (
-                      { outputChannelData[1], samples },
+                      { outputChannels[1], samples },
                       { monitor_out_.buffers ()->getReadPointer (1), samples });
                   }
               }
           },
-          [this] () {
+          [this] (const AudioDeviceInfo &info) {
+            audio_input_processor_ = utils::make_qobject_unique<
+              AudioInputProcessor> (
+              [this] () -> std::span<const float * const> {
+                return current_hw_input_;
+              },
+              info.input_channel_count,
+              AudioInputProcessor::ProcessorBaseDependencies{
+                .port_registry_ = port_registry_,
+                .param_registry_ = param_registry_ },
+              this);
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
-              nullptr, hw_interface_.get_sample_rate (),
-              hw_interface_.get_block_length ());
+              nullptr, info.sample_rate, info.block_length);
             Q_EMIT sampleRateChanged (sampleRate ());
             callback_running_ = true;
           },
           [this] () {
+            audio_input_processor_.reset ();
             monitor_out_.release_resources ();
             callback_running_ = false;
           }))

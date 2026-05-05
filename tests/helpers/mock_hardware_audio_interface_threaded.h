@@ -23,9 +23,12 @@ class ThreadedMockHardwareAudioInterface : public dsp::IHardwareAudioInterface
 {
 public:
   explicit ThreadedMockHardwareAudioInterface (
-    units::sample_rate_t sample_rate = units::sample_rate (48000),
-    units::sample_u32_t  block_length = units::samples (256))
-      : sample_rate_ (sample_rate), block_length_ (block_length)
+    units::sample_rate_t   sample_rate = units::sample_rate (48000),
+    units::sample_u32_t    block_length = units::samples (256),
+    units::channel_count_t input_channels = units::channels (2),
+    units::channel_count_t output_channels = units::channels (2))
+      : sample_rate_ (sample_rate), block_length_ (block_length),
+        input_channels_ (input_channels), output_channels_ (output_channels)
   {
   }
 
@@ -62,11 +65,11 @@ public:
     if (callback != nullptr)
       {
         callback_.store (callback, std::memory_order_release);
-        callback->about_to_start ();
+        callback->about_to_start (make_device_info ());
 
         is_running_.store (true, std::memory_order_release);
         callback_thread_ = std::jthread ([this] (std::stop_token stoken) {
-          constexpr int      num_channels = 2;
+          const auto num_channels = input_channels_.in<int> (units::channels);
           std::vector<float> output_buf (
             block_length_.in (units::samples) *num_channels, 0.f);
           std::vector<float> input_buf (
@@ -91,8 +94,9 @@ public:
               if (cb)
                 {
                   cb->process_audio (
-                    input_ptrs.data (), num_channels, output_ptrs.data (),
-                    num_channels, block_length_.in<int> (units::samples));
+                    { input_ptrs.data (), static_cast<size_t> (num_channels) },
+                    { output_ptrs.data (), static_cast<size_t> (num_channels) },
+                    block_length_);
                   process_call_count_.fetch_add (1, std::memory_order_acq_rel);
                 }
               auto sleep_us = static_cast<int64_t> (
@@ -116,6 +120,16 @@ public:
   }
 
 private:
+  dsp::AudioDeviceInfo make_device_info () const
+  {
+    return {
+      .sample_rate = sample_rate_,
+      .block_length = block_length_,
+      .input_channel_count = input_channels_,
+      .output_channel_count = output_channels_,
+    };
+  }
+
   void stop ()
   {
     is_running_.store (false, std::memory_order_release);
@@ -128,6 +142,8 @@ private:
 
   units::sample_rate_t               sample_rate_;
   units::sample_u32_t                block_length_;
+  units::channel_count_t             input_channels_;
+  units::channel_count_t             output_channels_;
   std::atomic<dsp::IAudioCallback *> callback_{ nullptr };
   std::atomic<bool>                  is_running_{ false };
   std::atomic<std::size_t>           process_call_count_{ 0 };

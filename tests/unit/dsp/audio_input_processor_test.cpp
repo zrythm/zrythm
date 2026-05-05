@@ -289,4 +289,64 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithFewerChannelsThanPorts)
   EXPECT_FLOAT_EQ (stereo_34->buffers ()->getSample (1, 0), 0.f);
 }
 
+// ========================================================================
+// find_output_port
+// ========================================================================
+
+TEST_F (AudioInputProcessorTest, FindOutputPortFindsStereoPort)
+{
+  setup_processor_with_4_channels ();
+  auto * port = processor_->find_output_port (0, true);
+  ASSERT_NE (port, nullptr);
+  EXPECT_TRUE (port->get_label ().view ().contains ("1-2"));
+}
+
+TEST_F (AudioInputProcessorTest, FindOutputPortFindsMonoPort)
+{
+  setup_processor_with_4_channels ();
+  auto * port = processor_->find_output_port (2, false);
+  ASSERT_NE (port, nullptr);
+  EXPECT_TRUE (port->get_label ().view ().contains ("3"));
+}
+
+TEST_F (AudioInputProcessorTest, FindOutputPortReturnsNullptrForMissingStereo)
+{
+  setup_processor_with_4_channels ();
+  auto * port = processor_->find_output_port (3, true);
+  EXPECT_EQ (port, nullptr);
+}
+
+TEST_F (AudioInputProcessorTest, FindOutputPortReturnsNullptrForOutOfRangeMono)
+{
+  setup_processor_with_4_channels ();
+  auto * port = processor_->find_output_port (4, false);
+  EXPECT_EQ (port, nullptr);
+}
+
+TEST_F (AudioInputProcessorTest, FindOutputPortReturnsNullptrForZeroChannels)
+{
+  auto provider = [] () -> std::span<const float * const> { return {}; };
+  processor_ = std::make_unique<AudioInputProcessor> (
+    provider, units::channels (0),
+    ProcessorBase::ProcessorBaseDependencies{
+      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto * port = processor_->find_output_port (0, false);
+  EXPECT_EQ (port, nullptr);
+}
+
+TEST_F (AudioInputProcessorTest, FindOutputPortFindsAllPortsIn4ChannelSetup)
+{
+  setup_processor_with_4_channels ();
+  // Stereo: (0, stereo), (2, stereo)
+  EXPECT_NE (processor_->find_output_port (0, true), nullptr);
+  EXPECT_NE (processor_->find_output_port (2, true), nullptr);
+  // Mono: (0, mono), (1, mono), (2, mono), (3, mono)
+  EXPECT_NE (processor_->find_output_port (0, false), nullptr);
+  EXPECT_NE (processor_->find_output_port (1, false), nullptr);
+  EXPECT_NE (processor_->find_output_port (2, false), nullptr);
+  EXPECT_NE (processor_->find_output_port (3, false), nullptr);
+  // Stereo at odd channel start doesn't exist
+  EXPECT_EQ (processor_->find_output_port (1, true), nullptr);
+}
+
 } // namespace zrythm::dsp

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/audio_callback.h"
+#include "dsp/audio_input_processor.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
 #include "dsp/hardware_audio_interface.h"
@@ -144,6 +145,15 @@ public:
   auto * midi_panic_processor () const { return midi_panic_processor_.get (); }
 
   /**
+   * @brief Returns the audio input processor, or nullptr if no audio device has
+   * started.
+   */
+  auto * audio_input_processor () const
+  {
+    return audio_input_processor_.get ();
+  }
+
+  /**
    * Queues MIDI note off to event queues.
    */
   void panic_all ();
@@ -264,6 +274,17 @@ private:
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
   std::unique_ptr<AudioCallback> audio_callback_;
+
+  utils::QObjectUniquePtr<AudioInputProcessor> audio_input_processor_;
+
+  /**
+   * @brief Current hardware audio input channels, updated each audio callback.
+   *
+   * Only accessed on the audio callback thread. Set at the start of
+   * process_audio(), cleared before return. AudioInputProcessor's provider
+   * reads it synchronously during the same callback.
+   */
+  std::span<const float * const> current_hw_input_;
 
   /**
    * @brief Whether the audio callback is currently periodically getting

@@ -75,8 +75,9 @@ private:
     {
       juce::ScopedNoDenormals no_denormals;
       callback_.process_audio (
-        inputChannelData, numInputChannels, outputChannelData,
-        numOutputChannels, numSamples);
+        { inputChannelData, static_cast<size_t> (numInputChannels) },
+        { outputChannelData, static_cast<size_t> (numOutputChannels) },
+        units::samples (numSamples));
     }
 
     void audioDeviceAboutToStart (juce::AudioIODevice * device) override;

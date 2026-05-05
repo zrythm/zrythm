@@ -14,12 +14,11 @@ class AudioCallback : public IAudioCallback
 {
 public:
   using EngineProcessCallback = std::function<void (
-    const float * const * inputChannelData,
-    int                   numInputChannels,
-    float * const *       outputChannelData,
-    int                   numOutputChannels,
-    int                   numSamples)>;
-  using DeviceAboutToStartCallback = std::function<void ()>;
+    std::span<const float * const> inputChannels,
+    std::span<float * const>       outputChannels,
+    units::sample_u32_t            numSamples)>;
+  using DeviceAboutToStartCallback =
+    std::function<void (const AudioDeviceInfo &)>;
   using DeviceStoppedCallback = std::function<void ()>;
 
   AudioCallback (
@@ -29,12 +28,10 @@ public:
 
 public:
   void process_audio (
-    const float * const * input_channel_data,
-    int                   num_input_channels,
-    float * const *       output_channel_data,
-    int                   num_output_channels,
-    int                   num_samples) noexcept override;
-  void about_to_start () override;
+    std::span<const float * const> input_channels,
+    std::span<float * const>       output_channels,
+    units::sample_u32_t            num_samples) noexcept override;
+  void about_to_start (const AudioDeviceInfo &info) override;
   void stopped () override;
   void error (std::string_view error_message) override;
 

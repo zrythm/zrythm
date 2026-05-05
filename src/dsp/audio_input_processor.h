@@ -8,6 +8,8 @@
 #include "dsp/processor_base.h"
 #include "utils/units.h"
 
+#include <QObject>
+
 namespace zrythm::dsp
 {
 
@@ -18,29 +20,36 @@ namespace zrythm::dsp
  * During processing, copies data from the hardware input provider into the
  * appropriate output port buffers.
  */
-class AudioInputProcessor final : public ProcessorBase
+class AudioInputProcessor final : public QObject, public ProcessorBase
 {
+  Q_OBJECT
+
 public:
   using InputDataProvider = std::function<std::span<const float * const> ()>;
 
   AudioInputProcessor (
     InputDataProvider         provider,
     units::channel_count_t    hw_input_channel_count,
-    ProcessorBaseDependencies dependencies);
+    ProcessorBaseDependencies dependencies,
+    QObject *                 parent = nullptr);
 
   void custom_process_block (
     dsp::graph::EngineProcessTimeInfo time_nfo,
     const dsp::ITransport            &transport,
     const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]] override;
 
+  dsp::AudioPort *
+  find_output_port (int first_channel_index, bool stereo) const noexcept
+    [[clang::nonblocking]];
+
 private:
   InputDataProvider provider_;
 
   struct PortMapping
   {
-    AudioPort * port;
+    AudioPort * port; ///< Owned by PortRegistry (outlives this processor)
     int         src_channel_start;
-    int         src_channel_count;
+    units::channel_count_t src_channel_count;
   };
 
   std::vector<PortMapping> port_mappings_;

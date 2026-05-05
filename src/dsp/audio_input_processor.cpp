@@ -11,8 +11,10 @@ namespace zrythm::dsp
 AudioInputProcessor::AudioInputProcessor (
   InputDataProvider         provider,
   units::channel_count_t    hw_input_channel_count,
-  ProcessorBaseDependencies dependencies)
-    : ProcessorBase (
+  ProcessorBaseDependencies dependencies,
+  QObject *                 parent)
+    : QObject (parent),
+      ProcessorBase (
         dependencies,
         utils::Utf8String::from_utf8_encoded_string ("Audio Input Processor")),
       provider_ (std::move (provider))
@@ -25,7 +27,8 @@ AudioInputProcessor::AudioInputProcessor (
           fmt::format ("Input {}-{}", i + 1, i + 2)),
         PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
       add_output_port (port_ref);
-      port_mappings_.push_back ({ port_ref.get_object_as<AudioPort> (), i, 2 });
+      port_mappings_.push_back (
+        { port_ref.get_object_as<AudioPort> (), i, units::channels (2) });
     }
 
   for (int i = 0; i < hw_chans; ++i)
@@ -35,7 +38,8 @@ AudioInputProcessor::AudioInputProcessor (
           fmt::format ("Input {}", i + 1)),
         PortFlow::Output, AudioPort::BusLayout::Mono, 1);
       add_output_port (port_ref);
-      port_mappings_.push_back ({ port_ref.get_object_as<AudioPort> (), i, 1 });
+      port_mappings_.push_back (
+        { port_ref.get_object_as<AudioPort> (), i, units::channels (1) });
     }
 }
 
@@ -56,8 +60,9 @@ AudioInputProcessor::custom_process_block (
 
   for (const auto &mapping : port_mappings_)
     {
-      auto * buf = mapping.port->buffers ().get ();
-      for (int ch = 0; ch < mapping.src_channel_count; ++ch)
+      auto *     buf = mapping.port->buffers ().get ();
+      const auto ch_count = mapping.src_channel_count.in<int> (units::channels);
+      for (int ch = 0; ch < ch_count; ++ch)
         {
           const int src_ch = mapping.src_channel_start + ch;
           if (src_ch < num_channels && channels[src_ch] != nullptr)
@@ -68,6 +73,18 @@ AudioInputProcessor::custom_process_block (
             }
         }
     }
+}
+
+dsp::AudioPort *
+AudioInputProcessor::find_output_port (int first_channel_index, bool stereo)
+  const noexcept
+{
+  const auto target_count = units::channels (stereo ? 2 : 1);
+  auto it = std::ranges::find_if (port_mappings_, [=] (const PortMapping &m) {
+    return m.src_channel_start == first_channel_index
+           && m.src_channel_count == target_count;
+  });
+  return it != port_mappings_.end () ? it->port : nullptr;
 }
 
 }

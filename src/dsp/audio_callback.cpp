@@ -23,32 +23,25 @@ AudioCallback::AudioCallback (
 
 void
 AudioCallback::process_audio (
-  const float * const * input_channel_data,
-  int                   num_input_channels,
-  float * const *       output_channel_data,
-  int                   num_output_channels,
-  int                   num_samples) noexcept
+  std::span<const float * const> input_channels,
+  std::span<float * const>       output_channels,
+  units::sample_u32_t            num_samples) noexcept
 {
-  assert (num_samples >= 0);
-  const auto samples = static_cast<size_t> (num_samples);
-
-  for (const auto ch : std::views::iota (0, num_output_channels))
+  for (auto * ch_data : output_channels)
     {
-      auto * ch_data = output_channel_data[ch];
-      utils::float_ranges::fill ({ ch_data, samples }, 0.f);
+      utils::float_ranges::fill (
+        { ch_data, num_samples.in<size_t> (units::samples) }, 0.f);
     }
 
-  process_cb_ (
-    input_channel_data, num_input_channels, output_channel_data,
-    num_output_channels, num_samples);
+  process_cb_ (input_channels, output_channels, num_samples);
 }
 
 void
-AudioCallback::about_to_start ()
+AudioCallback::about_to_start (const AudioDeviceInfo &info)
 {
   if (device_about_to_start_cb_.has_value ())
     {
-      std::invoke (device_about_to_start_cb_.value ());
+      std::invoke (device_about_to_start_cb_.value (), info);
     }
 }
 
