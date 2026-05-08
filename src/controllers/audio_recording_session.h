@@ -8,10 +8,9 @@
 #include <span>
 #include <vector>
 
-#include "structure/arrangement/arranger_object_all.h"
 #include "utils/units.h"
 
-#include <QPointer>
+#include <QtClassHelperMacros>
 
 namespace zrythm::controllers
 {
@@ -22,6 +21,7 @@ namespace zrythm::controllers
 struct RecordingAudioPacket
 {
   units::sample_t     timeline_position;
+  bool                transport_recording{};
   units::sample_u32_t nframes;
   std::vector<float>  l_frames;
   std::vector<float>  r_frames;
@@ -55,7 +55,7 @@ public:
 
   Q_DISABLE_COPY_MOVE (AudioRecordingSession)
 
-  static constexpr size_t kFifoCapacity = 64;
+  static constexpr size_t kFifoCapacity = 1024;
 
   /**
    * @brief RT-safe: writes audio data into the ring buffer.
@@ -69,6 +69,7 @@ public:
    */
   void write_samples (
     units::sample_t        timeline_position,
+    bool                   transport_recording,
     std::span<const float> l_data,
     std::span<const float> r_data) noexcept [[clang::nonblocking]];
 
@@ -111,47 +112,12 @@ public:
     return dropped_packets_.load (std::memory_order_relaxed);
   }
 
-  /**
-   * @brief Returns the UUIDs of all recorded regions.
-   */
-  const std::vector<structure::arrangement::ArrangerObject::Uuid> &
-  recorded_regions () const
-  {
-    return recorded_regions_;
-  }
-
-  /**
-   * @brief Registers a region UUID created during this recording session.
-   */
-  void add_recorded_region (structure::arrangement::ArrangerObject::Uuid id)
-  {
-    recorded_regions_.push_back (id);
-  }
-
-  /**
-   * @brief Returns the region currently being recorded into, or nullptr.
-   */
-  [[nodiscard]] structure::arrangement::AudioRegion * current_region () const
-  {
-    return current_region_;
-  }
-  /**
-   * @brief Sets the region currently being recorded into.
-   */
-  void set_current_region (structure::arrangement::AudioRegion * region)
-  {
-    current_region_ = region;
-  }
-
 private:
   struct Impl;
   std::unique_ptr<Impl> impl_;
 
   std::atomic<State>    state_{ State::Armed };
   std::atomic<uint64_t> dropped_packets_{ 0 };
-
-  std::vector<structure::arrangement::ArrangerObject::Uuid> recorded_regions_;
-  QPointer<structure::arrangement::AudioRegion>             current_region_;
 };
 
 }

@@ -22,7 +22,10 @@ struct RecordingCoordinator::Impl
 
   std::unordered_map<AudioRecordingSession *, uint64_t> last_reported_dropped;
 
-  std::vector<std::unique_ptr<AudioRecordingSession>> pending_deletion;
+  std::vector<std::pair<
+    structure::tracks::TrackUuid,
+    std::unique_ptr<AudioRecordingSession>>>
+    pending_deletion;
 
   utils::QObjectUniquePtr<QTimer> timer;
 };
@@ -30,13 +33,18 @@ struct RecordingCoordinator::Impl
 RecordingCoordinator::RecordingCoordinator (QObject * parent)
     : QObject (parent), impl_ (std::make_unique<Impl> ())
 {
+  rt_snapshot_.store (new Snapshot (), std::memory_order_release);
+
   impl_->timer = utils::make_qobject_unique<QTimer> (this);
   QObject::connect (
     impl_->timer.get (), &QTimer::timeout, this,
     &RecordingCoordinator::process_pending);
 }
 
-RecordingCoordinator::~RecordingCoordinator () = default;
+RecordingCoordinator::~RecordingCoordinator ()
+{
+  delete rt_snapshot_.load (std::memory_order_acquire);
+}
 
 void
 RecordingCoordinator::arm_track (
@@ -61,7 +69,7 @@ RecordingCoordinator::disarm_track (structure::tracks::TrackUuid track_id)
 
   it->second->finalize ();
   impl_->last_reported_dropped.erase (it->second.get ());
-  impl_->pending_deletion.push_back (std::move (it->second));
+  impl_->pending_deletion.emplace_back (track_id, std::move (it->second));
   impl_->sessions.erase (it);
   publish_snapshot ();
   impl_->timer->start (kDrainInterval);
@@ -77,9 +85,10 @@ AudioRecordingSession *
 RecordingCoordinator::session_for_track (
   structure::tracks::TrackUuid track_id) noexcept
 {
-  decltype (rt_snapshot_)::ScopedAccess<farbot::ThreadType::realtime> snap{
-    rt_snapshot_
-  };
+  const auto * snap = rt_snapshot_.load (std::memory_order_acquire);
+  if (snap == nullptr)
+    return nullptr;
+
   auto it = snap->find (track_id);
   return it != snap->end () ? it->second : nullptr;
 }
@@ -87,10 +96,17 @@ RecordingCoordinator::session_for_track (
 void
 RecordingCoordinator::process_pending ()
 {
+  std::vector<
+    std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>
+    ready;
+
   for (auto &[id, session] : impl_->sessions)
     {
-      // TODO: process drained packets (create/append regions)
-      std::ignore = session->drain_pending ();
+      auto packets = session->drain_pending ();
+      if (!packets.empty ())
+        {
+          ready.emplace_back (id, std::move (packets));
+        }
 
       const auto dropped = session->dropped_packets ();
       auto       drop_it = impl_->last_reported_dropped.find (session.get ());
@@ -105,15 +121,33 @@ RecordingCoordinator::process_pending ()
         }
     }
 
-  for (auto &session : impl_->pending_deletion)
+  for (auto &[track_id, session] : impl_->pending_deletion)
     {
-      // TODO: process drained packets (create/append regions)
-      std::ignore = session->drain_pending ();
+      auto packets = session->drain_pending ();
+      if (!packets.empty ())
+        {
+          ready.emplace_back (track_id, std::move (packets));
+        }
     }
+
+  const bool had_pending = !impl_->pending_deletion.empty ();
   impl_->pending_deletion.clear ();
 
+  old_snapshots_.swap (pending_snapshot_deletion_);
+
+  for (auto &[id, packets] : ready)
+    {
+      Q_EMIT audioDataReady (id, std::move (packets));
+    }
+
   if (impl_->sessions.empty ())
-    impl_->timer->stop ();
+    {
+      impl_->timer->stop ();
+      if (had_pending)
+        {
+          Q_EMIT recordingSessionEnded ();
+        }
+    }
   else
     impl_->timer->start (kDrainInterval);
 }
@@ -121,15 +155,18 @@ RecordingCoordinator::process_pending ()
 void
 RecordingCoordinator::publish_snapshot ()
 {
-  Snapshot snapshot;
+  auto new_snap = std::make_unique<Snapshot> ();
   for (const auto &[id, session] : impl_->sessions)
     {
-      snapshot.emplace (id, session.get ());
+      new_snap->emplace (id, session.get ());
     }
 
-  decltype (rt_snapshot_)::ScopedAccess<farbot::ThreadType::nonRealtime> snap{
-    rt_snapshot_
-  };
-  *snap = std::move (snapshot);
+  auto * old =
+    rt_snapshot_.exchange (new_snap.release (), std::memory_order_acq_rel);
+  if (old != nullptr)
+    {
+      pending_snapshot_deletion_.emplace_back (std::unique_ptr<Snapshot>{ old });
+    }
 }
+
 }

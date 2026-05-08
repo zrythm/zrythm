@@ -30,7 +30,7 @@ TEST_F (AudioRecordingSessionTest, WriteSamplesTransitionsToCapturing)
 {
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session_->write_samples (units::samples (0), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
   EXPECT_EQ (session_->state (), AudioRecordingSession::State::Capturing);
 }
 
@@ -38,7 +38,7 @@ TEST_F (AudioRecordingSessionTest, DrainPendingReadsWrittenData)
 {
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session_->write_samples (units::samples (0), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1);
@@ -55,7 +55,7 @@ TEST_F (AudioRecordingSessionTest, DrainPendingContainsCorrectAudioData)
       l[i] = static_cast<float> (i) * 0.01f;
       r[i] = static_cast<float> (i) * -0.01f;
     }
-  session_->write_samples (units::samples (0), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1);
@@ -71,8 +71,8 @@ TEST_F (AudioRecordingSessionTest, MultipleWritesBeforeDrain)
   std::vector<float> l (128, 0.1f);
   std::vector<float> r (128, 0.2f);
 
-  session_->write_samples (units::samples (0), l, r);
-  session_->write_samples (units::samples (128), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
+  session_->write_samples (units::samples (128), true, l, r);
 
   auto packets = session_->drain_pending ();
   EXPECT_EQ (packets.size (), 2);
@@ -85,20 +85,14 @@ TEST_F (AudioRecordingSessionTest, DiscontinuityDetected)
   std::vector<float> l (128, 0.1f);
   std::vector<float> r (128, 0.2f);
 
-  session_->write_samples (units::samples (0), l, r);
-  session_->write_samples (units::samples (256), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
+  session_->write_samples (units::samples (256), true, l, r);
 
   auto packets = session_->drain_pending ();
   EXPECT_EQ (packets.size (), 2);
   EXPECT_GT (
     packets[1].timeline_position,
     packets[0].timeline_position + packets[0].nframes);
-}
-
-TEST_F (AudioRecordingSessionTest, RegionTrackingStartsEmpty)
-{
-  EXPECT_TRUE (session_->recorded_regions ().empty ());
-  EXPECT_EQ (session_->current_region (), nullptr);
 }
 
 TEST_F (AudioRecordingSessionTest, FinalizeTransitionsState)
@@ -112,11 +106,10 @@ TEST_F (AudioRecordingSessionTest, FinalizeRejectsFurtherWrites)
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
 
-  session_->write_samples (units::samples (0), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
   session_->finalize ();
 
-  // Write after finalize should be rejected
-  session_->write_samples (units::samples (256), l, r);
+  session_->write_samples (units::samples (256), true, l, r);
 
   auto packets = session_->drain_pending ();
   // Only the first write should have produced a packet
@@ -128,15 +121,13 @@ TEST_F (AudioRecordingSessionTest, ResetClearsStateAndCounters)
   std::vector<float> l (128, 0.1f);
   std::vector<float> r (128, 0.2f);
 
-  session_->write_samples (units::samples (0), l, r);
-  session_->write_samples (units::samples (128), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
+  session_->write_samples (units::samples (128), true, l, r);
   EXPECT_EQ (session_->state (), AudioRecordingSession::State::Capturing);
 
   session_->reset ();
   EXPECT_EQ (session_->state (), AudioRecordingSession::State::Armed);
   EXPECT_EQ (session_->dropped_packets (), 0u);
-  EXPECT_TRUE (session_->recorded_regions ().empty ());
-  EXPECT_EQ (session_->current_region (), nullptr);
 
   auto packets = session_->drain_pending ();
   EXPECT_EQ (packets.size (), 0u);
@@ -147,11 +138,11 @@ TEST_F (AudioRecordingSessionTest, ResetAllowsReuse)
   std::vector<float> l (128, 0.1f);
   std::vector<float> r (128, 0.2f);
 
-  session_->write_samples (units::samples (0), l, r);
+  session_->write_samples (units::samples (0), true, l, r);
   std::ignore = session_->drain_pending ();
   session_->reset ();
 
-  session_->write_samples (units::samples (1000), l, r);
+  session_->write_samples (units::samples (1000), true, l, r);
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1u);
   EXPECT_EQ (packets[0].timeline_position, units::samples (1000));
@@ -166,18 +157,18 @@ TEST_F (AudioRecordingSessionTest, OverflowReusesSameSlot)
   for (size_t i = 0; i < capacity; ++i)
     {
       session_->write_samples (
-        units::samples (static_cast<int64_t> (i) * 128), l, r);
+        units::samples (static_cast<int64_t> (i) * 128), true, l, r);
     }
   EXPECT_EQ (session_->dropped_packets (), 0u);
 
-  session_->write_samples (units::samples (999'999), l, r);
+  session_->write_samples (units::samples (999'999), true, l, r);
   EXPECT_EQ (session_->dropped_packets (), 1u);
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), capacity);
   EXPECT_EQ (packets[0].timeline_position, units::samples (0));
 
-  session_->write_samples (units::samples (1'234'567), l, r);
+  session_->write_samples (units::samples (1'234'567), true, l, r);
   EXPECT_EQ (session_->dropped_packets (), 1u);
 
   auto remaining = session_->drain_pending ();
@@ -199,7 +190,7 @@ TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrain)
       for (int i = 0; i < num_writes; ++i)
         {
           session_->write_samples (
-            units::samples (static_cast<int64_t> (i) * 256), l, r);
+            units::samples (static_cast<int64_t> (i) * 256), true, l, r);
           writes_done.fetch_add (1, std::memory_order_relaxed);
         }
     });
@@ -235,10 +226,11 @@ TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrain)
 
 TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrainWithOverflow)
 {
-  static constexpr int num_writes = 500;
-  std::vector<float>   l (256, 0.5f);
-  std::vector<float>   r (256, 0.3f);
-  std::atomic<int>     writes_done{ 0 };
+  static constexpr int num_writes =
+    static_cast<int> (AudioRecordingSession::kFifoCapacity) * 2 + 100;
+  std::vector<float> l (256, 0.5f);
+  std::vector<float> r (256, 0.3f);
+  std::atomic<int>   writes_done{ 0 };
 
   std::vector<RecordingAudioPacket> all_packets;
   {
@@ -246,7 +238,7 @@ TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrainWithOverflow)
       for (int i = 0; i < num_writes; ++i)
         {
           session_->write_samples (
-            units::samples (static_cast<int64_t> (i) * 256), l, r);
+            units::samples (static_cast<int64_t> (i) * 256), true, l, r);
           writes_done.fetch_add (1, std::memory_order_relaxed);
         }
     });
@@ -279,6 +271,74 @@ TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrainWithOverflow)
         all_packets[i].timeline_position, all_packets[i - 1].timeline_position)
         << "Packet " << i << " is out of order";
     }
+}
+
+TEST_F (AudioRecordingSessionTest, DataIntegrityRoundTrip)
+{
+  auto roundtrip_session =
+    std::make_unique<AudioRecordingSession> (units::samples (256));
+
+  std::vector<float> l_write (256);
+  std::vector<float> r_write (256);
+  for (int i = 0; i < 256; ++i)
+    {
+      l_write[i] = static_cast<float> (i) / 256.0f;
+      r_write[i] = 1.0f - static_cast<float> (i) / 256.0f;
+    }
+  roundtrip_session->write_samples (units::samples (0), true, l_write, r_write);
+
+  auto packets = roundtrip_session->drain_pending ();
+  ASSERT_EQ (packets.size (), 1u);
+
+  const auto &pkt = packets[0];
+  ASSERT_EQ (pkt.nframes.in (units::samples), 256u);
+  ASSERT_EQ (pkt.l_frames.size (), 256u);
+  ASSERT_EQ (pkt.r_frames.size (), 256u);
+
+  for (size_t i = 0; i < 256; ++i)
+    {
+      EXPECT_FLOAT_EQ (pkt.l_frames[i], l_write[i])
+        << "L sample mismatch at index " << i;
+      EXPECT_FLOAT_EQ (pkt.r_frames[i], r_write[i])
+        << "R sample mismatch at index " << i;
+    }
+}
+
+TEST_F (AudioRecordingSessionTest, TransportRecordingFlagSurvivesRoundTrip)
+{
+  std::vector<float> l (128, 0.1f);
+  std::vector<float> r (128, 0.2f);
+
+  session_->write_samples (units::samples (0), true, l, r);
+  session_->write_samples (units::samples (128), false, l, r);
+
+  auto packets = session_->drain_pending ();
+  ASSERT_EQ (packets.size (), 2u);
+  EXPECT_TRUE (packets[0].transport_recording);
+  EXPECT_FALSE (packets[1].transport_recording);
+}
+
+TEST_F (AudioRecordingSessionTest, CorrectSpanRecordsOnlyRequestedFrames)
+{
+  auto span_session =
+    std::make_unique<AudioRecordingSession> (units::samples (512));
+
+  std::vector<float> l_buf (512, 0.0f);
+  std::vector<float> r_buf (512, 0.0f);
+  for (int i = 0; i < 256; ++i)
+    {
+      l_buf[i] = static_cast<float> (i) / 256.0f;
+      r_buf[i] = 1.0f - static_cast<float> (i) / 256.0f;
+    }
+
+  span_session->write_samples (
+    units::samples (0), true, std::span<const float> (l_buf.data (), 256),
+    std::span<const float> (r_buf.data (), 256));
+
+  auto packets = span_session->drain_pending ();
+  ASSERT_EQ (packets.size (), 1u);
+  EXPECT_EQ (packets[0].nframes.in (units::samples), 256u);
+  EXPECT_FLOAT_EQ (packets[0].l_frames[255], 255.0f / 256.0f);
 }
 
 } // namespace zrythm::controllers

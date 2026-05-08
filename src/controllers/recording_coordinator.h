@@ -3,16 +3,16 @@
 
 #pragma once
 
+#include <atomic>
 #include <chrono>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include "controllers/audio_recording_session.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <QObject>
-
-#include <farbot/RealtimeObject.hpp>
 
 namespace zrythm::controllers
 {
@@ -25,23 +25,22 @@ namespace zrythm::controllers
  *
  * @section thread_safety Thread Safety
  *
- * Session access from the RT thread is mediated by a farbot::RealtimeObject
- * snapshot (rt_snapshot_). The RT thread reads session pointers from the
- * snapshot via a ScopedAccess; the non-RT thread publishes updated snapshots
- * after arm/disarm operations.  This guarantees lock-free, allocation-free RT
- * reads.
+ * Session access from RT threads is mediated by an atomic snapshot pointer
+ * (rt_snapshot_). The non-RT thread publishes new snapshots via atomic
+ * exchange after arm/disarm operations; RT threads read via atomic load.
+ * This guarantees lock-free, allocation-free RT reads and supports multiple
+ * concurrent RT readers (the DSP graph processes nodes in parallel).
  *
- * Destroyed sessions are deferred: disarm_track() moves sessions to a pending
- * deletion list and restarts the drain timer, guaranteeing that
- * process_pending() will not clear the list for at least kDrainInterval
- * (currently 100 ms). Since audio callbacks complete in ~1-10 ms, the RT
- * thread has long since released its ScopedAccess before any session is
- * destroyed.
+ * Old snapshots are deferred: publish_snapshot() moves the previous snapshot
+ * to a pending-deletion list. process_pending() clears that list, which runs
+ * at least kDrainInterval (100 ms) after the last publish. Since audio
+ * callbacks complete in ~1-10 ms, all RT threads have long since loaded a
+ * newer snapshot before any old snapshot is destroyed.
  *
  * @note process_pending() may be called manually only when it is guaranteed
  * that no RT processing is occurring simultaneously (e.g., when the audio
- * engine is stopped). Otherwise, pending sessions could be destroyed while
- * the RT thread still holds a reference.
+ * engine is stopped). Otherwise, pending snapshots could be destroyed while
+ * an RT thread still holds a pointer.
  */
 class RecordingCoordinator : public QObject
 {
@@ -62,14 +61,14 @@ public:
    */
   void arm_track (
     structure::tracks::TrackUuid track_id,
-    units::sample_u32_t          max_block_length);
+    units::sample_u32_t          max_block_length) [[clang::blocking]];
 
   /**
    * @brief Disarms a track. Moves session to pending deletion.
    *
    * Must be called from the non-RT thread.
    */
-  void disarm_track (structure::tracks::TrackUuid track_id);
+  void disarm_track (structure::tracks::TrackUuid track_id) [[clang::blocking]];
 
   /**
    * @brief Returns whether a session exists for the given track.
@@ -89,11 +88,34 @@ public:
   /**
    * @brief Gets the session for a track (for RT callback access).
    *
+   * Safe to call from multiple RT threads concurrently.
    * Returns nullptr if no session exists.
    */
   [[nodiscard]] AudioRecordingSession *
   session_for_track (structure::tracks::TrackUuid track_id) noexcept
     [[clang::nonblocking]];
+
+Q_SIGNALS:
+
+  /**
+   * @brief Emitted when recorded audio data has been drained from a session.
+   *
+   * Connected consumers (e.g. RecordingMaterializer) use this to create or
+   * expand regions from the recorded audio packets.
+   */
+  void audioDataReady (
+    structure::tracks::TrackUuid      track_id,
+    std::vector<RecordingAudioPacket> packets);
+
+  /**
+   * @brief Emitted when all recording sessions have ended.
+   *
+   * Fires from process_pending() after pending-deletion sessions are fully
+   * drained and no active sessions remain. Consumers should finalize any
+   * open recording context (e.g. closing an undo macro) when this signal
+   * is received — no more audio data will arrive.
+   */
+  void recordingSessionEnded ();
 
 private:
   using Snapshot =
@@ -101,9 +123,27 @@ private:
 
   void publish_snapshot ();
 
-  farbot::
-    RealtimeObject<Snapshot, farbot::RealtimeObjectOptions::nonRealtimeMutatable>
-      rt_snapshot_;
+  // TODO: Replace this raw atomic pointer with a proper multi-reader
+  // realtime-safe container.  The current approach works but is ugly:
+  // publish_snapshot() heap-allocates a new Snapshot, atomically swaps the
+  // pointer, and defers the old Snapshot's deletion to
+  // pending_snapshot_deletion_.  Those deferred snapshots are freed in
+  // process_pending(), which runs at least kDrainInterval (100 ms) after
+  // the last publish — long after any RT thread has finished reading the
+  // old snapshot.  The initial snapshot (created in the constructor) and
+  // any remaining pending snapshots are freed in the destructor.
+  std::atomic<Snapshot *> rt_snapshot_{ nullptr };
+
+  // Two-phase deferred deletion for retired snapshots:
+  //   1. publish_snapshot() pushes the old snapshot into
+  //      pending_snapshot_deletion_.
+  //   2. process_pending() swaps pending_snapshot_deletion_ into
+  //      old_snapshots_ (destroying what was previously there) and emits
+  //      signals.  Each retired snapshot therefore survives at least two
+  //      drain intervals (~200 ms), guaranteeing every RT reader has moved
+  //      on to a newer snapshot before the old one is freed.
+  std::vector<std::unique_ptr<Snapshot>> pending_snapshot_deletion_;
+  std::vector<std::unique_ptr<Snapshot>> old_snapshots_;
 
   struct Impl;
   std::unique_ptr<Impl> impl_;
