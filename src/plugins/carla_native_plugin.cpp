@@ -575,7 +575,7 @@ CarlaNativePlugin::has_custom_ui (const zrythm::plugins::PluginDescriptor &descr
 }
 
 void
-CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
+CarlaNativePlugin::process_impl (const ProcessBlockInfo time_nfo)
 {
 #if HAVE_CARLA
   time_info_.playing = TRANSPORT->is_rolling ();
@@ -600,7 +600,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
       i++)
       {
         auto &port = audio_in_ports_[i];
-        inbufs_[audio_ports++] = &port->buf_[time_nfo.local_offset_];
+        inbufs_[audio_ports++] = &port->buf_[time_nfo.buffer_offset_];
       }
   }
 
@@ -611,7 +611,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
       {
         auto port = cv_in_ports_[i];
         inbufs_[max_variant_audio_ins_ + cv_ports++] =
-          &port->buf_[time_nfo.local_offset_];
+          &port->buf_[time_nfo.buffer_offset_];
       }
   }
 
@@ -622,7 +622,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
       {
         if (port->id_.type_ == PortType::Audio)
           {
-            outbufs_[audio_ports++] = &port->buf_[time_nfo.local_offset_];
+            outbufs_[audio_ports++] = &port->buf_[time_nfo.buffer_offset_];
           }
         if (audio_ports == max_variant_audio_outs_)
           break;
@@ -637,7 +637,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
         if (port->id_.type_ == PortType::CV)
           {
             outbufs_[max_variant_audio_outs_ + cv_ports++] =
-              &port->buf_[time_nfo.local_offset_];
+              &port->buf_[time_nfo.buffer_offset_];
           }
         if (cv_ports == max_variant_cv_outs_)
           break;
@@ -655,8 +655,8 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
       for (auto &ev : port->midi_events_.active_events_)
         {
           if (
-            ev.time_ < time_nfo.local_offset_
-            || ev.time_ >= time_nfo.local_offset_ + time_nfo.nframes_)
+            ev.time_ < time_nfo.buffer_offset_
+            || ev.time_ >= time_nfo.buffer_offset_ + time_nfo.nframes_)
             {
               /* skip events scheduled for another split within the processing
                * cycle
@@ -680,7 +680,7 @@ CarlaNativePlugin::process_impl (const EngineProcessTimeInfo time_nfo)
 
           /* event time is relative to the current zrythm full cycle (not
            * split). it needs to be made relative to the current split */
-          events[num_events_written].time = ev.time_ - time_nfo.local_offset_;
+          events[num_events_written].time = ev.time_ - time_nfo.buffer_offset_;
           events[num_events_written].size = 3;
           events[num_events_written].data[0] = ev.raw_buffer_[0];
           events[num_events_written].data[1] = ev.raw_buffer_[1];

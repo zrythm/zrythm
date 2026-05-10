@@ -180,12 +180,8 @@ TEST_F (MetronomeTest, BasicPlaybackNoTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Paused));
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), units::samples (256));
@@ -203,12 +199,8 @@ TEST_F (MetronomeTest, BasicPlaybackWithTicks)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), units::samples (256));
@@ -236,12 +228,8 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   // 120 BPM = 0.5 seconds per beat = 22050 samples per beat
   constexpr auto samples_per_beat = units::samples (22050);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 4 // 4 beats
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 4); // 4 beats
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 4);
@@ -284,12 +272,11 @@ TEST_F (MetronomeTest, LoopCrossing)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (44100 - 11025), // Start just before loop
-    .g_start_frame_w_offset_ = units::samples (44100 - 11025),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 2 // 2 beats
-  };
+  const auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    // Start just before loop
+    units::samples (44100 - 11025),
+    // 2 beats
+    samples_per_beat * 2);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 2);
@@ -330,12 +317,8 @@ TEST_F (MetronomeTest, CountinTicks)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 2
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 2);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 2);
@@ -364,12 +347,8 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
 
   constexpr auto samples_per_beat = units::samples (22050);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat);
@@ -389,12 +368,8 @@ TEST_F (MetronomeTest, EmptyRangeHandling)
   EXPECT_CALL (*transport_, get_play_state ())
     .WillRepeatedly (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0) // Empty range
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0)); // Empty range
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), units::samples (256));
@@ -419,12 +394,8 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
 
   constexpr auto samples_per_beat = units::samples (22050);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 3 // 3 beats in 3/4
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 3); // 3 beats in 3/4
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 3);
@@ -450,12 +421,8 @@ TEST_F (MetronomeTest, HighTempo)
   constexpr auto samples_per_beat =
     units::samples (11025); // 240 BPM = 0.25s per beat
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 4
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 4);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 4);
@@ -491,12 +458,8 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 4
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 4);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 4);
@@ -524,12 +487,8 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 4
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 4);
 
   metronome->prepare_for_processing (
     nullptr, units::sample_rate (44100), samples_per_beat * 4);
@@ -556,12 +515,8 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat * 2
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat * 2);
 
   // First process with enabled=true (default)
   metronome->prepare_for_processing (
@@ -599,12 +554,8 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
 
   constexpr auto samples_per_beat = units::samples (22050); // 120 BPM
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = samples_per_beat
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), samples_per_beat);
 
   // First, enable metronome and process to queue samples
   metronome->prepare_for_processing (

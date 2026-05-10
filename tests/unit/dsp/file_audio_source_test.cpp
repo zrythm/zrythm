@@ -182,15 +182,6 @@ TEST_F (FileAudioSourceTest, CreateFromInterleaved)
   EXPECT_EQ (src.get_num_frames (), nframes);
 }
 
-TEST_F (FileAudioSourceTest, CreateRecording)
-{
-  FileAudioSource src (
-    2, units::samples (100), project_sample_rate, current_bpm, u8"recording",
-    nullptr);
-  EXPECT_EQ (src.get_num_channels (), 2);
-  EXPECT_EQ (src.get_num_frames (), 100);
-}
-
 // Test core functionality
 TEST_F (FileAudioSourceTest, ExpandWithFrames)
 {
@@ -244,6 +235,38 @@ TEST_F (FileAudioSourceTest, PropertyAccess)
 }
 
 // Test edge cases
+TEST_F (FileAudioSourceTest, ExpandWithFramesMultipleExpansionsPreserveData)
+{
+  constexpr int             chunk_size = 100;
+  utils::audio::AudioBuffer initial (2, chunk_size);
+  for (int ch = 0; ch < 2; ++ch)
+    for (int i = 0; i < chunk_size; ++i)
+      initial.setSample (ch, i, static_cast<float> (i));
+  FileAudioSource src (
+    initial, FileAudioSource::BitDepth::BIT_DEPTH_32, project_sample_rate,
+    current_bpm, u8"multi_expand_test", nullptr);
+
+  constexpr int num_expansions = 20;
+  for (int exp = 0; exp < num_expansions; ++exp)
+    {
+      utils::audio::AudioBuffer chunk (2, chunk_size);
+      const auto base = static_cast<float> ((exp + 1) * chunk_size);
+      for (int ch = 0; ch < 2; ++ch)
+        for (int i = 0; i < chunk_size; ++i)
+          chunk.setSample (ch, i, base + static_cast<float> (i));
+      src.expand_with_frames (chunk);
+    }
+
+  const int expected_total = chunk_size + num_expansions * chunk_size;
+  EXPECT_EQ (src.get_num_frames (), expected_total);
+
+  const auto &samples = src.get_samples ();
+  for (int ch = 0; ch < 2; ++ch)
+    for (int i = 0; i < expected_total; ++i)
+      EXPECT_FLOAT_EQ (samples.getSample (ch, i), static_cast<float> (i))
+        << "Mismatch at ch=" << ch << " sample=" << i;
+}
+
 TEST_F (FileAudioSourceTest, InvalidFile)
 {
   ASSERT_THROW (

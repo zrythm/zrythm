@@ -221,12 +221,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, LinearChain)
     create_linear_chain (num_nodes), sample_rate_, max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (block_size)
-  };
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (block_size));
 
   for (auto _ : state)
     {
@@ -251,12 +247,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, SplitChain)
     max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (block_size)
-  };
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (block_size));
 
   for (auto _ : state)
     {
@@ -281,12 +273,8 @@ BENCHMARK_DEFINE_F (GraphSchedulerBenchmark, ComplexGraph)
     max_block_length_);
   scheduler_->start_threads (num_threads);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (block_size)
-  };
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (block_size));
 
   for (auto _ : state)
     {

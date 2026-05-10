@@ -64,14 +64,14 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
 
 void
 ModulatorMacroProcessor::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   /* if there are inputs, multiply by the knob value */
   if (!processing_caches_->cv_in_->port_sources ().empty ())
     {
-      const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+      const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
       const auto sub_nframes = time_nfo.nframes_.in (units::samples);
       utils::float_ranges::copy (
         std::span (processing_caches_->cv_out_->buf_)
@@ -89,7 +89,7 @@ ModulatorMacroProcessor::custom_process_block (
       utils::float_ranges::fill (
         std::span (processing_caches_->cv_out_->buf_)
           .subspan (
-            time_nfo.local_offset_.in (units::samples),
+            time_nfo.buffer_offset_.in (units::samples),
             time_nfo.nframes_.in (units::samples)),
         processing_caches_->macro_param_->currentValue ());
     }

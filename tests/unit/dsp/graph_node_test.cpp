@@ -72,9 +72,9 @@ TEST_F (GraphNodeTest, ProcessingBasics)
 {
   EXPECT_CALL (*processable_, process_block (_, _, _)).Times (Exactly (1));
 
-  auto                              node = create_test_node ();
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = units::samples (256);
+  auto node = create_test_node ();
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   node.process (time_info, units::samples (0), *transport_, *tempo_map_);
 }
 
@@ -111,8 +111,8 @@ TEST_F (GraphNodeTest, SkipProcessing)
   auto node = create_test_node ();
   node.set_skip_processing (true);
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   node.process (time_info, units::samples (0), *transport_, *tempo_map_);
 }
 
@@ -122,9 +122,9 @@ TEST_F (GraphNodeTest, ProcessingWithTransport)
     .WillOnce (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*processable_, process_block (_, _, _)).Times (1);
 
-  auto                              node = create_test_node ();
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = units::samples (256);
+  auto node = create_test_node ();
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   node.process (time_info, units::samples (0), *transport_, *tempo_map_);
 }
 
@@ -138,9 +138,9 @@ TEST_F (GraphNodeTest, LoopPointProcessing)
     .WillRepeatedly (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
-  auto                              node = create_test_node ();
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = units::samples (256);
+  auto node = create_test_node ();
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   node.process (time_info, units::samples (0), *transport_, *tempo_map_);
 }
 
@@ -190,14 +190,126 @@ TEST_F (GraphNodeTest, ProcessingWithLoopAndLatency)
     .WillRepeatedly (Return (ITransport::PlayState::Rolling));
   EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
     .WillRepeatedly (Return (units::samples (0)));
-  EXPECT_CALL (*processable_, process_block (_, _, _)).Times (2);
 
   auto node = create_test_node ();
   node.set_route_playback_latency (units::samples (256));
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.nframes_ = units::samples (256);
+  std::vector<ProcessBlockInfo> captured;
+  EXPECT_CALL (*processable_, process_block (_, _, _))
+    .Times (2)
+    .WillRepeatedly (
+      Invoke ([&captured] (ProcessBlockInfo info, const auto &, const auto &) {
+        captured.push_back (info);
+      }));
+
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   node.process (time_info, units::samples (64), *transport_, *tempo_map_);
+
+  ASSERT_EQ (captured.size (), 2u);
+
+  // compensate_latency adjusts transport_position_ by adding the route
+  // latency and buffer_offset_.
+  //
+  // playhead=0, route_latency=256, preroll_remaining=64, buffer_offset=0
+  // frames_to_add = 256 - 64 = 192.  With loop [0,192), get_playhead_...
+  // wraps: 0 + 192 = 192 >= loop_end, so adjusted = 192 - 192 = 0.
+  // transport_position_ = 0 + 0 (buffer_offset) = 0.
+  //
+  // process_chunks_after_splitting_at_loop_points then sees transport_position
+  // 0 within the loop [0,192): the full 192 frames are processable (reaching
+  // exactly loop_end), then the remaining 64 wrap to loop_start=0.
+  EXPECT_EQ (captured[0].transport_position_, units::samples (0u));
+  EXPECT_EQ (captured[0].buffer_offset_, units::samples (0u));
+  EXPECT_EQ (captured[0].nframes_, units::samples (192u));
+
+  // Chunk 2: wraps back to loop start, buffer_offset advances by 192
+  EXPECT_EQ (captured[1].transport_position_, units::samples (0u));
+  EXPECT_EQ (captured[1].buffer_offset_, units::samples (192u));
+  EXPECT_EQ (captured[1].nframes_, units::samples (64u));
+}
+
+TEST_F (GraphNodeTest, LatencyCompensationWithBufferOffset)
+{
+  EXPECT_CALL (*transport_, loop_enabled ()).WillRepeatedly (Return (false));
+  EXPECT_CALL (*processable_, get_single_playback_latency ())
+    .WillRepeatedly (Return (units::samples (128)));
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (Return (ITransport::PlayState::Rolling));
+  EXPECT_CALL (*transport_, get_playhead_position_in_audio_thread ())
+    .WillRepeatedly (Return (units::samples (1000)));
+
+  auto node = create_test_node ();
+  node.set_route_playback_latency (units::samples (256));
+
+  ProcessBlockInfo captured{ ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0)) };
+  EXPECT_CALL (*processable_, process_block (_, _, _))
+    .Times (1)
+    .WillOnce (
+      Invoke ([&captured] (ProcessBlockInfo info, const auto &, const auto &) {
+        captured = info;
+      }));
+
+  // Simulate an engine split: base playhead=1000, buffer_offset=128,
+  // nframes=128
+  ProcessBlockInfo time_nfo = {
+    .transport_position_ = units::samples (1000u),
+    .buffer_offset_ = units::samples (128u),
+    .nframes_ = units::samples (128u),
+  };
+
+  // remaining_preroll=0, so latency adjustment = route_latency - 0 = 256
+  node.process (time_nfo, units::samples (0), *transport_, *tempo_map_);
+
+  // compensate_latency adjusts transport_position by adding the route latency.
+  // With playhead=1000, latency=256, buffer_offset=128:
+  // adjusted_position = 1000 + 256 = 1256.
+  // The doc comment says transport_position_ is "already taking into account
+  // the offset", so the expected value should be 1256 + 128 = 1384.
+  EXPECT_EQ (captured.transport_position_, units::samples (1384u))
+    << "transport_position should include both latency adjustment (256) and "
+       "buffer_offset (128): playhead(1000) + latency(256) + offset(128) = "
+       "1384";
+  EXPECT_EQ (captured.buffer_offset_, units::samples (128u));
+  EXPECT_EQ (captured.nframes_, units::samples (128u));
+}
+
+TEST_F (GraphNodeTest, NonRollingTransportPositionIncludesBufferOffset)
+{
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (Return (ITransport::PlayState::Paused));
+  EXPECT_CALL (*transport_, loop_enabled ()).WillRepeatedly (Return (false));
+
+  auto node = create_test_node ();
+
+  ProcessBlockInfo captured{ ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0)) };
+  EXPECT_CALL (*processable_, process_block (_, _, _))
+    .Times (1)
+    .WillOnce (
+      Invoke ([&captured] (ProcessBlockInfo info, const auto &, const auto &) {
+        captured = info;
+      }));
+
+  // Simulate an engine split during Paused transport:
+  // playhead=500, buffer_offset=64, nframes=192
+  ProcessBlockInfo time_nfo = {
+    .transport_position_ = units::samples (500u),
+    .buffer_offset_ = units::samples (64u),
+    .nframes_ = units::samples (192u),
+  };
+
+  node.process (time_nfo, units::samples (0), *transport_, *tempo_map_);
+
+  // transport_position_ must include buffer_offset_ even when transport is
+  // not Rolling, per the documented contract ("already taking into account
+  // the offset").
+  EXPECT_EQ (captured.transport_position_, units::samples (564u))
+    << "transport_position should include buffer_offset for non-Rolling "
+       "transport: playhead(500) + offset(64) = 564";
+  EXPECT_EQ (captured.buffer_offset_, units::samples (64u));
+  EXPECT_EQ (captured.nframes_, units::samples (192u));
 }
 
 TEST_F (GraphNodeTest, ComplexGraphTopology)

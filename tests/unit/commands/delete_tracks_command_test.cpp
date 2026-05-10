@@ -47,6 +47,7 @@ protected:
     track_registry_,
     transport_,
     soloed_tracks_exist_getter_,
+    {},
   };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
 

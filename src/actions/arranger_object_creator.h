@@ -120,18 +120,20 @@ public:
     return obj_ref.get_object_as<structure::arrangement::ScaleObject> ();
   }
 
-  structure::arrangement::AudioRegion * add_empty_audio_region_for_recording (
-    structure::tracks::Track     &track,
-    structure::tracks::TrackLane &lane,
-    int                           num_channels,
-    const utils::Utf8String      &clip_name,
-    double                        start_ticks)
+  structure::arrangement::ArrangerObjectUuidReference
+  add_audio_region_for_recording (
+    structure::tracks::Track        &track,
+    structure::tracks::TrackLane    &lane,
+    const utils::audio::AudioBuffer &initial_frames,
+    const utils::Utf8String         &clip_name,
+    double                           start_ticks)
   {
     auto region_ref =
-      arranger_object_factory_.create_empty_audio_region_for_recording (
-        num_channels, clip_name, start_ticks);
+      arranger_object_factory_.create_audio_region_from_audio_buffer (
+        initial_frames, utils::audio::BitDepth::BIT_DEPTH_32, clip_name,
+        start_ticks);
     add_laned_object (track, lane, region_ref);
-    return region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+    return region_ref;
   }
 
   Q_INVOKABLE structure::arrangement::AudioRegion * addAudioRegionFromFile (

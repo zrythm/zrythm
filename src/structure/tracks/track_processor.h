@@ -27,6 +27,7 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  Q_DISABLE_COPY_MOVE (TrackProcessor)
 
   using PortType = dsp::PortType;
   using PortFlow = dsp::PortFlow;
@@ -58,21 +59,24 @@ public:
    * regions (including muted/disabled/etc.).
    */
   using FillEventsCallback = std::function<void (
-    const dsp::ITransport                   &transport,
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector *                   midi_events,
-    std::optional<StereoPortPair>            stereo_ports)>;
+    const dsp::ITransport              &transport,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    dsp::MidiEventVector *              midi_events,
+    std::optional<StereoPortPair>       stereo_ports)>;
 
   /**
    * @brief Callback to record the given audio or MIDI data.
    *
+   * @param timeline_position The absolute timeline position of this data.
+   * @param transport Transport state (for recording_enabled check).
    * @param midi_events MIDI events that should be recorded, if any.
    * @param stereo_ports Audio data that should be recorded, if any.
    */
-  using HandleRecordingCallback = std::function<void (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::MidiEventVector *             midi_events,
-    std::optional<ConstStereoPortPair>       stereo_ports)>;
+  using RecordingCallbackRT = std::function<void (
+    units::sample_t                    timeline_position,
+    const dsp::ITransport             &transport,
+    const dsp::MidiEventVector *       midi_events,
+    std::optional<ConstStereoPortPair> stereo_ports)>;
 
   /**
    * @brief Custom logic to use when appending the MIDI input events to the
@@ -84,9 +88,9 @@ public:
    * output notes that match the chord.
    */
   using AppendMidiInputsToOutputsFunc = std::function<void (
-    dsp::MidiEventVector                    &out_events,
-    const dsp::MidiEventVector              &in_events,
-    const dsp::graph::EngineProcessTimeInfo &time_nfo)>;
+    dsp::MidiEventVector               &out_events,
+    const dsp::MidiEventVector         &in_events,
+    const dsp::graph::ProcessBlockInfo &time_nfo)>;
 
   /**
    * @brief Function to transform the given MIDI inputs.
@@ -120,8 +124,8 @@ public:
   };
 
   using MidiEventProviderProcessFunc = std::function<void (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    dsp::MidiEventVector                    &output_buffer)>;
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    dsp::MidiEventVector               &output_buffer)>;
 
   enum class ActiveMidiEventProviders : uint8_t
   {
@@ -156,13 +160,14 @@ public:
     std::optional<TransformMidiInputsFunc> transform_midi_inputs_func =
       std::nullopt,
     std::optional<AppendMidiInputsToOutputsFunc>
-              append_midi_inputs_to_outputs_func = std::nullopt,
+                        append_midi_inputs_to_outputs_func = std::nullopt,
+    RecordingCallbackRT recording_cb =
+      [] (
+        units::sample_t,
+        const dsp::ITransport &,
+        const dsp::MidiEventVector *,
+        std::optional<ConstStereoPortPair>) { },
     QObject * parent = nullptr);
-
-  void set_handle_recording_callback (HandleRecordingCallback handle_rec_cb)
-  {
-    handle_recording_cb_ = std::move (handle_rec_cb);
-  }
 
   bool is_audio () const { return is_audio_; }
 
@@ -188,9 +193,9 @@ public:
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
   void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const dsp::graph::GraphNode * node,
@@ -339,9 +344,9 @@ public:
    * @param midi_events MidiEvents to fill.
    */
   void fill_midi_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport                   &transport,
-    dsp::MidiEventVector                    &midi_events);
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    const dsp::ITransport              &transport,
+    dsp::MidiEventVector               &midi_events);
 
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
@@ -352,9 +357,9 @@ public:
    * @param stereo_ports StereoPorts to fill.
    */
   void fill_audio_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport                   &transport,
-    StereoPortPair                           stereo_ports);
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    const dsp::ITransport              &transport,
+    StereoPortPair                      stereo_ports);
 
 private:
   friend void to_json (nlohmann::json &j, const TrackProcessor &tp);
@@ -369,9 +374,11 @@ private:
    * Splits the cycle and handles recording for each
    * slot.
    */
-  void handle_recording (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport                   &transport);
+  static void handle_recording (
+    const dsp::graph::ProcessBlockInfo   &time_nfo,
+    const dsp::ITransport                &transport,
+    const TrackProcessorProcessingCaches &processing_caches,
+    const RecordingCallbackRT &recording_cb) noexcept [[clang::nonblocking]];
 
   /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
@@ -399,7 +406,7 @@ private:
   const TrackNameProvider track_name_provider_;
 
   std::optional<FillEventsCallback>      fill_events_cb_;
-  std::optional<HandleRecordingCallback> handle_recording_cb_;
+  RecordingCallbackRT                    handle_recording_cb_;
   AppendMidiInputsToOutputsFunc          append_midi_inputs_to_outputs_func_;
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func_;
 

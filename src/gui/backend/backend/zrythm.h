@@ -21,10 +21,6 @@ class Settings;
 
 namespace zrythm
 {
-namespace engine::session
-{
-class RecordingManager;
-}
 
 /**
  * @addtogroup general
@@ -206,9 +202,6 @@ public:
 
   /** Chord preset pack manager. */
   std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
-
-  /** Recording manager. */
-  engine::session::RecordingManager * recording_manager_ = nullptr;
 
   /**
    * @brief LSP DSP context for the main thread.

@@ -26,10 +26,12 @@ protected:
       plugin_registry_,     port_registry_,
       param_registry_,      obj_registry_,
       track_registry_,      transport_,
-      [] { return false; },
+      [] { return false; }, {},
     };
-    track_factory_ =
-      std::make_unique<structure::tracks::TrackFactory> (factory_deps);
+    track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
+      [factory_deps] () -> structure::tracks::FinalTrackDependencies {
+        return factory_deps;
+      });
 
     // Create test tracks
     source_track_ref_ = track_factory_->create_empty_track (

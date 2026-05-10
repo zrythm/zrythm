@@ -74,6 +74,15 @@ JuceHardwareAudioInterface::get_sample_rate () const
   return units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ()));
 }
 
+[[nodiscard]] utils::Utf8String
+JuceHardwareAudioInterface::get_device_name () const
+{
+  auto * dev = device_manager_->getCurrentAudioDevice ();
+  if (dev == nullptr)
+    return {};
+  return utils::Utf8String::from_juce_string (dev->getName ());
+}
+
 void
 JuceHardwareAudioInterface::add_audio_callback (IAudioCallback * callback)
 {

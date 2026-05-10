@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -12,10 +12,12 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
+  required property DeviceManager deviceManager
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
   required property Project project
   property Plugin selectedPlugin: null
+  required property ProjectSession session
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -69,8 +71,10 @@ ColumnLayout {
       sourceComponent: TrackInspectorPage {
         anchors.fill: parent
         audioEngine: root.project.engine
+        deviceManager: root.deviceManager
         pluginImporter: root.pluginImporter
         pluginOperator: root.pluginOperator
+        session: root.session
         track: trackInspectorLoader.track
         trackSelectionModel: root.trackSelectionModel
         undoStack: root.undoStack

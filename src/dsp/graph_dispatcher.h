@@ -52,11 +52,11 @@ public:
    * @param tempo_map Tempo map for this cycle.
    */
   void start_cycle (
-    const dsp::ITransport            &current_transport_state,
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    units::sample_u64_t               remaining_latency_preroll,
-    bool                              realtime_context,
-    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]];
+    const dsp::ITransport       &current_transport_state,
+    dsp::graph::ProcessBlockInfo time_nfo,
+    units::sample_u64_t          remaining_latency_preroll,
+    bool                         realtime_context,
+    const dsp::TempoMap         &tempo_map) noexcept [[clang::nonblocking]];
 
   /**
    * Returns the max playback latency of the trigger
@@ -136,7 +136,7 @@ private:
    * @param time_nfo Current cycle time info.
    */
   void preprocess_at_start_of_cycle (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo) noexcept
+    const dsp::graph::ProcessBlockInfo &time_nfo) noexcept
     [[clang::nonblocking]];
 
 private:

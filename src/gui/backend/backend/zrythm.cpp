@@ -15,7 +15,6 @@
 #  include <sys/mman.h>
 #endif
 
-#include "engine/session/recording_manager.h"
 #include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
@@ -69,7 +68,6 @@ void
 Zrythm::init ()
 {
   settings_->init ();
-  recording_manager_ = new engine::session::RecordingManager (this);
   chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
     have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 

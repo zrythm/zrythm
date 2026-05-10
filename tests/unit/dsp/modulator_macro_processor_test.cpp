@@ -83,12 +83,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
   macro_param->setBaseValue (0.8f);
 
   // Process block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is macro value (0.8f) since no input
@@ -110,12 +106,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
   macro_param->setBaseValue (0.5f);
 
   // Process block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -154,12 +146,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
   macro_param->setBaseValue (0.5f);
 
   // Process block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   cv_in->process_block (time_nfo, *mock_transport_, *tempo_map_);
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -183,12 +171,8 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
   macro_param->setBaseValue (0.0f);
 
   // Process block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   macro_processor->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify output is zero

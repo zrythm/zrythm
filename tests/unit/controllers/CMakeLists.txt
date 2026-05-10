@@ -9,6 +9,7 @@ add_executable(zrythm_controllers_unit_tests
   project_loader_test.cpp
   project_saver_test.cpp
   recording_coordinator_test.cpp
+  recording_materializer_test.cpp
   transport_controller_test.cpp
 )
 

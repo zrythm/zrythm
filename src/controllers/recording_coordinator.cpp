@@ -43,6 +43,7 @@ RecordingCoordinator::RecordingCoordinator (QObject * parent)
 
 RecordingCoordinator::~RecordingCoordinator ()
 {
+  impl_->timer->stop ();
   delete rt_snapshot_.load (std::memory_order_acquire);
 }
 
@@ -83,7 +84,7 @@ RecordingCoordinator::has_session (structure::tracks::TrackUuid track_id) const
 
 AudioRecordingSession *
 RecordingCoordinator::session_for_track (
-  structure::tracks::TrackUuid track_id) noexcept
+  structure::tracks::TrackUuid track_id) const noexcept
 {
   const auto * snap = rt_snapshot_.load (std::memory_order_acquire);
   if (snap == nullptr)
@@ -166,6 +167,51 @@ RecordingCoordinator::publish_snapshot ()
   if (old != nullptr)
     {
       pending_snapshot_deletion_.emplace_back (std::unique_ptr<Snapshot>{ old });
+    }
+}
+
+void
+RecordingCoordinator::finalizeAllSessions ()
+{
+  std::vector<
+    std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>
+    ready;
+
+  for (auto &[id, session] : impl_->sessions)
+    {
+      auto packets = session->drain_pending ();
+      if (!packets.empty ())
+        {
+          ready.emplace_back (id, std::move (packets));
+        }
+      impl_->last_reported_dropped.erase (session.get ());
+      // Safe: transport is already Paused so no RT write_samples() is in
+      // flight (audio callbacks only write when Rolling).
+      session->reset ();
+    }
+
+  // Also drain pending-deletion sessions to avoid data loss for
+  // recently-disarmed tracks.
+  for (auto &[track_id, session] : impl_->pending_deletion)
+    {
+      auto packets = session->drain_pending ();
+      if (!packets.empty ())
+        {
+          ready.emplace_back (track_id, std::move (packets));
+        }
+    }
+  impl_->pending_deletion.clear ();
+
+  old_snapshots_.swap (pending_snapshot_deletion_);
+
+  for (auto &[id, packets] : ready)
+    {
+      Q_EMIT audioDataReady (id, std::move (packets));
+    }
+
+  if (!impl_->sessions.empty ())
+    {
+      Q_EMIT recordingSessionEnded ();
     }
 }
 

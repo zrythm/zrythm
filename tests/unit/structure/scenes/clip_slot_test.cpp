@@ -264,11 +264,11 @@ protected:
     for (int i = 0; i < 3; ++i)
       {
         tracks::FinalTrackDependencies deps{
-          *tempo_map_wrapper_, file_audio_source_registry_,
-          plugin_registry_,    port_registry_,
-          param_registry_,     *obj_registry_,
-          *track_registry_,    transport_,
-          [] { return false; }
+          *tempo_map_wrapper_,  file_audio_source_registry_,
+          plugin_registry_,     port_registry_,
+          param_registry_,      *obj_registry_,
+          *track_registry_,     transport_,
+          [] { return false; }, {}
         };
 
         auto track_ref = track_registry_->create_object<tracks::FolderTrack> (

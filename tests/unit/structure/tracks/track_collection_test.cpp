@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/audio_bus_track.h"
+#include "structure/tracks/audio_track.h"
 #include "structure/tracks/folder_track.h"
 #include "structure/tracks/track_collection.h"
+
+#include <QSignalSpy>
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -34,7 +37,7 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; },
+      [] { return false; }, {},
     };
 
     return track_registry->create_object<FolderTrack> (std::move (deps));
@@ -44,14 +47,26 @@ protected:
   TrackUuidReference create_audio_bus_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,  file_audio_source_registry,
-      plugin_registry,     port_registry,
-      param_registry,      obj_registry,
-      *track_registry,     transport,
-      [] { return false; }
+      *tempo_map_wrapper,   file_audio_source_registry,
+      plugin_registry,      port_registry,
+      param_registry,       obj_registry,
+      *track_registry,      transport,
+      [] { return false; }, {}
     };
 
     return track_registry->create_object<AudioBusTrack> (std::move (deps));
+  }
+
+  TrackUuidReference create_audio_track ()
+  {
+    FinalTrackDependencies deps{
+      *tempo_map_wrapper,   file_audio_source_registry,
+      plugin_registry,      port_registry,
+      param_registry,       obj_registry,
+      *track_registry,      transport,
+      [] { return false; }, {},
+    };
+    return track_registry->create_object<AudioTrack> (std::move (deps));
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -352,20 +367,6 @@ TEST_F (TrackCollectionTest, DataRoles)
   EXPECT_EQ (depth_var.toInt (), 0);
 }
 
-TEST_F (TrackCollectionTest, Clear)
-{
-  auto folder_track = create_folder_track ();
-  auto audio_bus_track = create_audio_bus_track ();
-
-  track_collection->add_track (folder_track);
-  track_collection->add_track (audio_bus_track);
-
-  EXPECT_EQ (track_collection->rowCount (), 2);
-
-  track_collection->clear ();
-  EXPECT_EQ (track_collection->rowCount (), 0);
-}
-
 TEST_F (TrackCollectionTest, Serialization)
 {
   auto folder_track = create_folder_track ();
@@ -474,8 +475,9 @@ TEST_F (TrackCollectionTest, SoloMuteListenCounts)
   EXPECT_EQ (track_collection->numMutedTracks (), 0);    // track3 was muted
   EXPECT_EQ (track_collection->numListenedTracks (), 0); // track3 was listened
 
-  // Clear all tracks and verify counts are 0
-  track_collection->clear ();
+  // Remove remaining tracks and verify counts are 0
+  track_collection->remove_track (track1.id ());
+  track_collection->remove_track (track2.id ());
   EXPECT_EQ (track_collection->numSoloedTracks (), 0);
   EXPECT_EQ (track_collection->numMutedTracks (), 0);
   EXPECT_EQ (track_collection->numListenedTracks (), 0);
@@ -977,6 +979,99 @@ TEST_F (TrackCollectionTest, NotifyTracksMovedEmptySetEmitsNoSignal)
   track_collection->notify_tracks_moved (empty);
 
   EXPECT_FALSE (signal_fired);
+}
+
+TEST_F (TrackCollectionTest, RecordingSignalEmittedOnAdd)
+{
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto track = create_audio_track ();
+  track_collection->add_track (track);
+
+  ASSERT_EQ (spy.count (), 1);
+  auto args = spy.takeFirst ();
+  EXPECT_EQ (args.at (0).value<Track *> (), track.get_object_base ());
+  EXPECT_FALSE (args.at (1).toBool ());
+}
+
+TEST_F (TrackCollectionTest, RecordingSignalEmittedOnToggle)
+{
+  auto track = create_audio_track ();
+  track_collection->add_track (track);
+
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto * recording_param = track.get_object_base ()->recordingParam ();
+  ASSERT_NE (recording_param, nullptr);
+  recording_param->setBaseValue (1.0f);
+
+  ASSERT_EQ (spy.count (), 1);
+  auto args = spy.takeFirst ();
+  EXPECT_EQ (args.at (0).value<Track *> (), track.get_object_base ());
+  EXPECT_TRUE (args.at (1).toBool ());
+}
+
+TEST_F (TrackCollectionTest, NoSignalForNonRecordingTrack)
+{
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto track = create_folder_track ();
+  track_collection->add_track (track);
+
+  EXPECT_EQ (spy.count (), 0);
+}
+
+TEST_F (TrackCollectionTest, SignalDisconnectedOnRemoval)
+{
+  auto track = create_audio_track ();
+  track_collection->add_track (track);
+
+  auto * recording_param = track.get_object_base ()->recordingParam ();
+  ASSERT_NE (recording_param, nullptr);
+  recording_param->setBaseValue (1.0f);
+
+  track_collection->remove_track (track.id ());
+
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  Q_EMIT recording_param->baseValueChanged (1.0f);
+
+  EXPECT_EQ (spy.count (), 0);
+}
+
+TEST_F (TrackCollectionTest, RecordingSignalForTrackAmongMultipleTracks)
+{
+  auto track1 = create_audio_track ();
+  auto track2 = create_audio_track ();
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto * param1 = track1.get_object_base ()->recordingParam ();
+  auto * param2 = track2.get_object_base ()->recordingParam ();
+
+  param1->setBaseValue (1.0f);
+  ASSERT_EQ (spy.count (), 1);
+  auto args1 = spy.takeFirst ();
+  EXPECT_EQ (args1.at (0).value<Track *> (), track1.get_object_base ());
+  EXPECT_TRUE (args1.at (1).toBool ());
+
+  param2->setBaseValue (1.0f);
+  ASSERT_EQ (spy.count (), 1);
+  auto args2 = spy.takeFirst ();
+  EXPECT_EQ (args2.at (0).value<Track *> (), track2.get_object_base ());
+  EXPECT_TRUE (args2.at (1).toBool ());
 }
 
 } // namespace zrythm::structure::tracks

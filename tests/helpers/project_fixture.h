@@ -71,16 +71,20 @@ protected:
 
   void TearDown () override
   {
-    metronome_.reset ();
-    monitor_fader_.reset ();
-    param_registry_.reset ();
-    port_registry_.reset ();
-    app_settings_.reset ();
-    plugin_format_manager_.reset ();
-    hw_interface_.reset ();
+    // Intentionally empty — let RAII destroy members in the correct order
+    // (derived class destructor runs first, freeing the project that
+    // references these objects, then base destructor frees them).
   }
 
-  std::unique_ptr<structure::project::Project> create_minimal_project ()
+  std::unique_ptr<structure::project::Project> create_minimal_project (
+    structure::tracks::TrackRecordingCallback recording_callback =
+      [] (
+        const structure::tracks::Track::Uuid &,
+        units::sample_t,
+        const dsp::ITransport &,
+        const dsp::MidiEventVector *,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
+      })
   {
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;
@@ -93,9 +97,11 @@ protected:
     PluginHostWindowFactory window_factory =
       [] (Plugin &) -> std::unique_ptr<IPluginHostWindow> { return nullptr; };
 
-    return std::make_unique<Project> (
+    auto project = std::make_unique<Project> (
       *app_settings_, path_provider, *hw_interface_, plugin_format_manager_,
       window_factory, *metronome_, *monitor_fader_);
+    project->install_recording_callback (std::move (recording_callback));
+    return project;
   }
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;

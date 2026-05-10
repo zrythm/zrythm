@@ -94,9 +94,15 @@ protected:
       return nullptr;
     };
 
-    return std::make_unique<Project> (
+    auto proj = std::make_unique<Project> (
       *app_settings, path_provider, *hw_interface, plugin_format_manager,
       window_factory, *metronome, *monitor_fader);
+    proj->install_recording_callback (
+      [] (
+        const tracks::Track::Uuid &, units::sample_t, const dsp::ITransport &,
+        const dsp::MidiEventVector *,
+        std::optional<tracks::TrackProcessor::ConstStereoPortPair>) { });
+    return proj;
   }
 
   // Note: add_default_tracks() creates Chord/Modulator/Marker/Master tracks,

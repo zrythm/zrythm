@@ -101,9 +101,8 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
   });
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -126,9 +125,8 @@ TEST_F (ProcessorParameterTest, ModulationApplication)
 
   // Process block with modulation
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -147,9 +145,8 @@ TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
   conn->bipolar_ = false;
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -168,9 +165,8 @@ TEST_F (ProcessorParameterTest, BipolarModulation)
   conn->bipolar_ = true;
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -192,9 +188,8 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
   conn->bipolar_ = false;
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -230,9 +225,8 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
   param_mod_input->port_sources ()[1].second->enabled_ = true;
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -249,9 +243,8 @@ TEST_F (ProcessorParameterTest, GestureBlocksAutomation)
   const float initial_value = param->baseValue ();
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
   param->endUserGesture ();
@@ -268,9 +261,8 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
   param_mod_input->port_sources ().front ().second->enabled_ = true;
 
   param->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = BLOCK_LENGTH },
     *mock_transport_, *tempo_map_);
 
@@ -469,7 +461,7 @@ TEST_F (ProcessorParameterTest, EnumerationCreateAndGetLabels)
 {
   auto range =
     ParameterRange::make_enumeration ({ u8"Red", u8"Green", u8"Blue" });
-  ASSERT_EQ (range.enum_count (), 3);
+  ASSERT_EQ (range.enumCount (), 3);
   EXPECT_EQ (range.enum_label (0).view (), "Red");
   EXPECT_EQ (range.enum_label (1).view (), "Green");
   EXPECT_EQ (range.enum_label (2).view (), "Blue");
@@ -478,12 +470,12 @@ TEST_F (ProcessorParameterTest, EnumerationCreateAndGetLabels)
 TEST_F (ProcessorParameterTest, EnumerationNormalizedRoundTrip)
 {
   auto range = ParameterRange::make_enumeration ({ u8"Off", u8"On", u8"Auto" });
-  for (size_t i = 0; i < range.enum_count (); ++i)
+  for (size_t i = 0; i < range.enumCount (); ++i)
     {
-      const auto normalized = range.normalized_from_index (i);
+      const auto normalized = range.normalizedEnumValue (i);
       EXPECT_GE (normalized, 0.f);
       EXPECT_LE (normalized, 1.f);
-      EXPECT_EQ (range.enum_index (normalized), i);
+      EXPECT_EQ (range.enumIndex (normalized), i);
     }
 }
 
@@ -511,7 +503,7 @@ TEST_F (ProcessorParameterTest, EnumerationDefaultIndex)
     ParameterRange::make_enumeration ({ u8"Off", u8"On", u8"Auto" }, 2);
   EXPECT_FLOAT_EQ (range.deff_, 2.f);
   const auto normalized_default = range.convertTo0To1 (range.deff_);
-  EXPECT_EQ (range.enum_index (normalized_default), 2u);
+  EXPECT_EQ (range.enumIndex (normalized_default), 2u);
   EXPECT_EQ (range.enum_label (2).view (), "Auto");
 }
 
@@ -527,7 +519,7 @@ TEST_F (ProcessorParameterTest, EnumerationSerializationRoundTrip)
   from_json (j, loaded);
 
   EXPECT_EQ (loaded.type_, ParameterRange::Type::Enumeration);
-  ASSERT_EQ (loaded.enum_count (), 3);
+  ASSERT_EQ (loaded.enumCount (), 3);
   EXPECT_EQ (loaded.enum_label (0).view (), "Off");
   EXPECT_EQ (loaded.enum_label (1).view (), "On");
   EXPECT_EQ (loaded.enum_label (2).view (), "Auto");
@@ -549,8 +541,8 @@ TEST_F (ProcessorParameterTest, EnumerationRejectsOutOfRangeDefaultIndex)
 TEST_F (ProcessorParameterTest, EnumIndexClampsOutOfRangeValues)
 {
   auto range = ParameterRange::make_enumeration ({ u8"A", u8"B", u8"C" });
-  EXPECT_EQ (range.enum_index (-0.5f), 0u);
-  EXPECT_EQ (range.enum_index (1.5f), 2u);
+  EXPECT_EQ (range.enumIndex (-0.5f), 0u);
+  EXPECT_EQ (range.enumIndex (1.5f), 2u);
 }
 
 } // namespace zrythm::dsp

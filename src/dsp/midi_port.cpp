@@ -57,12 +57,12 @@ MidiPort::clear_buffer (std::size_t offset, std::size_t nframes)
 
 void
 MidiPort::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   midi_events_.active_events_.clear ();
-  midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
+  midi_events_.dequeue (time_nfo.buffer_offset_, time_nfo.nframes_);
 
   auto &events = midi_events_.active_events_;
 #if 0
@@ -120,7 +120,7 @@ MidiPort::process_block (
       // TODO
       // backend_->sum_midi_data (
       // midi_events_,
-      // { .start_frame = time_nfo.local_offset_, .nframes = time_nfo.nframes_ },
+      // { .start_frame = time_nfo.buffer_offset_, .nframes = time_nfo.nframes_ },
       // [this] (const auto &ev) {
       // return owner_->are_events_on_midi_channel_approved (
       // utils::midi::midi_get_channel_0_to_15 (ev.raw_buffer_));
@@ -216,8 +216,8 @@ MidiPort::process_block (
               auto midi_time = units::samples (static_cast<uint32_t> (std::floor (
                 ratio * (double) AUDIO_ENGINE->get_block_length ())));
               if (
-                midi_time >= time_nfo.local_offset_
-                && midi_time < time_nfo.local_offset_ + time_nfo.nframes_)
+                midi_time >= time_nfo.buffer_offset_
+                && midi_time < time_nfo.buffer_offset_ + time_nfo.nframes_)
                 {
                   uint8_t beat_msg = utils::midi::MIDI_CLOCK_BEAT;
                   events.add_raw (&beat_msg, 1, midi_time);
@@ -239,7 +239,7 @@ MidiPort::process_block (
         continue;
 
       events.append (
-        src_port->midi_events_.active_events_, time_nfo.local_offset_,
+        src_port->midi_events_.active_events_, time_nfo.buffer_offset_,
         time_nfo.nframes_);
     } /* foreach source */
 

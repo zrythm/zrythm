@@ -311,10 +311,10 @@ GraphScheduler::contains_thread (RTThreadId::IdType thread_id)
 
 void
 GraphScheduler::run_cycle (
-  const dsp::graph::EngineProcessTimeInfo time_nfo,
-  units::sample_u64_t                     remaining_preroll_frames,
-  const dsp::ITransport                  &transport,
-  const dsp::TempoMap                    &tempo_map)
+  const dsp::graph::ProcessBlockInfo time_nfo,
+  units::sample_u64_t                remaining_preroll_frames,
+  const dsp::ITransport             &transport,
+  const dsp::TempoMap               &tempo_map)
 {
   time_nfo_ = time_nfo;
   remaining_preroll_frames_ = remaining_preroll_frames;

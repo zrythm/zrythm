@@ -90,15 +90,15 @@ public:
 
   // TrackEventProvider interface
   void process_midi_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
     dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
 
   /**
    * @brief Process audio events for clip launcher playback.
    */
   void process_audio_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    std::span<float>                         left_buffer,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    std::span<float>                    left_buffer,
     std::span<float> right_buffer) noexcept [[clang::nonblocking]];
 
   /**
@@ -117,16 +117,16 @@ private:
    * changes.
    */
   void update_playback_position (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    units::sample_t                          clip_loop_end_samples);
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    units::sample_t                     clip_loop_end_samples);
 
   /**
    * @brief Common logic for handling quantization and playback start.
    */
   std::pair<units::sample_t, units::sample_t> handle_quantization_and_start (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    units::sample_t                          clip_loop_end_samples,
-    structure::tracks::ClipQuantizeOption    quantize_opt);
+    const dsp::graph::ProcessBlockInfo   &time_nfo,
+    units::sample_t                       clip_loop_end_samples,
+    structure::tracks::ClipQuantizeOption quantize_opt);
 
   /**
    * @brief Template method for processing chunks with looping.
@@ -191,20 +191,22 @@ private:
   /**
    * @brief Last timeline position we've seen
    *
-   * This is only accessed by the ClipPlaybackDataProvider (audio thread)
-   * and doesn't need to be atomic.
+   * Accessed from both the RT audio thread and the non-RT thread
+   * (via queue_stop_playback), so must be atomic.
    */
-  units::sample_t last_seen_timeline_position_;
+  std::atomic<units::sample_t> last_seen_timeline_position_;
 
   /**
    * @brief Timeline position where the clip was launched
    *
-   * This is only accessed by the ClipPlaybackDataProvider (audio thread)
-   * and doesn't need to be atomic.
+   * Accessed from both the RT audio thread and the non-RT thread
+   * (via queue_stop_playback), so must be atomic.
    */
-  units::sample_t clip_launch_timeline_position_;
+  std::atomic<units::sample_t> clip_launch_timeline_position_;
 
   static_assert (decltype (internal_clip_buffer_position_)::is_always_lock_free);
+  static_assert (decltype (last_seen_timeline_position_)::is_always_lock_free);
+  static_assert (decltype (clip_launch_timeline_position_)::is_always_lock_free);
 };
 
 }

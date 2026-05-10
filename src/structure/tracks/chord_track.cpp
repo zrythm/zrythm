@@ -30,13 +30,13 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     std::nullopt, std::nullopt,
     [this] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
-      const dsp::graph::EngineProcessTimeInfo &time_nfo) {
+      const dsp::graph::ProcessBlockInfo &time_nfo) {
       out_events.transform_chord_and_append (
         in_events,
         [this] (midi_byte_t note_number) {
           return note_pitch_to_chord_descriptor (note_number);
         },
-        arrangement::MidiNote::DEFAULT_VELOCITY, time_nfo.local_offset_,
+        arrangement::MidiNote::DEFAULT_VELOCITY, time_nfo.buffer_offset_,
         time_nfo.nframes_);
     });
 }

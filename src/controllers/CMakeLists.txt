@@ -10,6 +10,7 @@ target_sources(zrythm_controllers_lib
     project_loader.cpp
     project_saver.cpp
     recording_coordinator.cpp
+    recording_materializer.cpp
     transport_controller.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -20,6 +21,7 @@ target_sources(zrythm_controllers_lib
       project_loader.h
       project_saver.h
       recording_coordinator.h
+      recording_materializer.h
       transport_controller.h
 )
 

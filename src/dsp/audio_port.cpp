@@ -35,17 +35,17 @@ init_from (
 
 void
 AudioPort::add_source_rt (
-  const AudioPort                  &src,
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  float                             multiplier)
+  const AudioPort             &src,
+  dsp::graph::ProcessBlockInfo time_nfo,
+  float                        multiplier)
 {
   const auto add_src =
     [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
       buf_->addFrom (
         static_cast<int> (dest_ch),
-        time_nfo.local_offset_.in<int> (units::samples), *src.buf_,
+        time_nfo.buffer_offset_.in<int> (units::samples), *src.buf_,
         static_cast<int> (src_ch),
-        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.buffer_offset_.in<int> (units::samples),
         time_nfo.nframes_.in<int> (units::samples), gain);
     };
 
@@ -82,9 +82,9 @@ AudioPort::add_source_rt (
 
 void
 AudioPort::copy_source_rt (
-  const AudioPort                  &src,
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  float                             multiplier)
+  const AudioPort             &src,
+  dsp::graph::ProcessBlockInfo time_nfo,
+  float                        multiplier)
 {
   const auto add_src =
     [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
@@ -92,19 +92,19 @@ AudioPort::copy_source_rt (
         {
           buf_->copyFrom (
             static_cast<int> (dest_ch),
-            time_nfo.local_offset_.in<int> (units::samples), *src.buf_,
+            time_nfo.buffer_offset_.in<int> (units::samples), *src.buf_,
             static_cast<int> (src_ch),
-            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.buffer_offset_.in<int> (units::samples),
             time_nfo.nframes_.in<int> (units::samples));
         }
       else
         {
           buf_->copyFrom (
             static_cast<int> (dest_ch),
-            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.buffer_offset_.in<int> (units::samples),
             src.buf_->getReadPointer (
               static_cast<int> (src_ch),
-              time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.buffer_offset_.in<int> (units::samples)),
             time_nfo.nframes_.in<int> (units::samples), gain);
         }
     };
@@ -185,9 +185,9 @@ AudioPort::release_resources ()
 
 void
 AudioPort::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   for (const auto &[_src_port, conn] : port_sources ())
     {
@@ -205,9 +205,9 @@ AudioPort::process_block (
           /* sum the signals */
           buf_->addFrom (
             static_cast<int> (dest_ch),
-            time_nfo.local_offset_.in<int> (units::samples), *src_port->buf_,
+            time_nfo.buffer_offset_.in<int> (units::samples), *src_port->buf_,
             static_cast<int> (source_ch),
-            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.buffer_offset_.in<int> (units::samples),
             time_nfo.nframes_.in<int> (units::samples), multiplier);
         }
       else
@@ -220,7 +220,7 @@ AudioPort::process_block (
     {
       constexpr float max_allowed_peak = 2.f;
       float           abs_peak = buf_->getMagnitude (
-        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.buffer_offset_.in<int> (units::samples),
         time_nfo.nframes_.in<int> (units::samples));
       if (abs_peak > max_allowed_peak)
         {
@@ -231,7 +231,7 @@ AudioPort::process_block (
               utils::float_ranges::clip (
                 { buf_->getWritePointer (
                     static_cast<int> (ch),
-                    time_nfo.local_offset_.in<int> (units::samples)),
+                    time_nfo.buffer_offset_.in<int> (units::samples)),
                   time_nfo.nframes_.in (units::samples) },
                 -max_allowed_peak, max_allowed_peak);
             }
@@ -245,7 +245,7 @@ AudioPort::process_block (
           audio_ring_[ch].force_write_multiple (
             buf_->getReadPointer (
               static_cast<int> (ch),
-              time_nfo.local_offset_.in<int> (units::samples)),
+              time_nfo.buffer_offset_.in<int> (units::samples)),
             time_nfo.nframes_.in (units::samples));
         }
     }

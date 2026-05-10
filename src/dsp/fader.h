@@ -81,7 +81,7 @@ public:
    */
   using PreProcessAudioCallback = std::function<void (
     std::pair<std::span<float>, std::span<float>> stereo_bufs,
-    const dsp::graph::EngineProcessTimeInfo      &time_nfo)>;
+    const dsp::graph::ProcessBlockInfo           &time_nfo)>;
 
   /**
    * Creates a new fader.
@@ -235,9 +235,9 @@ public:
   void custom_release_resources () override;
 
   [[gnu::hot]] void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   // ============================================================================
 

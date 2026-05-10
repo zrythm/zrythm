@@ -329,9 +329,9 @@ Fader::custom_release_resources ()
 
 void
 Fader::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   current_gain_.setTargetValue (calculate_target_gain_rt ());
 
@@ -374,7 +374,7 @@ Fader::custom_process_block (
       {
         for (
           const auto i : std::views::iota (
-            time_nfo.local_offset_.in<int> (units::samples),
+            time_nfo.buffer_offset_.in<int> (units::samples),
             out_buf->getNumSamples ()))
           {
             const auto gain = current_gain_.getCurrentValue ();
@@ -392,10 +392,10 @@ Fader::custom_process_block (
         auto [calc_l, calc_r] = dsp::calculate_balance_control (
           dsp::BalanceControlAlgorithm::Linear, pan);
         out_buf->applyGain (
-          0, time_nfo.local_offset_.in<int> (units::samples),
+          0, time_nfo.buffer_offset_.in<int> (units::samples),
           time_nfo.nframes_.in<int> (units::samples), calc_l);
         out_buf->applyGain (
-          1, time_nfo.local_offset_.in<int> (units::samples),
+          1, time_nfo.buffer_offset_.in<int> (units::samples),
           time_nfo.nframes_.in<int> (units::samples), calc_r);
       }
 
@@ -404,10 +404,10 @@ Fader::custom_process_block (
         {
           utils::float_ranges::make_mono (
             { out_buf->getWritePointer (
-                0, time_nfo.local_offset_.in<int> (units::samples)),
+                0, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             { out_buf->getWritePointer (
-                1, time_nfo.local_offset_.in<int> (units::samples)),
+                1, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             false);
         }
@@ -417,12 +417,12 @@ Fader::custom_process_block (
         {
           utils::float_ranges::mul_k2 (
             { out_buf->getWritePointer (
-                0, time_nfo.local_offset_.in<int> (units::samples)),
+                0, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             -1.f);
           utils::float_ranges::mul_k2 (
             { out_buf->getWritePointer (
-                1, time_nfo.local_offset_.in<int> (units::samples)),
+                1, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             -1.f);
         }
@@ -434,7 +434,7 @@ Fader::custom_process_block (
             {
               utils::float_ranges::clip (
                 { out_buf->getWritePointer (
-                    ch, time_nfo.local_offset_.in<int> (units::samples)),
+                    ch, time_nfo.buffer_offset_.in<int> (units::samples)),
                   time_nfo.nframes_.in (units::samples) },
                 -2.f, 2.f);
             }
@@ -448,7 +448,7 @@ Fader::custom_process_block (
             processing_caches_->midi_out_rt_->midi_events_.queued_events_;
           target_events.append (
             processing_caches_->midi_in_rt_->midi_events_.active_events_,
-            time_nfo.local_offset_, time_nfo.nframes_);
+            time_nfo.buffer_offset_, time_nfo.nframes_);
 
           // also apply volume changes
           for (auto &ev : target_events)

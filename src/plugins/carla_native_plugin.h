@@ -176,7 +176,7 @@ private:
   /**
    * Processes the plugin for this cycle.
    */
-  [[gnu::hot]] void process_impl (EngineProcessTimeInfo time_nfo) override;
+  [[gnu::hot]] void process_impl (ProcessBlockInfo time_nfo) override;
 
   void cleanup_impl () override;
 

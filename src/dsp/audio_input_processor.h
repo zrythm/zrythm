@@ -34,8 +34,8 @@ public:
     QObject *                 parent = nullptr);
 
   void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
     const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]] override;
 
   dsp::AudioPort *

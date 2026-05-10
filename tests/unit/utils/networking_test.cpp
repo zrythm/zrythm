@@ -1,22 +1,27 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <chrono>
 #include <fstream>
 #include <thread>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/io_utils.h"
 #include "utils/networking.h"
 #include "utils/utf8_string.h"
 
+#include <gtest/gtest.h>
 #include <httplib.h>
 
 using namespace std::chrono_literals;
 namespace zrythm::networking
 {
 
-class NetworkingTest : public ::testing::Test
+TEST (NetworkingTest, BasicUrlConstruction)
+{
+  EXPECT_NO_THROW ({ networking::URL url ("https://example.com"); });
+}
+
+class NetworkingServerTest : public ::testing::Test
 {
 protected:
   void SetUp () override
@@ -48,12 +53,7 @@ protected:
   }
 };
 
-TEST_F (NetworkingTest, BasicUrlConstruction)
-{
-  EXPECT_NO_THROW ({ networking::URL url ("https://example.com"); });
-}
-
-TEST_F (NetworkingTest, GetPageContents)
+TEST_F (NetworkingServerTest, GetPageContents)
 {
   svr_.Get ("/", [] (const httplib::Request &, httplib::Response &res) {
     res.set_content ("mock page contents", "text/plain");
@@ -64,7 +64,7 @@ TEST_F (NetworkingTest, GetPageContents)
   EXPECT_EQ (contents, "mock page contents");
 }
 
-TEST_F (NetworkingTest, GetPageContentsWithTimeout)
+TEST_F (NetworkingServerTest, GetPageContentsWithTimeout)
 {
   svr_.Get ("/timeout", [] (const httplib::Request &, httplib::Response &res) {
     res.set_content ("timeout test", "text/plain");
@@ -75,7 +75,7 @@ TEST_F (NetworkingTest, GetPageContentsWithTimeout)
   EXPECT_EQ (contents, "timeout test");
 }
 
-TEST_F (NetworkingTest, PostJsonNoAuth)
+TEST_F (NetworkingServerTest, PostJsonNoAuth)
 {
   svr_.Post ("/post", [] (const httplib::Request &req, httplib::Response &res) {
     res.set_content ("{\"received\": true}", "application/json");
@@ -99,7 +99,7 @@ TEST_F (NetworkingTest, PostJsonNoAuth)
   // QTemporaryDir auto-removes when destroyed, no manual cleanup needed
 }
 
-TEST_F (NetworkingTest, AsyncGetContents)
+TEST_F (NetworkingServerTest, AsyncGetContents)
 {
   svr_.Get ("/async", [] (const httplib::Request &, httplib::Response &res) {
     res.set_content ("async test", "text/plain");

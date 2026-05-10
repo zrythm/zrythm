@@ -93,6 +93,10 @@ AudioEngine::AudioEngine (
               }
           },
           [this] (const AudioDeviceInfo &info) {
+            // Keep old processor alive because the graph recalc needs to call
+            // release_resources on it
+            auto old_processor = std::move (audio_input_processor_);
+
             audio_input_processor_ = utils::make_qobject_unique<
               AudioInputProcessor> (
               [this] () -> std::span<const float * const> {
@@ -197,13 +201,8 @@ AudioEngine::
       auto current_transport_state = transport_.get_snapshot ();
       process_prepare (current_transport_state, units::samples (1), lock);
 
-      dsp::graph::EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = transport_.get_playhead_position_in_audio_thread (),
-        .g_start_frame_w_offset_ =
-          transport_.get_playhead_position_in_audio_thread (),
-        .local_offset_ = units::samples (0),
-        .nframes_ = units::samples (1),
-      };
+      auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+        transport_.get_playhead_position_in_audio_thread (), units::samples (1));
 
       graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false,
@@ -388,12 +387,10 @@ AudioEngine::process (
 
   /* --- handle preroll --- */
 
-  dsp::graph::EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frame_ =
+  dsp::graph::ProcessBlockInfo split_time_nfo = {
+    .transport_position_ =
       current_transport_state.get_playhead_position_in_audio_thread (),
-    .g_start_frame_w_offset_ =
-      current_transport_state.get_playhead_position_in_audio_thread (),
-    .local_offset_ = units::samples (0),
+    .buffer_offset_ = units::samples (0),
     .nframes_ = units::samples (0),
   };
 
@@ -433,9 +430,7 @@ AudioEngine::process (
       auto preroll_offset = total_frames_to_process - total_frames_remaining;
       assert (preroll_offset + num_preroll_frames <= total_frames_to_process);
 
-      split_time_nfo.g_start_frame_w_offset_ =
-        split_time_nfo.g_start_frame_ + preroll_offset;
-      split_time_nfo.local_offset_ = preroll_offset;
+      split_time_nfo.buffer_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
       graph_dispatcher_.start_cycle (
         current_transport_state, split_time_nfo, remaining_latency_preroll_,
@@ -467,9 +462,7 @@ AudioEngine::process (
                 .as<uint32_t> (units::samples));
 
             /* process for countin frames */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = countin_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
@@ -495,9 +488,7 @@ AudioEngine::process (
                 .as<uint32_t> (units::samples));
 
             /* process for preroll frames */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = preroll_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
@@ -510,9 +501,7 @@ AudioEngine::process (
               total_frames_remaining - preroll_frames;
             if (remaining_frames > units::samples (0))
               {
-                split_time_nfo.g_start_frame_w_offset_ =
-                  split_time_nfo.g_start_frame_ + cur_offset;
-                split_time_nfo.local_offset_ = cur_offset;
+                split_time_nfo.buffer_offset_ = cur_offset;
                 split_time_nfo.nframes_ = remaining_frames;
                 graph_dispatcher_.start_cycle (
                   current_transport_state, split_time_nfo,
@@ -523,9 +512,7 @@ AudioEngine::process (
           {
             /* run the cycle for the remaining frames - this will also play the
              * queued metronome events (if any) */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = total_frames_remaining;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,

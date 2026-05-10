@@ -45,9 +45,9 @@ AudioInputProcessor::AudioInputProcessor (
 
 void
 AudioInputProcessor::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   auto channels = provider_ ();
 
@@ -55,7 +55,7 @@ AudioInputProcessor::custom_process_block (
     return;
 
   const auto nframes = time_nfo.nframes_.in<size_t> (units::samples);
-  const auto offset = time_nfo.local_offset_.in<int> (units::samples);
+  const auto offset = time_nfo.buffer_offset_.in<int> (units::samples);
   const auto num_channels = static_cast<int> (channels.size ());
 
   for (const auto &mapping : port_mappings_)

@@ -207,9 +207,9 @@ public:
     units::sample_u32_t           max_block_length) final;
 
   [[gnu::hot]] void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept final;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept final;
 
   void custom_release_resources () final;
 
@@ -263,7 +263,7 @@ private:
     units::sample_u32_t  max_block_length) { };
 
   virtual void
-  process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept = 0;
+  process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept = 0;
 
   virtual void release_resources_impl () { }
 
@@ -276,9 +276,9 @@ private:
    * override this.
    */
   [[gnu::hot]] virtual void process_passthrough_impl (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept;
 
   virtual std::string save_state_impl () const = 0;
   virtual void        load_state_impl (const std::string &base64_state) = 0;

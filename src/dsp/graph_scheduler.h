@@ -134,10 +134,10 @@ public:
    * @param tempo_map Tempo map for this cycle
    */
   void run_cycle (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    units::sample_u64_t               remaining_preroll_frames,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map);
+    dsp::graph::ProcessBlockInfo time_nfo,
+    units::sample_u64_t          remaining_preroll_frames,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map);
 
   /**
    * @brief Returns whether the given thread is one of the graph threads.
@@ -200,7 +200,7 @@ private:
   /**
    * @brief Time info for the current process cycle.
    */
-  dsp::graph::EngineProcessTimeInfo time_nfo_;
+  dsp::graph::ProcessBlockInfo time_nfo_;
 
   /**
    * @brief Transport for the current process cycle.

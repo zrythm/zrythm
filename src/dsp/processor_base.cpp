@@ -127,9 +127,9 @@ ProcessorBase::release_resources ()
 
 void
 ProcessorBase::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   if (processing_caches_ == nullptr)
     {
@@ -141,10 +141,10 @@ ProcessorBase::process_block (
 
   // correct invalid time info
   if (
-    time_nfo.local_offset_ + time_nfo.nframes_
+    time_nfo.buffer_offset_ + time_nfo.nframes_
     > processing_caches_->max_block_length_) [[unlikely]]
     {
-      auto local_offset = time_nfo.local_offset_;
+      auto local_offset = time_nfo.buffer_offset_;
       auto nframes = time_nfo.nframes_;
       if (local_offset >= processing_caches_->max_block_length_)
         {
@@ -154,8 +154,7 @@ ProcessorBase::process_block (
       else
         nframes = processing_caches_->max_block_length_ - local_offset;
 
-      time_nfo.local_offset_ = local_offset;
-      time_nfo.g_start_frame_w_offset_ = time_nfo.g_start_frame_ + local_offset;
+      time_nfo.buffer_offset_ = local_offset;
       time_nfo.nframes_ = nframes;
     }
 
@@ -181,7 +180,7 @@ ProcessorBase::process_block (
       std::visit (
         [&] (auto &&in_port) {
           in_port->clear_buffer (
-            time_nfo.local_offset_.in (units::samples),
+            time_nfo.buffer_offset_.in (units::samples),
             time_nfo.nframes_.in (units::samples));
         },
         in_port_var);
@@ -190,9 +189,9 @@ ProcessorBase::process_block (
 
 void
 ProcessorBase::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
 
@@ -222,10 +221,10 @@ ProcessorBase::custom_process_block (
     std::views::zip (midi_in_ports, midi_out_ports))
     {
       out_port->clear_buffer (
-        time_nfo.local_offset_.in (units::samples),
+        time_nfo.buffer_offset_.in (units::samples),
         time_nfo.nframes_.in (units::samples));
       out_port->midi_events_.queued_events_.append (
-        in_port->midi_events_.active_events_, time_nfo.local_offset_,
+        in_port->midi_events_.active_events_, time_nfo.buffer_offset_,
         time_nfo.nframes_);
     }
   for (
@@ -238,7 +237,7 @@ ProcessorBase::custom_process_block (
     const auto &[in_port, out_port] :
     std::views::zip (cv_in_ports, cv_out_ports))
     {
-      const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+      const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
       const auto sub_nframes = time_nfo.nframes_.in (units::samples);
       utils::float_ranges::copy (
         std::span (out_port->buf_).subspan (sub_offset, sub_nframes),

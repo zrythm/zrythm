@@ -68,8 +68,8 @@ protected:
     }
 
     void process_block (
-      const dsp::graph::EngineProcessTimeInfo &time_nfo,
-      const ITransport                        &transport)
+      const dsp::graph::ProcessBlockInfo &time_nfo,
+      const ITransport                   &transport)
     {
       const auto &buffers = audio_port_.buffers ();
       if (buffers && buffers->getNumChannels () > 0)
@@ -78,9 +78,9 @@ protected:
           for (int ch = 0; ch < buffers->getNumChannels (); ++ch)
             {
               buffers->copyFrom (
-                ch, time_nfo.local_offset_.in<int> (units::samples),
+                ch, time_nfo.buffer_offset_.in<int> (units::samples),
                 prefilled_samples_, ch,
-                time_nfo.g_start_frame_w_offset_.in<int> (units::samples),
+                time_nfo.transport_position_.in<int> (units::samples),
                 time_nfo.nframes_.in<int> (units::samples));
             }
         }

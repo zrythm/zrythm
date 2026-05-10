@@ -131,12 +131,8 @@ TEST_F (AudioInputProcessorTest, ZeroChannelsCreatesNoPorts)
   const auto &outputs = processor_->get_output_ports ();
   EXPECT_EQ (outputs.size (), 0);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = max_block_length_
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 }
 
@@ -153,12 +149,8 @@ TEST_F (AudioInputProcessorTest, ProcessBlockCopiesDataToStereoPorts)
       input_data_[ch].begin (), input_data_[ch].end (),
       static_cast<float> (ch + 1) * 0.1f);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = max_block_length_
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &outputs = processor_->get_output_ports ();
@@ -182,12 +174,8 @@ TEST_F (AudioInputProcessorTest, ProcessBlockCopiesDataToMonoPorts)
       input_data_[ch].begin (), input_data_[ch].end (),
       static_cast<float> (ch + 1) * 0.1f);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = max_block_length_
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &outputs = processor_->get_output_ports ();
@@ -212,12 +200,8 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithEmptyProviderIsNoOp)
       .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = max_block_length_
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length_);
   // Should not crash or modify any buffers
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -239,10 +223,9 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithOffset)
       input_data_[ch].begin (), input_data_[ch].end (),
       static_cast<float> (ch + 1) * 0.1f);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (offset),
-    .local_offset_ = units::samples (offset),
+  dsp::graph::ProcessBlockInfo time_nfo{
+    .transport_position_ = units::samples (0),
+    .buffer_offset_ = units::samples (offset),
     .nframes_ = units::samples (block_size - offset)
   };
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -268,12 +251,8 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithFewerChannelsThanPorts)
       input_data_[ch].begin (), input_data_[ch].end (),
       static_cast<float> (ch + 1) * 0.1f);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = max_block_length_
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &outputs = processor_->get_output_ports ();

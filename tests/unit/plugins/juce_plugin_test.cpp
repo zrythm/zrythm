@@ -275,12 +275,8 @@ TEST_F (JucePluginTest, AsyncInstantiationFailure)
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Test processing without instantiation
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   // This should not crash even if plugin is not instantiated
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -319,12 +315,8 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process a block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 }
@@ -491,12 +483,8 @@ TEST_F (JucePluginTest, MidiProcessing)
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process with MIDI input
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -556,12 +544,8 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process with MIDI input
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -596,28 +580,19 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Test with zero-length buffer
-  dsp::graph::EngineProcessTimeInfo zero_time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0)
-  };
+  auto zero_time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0));
   plugin_->process_block (zero_time_nfo, *mock_transport_, *tempo_map_);
 
   // Test with very large buffer
-  dsp::graph::EngineProcessTimeInfo large_time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (8192)
-  };
+  auto large_time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (8192));
   plugin_->process_block (large_time_nfo, *mock_transport_, *tempo_map_);
 
   // Test with non-zero local offset
-  dsp::graph::EngineProcessTimeInfo offset_time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (256),
+  dsp::graph::ProcessBlockInfo offset_time_nfo{
+    .transport_position_ = units::samples (0),
+    .buffer_offset_ = units::samples (256),
     .nframes_ = units::samples (512)
   };
   plugin_->process_block (offset_time_nfo, *mock_transport_, *tempo_map_);
@@ -1050,12 +1025,8 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
     });
 
   // Process the block
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (test_buffer_size)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (test_buffer_size));
 
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -1154,10 +1125,9 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
       });
 
   // Process with split cycle parameters
-  dsp::graph::EngineProcessTimeInfo split_time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (split_offset),
-    .local_offset_ = units::samples (split_offset),
+  dsp::graph::ProcessBlockInfo split_time_nfo{
+    .transport_position_ = units::samples (0),
+    .buffer_offset_ = units::samples (split_offset),
     .nframes_ = units::samples (split_frames)
   };
 

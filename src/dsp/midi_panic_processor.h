@@ -40,9 +40,9 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override
   {
     const auto panic = panic_.exchange (false);
     if (!panic)
@@ -50,7 +50,7 @@ public:
 
     // queue panic event
     midi_out_->midi_events_.queued_events_.panic_without_lock (
-      time_nfo.local_offset_);
+      time_nfo.buffer_offset_);
   }
 
   void custom_prepare_for_processing (

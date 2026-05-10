@@ -81,6 +81,8 @@ public:
    */
   Q_SIGNAL void tracksMoved (const QList<int> &rows);
 
+  Q_SIGNAL void trackRecordingArmedChanged (Track * track, bool armed);
+
   // ========================================================================
   // Track Management
   // ========================================================================
@@ -186,11 +188,6 @@ public:
    * @brief Move a track from one position to another.
    */
   void move_track (const Track::Uuid &track_id, int pos);
-
-  /**
-   * @brief Clear all tracks from the collection.
-   */
-  void clear ();
 
   /**
    * @brief Get a span view of all tracks.
@@ -318,6 +315,9 @@ private:
    * Key: child, value: parent.
    */
   std::unordered_map<Track::Uuid, Track::Uuid> folder_parent_;
+
+  std::unordered_map<Track::Uuid, QMetaObject::Connection>
+    recording_param_connections_;
 };
 
 } // namespace zrythm::structure::tracks

@@ -88,7 +88,18 @@ public:
 
   void resume (const EngineState &state);
 
+  /**
+   * @brief Activate the engine if not already active.
+   *
+   * This method is idempotent.
+   */
   Q_INVOKABLE void activate ();
+
+  /**
+   * @brief Deactivates the engine if active.
+   *
+   * This method is idempotent.
+   */
   Q_INVOKABLE void deactivate ();
 
   /**
@@ -179,6 +190,11 @@ public:
   units::sample_rate_t get_sample_rate () const
   {
     return hw_interface_.get_sample_rate ();
+  }
+
+  utils::Utf8String get_hw_device_name () const
+  {
+    return hw_interface_.get_device_name ();
   }
 
   /**

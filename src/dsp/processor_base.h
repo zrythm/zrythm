@@ -151,9 +151,9 @@ public:
    * processor implementations to do.
    */
   void process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept final;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept final;
   void prepare_for_processing (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
@@ -169,9 +169,9 @@ protected:
    * By default, this does passthrough to same-type ports.
    */
   virtual void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]];
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept [[clang::nonblocking]];
 
   virtual void custom_prepare_for_processing (
     const graph::GraphNode * node,

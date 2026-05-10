@@ -230,6 +230,13 @@ protected:
       *app_settings, path_provider, *hw_interface, plugin_format_manager,
       window_factory, *metronome, *monitor_fader);
 
+    project->install_recording_callback (
+      [] (
+        const structure::tracks::Track::Uuid &, units::sample_t,
+        const dsp::ITransport &, const dsp::MidiEventVector *,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
+      });
+
     return project;
   }
 

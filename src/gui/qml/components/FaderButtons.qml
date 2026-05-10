@@ -61,6 +61,63 @@ ColumnLayout {
     }
   }
 
+  // Monitor mode button (cycles Off → On → Auto)
+  ToolButton {
+    id: monitorButton
+
+    property ProcessorParameter monitorParam: root.track.monitorParam
+
+    function updateColor(): void {
+      if (!monitorParam)
+        return;
+      const idx = monitorParam.range.enumIndex(monitorParam.baseValue);
+      switch (idx) {
+      case 0:
+        monitorButton.icon.color = palette.mid;
+        break;
+      case 1:
+        monitorButton.icon.color = palette.highlight;
+        break;
+      default:
+        monitorButton.icon.color = palette.buttonText;
+        break;
+      }
+    }
+
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    icon.source: ResourceManager.getIconUrl("zrythm-dark", "audition.svg")
+    visible: monitorParam !== null
+
+    Component.onCompleted: updateColor()
+    onClicked: {
+      if (!monitorParam)
+        return;
+      const idx = monitorParam.range.enumIndex(monitorParam.baseValue);
+      const next = (idx + 1) % monitorParam.range.enumCount();
+      monitorParam.baseValue = monitorParam.range.normalizedEnumValue(next);
+    }
+    onMonitorParamChanged: updateColor()
+
+    Connections {
+      function onBaseValueChanged() {
+        monitorButton.updateColor();
+      }
+
+      enabled: monitorButton.monitorParam !== null
+      target: monitorButton.monitorParam
+    }
+
+    ToolTip {
+      text: {
+        if (!root.track.monitorParam)
+          return "";
+        const idx = root.track.monitorParam.range.enumIndex(root.track.monitorParam.baseValue);
+        return qsTr("Monitor: %1").arg(root.track.monitorParam.range.enumLabel(idx));
+      }
+    }
+  }
+
   // Solo button
   ToolButton {
     id: soloButton
@@ -159,7 +216,6 @@ ColumnLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
-    icon.color: palette.buttonText
     icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
 
     onClicked:

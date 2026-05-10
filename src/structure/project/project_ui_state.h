@@ -75,6 +75,9 @@ public:
 
   static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
 
+Q_SIGNALS:
+  void audioInputSelectionChanged ();
+
 private:
   dsp::AudioInputSelection * get_or_create_audio_input_selection (
     const structure::tracks::Track::Uuid &uuid);

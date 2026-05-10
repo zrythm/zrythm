@@ -253,9 +253,8 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
   channel->fader ()->prepare_for_processing (
     nullptr, sample_rate_, max_block_length_);
   channel->fader ()->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = max_block_length_ },
     *mock_transport_, *tempo_map_);
   EXPECT_TRUE (callback_called);

@@ -84,8 +84,8 @@ protected:
   {
     return
       [seq] (
-        const dsp::graph::EngineProcessTimeInfo &time_nfo,
-        dsp::MidiEventVector                    &output_buffer) {
+        const dsp::graph::ProcessBlockInfo &time_nfo,
+        dsp::MidiEventVector               &output_buffer) {
         // Convert juce MIDI sequence to output buffer
         for (int i = 0; i < seq.getNumEvents (); ++i)
           {
@@ -193,12 +193,8 @@ TEST_F (TrackProcessorTest, DisabledTrackProcessing)
     [] { return false; }, TrackProcessor::Capabilities::AudioTrack,
     dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -230,12 +226,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMonitoringOff)
     [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
     dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -276,12 +268,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithInputGain)
     [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
     dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -329,12 +317,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithMono)
     [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
     dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -377,7 +361,7 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
   TrackProcessor::FillEventsCallback fill_events_cb =
     [&] (
       const dsp::ITransport                        &itransport,
-      const dsp::graph::EngineProcessTimeInfo      &time_nfo,
+      const dsp::graph::ProcessBlockInfo           &time_nfo,
       dsp::MidiEventVector *                        midi_events,
       std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
       for (size_t i = 0; i < 256; ++i)
@@ -391,12 +375,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
     [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
     dependencies_, fill_events_cb);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -406,8 +386,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithOutputGain)
     output_gain_param.range ().convertTo0To1 (0.5f));
 
   // Enable rolling so that events are taken into account
-  EXPECT_CALL (*transport_, get_play_state ())
-    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -442,12 +422,8 @@ TEST_P (MonitorModeAutoTest, DependsOnRecordingArmed)
       | TrackProcessor::Capabilities::Recording,
     dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -507,12 +483,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_,
     std::nullopt, transform_func);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -673,7 +645,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
   TrackProcessor::AppendMidiInputsToOutputsFunc append_func =
     [] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
-      const dsp::graph::EngineProcessTimeInfo &time_nfo) {
+      const dsp::graph::ProcessBlockInfo &time_nfo) {
       // Append all input events to output, but transpose them up by 5 semitones
       for (const auto &event : in_events)
         {
@@ -695,12 +667,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_,
     std::nullopt, std::nullopt, append_func);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -760,43 +728,45 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
 TEST_F (TrackProcessorTest, RecordingCallback)
 {
   bool                         recording_called = false;
-  uint64_t                     recorded_start_frame = 0;
+  units::sample_t              recorded_timeline_position;
   int64_t                      recorded_nframes = 0;
   const dsp::MidiEventVector * recorded_midi_events = nullptr;
   std::optional<TrackProcessor::ConstStereoPortPair> recorded_stereo_ports;
 
-  TrackProcessor::HandleRecordingCallback recording_cb =
-    [&recording_called, &recorded_start_frame, &recorded_nframes,
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recording_called, &recorded_timeline_position, &recorded_nframes,
      &recorded_midi_events, &recorded_stereo_ports] (
-      const dsp::graph::EngineProcessTimeInfo           &time_nfo,
-      const dsp::MidiEventVector *                       midi_events,
+      units::sample_t              timeline_position, const dsp::ITransport &,
+      const dsp::MidiEventVector * midi_events,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
       recording_called = true;
-      recorded_start_frame = time_nfo.g_start_frame_.in (units::samples);
-      recorded_nframes = time_nfo.nframes_.in (units::samples);
+      recorded_timeline_position = timeline_position;
+      if (stereo_ports.has_value ())
+        recorded_nframes = stereo_ports->first.size ();
       recorded_midi_events = midi_events;
       recorded_stereo_ports = stereo_ports;
     };
 
   TrackProcessor processor (
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Track"; },
-    [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
-    dependencies_);
-  processor.set_handle_recording_callback (recording_cb);
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (44100),
-    .g_start_frame_w_offset_ = units::samples (44100),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (44100), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+  processor.set_recording_armed (true);
+
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
   EXPECT_TRUE (recording_called);
-  EXPECT_EQ (recorded_start_frame, 44100);
+  EXPECT_EQ (recorded_timeline_position, units::samples (44100));
   EXPECT_EQ (recorded_nframes, 256);
 }
 
@@ -820,12 +790,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
     *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Piano Roll"; },
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -844,38 +810,37 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
 TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
 {
   bool                         recording_called = false;
-  uint64_t                     recorded_start_frame = 0;
+  units::sample_t              recorded_timeline_position;
   uint64_t                     recorded_nframes = 0;
   const dsp::MidiEventVector * recorded_midi_events = nullptr;
   std::optional<TrackProcessor::ConstStereoPortPair> recorded_stereo_ports;
 
-  TrackProcessor::HandleRecordingCallback recording_cb =
-    [&recording_called, &recorded_start_frame, &recorded_nframes,
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recording_called, &recorded_timeline_position, &recorded_nframes,
      &recorded_midi_events, &recorded_stereo_ports] (
-      const dsp::graph::EngineProcessTimeInfo           &time_nfo,
-      const dsp::MidiEventVector *                       midi_events,
+      units::sample_t              timeline_position, const dsp::ITransport &,
+      const dsp::MidiEventVector * midi_events,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
       recording_called = true;
-      recorded_start_frame = time_nfo.g_start_frame_.in (units::samples);
-      recorded_nframes = time_nfo.nframes_.in (units::samples);
+      recorded_timeline_position = timeline_position;
+      if (stereo_ports.has_value ())
+        recorded_nframes = stereo_ports->first.size ();
       recorded_midi_events = midi_events;
       recorded_stereo_ports = stereo_ports;
     };
 
   TrackProcessor processor (
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Audio Recording"; },
-    [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
-    dependencies_);
-  processor.set_handle_recording_callback (recording_cb);
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (88200),
-    .g_start_frame_w_offset_ = units::samples (88200),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (88200), units::samples (512));
 
   processor.prepare_for_processing (nullptr, sample_rate_, units::samples (512));
+  processor.set_recording_armed (true);
 
   // Fill input buffers with test pattern
   auto &stereo_in = processor.get_stereo_in_port ();
@@ -888,10 +853,13 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
         1, i, 0.6f + 0.3f * std::cos (static_cast<float> (i) * 0.1f));
     }
 
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
   EXPECT_TRUE (recording_called);
-  EXPECT_EQ (recorded_start_frame, 88200);
+  EXPECT_EQ (recorded_timeline_position, units::samples (88200));
   EXPECT_EQ (recorded_nframes, 512);
   EXPECT_EQ (recorded_midi_events, nullptr); // No MIDI events for audio track
   EXPECT_TRUE (recorded_stereo_ports.has_value ());
@@ -935,12 +903,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyInput)
     *tempo_map_, dsp::PortType::Midi, [] { return u8"Empty MIDI Track"; },
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -958,12 +922,8 @@ TEST_F (TrackProcessorTest, AudioBusTrackProcessingWithLargeBuffer)
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Large Buffer Track"; },
     [] { return true; }, TrackProcessor::Capabilities{}, dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (1024)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (1024));
 
   processor.prepare_for_processing (
     nullptr, sample_rate_, units::samples (1024));
@@ -992,12 +952,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
     *tempo_map_, dsp::PortType::Midi, [] { return u8"Multi MIDI Track"; },
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -1064,7 +1020,7 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
   TrackProcessor::AppendMidiInputsToOutputsFunc append_func =
     [] (
       dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
-      const dsp::graph::EngineProcessTimeInfo &time_nfo) {
+      const dsp::graph::ProcessBlockInfo &time_nfo) {
       // Append all transformed events to output
       for (const auto &event : in_events)
         {
@@ -1077,12 +1033,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
     [] { return true; }, TrackProcessor::Capabilities::PianoRoll, dependencies_,
     std::nullopt, transform_func, append_func);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -1162,18 +1114,14 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithCustomMidiEventProvider)
   processor.set_midi_providers_active (
     TrackProcessor::ActiveMidiEventProviders::Custom, true);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling so that events are taken into account
-  EXPECT_CALL (*transport_, get_play_state ())
-    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -1235,18 +1183,14 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithEmptyCustomMidiEventProvider)
   processor.set_midi_providers_active (
     TrackProcessor::ActiveMidiEventProviders::Custom, true);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling so that events would be processed if they existed
-  EXPECT_CALL (*transport_, get_play_state ())
-    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -1283,18 +1227,14 @@ TEST_F (
   processor.set_midi_providers_active (
     TrackProcessor::ActiveMidiEventProviders::Custom, true);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   processor.prepare_for_processing (nullptr, sample_rate_, units::samples (512));
 
   // Enable rolling
-  EXPECT_CALL (*transport_, get_play_state ())
-    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -1333,18 +1273,14 @@ TEST_F (
   processor.set_midi_providers_active (
     TrackProcessor::ActiveMidiEventProviders::Custom, true);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
 
   // Enable rolling
-  EXPECT_CALL (*transport_, get_play_state ())
-    .WillOnce (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
@@ -1395,6 +1331,480 @@ TEST_F (TrackProcessorTest, RecordingCapability)
   EXPECT_TRUE (with_rec.is_recording_armed ());
   with_rec.set_recording_armed (false);
   EXPECT_FALSE (with_rec.is_recording_armed ());
+}
+
+TEST_F (TrackProcessorTest, RecordingCallbackSimpleRange)
+{
+  struct RecordingCall
+  {
+    units::sample_t timeline_position;
+    size_t          nframes;
+  };
+  std::vector<RecordingCall> recording_calls;
+
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recording_calls] (
+      units::sample_t timeline_position, const dsp::ITransport &,
+      const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      recording_calls.push_back (
+        {
+          timeline_position,
+          stereo_ports.has_value ()
+            ? stereo_ports->first.size ()
+            : static_cast<size_t> (0),
+        });
+    };
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Simple"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (44100), units::samples (256));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+  processor.set_recording_armed (true);
+
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  ASSERT_EQ (recording_calls.size (), 1u);
+  EXPECT_EQ (recording_calls[0].timeline_position, units::samples (44100));
+  EXPECT_EQ (recording_calls[0].nframes, 256u);
+}
+
+TEST_F (TrackProcessorTest, RecordingCallbackSkippedDuringPreroll)
+{
+  bool recording_called = false;
+
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recording_called] (
+      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair>) {
+      recording_called = true;
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Preroll"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+  processor.set_recording_armed (true);
+
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (1024)));
+  EXPECT_CALL (*transport_, recording_preroll_frames_remaining ())
+    .Times (::testing::AtLeast (1));
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  EXPECT_FALSE (recording_called);
+}
+
+TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectAudioSpanToCallback)
+{
+  constexpr auto max_block_length = units::samples (512u);
+
+  // Punch range [128, 384) within [0, 512) block.
+  // handle_recording will split into sub-ranges.  Only the punch range
+  // sub-arc has recording_enabled == true in the transport, so the
+  // callback should only fire for that sub-range with nframes == 256.
+  const auto punch_start = units::samples (128);
+  const auto punch_end = units::samples (384);
+  const auto punch_nframes = units::samples (256u);
+
+  struct CapturedCall
+  {
+    units::sample_t    timeline_position;
+    std::vector<float> l_samples;
+    std::vector<float> r_samples;
+  };
+  std::vector<CapturedCall> calls;
+
+  TrackProcessor::RecordingCallbackRT capture_cb =
+    [&] (
+      units::sample_t timeline_position, const dsp::ITransport &transport,
+      const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      if (stereo_ports.has_value ())
+        {
+          auto &sp = *stereo_ports;
+          calls.push_back (
+            {
+              timeline_position,
+              { sp.first.begin (),  sp.first.end ()  },
+              { sp.second.begin (), sp.second.end () },
+          });
+        }
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, capture_cb);
+
+  processor.prepare_for_processing (nullptr, sample_rate_, max_block_length);
+  processor.set_recording_armed (true);
+
+  // Fill the stereo input buffer with known per-sample data so we can
+  // verify the callback receives the right slice.
+  auto &stereo_in = processor.get_stereo_in_port ();
+  auto &in_buf_unique = stereo_in.buffers ();
+  ASSERT_NE (in_buf_unique, nullptr);
+  auto * in_buf = in_buf_unique.get ();
+  ASSERT_EQ (in_buf->getNumChannels (), 2);
+  ASSERT_GE (
+    in_buf->getNumSamples (), max_block_length.in<int> (units::samples));
+
+  for (int ch = 0; ch < 2; ++ch)
+    {
+      for (int i = 0; i < in_buf->getNumSamples (); ++i)
+        {
+          // Left: 0.0, 1.0, 2.0, ...  Right: 0.0, -1.0, -2.0, ...
+          in_buf->setSample (
+            ch, i, ch == 0 ? static_cast<float> (i) : -static_cast<float> (i));
+        }
+    }
+
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, get_punch_range_positions ())
+    .WillByDefault (::testing::Return (std::make_pair (punch_start, punch_end)));
+  ON_CALL (*transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, metronome_countin_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length);
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  // The callback should only fire for the punch range [128, 384).
+  // Pre-punch [0, 128) and post-punch [384, 512) should NOT trigger
+  // recording.
+  ASSERT_EQ (calls.size (), 1u)
+    << "Expected exactly 1 recording callback (for the punch range), got "
+    << calls.size () << "\nCalls received:\n"
+    <<
+    [&calls] () {
+      std::string s;
+      for (size_t i = 0; i < calls.size (); ++i)
+        {
+          s += fmt::format (
+            "  #{}: start={}, span_size={}\n", i,
+            calls[i].timeline_position.in (units::samples),
+            calls[i].l_samples.size ());
+        }
+      return s;
+    }();
+
+  const auto &call = calls[0];
+
+  // --- Verify the callback was for the punch range ---
+  EXPECT_EQ (call.timeline_position, punch_start);
+
+  // --- Verify sizes ---
+  const auto expected_nframes = punch_nframes.in<size_t> (units::samples);
+  EXPECT_EQ (call.l_samples.size (), expected_nframes);
+  EXPECT_EQ (call.r_samples.size (), expected_nframes);
+
+  // --- Verify audio contents match the buffer slice [128, 384) ---
+  for (size_t i = 0; i < expected_nframes; ++i)
+    {
+      const auto buf_idx = static_cast<int64_t> (i) + 128;
+      EXPECT_FLOAT_EQ (call.l_samples[i], static_cast<float> (buf_idx))
+        << "L sample mismatch at span index " << i << " (buffer index "
+        << buf_idx << ")";
+      EXPECT_FLOAT_EQ (call.r_samples[i], -static_cast<float> (buf_idx))
+        << "R sample mismatch at span index " << i << " (buffer index "
+        << buf_idx << ")";
+    }
+
+  // --- Sanity: last sample should NOT be the buffer boundary ---
+  // If the bug were present (span = 512 instead of 256), we'd see
+  // sample index 383+1 = 384 worth of data, ending at value 511.
+  ASSERT_FALSE (call.l_samples.empty ());
+  EXPECT_FLOAT_EQ (call.l_samples.back (), 383.0f)
+    << "Last sample should be at punch_end - 1";
+  EXPECT_FLOAT_EQ (call.r_samples.back (), -383.0f);
+}
+
+TEST_F (TrackProcessorTest, RecordingCallbackNotFiredWhenTransportPaused)
+{
+  constexpr auto max_block_length = units::samples (256u);
+
+  int                                 callback_count = 0;
+  TrackProcessor::RecordingCallbackRT capture_cb =
+    [&] (
+      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair>) { ++callback_count; };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, capture_cb);
+
+  processor.prepare_for_processing (nullptr, sample_rate_, max_block_length);
+  processor.set_recording_armed (true);
+
+  ON_CALL (*transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, metronome_countin_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (false));
+
+  EXPECT_CALL (*transport_, get_play_state ()).Times (::testing::AtLeast (1));
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length);
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  EXPECT_EQ (callback_count, 0)
+    << "Recording callback should not fire when transport is not rolling";
+}
+
+TEST_F (TrackProcessorTest, RecordingAcrossLoopBoundaryViaGraphNode)
+{
+  constexpr auto max_block_length = units::samples (512u);
+
+  struct CapturedCall
+  {
+    units::sample_t    timeline_position;
+    std::vector<float> l_samples;
+    std::vector<float> r_samples;
+  };
+  std::vector<CapturedCall> calls;
+
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&calls] (
+      units::sample_t timeline_position, const dsp::ITransport &,
+      const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      if (stereo_ports.has_value ())
+        {
+          auto &sp = *stereo_ports;
+          calls.push_back (
+            {
+              .timeline_position = timeline_position,
+              .l_samples = { sp.first.begin (),  sp.first.end ()  },
+              .r_samples = { sp.second.begin (), sp.second.end () }
+          });
+        }
+    };
+
+  auto processor = std::make_unique<TrackProcessor> (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Loop"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
+
+  processor->prepare_for_processing (nullptr, sample_rate_, max_block_length);
+  processor->set_recording_armed (true);
+
+  // Fill input buffer with known per-sample data
+  auto &stereo_in = processor->get_stereo_in_port ();
+  auto &in_buf_unique = stereo_in.buffers ();
+  ASSERT_NE (in_buf_unique, nullptr);
+  auto * in_buf = in_buf_unique.get ();
+  ASSERT_EQ (in_buf->getNumChannels (), 2);
+  ASSERT_GE (
+    in_buf->getNumSamples (), max_block_length.in<int> (units::samples));
+  for (int ch = 0; ch < 2; ++ch)
+    {
+      for (int i = 0; i < in_buf->getNumSamples (); ++i)
+        {
+          in_buf->setSample (
+            ch, i, ch == 0 ? static_cast<float> (i) : -static_cast<float> (i));
+        }
+    }
+
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, loop_enabled ()).WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, get_loop_range_positions ())
+    .WillByDefault (
+      ::testing::Return (
+        std::make_pair (units::samples (0), units::samples (384))));
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, get_playhead_position_in_audio_thread ())
+    .WillByDefault (::testing::Return (units::samples (256)));
+
+  // Wrap in GraphNode so process_chunks_after_splitting_at_loop_points
+  // handles the loop split.
+  dsp::graph::GraphNode node (1, *processor);
+
+  // 512-frame cycle starting at position 256.
+  // Loop end is at 384, so the graph splits into:
+  //   Chunk 1: [256, 384) = 128 frames (pre-loop)
+  //   Chunk 2: [0, 128)   = 128 frames (post-loop, wraps to loop start)
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (256), max_block_length);
+  node.process (time_nfo, units::samples (0), *transport_, *tempo_map_);
+
+  ASSERT_EQ (calls.size (), 2u);
+
+  // Chunk 1: [256, 384) — buffer offset 0, 128 frames
+  EXPECT_EQ (calls[0].timeline_position, units::samples (256));
+  ASSERT_EQ (calls[0].l_samples.size (), 128u);
+  for (size_t i = 0; i < 128u; ++i)
+    {
+      EXPECT_FLOAT_EQ (calls[0].l_samples[i], static_cast<float> (i))
+        << "L sample mismatch at chunk 1 index " << i;
+      EXPECT_FLOAT_EQ (calls[0].r_samples[i], -static_cast<float> (i))
+        << "R sample mismatch at chunk 1 index " << i;
+    }
+
+  // Chunk 2: [0, 384) — buffer offset 128, 384 frames
+  EXPECT_EQ (calls[1].timeline_position, units::samples (0));
+  ASSERT_EQ (calls[1].l_samples.size (), 384u);
+  for (size_t i = 0; i < 384u; ++i)
+    {
+      const auto buf_idx = static_cast<int64_t> (i) + 128;
+      EXPECT_FLOAT_EQ (calls[1].l_samples[i], static_cast<float> (buf_idx))
+        << "L sample mismatch at chunk 2 index " << i;
+      EXPECT_FLOAT_EQ (calls[1].r_samples[i], -static_cast<float> (buf_idx))
+        << "R sample mismatch at chunk 2 index " << i;
+    }
+}
+
+TEST_F (TrackProcessorTest, MonitoringPreservesExistingClipMaterialDuringPlayback)
+{
+  constexpr float clip_value = 0.5f;
+  constexpr float input_value = 0.3f;
+  constexpr auto  num_frames = 256u;
+
+  TrackProcessor::FillEventsCallback fill_clip =
+    [&] (
+      const dsp::ITransport &, const dsp::graph::ProcessBlockInfo &time_nfo,
+      dsp::MidiEventVector *,
+      std::optional<TrackProcessor::StereoPortPair> stereo_ports) {
+      if (!stereo_ports.has_value ())
+        return;
+      for (
+        const auto i :
+        std::views::iota (0u, time_nfo.nframes_.in (units::samples)))
+        {
+          stereo_ports
+            ->first[time_nfo.buffer_offset_.in<size_t> (units::samples) + i] +=
+            clip_value;
+          stereo_ports
+            ->second[time_nfo.buffer_offset_.in<size_t> (units::samples) + i] +=
+            clip_value;
+        }
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Monitor+Clip Track"; },
+    [] { return true; }, TrackProcessor::Capabilities::AudioTrack,
+    dependencies_, fill_clip);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (num_frames));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  processor.get_monitor_audio_param ().setBaseValue (
+    processor.get_monitor_audio_param ().range ().normalized_from_enum (
+      TrackProcessor::MonitorMode::On));
+
+  processor.get_mono_param ().setBaseValue (0.f);
+
+  auto &stereo_in = processor.get_stereo_in_port ();
+  for (const auto i : std::views::iota (0u, num_frames))
+    {
+      stereo_in.buffers ()->setSample (0, i, input_value);
+      stereo_in.buffers ()->setSample (1, i, input_value);
+    }
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  auto &stereo_out = processor.get_stereo_out_port ();
+  for (const auto i : std::views::iota (0u, num_frames))
+    {
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (0, i), clip_value + input_value,
+        AUDIO_BUFFER_DIFF_TOLERANCE)
+        << "L channel: expected clip (" << clip_value << ") + input ("
+        << input_value << ") = " << (clip_value + input_value) << " but got "
+        << stereo_out.buffers ()->getSample (0, i) << " at sample " << i;
+      EXPECT_NEAR (
+        stereo_out.buffers ()->getSample (1, i), clip_value + input_value,
+        AUDIO_BUFFER_DIFF_TOLERANCE)
+        << "R channel: expected clip (" << clip_value << ") + input ("
+        << input_value << ") = " << (clip_value + input_value) << " but got "
+        << stereo_out.buffers ()->getSample (1, i) << " at sample " << i;
+    }
+}
+
+TEST_F (TrackProcessorTest, DisarmedTrackSkipsRecording)
+{
+  bool recording_called = false;
+
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recording_called] (
+      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      std::optional<TrackProcessor::ConstStereoPortPair>) {
+      recording_called = true;
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Disarmed Track"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::AudioTrack
+      | TrackProcessor::Capabilities::Recording,
+    dependencies_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (44100), units::samples (256));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  EXPECT_CALL (*transport_, get_play_state ()).Times (::testing::AtLeast (1));
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  EXPECT_FALSE (recording_called)
+    << "Recording callback should not fire for disarmed track";
 }
 
 } // namespace zrythm::structure::tracks

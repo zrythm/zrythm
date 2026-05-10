@@ -86,13 +86,29 @@ public:
   void process_pending ();
 
   /**
+   * @brief Finalizes the current recording take and resets sessions for reuse.
+   *
+   * Drains all pending audio data from active sessions, emits audioDataReady
+   * for each track with data, then emits recordingSessionEnded to finalize the
+   * undo macro. Sessions are reset to Armed state rather than destroyed, so
+   * they accept new writes when recording resumes (e.g., after transport
+   * restart).
+   *
+   * Intended to be called when transport stops. Sessions are only destroyed
+   * via disarm_track().
+   *
+   * Must be called from the non-RT thread.
+   */
+  Q_SLOT void finalizeAllSessions ();
+
+  /**
    * @brief Gets the session for a track (for RT callback access).
    *
    * Safe to call from multiple RT threads concurrently.
    * Returns nullptr if no session exists.
    */
   [[nodiscard]] AudioRecordingSession *
-  session_for_track (structure::tracks::TrackUuid track_id) noexcept
+  session_for_track (structure::tracks::TrackUuid track_id) const noexcept
     [[clang::nonblocking]];
 
 Q_SIGNALS:
@@ -108,12 +124,13 @@ Q_SIGNALS:
     std::vector<RecordingAudioPacket> packets);
 
   /**
-   * @brief Emitted when all recording sessions have ended.
+   * @brief Emitted when a recording take has been finalized.
    *
-   * Fires from process_pending() after pending-deletion sessions are fully
-   * drained and no active sessions remain. Consumers should finalize any
+   * Fires from finalizeAllSessions() after all pending audio data is drained
+   * and sessions are reset to Armed state. Consumers should finalize any
    * open recording context (e.g. closing an undo macro) when this signal
-   * is received — no more audio data will arrive.
+   * is received — no more audio data will arrive for this take.
+   * Sessions remain alive and can accept new writes when recording resumes.
    */
   void recordingSessionEnded ();
 

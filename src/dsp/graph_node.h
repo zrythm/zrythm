@@ -47,22 +47,35 @@ class GraphNode;
  * Common struct to pass around during processing to avoid repeating the data in
  * function arguments.
  */
-struct EngineProcessTimeInfo
+struct ProcessBlockInfo
 {
 public:
   void print () const;
 
+  static constexpr ProcessBlockInfo from_position_and_nframes (
+    units::sample_u64_t transport_position,
+    units::sample_u32_t nframes)
+  {
+    return {
+      .transport_position_ = transport_position,
+      .buffer_offset_ = units::samples (0),
+      .nframes_ = nframes
+    };
+  }
+
+  [[gnu::hot]] constexpr units::sample_u64_t end_position () const noexcept
+  {
+    return transport_position_ + nframes_;
+  }
+
 public:
-  /** Global position at the start of the processing cycle (no offset added). */
-  units::sample_u64_t g_start_frame_;
+  /** Transport (timeline) position at the start of this chunk (already taking
+   * into account the offset). */
+  units::sample_u64_t transport_position_;
 
-  /** Global position with dsp::graph::EngineProcessTimeInfo.local_offset added,
-   * for convenience. */
-  units::sample_u64_t g_start_frame_w_offset_;
-
-  /** Offset in the current processing cycle, between 0 and the number of
-   * frames in AudioEngine.block_length. */
-  units::sample_u32_t local_offset_;
+  /** Offset in the current processing cycle's audio buffer, between 0 and the
+   * number of frames in AudioEngine.block_length. */
+  units::sample_u32_t buffer_offset_;
 
   /**
    * Number of frames to process in this call, starting from the offset.
@@ -117,9 +130,9 @@ public:
   }
 
   [[gnu::hot]] virtual void process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap &tempo_map) noexcept [[clang::nonblocking]] { };
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept [[clang::nonblocking]] { };
 
   /**
    * @brief Called to release resources allocated by @ref
@@ -185,10 +198,10 @@ public:
    * special nodes that are processed before/after the actual processing).
    */
   [[gnu::hot]] void process (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    units::sample_u64_t               remaining_preroll_frames,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) const;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    units::sample_u64_t          remaining_preroll_frames,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) const;
 
   units::sample_u32_t get_single_playback_latency () const
   {
@@ -246,10 +259,10 @@ private:
    * @param remaining_preroll_frames Frames remaining in preroll period
    */
   [[gnu::hot]] void compensate_latency (
-    dsp::graph::EngineProcessTimeInfo &time_nfo,
-    units::sample_u32_t                remaining_preroll_frames,
-    const dsp::ITransport             &transport,
-    const dsp::TempoMap               &tempo_map) const;
+    dsp::graph::ProcessBlockInfo &time_nfo,
+    units::sample_u32_t           remaining_preroll_frames,
+    const dsp::ITransport        &transport,
+    const dsp::TempoMap          &tempo_map) const;
 
   /**
    * Processes audio in chunks when loop points are encountered.
@@ -261,9 +274,9 @@ private:
    * @param time_nfo Time info containing frame counts and offsets
    */
   [[gnu::hot]] void process_chunks_after_splitting_at_loop_points (
-    dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport             &transport,
-    const dsp::TempoMap               &tempo_map) const;
+    dsp::graph::ProcessBlockInfo &time_nfo,
+    const dsp::ITransport        &transport,
+    const dsp::TempoMap          &tempo_map) const;
 
 public:
   /** Incoming node count. */

@@ -32,6 +32,7 @@ public:
 
   [[nodiscard]] units::sample_u32_t  get_block_length () const override;
   [[nodiscard]] units::sample_rate_t get_sample_rate () const override;
+  [[nodiscard]] utils::Utf8String    get_device_name () const override;
 
   void add_audio_callback (IAudioCallback * callback) override;
   void remove_audio_callback (IAudioCallback * callback) override;

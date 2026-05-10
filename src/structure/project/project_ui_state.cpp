@@ -81,6 +81,15 @@ ProjectUiState::get_or_create_audio_input_selection (
 
   auto   sel = utils::make_qobject_unique<dsp::AudioInputSelection> (this);
   auto * raw = sel.get ();
+
+  auto emit_changed = [this] { Q_EMIT audioInputSelectionChanged (); };
+  QObject::connect (
+    raw, &dsp::AudioInputSelection::deviceNameChanged, this, emit_changed);
+  QObject::connect (
+    raw, &dsp::AudioInputSelection::firstChannelChanged, this, emit_changed);
+  QObject::connect (
+    raw, &dsp::AudioInputSelection::stereoChanged, this, emit_changed);
+
   audio_input_selections_.emplace (uuid, std::move (sel));
   return raw;
 }
@@ -151,9 +160,8 @@ from_json (const nlohmann::json &j, ProjectUiState &p)
         {
           structure::tracks::Track::Uuid uuid;
           entry[0].get_to (uuid);
-          auto sel = utils::make_qobject_unique<dsp::AudioInputSelection> (&p);
+          auto * sel = p.get_or_create_audio_input_selection (uuid);
           from_json (entry[1], *sel);
-          p.audio_input_selections_.emplace (uuid, std::move (sel));
         }
     }
 }

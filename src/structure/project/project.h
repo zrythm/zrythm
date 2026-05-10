@@ -209,6 +209,15 @@ public:
     return audio_input_selection_provider_;
   }
 
+  /**
+   * @brief Installs the recording callback used by all tracks.
+   *
+   * Must be called exactly once by ProjectSession after construction,
+   * before any tracks are created.
+   */
+  void install_recording_callback (
+    structure::tracks::TrackRecordingCallback callback);
+
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kFileAudioSourceRegistryKey =
@@ -311,6 +320,8 @@ private:
   dsp::Metronome &metronome_;
 
   AudioInputSelectionProvider audio_input_selection_provider_;
+
+  structure::tracks::TrackRecordingCallback track_recording_callback_;
 
   /**
    * @brief Graph dispatcher.

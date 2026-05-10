@@ -96,7 +96,7 @@ ControlRoom::ControlRoom (
   monitor_fader_->set_preprocess_audio_callback (
     [this] (
       std::pair<std::span<float>, std::span<float>> stereo_bufs,
-      const dsp::graph::EngineProcessTimeInfo      &time_nfo) {
+      const dsp::graph::ProcessBlockInfo           &time_nfo) {
       const float dim_amp = dim_volume_->baseValue ();
 
       /* if have listened tracks */
@@ -114,7 +114,7 @@ ControlRoom::ControlRoom (
       if (have_listened)
         {
           /* dim signal */
-          const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+          const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
           const auto sub_nframes = time_nfo.nframes_.in (units::samples);
           utils::float_ranges::mul_k2 (
             stereo_bufs.first.subspan (sub_offset, sub_nframes), dim_amp);
@@ -140,14 +140,14 @@ ControlRoom::ControlRoom (
                             stereo_bufs.first.subspan (sub_offset, sub_nframes),
                             { f->get_stereo_out_port ().buffers ()->getReadPointer (
                                 0,
-                                time_nfo.local_offset_.in<int> (units::samples)),
+                                time_nfo.buffer_offset_.in<int> (units::samples)),
                               sub_nframes },
                             listen_amp);
                           utils::float_ranges::product (
                             stereo_bufs.second.subspan (sub_offset, sub_nframes),
                             { f->get_stereo_out_port ().buffers ()->getReadPointer (
                                 1,
-                                time_nfo.local_offset_.in<int> (units::samples)),
+                                time_nfo.buffer_offset_.in<int> (units::samples)),
                               sub_nframes },
                             listen_amp);
                         }
@@ -160,7 +160,7 @@ ControlRoom::ControlRoom (
       /* apply dim if enabled */
       if (dim_output_)
         {
-          const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+          const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
           const auto sub_nframes = time_nfo.nframes_.in (units::samples);
           utils::float_ranges::mul_k2 (
             stereo_bufs.first.subspan (sub_offset, sub_nframes), dim_amp);

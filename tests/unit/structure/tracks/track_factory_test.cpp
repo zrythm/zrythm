@@ -27,11 +27,12 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; },
+      [] { return false; }, {},
     };
 
     // Create factory
-    factory = std::make_unique<TrackFactory> (std::move (deps));
+    factory = std::make_unique<TrackFactory> (
+      [deps] () -> FinalTrackDependencies { return deps; });
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -378,6 +379,45 @@ TEST_F (TrackFactoryTest, BuilderTrackNamesAreNonEmpty)
   test_builder_track_has_non_empty_name (
     factory->get_builder<MidiGroupTrack> ());
   test_builder_track_has_non_empty_name (factory->get_builder<FolderTrack> ());
+}
+
+// Test that AudioTrack has a recording parameter (TrackFeatures::Recording)
+TEST_F (TrackFactoryTest, AudioTrackHasRecordingCapability)
+{
+  auto   audio_track_ref = factory->create_empty_track<AudioTrack> ();
+  auto * audio_track = audio_track_ref.get_object_as<AudioTrack> ();
+  ASSERT_NE (audio_track, nullptr);
+  EXPECT_NE (audio_track->recordingParam (), nullptr);
+}
+
+// Test that MidiTrack has a recording parameter (TrackFeatures::Recording)
+TEST_F (TrackFactoryTest, MidiTrackHasRecordingCapability)
+{
+  auto   midi_track_ref = factory->create_empty_track<MidiTrack> ();
+  auto * midi_track = midi_track_ref.get_object_as<MidiTrack> ();
+  ASSERT_NE (midi_track, nullptr);
+  EXPECT_NE (midi_track->recordingParam (), nullptr);
+}
+
+// Test that FolderTrack does not have a recording parameter
+TEST_F (TrackFactoryTest, FolderTrackHasNoRecordingCapability)
+{
+  auto   folder_track_ref = factory->create_empty_track<FolderTrack> ();
+  auto * folder_track = folder_track_ref.get_object_as<FolderTrack> ();
+  ASSERT_NE (folder_track, nullptr);
+  EXPECT_EQ (folder_track->recordingParam (), nullptr);
+}
+
+// Test that the recording parameter is not automatable
+TEST_F (TrackFactoryTest, RecordingParamIsNotAutomatable)
+{
+  auto   audio_track_ref = factory->create_empty_track<AudioTrack> ();
+  auto * audio_track = audio_track_ref.get_object_as<AudioTrack> ();
+  ASSERT_NE (audio_track, nullptr);
+
+  auto * param = audio_track->recordingParam ();
+  ASSERT_NE (param, nullptr);
+  EXPECT_FALSE (param->automatable ());
 }
 
 } // namespace zrythm::structure::tracks

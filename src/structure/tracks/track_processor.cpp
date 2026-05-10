@@ -40,6 +40,7 @@ TrackProcessor::TrackProcessor (
   std::optional<FillEventsCallback>      fill_events_cb,
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func,
   std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func,
+  RecordingCallbackRT recording_cb,
   QObject * parent)
     : QObject(parent), dsp::ProcessorBase (
         dependencies,
@@ -51,17 +52,18 @@ TrackProcessor::TrackProcessor (
       enabled_provider_ (std::move(enabled_provider)),
       track_name_provider_ (track_name_provider),
       fill_events_cb_(std::move(fill_events_cb)),
+      handle_recording_cb_(std::move(recording_cb)),
       append_midi_inputs_to_outputs_func_ (
         append_midi_inputs_to_outputs_func.has_value() ?
         append_midi_inputs_to_outputs_func.value() :
         [] (
           dsp::MidiEventVector        &out_events,
           const dsp::MidiEventVector  &in_events,
-          const dsp::graph::EngineProcessTimeInfo &time_nfo) {
+          const dsp::graph::ProcessBlockInfo &time_nfo) {
           out_events.append (
-            in_events, time_nfo.local_offset_, time_nfo.nframes_);
+            in_events, time_nfo.buffer_offset_, time_nfo.nframes_);
         }),
-      transform_midi_inputs_func_(std::move(transform_midi_inputs_func ))
+      transform_midi_inputs_func_ (std::move (transform_midi_inputs_func))
 {
   clip_playback_data_provider_ =
     std::make_unique<ClipPlaybackDataProvider> (tempo_map);
@@ -235,6 +237,10 @@ TrackProcessor::TrackProcessor (
             utils::Utf8String::from_utf8_encoded_string (recording_param_id)),
           dsp::ParameterRange::make_toggle (false), u8"Track record"));
       recording_id_ = get_parameters ().back ().id ();
+      get_parameters ()
+        .back ()
+        .get_object_as<dsp::ProcessorParameter> ()
+        ->set_automatable (false);
     }
 
   // generate MIDI CC caches and set up mappings
@@ -341,129 +347,60 @@ TrackProcessor::set_custom_midi_event_provider (
 
 void
 TrackProcessor::handle_recording (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport                   &transport)
+  const dsp::graph::ProcessBlockInfo   &time_nfo,
+  const dsp::ITransport                &transport,
+  const TrackProcessorProcessingCaches &processing_caches,
+  const RecordingCallbackRT            &recording_cb) noexcept
 {
-  assert (handle_recording_cb_.has_value ());
+  const auto start = time_nfo.transport_position_;
+  const auto end = time_nfo.end_position ();
 
-  auto       start = time_nfo.g_start_frame_w_offset_;
-  auto       end = time_nfo.g_start_frame_ + time_nfo.nframes_;
-  const auto loop = transport.get_loop_range_positions ();
+  // The graph (process_chunks_after_splitting_at_loop_points) already
+  // splits at loop boundaries, so each process_block call covers a
+  // single non-loop-crossing region. We only handle punch splitting
+  // here.
 
   // split point + nframes pairs
-  boost::container::static_vector<std::pair<units::sample_t, units::sample_t>, 6>
+  boost::container::static_vector<std::pair<units::sample_t, units::sample_t>, 3>
     ranges;
   ranges.emplace_back (start, time_nfo.nframes_);
 
-  const bool loop_hit = transport.loop_enabled () && loop.second == end;
+  const auto punch =
+    transport.punch_enabled ()
+      ? std::optional<std::pair<units::sample_t, units::sample_t>> (
+          transport.get_punch_range_positions ())
+      : std::nullopt;
 
-  // Handle loop case
-  if (loop_hit)
-    {
-      auto pre_loop = loop.second - start;
-      ranges.clear ();
-      ranges.emplace_back (start, pre_loop);
-      ranges.emplace_back (loop.second, units::samples (0)); // loop end pause
-      ranges.emplace_back (loop.first, time_nfo.nframes_ - pre_loop);
-    }
   // Handle punch points
-  if (transport.punch_enabled ())
+  if (punch.has_value ())
     {
-      auto punch = transport.get_punch_range_positions ();
-
-      bool punch_in_hit = false;
-      bool punch_out_hit = false;
-
-      if (loop_hit)
+      const bool punch_in_hit = punch->first >= start && punch->first < end;
+      if (punch_in_hit)
         {
-          // before loop
-          punch_in_hit = punch.first >= start && punch.first < loop.second;
+          // punch in
+          ranges.emplace_back (punch->first, end - punch->first);
+
+          // adjust frames of previous split
+          ranges[0].second -= ranges[1].second;
+        }
+      const bool punch_out_hit = punch->second >= start && punch->second < end;
+      if (punch_out_hit)
+        {
           if (punch_in_hit)
             {
-              constexpr size_t index_to_insert = 1;
-              // add punch in
-              ranges.insert (
-                ranges.begin () + index_to_insert,
-                std::make_pair (punch.first, loop.second - punch.first));
+              // add punch out
+              ranges.emplace_back (punch->second, end - punch->second);
 
               // adjust frames of previous split
-              ranges[index_to_insert - 1].second -=
-                ranges[index_to_insert].second;
+              ranges[1].second -= ranges[2].second;
             }
-          punch_out_hit = punch.second >= start && punch.second < loop.second;
-          if (punch_out_hit)
+          else
             {
-              if (punch_in_hit)
-                {
-                  ranges.insert (
-                    ranges.begin () + 2,
-                    std::make_pair (punch.second, loop.second - punch.second));
-
-                  // add pause
-                  ranges.insert (
-                    ranges.begin () + 3,
-                    std::make_pair (
-                      ranges[2].first + ranges[2].second, units::samples (0)));
-
-                  // adjust frames of previous split
-                  ranges[1].second -= ranges[2].second;
-                }
-              else
-                {
-                  // add punch out
-                  ranges.insert (
-                    ranges.begin () + 1,
-                    std::make_pair (punch.second, loop.second - punch.second));
-
-                  // add pause
-                  ranges.insert (
-                    ranges.begin () + 2,
-                    std::make_pair (
-                      ranges[1].first + ranges[1].second, units::samples (0)));
-
-                  // adjust frames of previous split
-                  ranges[0].second -= ranges[1].second;
-                }
-            }
-        }
-      else // loop not hit
-        {
-          punch_in_hit = punch.first >= start && punch.first < end;
-          if (punch_in_hit)
-            {
-              // punch in
-              ranges.emplace_back (punch.first, end - punch.first);
+              // add punch out
+              ranges.emplace_back (punch->second, end - punch->second);
 
               // adjust frames of previous split
               ranges[0].second -= ranges[1].second;
-            }
-          punch_out_hit = punch.second >= start && punch.second < end;
-          if (punch_out_hit)
-            {
-              if (punch_in_hit)
-                {
-                  // add punch out
-                  ranges.emplace_back (punch.second, end - punch.second);
-
-                  // add pause
-                  ranges.emplace_back (
-                    ranges[2].first + ranges[2].second, units::samples (0));
-
-                  // adjust frames of previous split
-                  ranges[1].second -= ranges[2].second;
-                }
-              else
-                {
-                  // add punch out
-                  ranges.emplace_back (punch.second, end - punch.second);
-
-                  // add pause
-                  ranges.emplace_back (
-                    ranges[1].first + ranges[1].second, units::samples (0));
-
-                  // adjust frames of previous split
-                  ranges[0].second -= ranges[1].second;
-                }
             }
         }
     }
@@ -475,36 +412,53 @@ TrackProcessor::handle_recording (
       if (index != 0 && range.first == ranges[index - 1].first)
         continue;
 
-      dsp::graph::EngineProcessTimeInfo cur_time_nfo = {
-        .g_start_frame_ = range.first,
-        .g_start_frame_w_offset_ = range.first,
-        .local_offset_ = units::samples (0),
-        .nframes_ = range.second
-      };
-      if (is_midi ())
+      // skip pause ranges (nothing to record)
+      if (range.second == units::samples (0))
+        continue;
+
+      // skip ranges outside the punch window when punch is enabled
+      if (punch.has_value ())
         {
-          std::invoke (
-            *handle_recording_cb_, cur_time_nfo,
-            &processing_caches_->midi_in_rt_->midi_events_.active_events_,
+          const auto range_end = range.first + range.second;
+          const bool overlaps_punch =
+            range.first < punch->second && range_end > punch->first;
+          if (!overlaps_punch)
+            continue;
+        }
+
+      const auto is_midi = processing_caches.midi_in_rt_ != nullptr;
+      const auto is_audio = !processing_caches.audio_ins_rt_.empty ();
+      if (is_midi)
+        {
+          recording_cb (
+            range.first, transport,
+            &processing_caches.midi_in_rt_->midi_events_.active_events_,
             std::nullopt);
         }
-      else if (is_audio ())
+      else if (is_audio)
         {
-          // assumed audio track (other audio-based tracks are not recordable)
-          assert (mono_id_.has_value ());
           const auto &out_buf =
-            processing_caches_->audio_ins_rt_.front ()->buffers ();
-          auto * l = out_buf->getWritePointer (0);
+            processing_caches.audio_ins_rt_.front ()->buffers ();
+          assert (range.first >= start);
+          const auto offset =
+            time_nfo.buffer_offset_.in<size_t> (units::samples)
+            + (range.first - start).in<size_t> (units::samples);
+          const auto recording_nframes =
+            range.second.in<size_t> (units::samples);
+          assert (
+            offset + recording_nframes
+            <= static_cast<size_t> (out_buf->getNumSamples ()));
+          auto * l = out_buf->getWritePointer (0) + offset;
           auto * r =
-            processing_caches_->mono_param_->range ().isToggled (
-              processing_caches_->mono_param_->currentValue ())
+            (processing_caches.mono_param_->range ().isToggled (
+              processing_caches.mono_param_->currentValue ()))
               ? l
-              : out_buf->getWritePointer (1);
-          std::invoke (
-            *handle_recording_cb_, cur_time_nfo, nullptr,
+              : out_buf->getWritePointer (1) + offset;
+          recording_cb (
+            range.first, transport, nullptr,
             std::make_pair (
-              std::span (l, out_buf->getNumSamples ()),
-              std::span (r, out_buf->getNumSamples ())));
+              std::span (l, recording_nframes),
+              std::span (r, recording_nframes)));
         }
     }
 }
@@ -723,9 +677,9 @@ TrackProcessor::set_midi_mappings ()
 
 void
 TrackProcessor::fill_midi_events (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport                   &transport,
-  dsp::MidiEventVector                    &midi_events)
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  const dsp::ITransport              &transport,
+  dsp::MidiEventVector               &midi_events)
 {
   const auto active_providers = active_midi_event_providers_.load ();
 
@@ -753,9 +707,9 @@ TrackProcessor::fill_midi_events (
 
 void
 TrackProcessor::fill_audio_events (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport                   &transport,
-  StereoPortPair                           stereo_ports)
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  const dsp::ITransport              &transport,
+  StereoPortPair                      stereo_ports)
 {
   const auto active_providers = active_audio_providers_.load ();
 
@@ -784,9 +738,9 @@ TrackProcessor::fill_audio_events (
 
 void
 TrackProcessor::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   // First, clear all output
   if (is_audio ())
@@ -827,11 +781,11 @@ TrackProcessor::custom_process_block (
   if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       auto &pr = *processing_caches_->piano_roll_rt_;
-      pr.midi_events_.dequeue (time_nfo.local_offset_, time_nfo.nframes_);
+      pr.midi_events_.dequeue (time_nfo.buffer_offset_, time_nfo.nframes_);
 
       /* append the midi events from piano roll to MIDI out */
       processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
-        pr.midi_events_.active_events_, time_nfo.local_offset_,
+        pr.midi_events_.active_events_, time_nfo.buffer_offset_,
         time_nfo.nframes_);
     }
 
@@ -841,7 +795,7 @@ TrackProcessor::custom_process_block (
       // MIDI out
       add_events_from_midi_cc_control_ports (
         processing_caches_->midi_out_rt_->midi_events_.queued_events_,
-        time_nfo.local_offset_);
+        time_nfo.buffer_offset_);
     }
 
   /* add inputs to outputs */
@@ -879,24 +833,24 @@ TrackProcessor::custom_process_block (
           const auto &in_buf = stereo_in->buffers ();
           const auto &out_buf = stereo_out->buffers ();
 
-          utils::float_ranges::product (
+          utils::float_ranges::mix_product (
             { out_buf->getWritePointer (
-                0, time_nfo.local_offset_.in<int> (units::samples)),
+                0, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             { in_buf->getReadPointer (
-                0, time_nfo.local_offset_.in<int> (units::samples)),
+                0, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in (units::samples) },
             input_gain_id_ ? input_gain () : 1.f);
 
           const auto &src_right_buf =
             (mono_id_ && mono ())
               ? in_buf->getWritePointer (
-                  0, time_nfo.local_offset_.in<int> (units::samples))
+                  0, time_nfo.buffer_offset_.in<int> (units::samples))
               : in_buf->getWritePointer (
-                  1, time_nfo.local_offset_.in<int> (units::samples));
-          utils::float_ranges::product (
+                  1, time_nfo.buffer_offset_.in<int> (units::samples));
+          utils::float_ranges::mix_product (
             { out_buf->getWritePointer (
-                1, time_nfo.local_offset_.in<int> (units::samples)),
+                1, time_nfo.buffer_offset_.in<int> (units::samples)),
               time_nfo.nframes_.in<size_t> (units::samples) },
             { src_right_buf, time_nfo.nframes_.in<size_t> (units::samples) },
             input_gain_id_ ? input_gain () : 1.f);
@@ -930,13 +884,12 @@ TrackProcessor::custom_process_block (
 
   if (
     !transport.has_recording_preroll_frames_remaining ()
-    && handle_recording_cb_.has_value ())
+    && transport.get_play_state () == dsp::ITransport::PlayState::Rolling
+    && ENUM_BITSET_TEST (capabilities_, Capabilities::Recording)
+    && is_recording_armed_rt ())
     {
-      /* handle recording. this will only create events in regions. it
-       * will not copy the input content to the output ports. this will
-       * also create automation for MIDI CC, if any (see
-       * midi_mappings_apply_cc_events above) */
-      handle_recording (time_nfo, transport);
+      handle_recording (
+        time_nfo, transport, *processing_caches_, handle_recording_cb_);
     }
 
   /* apply output gain */
@@ -947,7 +900,7 @@ TrackProcessor::custom_process_block (
         output_gain_param.currentValue ());
 
       processing_caches_->audio_outs_rt_.front ()->buffers ()->applyGain (
-        time_nfo.local_offset_.in<int> (units::samples),
+        time_nfo.buffer_offset_.in<int> (units::samples),
         time_nfo.nframes_.in<int> (units::samples), output_gain);
     }
 }
@@ -958,24 +911,6 @@ TrackProcessor::custom_prepare_for_processing (
   units::sample_rate_t          sample_rate,
   units::sample_u32_t           max_block_length)
 {
-  if (node != nullptr)
-    {
-// TODO: this must only be set on recordable tracks and we don't have a way to
-// check if the track is recordable here
-#if 0
-      set_handle_recording_callback (
-        [] (
-          const dsp::graph::EngineProcessTimeInfo &time_nfo,
-          const dsp::MidiEventVector * midi_events,
-          std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
-            stereo_ports) {
-          // TODO (or refactor)
-          // RECORDING_MANAGER->handle_recording (
-          // tr, time_nfo, midi_events, stereo_ports);
-        });
-#endif
-    }
-
   processing_caches_ = std::make_unique<TrackProcessorProcessingCaches> ();
 
   if (is_audio ())

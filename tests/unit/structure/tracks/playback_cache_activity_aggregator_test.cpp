@@ -40,7 +40,7 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; },
+      [] { return false; }, {},
     };
     return track_registry->create_object<MidiTrack> (std::move (deps));
   }
@@ -99,7 +99,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemove)
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnClear)
+TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemoveAllTracks)
 {
   auto track1 = create_midi_track ();
   auto track2 = create_midi_track ();
@@ -114,7 +114,8 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnClear)
   QTest::qWait (200);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 2);
 
-  track_collection->clear ();
+  track_collection->remove_track (track1.id ());
+  track_collection->remove_track (track2.id ());
   QTest::qWait (50);
   EXPECT_EQ (aggregator->cachePendingCount (), 0);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
@@ -170,7 +171,9 @@ TEST_F (PlaybackCacheActivityAggregatorTest, DetectsExistingTracksOnSetCollectio
   EXPECT_EQ (late_aggregator->cacheCompleteCount (), 1);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, TracksAddedAfterClearAreStillTracked)
+TEST_F (
+  PlaybackCacheActivityAggregatorTest,
+  TracksAddedAfterRemovalAreStillTracked)
 {
   // Add a track and generate some cache activity
   auto track1 = create_midi_track ();
@@ -180,14 +183,13 @@ TEST_F (PlaybackCacheActivityAggregatorTest, TracksAddedAfterClearAreStillTracke
   QTest::qWait (200);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
-  // Clear the collection (triggers modelAboutToBeReset)
-  track_collection->clear ();
+  // Remove the track — aggregator should disconnect from it
+  track_collection->remove_track (track1.id ());
   QTest::qWait (50);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 
-  // Add a new track after the clear — the aggregator should still be
-  // connected to modelAboutToBeReset and rowsInserted, so this track's
-  // activity should be picked up.
+  // Add a new track after the removal — the aggregator should still be
+  // connected to rowsInserted, so this track's activity should be picked up.
   auto track2 = create_midi_track ();
   track_collection->add_track (track2);
   track2.get_object_base ()->regeneratePlaybackCaches (
@@ -195,13 +197,13 @@ TEST_F (PlaybackCacheActivityAggregatorTest, TracksAddedAfterClearAreStillTracke
   QTest::qWait (200);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
-  // A second clear should also work (verifies the connection survived)
-  track_collection->clear ();
+  // A second removal should also work (verifies the connection survived)
+  track_collection->remove_track (track2.id ());
   QTest::qWait (50);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnClear)
+TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnRemoval)
 {
   QSignalSpy pending_spy (
     aggregator.get (),
@@ -217,12 +219,12 @@ TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnClear)
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
   QTest::qWait (200);
 
-  // Clear spy counts so we only measure the clear-related emissions
+  // Clear spy counts so we only measure the removal-related emissions
   pending_spy.clear ();
   complete_spy.clear ();
 
-  // Clear the collection — disconnectAll() emits both signals
-  track_collection->clear ();
+  // Remove the track — disconnectAll() emits both signals
+  track_collection->remove_track (track.id ());
   QTest::qWait (50);
 
   EXPECT_GE (pending_spy.count (), 1);

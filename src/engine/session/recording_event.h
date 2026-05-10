@@ -48,15 +48,15 @@ public:
 
 public:
   void init (
-    const Type                               type,
-    const structure::tracks::Track          &track,
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
+    const Type                          type,
+    const structure::tracks::Track     &track,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
     std::source_location source_location = std::source_location::current ())
   {
     type_ = type;
     track_uuid_ = track.get_uuid ();
     g_start_frame_w_offset_ = time_nfo.g_start_frame_w_offset_;
-    local_offset_ = time_nfo.local_offset_;
+    buffer_offset_ = time_nfo.buffer_offset_;
     has_midi_event_ = false;
     midi_event_ = dsp::MidiEvent{};
     automation_track_idx_ = 0;
@@ -76,7 +76,7 @@ public:
   units::sample_u64_t g_start_frame_w_offset_;
 
   /** Offset in current cycle that this event starts from. */
-  units::sample_u32_t local_offset_;
+  units::sample_u32_t buffer_offset_;
 
   /** Number of frames processed in this event. */
   units::sample_u32_t nframes_;
@@ -106,7 +106,7 @@ public:
     (type_,
      track_uuid_,
      g_start_frame_w_offset_,
-     local_offset_,
+     buffer_offset_,
      nframes_,
      automation_track_idx_,
      has_midi_event_,

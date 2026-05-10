@@ -224,40 +224,20 @@ TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrain)
     }
 }
 
-TEST_F (AudioRecordingSessionTest, ConcurrentWriteAndDrainWithOverflow)
+TEST_F (AudioRecordingSessionTest, WriteOverflowDropsPackets)
 {
   static constexpr int num_writes =
     static_cast<int> (AudioRecordingSession::kFifoCapacity) * 2 + 100;
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  std::atomic<int>   writes_done{ 0 };
 
-  std::vector<RecordingAudioPacket> all_packets;
-  {
-    std::jthread writer ([&] (std::stop_token) {
-      for (int i = 0; i < num_writes; ++i)
-        {
-          session_->write_samples (
-            units::samples (static_cast<int64_t> (i) * 256), true, l, r);
-          writes_done.fetch_add (1, std::memory_order_relaxed);
-        }
-    });
+  for (int i = 0; i < num_writes; ++i)
+    {
+      session_->write_samples (
+        units::samples (static_cast<int64_t> (i) * 256), true, l, r);
+    }
 
-    std::jthread reader ([&] (std::stop_token) {
-      while (writes_done.load (std::memory_order_relaxed) < num_writes)
-        {
-          auto packets = session_->drain_pending ();
-          all_packets.insert (
-            all_packets.end (), std::make_move_iterator (packets.begin ()),
-            std::make_move_iterator (packets.end ()));
-          std::this_thread::sleep_for (std::chrono::milliseconds (5));
-        }
-      auto remaining = session_->drain_pending ();
-      all_packets.insert (
-        all_packets.end (), std::make_move_iterator (remaining.begin ()),
-        std::make_move_iterator (remaining.end ()));
-    });
-  }
+  auto all_packets = session_->drain_pending ();
 
   EXPECT_GT (all_packets.size (), 0u);
   EXPECT_GT (session_->dropped_packets (), 0u);

@@ -151,6 +151,21 @@ Track::make_track_processor (
   if (ENUM_BITSET_TEST (features_, TrackFeatures::Recording))
     caps |= TrackProcessor::Capabilities::Recording;
 
+  TrackProcessor::RecordingCallbackRT internal_recording_cb;
+  if (base_dependencies_.track_recording_callback)
+    {
+      auto cb = base_dependencies_.track_recording_callback;
+      internal_recording_cb =
+        [this, cb] (
+          units::sample_t timeline_position, const dsp::ITransport &transport_ref,
+          const dsp::MidiEventVector *                       midi_events,
+          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+          cb (
+            get_uuid (), timeline_position, transport_ref, midi_events,
+            std::move (stereo_ports));
+        };
+    }
+
   auto tp = utils::make_qobject_unique<TrackProcessor> (
     base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_.value (),
     [this] () { return get_name (); }, [this] () { return enabled (); }, caps,
@@ -158,7 +173,7 @@ Track::make_track_processor (
       .port_registry_ = base_dependencies_.port_registry_,
       .param_registry_ = base_dependencies_.param_registry_ },
     fill_events_cb, transform_midi_inputs_func,
-    append_midi_inputs_to_outputs_func, this);
+    append_midi_inputs_to_outputs_func, internal_recording_cb, this);
 
   init_cache_scheduler ();
   init_playback_cache_activity_tracker (*tp);
@@ -173,6 +188,15 @@ Track::recordingParam () const
     return nullptr;
   assert (processor_ != nullptr);
   return &processor_->get_recording_param ();
+}
+
+dsp::ProcessorParameter *
+Track::monitorParam () const
+{
+  if (type_ != Type::Audio)
+    return nullptr;
+  assert (processor_ != nullptr);
+  return &processor_->get_monitor_audio_param ();
 }
 
 utils::QObjectUniquePtr<AutomationTracklist>
@@ -655,15 +679,15 @@ from_json (const nlohmann::json &j, Track &track)
   // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
   if (track.channel_)
     {
-      j[Track::kChannelKey].get_to (*track.channel_);
+      j.at (Track::kChannelKey).get_to (*track.channel_);
     }
   if (track.processor_)
     {
-      j[Track::kProcessorKey].get_to (*track.processor_);
+      j.at (Track::kProcessorKey).get_to (*track.processor_);
     }
   if (track.automation_tracklist_)
     {
-      j[Track::kAutomationTracklistKey].get_to (*track.automation_tracklist_);
+      j.at (Track::kAutomationTracklistKey).get_to (*track.automation_tracklist_);
     }
   if (track.modulators_)
     {
@@ -684,7 +708,7 @@ from_json (const nlohmann::json &j, Track &track)
     }
   if (track.piano_roll_track_mixin_)
     {
-      j[Track::kPianoRollKey].get_to (*track.piano_roll_track_mixin_);
+      j.at (Track::kPianoRollKey).get_to (*track.piano_roll_track_mixin_);
     }
 }
 }

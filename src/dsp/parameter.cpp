@@ -141,9 +141,9 @@ ProcessorParameter::ProcessorParameter (
 
 void
 ProcessorParameter::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   float current_val = base_value_.load ();
 
@@ -158,7 +158,7 @@ ProcessorParameter::process_block (
   if (automation_value_provider_)
     {
       const auto val = std::invoke (
-        automation_value_provider_.value (), time_nfo.g_start_frame_w_offset_);
+        automation_value_provider_.value (), time_nfo.transport_position_);
       if (val.has_value ())
         {
           current_val = std::clamp (val.value (), 0.f, 1.f);
@@ -179,7 +179,7 @@ ProcessorParameter::process_block (
 
       // modulation value [0, 1]
       auto modulation_base_val =
-        src_port->buf_[time_nfo.local_offset_.in (units::samples)];
+        src_port->buf_[time_nfo.buffer_offset_.in (units::samples)];
 
       // if bipolar, convert to [-1, 1]
       if (conn->bipolar_)

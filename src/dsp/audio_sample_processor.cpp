@@ -8,11 +8,11 @@ namespace zrythm::dsp
 {
 void
 AudioSampleProcessor::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
-  const auto cycle_offset = time_nfo.local_offset_;
+  const auto cycle_offset = time_nfo.buffer_offset_;
   const auto nframes = time_nfo.nframes_;
 
   auto * out_port = get_output_audio_port_rt ();

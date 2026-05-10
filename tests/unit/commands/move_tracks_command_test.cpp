@@ -36,7 +36,7 @@ protected:
       plugin_registry_,     port_registry_,
       param_registry_,      obj_registry_,
       *track_registry_,     transport_,
-      [] { return false; },
+      [] { return false; }, {},
     };
   }
 

@@ -208,11 +208,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = units::samples (0);
-  time_info.g_start_frame_w_offset_ = units::samples (0);
-  time_info.local_offset_ = units::samples (0);
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   dispatcher_->start_cycle (
     *transport_, time_info, units::samples (0), true, *tempo_map_);
@@ -242,11 +239,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleInNonRealtimeContext)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = units::samples (0);
-  time_info.g_start_frame_w_offset_ = units::samples (0);
-  time_info.local_offset_ = units::samples (0);
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   dispatcher_->start_cycle (
     *transport_, time_info, units::samples (0), false, *tempo_map_);
@@ -285,11 +279,8 @@ TEST_F (DspGraphDispatcherTest, StartCycleWithLatencyPreroll)
   // TODO: I haven't done the calculations yet to see if this is correct
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (0);
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = units::samples (0);
-  time_info.g_start_frame_w_offset_ = units::samples (0);
-  time_info.local_offset_ = units::samples (0);
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   constexpr auto remaining_latency_preroll = units::samples (64);
   dispatcher_->start_cycle (
@@ -340,11 +331,8 @@ TEST_F (DspGraphDispatcherTest, ProcessingThreadDetection)
   EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
   EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = units::samples (0);
-  time_info.g_start_frame_w_offset_ = units::samples (0);
-  time_info.local_offset_ = units::samples (0);
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   // After starting a cycle, main thread might be detected as processing thread
   // depending on implementation, but this test ensures the method doesn't crash
@@ -416,11 +404,8 @@ TEST_F (DspGraphDispatcherTest, PreprocessAtStartOfCycleNoThrow)
 {
   create_dispatcher ();
 
-  dsp::graph::EngineProcessTimeInfo time_info{};
-  time_info.g_start_frame_ = units::samples (0);
-  time_info.g_start_frame_w_offset_ = units::samples (0);
-  time_info.local_offset_ = units::samples (0);
-  time_info.nframes_ = units::samples (256);
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   // This should not throw even without a scheduler
   EXPECT_NO_THROW ({

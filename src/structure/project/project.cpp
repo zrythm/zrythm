@@ -138,9 +138,9 @@ Project::Project (
             .top_level_window_provider_ = plugin_host_window_provider_,
           },
           this)),
-      track_factory_ (
-        std::make_unique<structure::tracks::TrackFactory> (
-          get_final_track_dependencies ())),
+      track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {
+        return get_final_track_dependencies ();
+      })),
       tempo_object_manager_ (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
@@ -230,7 +230,13 @@ Project::Project (
     tempo_map_wrapper_.get (), rebuild_tempo_map);
 }
 
-Project::~Project () = default;
+Project::~Project ()
+{
+  if (audio_engine_->activated ())
+    {
+      audio_engine_->deactivate ();
+    }
+}
 
 dsp::Fader &
 Project::monitor_fader () const
@@ -244,9 +250,26 @@ Project::metronome () const
   return metronome_;
 }
 
+void
+Project::install_recording_callback (
+  structure::tracks::TrackRecordingCallback callback)
+{
+  if (track_recording_callback_)
+    {
+      throw std::runtime_error (
+        "install_recording_callback called more than once");
+    }
+  track_recording_callback_ = std::move (callback);
+}
+
 structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies () const
 {
+  if (!track_recording_callback_)
+    {
+      throw std::runtime_error (
+        "Recording callback not installed — call install_recording_callback() first");
+    }
   return structure::tracks::FinalTrackDependencies{
     *tempo_map_wrapper_,
     *file_audio_source_registry_,
@@ -266,7 +289,8 @@ Project::get_final_track_dependencies () const
           }
         return ch->fader ()->currently_soloed_rt ();
       });
-    }
+    },
+    track_recording_callback_
   };
 }
 

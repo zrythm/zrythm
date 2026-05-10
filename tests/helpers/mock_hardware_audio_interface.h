@@ -7,6 +7,7 @@
 
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/iaudio_callback.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::test_helpers
 {
@@ -37,6 +38,15 @@ public:
   [[nodiscard]] units::sample_rate_t get_sample_rate () const override
   {
     return sample_rate_;
+  }
+  [[nodiscard]] utils::Utf8String get_device_name () const override
+  {
+    return device_name_;
+  }
+
+  void set_device_name (utils::Utf8String name)
+  {
+    device_name_ = std::move (name);
   }
 
   void add_audio_callback (dsp::IAudioCallback * callback) override
@@ -74,6 +84,7 @@ private:
   units::sample_u32_t    block_length_;
   units::channel_count_t input_channels_;
   units::channel_count_t output_channels_;
+  utils::Utf8String      device_name_;
   dsp::IAudioCallback *  callback_ = nullptr;
 };
 

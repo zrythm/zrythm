@@ -131,12 +131,12 @@ public:
   /**
    * @brief Returns the number of enum entries.
    */
-  size_t enum_count () const { return enum_labels_.size (); }
+  Q_INVOKABLE size_t enumCount () const { return enum_labels_.size (); }
 
   /**
    * @brief Converts a normalized value to an enum index.
    */
-  size_t enum_index (float normalized_val) const
+  Q_INVOKABLE size_t enumIndex (float normalized_val) const
   {
     const auto real = convertFrom0To1 (normalized_val);
     assert (!enum_labels_.empty ());
@@ -147,7 +147,7 @@ public:
   /**
    * @brief Returns the normalized value for a given enum index.
    */
-  float normalized_from_index (size_t index) const
+  Q_INVOKABLE float normalizedEnumValue (size_t index) const
   {
     assert (index < enum_labels_.size ());
     if (enum_labels_.size () == 1)
@@ -163,18 +163,25 @@ public:
     return enum_labels_.at (index);
   }
 
+  Q_INVOKABLE QString enumLabel (int index) const
+  {
+    if (index < 0 || static_cast<size_t> (index) >= enum_labels_.size ())
+      return {};
+    return enum_label (static_cast<size_t> (index)).to_qstring ();
+  }
+
   template <EnumType E> float normalized_from_enum (E value) const
   {
     assert (type_ == Type::Enumeration);
     const auto index = static_cast<size_t> (value);
     assert (index < enum_labels_.size ());
-    return normalized_from_index (index);
+    return normalizedEnumValue (index);
   }
 
   template <EnumType E> E enum_value (float normalized_val) const
   {
     assert (type_ == Type::Enumeration);
-    return static_cast<E> (enum_index (normalized_val));
+    return static_cast<E> (enumIndex (normalized_val));
   }
 
   constexpr float clamp_to_range (float val) const
@@ -365,9 +372,9 @@ public:
    * by the owning processor.
    */
   void process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void prepare_for_processing (
     const graph::GraphNode * node,

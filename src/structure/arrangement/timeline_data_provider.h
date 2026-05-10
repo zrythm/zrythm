@@ -160,8 +160,8 @@ public:
    * Process MIDI events for the given time range.
    */
   void process_midi_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState               transport_state,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    dsp::ITransport::PlayState          transport_state,
     dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
 
   void clear_all_caches () override;
@@ -287,9 +287,9 @@ public:
    * Process audio events for the given time range.
    */
   void process_audio_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState               transport_state,
-    std::span<float>                         output_left,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    dsp::ITransport::PlayState          transport_state,
+    std::span<float>                    output_left,
     std::span<float> output_right) noexcept [[clang::nonblocking]];
 
   void clear_all_caches () override;
@@ -369,8 +369,8 @@ public:
    * Process automation events for the given time range.
    */
   void process_automation_events (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    dsp::ITransport::PlayState               transport_state,
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    dsp::ITransport::PlayState          transport_state,
     std::span<float> output_values) noexcept [[clang::nonblocking]];
 
   /**

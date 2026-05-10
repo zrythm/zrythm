@@ -5,6 +5,7 @@
 #include "dsp/graph.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
+#include "structure/tracks/audio_track.h"
 #include "structure/tracks/track.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
@@ -90,9 +91,15 @@ protected:
       return nullptr;
     };
 
-    return std::make_unique<Project> (
+    auto project = std::make_unique<Project> (
       *app_settings_, path_provider, *hw_interface_, plugin_format_manager_,
       window_factory, *metronome_, *monitor_fader_);
+    project->install_recording_callback (
+      [] (
+        const tracks::Track::Uuid &, units::sample_t, const dsp::ITransport &,
+        const dsp::MidiEventVector *,
+        std::optional<tracks::TrackProcessor::ConstStereoPortPair>) { });
+    return project;
   }
 
   tracks::AudioBusTrack * add_audio_bus_track (Project &project)
@@ -103,6 +110,41 @@ protected:
     raw->setName (u8"Audio Bus");
     project.tracklist ()->collection ()->add_track (track_ref);
     return raw;
+  }
+
+  tracks::AudioTrack * add_audio_track (Project &project)
+  {
+    auto track_ref =
+      project.track_factory_->create_empty_track<tracks::AudioTrack> ();
+    auto * raw = track_ref.get_object_as<tracks::AudioTrack> ();
+    raw->setName (u8"Audio Track");
+    project.tracklist ()->collection ()->add_track (track_ref);
+    return raw;
+  }
+
+  bool has_audio_input_connection (
+    dsp::graph::Graph &graph,
+    Project           &project,
+    tracks::Track     &track)
+  {
+    auto * audio_in_processor = project.engine ()->audio_input_processor ();
+    if (audio_in_processor == nullptr)
+      return false;
+
+    auto * src_port = audio_in_processor->find_output_port (0, true);
+    if (src_port == nullptr)
+      return false;
+
+    auto * src_node = graph.get_nodes ().find_node_for_processable (*src_port);
+    auto * dst_node = graph.get_nodes ().find_node_for_processable (
+      track.get_track_processor ()->get_stereo_in_port ());
+    if (src_node == nullptr || dst_node == nullptr)
+      return false;
+
+    const auto &feeds = src_node->feeds ();
+    return std::ranges::any_of (feeds, [dst_node] (const auto &ref) {
+      return &ref.get () == dst_node;
+    });
   }
 
   std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;
@@ -183,6 +225,103 @@ TEST_F (ProjectGraphBuilderTest, AudioInputProviderWithNoSelectionsGraphIsValid)
 
   EXPECT_TRUE (graph.is_valid ())
     << "Graph should be valid when provider returns nullptr for all tracks";
+}
+
+TEST_F (ProjectGraphBuilderTest, AudioInputConnectedWhenDeviceNameMatches)
+{
+  const auto device_name = "Test Device";
+  auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
+    hw_interface_.get ());
+  ASSERT_NE (mock_hw, nullptr);
+  mock_hw->set_device_name (
+    utils::Utf8String::from_utf8_encoded_string (device_name));
+
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_track (*project);
+
+  auto selection = std::make_unique<dsp::AudioInputSelection> ();
+  selection->setDeviceName (QString::fromStdString (device_name));
+  selection->setFirstChannel (0);
+  selection->setStereo (true);
+  auto * raw_sel = selection.get ();
+
+  project->set_audio_input_selection_provider (
+    [raw_sel] (const structure::tracks::Track::Uuid &)
+      -> dsp::AudioInputSelection * { return raw_sel; });
+
+  project->engine ()->activate ();
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_TRUE (has_audio_input_connection (graph, *project, *track));
+}
+
+TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameDiffers)
+{
+  auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
+    hw_interface_.get ());
+  ASSERT_NE (mock_hw, nullptr);
+  mock_hw->set_device_name (
+    utils::Utf8String::from_utf8_encoded_string ("Current Device"));
+
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_track (*project);
+
+  auto selection = std::make_unique<dsp::AudioInputSelection> ();
+  selection->setDeviceName ("Different Device");
+  selection->setFirstChannel (0);
+  selection->setStereo (true);
+  auto * raw_sel = selection.get ();
+
+  project->set_audio_input_selection_provider (
+    [raw_sel] (const structure::tracks::Track::Uuid &)
+      -> dsp::AudioInputSelection * { return raw_sel; });
+
+  project->engine ()->activate ();
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_FALSE (has_audio_input_connection (graph, *project, *track));
+}
+
+TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameEmpty)
+{
+  auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
+    hw_interface_.get ());
+  ASSERT_NE (mock_hw, nullptr);
+  mock_hw->set_device_name (
+    utils::Utf8String::from_utf8_encoded_string ("Test Device"));
+
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_track (*project);
+
+  auto selection = std::make_unique<dsp::AudioInputSelection> ();
+  selection->setDeviceName ("");
+  selection->setFirstChannel (0);
+  selection->setStereo (true);
+  auto * raw_sel = selection.get ();
+
+  project->set_audio_input_selection_provider (
+    [raw_sel] (const structure::tracks::Track::Uuid &)
+      -> dsp::AudioInputSelection * { return raw_sel; });
+
+  project->engine ()->activate ();
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_FALSE (has_audio_input_connection (graph, *project, *track));
 }
 
 } // namespace zrythm::structure::project

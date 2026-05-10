@@ -26,6 +26,13 @@ namespace zrythm::structure::tracks
 {
 using SoloedTracksExistGetter = std::function<bool ()>;
 
+using TrackRecordingCallback = std::function<void (
+  const utils::UuidIdentifiableObject<Track>::Uuid &,
+  units::sample_t,
+  const dsp::ITransport &,
+  const dsp::MidiEventVector *,
+  std::optional<TrackProcessor::ConstStereoPortPair>)>;
+
 struct BaseTrackDependencies
 {
   const dsp::TempoMapWrapper          &tempo_map_;
@@ -36,6 +43,7 @@ struct BaseTrackDependencies
   arrangement::ArrangerObjectRegistry &obj_registry_;
   const dsp::ITransport               &transport_;
   SoloedTracksExistGetter              soloed_tracks_exist_getter_;
+  TrackRecordingCallback               track_recording_callback;
 };
 
 /**
@@ -74,6 +82,8 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
     zrythm::structure::tracks::TrackLaneList * lanes READ lanes CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * recordingParam READ recordingParam CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * monitorParam READ monitorParam CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::PianoRollTrackMixin * pianoRollTrackMixin READ
       pianoRollTrackMixin CONSTANT)
@@ -440,6 +450,7 @@ public:
   TrackLaneList * lanes () const { return lanes_.get (); }
 
   dsp::ProcessorParameter * recordingParam () const;
+  dsp::ProcessorParameter * monitorParam () const;
 
   PianoRollTrackMixin * pianoRollTrackMixin () const
   {
@@ -793,7 +804,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
     arrangement::ArrangerObjectRegistry &obj_registry,
     TrackRegistry                       &track_registry,
     const dsp::ITransport               &transport,
-    SoloedTracksExistGetter              soloed_tracks_exist_getter)
+    SoloedTracksExistGetter              soloed_tracks_exist_getter,
+    TrackRecordingCallback               recording_callback)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,
@@ -802,7 +814,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
           param_registry,
           obj_registry,
           transport,
-          std::move (soloed_tracks_exist_getter)),
+          std::move (soloed_tracks_exist_getter),
+          std::move (recording_callback)),
         track_registry_ (track_registry)
   {
   }

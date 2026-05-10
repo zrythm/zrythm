@@ -4,6 +4,7 @@
 #pragma once
 
 #include "utils/units.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::dsp
 {
@@ -30,6 +31,11 @@ public:
    * @brief Returns the current sample rate.
    */
   virtual units::sample_rate_t get_sample_rate () const = 0;
+
+  /**
+   * @brief Returns the name of the current audio device.
+   */
+  virtual utils::Utf8String get_device_name () const = 0;
 
   /**
    * @brief Adds an audio callback to receive audio I/O events.

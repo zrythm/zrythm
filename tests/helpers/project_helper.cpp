@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#error "This is dead legacy code - only use for reference"
+
 #include "zrythm-test-config.h"
 
 #include "tests/helpers/project_helper.h"

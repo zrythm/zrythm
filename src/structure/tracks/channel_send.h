@@ -90,9 +90,9 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const dsp::graph::GraphNode * node,

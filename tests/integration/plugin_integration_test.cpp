@@ -107,13 +107,11 @@ protected:
     return result;
   }
 
-  static dsp::graph::EngineProcessTimeInfo
-  make_time_info (uint32_t num_frames = 256)
+  static dsp::graph::ProcessBlockInfo make_time_info (uint32_t num_frames = 256)
   {
-    return dsp::graph::EngineProcessTimeInfo{
-      .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    return dsp::graph::ProcessBlockInfo{
+      .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = units::samples (num_frames),
     };
   }

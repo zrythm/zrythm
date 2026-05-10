@@ -35,7 +35,7 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; },
+      [] { return false; }, {},
     };
 
     return track_registry->create_object<ChordTrack> (std::move (deps));
@@ -45,11 +45,11 @@ protected:
   TrackUuidReference create_modulator_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,  file_audio_source_registry,
-      plugin_registry,     port_registry,
-      param_registry,      obj_registry,
-      *track_registry,     transport,
-      [] { return false; }
+      *tempo_map_wrapper,   file_audio_source_registry,
+      plugin_registry,      port_registry,
+      param_registry,       obj_registry,
+      *track_registry,      transport,
+      [] { return false; }, {}
     };
 
     return track_registry->create_object<ModulatorTrack> (std::move (deps));
@@ -59,11 +59,11 @@ protected:
   TrackUuidReference create_master_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,  file_audio_source_registry,
-      plugin_registry,     port_registry,
-      param_registry,      obj_registry,
-      *track_registry,     transport,
-      [] { return false; }
+      *tempo_map_wrapper,   file_audio_source_registry,
+      plugin_registry,      port_registry,
+      param_registry,       obj_registry,
+      *track_registry,      transport,
+      [] { return false; }, {}
     };
 
     return track_registry->create_object<MasterTrack> (std::move (deps));
@@ -73,11 +73,11 @@ protected:
   TrackUuidReference create_marker_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,  file_audio_source_registry,
-      plugin_registry,     port_registry,
-      param_registry,      obj_registry,
-      *track_registry,     transport,
-      [] { return false; }
+      *tempo_map_wrapper,   file_audio_source_registry,
+      plugin_registry,      port_registry,
+      param_registry,       obj_registry,
+      *track_registry,      transport,
+      [] { return false; }, {}
     };
 
     return track_registry->create_object<MarkerTrack> (std::move (deps));

@@ -103,12 +103,8 @@ GraphRenderer::render (
       }();
 
       // Setup time info for this processing cycle
-      dsp::graph::EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = current_pos,
-        .g_start_frame_w_offset_ = current_pos,
-        .local_offset_ = units::samples (0),
-        .nframes_ = nframes,
-      };
+      auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+        current_pos, nframes);
 
       // Only update transport position after latency preroll is exhausted
       if (latency_preroll_frames <= units::samples (0))

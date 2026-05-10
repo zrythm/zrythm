@@ -313,9 +313,11 @@ ApplicationWindow {
         SplitView.fillHeight: true
         SplitView.minimumWidth: 40
         SplitView.preferredWidth: 200
+        deviceManager: root.deviceManager
         pluginImporter: root.session.pluginImporter
         pluginOperator: root.session.pluginOperator
         project: root.project
+        session: root.session
         trackSelectionModel: trackSelectionModel
         tracklist: root.project.tracklist
         undoStack: root.session.undoStack

@@ -61,9 +61,9 @@ public:
   // ============================================================================
 
   void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void custom_prepare_for_processing (
     const graph::GraphNode * node,
@@ -91,9 +91,9 @@ private:
    * Queues metronome events for preroll count-in.
    */
   void queue_metronome_countin (
-    const dsp::graph::EngineProcessTimeInfo &time_nfo,
-    const dsp::ITransport                   &transport,
-    const dsp::TempoMap                     &tempo_map);
+    const dsp::graph::ProcessBlockInfo &time_nfo,
+    const dsp::ITransport              &transport,
+    const dsp::TempoMap                &tempo_map);
 
   /**
    * Queues a metronomem tick at the given local offset.

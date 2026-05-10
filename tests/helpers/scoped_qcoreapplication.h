@@ -45,7 +45,8 @@ public:
       }
     if (!cond ())
       {
-        throw std::runtime_error ("condition failed");
+        throw std::runtime_error (
+          "process_events_until_true: condition failed after timeout");
       }
   }
 

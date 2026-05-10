@@ -28,9 +28,9 @@ public:
   MidiPort (utils::Utf8String label, PortFlow flow);
 
   [[gnu::hot]] void process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void prepare_for_processing (
     const graph::GraphNode * node,

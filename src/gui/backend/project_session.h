@@ -9,6 +9,8 @@
 #include "actions/plugin_importer.h"
 #include "actions/plugin_operator.h"
 #include "actions/track_creator.h"
+#include "controllers/recording_coordinator.h"
+#include "controllers/recording_materializer.h"
 #include "controllers/transport_controller.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project.h"
@@ -89,6 +91,7 @@ public:
   actions::PluginOperator *                pluginOperator () const;
   actions::FileImporter *                  fileImporter () const;
   controllers::TransportController *       transportController () const;
+  controllers::RecordingCoordinator *      recordingCoordinator () const;
 
   Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
               createArrangerObjectSelectionOperator (
@@ -154,6 +157,10 @@ private:
   utils::QObjectUniquePtr<actions::PluginOperator> plugin_operator_;
   utils::QObjectUniquePtr<actions::FileImporter>   file_importer_;
   utils::QObjectUniquePtr<controllers::TransportController> transport_controller_;
+  utils::QObjectUniquePtr<controllers::RecordingCoordinator>
+    recording_coordinator_;
+  utils::QObjectUniquePtr<controllers::RecordingMaterializer>
+    recording_materializer_;
 };
 
 } // namespace zrythm::gui
