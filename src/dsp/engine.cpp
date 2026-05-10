@@ -111,6 +111,7 @@ AudioEngine::AudioEngine (
             monitor_out_.prepare_for_processing (
               nullptr, info.sample_rate, info.block_length);
             Q_EMIT sampleRateChanged (sampleRate ());
+            Q_EMIT blockLengthChanged (blockLength ());
             callback_running_ = true;
           },
           [this] () {

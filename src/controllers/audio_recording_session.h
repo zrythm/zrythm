@@ -58,6 +58,16 @@ public:
   static constexpr size_t kFifoCapacity = 1024;
 
   /**
+   * @brief Prepares internal buffers for processing at the given block length.
+   *
+   * Buffers are only grown, never shrunk, so a decrease in block length is
+   * safe (existing large buffers are kept). Must be called before audio
+   * processing starts (not concurrently with write_samples() or
+   * drain_pending()).
+   */
+  void prepare_for_processing (units::sample_u32_t block_length);
+
+  /**
    * @brief RT-safe: writes audio data into the ring buffer.
    *
    * Called from the audio thread. No allocations — copies data into

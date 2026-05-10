@@ -95,6 +95,15 @@ RecordingCoordinator::session_for_track (
 }
 
 void
+RecordingCoordinator::prepare_for_processing (units::sample_u32_t block_length)
+{
+  for (auto &[track_id, session] : impl_->sessions)
+    {
+      session->prepare_for_processing (block_length);
+    }
+}
+
+void
 RecordingCoordinator::process_pending ()
 {
   std::vector<

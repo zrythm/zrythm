@@ -11,6 +11,8 @@
  * arm/disarm lifecycle works correctly with the engine running.
  */
 
+#include <algorithm>
+
 #include "controllers/audio_recording_session.h"
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
@@ -67,6 +69,14 @@ protected:
     mock_hw_ = dynamic_cast<test_helpers::ThreadedMockHardwareAudioInterface *> (
       hw_interface_.get ());
     ASSERT_NE (mock_hw_, nullptr);
+
+    auto * coordinator_raw = coordinator_.get ();
+    auto * engine_raw = project_->engine ();
+    QObject::connect (
+      engine_raw, &dsp::AudioEngine::blockLengthChanged, coordinator_raw,
+      [coordinator_raw] (int block_length) {
+        coordinator_raw->prepare_for_processing (units::samples (block_length));
+      });
   }
 
   void TearDown () override { ProjectTestFixture::TearDown (); }
@@ -178,8 +188,16 @@ protected:
       });
   }
 
+  /**
+   * @brief Drains pending audio from a session, waiting until at least one
+   * packet is available.
+   *
+   * Repeatedly processes Qt events and drains the session's SPSC fifo until
+   * audio data has been received from the recording thread. Returns all
+   * accumulated packets.
+   */
   std::vector<controllers::RecordingAudioPacket>
-  drain_session_until_non_empty (controllers::AudioRecordingSession * session)
+  collect_recorded_packets (controllers::AudioRecordingSession * session)
   {
     std::vector<controllers::RecordingAudioPacket> packets;
     process_events_until_true ([session, &packets] () {
@@ -224,7 +242,7 @@ TEST_F (AudioRecordingPipelineTest, ArmTrackWritesToSession)
   auto * session = coordinator_->session_for_track (track->get_uuid ());
   ASSERT_NE (session, nullptr);
 
-  auto packets = drain_session_until_non_empty (session);
+  auto packets = collect_recorded_packets (session);
 
   stop_engine ();
 
@@ -247,7 +265,7 @@ TEST_F (AudioRecordingPipelineTest, DisarmStopsWriting)
   auto * session = coordinator_->session_for_track (track->get_uuid ());
   ASSERT_NE (session, nullptr);
 
-  auto packets_before = drain_session_until_non_empty (session);
+  auto packets_before = collect_recorded_packets (session);
   EXPECT_FALSE (packets_before.empty ())
     << "Session should have recorded audio data before disarming";
 
@@ -273,7 +291,7 @@ TEST_F (AudioRecordingPipelineTest, AudioInputThroughRecordingPipeline)
   auto * session = coordinator_->session_for_track (track->get_uuid ());
   ASSERT_NE (session, nullptr);
 
-  auto packets = drain_session_until_non_empty (session);
+  auto packets = collect_recorded_packets (session);
 
   stop_engine ();
 
@@ -297,7 +315,7 @@ TEST_F (AudioRecordingPipelineTest, AudioInputThroughRecordingPipeline)
   EXPECT_GT (total_frames, 0u) << "Should have recorded some audio frames";
 }
 
-TEST_F (AudioRecordingPipelineTest, DeviceChangeDuringProcessingNoCrash)
+TEST_F (AudioRecordingPipelineTest, BlockLengthIncreaseDuringRecording)
 {
   auto * track = add_audio_track ();
   ASSERT_NE (track, nullptr);
@@ -316,16 +334,25 @@ TEST_F (AudioRecordingPipelineTest, DeviceChangeDuringProcessingNoCrash)
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
+  auto pre_packets = collect_recorded_packets (session);
+  ASSERT_FALSE (pre_packets.empty ());
+
   dsp::AudioDeviceInfo new_device_info{
     .sample_rate = units::sample_rate (48000),
     .block_length = units::samples (512),
     .input_channel_count = units::channels (4),
     .output_channel_count = units::channels (2),
   };
+  QSignalSpy block_length_spy (
+    project_->engine (), &dsp::AudioEngine::blockLengthChanged);
+  const auto count_before_change = mock_hw_->process_call_count ();
   mock_hw_->simulate_device_change (new_device_info);
 
-  process_events_until_true ([this] () {
-    return mock_hw_->process_call_count () >= initial_process_count_ + 5;
+  ASSERT_EQ (block_length_spy.size (), 1);
+  EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 512);
+
+  process_events_until_true ([this, count_before_change] () {
+    return mock_hw_->process_call_count () >= count_before_change + 5;
   });
 
   auto * session_after = coordinator_->session_for_track (track->get_uuid ());
@@ -335,9 +362,77 @@ TEST_F (AudioRecordingPipelineTest, DeviceChangeDuringProcessingNoCrash)
     controllers::AudioRecordingSession::State::Capturing)
     << "Session should remain in Capturing state after device change";
 
-  auto post_packets = drain_session_until_non_empty (session_after);
+  auto post_packets = collect_recorded_packets (session_after);
   EXPECT_FALSE (post_packets.empty ())
     << "Session should continue recording after device change";
+
+  bool has_new_block_length =
+    std::ranges::any_of (post_packets, [] (const auto &packet) {
+      return packet.nframes == units::samples (512u);
+    });
+  EXPECT_TRUE (has_new_block_length)
+    << "At least one post-change packet should use the new block length";
+
+  stop_engine ();
+}
+
+TEST_F (AudioRecordingPipelineTest, BlockLengthShrinkDuringRecording)
+{
+  auto * track = add_audio_track ();
+  ASSERT_NE (track, nullptr);
+  set_audio_input_selection (*track, u"Test Device"_s, 0, true);
+  set_provider ();
+
+  coordinator_->arm_track (track->get_uuid (), block_length ());
+
+  start_engine_and_wait_for_cycles ();
+
+  auto * session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_NE (session, nullptr);
+
+  process_events_until_true ([session] () {
+    return session->state ()
+           == controllers::AudioRecordingSession::State::Capturing;
+  });
+
+  auto pre_packets = collect_recorded_packets (session);
+  ASSERT_FALSE (pre_packets.empty ());
+
+  dsp::AudioDeviceInfo new_device_info{
+    .sample_rate = units::sample_rate (48000),
+    .block_length = units::samples (64),
+    .input_channel_count = units::channels (2),
+    .output_channel_count = units::channels (2),
+  };
+  QSignalSpy block_length_spy (
+    project_->engine (), &dsp::AudioEngine::blockLengthChanged);
+  const auto count_before_change = mock_hw_->process_call_count ();
+  mock_hw_->simulate_device_change (new_device_info);
+
+  ASSERT_EQ (block_length_spy.size (), 1);
+  EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 64);
+
+  process_events_until_true ([this, count_before_change] () {
+    return mock_hw_->process_call_count () >= count_before_change + 5;
+  });
+
+  auto * session_after = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_NE (session_after, nullptr);
+  EXPECT_EQ (
+    session_after->state (),
+    controllers::AudioRecordingSession::State::Capturing)
+    << "Session should remain in Capturing state after block length shrink";
+
+  auto post_packets = collect_recorded_packets (session_after);
+  EXPECT_FALSE (post_packets.empty ())
+    << "Session should continue recording after block length shrink";
+
+  bool has_shrunk_block_length =
+    std::ranges::any_of (post_packets, [] (const auto &packet) {
+      return packet.nframes == units::samples (64u);
+    });
+  EXPECT_TRUE (has_shrunk_block_length)
+    << "At least one post-shrink packet should use the new block length";
 
   stop_engine ();
 }

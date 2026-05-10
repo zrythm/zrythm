@@ -156,6 +156,12 @@ ProjectSession::ProjectSession (
         }
     });
 
+  QObject::connect (
+    project_->engine (), &dsp::AudioEngine::blockLengthChanged, coordinator,
+    [coordinator] (int block_length) {
+      coordinator->prepare_for_processing (units::samples (block_length));
+    });
+
   recording_materializer_ = utils::make_qobject_unique<
     controllers::RecordingMaterializer> (
     *recording_coordinator_, *undo_stack_,

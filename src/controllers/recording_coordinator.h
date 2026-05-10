@@ -111,6 +111,16 @@ public:
   session_for_track (structure::tracks::TrackUuid track_id) const noexcept
     [[clang::nonblocking]];
 
+  /**
+   * @brief Prepares all active sessions for processing at the given block
+   * length.
+   *
+   * Buffers are only grown, never shrunk. Must be called before audio
+   * processing starts (not concurrently with write_samples() or
+   * drain_pending()).
+   */
+  void prepare_for_processing (units::sample_u32_t block_length);
+
 Q_SIGNALS:
 
   /**

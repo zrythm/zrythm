@@ -47,7 +47,7 @@ struct AudioRecordingSession::Impl
   std::vector<RecordingAudioPacket> slots;
   IndexFifo                         index_buffer;
   size_t                            next_write_slot = 0;
-  const units::sample_u32_t         max_block_length;
+  units::sample_u32_t               max_block_length;
 };
 
 AudioRecordingSession::AudioRecordingSession (
@@ -57,6 +57,22 @@ AudioRecordingSession::AudioRecordingSession (
 }
 
 AudioRecordingSession::~AudioRecordingSession () = default;
+
+void
+AudioRecordingSession::prepare_for_processing (units::sample_u32_t block_length)
+{
+  assert (block_length > units::samples (0u));
+  if (block_length > impl_->max_block_length)
+    {
+      const auto new_size = block_length.in (units::samples);
+      for (auto &slot : impl_->slots)
+        {
+          slot.l_frames.resize (new_size);
+          slot.r_frames.resize (new_size);
+        }
+    }
+  impl_->max_block_length = block_length;
+}
 
 void
 AudioRecordingSession::write_samples (

@@ -23,6 +23,7 @@ class AudioEngine : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (int sampleRate READ sampleRate NOTIFY sampleRateChanged)
+  Q_PROPERTY (int blockLength READ blockLength NOTIFY blockLengthChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -74,8 +75,13 @@ public:
   }
 
   int sampleRate () const { return get_sample_rate ().in (units::sample_rate); }
+  int blockLength () const
+  {
+    return get_block_length ().in<int> (units::samples);
+  }
 
   Q_SIGNAL void sampleRateChanged (int sampleRate);
+  Q_SIGNAL void blockLengthChanged (int blockLength);
 
   // =========================================================
 
