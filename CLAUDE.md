@@ -36,11 +36,21 @@ ctest --test-dir builddir_cmake -R "TransportControllerTest" --output-on-failure
 ctest --test-dir builddir_cmake -N
 
 # Run specific test binary directly
-./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests
+./builddir_cmake/products/bin/zrythm_dsp_unit_tests
 
 # Run specific test case with filter
-./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests --gtest_filter=TempoMapTest.testCaseName
+./builddir_cmake/products/bin/zrythm_dsp_unit_tests --gtest_filter=TempoMapTest.testCaseName
 ```
+
+### Test Binary Target Names
+
+Test binary targets follow a strict naming convention. **Do not guess target names** — derive them from the pattern:
+
+- **Unit tests**: `zrythm_<path_with_underscores>_unit_tests` — where `<path_with_underscores>` is the directory path under `tests/unit/` with `/` replaced by `_` (e.g., `tests/unit/structure/tracks/` → `zrythm_structure_tracks_unit_tests`)
+- **Benchmarks**: `zrythm_<path_with_underscores>_benchmarks` (same pattern, under `tests/benchmarks/`)
+- **Integration tests**: `zrythm_integration_tests`
+
+When unsure, list all targets with: `ctest --test-dir builddir_cmake -N`
 
 ### Packaging
 
@@ -308,6 +318,13 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
 - Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
+
+### Flaky Test Prevention
+
+- Use condition variables, latches, or `QSignalSpy::wait()` for synchronization — never `sleep()` or timed waits
+- Make temp directories unique per test (e.g., prepend test name) and clean them up in teardown
+- Avoid depending on real-time clocks, network, or filesystem state in unit tests; mock or abstract these away
+- Use deterministic seeds for any randomized test inputs (e.g., pass a fixed seed to `std::mt19937`)
 
 ### Test Utilities
 
