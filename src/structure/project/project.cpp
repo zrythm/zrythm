@@ -169,6 +169,12 @@ Project::Project (
           return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
         }())
 {
+  QObject::connect (
+    audio_engine_.get (), &dsp::AudioEngine::sampleRateChanged,
+    tempo_map_wrapper_.get (), [this] (int new_rate) {
+      tempo_map_wrapper_->setSampleRate (static_cast<double> (new_rate));
+    });
+
   // Keep up-to-date realtime cache of tracks
   // Note: this is thread-safe since tracks are only added/removed while the
   // graph is paused
