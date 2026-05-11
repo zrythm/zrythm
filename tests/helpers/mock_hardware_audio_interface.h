@@ -7,7 +7,6 @@
 
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/iaudio_callback.h"
-#include "utils/utf8_string.h"
 
 namespace zrythm::test_helpers
 {
@@ -15,8 +14,7 @@ namespace zrythm::test_helpers
 /**
  * @brief Mock hardware audio interface for unit tests.
  *
- * Returns fixed sample rate and block length values without any
- * JUCE or ALSA/MIDI dependencies.
+ * Returns fixed device info without any audio backend dependencies.
  */
 class MockHardwareAudioInterface : public dsp::IHardwareAudioInterface
 {
@@ -26,27 +24,31 @@ public:
     units::sample_u32_t    block_length = units::samples (256),
     units::channel_count_t input_channels = units::channels (2),
     units::channel_count_t output_channels = units::channels (2))
-      : sample_rate_ (sample_rate), block_length_ (block_length),
-        input_channels_ (input_channels), output_channels_ (output_channels)
+      : device_info_{
+          .device_name = {},
+          .sample_rate = sample_rate,
+          .block_length = block_length,
+          .input_channel_count = input_channels,
+          .output_channel_count = output_channels,
+        }
   {
   }
 
-  [[nodiscard]] units::sample_u32_t get_block_length () const override
+  [[nodiscard]] dsp::AudioDeviceInfo get_device_info () const override
   {
-    return block_length_;
-  }
-  [[nodiscard]] units::sample_rate_t get_sample_rate () const override
-  {
-    return sample_rate_;
-  }
-  [[nodiscard]] utils::Utf8String get_device_name () const override
-  {
-    return device_name_;
+    return device_info_;
   }
 
-  void set_device_name (utils::Utf8String name)
+  /**
+   * @brief Updates the device info.
+   *
+   * Must not be called while audio processing is active (between
+   * about_to_start() and stopped()).
+   */
+  void set_device_info (dsp::AudioDeviceInfo info)
   {
-    device_name_ = std::move (name);
+    assert (!processing_active_);
+    device_info_ = std::move (info);
   }
 
   void add_audio_callback (dsp::IAudioCallback * callback) override
@@ -55,7 +57,8 @@ public:
     callback_ = callback;
     if (callback_ != nullptr)
       {
-        callback_->about_to_start (make_device_info ());
+        processing_active_ = true;
+        callback_->about_to_start ();
       }
   }
 
@@ -67,25 +70,13 @@ public:
         callback_->stopped ();
       }
     callback_ = nullptr;
+    processing_active_ = false;
   }
 
 private:
-  dsp::AudioDeviceInfo make_device_info () const
-  {
-    return {
-      .sample_rate = sample_rate_,
-      .block_length = block_length_,
-      .input_channel_count = input_channels_,
-      .output_channel_count = output_channels_,
-    };
-  }
-
-  units::sample_rate_t   sample_rate_;
-  units::sample_u32_t    block_length_;
-  units::channel_count_t input_channels_;
-  units::channel_count_t output_channels_;
-  utils::Utf8String      device_name_;
-  dsp::IAudioCallback *  callback_ = nullptr;
+  dsp::AudioDeviceInfo  device_info_;
+  dsp::IAudioCallback * callback_ = nullptr;
+  bool                  processing_active_ = false;
 };
 
 } // namespace zrythm::test_helpers

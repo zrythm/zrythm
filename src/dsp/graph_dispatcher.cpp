@@ -116,8 +116,9 @@ DspGraphDispatcher::recalc_graph (bool soft)
 {
   z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
 
-  const auto sample_rate = hw_interface_.get_sample_rate ();
-  const auto buffer_size = hw_interface_.get_block_length ();
+  const auto device_info = hw_interface_.get_device_info ();
+  const auto sample_rate = device_info.sample_rate;
+  const auto buffer_size = device_info.block_length;
 
   const auto rebuild_graph = [&] () {
     graph::Graph graph;

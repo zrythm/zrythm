@@ -61,6 +61,7 @@ target_sources(zrythm_dsp_lib
       atomic_position.h
       atomic_position_qml_adapter.h
       audio_callback.h
+      audio_device_info.h
       audio_input_selection.h
       audio_input_processor.h
       audio_pool.h

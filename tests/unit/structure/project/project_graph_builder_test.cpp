@@ -233,8 +233,14 @@ TEST_F (ProjectGraphBuilderTest, AudioInputConnectedWhenDeviceNameMatches)
   auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
     hw_interface_.get ());
   ASSERT_NE (mock_hw, nullptr);
-  mock_hw->set_device_name (
-    utils::Utf8String::from_utf8_encoded_string (device_name));
+  mock_hw->set_device_info (
+    {
+      .device_name = utils::Utf8String::from_utf8_encoded_string (device_name),
+      .sample_rate = units::sample_rate (48000),
+      .block_length = units::samples (256),
+      .input_channel_count = units::channels (2),
+      .output_channel_count = units::channels (2),
+    });
 
   auto project = create_project ();
   project->add_default_tracks ();
@@ -265,8 +271,15 @@ TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameDiffers)
   auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
     hw_interface_.get ());
   ASSERT_NE (mock_hw, nullptr);
-  mock_hw->set_device_name (
-    utils::Utf8String::from_utf8_encoded_string ("Current Device"));
+  mock_hw->set_device_info (
+    {
+      .device_name =
+        utils::Utf8String::from_utf8_encoded_string ("Current Device"),
+      .sample_rate = units::sample_rate (48000),
+      .block_length = units::samples (256),
+      .input_channel_count = units::channels (2),
+      .output_channel_count = units::channels (2),
+    });
 
   auto project = create_project ();
   project->add_default_tracks ();
@@ -297,8 +310,14 @@ TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameEmpty)
   auto * mock_hw = dynamic_cast<test_helpers::MockHardwareAudioInterface *> (
     hw_interface_.get ());
   ASSERT_NE (mock_hw, nullptr);
-  mock_hw->set_device_name (
-    utils::Utf8String::from_utf8_encoded_string ("Test Device"));
+  mock_hw->set_device_info (
+    {
+      .device_name = utils::Utf8String::from_utf8_encoded_string ("Test Device"),
+      .sample_rate = units::sample_rate (48000),
+      .block_length = units::samples (256),
+      .input_channel_count = units::channels (2),
+      .output_channel_count = units::channels (2),
+    });
 
   auto project = create_project ();
   project->add_default_tracks ();

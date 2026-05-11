@@ -130,7 +130,7 @@ ProjectSession::ProjectSession (
       if (armed)
         {
           static constexpr auto kDefaultMaxBlockLength = units::samples (8192u);
-          auto block_length = project_->engine ()->get_block_length ();
+          auto block_length = project_->engine ()->block_length ();
           coordinator_ptr->arm_track (
             track->get_uuid (),
             block_length > units::samples (0u)

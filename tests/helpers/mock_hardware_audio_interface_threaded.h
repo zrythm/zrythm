@@ -27,29 +27,33 @@ public:
     units::sample_u32_t    block_length = units::samples (256),
     units::channel_count_t input_channels = units::channels (2),
     units::channel_count_t output_channels = units::channels (2))
-      : sample_rate_ (sample_rate), block_length_ (block_length),
-        input_channels_ (input_channels), output_channels_ (output_channels)
+      : device_info_{
+          .device_name = {},
+          .sample_rate = sample_rate,
+          .block_length = block_length,
+          .input_channel_count = input_channels,
+          .output_channel_count = output_channels,
+        }
   {
   }
 
   ~ThreadedMockHardwareAudioInterface () override { stop (); }
 
-  [[nodiscard]] units::sample_u32_t get_block_length () const override
+  [[nodiscard]] dsp::AudioDeviceInfo get_device_info () const override
   {
-    return block_length_;
-  }
-  [[nodiscard]] units::sample_rate_t get_sample_rate () const override
-  {
-    return sample_rate_;
-  }
-  [[nodiscard]] utils::Utf8String get_device_name () const override
-  {
-    return device_name_;
+    return device_info_;
   }
 
-  void set_device_name (utils::Utf8String name)
+  /**
+   * @brief Updates the device info.
+   *
+   * Must not be called while audio processing is active (between
+   * about_to_start() and stopped()).
+   */
+  void set_device_info (dsp::AudioDeviceInfo info)
   {
-    device_name_ = std::move (name);
+    assert (!processing_active_.load (std::memory_order_acquire));
+    device_info_ = std::move (info);
   }
 
   /**
@@ -74,7 +78,7 @@ public:
     if (callback != nullptr)
       {
         callback_.store (callback, std::memory_order_release);
-        start_callback_thread (make_device_info ());
+        start_callback_thread ();
       }
   }
 
@@ -87,51 +91,42 @@ public:
         cb->stopped ();
       }
     callback_.store (nullptr, std::memory_order_release);
+    processing_active_.store (false, std::memory_order_release);
   }
 
-  void simulate_device_change (const dsp::AudioDeviceInfo &new_info)
+  void simulate_device_change (dsp::AudioDeviceInfo new_info)
   {
     stop ();
     auto * cb = callback_.load (std::memory_order_acquire);
     if (cb != nullptr)
       {
         cb->stopped ();
-        // Sync member variables so the thread lambda and public getters
-        // (get_sample_rate, get_block_length) reflect the new device.
-        // This will be removed when get_sample_rate/get_block_length are
-        // removed from IHardwareAudioInterface and cached in Engine
-        // instead.
-        sample_rate_ = new_info.sample_rate;
-        block_length_ = new_info.block_length;
-        input_channels_ = new_info.input_channel_count;
-        output_channels_ = new_info.output_channel_count;
-        start_callback_thread (new_info);
+        processing_active_.store (false, std::memory_order_release);
+        device_info_ = std::move (new_info);
+        start_callback_thread ();
       }
   }
 
 private:
-  void start_callback_thread (const dsp::AudioDeviceInfo &info)
+  void start_callback_thread ()
   {
     auto * cb = callback_.load (std::memory_order_acquire);
-    cb->about_to_start (info);
+    cb->about_to_start ();
+    processing_active_.store (true, std::memory_order_release);
 
     is_running_.store (true, std::memory_order_release);
     callback_thread_ = std::jthread ([this] (std::stop_token stoken) {
-      const auto num_channels = input_channels_.in<int> (units::channels);
-      std::vector<float> output_buf (
-        block_length_.in (units::samples) *num_channels, 0.f);
-      std::vector<float> input_buf (
-        block_length_.in (units::samples) *num_channels, 0.f);
-      std::vector<float *>       output_ptrs (num_channels);
+      const auto num_channels =
+        device_info_.input_channel_count.in<int> (units::channels);
+      const auto           bl = device_info_.block_length.in (units::samples);
+      std::vector<float>   output_buf (bl * num_channels, 0.f);
+      std::vector<float>   input_buf (bl * num_channels, 0.f);
+      std::vector<float *> output_ptrs (num_channels);
       std::vector<const float *> input_ptrs (num_channels);
       for (int ch = 0; ch < num_channels; ++ch)
         {
-          output_ptrs[ch] =
-            output_buf.data ()
-            + (static_cast<size_t> (ch) * block_length_.in (units::samples));
-          input_ptrs[ch] =
-            input_buf.data ()
-            + (static_cast<size_t> (ch) * block_length_.in (units::samples));
+          output_ptrs[ch] = output_buf.data () + (static_cast<size_t> (ch) * bl);
+          input_ptrs[ch] = input_buf.data () + (static_cast<size_t> (ch) * bl);
         }
 
       while (
@@ -144,25 +139,15 @@ private:
               current_cb->process_audio (
                 { input_ptrs.data (), static_cast<size_t> (num_channels) },
                 { output_ptrs.data (), static_cast<size_t> (num_channels) },
-                block_length_);
+                device_info_.block_length);
               process_call_count_.fetch_add (1, std::memory_order_acq_rel);
             }
           auto sleep_us = static_cast<int64_t> (
-            block_length_.in<double> (units::samples) * 1'000'000.0
-            / sample_rate_.in (units::sample_rate));
+            device_info_.block_length.in<double> (units::samples) * 1'000'000.0
+            / device_info_.sample_rate.in (units::sample_rate));
           std::this_thread::sleep_for (std::chrono::microseconds (sleep_us));
         }
     });
-  }
-
-  dsp::AudioDeviceInfo make_device_info () const
-  {
-    return {
-      .sample_rate = sample_rate_,
-      .block_length = block_length_,
-      .input_channel_count = input_channels_,
-      .output_channel_count = output_channels_,
-    };
   }
 
   void stop ()
@@ -175,11 +160,8 @@ private:
       }
   }
 
-  units::sample_rate_t               sample_rate_;
-  units::sample_u32_t                block_length_;
-  units::channel_count_t             input_channels_;
-  units::channel_count_t             output_channels_;
-  utils::Utf8String                  device_name_;
+  dsp::AudioDeviceInfo               device_info_;
+  std::atomic<bool>                  processing_active_{ false };
   std::atomic<dsp::IAudioCallback *> callback_{ nullptr };
   std::atomic<bool>                  is_running_{ false };
   std::atomic<std::size_t>           process_call_count_{ 0 };

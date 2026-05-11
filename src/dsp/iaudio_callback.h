@@ -12,20 +12,6 @@ namespace zrythm::dsp
 {
 
 /**
- * @brief Information about an audio device, provided when the device starts.
- *
- * Contains the device configuration that callbacks need to prepare for
- * processing.
- */
-struct AudioDeviceInfo
-{
-  units::sample_rate_t   sample_rate;
-  units::sample_u32_t    block_length;
-  units::channel_count_t input_channel_count;
-  units::channel_count_t output_channel_count;
-};
-
-/**
  * @brief Pure-abstract audio callback interface.
  *
  * Decouples the audio engine from any specific audio backend (e.g., JUCE).
@@ -47,10 +33,8 @@ public:
 
   /**
    * @brief Called when the audio device is about to start processing.
-   *
-   * @param info Device configuration (sample rate, buffer size, channel counts).
    */
-  virtual void about_to_start (const AudioDeviceInfo &info) = 0;
+  virtual void about_to_start () = 0;
 
   /**
    * @brief Called when the audio device has stopped.

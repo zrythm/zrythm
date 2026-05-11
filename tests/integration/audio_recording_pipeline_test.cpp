@@ -106,7 +106,7 @@ protected:
 
   units::sample_u32_t block_length () const
   {
-    const auto bl = project_->engine ()->get_block_length ();
+    const auto bl = project_->engine ()->block_length ();
     assert (bl > units::samples (0u));
     return bl;
   }
@@ -153,7 +153,7 @@ protected:
 
     auto clip_ref = file_registry.create_object<dsp::FileAudioSource> (
       initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
-      project_->engine ()->get_sample_rate (), 120.f, u8"RecordingClip");
+      project_->engine ()->sample_rate (), 120.f, u8"RecordingClip");
 
     auto source_obj_ref =
       obj_registry.create_object<structure::arrangement::AudioSourceObject> (
@@ -338,6 +338,7 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthIncreaseDuringRecording)
   ASSERT_FALSE (pre_packets.empty ());
 
   dsp::AudioDeviceInfo new_device_info{
+    .device_name = u8"Test Device 2",
     .sample_rate = units::sample_rate (48000),
     .block_length = units::samples (512),
     .input_channel_count = units::channels (4),
@@ -399,6 +400,7 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthShrinkDuringRecording)
   ASSERT_FALSE (pre_packets.empty ());
 
   dsp::AudioDeviceInfo new_device_info{
+    .device_name = u8"Test Device Small",
     .sample_rate = units::sample_rate (48000),
     .block_length = units::samples (64),
     .input_channel_count = units::channels (2),
@@ -769,7 +771,7 @@ TEST_F (AudioRecordingPipelineTest, RecordedAudioDataIntegrity)
   EXPECT_GT (num_frames, 0) << "Clip should contain audio frames";
 
   const auto expected_min_frames =
-    project_->engine ()->get_block_length ().in (units::samples) * 2;
+    static_cast<size_t> (project_->engine ()->blockLength ()) * 2;
   EXPECT_GE (num_frames, expected_min_frames)
     << "Clip should contain at least 2 engine cycles worth of frames";
 

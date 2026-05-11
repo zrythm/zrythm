@@ -45,7 +45,7 @@ protected:
   AudioCallback::DeviceAboutToStartCallback
   create_mock_about_to_start_callback ()
   {
-    return [this] (const AudioDeviceInfo &) { about_to_start_called_ = true; };
+    return [this] () { about_to_start_called_ = true; };
   }
 
   AudioCallback::DeviceStoppedCallback create_mock_stopped_callback ()
@@ -62,21 +62,11 @@ protected:
   }
   static auto create_empty_about_to_start_cb ()
   {
-    return [] (const AudioDeviceInfo &) { };
+    return [] () { };
   }
   static auto create_empty_stopped_cb ()
   {
     return [] () { };
-  }
-
-  static auto make_default_device_info ()
-  {
-    return AudioDeviceInfo{
-      .sample_rate = units::sample_rate (48000),
-      .block_length = units::samples (256),
-      .input_channel_count = units::channels (2),
-      .output_channel_count = units::channels (2),
-    };
   }
 
   // Test data members
@@ -213,7 +203,7 @@ TEST_F (AudioCallbackTest, AboutToStartWithCallback)
   AudioCallback audio_callback (
     create_empty_process_cb (), about_to_start_cb, create_empty_stopped_cb ());
 
-  audio_callback.about_to_start (make_default_device_info ());
+  audio_callback.about_to_start ();
 
   EXPECT_TRUE (about_to_start_called_);
 }
@@ -225,7 +215,7 @@ TEST_F (AudioCallbackTest, AboutToStartWithEmptyCallback)
     create_empty_stopped_cb ());
 
   // Should not crash with empty callback
-  audio_callback.about_to_start (make_default_device_info ());
+  audio_callback.about_to_start ();
 
   EXPECT_FALSE (about_to_start_called_);
 }
@@ -311,7 +301,7 @@ TEST_F (AudioCallbackTest, CallbackOrderInRealScenario)
 
   AudioCallback audio_callback (process_cb, about_to_start_cb, stopped_cb);
 
-  audio_callback.about_to_start (make_default_device_info ());
+  audio_callback.about_to_start ();
   EXPECT_TRUE (about_to_start_called_);
   EXPECT_FALSE (process_cb_called_);
   EXPECT_FALSE (stopped_called_);

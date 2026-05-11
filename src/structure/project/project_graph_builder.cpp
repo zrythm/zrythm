@@ -324,7 +324,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                     {
                       if (
                         !sel->deviceName ().isEmpty ()
-                        && sel->deviceName () == engine->get_hw_device_name ())
+                        && sel->deviceName () == engine->device_name ())
                         {
                           auto * src_port =
                             engine->audio_input_processor ()->find_output_port (

@@ -35,6 +35,36 @@
 namespace zrythm::dsp
 {
 
+int
+AudioEngine::sampleRate () const
+{
+  return sample_rate ().in (units::sample_rate);
+}
+
+int
+AudioEngine::blockLength () const
+{
+  return block_length ().in<int> (units::samples);
+}
+
+units::sample_rate_t
+AudioEngine::sample_rate () const
+{
+  return hw_interface_.get_device_info ().sample_rate;
+}
+
+units::sample_u32_t
+AudioEngine::block_length () const
+{
+  return hw_interface_.get_device_info ().block_length;
+}
+
+utils::Utf8String
+AudioEngine::device_name () const
+{
+  return hw_interface_.get_device_info ().device_name;
+}
+
 AudioEngine::AudioEngine (
   dsp::Transport          &transport,
   IHardwareAudioInterface &hw_interface,
@@ -92,7 +122,9 @@ AudioEngine::AudioEngine (
                   }
               }
           },
-          [this] (const AudioDeviceInfo &info) {
+          [this] () {
+            const auto info = hw_interface_.get_device_info ();
+            cached_device_info_ = info;
             // Keep old processor alive because the graph recalc needs to call
             // release_resources on it
             auto old_processor = std::move (audio_input_processor_);
@@ -110,11 +142,13 @@ AudioEngine::AudioEngine (
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
               nullptr, info.sample_rate, info.block_length);
-            Q_EMIT sampleRateChanged (sampleRate ());
-            Q_EMIT blockLengthChanged (blockLength ());
+            Q_EMIT sampleRateChanged (info.sample_rate.in (units::sample_rate));
+            Q_EMIT blockLengthChanged (
+              info.block_length.in<int> (units::samples));
             callback_running_ = true;
           },
           [this] () {
+            cached_device_info_.reset ();
             monitor_out_.release_resources ();
             callback_running_ = false;
           }))
@@ -269,9 +303,7 @@ AudioEngine::activate_impl (const bool activate)
   z_debug ("Setting engine status to: {}", new_state);
   if (activate)
     {
-      load_measurer_.reset (
-        get_sample_rate ().in (units::sample_rate),
-        get_block_length ().in<int> (units::samples));
+      load_measurer_.reset (sampleRate (), blockLength ());
 
       hw_interface_.add_audio_callback (audio_callback_.get ());
     }
@@ -294,7 +326,8 @@ AudioEngine::process_prepare (
   units::sample_u32_t                              nframes,
   SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
 {
-  const auto block_length = get_block_length ();
+  assert (cached_device_info_.has_value ());
+  const auto block_length = cached_device_info_->block_length;
 
   const auto update_transport_play_state =
     [&] (dsp::ITransport::PlayState play_state) {

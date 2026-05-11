@@ -37,11 +37,11 @@ AudioCallback::process_audio (
 }
 
 void
-AudioCallback::about_to_start (const AudioDeviceInfo &info)
+AudioCallback::about_to_start ()
 {
   if (device_about_to_start_cb_.has_value ())
     {
-      std::invoke (device_about_to_start_cb_.value (), info);
+      std::invoke (device_about_to_start_cb_.value ());
     }
 }
 

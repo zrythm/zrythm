@@ -17,8 +17,7 @@ public:
     std::span<const float * const> inputChannels,
     std::span<float * const>       outputChannels,
     units::sample_u32_t            numSamples)>;
-  using DeviceAboutToStartCallback =
-    std::function<void (const AudioDeviceInfo &)>;
+  using DeviceAboutToStartCallback = std::function<void ()>;
   using DeviceStoppedCallback = std::function<void ()>;
 
   AudioCallback (
@@ -31,7 +30,7 @@ public:
     std::span<const float * const> input_channels,
     std::span<float * const>       output_channels,
     units::sample_u32_t            num_samples) noexcept override;
-  void about_to_start (const AudioDeviceInfo &info) override;
+  void about_to_start () override;
   void stopped () override;
   void error (std::string_view error_message) override;
 

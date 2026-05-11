@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "dsp/audio_callback.h"
 #include "dsp/audio_input_processor.h"
 #include "dsp/audio_port.h"
@@ -74,16 +76,32 @@ public:
     return load_measurer_.getLoadAsPercentage ();
   }
 
-  int sampleRate () const { return get_sample_rate ().in (units::sample_rate); }
-  int blockLength () const
-  {
-    return get_block_length ().in<int> (units::samples);
-  }
+  /**
+   * @brief Current sample rate from the hardware interface (QML-friendly).
+   */
+  int sampleRate () const;
+  /**
+   * @brief Current block length from the hardware interface (QML-friendly).
+   */
+  int blockLength () const;
 
   Q_SIGNAL void sampleRateChanged (int sampleRate);
   Q_SIGNAL void blockLengthChanged (int blockLength);
 
   // =========================================================
+
+  /**
+   * @brief Current sample rate as a unit type.
+   */
+  units::sample_rate_t sample_rate () const;
+  /**
+   * @brief Current block length as a unit type.
+   */
+  units::sample_u32_t block_length () const;
+  /**
+   * @brief Current audio device name from the hardware interface.
+   */
+  utils::Utf8String device_name () const;
 
   /**
    * @param force_pause Whether to force transport
@@ -188,21 +206,6 @@ public:
     return SemaphoreRAII (process_lock_, true);
   }
 
-  units::sample_u32_t get_block_length () const
-  {
-    return hw_interface_.get_block_length ();
-  }
-
-  units::sample_rate_t get_sample_rate () const
-  {
-    return hw_interface_.get_sample_rate ();
-  }
-
-  utils::Utf8String get_hw_device_name () const
-  {
-    return hw_interface_.get_device_name ();
-  }
-
   /**
    * @brief Executes the given function after pausing processing and then
    * resumes processing.
@@ -292,6 +295,8 @@ private:
 
   std::atomic<State> state_{ State::Uninitialized };
   static_assert (decltype (state_)::is_always_lock_free);
+
+  std::optional<dsp::AudioDeviceInfo> cached_device_info_;
 
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
