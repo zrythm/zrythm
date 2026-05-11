@@ -7,6 +7,7 @@
 #include "structure/tracks/track_processor.h"
 
 #include "../../dsp/graph_helpers.h"
+#include <boost/container/static_vector.hpp>
 #include <gtest/gtest.h>
 
 namespace zrythm::structure::tracks
@@ -1377,6 +1378,7 @@ TEST_F (TrackProcessorTest, RecordingCallbackSimpleRange)
   ON_CALL (*transport_, get_play_state ())
     .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
 
+  recording_calls.reserve (4);
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
   ASSERT_EQ (recording_calls.size (), 1u);
@@ -1432,9 +1434,9 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectAudioSpanToCallback)
 
   struct CapturedCall
   {
-    units::sample_t    timeline_position;
-    std::vector<float> l_samples;
-    std::vector<float> r_samples;
+    units::sample_t                             timeline_position;
+    boost::container::static_vector<float, 512> l_samples;
+    boost::container::static_vector<float, 512> r_samples;
   };
   std::vector<CapturedCall> calls;
 
@@ -1503,6 +1505,7 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectAudioSpanToCallback)
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), max_block_length);
 
+  calls.reserve (4);
   processor.process_block (time_nfo, *transport_, *tempo_map_);
 
   // The callback should only fire for the punch range [128, 384).
@@ -1603,9 +1606,9 @@ TEST_F (TrackProcessorTest, RecordingAcrossLoopBoundaryViaGraphNode)
 
   struct CapturedCall
   {
-    units::sample_t    timeline_position;
-    std::vector<float> l_samples;
-    std::vector<float> r_samples;
+    units::sample_t                             timeline_position;
+    boost::container::static_vector<float, 512> l_samples;
+    boost::container::static_vector<float, 512> r_samples;
   };
   std::vector<CapturedCall> calls;
 
@@ -1677,6 +1680,7 @@ TEST_F (TrackProcessorTest, RecordingAcrossLoopBoundaryViaGraphNode)
   //   Chunk 2: [0, 128)   = 128 frames (post-loop, wraps to loop start)
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (256), max_block_length);
+  calls.reserve (4);
   node.process (time_nfo, units::samples (0), *transport_, *tempo_map_);
 
   ASSERT_EQ (calls.size (), 2u);
