@@ -6,6 +6,7 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/scenes/scene.h"
+#include "structure/tracks/clip_playback_data_provider.h"
 #include "structure/tracks/track_collection.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>

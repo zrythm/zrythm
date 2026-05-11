@@ -3,19 +3,22 @@
 
 #pragma once
 
+#include <memory>
+
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
-#include "structure/arrangement/arranger_object_all.h"
-#include "structure/arrangement/timeline_data_provider.h"
-#include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/icloneable.h"
-#include "utils/mpmc_queue.h"
-#include "utils/qt.h"
 
-#include <farbot/RealtimeObject.hpp>
+namespace zrythm::structure::arrangement
+{
+class MidiTimelineDataProvider;
+class AudioTimelineDataProvider;
+}
 
 namespace zrythm::structure::tracks
 {
+class ClipPlaybackDataProvider;
+
 /**
  * A TrackProcessor is a standalone processor that is used as the first step
  * when processing a track in the DSP graph.
@@ -28,23 +31,6 @@ class TrackProcessor final : public QObject, public dsp::ProcessorBase
   QML_ELEMENT
   QML_UNCREATABLE ("")
   Q_DISABLE_COPY_MOVE (TrackProcessor)
-
-  using PortType = dsp::PortType;
-  using PortFlow = dsp::PortFlow;
-
-  struct TrackProcessorProcessingCaches
-  {
-    std::vector<dsp::AudioPort *> audio_ins_rt_;
-    std::vector<dsp::AudioPort *> audio_outs_rt_;
-    dsp::MidiPort *               midi_in_rt_{};
-    dsp::MidiPort *               midi_out_rt_{};
-    dsp::MidiPort *               piano_roll_rt_{};
-    dsp::ProcessorParameter *     mono_param_{};
-    dsp::ProcessorParameter *     input_gain_{};
-    dsp::ProcessorParameter *     output_gain_{};
-    dsp::ProcessorParameter *     monitor_audio_{};
-    dsp::ProcessorParameter *     recording_param_{};
-  };
 
 public:
   using StereoPortPair = std::pair<std::span<float>, std::span<float>>;
@@ -151,7 +137,7 @@ public:
    */
   TrackProcessor (
     const dsp::TempoMap                   &tempo_map,
-    PortType                               signal_type,
+    dsp::PortType                          signal_type,
     TrackNameProvider                      track_name_provider,
     EnabledProvider                        enabled_provider,
     Capabilities                           capabilities,
@@ -168,6 +154,7 @@ public:
         const dsp::MidiEventVector *,
         std::optional<ConstStereoPortPair>) { },
     QObject * parent = nullptr);
+  ~TrackProcessor () override;
 
   bool is_audio () const { return is_audio_; }
 
@@ -217,32 +204,11 @@ public:
     return *get_output_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
 
-  dsp::ProcessorParameter &get_mono_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*mono_id_));
-  }
-  dsp::ProcessorParameter &get_input_gain_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*input_gain_id_));
-  }
-  dsp::ProcessorParameter &get_output_gain_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*output_gain_id_));
-  }
-  dsp::ProcessorParameter &get_monitor_audio_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*monitor_audio_id_));
-  }
-  dsp::ProcessorParameter &get_recording_param () const
-  {
-    assert (ENUM_BITSET_TEST (capabilities_, Capabilities::Recording));
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*recording_id_));
-  }
+  dsp::ProcessorParameter &get_mono_param () const;
+  dsp::ProcessorParameter &get_input_gain_param () const;
+  dsp::ProcessorParameter &get_output_gain_param () const;
+  dsp::ProcessorParameter &get_monitor_audio_param () const;
+  dsp::ProcessorParameter &get_recording_param () const;
 
   bool is_recording_armed () const;
   bool is_recording_armed_rt () const noexcept [[clang::nonblocking]];
@@ -255,13 +221,7 @@ public:
    * @param control_no Control (0-127)
    */
   dsp::ProcessorParameter &
-  get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no)
-  {
-    assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (
-        midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no)));
-  }
+  get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no);
 
   /**
    * MIDI in Port.
@@ -297,13 +257,10 @@ public:
     return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
   }
 
-  auto &timeline_audio_data_provider ()
-  {
-    return *timeline_audio_data_provider_;
-  }
-  auto &timeline_midi_data_provider () { return *timeline_midi_data_provider_; }
+  arrangement::AudioTimelineDataProvider &timeline_audio_data_provider ();
+  arrangement::MidiTimelineDataProvider  &timeline_midi_data_provider ();
 
-  auto &clip_playback_data_provider () { return *clip_playback_data_provider_; }
+  ClipPlaybackDataProvider &clip_playback_data_provider ();
 
   /**
    * @brief Used to enable or disable MIDI event providers.
@@ -371,16 +328,6 @@ private:
     utils::ObjectCloneType clone_type);
 
   /**
-   * Splits the cycle and handles recording for each
-   * slot.
-   */
-  static void handle_recording (
-    const dsp::graph::ProcessBlockInfo   &time_nfo,
-    const dsp::ITransport                &transport,
-    const TrackProcessorProcessingCaches &processing_caches,
-    const RecordingCallbackRT &recording_cb) noexcept [[clang::nonblocking]];
-
-  /**
    * Adds events to midi out based on any changes in MIDI CC control ports.
    */
   [[gnu::hot]] void add_events_from_midi_cc_control_ports (
@@ -405,111 +352,8 @@ private:
   const EnabledProvider   enabled_provider_;
   const TrackNameProvider track_name_provider_;
 
-  std::optional<FillEventsCallback>      fill_events_cb_;
-  RecordingCallbackRT                    handle_recording_cb_;
-  AppendMidiInputsToOutputsFunc          append_midi_inputs_to_outputs_func_;
-  std::optional<TransformMidiInputsFunc> transform_midi_inputs_func_;
-
-  /** Mono toggle, if audio. */
-  std::optional<dsp::ProcessorParameter::Uuid> mono_id_;
-
-  /** Input gain, if audio. */
-  std::optional<dsp::ProcessorParameter::Uuid> input_gain_id_;
-
-  /**
-   * Output gain, if audio.
-   *
-   * This is applied after regions are processed to @ref stereo_out_.
-   */
-  std::optional<dsp::ProcessorParameter::Uuid> output_gain_id_;
-
-  /**
-   * Monitor mode for audio tracks: Off, On, or Auto.
-   *
-   * In Auto mode, input monitoring is active only when the track is armed
-   * for recording. This is only created for audio tracks.
-   */
-  std::optional<dsp::ProcessorParameter::Uuid> monitor_audio_id_;
-
-  std::optional<dsp::ProcessorParameter::Uuid> recording_id_;
-
-#if 0
-  /** Mappings to each CC port. */
-  std::unique_ptr<engine::session::MidiMappings> cc_mappings_;
-#endif
-
-  /**
-   * @brief Runtime caches of MIDI CC and automation controls.
-   */
-  struct MidiCcCaches
-  {
-    /** MIDI CC control ports, 16 channels x 128 controls. */
-    std::array<dsp::ProcessorParameter::Uuid, static_cast<size_t> (16) * 128>
-      midi_cc_ids_;
-
-    using SixteenPortUuidArray = std::array<dsp::ProcessorParameter::Uuid, 16>;
-
-    /** Pitch bend x 16 channels. */
-    SixteenPortUuidArray pitch_bend_ids_;
-
-    /**
-     * Polyphonic key pressure (aftertouch).
-     *
-     * This message is most often sent by pressing down on the key after it
-     * "bottoms out".
-     *
-     * FIXME this is completely wrong. It's supposed to be per-key, so 128 x
-     * 16 ports.
-     */
-    SixteenPortUuidArray poly_key_pressure_ids_;
-
-    /**
-     * Channel pressure (aftertouch).
-     *
-     * This message is different from polyphonic after-touch - sends the
-     * single greatest pressure value (of all the current depressed keys).
-     */
-    SixteenPortUuidArray channel_pressure_ids_;
-
-    /**
-     * A queue of MIDI CC ports whose values have been recently updated.
-     *
-     * This is used during processing to avoid checking every single MIDI CC
-     * port for changes.
-     */
-    MPMCQueue<dsp::ProcessorParameter *> updated_midi_automatable_ports_;
-  };
-
-  std::unique_ptr<MidiCcCaches> midi_cc_caches_;
-
-  // Processing caches
-  std::unique_ptr<TrackProcessorProcessingCaches> processing_caches_;
-
-  /**
-   * @brief MIDI data provider from the timeline.
-   */
-  utils::QObjectUniquePtr<arrangement::MidiTimelineDataProvider>
-    timeline_midi_data_provider_;
-
-  /**
-   * @brief MIDI data provider from the timeline.
-   */
-  utils::QObjectUniquePtr<arrangement::AudioTimelineDataProvider>
-    timeline_audio_data_provider_;
-
-  std::unique_ptr<ClipPlaybackDataProvider> clip_playback_data_provider_;
-
-  // TODO: piano roll, recording data providers
-
-  farbot::RealtimeObject<
-    std::optional<MidiEventProviderProcessFunc>,
-    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
-    custom_midi_event_provider_;
-
-  std::atomic<ActiveMidiEventProviders> active_midi_event_providers_;
-  std::atomic<ActiveAudioProviders>     active_audio_providers_;
-
-  static_assert (decltype (active_midi_event_providers_)::is_always_lock_free);
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 }
 

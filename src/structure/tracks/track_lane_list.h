@@ -6,6 +6,7 @@
 #include "structure/tracks/track_lane.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/expandable_tick_range.h"
+#include "utils/qt.h"
 
 namespace zrythm::structure::tracks
 {
