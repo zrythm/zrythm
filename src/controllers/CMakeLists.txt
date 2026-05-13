@@ -53,4 +53,4 @@ qt_add_qml_module(zrythm_controllers_lib
 )
 
 target_precompile_headers(zrythm_controllers_lib REUSE_FROM zrythm_undo_lib)
-target_precompile_headers(zrythm_controllers_libplugin REUSE_FROM zrythm_controllers_lib)
+set_target_properties(zrythm_controllers_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

@@ -28,4 +28,4 @@ qt_add_qml_module(zrythm_undo_lib
   VERSION 1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmUndo
 )
-target_precompile_headers(zrythm_undo_libplugin REUSE_FROM zrythm_commands_lib)
+set_target_properties(zrythm_undo_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

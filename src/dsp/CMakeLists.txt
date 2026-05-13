@@ -139,7 +139,7 @@ qt_add_qml_module(zrythm_dsp_lib
   VERSION 1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmDsp
 )
-target_precompile_headers(zrythm_dsp_libplugin REUSE_FROM zrythm_dsp_lib)
+set_target_properties(zrythm_dsp_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # this breaks things on MSVC (:: in path names)
 # add_library(zrythm::dsp_lib ALIAS zrythm_dsp_lib)
