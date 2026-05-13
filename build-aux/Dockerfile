@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 FROM ubuntu:20.04
@@ -21,12 +21,26 @@ RUN apt-get update && apt-get install -y \
     libxcb-xkb-dev libxcb-xkb1 pax-utils libfontconfig1-dev itstool \
     libxcb-cursor-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb1-dev \
     libxcb-xinerama0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev \
-    libxkbcommon-x11-dev python3.8-venv ccache libc6-dbg
+    libxkbcommon-x11-dev python3.8-venv ccache libc6-dbg libdbus-1-dev
+
+# Binutils
+RUN wget https://sourceware.org/pub/binutils/releases/binutils-2.46.0.tar.xz && \
+    tar -xf binutils-2.46.0.tar.xz && \
+    cd binutils-2.46.0 && \
+    mkdir build && cd build && \
+    ../configure --prefix=/usr/local \
+    --enable-plugins --enable-lto \
+    --with-system-zlib && \
+    make -j$(nproc) && \
+    make install && \
+    cd ../.. && \
+    rm -rf binutils-2.46.0.tar.xz binutils-2.46.0 && \
+    ld --version
 
 # GCC
-RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.2.0/gcc-15.2.0.tar.xz && \
-    tar -xf gcc-15.2.0.tar.xz && \
-    cd gcc-15.2.0 && \
+RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-16.1.0/gcc-16.1.0.tar.xz && \
+    tar -xf gcc-16.1.0.tar.xz && \
+    cd gcc-16.1.0 && \
     ./contrib/download_prerequisites && \
     mkdir gcc-build && cd gcc-build && \
     ../configure CFLAGS_FOR_TARGET='-O2 -fPIC -mtune=generic -fstack-protector-strong -D_FORTIFY_SOURCE=2' \
@@ -40,11 +54,11 @@ RUN wget https://gcc.gnu.org/pub/gcc/releases/gcc-15.2.0/gcc-15.2.0.tar.xz && \
     --enable-libstdcxx-backtrace --enable-link-serialization=1 \
     --enable-linker-build-id --enable-lto --enable-plugin --enable-shared \
     --enable-threads=posix --disable-libssp --disable-libstdcxx-pch \
-    --disable-werror && \
+    --disable-werror --with-ld=/usr/local/bin/ld && \
     make -j$(nproc) && \
     make install && \
     cd .. && \
-    rm -rf gcc-15.2.0.tar.xz gcc-15.2.0 && \
+    rm -rf gcc-16.1.0.tar.xz gcc-16.1.0 && \
     update-alternatives --install /usr/bin/gcc gcc /usr/local/bin/gcc 100 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/local/bin/g++ 100 && \
     update-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc 100 && \
@@ -60,7 +74,8 @@ ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CON
     LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH \
     CMAKE_PREFIX_PATH=/usr/local:$CMAKE_PREFIX_PATH \
     QT_QPA_PLATFORM=offscreen \
-    BOOST_ROOT=/usr/local
+    BOOST_ROOT=/usr/local \
+    APPIMAGE_EXTRACT_AND_RUN=1
 
 # Set up environment for all users
 RUN echo 'export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:$PKG_CONFIG_PATH' > /etc/profile.d/zrythm_env.sh && \
@@ -107,25 +122,30 @@ RUN wget https://lv2plug.in/spec/lv2-1.18.10.tar.xz && \
     rm -rf lv2-1.18.10.tar.xz lv2-1.18.10
 
 # Qt (`-unity-build` removed due to compilation error)
-RUN wget https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.tar.xz && \
-    tar -xf qt-everywhere-src-6.10.0.tar.xz && \
-    cd qt-everywhere-src-6.10.0 && \
+RUN wget https://download.qt.io/official_releases/qt/6.11/6.11.1/single/qt-everywhere-src-6.11.1.tar.xz && \
+    tar -xf qt-everywhere-src-6.11.1.tar.xz && \
+    rm qt-everywhere-src-6.11.1.tar.xz && \
+    cd qt-everywhere-src-6.11.1 && \
     mkdir build-qt-release && cd build-qt-release && \
-    ../configure -prefix /usr/local -release -no-gtk -qt-zlib -qt-libjpeg \
+    ../configure -prefix /usr/local -release -no-gtk -dbus-runtime -qt-zlib -qt-libjpeg \
     -qt-libpng -qt-freetype -qt-pcre -qt-harfbuzz -opensource \
-    -confirm-license -skip qtgrpc -skip qtdoc -skip qtwebengine \
-    -skip qtconnectivity -skip qtsensors -skip qtserialbus -skip qtserialport \
-    -skip qtlocation -skip qtpositioning -skip qtmqtt -skip qtremoteobjects \
-    -skip qtopcua -skip qt5compat -skip qtactiveqt -skip qtcoap \
-    -xcb -pch -force-bundled-libs && \
+    -confirm-license \
+    -skip qtgrpc,qtdoc,qtwebengine,qtconnectivity,qtsensors,qtserialbus,qtserialport,qtlocation,qtpositioning,qtmqtt,qtremoteobjects,qtopcua,qt5compat,qtactiveqt,qtcoap,qtpdf,qtquick3d,qtquick3dphysics \
+    -xcb -opengl desktop -egl -pch -force-bundled-libs && \
     cmake --build . --parallel && \
     cmake --install . && \
     cd ../.. && \
-    rm -rf qt-everywhere-src-6.10.0.tar.xz qt-everywhere-src-6.10.0 && \
+    rm -rf qt-everywhere-src-6.11.1 && \
     qmllint --version
 
 # Install various utilities
-RUN apt-get install -y curl sudo
+RUN apt-get install -y curl sudo patchelf
+
+# appimagetool (not available in Ubuntu 20.04 repos)
+RUN curl -L -o /usr/local/bin/appimagetool \
+    "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage" && \
+    chmod +x /usr/local/bin/appimagetool && \
+    appimagetool --version
 
 # Install gitlab runner too so container can be used as a runner
 # (needs manual registration)
