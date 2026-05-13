@@ -3,10 +3,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <unordered_map>
 
 #include "controllers/recording_coordinator.h"
+#include "controllers/recording_mode.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "undo/undo_stack.h"
 #include "utils/audio.h"
@@ -38,16 +40,27 @@ class RecordingMaterializer : public QObject
   Q_OBJECT
 
 public:
-  using RegionCreator = std::function<std::optional<
-    structure::arrangement::ArrangerObjectUuidReference> (
+  using RecordingMode = recording::RecordingMode;
+
+  struct CreatedRegion
+  {
+    structure::arrangement::ArrangerObjectUuidReference region;
+    size_t                                              actual_lane_index{};
+  };
+  using RegionCreationResult = std::optional<CreatedRegion>;
+  using RegionCreator = std::function<RegionCreationResult (
     structure::tracks::TrackUuid     track_id,
     units::sample_t                  start_position,
-    const utils::audio::AudioBuffer &initial_frames)>;
+    const utils::audio::AudioBuffer &initial_frames,
+    size_t                           lane_index)>;
+
+  using RecordingModeProvider = std::function<RecordingMode ()>;
 
   explicit RecordingMaterializer (
     RecordingCoordinator &recording_coordinator,
     undo::UndoStack      &undo_stack,
     RegionCreator         region_creator,
+    RecordingModeProvider recording_mode_provider,
     QObject *             parent = nullptr);
 
   ~RecordingMaterializer () override;
@@ -60,6 +73,7 @@ private:
     std::optional<structure::arrangement::ArrangerObjectUuidReference>
                                    current_region;
     std::optional<units::sample_t> last_end_position;
+    size_t                         current_lane_index = 0;
   };
 
   void on_audio_data_ready (
@@ -68,6 +82,7 @@ private:
 
   std::optional<structure::arrangement::ArrangerObjectUuidReference>
   get_or_create_region (
+    TrackRecordingState             &state,
     structure::tracks::TrackUuid     track_id,
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames);
@@ -80,6 +95,7 @@ private:
   RecordingCoordinator     &recording_coordinator_;
   QPointer<undo::UndoStack> undo_stack_;
   RegionCreator             region_creator_;
+  RecordingModeProvider     recording_mode_provider_;
 
   std::unordered_map<structure::tracks::TrackUuid, TrackRecordingState>
     track_states_;

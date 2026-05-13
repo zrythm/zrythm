@@ -14,9 +14,11 @@ RecordingMaterializer::RecordingMaterializer (
   RecordingCoordinator &recording_coordinator,
   undo::UndoStack      &undo_stack,
   RegionCreator         region_creator,
+  RecordingModeProvider recording_mode_provider,
   QObject *             parent)
     : QObject (parent), recording_coordinator_ (recording_coordinator),
-      undo_stack_ (&undo_stack), region_creator_ (std::move (region_creator))
+      undo_stack_ (&undo_stack), region_creator_ (std::move (region_creator)),
+      recording_mode_provider_ (std::move (recording_mode_provider))
 {
   QObject::connect (
     &recording_coordinator_, &RecordingCoordinator::audioDataReady, this,
@@ -58,6 +60,23 @@ RecordingMaterializer::on_audio_data_ready (
 
       if (discontinuous && state.current_region.has_value ())
         {
+          const auto mode = recording_mode_provider_ ();
+
+          if (mode == RecordingMode::Takes || mode == RecordingMode::TakesMuted)
+            {
+              if (mode == RecordingMode::TakesMuted)
+                {
+                  auto * prev_region = state.current_region->get_object_as<
+                    structure::arrangement::AudioRegion> ();
+                  if (prev_region != nullptr)
+                    {
+                      prev_region->mute ()->setMuted (true);
+                    }
+                }
+
+              state.current_lane_index++;
+            }
+
           state.current_region.reset ();
         }
 
@@ -69,7 +88,7 @@ RecordingMaterializer::on_audio_data_ready (
       if (!state.current_region.has_value ())
         {
           state.current_region = get_or_create_region (
-            track_id, packet.timeline_position, scratch_buf_);
+            state, track_id, packet.timeline_position, scratch_buf_);
 
           if (!state.current_region.has_value ())
             {
@@ -104,6 +123,7 @@ RecordingMaterializer::on_audio_data_ready (
 
 std::optional<structure::arrangement::ArrangerObjectUuidReference>
 RecordingMaterializer::get_or_create_region (
+  TrackRecordingState             &state,
   structure::tracks::TrackUuid     track_id,
   units::sample_t                  start_position,
   const utils::audio::AudioBuffer &initial_frames)
@@ -115,7 +135,12 @@ RecordingMaterializer::get_or_create_region (
       recording_macro_active_ = true;
     }
 
-  return region_creator_ (track_id, start_position, initial_frames);
+  auto result = region_creator_ (
+    track_id, start_position, initial_frames, state.current_lane_index);
+  if (!result.has_value ())
+    return std::nullopt;
+  state.current_lane_index = result->actual_lane_index;
+  return result->region;
 }
 
 dsp::FileAudioSource *

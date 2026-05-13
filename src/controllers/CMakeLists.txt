@@ -22,6 +22,7 @@ target_sources(zrythm_controllers_lib
       project_saver.h
       recording_coordinator.h
       recording_materializer.h
+      recording_mode.h
       transport_controller.h
 )
 

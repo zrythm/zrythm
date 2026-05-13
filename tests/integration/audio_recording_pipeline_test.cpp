@@ -25,6 +25,8 @@
 #include "structure/tracks/audio_track.h"
 #include "structure/tracks/track.h"
 
+#include <QSignalSpy>
+
 #include "helpers/project_fixture.h"
 
 #include "unit/actions/mock_undo_stack.h"
@@ -181,11 +183,17 @@ protected:
       *coordinator_, *undo_stack_,
       [this] (
         structure::tracks::TrackUuid track_id, units::sample_t start_position,
-        const utils::audio::AudioBuffer &initial_frames)
-        -> std::optional<structure::arrangement::ArrangerObjectUuidReference> {
-        return create_recording_region (
-          track_id, start_position, initial_frames);
-      });
+        const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
+        -> controllers::RecordingMaterializer::RegionCreationResult {
+        auto region_ref_opt =
+          create_recording_region (track_id, start_position, initial_frames);
+        if (!region_ref_opt.has_value ())
+          return std::nullopt;
+        return controllers::RecordingMaterializer::CreatedRegion{
+          std::move (*region_ref_opt), lane_index
+        };
+      },
+      [] () { return controllers::recording::RecordingMode::Takes; });
   }
 
   /**

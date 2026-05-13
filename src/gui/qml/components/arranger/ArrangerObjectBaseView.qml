@@ -25,8 +25,16 @@ Control {
     if (root.isSelected)
       c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
-    return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+    c = Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+
+    if (root._isMuted) {
+      const hsl = Qt.hsla(c.hslHue, c.hslSaturation / 2, c.hslLightness, c.alpha);
+      c = hsl;
+    }
+
+    return c;
   }
+  readonly property bool _isMuted: arrangerObject.mute?.muted ?? false
   required property Track track
   required property UndoStack undoStack
 

@@ -3,7 +3,10 @@
 
 #pragma once
 
-#include <QtQmlIntegration>
+#include "controllers/recording_mode.h"
+
+#include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::dsp
 {
@@ -24,6 +27,7 @@ class TransportController : public QObject
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  QML_EXTENDED_NAMESPACE (zrythm::controllers::recording)
 
 public:
   explicit TransportController (

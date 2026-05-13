@@ -8,6 +8,7 @@
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
 #include <QPointer>
@@ -171,8 +172,8 @@ ProjectSession::ProjectSession (
        arranger_object_creator_.get ()),
      project_ptr = QPointer<structure::project::Project> (project_.get ())] (
       structure::tracks::TrackUuid track_id, units::sample_t start_position,
-      const utils::audio::AudioBuffer &initial_frames)
-      -> std::optional<structure::arrangement::ArrangerObjectUuidReference> {
+      const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
+      -> controllers::RecordingMaterializer::RegionCreationResult {
       if (creator_ptr.isNull () || project_ptr.isNull ())
         return std::nullopt;
 
@@ -184,9 +185,11 @@ ProjectSession::ProjectSession (
         [] (auto * t) -> structure::tracks::Track * { return t; }, *track_var);
 
       assert (!track->lanes ()->lanes ().empty ());
-      const auto lane_idx = track->lanes ()->lanes ().size () - 1;
-      track->lanes ()->create_missing_lanes (lane_idx);
-      auto * lane = track->lanes ()->lanes ().at (lane_idx).get ();
+
+      const auto actual_lane_idx =
+        std::max (lane_index, track->lanes ()->lanes ().size () - 1);
+      track->lanes ()->create_missing_lanes (actual_lane_idx);
+      auto * lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
 
       const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
         units::precise_sample_t (start_position));
@@ -194,8 +197,18 @@ ProjectSession::ProjectSession (
       const auto clip_name = utils::Utf8String::from_qstring (
         QObject::tr ("Recording %1").arg (track->name ()));
 
-      return creator_ptr->add_audio_region_for_recording (
+      auto region_ref = creator_ptr->add_audio_region_for_recording (
         *track, *lane, initial_frames, clip_name, start_ticks.in (units::ticks));
+
+      return controllers::RecordingMaterializer::CreatedRegion{
+        std::move (region_ref), actual_lane_idx
+      };
+    },
+    [&settings = app_settings_] () {
+      using controllers::recording::RecordingMode;
+      return static_cast<RecordingMode> (std::clamp (
+        settings.recordingMode (), 0,
+        static_cast<int> (RecordingMode::TakesMuted)));
     },
     this);
 }

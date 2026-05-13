@@ -68,24 +68,34 @@ protected:
     return region_ref;
   }
 
-  void create_materializer ()
+  void create_materializer (
+    controllers::recording::RecordingMode mode =
+      controllers::recording::RecordingMode::Takes)
   {
     region_create_count_ = 0;
     last_track_id_ = TrackUuid ();
     last_start_position_ = units::samples (0);
+    last_lane_index_ = 0;
 
     materializer_ = std::make_unique<RecordingMaterializer> (
       *coordinator_, *undo_stack_,
       [this] (
         TrackUuid track_id, units::sample_t start_position,
-        const utils::audio::AudioBuffer &initial_frames)
-        -> std::optional<structure::arrangement::ArrangerObjectUuidReference> {
+        const utils::audio::AudioBuffer &initial_frames,
+        size_t lane_index) -> RecordingMaterializer::RegionCreationResult {
         region_create_count_++;
         last_track_id_ = track_id;
         last_start_position_ = start_position;
-        return create_recording_region (
-          track_id, start_position, initial_frames);
-      });
+        last_lane_index_ = lane_index;
+        auto region_ref_opt =
+          create_recording_region (track_id, start_position, initial_frames);
+        if (!region_ref_opt.has_value ())
+          return std::nullopt;
+        return RecordingMaterializer::CreatedRegion{
+          std::move (*region_ref_opt), lane_index
+        };
+      },
+      [mode] () { return mode; });
   }
 
   void write_and_drain (
@@ -139,6 +149,7 @@ protected:
   int             region_create_count_ = 0;
   TrackUuid       last_track_id_;
   units::sample_t last_start_position_;
+  size_t          last_lane_index_ = 0;
 };
 
 TEST_F (RecordingMaterializerTest, TransportRecordingFalseDiscardsData)
@@ -298,10 +309,9 @@ TEST_F (RecordingMaterializerTest, NullRegionCreatorDoesNotCorruptState)
 
   materializer_ = std::make_unique<RecordingMaterializer> (
     *coordinator_, *undo_stack_,
-    [] (TrackUuid, units::sample_t, const utils::audio::AudioBuffer &)
-      -> std::optional<structure::arrangement::ArrangerObjectUuidReference> {
-      return std::nullopt;
-    });
+    [] (TrackUuid, units::sample_t, const utils::audio::AudioBuffer &, size_t)
+      -> RecordingMaterializer::RegionCreationResult { return std::nullopt; },
+    [] () { return controllers::recording::RecordingMode::Takes; });
 
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256));
@@ -371,6 +381,111 @@ TEST_F (RecordingMaterializerTest, DisarmAllTracksFinalizesMacro)
 
   EXPECT_TRUE (undo_stack_->canUndo ())
     << "Macro should be finalized after all tracks disarmed";
+}
+
+TEST_F (RecordingMaterializerTest, TakesMutedModeMutesPrevious)
+{
+  create_materializer (controllers::recording::RecordingMode::TakesMuted);
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256));
+
+  write_and_drain (track_id, units::samples (0), true);
+  EXPECT_EQ (region_create_count_, 1);
+
+  auto * first_region = get_last_created_region ();
+  ASSERT_NE (first_region, nullptr);
+  EXPECT_FALSE (first_region->mute ()->muted ());
+
+  write_and_drain (track_id, units::samples (1000), true);
+  EXPECT_EQ (region_create_count_, 2);
+
+  EXPECT_TRUE (first_region->mute ()->muted ())
+    << "Previous region should be muted in TakesMuted mode";
+
+  auto * second_region = get_last_created_region ();
+  ASSERT_NE (second_region, nullptr);
+  EXPECT_FALSE (second_region->mute ()->muted ());
+}
+
+TEST_F (RecordingMaterializerTest, TakesModeDoesNotMutePrevious)
+{
+  create_materializer (controllers::recording::RecordingMode::Takes);
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256));
+
+  write_and_drain (track_id, units::samples (0), true);
+  EXPECT_EQ (region_create_count_, 1);
+
+  auto * first_region = get_last_created_region ();
+  ASSERT_NE (first_region, nullptr);
+
+  write_and_drain (track_id, units::samples (1000), true);
+  EXPECT_EQ (region_create_count_, 2);
+
+  EXPECT_FALSE (first_region->mute ()->muted ())
+    << "Previous region should NOT be muted in Takes mode";
+}
+
+TEST_F (RecordingMaterializerTest, MultipleLoopBacksMuteAllPrevious)
+{
+  create_materializer (controllers::recording::RecordingMode::TakesMuted);
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256));
+
+  write_and_drain (track_id, units::samples (0), true);
+  write_and_drain (track_id, units::samples (1000), true);
+  write_and_drain (track_id, units::samples (0), true);
+  write_and_drain (track_id, units::samples (1000), true);
+
+  EXPECT_EQ (region_create_count_, 4);
+
+  EXPECT_TRUE (
+    region_refs_[0]
+      .get_object_as<structure::arrangement::AudioRegion> ()
+      ->mute ()
+      ->muted ());
+  EXPECT_TRUE (
+    region_refs_[1]
+      .get_object_as<structure::arrangement::AudioRegion> ()
+      ->mute ()
+      ->muted ());
+  EXPECT_TRUE (
+    region_refs_[2]
+      .get_object_as<structure::arrangement::AudioRegion> ()
+      ->mute ()
+      ->muted ());
+  EXPECT_FALSE (
+    region_refs_[3]
+      .get_object_as<structure::arrangement::AudioRegion> ()
+      ->mute ()
+      ->muted ())
+    << "Latest region should not be muted";
+}
+
+TEST_F (RecordingMaterializerTest, SessionResetClearsLaneIndex)
+{
+  create_materializer (controllers::recording::RecordingMode::Takes);
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256));
+
+  write_and_drain (track_id, units::samples (0), true);
+  EXPECT_EQ (last_lane_index_, 0);
+
+  write_and_drain (track_id, units::samples (1000), true);
+  EXPECT_EQ (last_lane_index_, 1);
+
+  coordinator_->disarm_track (track_id);
+  coordinator_->process_pending ();
+
+  coordinator_->arm_track (track_id, units::samples (256));
+
+  write_and_drain (track_id, units::samples (0), true);
+  EXPECT_EQ (last_lane_index_, 0)
+    << "Lane index should reset after session ends";
 }
 
 }
