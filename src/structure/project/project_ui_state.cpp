@@ -25,7 +25,7 @@ ProjectUiState::ProjectUiState (
       snap_grid_timeline_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           project.tempo_map (),
-          utils::NoteLength::Bar,
+          dsp::notes::NoteLength::Bar,
           [this] {
             return app_settings_.timelineLastCreatedObjectLengthInTicks ();
           },
@@ -33,7 +33,7 @@ ProjectUiState::ProjectUiState (
       snap_grid_editor_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           project.tempo_map (),
-          utils::NoteLength::Note_1_8,
+          dsp::notes::NoteLength::Note_1_8,
           [this] {
             return app_settings_.editorLastCreatedObjectLengthInTicks ();
           },

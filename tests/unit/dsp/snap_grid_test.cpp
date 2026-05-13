@@ -19,7 +19,7 @@ protected:
   {
     tempo_map = std::make_unique<TempoMap> (SAMPLE_RATE);
     snap_grid = std::make_unique<SnapGrid> (
-      *tempo_map, utils::NoteLength ::Note_1_4, [] () { return 0.0; });
+      *tempo_map, dsp::notes::NoteLength ::Note_1_4, [] () { return 0.0; });
   }
 
   std::unique_ptr<TempoMap> tempo_map;
@@ -51,21 +51,21 @@ TEST_F (SnapGridTest, SnapTicksCalculation)
 
   // Test eighth note (1/8)
   snap_grid->setSnapAdaptive (false);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_8);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
   snap_ticks = snap_grid->snapTicks (0);
   EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () / 2.0);
 
   // Test dotted quarter note
   snap_grid->setSnapAdaptive (false);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_4);
-  snap_grid->setSnapNoteType (utils::NoteType::Dotted);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
   snap_ticks = snap_grid->snapTicks (0);
   EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () * 1.5);
 
   // Test triplet quarter note
   snap_grid->setSnapAdaptive (false);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_4);
-  snap_grid->setSnapNoteType (utils::NoteType::Triplet);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Triplet);
   snap_ticks = snap_grid->snapTicks (0);
   EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () * 2.0 / 3.0);
 }
@@ -256,8 +256,8 @@ TEST_F (SnapGridTest, TimeSignatureChanges)
   tempo_map->add_time_signature_event (units::ticks (0), 3, 4);
 
   snap_grid->setSnapAdaptive (false);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Bar);
-  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Bar);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
 
   // Bar length should be 3 * quarter notes = 3 * 960 = 2880 ticks
   double bar_ticks = snap_grid->snapTicks (0);
@@ -323,8 +323,8 @@ TEST_F (SnapGridTest, PropertySignals)
   snap_grid->setKeepOffset (true);
   snap_grid->setSixteenthsVisible (true);
   snap_grid->setBeatsVisible (true);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_8);
-  snap_grid->setSnapNoteType (utils::NoteType::Dotted);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
   snap_grid->setLengthType (SnapGrid::NoteLengthType::Custom);
 }
 
@@ -365,7 +365,7 @@ TEST_F (SnapGridTest, Serialization)
   j = *snap_grid;
 
   // Create new snap grid and deserialize
-  SnapGrid new_snap_grid (*tempo_map, utils::NoteLength::Note_1_4, [] () {
+  SnapGrid new_snap_grid (*tempo_map, dsp::notes::NoteLength::Note_1_4, [] () {
     return 0.0;
   });
   j.get_to (new_snap_grid);
@@ -382,42 +382,42 @@ TEST_F (SnapGridTest, Serialization)
 TEST_F (SnapGridTest, NoteLengthTypeProperties)
 {
   // Test initial values
-  EXPECT_EQ (snap_grid->snapNoteLength (), utils::NoteLength::Note_1_4);
-  EXPECT_EQ (snap_grid->snapNoteType (), utils::NoteType::Normal);
+  EXPECT_EQ (snap_grid->snapNoteLength (), dsp::notes::NoteLength::Note_1_4);
+  EXPECT_EQ (snap_grid->snapNoteType (), dsp::notes::NoteType::Normal);
 
   // Test setting note length
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_8);
-  EXPECT_EQ (snap_grid->snapNoteLength (), utils::NoteLength::Note_1_8);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
+  EXPECT_EQ (snap_grid->snapNoteLength (), dsp::notes::NoteLength::Note_1_8);
 
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_16);
-  EXPECT_EQ (snap_grid->snapNoteLength (), utils::NoteLength::Note_1_16);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_16);
+  EXPECT_EQ (snap_grid->snapNoteLength (), dsp::notes::NoteLength::Note_1_16);
 
-  snap_grid->setSnapNoteLength (utils::NoteLength::Bar);
-  EXPECT_EQ (snap_grid->snapNoteLength (), utils::NoteLength::Bar);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Bar);
+  EXPECT_EQ (snap_grid->snapNoteLength (), dsp::notes::NoteLength::Bar);
 
   // Test setting note type
-  snap_grid->setSnapNoteType (utils::NoteType::Dotted);
-  EXPECT_EQ (snap_grid->snapNoteType (), utils::NoteType::Dotted);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
+  EXPECT_EQ (snap_grid->snapNoteType (), dsp::notes::NoteType::Dotted);
 
-  snap_grid->setSnapNoteType (utils::NoteType::Triplet);
-  EXPECT_EQ (snap_grid->snapNoteType (), utils::NoteType::Triplet);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Triplet);
+  EXPECT_EQ (snap_grid->snapNoteType (), dsp::notes::NoteType::Triplet);
 
-  snap_grid->setSnapNoteType (utils::NoteType::Normal);
-  EXPECT_EQ (snap_grid->snapNoteType (), utils::NoteType::Normal);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
+  EXPECT_EQ (snap_grid->snapNoteType (), dsp::notes::NoteType::Normal);
 
   // Test that snap ticks calculation respects note length and type
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_4);
-  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
   EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq ());
 
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_8);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
   EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () / 2);
 
-  snap_grid->setSnapNoteLength (utils::NoteLength::Note_1_4);
-  snap_grid->setSnapNoteType (utils::NoteType::Dotted);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
   EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () * 1.5);
 
-  snap_grid->setSnapNoteType (utils::NoteType::Triplet);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Triplet);
   EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () * 2.0 / 3.0);
 }
 
@@ -434,8 +434,8 @@ TEST_F (SnapGridTest, SnapPointsRespectTimeSignatureChanges)
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Beat);
-  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Beat);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
 
   // In 4/4 time: each beat is 960 ticks
   // In 3/4 time: each beat is also 960 ticks (same denominator)
@@ -493,8 +493,8 @@ TEST_F (SnapGridTest, SnapPointsWithComplexTimeSignatureChanges)
 
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
-  snap_grid->setSnapNoteLength (utils::NoteLength::Beat);
-  snap_grid->setSnapNoteType (utils::NoteType::Normal);
+  snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Beat);
+  snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
 
   // Test in 4/4 section - beats at 0, 960, 1920, 2880
   EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (0), 960);

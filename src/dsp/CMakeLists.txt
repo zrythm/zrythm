@@ -34,6 +34,7 @@ target_sources(zrythm_dsp_lib
     metronome.cpp
     midi_event.cpp
     midi_port.cpp
+    note_type.cpp
     modulator_macro_processor.cpp
     musical_scale.cpp
     panning.cpp
@@ -93,6 +94,7 @@ target_sources(zrythm_dsp_lib
       midi_port.h
       modulator_macro_processor.h
       musical_scale.h
+      note_type.h
       parameter.h
       panning.h
       passthrough_processors.h

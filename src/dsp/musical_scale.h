@@ -26,10 +26,10 @@ class MusicalScale : public QObject
   Q_PROPERTY (
     ScaleType scaleType READ scaleType WRITE setScaleType NOTIFY scaleTypeChanged)
   Q_PROPERTY (
-    zrythm::dsp::MusicalNote rootKey READ rootKey WRITE setRootKey NOTIFY
-      rootKeyChanged)
+    zrythm::dsp::chords::MusicalNote rootKey READ rootKey WRITE setRootKey
+      NOTIFY rootKeyChanged)
   QML_ELEMENT
-  QML_EXTENDED_NAMESPACE (zrythm::dsp)
+  QML_EXTENDED_NAMESPACE (zrythm::dsp::chords)
 
 public:
   /**

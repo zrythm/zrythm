@@ -1,18 +1,20 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
-namespace zrythm::utils
+namespace zrythm::dsp::notes
 {
 Q_NAMESPACE
+QML_ELEMENT
 
-enum class NoteLength
+enum class NoteLength : std::uint8_t
 {
   Bar,
   Beat,
@@ -26,9 +28,9 @@ enum class NoteLength
   Note_1_64,
   Note_1_128
 };
-Q_ENUM_NS (NoteLength);
+Q_ENUM_NS (NoteLength)
 
-enum class NoteType
+enum class NoteType : std::uint8_t
 {
   Normal,
   Dotted, ///< 2/3 of its original size
@@ -42,4 +44,4 @@ note_length_to_str (NoteLength len);
 std::string_view
 note_type_to_str (NoteType type);
 
-}; // namespace zrythm::utils
+} // namespace zrythm::dsp::notes

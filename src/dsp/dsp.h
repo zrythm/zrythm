@@ -13,6 +13,7 @@
 #include "./itransport.h"
 #include "./midi_event.h"
 #include "./musical_scale.h"
+#include "./note_type.h"
 #include "./parameter.h"
 #include "./port_all.h"
 #include "./port_connection.h"

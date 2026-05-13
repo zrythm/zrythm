@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include "dsp/note_type.h"
 #include "dsp/transport.h"
-#include "utils/note_type.h"
 #include "utils/pcg_rand.h"
 #include "utils/units.h"
 
@@ -24,8 +24,8 @@ class QuantizeOptions final
 {
 public:
   static constexpr auto MAX_SNAP_POINTS = 120096;
-  using NoteLength = utils::NoteLength;
-  using NoteType = utils::NoteType;
+  using NoteLength = dsp::notes::NoteLength;
+  using NoteType = dsp::notes::NoteType;
 
 public:
   QuantizeOptions () = default;

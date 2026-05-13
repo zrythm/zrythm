@@ -30,7 +30,6 @@ target_sources(zrythm_utils_lib
     mem.cpp
     midi.cpp
     networking.cpp
-    note_type.cpp
     pcg_rand.cpp
     playback_cache_scheduler.cpp
     resampler.cpp
@@ -84,7 +83,6 @@ target_sources(zrythm_utils_lib
       monotonic_time_provider.h
       mpmc_queue.h
       networking.h
-      note_type.h
       object_pool.h
       optional_ref.h
       pcg_rand.h

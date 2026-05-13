@@ -32,9 +32,11 @@ ProjectSession::ProjectSession (
           },
           this)),
       quantize_opts_editor_ (
-        std::make_unique<old_dsp::QuantizeOptions> (utils::NoteLength::Note_1_8)),
+        std::make_unique<old_dsp::QuantizeOptions> (
+          dsp::notes::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (
-        std::make_unique<old_dsp::QuantizeOptions> (utils::NoteLength::Note_1_1)),
+        std::make_unique<old_dsp::QuantizeOptions> (
+          dsp::notes::NoteLength::Note_1_1)),
       arranger_object_creator_ (
         utils::make_qobject_unique<actions::ArrangerObjectCreator> (
           *undo_stack_,

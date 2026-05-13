@@ -12,7 +12,6 @@
 #include "./math_utils.h"
 #include "./midi.h"
 #include "./monotonic_time_provider.h"
-#include "./note_type.h"
 #include "./qt.h"
 #include "./rt_thread_id.h"
 #include "./serialization.h"

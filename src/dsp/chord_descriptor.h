@@ -3,18 +3,23 @@
 
 #pragma once
 
+#include <array>
+#include <cstdint>
+
+#include <QObject>
+#include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::utils
 {
 class Utf8String;
 }
 
-#include <QObject>
-
-#include <nlohmann/json_fwd.hpp>
-
-namespace zrythm::dsp
+namespace zrythm::dsp::chords
 {
 Q_NAMESPACE
+QML_ELEMENT
 
 enum class MusicalNote : std::uint8_t
 {
@@ -77,6 +82,15 @@ enum class ChordAccent : std::uint8_t
   SixthThirteenth,
 };
 Q_ENUM_NS (ChordAccent)
+
+} // namespace zrythm::dsp::chords
+
+namespace zrythm::dsp
+{
+
+using MusicalNote = chords::MusicalNote;
+using ChordType = chords::ChordType;
+using ChordAccent = chords::ChordAccent;
 
 /**
  * A ChordDescriptor describes a chord and is not linked to any specific object

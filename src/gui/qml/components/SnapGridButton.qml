@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -164,11 +164,11 @@ Button {
             ComboBox {
               currentIndex: {
                 switch (root.snapGrid.snapNoteType) {
-                case SnapGrid.Normal:
+                case SnapGrid.NoteType.Normal:
                   return 0;
-                case SnapGrid.Triplet:
+                case SnapGrid.NoteType.Triplet:
                   return 1;
-                case SnapGrid.Dotted:
+                case SnapGrid.NoteType.Dotted:
                   return 2;
                 default:
                   return 0;
