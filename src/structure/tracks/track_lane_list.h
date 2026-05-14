@@ -4,7 +4,6 @@
 #pragma once
 
 #include "structure/tracks/track_lane.h"
-#include "structure/tracks/track_processor.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/qt.h"
 
@@ -70,12 +69,9 @@ public:
   Q_SIGNAL void
   laneObjectsNeedRecache (utils::ExpandableTickRange affectedRange);
 
-  // ========================================================================
+  Q_SIGNAL void totalHeightChanged ();
 
-  friend void init_from (
-    TrackLaneList         &obj,
-    const TrackLaneList   &other,
-    utils::ObjectCloneType clone_type);
+  // ========================================================================
 
   [[nodiscard]] size_t size () const noexcept { return lanes_.size (); }
 
@@ -83,44 +79,10 @@ public:
 
   TrackLane * at (size_t idx) const { return lanes_.at (idx).get (); }
 
-#if 0
-  void reserve (size_t size) { lanes_.reserve (size); }
-
-  void push_back (utils::QObjectUniquePtr<TrackLane> &&lane)
-  {
-    const int idx = static_cast<int> (lanes_.size ());
-    beginInsertRows (QModelIndex (), idx, idx);
-    lane->setParent (this);
-    lanes_.emplace_back (std::move (lane));
-    endInsertRows ();
-  }
-#endif
-
   /** Removes last lane. */
-  utils::QObjectUniquePtr<TrackLane> pop_back ()
-  {
-    if (!empty ())
-      {
-        const int idx = static_cast<int> (lanes_.size () - 1);
-        beginRemoveRows (QModelIndex (), idx, idx);
-        auto lane = std::move (lanes_.back ());
-        lanes_.pop_back ();
-        endRemoveRows ();
-        return lane;
-      }
-    return {};
-  }
+  utils::QObjectUniquePtr<TrackLane> pop_back ();
 
-  void clear ()
-  {
-    if (!empty ())
-      {
-        beginRemoveRows (
-          QModelIndex (), 0, static_cast<int> (lanes_.size () - 1));
-        lanes_.clear ();
-        endRemoveRows ();
-      }
-  }
+  void clear ();
 
   auto &lanes () const { return lanes_; }
 

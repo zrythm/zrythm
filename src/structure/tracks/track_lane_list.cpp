@@ -37,7 +37,11 @@ TrackLaneList::TrackLaneList (
               arrangement::AudioRegion>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
+          QObject::connect (
+            lane.get (), &TrackLane::heightChanged, this,
+            &TrackLaneList::totalHeightChanged);
         }
+      Q_EMIT totalHeightChanged ();
     });
   QObject::connect (
     this, &TrackLaneList::rowsAboutToBeRemoved, this,
@@ -55,8 +59,16 @@ TrackLaneList::TrackLaneList (
               arrangement::AudioRegion>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache);
+          QObject::disconnect (
+            lane.get (), &TrackLane::heightChanged, this,
+            &TrackLaneList::totalHeightChanged);
         }
     });
+  QObject::connect (
+    this, &TrackLaneList::rowsRemoved, this, &TrackLaneList::totalHeightChanged);
+  QObject::connect (
+    this, &TrackLaneList::lanesVisibleChanged, this,
+    &TrackLaneList::totalHeightChanged);
 }
 
 // ========================================================================
@@ -199,12 +211,43 @@ TrackLaneList::remove_empty_last_lanes ()
       ++keep_from; // Move past the last non-matching element
     }
 
+  if (keep_from == lanes_.end ())
+    return;
+
   // Erase from keep_from to end
-  beginRemoveRows (
-    {}, static_cast<int> (std::ranges::distance (lanes_.begin (), keep_from)),
-    static_cast<int> (lanes_.size ()));
+  const int first_row =
+    static_cast<int> (std::ranges::distance (lanes_.begin (), keep_from));
+  const int last_row = static_cast<int> (lanes_.size () - 1);
+  beginRemoveRows ({}, first_row, last_row);
   lanes_.erase (keep_from, lanes_.end ());
   endRemoveRows ();
+}
+
+void
+TrackLaneList::clear ()
+{
+  if (!empty ())
+    {
+      beginRemoveRows (QModelIndex (), 0, static_cast<int> (lanes_.size () - 1));
+      lanes_.clear ();
+      endRemoveRows ();
+    }
+}
+
+utils::QObjectUniquePtr<TrackLane>
+TrackLaneList::pop_back ()
+{
+  if (!empty ())
+    {
+      const int idx = static_cast<int> (lanes_.size () - 1);
+      beginRemoveRows (QModelIndex (), idx, idx);
+      auto lane = std::move (lanes_.back ());
+      lane->setParent (nullptr);
+      lanes_.pop_back ();
+      endRemoveRows ();
+      return lane;
+    }
+  return {};
 }
 
 void
@@ -245,28 +288,6 @@ TrackLaneList::update_default_lane_names ()
 }
 
 void
-init_from (
-  TrackLaneList         &obj,
-  const TrackLaneList   &other,
-  utils::ObjectCloneType clone_type)
-{
-  obj.clear ();
-  obj.lanes_.reserve (other.size ());
-  // TODO
-#if 0
-  for (const auto lane_var : other)
-    {
-      std::visit (
-        [&] (auto &&lane) {
-          auto * new_lane = lane->clone_raw_ptr ();
-          push_back (new_lane);
-        },
-        lane_var);
-    }
-#endif
-}
-
-void
 to_json (nlohmann::json &j, const TrackLaneList &p)
 {
   j[TrackLaneList::kLanesKey] = p.lanes_;
@@ -276,13 +297,15 @@ to_json (nlohmann::json &j, const TrackLaneList &p)
 void
 from_json (const nlohmann::json &j, TrackLaneList &p)
 {
-  p.lanes_.clear ();
+  p.clear ();
   for (const auto &lane_json : j.at (TrackLaneList::kLanesKey))
     {
-      auto * lane = p.insertLane (p.lanes_.size ());
+      auto * lane = p.insertLane (p.size ());
       lane_json.get_to (*lane);
     }
-  j.at (TrackLaneList::kLanesVisibleKey).get_to (p.lanes_visible_);
+  bool lanes_visible = false;
+  j.at (TrackLaneList::kLanesVisibleKey).get_to (lanes_visible);
+  p.setLanesVisible (lanes_visible);
 }
 
 TrackLaneList::~TrackLaneList () = default;

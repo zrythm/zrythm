@@ -255,12 +255,12 @@ Track::make_lanes ()
   auto ret = utils::make_qobject_unique<TrackLaneList> (
     base_dependencies_.obj_registry_,
     base_dependencies_.file_audio_source_registry_, this);
-  ret->create_missing_lanes (0);
 
-  // Listen to height changes
   QObject::connect (
-    ret.get (), &TrackLaneList::lanesVisibleChanged, this,
+    ret.get (), &TrackLaneList::totalHeightChanged, this,
     &Track::fullVisibleHeightChanged);
+
+  ret->create_missing_lanes (0);
 
   return ret;
 }
