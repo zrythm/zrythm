@@ -148,7 +148,12 @@ private:
   using Snapshot =
     std::unordered_map<structure::tracks::TrackUuid, AudioRecordingSession *>;
 
+  using DrainResult = std::vector<
+    std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>;
+
   void publish_snapshot ();
+
+  bool drain_pending_deletion (DrainResult &ready);
 
   // TODO: Replace this raw atomic pointer with a proper multi-reader
   // realtime-safe container.  The current approach works but is ugly:

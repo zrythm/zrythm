@@ -322,36 +322,45 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                 {
                   if (auto * sel = sel_provider (tr->get_uuid ()))
                     {
-                      if (
-                        !sel->deviceName ().isEmpty ()
-                        && sel->deviceName () == engine->device_name ())
+                      if (!sel->deviceName ().isEmpty ())
                         {
-                          auto * src_port =
-                            engine->audio_input_processor ()->find_output_port (
-                              sel->firstChannel (), sel->stereo ());
-                          if (src_port)
+                          if (sel->deviceName () == engine->device_name ())
                             {
-                              auto * src_node =
-                                graph.get_nodes ().find_node_for_processable (
-                                  *src_port);
-                              auto * dst_node =
-                                graph.get_nodes ().find_node_for_processable (
-                                  tr->get_track_processor ()
-                                    ->get_stereo_in_port ());
-                              if (src_node && dst_node)
-                                src_node->connect_to (*dst_node);
+                              auto * src_port =
+                                engine->audio_input_processor ()->find_output_port (
+                                  sel->firstChannel (), sel->stereo ());
+                              if (src_port)
+                                {
+                                  auto * src_node =
+                                    graph.get_nodes ()
+                                      .find_node_for_processable (*src_port);
+                                  auto * dst_node =
+                                    graph.get_nodes ().find_node_for_processable (
+                                      tr->get_track_processor ()
+                                        ->get_stereo_in_port ());
+                                  if (src_node && dst_node)
+                                    src_node->connect_to (*dst_node);
+                                  else
+                                    {
+                                      z_warning (
+                                        "Failed to find graph node for audio input connection (src={}, dst={})",
+                                        src_node != nullptr,
+                                        dst_node != nullptr);
+                                    }
+                                }
                               else
                                 {
                                   z_warning (
-                                    "Failed to find graph node for audio input connection (src={}, dst={})",
-                                    src_node != nullptr, dst_node != nullptr);
+                                    "AudioInputProcessor has no output port for channel {} (stereo: {})",
+                                    sel->firstChannel (), sel->stereo ());
                                 }
                             }
                           else
                             {
-                              z_warning (
-                                "AudioInputProcessor has no output port for channel {} (stereo: {})",
-                                sel->firstChannel (), sel->stereo ());
+                              z_debug (
+                                "Audio input selection device '{}' does not match current device '{}' for track {}",
+                                sel->deviceName (), engine->device_name (),
+                                tr->get_uuid ());
                             }
                         }
                     }

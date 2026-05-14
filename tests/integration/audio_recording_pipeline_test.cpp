@@ -218,6 +218,36 @@ protected:
     return packets;
   }
 
+  /**
+   * @brief Drains the coordinator's pending data repeatedly until a condition
+   * is met.
+   *
+   * Calls process_pending() inside process_events_until_true, giving the
+   * materializer a chance to create/expand regions after each drain. The
+   * predicate is checked after each drain cycle.
+   */
+  void drain_until (std::function<bool ()> predicate)
+  {
+    process_events_until_true ([this, pred = std::move (predicate)] () {
+      coordinator_->process_pending ();
+      return pred ();
+    });
+  }
+
+  dsp::FileAudioSource * get_first_clip () const
+  {
+    if (region_refs_.empty ())
+      return nullptr;
+    auto * region =
+      region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
+    auto children = region->get_children_view ();
+    if (children.empty ())
+      return nullptr;
+    auto * source_obj = children.front ();
+    auto   clip_ref = source_obj->audio_source_ref ();
+    return clip_ref.get_object_as<dsp::FileAudioSource> ();
+  }
+
   test_helpers::ThreadedMockHardwareAudioInterface * mock_hw_{};
   size_t initial_process_count_{ 0 };
 
@@ -482,18 +512,13 @@ TEST_F (AudioRecordingPipelineTest, MaterializerCreatesRegionFromEngineAudio)
   ASSERT_FALSE (region_refs_.empty ())
     << "Materializer should have created at least one region";
 
-  auto * region =
-    region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
-  ASSERT_NE (region, nullptr);
-
-  auto children = region->get_children_view ();
-  ASSERT_FALSE (children.empty ());
-  auto * source_obj = children.front ();
-  auto   clip_ref = source_obj->audio_source_ref ();
-  auto * clip = clip_ref.get_object_as<dsp::FileAudioSource> ();
+  auto * clip = get_first_clip ();
   ASSERT_NE (clip, nullptr);
   EXPECT_GT (clip->get_num_frames (), 0)
     << "Recorded clip should contain audio frames";
+
+  auto * region =
+    region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
   EXPECT_GT (region->bounds ()->length ()->ticks (), 0.0)
     << "Region length should be positive";
 }
@@ -568,7 +593,11 @@ TEST_F (AudioRecordingPipelineTest, ContinuousRecordingExpandsSingleRegion)
   stop_engine ();
 
   coordinator_->disarm_track (track->get_uuid ());
-  coordinator_->process_pending ();
+
+  drain_until ([this] {
+    auto * clip = get_first_clip ();
+    return clip != nullptr && clip->get_num_frames () > 256;
+  });
 
   ASSERT_FALSE (region_refs_.empty ());
   // Continuous recording should produce exactly one region (no
@@ -576,13 +605,8 @@ TEST_F (AudioRecordingPipelineTest, ContinuousRecordingExpandsSingleRegion)
   EXPECT_EQ (region_refs_.size (), 1u)
     << "Continuous recording should create a single region";
 
-  auto * region =
-    region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
-  auto children = region->get_children_view ();
-  ASSERT_FALSE (children.empty ());
-  auto * source_obj = children.front ();
-  auto   clip_ref = source_obj->audio_source_ref ();
-  auto * clip = clip_ref.get_object_as<dsp::FileAudioSource> ();
+  auto * clip = get_first_clip ();
+  ASSERT_NE (clip, nullptr);
   EXPECT_GT (clip->get_num_frames (), 256)
     << "Multiple engine cycles should expand the clip beyond one block";
 }
@@ -626,7 +650,7 @@ TEST_F (AudioRecordingPipelineTest, MultiTrackRecordingCreatesRegionsForAll)
 
   coordinator_->disarm_track (track_a->get_uuid ());
   coordinator_->disarm_track (track_b->get_uuid ());
-  coordinator_->process_pending ();
+  drain_until ([this] { return region_refs_.size () >= 2; });
 
   EXPECT_GE (region_refs_.size (), 2u)
     << "Both tracks should have created at least one region each";
@@ -762,30 +786,30 @@ TEST_F (AudioRecordingPipelineTest, RecordedAudioDataIntegrity)
   stop_engine ();
 
   coordinator_->disarm_track (track->get_uuid ());
-  coordinator_->process_pending ();
+
+  const auto expected_min_frames =
+    static_cast<size_t> (project_->engine ()->blockLength ()) * 2;
+  drain_until ([this, expected_min_frames] {
+    auto * clip = get_first_clip ();
+    return clip != nullptr
+           && clip->get_num_frames () >= static_cast<int> (expected_min_frames);
+  });
 
   ASSERT_FALSE (region_refs_.empty ());
 
-  auto * region =
-    region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
-  auto children = region->get_children_view ();
-  ASSERT_FALSE (children.empty ());
-  auto * source_obj = children.front ();
-  auto   clip_ref = source_obj->audio_source_ref ();
-  auto * clip = clip_ref.get_object_as<dsp::FileAudioSource> ();
+  auto * clip = get_first_clip ();
   ASSERT_NE (clip, nullptr);
 
   const auto num_frames = clip->get_num_frames ();
   EXPECT_GT (num_frames, 0) << "Clip should contain audio frames";
-
-  const auto expected_min_frames =
-    static_cast<size_t> (project_->engine ()->blockLength ()) * 2;
-  EXPECT_GE (num_frames, expected_min_frames)
+  EXPECT_GE (num_frames, static_cast<int> (expected_min_frames))
     << "Clip should contain at least 2 engine cycles worth of frames";
 
   EXPECT_EQ (clip->get_num_channels (), 2)
     << "Stereo recording should produce a 2-channel clip";
 
+  auto * region =
+    region_refs_.front ().get_object_as<structure::arrangement::AudioRegion> ();
   const auto region_length_samples = region->bounds ()->length ()->samples ();
   EXPECT_NEAR (region_length_samples, static_cast<double> (num_frames), 1.0)
     << "Region length in samples should match clip frame count";

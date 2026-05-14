@@ -338,4 +338,51 @@ TEST_F (RecordingCoordinatorTest, EndAllSessionsResetsSessionForReuse)
     << "Reset session should accept writes again";
 }
 
+TEST_F (
+  RecordingCoordinatorTest,
+  ProcessPendingDoesNotEmitSessionEndedWithNoActivity)
+{
+  QSignalSpy ended_spy (
+    coordinator_.get (), &RecordingCoordinator::recordingSessionEnded);
+  ASSERT_TRUE (ended_spy.isValid ());
+
+  coordinator_->process_pending ();
+
+  EXPECT_EQ (ended_spy.count (), 0)
+    << "recordingSessionEnded should not be emitted when no recording "
+       "activity occurred";
+}
+
+TEST_F (
+  RecordingCoordinatorTest,
+  FinalizeAllSessionsEmitsSessionEndedWhenAllTracksPreDisarmed)
+{
+  auto track_uuid = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_uuid, units::samples (256));
+
+  auto * session = coordinator_->session_for_track (track_uuid);
+  ASSERT_NE (session, nullptr);
+
+  std::vector<float> l (256, 0.5f);
+  std::vector<float> r (256, 0.3f);
+  session->write_samples (units::samples (0), true, l, r);
+
+  QSignalSpy data_spy (
+    coordinator_.get (), &RecordingCoordinator::audioDataReady);
+  QSignalSpy ended_spy (
+    coordinator_.get (), &RecordingCoordinator::recordingSessionEnded);
+  ASSERT_TRUE (data_spy.isValid ());
+  ASSERT_TRUE (ended_spy.isValid ());
+
+  coordinator_->disarm_track (track_uuid);
+
+  coordinator_->finalizeAllSessions ();
+
+  EXPECT_EQ (data_spy.count (), 1)
+    << "Pending data from disarmed track should be drained";
+  EXPECT_EQ (ended_spy.count (), 1)
+    << "recordingSessionEnded should be emitted even when all tracks "
+       "were disarmed before finalizeAllSessions";
+}
+
 }

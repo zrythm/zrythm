@@ -62,19 +62,28 @@ RecordingMaterializer::on_audio_data_ready (
         {
           const auto mode = recording_mode_provider_ ();
 
-          if (mode == RecordingMode::Takes || mode == RecordingMode::TakesMuted)
+          switch (mode)
             {
-              if (mode == RecordingMode::TakesMuted)
-                {
-                  auto * prev_region = state.current_region->get_object_as<
-                    structure::arrangement::AudioRegion> ();
-                  if (prev_region != nullptr)
-                    {
-                      prev_region->mute ()->setMuted (true);
-                    }
-                }
-
+            case RecordingMode::TakesMuted:
+              {
+                auto * prev_region = state.current_region->get_object_as<
+                  structure::arrangement::AudioRegion> ();
+                if (prev_region != nullptr)
+                  {
+                    prev_region->mute ()->setMuted (true);
+                  }
+              }
+              [[fallthrough]];
+            case RecordingMode::Takes:
               state.current_lane_index++;
+              break;
+            case RecordingMode::OverwriteEvents:
+            case RecordingMode::MergeEvents:
+              z_warning (
+                "Recording mode {} is not yet implemented, falling back to Takes behavior",
+                mode);
+              state.current_lane_index++;
+              break;
             }
 
           state.current_region.reset ();

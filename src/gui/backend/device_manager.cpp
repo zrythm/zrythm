@@ -172,4 +172,4 @@ DeviceManager::DeviceSelectorWindow::closeButtonPressed ()
   QTimer::singleShot (0, dm, [dm] () { dm->device_selector_window_.reset (); });
 }
 
-} // namespace zrythm::engine::device_io
+} // namespace zrythm::gui::backend

@@ -106,9 +106,7 @@ RecordingCoordinator::prepare_for_processing (units::sample_u32_t block_length)
 void
 RecordingCoordinator::process_pending ()
 {
-  std::vector<
-    std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>
-    ready;
+  DrainResult ready;
 
   for (auto &[id, session] : impl_->sessions)
     {
@@ -131,17 +129,7 @@ RecordingCoordinator::process_pending ()
         }
     }
 
-  for (auto &[track_id, session] : impl_->pending_deletion)
-    {
-      auto packets = session->drain_pending ();
-      if (!packets.empty ())
-        {
-          ready.emplace_back (track_id, std::move (packets));
-        }
-    }
-
-  const bool had_pending = !impl_->pending_deletion.empty ();
-  impl_->pending_deletion.clear ();
+  const bool had_pending = drain_pending_deletion (ready);
 
   old_snapshots_.swap (pending_snapshot_deletion_);
 
@@ -160,6 +148,22 @@ RecordingCoordinator::process_pending ()
     }
   else
     impl_->timer->start (kDrainInterval);
+}
+
+bool
+RecordingCoordinator::drain_pending_deletion (DrainResult &ready)
+{
+  for (auto &[track_id, session] : impl_->pending_deletion)
+    {
+      auto packets = session->drain_pending ();
+      if (!packets.empty ())
+        {
+          ready.emplace_back (track_id, std::move (packets));
+        }
+    }
+  const bool had_pending = !impl_->pending_deletion.empty ();
+  impl_->pending_deletion.clear ();
+  return had_pending;
 }
 
 void
@@ -182,9 +186,7 @@ RecordingCoordinator::publish_snapshot ()
 void
 RecordingCoordinator::finalizeAllSessions ()
 {
-  std::vector<
-    std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>
-    ready;
+  DrainResult ready;
 
   for (auto &[id, session] : impl_->sessions)
     {
@@ -201,15 +203,7 @@ RecordingCoordinator::finalizeAllSessions ()
 
   // Also drain pending-deletion sessions to avoid data loss for
   // recently-disarmed tracks.
-  for (auto &[track_id, session] : impl_->pending_deletion)
-    {
-      auto packets = session->drain_pending ();
-      if (!packets.empty ())
-        {
-          ready.emplace_back (track_id, std::move (packets));
-        }
-    }
-  impl_->pending_deletion.clear ();
+  const bool had_pending = drain_pending_deletion (ready);
 
   old_snapshots_.swap (pending_snapshot_deletion_);
 
@@ -218,7 +212,11 @@ RecordingCoordinator::finalizeAllSessions ()
       Q_EMIT audioDataReady (id, std::move (packets));
     }
 
-  if (!impl_->sessions.empty ())
+  // recordingSessionEnded is intentionally emitted whenever any recording
+  // activity occurred — even if all tracks were disarmed before this call
+  // (had_pending is true) and sessions are now empty. An arm/disarm cycle
+  // constitutes a completed session lifecycle that consumers must observe.
+  if (!impl_->sessions.empty () || had_pending)
     {
       Q_EMIT recordingSessionEnded ();
     }
