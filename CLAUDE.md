@@ -321,7 +321,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ### Flaky Test Prevention
 
-- Use condition variables, latches, or `QSignalSpy::wait()` for synchronization — never `sleep()` or timed waits
+- Use condition variables, latches, `QSignalSpy::wait()`, or `QTest::qWaitFor()` for synchronization — never `sleep()` or timed waits such as `QTest::qWait()`
 - Make temp directories unique per test (e.g., prepend test name) and clean them up in teardown
 - Avoid depending on real-time clocks, network, or filesystem state in unit tests; mock or abstract these away
 - Use deterministic seeds for any randomized test inputs (e.g., pass a fixed seed to `std::mt19937`)
