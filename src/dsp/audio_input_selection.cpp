@@ -3,6 +3,8 @@
 
 #include "dsp/audio_input_selection.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 
