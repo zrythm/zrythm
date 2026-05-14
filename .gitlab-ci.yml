@@ -371,7 +371,7 @@ check:sanitizer-thread:
   extends: .sanitizer-template
   variables:
     SANITIZER_TYPE: "THREAD"
-    INSTALLED_QT_PREFIX: "/opt/Qt-6.11.0/Debug-tsan"
+    INSTALLED_QT_PREFIX: "/opt/Qt-6.11.1/Debug-tsan"
     # Linker errors when building bundled plugins
     WITH_BUNDLED_PLUGINS: "OFF"
 
