@@ -24,7 +24,8 @@ class AutomationTrack
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (dsp::ProcessorParameter * parameter READ parameter CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * parameter READ parameter CONSTANT)
   Q_PROPERTY (
     AutomationMode automationMode READ getAutomationMode WRITE setAutomationMode
       NOTIFY automationModeChanged)

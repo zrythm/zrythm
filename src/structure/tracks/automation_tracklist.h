@@ -23,7 +23,9 @@ class AutomationTrackHolder : public QObject
   QML_ELEMENT
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
-  Q_PROPERTY (AutomationTrack * automationTrack READ automationTrack CONSTANT)
+  Q_PROPERTY (
+    zrythm::structure::tracks::AutomationTrack * automationTrack READ
+      automationTrack CONSTANT)
   QML_UNCREATABLE ("")
 
 public:

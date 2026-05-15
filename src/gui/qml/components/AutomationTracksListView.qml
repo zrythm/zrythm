@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -12,7 +12,7 @@ import ZrythmStyle
 ListView {
   id: control
 
-  property var track
+  property Track track
 
   clip: true
   implicitHeight: contentHeight
@@ -21,8 +21,8 @@ ListView {
   delegate: ItemDelegate {
     id: automationTrackItem
 
-    readonly property var automationTrack: automationTrackHolder.automationTrack
-    required property var automationTrackHolder
+    readonly property AutomationTrack automationTrack: automationTrackHolder.automationTrack
+    required property AutomationTrackHolder automationTrackHolder
 
     height: automationTrackHolder.height
     width: ListView.view.width
@@ -62,10 +62,10 @@ ListView {
           Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
           Layout.fillHeight: false
           Layout.fillWidth: true
+          Layout.preferredHeight: Style.buttonHeight
           font: automationColumnLayout.buttonFont
           icon.source: ResourceManager.getIconUrl("zrythm-dark", "automation-4p.svg")
           padding: Style.buttonPadding
-          styleHeight: Style.buttonHeight
           text: automationTrackItem.automationTrackHolder.automationTrack.parameter.label
 
           Component.onCompleted: {
@@ -79,13 +79,23 @@ ListView {
         }
 
         Label {
+          id: currentValueLabel
+
           Layout.alignment: Qt.AlignRight | Qt.AlignBaseline
           Layout.fillHeight: false
           Layout.fillWidth: false
           font: Style.smallTextFont
-          text: {
-            automationTrackItem.automationTrackHolder.automationTrack.parameter.baseValue;
-            return automationTrackItem.automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackItem.automationTrackHolder.automationTrack.parameter.currentValue());
+          text: ""
+
+          Timer {
+            interval: 50
+            repeat: true
+            running: automationTrackItem.visible
+            triggeredOnStart: true
+
+            onTriggered: {
+              currentValueLabel.text = automationTrackItem.automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackItem.automationTrackHolder.automationTrack.parameter.currentValue());
+            }
           }
         }
       }
@@ -111,8 +121,8 @@ ListView {
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 0
             font: automationColumnLayout.buttonFont
+            height: Style.buttonHeight
             padding: Style.buttonPadding
-            styleHeight: Style.buttonHeight
             text: qsTr("On")
 
             onClicked: {
@@ -125,8 +135,8 @@ ListView {
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 1
             font: automationColumnLayout.buttonFont
+            height: Style.buttonHeight
             padding: Style.buttonPadding
-            styleHeight: Style.buttonHeight
             text: automationTrackItem.automationTrack.recordMode === 0 ? qsTr("Touch") : qsTr("Latch")
 
             onClicked: {
@@ -142,8 +152,8 @@ ListView {
             checkable: true
             checked: automationTrackItem.automationTrack.automationMode === 2
             font: automationColumnLayout.buttonFont
+            height: Style.buttonHeight
             padding: Style.buttonPadding
-            styleHeight: Style.buttonHeight
             text: qsTr("Off")
 
             onClicked: {
@@ -168,8 +178,8 @@ ListView {
           Button {
             id: removeAutomationTrackButton
 
+            height: Style.buttonHeight
             padding: Style.buttonPadding
-            styleHeight: Style.buttonHeight
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "remove.svg")
             text: "-"
@@ -192,8 +202,8 @@ ListView {
           Button {
             id: addAutomationTrackButton
 
+            height: Style.buttonHeight
             padding: Style.buttonPadding
-            styleHeight: Style.buttonHeight
 
             // icon.source: ResourceManager.getIconUrl("zrythm-dark", "add.svg")
             text: "+"
@@ -217,11 +227,10 @@ ListView {
     }
 
     ResizeHandle {
-      resizeTarget: automationTrackItem.automationTrackHolder
-
       anchors.bottom: parent.bottom
       anchors.left: parent.left
       anchors.right: parent.right
+      resizeTarget: automationTrackItem.automationTrackHolder
     }
 
     Connections {
