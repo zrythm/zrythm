@@ -21,7 +21,7 @@ Item {
   property real keyWidth: 48 // Width of white keys
   readonly property color labelColor: "#666666"
   readonly property color labelPressedColor: "white"
-  required property var pianoRoll
+  required property PianoRoll pianoRoll
   readonly property int startNote: 0 // Starting MIDI note (0-127)
   readonly property color whiteKeyPressedColor: Qt.tint("white", Qt.alpha(root.palette.highlight, 0.6)) //"#88aaff"
 

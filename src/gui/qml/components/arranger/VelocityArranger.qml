@@ -11,7 +11,7 @@ Arranger {
   id: root
 
   readonly property real maxVelocityHeight: height
-  required property var pianoRoll
+  required property PianoRoll pianoRoll
 
   function beginObjectCreation(x: real, y: real): var {
     return null;

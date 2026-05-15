@@ -709,8 +709,8 @@ Arranger {
           delegate: Item {
             id: automationTrackItem
 
-            readonly property var automationTrack: automationTrackHolder.automationTrack
-            required property var automationTrackHolder
+            readonly property AutomationTrack automationTrack: automationTrackHolder.automationTrack
+            required property AutomationTrackHolder automationTrackHolder
 
             height: automationTrackHolder.height
             width: automationTracksListView.width

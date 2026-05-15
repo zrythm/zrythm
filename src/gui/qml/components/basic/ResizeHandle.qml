@@ -50,9 +50,7 @@ Rectangle {
     }
   }
 
-  MouseArea {
-    acceptedButtons: Qt.NoButton // Pass through mouse events to the DragHandler
-    anchors.fill: parent
+  HoverHandler {
     cursorShape: Qt.SizeVerCursor
   }
 }

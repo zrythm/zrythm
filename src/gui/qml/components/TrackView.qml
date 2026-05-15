@@ -23,8 +23,8 @@ Control {
   required property bool expanded
   required property bool foldable
   property bool isResizing: false
-  property var listViewDraggedTrack: null
-  property var listViewDropTargetFolder: null
+  property Track listViewDraggedTrack: null
+  property Track listViewDropTargetFolder: null
   property int listViewDropTargetIndex: -1
   property bool listViewIsLast: false
   property int listViewPastEndIndex: -1
@@ -67,6 +67,7 @@ Control {
 
     MenuItem {
       id: deleteMenuItem
+
       text: qsTr("Delete Track")
 
       onTriggered: {
@@ -309,6 +310,7 @@ Control {
 
               Layout.fillHeight: true
               Layout.fillWidth: true
+              boundsBehavior: Flickable.StopAtBounds
               implicitHeight: contentHeight
               model: root.track.lanes
 

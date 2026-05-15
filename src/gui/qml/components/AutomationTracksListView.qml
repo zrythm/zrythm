@@ -14,6 +14,7 @@ ListView {
 
   property Track track
 
+  boundsBehavior: Flickable.StopAtBounds
   clip: true
   implicitHeight: contentHeight
   interactive: false

@@ -35,16 +35,13 @@ ColumnLayout {
         text: "<small>" + qsTr("%1 soloed").arg(root.trackCollection.numSoloedTracks) + "</small>"
         textFormat: Text.RichText
 
-        ToolTip {
-          text: qsTr("Currently soloed tracks")
-          visible: soloedTracksLabelMouseArea.containsMouse
+        HoverHandler {
+          id: soloedTracksHover
         }
 
-        MouseArea {
-          id: soloedTracksLabelMouseArea
-
-          anchors.fill: parent
-          hoverEnabled: true
+        ToolTip {
+          text: qsTr("Currently soloed tracks")
+          visible: soloedTracksHover.hovered
         }
       }
 

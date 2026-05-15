@@ -84,7 +84,7 @@ Item {
   required property SnapGrid snapGrid
   property var tempQmlArrangerObjects: []
   required property TempoMap tempoMap
-  required property var tool
+  required property ArrangerTool tool
   required property Transport transport
   required property UndoStack undoStack
   required property UnifiedProxyModel unifiedObjectsModel

@@ -16,8 +16,8 @@ ListView {
   // Drag-and-drop state shared with delegates. Delegate properties are
   // prefixed with "listView" (e.g., listViewDraggedTrack) to distinguish
   // them from these ListView-level properties.
-  property var draggedTrack: null
-  property var dropTargetFolder: null
+  property Track draggedTrack: null
+  property Track dropTargetFolder: null
   property int dropTargetIndex: -1
   required property bool pinned
   required property TrackCollectionOperator trackCollectionOperator
