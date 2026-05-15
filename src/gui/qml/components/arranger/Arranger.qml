@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -417,511 +417,517 @@ Item {
     ScrollBar.vertical.policy: root.enableYScroll ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
     anchors.fill: parent
     clip: true
-    contentHeight: root.enableYScroll ? arrangerContent.height : scrollView.height
-    contentWidth: arrangerContent.width
 
-    Synchronizer {
-      sourceObject: root.editorSettings
-      sourceProperty: "x"
-      targetObject: scrollView.contentItem
-      targetProperty: "contentX"
-    }
+    Flickable {
+      id: flickable
 
-    Loader {
-      active: root.enableYScroll
-      enabled: active
+      boundsBehavior: Flickable.StopAtBounds
+      contentHeight: root.enableYScroll ? arrangerContent.height : flickable.height
+      contentWidth: arrangerContent.width
 
-      sourceComponent: Synchronizer {
+      Synchronizer {
         sourceObject: root.editorSettings
-        sourceProperty: "y"
-        targetObject: scrollView.contentItem
-        targetProperty: "contentY"
-      }
-    }
-
-    Item {
-      id: arrangerContent
-
-      readonly property var appWindow: ApplicationWindow.window
-      property bool arrangerIsActive: activeFocus
-
-      height: root.enableYScroll ? 600 : scrollView.height
-      width: root.ruler.contentWidth
-
-      onActiveFocusChanged: {
-        console.log("active focus", activeFocus, root);
-      }
-      onArrangerIsActiveChanged: {
-        appWindow.activeArranger = arrangerIsActive ? root : null;
+        sourceProperty: "x"
+        targetObject: flickable
+        targetProperty: "contentX"
       }
 
-      Menu {
-        id: arrangerContextMenu
+      Loader {
+        active: root.enableYScroll
+        enabled: active
 
-        onAboutToHide: {
-          arrangerContent.arrangerIsActive = Qt.binding(function () {
-            return arrangerContent.activeFocus;
-          });
+        sourceComponent: Synchronizer {
+          sourceObject: root.editorSettings
+          sourceProperty: "y"
+          targetObject: flickable
+          targetProperty: "contentY"
         }
-        onAboutToShow: {
-          arrangerContent.arrangerIsActive = true;
-        }
-
-        MenuItem {
-          text: qsTr("Copy")
-
-          onTriggered: {}
-        }
-
-        MenuItem {
-          text: qsTr("Paste")
-
-          onTriggered: {}
-        }
-
-        MenuItem {
-          action: arrangerContent.appWindow.deleteAction
-        }
-
-        MenuSeparator {
-        }
-
-        MenuItem {
-          action: arrangerContent.appWindow.toggleMuteAction
-        }
-      }
-
-      Image {
-        id: dropRectImage
-
-        height: 25
-        opacity: arrangerDropArea.containsDrag ? 0.8 : 0.0
-        source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
-        width: 25
-        x: arrangerDropArea.drag.x
-        y: arrangerDropArea.drag.y
-        z: 2
-      }
-
-      Rectangle {
-        id: arrangerDropRect
-
-        anchors.fill: parent
-        color: "grey"
-        opacity: arrangerDropArea.containsDrag ? 0.1 : 0.0
-
-        DropArea {
-          id: arrangerDropArea
-
-          anchors.fill: parent
-
-          onContainsDragChanged: {
-            if (containsDrag) {
-              const item = arrangerDropArea.drag.source as Item;
-              const size = Qt.size(item.width, item.height);
-              dropRectImage.width = item.width;
-              dropRectImage.height = item.height;
-              item.grabToImage(function (result) {
-                dropRectImage.source = result.url;
-              }, size);
-            }
-          }
-          onDropped: drop => {
-            // Handle the dropped file(s)
-            console.log("Drop on arranger at coordinates", drop.x, drop.y);
-          }
-          onPositionChanged:
-          // TODO: Show drop positions, etc.
-          {}
-        }
-      }
-
-      // Vertical grid lines
-      ArrangerGridCanvas {
-        barLineOpacity: root.ruler.barLineOpacity
-        beatLineOpacity: root.ruler.beatLineOpacity
-        detailMeasurePxThreshold: root.ruler.detailMeasurePxThreshold
-        height: arrangerContent.height
-        lineColor: root.palette.button
-        pxPerTick: root.ruler.pxPerTick
-        scrollX: root.scrollX
-        scrollXPlusWidth: root.scrollXPlusWidth
-        sixteenthLineOpacity: root.ruler.sixteenthLineOpacity
-        tempoMap: root.tempoMap
-        width: root.scrollViewWidth
-        x: root.scrollX
       }
 
       Item {
-        id: extraContent
+        id: arrangerContent
 
-        anchors.fill: parent
-        z: 10
-      }
+        readonly property var appWindow: ApplicationWindow.window
+        property bool arrangerIsActive: activeFocus
 
-      // Playhead
-      Rectangle {
-        id: playhead
+        height: root.enableYScroll ? 600 : flickable.height
+        width: root.ruler.contentWidth
 
-        color: Style.dangerColor
-        height: parent.height
-        width: 2
-        x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
-        z: 1000
-      }
-
-      // Selection rectangle
-      Rectangle {
-        id: selectionRectangle
-
-        readonly property real maxX: Math.max(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
-        readonly property real maxY: Math.max(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
-        readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
-        readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
-
-        border.color: Style.backgroundAppendColor
-        border.width: 2
-        color: Qt.alpha(Style.backgroundAppendColor, 0.1)
-        height: maxY - minY
-        opacity: 0.5
-        visible: scrollView.currentAction === Arranger.Selecting
-        width: maxX - minX
-        x: minX
-        y: minY
-        z: 1
-      }
-
-      MouseArea {
-        id: arrangerMouseArea
-
-        property alias action: scrollView.currentAction
-        property point currentCoordinates
-        readonly property real currentTimelineTicks: currentCoordinates.x / root.ruler.pxPerTick
-        property bool hovered: false
-        property point startCoordinates
-        readonly property real startTimelineTicks: startCoordinates.x / root.ruler.pxPerTick
-
-        function calculateObjectMovementTicks() {
-          const obj = root.getObjectAtCurrentIndex();
-          const objTimelineTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
-          const ticksAlreadyMoved = objTimelineTicks - startTimelineTicks;
-          const ticksToMove = calculateSnappedMovementTicks(startTimelineTicks) - ticksAlreadyMoved;
-          return ticksToMove;
+        onActiveFocusChanged: {
+          console.log("active focus", activeFocus, root);
+        }
+        onArrangerIsActiveChanged: {
+          appWindow.activeArranger = arrangerIsActive ? root : null;
         }
 
-        // Returns the number of ticks that the curent selection should be moved during a drag, taking grid snapping options into account.
-        // Parameter: The object (at the current selection index)'s position in ticks when the drag started
-        function calculateSnappedMovementTicks(objectTicksAtDragStart: real): real {
-          const unsnappedTicksSinceStart = currentTimelineTicks - startTimelineTicks;
-          let ticksToMove;
-          if (root.shouldSnap) {
-            const unsnappedObjectTicks = objectTicksAtDragStart + unsnappedTicksSinceStart;
-            const snappedObjectTicks = root.calculateSnappedPosition(unsnappedObjectTicks, objectTicksAtDragStart);
-            ticksToMove = snappedObjectTicks - objectTicksAtDragStart;
-          } else {
-            ticksToMove = unsnappedTicksSinceStart;
+        Menu {
+          id: arrangerContextMenu
+
+          onAboutToHide: {
+            arrangerContent.arrangerIsActive = Qt.binding(function () {
+              return arrangerContent.activeFocus;
+            });
           }
-          return Math.max(ticksToMove, -objectTicksAtDragStart);
+          onAboutToShow: {
+            arrangerContent.arrangerIsActive = true;
+          }
+
+          MenuItem {
+            text: qsTr("Copy")
+
+            onTriggered: {}
+          }
+
+          MenuItem {
+            text: qsTr("Paste")
+
+            onTriggered: {}
+          }
+
+          MenuItem {
+            action: arrangerContent.appWindow.deleteAction
+          }
+
+          MenuSeparator {
+          }
+
+          MenuItem {
+            action: arrangerContent.appWindow.toggleMuteAction
+          }
         }
 
-        // Moves the selected objects by the given amount of ticks.
-        function moveSelectionsX(ticksToMove: real) {
-          if (root.selectionOperator) {
-            const success = root.selectionOperator.moveByTicks(ticksToMove);
-            if (!success) {
-              console.warn("Failed to move selections - validation failed");
+        Image {
+          id: dropRectImage
+
+          height: 25
+          opacity: arrangerDropArea.containsDrag ? 0.8 : 0.0
+          source: ResourceManager.getIconUrl("zrythm-dark", "zrythm.svg")
+          width: 25
+          x: arrangerDropArea.drag.x
+          y: arrangerDropArea.drag.y
+          z: 2
+        }
+
+        Rectangle {
+          id: arrangerDropRect
+
+          anchors.fill: parent
+          color: "grey"
+          opacity: arrangerDropArea.containsDrag ? 0.1 : 0.0
+
+          DropArea {
+            id: arrangerDropArea
+
+            anchors.fill: parent
+
+            onContainsDragChanged: {
+              if (containsDrag) {
+                const item = arrangerDropArea.drag.source as Item;
+                const size = Qt.size(item.width, item.height);
+                dropRectImage.width = item.width;
+                dropRectImage.height = item.height;
+                item.grabToImage(function (result) {
+                  dropRectImage.source = result.url;
+                }, size);
+              }
             }
+            onDropped: drop => {
+              // Handle the dropped file(s)
+              console.log("Drop on arranger at coordinates", drop.x, drop.y);
+            }
+            onPositionChanged:
+            // TODO: Show drop positions, etc.
+            {}
           }
         }
 
-        function moveTemporaryObjectsX() {
-          const obj = root.getObjectAtCurrentIndex();
-          const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj)) * root.ruler.pxPerTick;
-          root.tempQmlArrangerObjects.forEach(qmlObj => {
-            qmlObj.x = qmlObj.coordinatesOnConstruction.x + xToMoveSinceStart;
-          });
+        // Vertical grid lines
+        ArrangerGridCanvas {
+          barLineOpacity: root.ruler.barLineOpacity
+          beatLineOpacity: root.ruler.beatLineOpacity
+          detailMeasurePxThreshold: root.ruler.detailMeasurePxThreshold
+          height: arrangerContent.height
+          lineColor: root.palette.button
+          pxPerTick: root.ruler.pxPerTick
+          scrollX: root.scrollX
+          scrollXPlusWidth: root.scrollXPlusWidth
+          sixteenthLineOpacity: root.ruler.sixteenthLineOpacity
+          tempoMap: root.tempoMap
+          width: root.scrollViewWidth
+          x: root.scrollX
         }
 
-        // Snaps the selected objects' positions (if snap is on).
-        function snapNewlyCreatedObjects() {
-          const ticksToMove = calculateObjectMovementTicks();
-          moveSelectionsX(ticksToMove);
+        Item {
+          id: extraContent
+
+          anchors.fill: parent
+          z: 10
         }
 
-        acceptedButtons: Qt.AllButtons
-        anchors.fill: parent
-        hoverEnabled: true
-        preventStealing: true
-        z: 1
+        // Playhead
+        Rectangle {
+          id: playhead
 
-        onDoubleClicked: mouse => {
-          console.log("doubleClicked", action);
-          if (mouse.button === Qt.LeftButton) {
-            if (root.hoveredObject !== null) {
-              action = Arranger.None;
-              root.clearTempQmlArrangerObjects();
-              CursorManager.unsetCursor();
-              root.hoveredObject.objectDoubleClicked();
+          color: Style.dangerColor
+          height: parent.height
+          width: 2
+          x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
+          z: 1000
+        }
+
+        // Selection rectangle
+        Rectangle {
+          id: selectionRectangle
+
+          readonly property real maxX: Math.max(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
+          readonly property real maxY: Math.max(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
+          readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
+          readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
+
+          border.color: Style.backgroundAppendColor
+          border.width: 2
+          color: Qt.alpha(Style.backgroundAppendColor, 0.1)
+          height: maxY - minY
+          opacity: 0.5
+          visible: scrollView.currentAction === Arranger.Selecting
+          width: maxX - minX
+          x: minX
+          y: minY
+          z: 1
+        }
+
+        MouseArea {
+          id: arrangerMouseArea
+
+          property alias action: scrollView.currentAction
+          property point currentCoordinates
+          readonly property real currentTimelineTicks: currentCoordinates.x / root.ruler.pxPerTick
+          property bool hovered: false
+          property point startCoordinates
+          readonly property real startTimelineTicks: startCoordinates.x / root.ruler.pxPerTick
+
+          function calculateObjectMovementTicks() {
+            const obj = root.getObjectAtCurrentIndex();
+            const objTimelineTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+            const ticksAlreadyMoved = objTimelineTicks - startTimelineTicks;
+            const ticksToMove = calculateSnappedMovementTicks(startTimelineTicks) - ticksAlreadyMoved;
+            return ticksToMove;
+          }
+
+          // Returns the number of ticks that the curent selection should be moved during a drag, taking grid snapping options into account.
+          // Parameter: The object (at the current selection index)'s position in ticks when the drag started
+          function calculateSnappedMovementTicks(objectTicksAtDragStart: real): real {
+            const unsnappedTicksSinceStart = currentTimelineTicks - startTimelineTicks;
+            let ticksToMove;
+            if (root.shouldSnap) {
+              const unsnappedObjectTicks = objectTicksAtDragStart + unsnappedTicksSinceStart;
+              const snappedObjectTicks = root.calculateSnappedPosition(unsnappedObjectTicks, objectTicksAtDragStart);
+              ticksToMove = snappedObjectTicks - objectTicksAtDragStart;
             } else {
-              // create an object at the mouse position
-              let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
-              if (obj) {
-                snapNewlyCreatedObjects();
+              ticksToMove = unsnappedTicksSinceStart;
+            }
+            return Math.max(ticksToMove, -objectTicksAtDragStart);
+          }
+
+          // Moves the selected objects by the given amount of ticks.
+          function moveSelectionsX(ticksToMove: real) {
+            if (root.selectionOperator) {
+              const success = root.selectionOperator.moveByTicks(ticksToMove);
+              if (!success) {
+                console.warn("Failed to move selections - validation failed");
               }
             }
           }
-        }
-        onEntered: () => {
-          hovered = true;
-          root.updateCursor();
-        }
-        onExited: () => {
-          hovered = false;
-        }
-        onPositionChanged: mouse => {
-          const prevCoordinates = Qt.point(currentCoordinates.x, currentCoordinates.y);
-          currentCoordinates = Qt.point(mouse.x, mouse.y);
-          const dx = mouse.x - prevCoordinates.x;
-          const dy = mouse.y - prevCoordinates.y;
-          const ticksDiff = dx / root.ruler.pxPerTick;
-          root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
-          root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
-          root.altHeld = mouse.modifiers & Qt.AltModifier;
-          if (pressed) {
-            // handle action transitions
-            if (action === Arranger.StartingSelection) {
-              action = Arranger.Selecting;
-              if (!root.ctrlHeld) {
-                root.arrangerSelectionModel.clear();
-              }
-            } else if (action === Arranger.StartingPanning)
-              action = Arranger.Panning;
-            else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
-              if (root.altHeld) {
-                action = Arranger.MovingLink;
-              } else if (root.ctrlHeld) {
-                // TODO: also check that selection does not contain unclonable objects before entering this block
-                action = Arranger.MovingCopy;
+
+          function moveTemporaryObjectsX() {
+            const obj = root.getObjectAtCurrentIndex();
+            const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj)) * root.ruler.pxPerTick;
+            root.tempQmlArrangerObjects.forEach(qmlObj => {
+              qmlObj.x = qmlObj.coordinatesOnConstruction.x + xToMoveSinceStart;
+            });
+          }
+
+          // Snaps the selected objects' positions (if snap is on).
+          function snapNewlyCreatedObjects() {
+            const ticksToMove = calculateObjectMovementTicks();
+            moveSelectionsX(ticksToMove);
+          }
+
+          acceptedButtons: Qt.AllButtons
+          anchors.fill: parent
+          hoverEnabled: true
+          preventStealing: true
+          z: 1
+
+          onDoubleClicked: mouse => {
+            console.log("doubleClicked", action);
+            if (mouse.button === Qt.LeftButton) {
+              if (root.hoveredObject !== null) {
+                action = Arranger.None;
+                root.clearTempQmlArrangerObjects();
+                CursorManager.unsetCursor();
+                root.hoveredObject.objectDoubleClicked();
               } else {
+                // create an object at the mouse position
+                let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
+                if (obj) {
+                  snapNewlyCreatedObjects();
+                }
+              }
+            }
+          }
+          onEntered: () => {
+            hovered = true;
+            root.updateCursor();
+          }
+          onExited: () => {
+            hovered = false;
+          }
+          onPositionChanged: mouse => {
+            const prevCoordinates = Qt.point(currentCoordinates.x, currentCoordinates.y);
+            currentCoordinates = Qt.point(mouse.x, mouse.y);
+            const dx = mouse.x - prevCoordinates.x;
+            const dy = mouse.y - prevCoordinates.y;
+            const ticksDiff = dx / root.ruler.pxPerTick;
+            root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
+            root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
+            root.altHeld = mouse.modifiers & Qt.AltModifier;
+            if (pressed) {
+              // handle action transitions
+              if (action === Arranger.StartingSelection) {
+                action = Arranger.Selecting;
+                if (!root.ctrlHeld) {
+                  root.arrangerSelectionModel.clear();
+                }
+              } else if (action === Arranger.StartingPanning)
+                action = Arranger.Panning;
+              else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
+                if (root.altHeld) {
+                  action = Arranger.MovingLink;
+                } else if (root.ctrlHeld) {
+                  // TODO: also check that selection does not contain unclonable objects before entering this block
+                  action = Arranger.MovingCopy;
+                } else {
+                  action = Arranger.Moving;
+                }
+
+                // Update qmlObjectsBeingMoved based on current selection
+                root.updateTempQmlArrangerObjects();
+              } else if (action === Arranger.Moving && root.altHeld) {
+                action = Arranger.MovingLink;
+              } else if (action === Arranger.Moving && root.ctrlHeld) {
+                action = Arranger.MovingCopy;
+              } else if (action === Arranger.MovingLink && !root.altHeld) {
+                action = (root.ctrlHeld) ? Arranger.MovingCopy : Arranger.Moving;
+              } else if (action === Arranger.MovingCopy && !root.ctrlHeld) {
                 action = Arranger.Moving;
               }
 
-              // Update qmlObjectsBeingMoved based on current selection
-              root.updateTempQmlArrangerObjects();
-            } else if (action === Arranger.Moving && root.altHeld) {
-              action = Arranger.MovingLink;
-            } else if (action === Arranger.Moving && root.ctrlHeld) {
-              action = Arranger.MovingCopy;
-            } else if (action === Arranger.MovingLink && !root.altHeld) {
-              action = (root.ctrlHeld) ? Arranger.MovingCopy : Arranger.Moving;
-            } else if (action === Arranger.MovingCopy && !root.ctrlHeld) {
-              action = Arranger.Moving;
-            }
-
-            // Process current action
-            if (action === Arranger.Selecting) {
-              // Select all objects within the selection rectangle
-              root.selectObjectsInRectangle();
-            } else if (action === Arranger.Panning) {
-              currentCoordinates.x -= dx;
-              root.editorSettings.x -= dx;
-              if (root.enableYScroll) {
-                currentCoordinates.y -= dy;
-                root.editorSettings.y -= dy;
-              }
-            } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
-              moveTemporaryObjectsX();
-              moveTemporaryObjectsY(dy, prevCoordinates.y);
-            } else if (action == Arranger.CreatingMoving) {
-              const ticksToMove = calculateObjectMovementTicks();
-              moveSelectionsX(ticksToMove);
-              moveSelectionsY(dy, prevCoordinates.y);
-            } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
-              // Apply snapping to resize endpoint
-              const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-
-              // Calculate delta in ticks based on the resize type and direction
-              let resizeType = ArrangerObjectSelectionOperator.Bounds;
-              let delta = 0;
-              const obj = root.getObjectAtCurrentIndex();
-
-              // Determine resize type based on current action
-              if (action === Arranger.ResizingLLoop) {
-                resizeType = ArrangerObjectSelectionOperator.LoopPoints;
-              } else if (action === Arranger.ResizingLFade) {
-                resizeType = ArrangerObjectSelectionOperator.Fades;
-              }
-
-              // Calculate delta based on the resize type
-              if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
-                // For bounds resize, delta is the difference in position ticks
-                const originalPosTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
-                delta = startTicks - originalPosTicks;
-              } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
-                // For fades resize, delta is in ticks (will be converted internally)
-                if (obj.fadeRange) {
-                  const originalFadeIn = obj.fadeRange.startOffset.ticks;
-                  delta = startTicks - originalFadeIn;
+              // Process current action
+              if (action === Arranger.Selecting) {
+                // Select all objects within the selection rectangle
+                root.selectObjectsInRectangle();
+              } else if (action === Arranger.Panning) {
+                currentCoordinates.x -= dx;
+                root.editorSettings.x -= dx;
+                if (root.enableYScroll) {
+                  currentCoordinates.y -= dy;
+                  root.editorSettings.y -= dy;
                 }
-              }
-
-              root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
-            } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
-              if (action === Arranger.CreatingResizingMovingR) {
+              } else if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
+                moveTemporaryObjectsX();
+                moveTemporaryObjectsY(dy, prevCoordinates.y);
+              } else if (action == Arranger.CreatingMoving) {
+                const ticksToMove = calculateObjectMovementTicks();
+                moveSelectionsX(ticksToMove);
                 moveSelectionsY(dy, prevCoordinates.y);
-              }
-              // Apply snapping to resize endpoint
-              const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-              if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
-                const obj = root.getObjectAtCurrentIndex();
-                if (ArrangerObjectHelpers.objectLengthFromTimelineEndTicks(obj, endTicks) > 0) {
-                  ArrangerObjectHelpers.setObjectEndFromTimelineTicks(obj, endTicks);
-                }
-              } else {
+              } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
+                // Apply snapping to resize endpoint
+                const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+
                 // Calculate delta in ticks based on the resize type and direction
                 let resizeType = ArrangerObjectSelectionOperator.Bounds;
                 let delta = 0;
                 const obj = root.getObjectAtCurrentIndex();
 
                 // Determine resize type based on current action
-                if (action === Arranger.ResizingRLoop) {
+                if (action === Arranger.ResizingLLoop) {
                   resizeType = ArrangerObjectSelectionOperator.LoopPoints;
-                } else if (action === Arranger.ResizingRFade) {
+                } else if (action === Arranger.ResizingLFade) {
                   resizeType = ArrangerObjectSelectionOperator.Fades;
                 }
 
                 // Calculate delta based on the resize type
                 if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
-                  // For bounds resize, delta is the difference in ticks
-                  const originalEndTicks = ArrangerObjectHelpers.getObjectEndInTimelineTicks(obj);
-                  delta = endTicks - originalEndTicks;
+                  // For bounds resize, delta is the difference in position ticks
+                  const originalPosTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+                  delta = startTicks - originalPosTicks;
                 } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                   // For fades resize, delta is in ticks (will be converted internally)
                   if (obj.fadeRange) {
-                    const originalFadeOut = obj.fadeRange.endOffset.ticks;
-                    delta = endTicks - originalFadeOut;
+                    const originalFadeIn = obj.fadeRange.startOffset.ticks;
+                    delta = startTicks - originalFadeIn;
                   }
                 }
 
-                root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
-              }
-            }
-          }
+                root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+              } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
+                if (action === Arranger.CreatingResizingMovingR) {
+                  moveSelectionsY(dy, prevCoordinates.y);
+                }
+                // Apply snapping to resize endpoint
+                const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+                if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
+                  const obj = root.getObjectAtCurrentIndex();
+                  if (ArrangerObjectHelpers.objectLengthFromTimelineEndTicks(obj, endTicks) > 0) {
+                    ArrangerObjectHelpers.setObjectEndFromTimelineTicks(obj, endTicks);
+                  }
+                } else {
+                  // Calculate delta in ticks based on the resize type and direction
+                  let resizeType = ArrangerObjectSelectionOperator.Bounds;
+                  let delta = 0;
+                  const obj = root.getObjectAtCurrentIndex();
 
-          root.updateCursor();
-        }
-        // This must push a cursor via the CursorManager
-        onPressed: mouse => {
-          startCoordinates = Qt.point(mouse.x, mouse.y);
-          currentCoordinates = startCoordinates;
-          console.log("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
-          arrangerContent.forceActiveFocus();
-          if (action === Arranger.None) {
-            if (mouse.button === Qt.MiddleButton) {
-              action = Arranger.StartingPanning;
-            } else if (mouse.button === Qt.RightButton) {
-              if (root.hoveredObject) {
-                root.hoveredObject.requestSelection(mouse);
-              }
-            } else if (mouse.button === Qt.LeftButton) {
-              if (root.hoveredObject) {
-                root.hoveredObject.requestSelection(mouse);
-                if (root.hoveredObject.isResizingL) {
-                  if (root.shouldResizeBeLoopResize(root.hoveredObject, true)) {
-                    action = Arranger.ResizingLLoop;
-                  } else {
-                    action = Arranger.ResizingL;
+                  // Determine resize type based on current action
+                  if (action === Arranger.ResizingRLoop) {
+                    resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+                  } else if (action === Arranger.ResizingRFade) {
+                    resizeType = ArrangerObjectSelectionOperator.Fades;
                   }
-                  root.hoveredObject.isResizingL = false;
-                } else if (root.hoveredObject.isResizingR) {
-                  if (root.shouldResizeBeLoopResize(root.hoveredObject, false)) {
-                    action = Arranger.ResizingRLoop;
-                  } else {
-                    action = Arranger.ResizingR;
+
+                  // Calculate delta based on the resize type
+                  if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
+                    // For bounds resize, delta is the difference in ticks
+                    const originalEndTicks = ArrangerObjectHelpers.getObjectEndInTimelineTicks(obj);
+                    delta = endTicks - originalEndTicks;
+                  } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                    // For fades resize, delta is in ticks (will be converted internally)
+                    if (obj.fadeRange) {
+                      const originalFadeOut = obj.fadeRange.endOffset.ticks;
+                      delta = endTicks - originalFadeOut;
+                    }
                   }
-                  root.hoveredObject.isResizingR = false;
-                } else {
-                  if (mouse.modifiers & Qt.ControlModifier) {
-                    action = Arranger.StartingMovingCopy;
-                  } else if (mouse.modifiers & Qt.AltModifier) {
-                    action = Arranger.StartingMovingLink;
-                  } else {
-                    action = Arranger.StartingMoving;
-                  }
+
+                  root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
                 }
-              } else {
-                action = Arranger.StartingSelection;
               }
             }
+
+            root.updateCursor();
           }
-          root.updateCursor();
-        }
-        onReleased: mouse => {
-          if (mouse.button === Qt.RightButton) {
-            arrangerContextMenu.popup();
-            return;
-          }
-          if (action === Arranger.StartingMovingCopy) {
-            // Ctrl+click without drag — perform the deferred toggle.
-            root.handleDeferredCtrlClickToggle();
-          } else if ([Arranger.StartingMoving, Arranger.StartingMovingLink].includes(action)) {
-            // Alt+click or plain click without drag — selection was already set
-            // in handleObjectSelection, nothing more to do.
-          } else if (action != Arranger.None && action != Arranger.StartingSelection) {
-            if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
-              if (root.tempQmlArrangerObjects.length > 0) {
-                const firstTempObj = root.tempQmlArrangerObjects[0];
-                // Calculate the final snapped position difference
-                const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
-                if (action === Arranger.MovingCopy) {
-                  root.undoStack.beginMacro(qsTr("Copy Objects"));
-                  // This creates new object clones at the original positions, and the following move operations move the original objects
-                  root.selectionOperator.cloneObjects();
-                } else if (action === Arranger.MovingLink) {
-                  // TODO: Link operation is not yet implemented on the C++ side
-                  // (ArrangerObjectSelectionOperator has no linkObjects() method).
-                  // For now this performs a plain move. Replace with a proper link
-                  // operation once the C++ API is available.
-                  root.undoStack.beginMacro(qsTr("Move Objects"));
-                } else {
-                  root.undoStack.beginMacro(qsTr("Move Objects"));
+          // This must push a cursor via the CursorManager
+          onPressed: mouse => {
+            startCoordinates = Qt.point(mouse.x, mouse.y);
+            currentCoordinates = startCoordinates;
+            console.log("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
+            arrangerContent.forceActiveFocus();
+            if (action === Arranger.None) {
+              if (mouse.button === Qt.MiddleButton) {
+                action = Arranger.StartingPanning;
+              } else if (mouse.button === Qt.RightButton) {
+                if (root.hoveredObject) {
+                  root.hoveredObject.requestSelection(mouse);
                 }
-                moveSelectionsX(finalTicksDiff);
-                moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
+              } else if (mouse.button === Qt.LeftButton) {
+                if (root.hoveredObject) {
+                  root.hoveredObject.requestSelection(mouse);
+                  if (root.hoveredObject.isResizingL) {
+                    if (root.shouldResizeBeLoopResize(root.hoveredObject, true)) {
+                      action = Arranger.ResizingLLoop;
+                    } else {
+                      action = Arranger.ResizingL;
+                    }
+                    root.hoveredObject.isResizingL = false;
+                  } else if (root.hoveredObject.isResizingR) {
+                    if (root.shouldResizeBeLoopResize(root.hoveredObject, false)) {
+                      action = Arranger.ResizingRLoop;
+                    } else {
+                      action = Arranger.ResizingR;
+                    }
+                    root.hoveredObject.isResizingR = false;
+                  } else {
+                    if (mouse.modifiers & Qt.ControlModifier) {
+                      action = Arranger.StartingMovingCopy;
+                    } else if (mouse.modifiers & Qt.AltModifier) {
+                      action = Arranger.StartingMovingLink;
+                    } else {
+                      action = Arranger.StartingMoving;
+                    }
+                  }
+                } else {
+                  action = Arranger.StartingSelection;
+                }
+              }
+            }
+            root.updateCursor();
+          }
+          onReleased: mouse => {
+            if (mouse.button === Qt.RightButton) {
+              arrangerContextMenu.popup();
+              return;
+            }
+            if (action === Arranger.StartingMovingCopy) {
+              // Ctrl+click without drag — perform the deferred toggle.
+              root.handleDeferredCtrlClickToggle();
+            } else if ([Arranger.StartingMoving, Arranger.StartingMovingLink].includes(action)) {
+              // Alt+click or plain click without drag — selection was already set
+              // in handleObjectSelection, nothing more to do.
+            } else if (action != Arranger.None && action != Arranger.StartingSelection) {
+              if ([Arranger.Moving, Arranger.MovingCopy, Arranger.MovingLink].includes(action)) {
+                if (root.tempQmlArrangerObjects.length > 0) {
+                  const firstTempObj = root.tempQmlArrangerObjects[0];
+                  // Calculate the final snapped position difference
+                  const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
+                  if (action === Arranger.MovingCopy) {
+                    root.undoStack.beginMacro(qsTr("Copy Objects"));
+                    // This creates new object clones at the original positions, and the following move operations move the original objects
+                    root.selectionOperator.cloneObjects();
+                  } else if (action === Arranger.MovingLink) {
+                    // TODO: Link operation is not yet implemented on the C++ side
+                    // (ArrangerObjectSelectionOperator has no linkObjects() method).
+                    // For now this performs a plain move. Replace with a proper link
+                    // operation once the C++ API is available.
+                    root.undoStack.beginMacro(qsTr("Move Objects"));
+                  } else {
+                    root.undoStack.beginMacro(qsTr("Move Objects"));
+                  }
+                  moveSelectionsX(finalTicksDiff);
+                  moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
+                  root.undoStack.endMacro();
+                }
+              } else if (action === Arranger.CreatingMoving) {
                 root.undoStack.endMacro();
               }
-            } else if (action === Arranger.CreatingMoving) {
-              root.undoStack.endMacro();
-            }
-            console.log("released after action");
-          } else {
-            console.log("released without action");
-            if (root.hoveredObject === null) {
-              root.arrangerSelectionModel.clear();
-            }
-          }
-          action = Arranger.None;
-          root.clearTempQmlArrangerObjects();
-          root.wasClickedObjectSelectedOnPress = false;
-          root.clickedUnifiedIndexOnPress = null;
-          root.updateCursor();
-        }
-
-        StateGroup {
-          id: stateGroup
-
-          states: [
-            State {
-              name: "unsetCursor"
-              when: !arrangerMouseArea.hovered && arrangerMouseArea.action === Arranger.CurrentAction.None && root.hoveredObject === null
-
-              StateChangeScript {
-                script: {
-                  CursorManager.unsetCursor();
-                }
+              console.log("released after action");
+            } else {
+              console.log("released without action");
+              if (root.hoveredObject === null) {
+                root.arrangerSelectionModel.clear();
               }
             }
-          ]
+            action = Arranger.None;
+            root.clearTempQmlArrangerObjects();
+            root.wasClickedObjectSelectedOnPress = false;
+            root.clickedUnifiedIndexOnPress = null;
+            root.updateCursor();
+          }
+
+          StateGroup {
+            id: stateGroup
+
+            states: [
+              State {
+                name: "unsetCursor"
+                when: !arrangerMouseArea.hovered && arrangerMouseArea.action === Arranger.CurrentAction.None && root.hoveredObject === null
+
+                StateChangeScript {
+                  script: {
+                    CursorManager.unsetCursor();
+                  }
+                }
+              }
+            ]
+          }
         }
       }
     }
