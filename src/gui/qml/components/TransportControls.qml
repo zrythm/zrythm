@@ -12,10 +12,10 @@ RowLayout {
   id: root
 
   required property AppSettings appSettings
+  required property Metronome metronome
   required property TempoMap tempoMap
   required property Transport transport
   required property TransportController transportController
-  required property Metronome metronome
 
   LinkedButtons {
     Button {
@@ -42,11 +42,6 @@ RowLayout {
       }
     }
 
-    RecordSplitButton {
-      transport: root.transport
-      appSettings: root.appSettings
-    }
-
     Button {
       checkable: true
       checked: root.transport.loopEnabled
@@ -56,6 +51,17 @@ RowLayout {
         root.transport.loopEnabled = checked;
       }
     }
+  }
+
+  RecordSplitButton {
+    appSettings: root.appSettings
+    transport: root.transport
+  }
+
+  MetronomeSplitButton {
+    id: metronomeSplitButton
+
+    metronome: root.metronome
   }
 
   RowLayout {
@@ -89,11 +95,6 @@ RowLayout {
         const timeSigDenominator = root.tempoMap.timeSignatureDenominatorAtTick(root.transport.playhead.ticks);
         return `${timeSigNumerator}/${timeSigDenominator}`;
       }
-    }
-
-    MetronomeSplitButton {
-      id: metronomeSplitButton
-      metronome: root.metronome
     }
   }
 }
