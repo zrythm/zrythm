@@ -88,12 +88,8 @@ TEST_F (GraphSchedulerTest, ProcessingCycle)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (2);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0u),
-    .nframes_ = units::samples (256u)
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256u));
   scheduler_->run_cycle (
     time_info, units::samples (0), *transport_, *tempo_map_);
 
@@ -115,12 +111,8 @@ TEST_F (GraphSchedulerTest, MultiThreadedProcessing)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (4);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0u),
-    .nframes_ = units::samples (256u)
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256u));
   scheduler_->run_cycle (
     time_info, units::samples (0), *transport_, *tempo_map_);
 
@@ -144,12 +136,8 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
     std::move (collection), sample_rate_, block_length_);
   scheduler_->start_threads (1); // Single thread to ensure deterministic order
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0u),
-    .nframes_ = units::samples (256u)
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256u));
   scheduler_->run_cycle (
     time_info, units::samples (0), *transport_, *tempo_map_);
 
@@ -208,12 +196,8 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   // Run a processing cycle to ensure everything works
   scheduler_->start_threads (2);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0u),
-    .nframes_ = new_block_length
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), new_block_length);
   scheduler_->run_cycle (
     time_info, units::samples (0), *transport_, *tempo_map_);
 

@@ -46,8 +46,7 @@ public:
     last_max_block_length_ = max_block_length;
   }
 
-  void
-  process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept override
+  void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override
   {
     process_called_ = true;
     last_time_info_ = time_info;
@@ -56,16 +55,12 @@ public:
   std::string save_state_impl () const override { return {}; }
   void        load_state_impl (const std::string &) override { }
 
-  bool                              prepare_called_ = false;
-  bool                              process_called_ = false;
-  units::sample_rate_t              last_sample_rate_;
-  units::sample_u32_t               last_max_block_length_;
-  dsp::graph::EngineProcessTimeInfo last_time_info_{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0)
-  };
+  bool                         prepare_called_ = false;
+  bool                         process_called_ = false;
+  units::sample_rate_t         last_sample_rate_;
+  units::sample_u32_t          last_max_block_length_;
+  dsp::graph::ProcessBlockInfo last_time_info_ = dsp::graph::ProcessBlockInfo::
+    from_position_and_nframes (units::samples (0), units::samples (0));
 };
 
 class PluginTest : public ::testing::Test
@@ -214,12 +209,8 @@ TEST_F (PluginTest, ProcessingWhenEnabled)
   bypass->setBaseValue (0.0f); // Not bypassed
 
   // Process
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   EXPECT_TRUE (plugin_->process_called_);
@@ -243,12 +234,8 @@ TEST_F (PluginTest, ProcessingWhenBypassed)
   bypass->setBaseValue (1.0f); // Bypassed
 
   // Process
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   EXPECT_FALSE (plugin_->process_called_);
@@ -270,12 +257,8 @@ TEST_F (PluginTest, ProcessingWhenInstantiationFailed)
   plugin_->set_instantiation_failed (true);
 
   // Process
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   EXPECT_FALSE (plugin_->process_called_);
@@ -296,12 +279,8 @@ TEST_F (PluginTest, CurrentlyEnabled)
   // Create bypass parameter
   auto * bypass = plugin_->bypassParameter ();
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   // Test enabled
   bypass->setBaseValue (0.0f);
@@ -403,12 +382,8 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   auto * bypass = plugin_->bypassParameter ();
   bypass->setBaseValue (1.0f); // Bypassed
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify passthrough

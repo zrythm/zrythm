@@ -93,22 +93,20 @@ TEST_F (AudioEngineTest, ConstructorInitializesCorrectly)
   EXPECT_EQ (engine->xRunCount (), 0); // Initial value should be 0
 }
 
-TEST_F (AudioEngineTest, GetBlockLengthReturnsCorrectValue)
+TEST_F (AudioEngineTest, BlockLengthReturnsCorrectValue)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, *graph_dispatcher_, *tempo_map_);
 
-  // Should return the buffer size from the audio device
-  EXPECT_EQ (engine->get_block_length (), units::samples (256));
+  EXPECT_EQ (engine->blockLength (), 256);
 }
 
-TEST_F (AudioEngineTest, GetSampleRateReturnsCorrectValue)
+TEST_F (AudioEngineTest, SampleRateReturnsCorrectValue)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, *graph_dispatcher_, *tempo_map_);
 
-  // Should return the sample rate from the audio device
-  EXPECT_EQ (engine->get_sample_rate ().in (units::sample_rate), 48000);
+  EXPECT_EQ (engine->sampleRate (), 48000);
 }
 
 TEST_F (AudioEngineTest, ActivateWithTrueSetsStateToActive)

@@ -81,7 +81,7 @@ public:
    */
   using PreProcessAudioCallback = std::function<void (
     std::pair<std::span<float>, std::span<float>> stereo_bufs,
-    const dsp::graph::EngineProcessTimeInfo      &time_nfo)>;
+    const dsp::graph::ProcessBlockInfo           &time_nfo)>;
 
   /**
    * Creates a new fader.
@@ -181,7 +181,7 @@ public:
   bool currently_muted () const
   {
     const auto &mute_param = get_mute_param ();
-    return mute_param.range ().is_toggled (mute_param.currentValue ());
+    return mute_param.range ().isToggled (mute_param.currentValue ());
   }
 
   /**
@@ -190,7 +190,7 @@ public:
   [[gnu::hot]] bool currently_soloed () const
   {
     const auto &solo_param = get_solo_param ();
-    return solo_param.range ().is_toggled (solo_param.currentValue ());
+    return solo_param.range ().isToggled (solo_param.currentValue ());
   }
 
   /**
@@ -199,7 +199,7 @@ public:
   bool currently_listened () const
   {
     const auto &listened_param = get_listen_param ();
-    return listened_param.range ().is_toggled (listened_param.currentValue ());
+    return listened_param.range ().isToggled (listened_param.currentValue ());
   }
 
   /**
@@ -235,9 +235,9 @@ public:
   void custom_release_resources () override;
 
   [[gnu::hot]] void custom_process_block (
-    dsp::graph::EngineProcessTimeInfo time_nfo,
-    const dsp::ITransport            &transport,
-    const dsp::TempoMap              &tempo_map) noexcept override;
+    dsp::graph::ProcessBlockInfo time_nfo,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   // ============================================================================
 
@@ -312,14 +312,14 @@ public:
 
   auto currently_soloed_rt () const noexcept [[clang::nonblocking]]
   {
-    return processing_caches_->solo_param_->range ().is_toggled (
+    return processing_caches_->solo_param_->range ().isToggled (
       processing_caches_->solo_param_->currentValue ());
   };
 
   bool currently_listened_rt () const noexcept [[clang::nonblocking]]
   {
     const auto &listened_param = processing_caches_->listen_param_;
-    return listened_param->range ().is_toggled (listened_param->currentValue ());
+    return listened_param->range ().isToggled (listened_param->currentValue ());
   }
 
 private:
@@ -349,7 +349,7 @@ private:
   bool effectively_muted_rt () const
   {
     const auto currently_muted_rt = [this] () {
-      return processing_caches_->mute_param_->range ().is_toggled (
+      return processing_caches_->mute_param_->range ().isToggled (
         processing_caches_->mute_param_->currentValue ());
     };
 

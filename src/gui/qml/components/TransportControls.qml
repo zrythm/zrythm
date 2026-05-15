@@ -11,6 +11,7 @@ import ZrythmStyle
 RowLayout {
   id: root
 
+  required property AppSettings appSettings
   required property TempoMap tempoMap
   required property Transport transport
   required property TransportController transportController
@@ -41,14 +42,9 @@ RowLayout {
       }
     }
 
-    RecordButton {
-      id: recordButton
-
-      checked: root.transport.recordEnabled
-
-      onCheckedChanged: {
-        root.transport.recordEnabled = checked;
-      }
+    RecordSplitButton {
+      transport: root.transport
+      appSettings: root.appSettings
     }
 
     Button {

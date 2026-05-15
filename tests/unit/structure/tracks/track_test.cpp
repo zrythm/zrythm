@@ -261,6 +261,69 @@ TEST_F (TrackTest, TrackTypeSpecificBehavior)
   }
 }
 
+TEST_F (TrackTest, FullVisibleHeightChangesWhenLanesAdded)
+{
+  auto track = createMockTrack (Track::Type::Audio);
+  ASSERT_NE (track->lanes (), nullptr);
+  ASSERT_EQ (track->lanes ()->size (), 2);
+  track->lanes ()->setLanesVisible (true);
+
+  QSignalSpy spy (track.get (), &Track::fullVisibleHeightChanged);
+  const auto initial_height = track->fullVisibleHeight ();
+
+  track->lanes ()->addLane ();
+  EXPECT_EQ (track->lanes ()->size (), 3);
+  EXPECT_GE (spy.count (), 1);
+  EXPECT_GT (track->fullVisibleHeight (), initial_height);
+}
+
+TEST_F (TrackTest, FullVisibleHeightChangesWhenLaneHeightChanges)
+{
+  auto track = createMockTrack (Track::Type::Audio);
+  ASSERT_NE (track->lanes (), nullptr);
+  track->lanes ()->setLanesVisible (true);
+
+  QSignalSpy spy (track.get (), &Track::fullVisibleHeightChanged);
+  const auto initial_height = track->fullVisibleHeight ();
+
+  track->lanes ()->at (0)->setHeight (200.0);
+  EXPECT_GE (spy.count (), 1);
+  EXPECT_GT (track->fullVisibleHeight (), initial_height);
+}
+
+TEST_F (TrackTest, FullVisibleHeightChangesWhenLanesRemoved)
+{
+  auto track = createMockTrack (Track::Type::Audio);
+  ASSERT_NE (track->lanes (), nullptr);
+  track->lanes ()->setLanesVisible (true);
+  track->lanes ()->addLane ();
+  ASSERT_EQ (track->lanes ()->size (), 3);
+
+  QSignalSpy spy (track.get (), &Track::fullVisibleHeightChanged);
+  const auto height_before = track->fullVisibleHeight ();
+
+  track->lanes ()->removeLane (2);
+  EXPECT_EQ (track->lanes ()->size (), 2);
+  EXPECT_GE (spy.count (), 1);
+  EXPECT_LT (track->fullVisibleHeight (), height_before);
+}
+
+TEST_F (TrackTest, FullVisibleHeightChangesWhenLanesVisibilityToggles)
+{
+  auto track = createMockTrack (Track::Type::Audio);
+  ASSERT_NE (track->lanes (), nullptr);
+
+  QSignalSpy spy (track.get (), &Track::fullVisibleHeightChanged);
+
+  track->lanes ()->setLanesVisible (true);
+  EXPECT_GE (spy.count (), 1);
+
+  const auto visible_height = track->fullVisibleHeight ();
+  track->lanes ()->setLanesVisible (false);
+  EXPECT_GE (spy.count (), 2);
+  EXPECT_LT (track->fullVisibleHeight (), visible_height);
+}
+
 // TODO
 #if 0
 TEST_F (TrackTest, PluginDescriptorValidation)

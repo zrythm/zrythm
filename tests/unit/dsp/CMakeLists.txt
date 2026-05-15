@@ -6,6 +6,7 @@ add_executable(zrythm_dsp_unit_tests
   atomic_position_test.cpp
   audio_callback_test.cpp
   audio_pool_test.cpp
+  audio_input_processor_test.cpp
   audio_port_test.cpp
   audio_sample_processor_test.cpp
   chord_descriptor_test.cpp

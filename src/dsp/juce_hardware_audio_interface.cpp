@@ -49,20 +49,21 @@ JuceHardwareAudioInterface::~JuceHardwareAudioInterface ()
   callback_adapters_.clear ();
 }
 
-[[nodiscard]] units::sample_u32_t
-JuceHardwareAudioInterface::get_block_length () const
+[[nodiscard]] AudioDeviceInfo
+JuceHardwareAudioInterface::get_device_info () const
 {
   auto * dev = device_manager_->getCurrentAudioDevice ();
   assert (dev != nullptr);
-  return units::samples (dev->getCurrentBufferSizeSamples ());
-}
-
-[[nodiscard]] units::sample_rate_t
-JuceHardwareAudioInterface::get_sample_rate () const
-{
-  auto * dev = device_manager_->getCurrentAudioDevice ();
-  assert (dev != nullptr);
-  return units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ()));
+  return {
+    .device_name = utils::Utf8String::from_juce_string (dev->getName ()),
+    .sample_rate =
+      units::sample_rate (static_cast<int> (dev->getCurrentSampleRate ())),
+    .block_length = units::samples (dev->getCurrentBufferSizeSamples ()),
+    .input_channel_count =
+      units::channels (dev->getActiveInputChannels ().countNumberOfSetBits ()),
+    .output_channel_count =
+      units::channels (dev->getActiveOutputChannels ().countNumberOfSetBits ()),
+  };
 }
 
 void

@@ -20,7 +20,7 @@ protected:
   {
     tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
     snap_grid_ = std::make_unique<dsp::SnapGrid> (
-      *tempo_map_, utils::NoteLength::Note_1_4, [] () { return 0.0; });
+      *tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 0.0; });
 
     // Setup config provider with default values
     config_provider_ = {

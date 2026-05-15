@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2021, 2024 Alexandros Theodotou
+# SPDX-FileCopyrightText: © 2021, 2024, 2026 Alexandros Theodotou
 # SPDX-License-Identifier: FSFAP
 ---
 # prefix with '-' to disable checks
@@ -31,6 +31,7 @@ WarningsAsErrors: >
   readability-use-std-min-max,
   modernize-use-constraints,
   cppcoreguidelines-pro-type-member-init,
+  readability-convert-member-functions-to-static,
   readability-redundant-string-cstr,
   readability-redundant-casting,
   readability-implicit-bool-conversion,

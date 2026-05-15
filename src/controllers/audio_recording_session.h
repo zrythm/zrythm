@@ -1,0 +1,133 @@
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#pragma once
+
+#include <atomic>
+#include <memory>
+#include <span>
+#include <vector>
+
+#include "utils/units.h"
+
+#include <QtClassHelperMacros>
+
+namespace zrythm::controllers
+{
+
+/**
+ * @brief A single packet of recorded audio data transferred from RT to non-RT.
+ */
+struct RecordingAudioPacket
+{
+  units::sample_t     timeline_position;
+  bool                transport_recording{};
+  units::sample_u32_t nframes;
+  std::vector<float>  l_frames;
+  std::vector<float>  r_frames;
+};
+
+/**
+ * @brief Per-track recording state with a lock-free SPSC queue.
+ *
+ * The RT thread writes audio into pre-allocated slots and pushes slot indices
+ * onto a farbot SPSC fifo. The non-RT timer drains pending indices and reads
+ * the corresponding slot data into RecordingAudioPacket objects.
+ *
+ * Thread contracts:
+ * - write_samples(): audio thread only (single producer)
+ * - drain_pending(): timer thread only (single consumer)
+ * - finalize(): any thread (atomic flag — safe during active writes)
+ * - reset(): any thread (must not overlap with write/drain)
+ */
+class AudioRecordingSession
+{
+public:
+  enum class State : uint8_t
+  {
+    Armed,
+    Capturing,
+    Finalizing,
+  };
+
+  explicit AudioRecordingSession (units::sample_u32_t max_block_length);
+  ~AudioRecordingSession ();
+
+  Q_DISABLE_COPY_MOVE (AudioRecordingSession)
+
+  static constexpr size_t kFifoCapacity = 1024;
+
+  /**
+   * @brief Prepares internal buffers for processing at the given block length.
+   *
+   * Buffers are only grown, never shrunk, so a decrease in block length is
+   * safe (existing large buffers are kept). Must be called before audio
+   * processing starts (not concurrently with write_samples() or
+   * drain_pending()).
+   */
+  void prepare_for_processing (units::sample_u32_t block_length);
+
+  /**
+   * @brief RT-safe: writes audio data into the ring buffer.
+   *
+   * Called from the audio thread. No allocations — copies data into
+   * pre-allocated slot memory and pushes the slot index onto the SPSC fifo.
+   * If the fifo is full, the slot is overwritten with the latest data but
+   * the index is not queued and the dropped counter is incremented. The
+   * next call reuses the same slot, so once the consumer drains enough
+   * entries the most recent audio is always captured.
+   */
+  void write_samples (
+    units::sample_t        timeline_position,
+    bool                   transport_recording,
+    std::span<const float> l_data,
+    std::span<const float> r_data) noexcept [[clang::nonblocking]];
+
+  /**
+   * @brief Non-RT: drains all pending packets from the ring buffer.
+   *
+   * Called from the timer thread. Reads slot indices from the SPSC fifo
+   * and copies the slot data into RecordingAudioPacket objects.
+   */
+  [[nodiscard]] std::vector<RecordingAudioPacket>
+  drain_pending () [[clang::blocking]];
+
+  [[nodiscard]] auto state () const
+  {
+    return state_.load (std::memory_order_acquire);
+  }
+
+  /**
+   * @brief Transitions to Finalizing state, rejecting further writes.
+   *
+   * Safe to call while write_samples() is in progress on another thread —
+   * this only sets an atomic flag. Any in-flight writes will complete
+   * normally; subsequent audio callbacks will see Finalizing and skip.
+   */
+  void finalize () noexcept;
+
+  /**
+   * @brief Resets the session to Armed state for reuse.
+   *
+   * Must only be called when neither write_samples() nor drain_pending()
+   * are active. Clears all buffered data, recorded regions, and counters.
+   */
+  void reset ();
+
+  /**
+   * @brief Returns the number of packets dropped due to fifo overflow.
+   */
+  [[nodiscard]] uint64_t dropped_packets () const
+  {
+    return dropped_packets_.load (std::memory_order_relaxed);
+  }
+
+private:
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
+
+  std::atomic<State>    state_{ State::Armed };
+  std::atomic<uint64_t> dropped_packets_{ 0 };
+};
+
+}

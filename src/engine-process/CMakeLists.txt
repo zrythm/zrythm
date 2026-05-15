@@ -8,4 +8,6 @@ qt_add_executable(zrythm-engine
   audio_engine_application.cpp
 )
 
+set_target_properties(zrythm-engine PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+
 target_link_libraries(zrythm-engine PRIVATE zrythm_dsp_lib)

@@ -100,6 +100,13 @@ protected:
       *app_settings, path_provider, *hw_interface, plugin_format_manager,
       window_factory, *metronome, *monitor_fader);
 
+    project->install_recording_callback (
+      [] (
+        const structure::tracks::Track::Uuid &, units::sample_t,
+        const dsp::ITransport &, const dsp::MidiEventVector *,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
+      });
+
     return project;
   }
 
@@ -350,5 +357,66 @@ TEST_F (ProjectTest, EngineAccess)
 
   // Verify audio_engine_ member is the same
   EXPECT_EQ (engine, project->audio_engine_.get ());
+}
+
+// ============================================================================
+// Install Recording Callback Tests
+// ============================================================================
+
+TEST_F (ProjectTest, InstallRecordingCallbackAndGetFinalTrackDependencies)
+{
+  auto project = create_minimal_project ();
+  ASSERT_NE (project, nullptr);
+
+  auto deps = project->get_final_track_dependencies ();
+
+  EXPECT_TRUE (static_cast<bool> (deps.track_recording_callback));
+}
+
+TEST_F (ProjectTest, RecordingCallbackPropagatedToCreatedTracks)
+{
+  auto project = create_minimal_project ();
+  ASSERT_NE (project, nullptr);
+
+  project->add_default_tracks ();
+
+  auto * singleton_tracks = project->tracklist ()->singletonTracks ();
+  ASSERT_NE (singleton_tracks, nullptr);
+
+  // Chord track has TrackFeatures::Recording
+  auto * chord_track = singleton_tracks->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+  EXPECT_NE (chord_track->recordingParam (), nullptr);
+
+  // Master track does NOT have TrackFeatures::Recording
+  auto * master_track = singleton_tracks->masterTrack ();
+  ASSERT_NE (master_track, nullptr);
+  EXPECT_EQ (master_track->recordingParam (), nullptr);
+}
+
+TEST_F (ProjectTest, GetFinalTrackDependenciesThrowsWhenNotInstalled)
+{
+  auto project = std::make_unique<Project> (
+    *app_settings, [this] (bool) { return project_dir; }, *hw_interface,
+    plugin_format_manager,
+    [] (plugins::Plugin &) -> std::unique_ptr<plugins::IPluginHostWindow> {
+      return nullptr;
+    },
+    *metronome, *monitor_fader);
+
+  EXPECT_THROW (project->get_final_track_dependencies (), std::runtime_error);
+}
+
+TEST_F (ProjectTest, InstallRecordingCallbackThrowsOnDoubleInstall)
+{
+  auto project = create_minimal_project ();
+  EXPECT_THROW (
+    project->install_recording_callback (
+      [] (
+        const structure::tracks::Track::Uuid &, units::sample_t,
+        const dsp::ITransport &, const dsp::MidiEventVector *,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
+      }),
+    std::runtime_error);
 }
 }

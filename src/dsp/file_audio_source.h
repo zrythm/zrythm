@@ -93,23 +93,6 @@ public:
   {
   }
 
-  /**
-   * Create an audio clip while recording.
-   *
-   * The frames will keep getting reallocated until the recording is
-   * finished.
-   *
-   * @param nframes Number of frames to allocate. This should be the
-   * current cycle's frames when called during recording.
-   */
-  FileAudioSource (
-    channels_t               channels,
-    units::sample_u64_t      nframes,
-    units::sample_rate_t     project_sample_rate,
-    bpm_t                    current_bpm,
-    const utils::Utf8String &name,
-    QObject *                parent = nullptr);
-
   // ========================================================================
   // QML Interface
   // ========================================================================

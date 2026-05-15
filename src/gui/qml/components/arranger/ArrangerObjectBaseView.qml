@@ -25,8 +25,14 @@ Control {
     if (root.isSelected)
       c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
-    return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+    c = Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+
+    if (root._isMuted)
+      c = QmlUtils.saturate(c, 0.0);
+
+    return c;
   }
+  readonly property bool _isMuted: arrangerObject.mute?.muted ?? false
   required property Track track
   required property UndoStack undoStack
 

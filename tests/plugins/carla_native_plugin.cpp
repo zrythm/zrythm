@@ -196,12 +196,11 @@ TEST_F (ZrythmFixture, Process)
   test_project_stop_dummy_engine ();
 
   /* run plugin and check that output is filled */
-  const auto           &out = pl->out_ports_[0];
-  nframes_t             local_offset = 60;
-  EngineProcessTimeInfo time_nfo = {
+  const auto      &out = pl->out_ports_[0];
+  nframes_t        local_offset = 60;
+  ProcessBlockInfo time_nfo = {
     .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
+    .buffer_offset_ = units::samples (0),
     .nframes_ = local_offset
   };
   pl->process (time_nfo);
@@ -211,7 +210,7 @@ TEST_F (ZrythmFixture, Process)
     }
   time_nfo.g_start_frame_ = units::samples (0);
   time_nfo.g_start_frame_w_offset_ = local_offset;
-  time_nfo.local_offset_ = local_offset;
+  time_nfo.buffer_offset_ = local_offset;
   time_nfo.nframes_ = AUDIO_ENGINE->block_length_ - local_offset;
   pl->process (time_nfo);
   for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length_; i++)

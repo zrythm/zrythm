@@ -145,17 +145,16 @@ ChannelSend::clear_destination_port ()
 
 void
 ChannelSend::custom_process_block (
-  const dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport                  &transport,
-  const dsp::TempoMap                    &tempo_map) noexcept
+  const dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport             &transport,
+  const dsp::TempoMap               &tempo_map) noexcept
 {
-  const auto local_offset = time_nfo.local_offset_;
+  const auto local_offset = time_nfo.buffer_offset_;
   const auto nframes = time_nfo.nframes_;
 
   // Check if enabled
-  const auto is_enabled =
-    processing_caches_->enabled_param_->range ().is_toggled (
-      processing_caches_->enabled_param_->currentValue ());
+  const auto is_enabled = processing_caches_->enabled_param_->range ().isToggled (
+    processing_caches_->enabled_param_->currentValue ());
 
   if (is_audio ())
     {

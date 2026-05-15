@@ -35,6 +35,36 @@
 namespace zrythm::dsp
 {
 
+int
+AudioEngine::sampleRate () const
+{
+  return sample_rate ().in (units::sample_rate);
+}
+
+int
+AudioEngine::blockLength () const
+{
+  return block_length ().in<int> (units::samples);
+}
+
+units::sample_rate_t
+AudioEngine::sample_rate () const
+{
+  return hw_interface_.get_device_info ().sample_rate;
+}
+
+units::sample_u32_t
+AudioEngine::block_length () const
+{
+  return hw_interface_.get_device_info ().block_length;
+}
+
+utils::Utf8String
+AudioEngine::device_name () const
+{
+  return hw_interface_.get_device_info ().device_name;
+}
+
 AudioEngine::AudioEngine (
   dsp::Transport          &transport,
   IHardwareAudioInterface &hw_interface,
@@ -58,13 +88,11 @@ AudioEngine::AudioEngine (
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (
-            const float * const * inputChannelData,
-            int                   numInputChannels,
-            float * const *       outputChannelData,
-            int                   numOutputChannels,
-            int                   numSamples) {
-            assert (numSamples >= 0);
-            const auto samples = static_cast<size_t> (numSamples);
+            std::span<const float * const> inputChannels,
+            std::span<float * const>       outputChannels,
+            units::sample_u32_t            numSamples) {
+            current_hw_input_ = inputChannels;
+
             juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
               load_measurer_
             };
@@ -72,36 +100,55 @@ AudioEngine::AudioEngine (
               this->transport_.playhead ()->playhead ()
             };
 
-            const auto process_status =
-              this->process (guard, units::samples (numSamples));
+            const auto process_status = this->process (guard, numSamples);
+            current_hw_input_ = {};
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
                 // Note: the monitor output ports below require the processing
                 // graph to be operational. We are guarding against other cases
                 // by checking the process() return status
-                if (numOutputChannels > 0)
+                const auto samples = numSamples.in<size_t> (units::samples);
+                if (!outputChannels.empty ())
                   {
                     utils::float_ranges::copy (
-                      { outputChannelData[0], samples },
+                      { outputChannels[0], samples },
                       { monitor_out_.buffers ()->getReadPointer (0), samples });
                   }
-                if (numOutputChannels > 1)
+                if (outputChannels.size () > 1)
                   {
                     utils::float_ranges::copy (
-                      { outputChannelData[1], samples },
+                      { outputChannels[1], samples },
                       { monitor_out_.buffers ()->getReadPointer (1), samples });
                   }
               }
           },
           [this] () {
+            const auto info = hw_interface_.get_device_info ();
+            cached_device_info_ = info;
+            // Keep old processor alive because the graph recalc needs to call
+            // release_resources on it
+            auto old_processor = std::move (audio_input_processor_);
+
+            audio_input_processor_ = utils::make_qobject_unique<
+              AudioInputProcessor> (
+              [this] () -> std::span<const float * const> {
+                return current_hw_input_;
+              },
+              info.input_channel_count,
+              AudioInputProcessor::ProcessorBaseDependencies{
+                .port_registry_ = port_registry_,
+                .param_registry_ = param_registry_ },
+              this);
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
-              nullptr, hw_interface_.get_sample_rate (),
-              hw_interface_.get_block_length ());
-            Q_EMIT sampleRateChanged (sampleRate ());
+              nullptr, info.sample_rate, info.block_length);
+            Q_EMIT sampleRateChanged (info.sample_rate.in (units::sample_rate));
+            Q_EMIT blockLengthChanged (
+              info.block_length.in<int> (units::samples));
             callback_running_ = true;
           },
           [this] () {
+            cached_device_info_.reset ();
             monitor_out_.release_resources ();
             callback_running_ = false;
           }))
@@ -189,13 +236,8 @@ AudioEngine::
       auto current_transport_state = transport_.get_snapshot ();
       process_prepare (current_transport_state, units::samples (1), lock);
 
-      dsp::graph::EngineProcessTimeInfo time_nfo = {
-        .g_start_frame_ = transport_.get_playhead_position_in_audio_thread (),
-        .g_start_frame_w_offset_ =
-          transport_.get_playhead_position_in_audio_thread (),
-        .local_offset_ = units::samples (0),
-        .nframes_ = units::samples (1),
-      };
+      auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+        transport_.get_playhead_position_in_audio_thread (), units::samples (1));
 
       graph_dispatcher_.start_cycle (
         current_transport_state, time_nfo, remaining_latency_preroll_, false,
@@ -261,9 +303,7 @@ AudioEngine::activate_impl (const bool activate)
   z_debug ("Setting engine status to: {}", new_state);
   if (activate)
     {
-      load_measurer_.reset (
-        get_sample_rate ().in (units::sample_rate),
-        get_block_length ().in<int> (units::samples));
+      load_measurer_.reset (sampleRate (), blockLength ());
 
       hw_interface_.add_audio_callback (audio_callback_.get ());
     }
@@ -286,7 +326,8 @@ AudioEngine::process_prepare (
   units::sample_u32_t                              nframes,
   SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
 {
-  const auto block_length = get_block_length ();
+  assert (cached_device_info_.has_value ());
+  const auto block_length = cached_device_info_->block_length;
 
   const auto update_transport_play_state =
     [&] (dsp::ITransport::PlayState play_state) {
@@ -380,12 +421,10 @@ AudioEngine::process (
 
   /* --- handle preroll --- */
 
-  dsp::graph::EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frame_ =
+  dsp::graph::ProcessBlockInfo split_time_nfo = {
+    .transport_position_ =
       current_transport_state.get_playhead_position_in_audio_thread (),
-    .g_start_frame_w_offset_ =
-      current_transport_state.get_playhead_position_in_audio_thread (),
-    .local_offset_ = units::samples (0),
+    .buffer_offset_ = units::samples (0),
     .nframes_ = units::samples (0),
   };
 
@@ -425,9 +464,7 @@ AudioEngine::process (
       auto preroll_offset = total_frames_to_process - total_frames_remaining;
       assert (preroll_offset + num_preroll_frames <= total_frames_to_process);
 
-      split_time_nfo.g_start_frame_w_offset_ =
-        split_time_nfo.g_start_frame_ + preroll_offset;
-      split_time_nfo.local_offset_ = preroll_offset;
+      split_time_nfo.buffer_offset_ = preroll_offset;
       split_time_nfo.nframes_ = num_preroll_frames;
       graph_dispatcher_.start_cycle (
         current_transport_state, split_time_nfo, remaining_latency_preroll_,
@@ -459,9 +496,7 @@ AudioEngine::process (
                 .as<uint32_t> (units::samples));
 
             /* process for countin frames */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = countin_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
@@ -487,9 +522,7 @@ AudioEngine::process (
                 .as<uint32_t> (units::samples));
 
             /* process for preroll frames */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = preroll_frames;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,
@@ -502,9 +535,7 @@ AudioEngine::process (
               total_frames_remaining - preroll_frames;
             if (remaining_frames > units::samples (0))
               {
-                split_time_nfo.g_start_frame_w_offset_ =
-                  split_time_nfo.g_start_frame_ + cur_offset;
-                split_time_nfo.local_offset_ = cur_offset;
+                split_time_nfo.buffer_offset_ = cur_offset;
                 split_time_nfo.nframes_ = remaining_frames;
                 graph_dispatcher_.start_cycle (
                   current_transport_state, split_time_nfo,
@@ -515,9 +546,7 @@ AudioEngine::process (
           {
             /* run the cycle for the remaining frames - this will also play the
              * queued metronome events (if any) */
-            split_time_nfo.g_start_frame_w_offset_ =
-              split_time_nfo.g_start_frame_ + cur_offset;
-            split_time_nfo.local_offset_ = cur_offset;
+            split_time_nfo.buffer_offset_ = cur_offset;
             split_time_nfo.nframes_ = total_frames_remaining;
             graph_dispatcher_.start_cycle (
               current_transport_state, split_time_nfo,

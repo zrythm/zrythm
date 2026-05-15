@@ -15,7 +15,7 @@ namespace zrythm::dsp
 
 SnapGrid::SnapGrid (
   const TempoMap          &tempo_map,
-  utils::NoteLength        default_note_length,
+  dsp::notes::NoteLength   default_note_length,
   LastObjectLengthProvider last_object_length_provider,
   QObject *                parent)
     : QObject (parent), default_note_length_ (default_note_length),
@@ -54,12 +54,12 @@ SnapGrid::defaultTicks (int64_t ticks) const
   int ticks_per_beat = ticks_per_bar / time_sig.numerator;
 
   return get_ticks_from_length_and_type (
-    default_note_length_, utils::NoteType::Normal, ticks_per_bar,
+    default_note_length_, dsp::notes::NoteType::Normal, ticks_per_bar,
     ticks_per_beat);
 }
 
 static auto
-get_note_type_short_str (utils::NoteType type)
+get_note_type_short_str (dsp::notes::NoteType type)
 {
   static constexpr std::array<std::string_view, 3> note_type_short_strings = {
     "",
@@ -71,11 +71,11 @@ get_note_type_short_str (utils::NoteType type)
 
 QString
 SnapGrid::stringize_length_and_type (
-  utils::NoteLength note_length,
-  utils::NoteType   note_type)
+  dsp::notes::NoteLength note_length,
+  dsp::notes::NoteType   note_type)
 {
   const auto c = get_note_type_short_str (note_type);
-  const auto first_part = utils::note_length_to_str (note_length);
+  const auto first_part = dsp::notes::note_length_to_str (note_length);
 
   return QString::fromStdString (fmt::format ("{}{}", first_part, c));
 }
@@ -317,7 +317,7 @@ SnapGrid::setBeatsVisible (bool visible)
 }
 
 void
-SnapGrid::setSnapNoteLength (utils::NoteLength length)
+SnapGrid::setSnapNoteLength (dsp::notes::NoteLength length)
 {
   if (length == snap_note_length_)
     return;
@@ -328,7 +328,7 @@ SnapGrid::setSnapNoteLength (utils::NoteLength length)
 }
 
 void
-SnapGrid::setSnapNoteType (utils::NoteType type)
+SnapGrid::setSnapNoteType (dsp::notes::NoteType type)
 {
   if (type == snap_note_type_)
     return;

@@ -58,10 +58,6 @@ Track::Track (
     {
       lanes_ = make_lanes ();
     }
-  if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::Recording))
-    {
-      recordable_track_mixin_ = make_recordable_track_mixin ();
-    }
   if (ENUM_BITSET_TEST (enabled_features, TrackFeatures::PianoRoll))
     {
       piano_roll_track_mixin_ = make_piano_roll_track_mixin ();
@@ -145,20 +141,62 @@ Track::make_track_processor (
   std::optional<TrackProcessor::AppendMidiInputsToOutputsFunc>
     append_midi_inputs_to_outputs_func)
 {
+  auto caps = TrackProcessor::Capabilities{};
+  if (has_piano_roll () || is_chord ())
+    caps |= TrackProcessor::Capabilities::PianoRoll;
+  if (has_piano_roll ())
+    caps |= TrackProcessor::Capabilities::MidiCC;
+  if (is_audio ())
+    caps |= TrackProcessor::Capabilities::AudioTrack;
+  if (ENUM_BITSET_TEST (features_, TrackFeatures::Recording))
+    caps |= TrackProcessor::Capabilities::Recording;
+
+  TrackProcessor::RecordingCallbackRT internal_recording_cb;
+  if (base_dependencies_.track_recording_callback)
+    {
+      auto cb = base_dependencies_.track_recording_callback;
+      internal_recording_cb =
+        [this, cb] (
+          units::sample_t timeline_position, const dsp::ITransport &transport_ref,
+          const dsp::MidiEventVector *                       midi_events,
+          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+          cb (
+            get_uuid (), timeline_position, transport_ref, midi_events,
+            std::move (stereo_ports));
+        };
+    }
+
   auto tp = utils::make_qobject_unique<TrackProcessor> (
     base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_.value (),
-    [this] () { return get_name (); }, [this] () { return enabled (); },
-    has_piano_roll () || is_chord (), has_piano_roll (), is_audio (),
+    [this] () { return get_name (); }, [this] () { return enabled (); }, caps,
     TrackProcessor::ProcessorBaseDependencies{
       .port_registry_ = base_dependencies_.port_registry_,
       .param_registry_ = base_dependencies_.param_registry_ },
     fill_events_cb, transform_midi_inputs_func,
-    append_midi_inputs_to_outputs_func, this);
+    append_midi_inputs_to_outputs_func, internal_recording_cb, this);
 
   init_cache_scheduler ();
   init_playback_cache_activity_tracker (*tp);
 
   return tp;
+}
+
+dsp::ProcessorParameter *
+Track::recordingParam () const
+{
+  if (!ENUM_BITSET_TEST (features_, TrackFeatures::Recording))
+    return nullptr;
+  assert (processor_ != nullptr);
+  return &processor_->get_recording_param ();
+}
+
+dsp::ProcessorParameter *
+Track::monitorParam () const
+{
+  if (type_ != Type::Audio)
+    return nullptr;
+  assert (processor_ != nullptr);
+  return &processor_->get_monitor_audio_param ();
 }
 
 utils::QObjectUniquePtr<AutomationTracklist>
@@ -217,12 +255,12 @@ Track::make_lanes ()
   auto ret = utils::make_qobject_unique<TrackLaneList> (
     base_dependencies_.obj_registry_,
     base_dependencies_.file_audio_source_registry_, this);
-  ret->create_missing_lanes (0);
 
-  // Listen to height changes
   QObject::connect (
-    ret.get (), &TrackLaneList::lanesVisibleChanged, this,
+    ret.get (), &TrackLaneList::totalHeightChanged, this,
     &Track::fullVisibleHeightChanged);
+
+  ret->create_missing_lanes (0);
 
   return ret;
 }
@@ -285,16 +323,6 @@ Track::init_playback_cache_activity_tracker (TrackProcessor &proc)
         },
         this);
     }
-}
-
-utils::QObjectUniquePtr<RecordableTrackMixin>
-Track::make_recordable_track_mixin ()
-{
-  return utils::make_qobject_unique<RecordableTrackMixin> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = get_port_registry (),
-      .param_registry_ = get_param_registry () },
-    [this] () { return name_; }, this);
 }
 
 utils::QObjectUniquePtr<PianoRollTrackMixin>
@@ -626,11 +654,6 @@ to_json (nlohmann::json &j, const Track &track)
     {
       to_json (j, *track.lanes_);
     }
-  if (track.recordable_track_mixin_)
-    {
-      j[Track::kRecordingParamKey] =
-        track.recordable_track_mixin_->get_recording_param ().get_uuid ();
-    }
   if (track.piano_roll_track_mixin_)
     {
       j[Track::kPianoRollKey] = track.piano_roll_track_mixin_;
@@ -656,15 +679,15 @@ from_json (const nlohmann::json &j, Track &track)
   // j.at (Track::kFrozenClipIdKey).get_to (track.frozen_clip_id_);
   if (track.channel_)
     {
-      j[Track::kChannelKey].get_to (*track.channel_);
+      j.at (Track::kChannelKey).get_to (*track.channel_);
     }
   if (track.processor_)
     {
-      j[Track::kProcessorKey].get_to (*track.processor_);
+      j.at (Track::kProcessorKey).get_to (*track.processor_);
     }
   if (track.automation_tracklist_)
     {
-      j[Track::kAutomationTracklistKey].get_to (*track.automation_tracklist_);
+      j.at (Track::kAutomationTracklistKey).get_to (*track.automation_tracklist_);
     }
   if (track.modulators_)
     {
@@ -683,13 +706,9 @@ from_json (const nlohmann::json &j, Track &track)
     {
       from_json (j, *track.lanes_);
     }
-  if (track.recordable_track_mixin_)
-    {
-      j[Track::kRecordingParamKey].get_to (*track.recordable_track_mixin_);
-    }
   if (track.piano_roll_track_mixin_)
     {
-      j[Track::kPianoRollKey].get_to (*track.piano_roll_track_mixin_);
+      j.at (Track::kPianoRollKey).get_to (*track.piano_roll_track_mixin_);
     }
 }
 }

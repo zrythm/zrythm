@@ -81,11 +81,11 @@ TEST_F (ZrythmFixture, MidiFilePlayback)
           /* try all possible offsets */
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
-              EngineProcessTimeInfo time_nfo = {
+              ProcessBlockInfo time_nfo = {
                 .g_start_frame_ = (unsigned_frame_t) i,
                 .g_start_frame_w_offset_ =
                   (unsigned_frame_t) i + (unsigned_frame_t) j,
-                .local_offset_ = (nframes_t) j,
+                .buffer_offset_ = (nframes_t) j,
                 .nframes_ = BUFFER_SIZE,
               };
               track->fill_midi_events (time_nfo, events);

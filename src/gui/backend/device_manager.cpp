@@ -4,7 +4,10 @@
 #include <utility>
 
 #include "gui/backend/device_manager.h"
+#include "utils/exceptions.h"
 #include "utils/logger.h"
+
+#include <QTimer>
 
 #include <juce_audio_utils/juce_audio_utils.h>
 
@@ -17,6 +20,12 @@ DeviceManager::DeviceManager (
     : state_getter_ (std::move (state_getter)),
       state_setter_ (std::move (state_setter))
 {
+  addChangeListener (&device_change_listener_);
+}
+
+DeviceManager::~DeviceManager ()
+{
+  removeChangeListener (&device_change_listener_);
 }
 
 void
@@ -28,6 +37,13 @@ DeviceManager::initialize (
   auto ret = initialise (
     max_input_channels, max_output_channels, state_getter_ ().get (),
     fallback_to_default);
+  if (ret.isNotEmpty ())
+    {
+      throw utils::exceptions::ZrythmException (
+        fmt::format (
+          "Audio device initialization failed: {}", ret.toStdString ()));
+    }
+  Q_EMIT availableAudioInputsChanged ();
 }
 
 void
@@ -37,7 +53,7 @@ DeviceManager::save_state ()
   if (xml)
     {
       z_debug ("saving device manager state");
-      state_setter_ (*createStateXml ());
+      state_setter_ (*xml);
     }
   else
     {
@@ -86,6 +102,45 @@ DeviceManager::showDeviceSelector ()
   device_selector_window_ = std::make_unique<DeviceSelectorWindow> (*this);
 }
 
+QVector<AudioInputInfo>
+DeviceManager::availableAudioInputs () const
+{
+  QVector<AudioInputInfo> result;
+  auto *                  dev = getCurrentAudioDevice ();
+  if (dev == nullptr)
+    return result;
+
+  const auto active_channels = dev->getActiveInputChannels ();
+  const int  num_channels = active_channels.getHighestBit () + 1;
+  const auto device_name =
+    utils::Utf8String::from_juce_string (dev->getName ()).to_qstring ();
+
+  for (int i = 0; i + 1 < num_channels; i += 2)
+    {
+      if (!active_channels[i] || !active_channels[i + 1])
+        continue;
+      result.append (
+        {
+          .deviceName = device_name,
+          .firstChannel = i,
+          .stereo = true,
+        });
+    }
+  for (int i = 0; i < num_channels; ++i)
+    {
+      if (!active_channels[i])
+        continue;
+      result.append (
+        {
+          .deviceName = device_name,
+          .firstChannel = i,
+          .stereo = false,
+        });
+    }
+
+  return result;
+}
+
 DeviceManager::DeviceSelectorWindow::DeviceSelectorWindow (
   DeviceManager &dev_manager)
     : juce::DocumentWindow (
@@ -108,4 +163,13 @@ DeviceManager::DeviceSelectorWindow::DeviceSelectorWindow (
   toFront (true);
 }
 
-} // namespace zrythm::engine::device_io
+void
+DeviceManager::DeviceSelectorWindow::closeButtonPressed ()
+{
+  dev_manager_.save_state ();
+  Q_EMIT dev_manager_.availableAudioInputsChanged ();
+  auto * dm = &dev_manager_;
+  QTimer::singleShot (0, dm, [dm] () { dm->device_selector_window_.reset (); });
+}
+
+} // namespace zrythm::gui::backend

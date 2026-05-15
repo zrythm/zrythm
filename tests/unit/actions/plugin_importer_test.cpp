@@ -54,9 +54,12 @@ protected:
       track_registry_,
       *transport_,
       soloed_tracks_exist_getter_,
+      {},
     };
-    track_factory_ =
-      std::make_unique<structure::tracks::TrackFactory> (factory_deps);
+    track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
+      [factory_deps] () -> structure::tracks::FinalTrackDependencies {
+        return factory_deps;
+      });
 
     // Create and register singleton tracks
     auto master_track_ref =

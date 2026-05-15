@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <span>
 #include <string_view>
+
+#include "utils/units.h"
 
 namespace zrythm::dsp
 {
@@ -22,19 +25,11 @@ public:
 
   /**
    * @brief Called when the audio device wants to process a block of audio data.
-   *
-   * @param input_channel_data Array of pointers to input channel data
-   * @param num_input_channels Number of input channels
-   * @param output_channel_data Array of pointers to output channel data
-   * @param num_output_channels Number of output channels
-   * @param num_samples Number of samples in this block
    */
   virtual void process_audio (
-    const float * const * input_channel_data,
-    int                   num_input_channels,
-    float * const *       output_channel_data,
-    int                   num_output_channels,
-    int                   num_samples) noexcept = 0;
+    std::span<const float * const> input_channels,
+    std::span<float * const>       output_channels,
+    units::sample_u32_t            num_samples) noexcept = 0;
 
   /**
    * @brief Called when the audio device is about to start processing.

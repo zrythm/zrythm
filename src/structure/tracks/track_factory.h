@@ -14,8 +14,10 @@ namespace zrythm::structure::tracks
 class TrackFactory
 {
 public:
-  TrackFactory (FinalTrackDependencies track_deps)
-      : track_deps_ (std::move (track_deps))
+  using DependenciesProvider = std::function<FinalTrackDependencies ()>;
+
+  TrackFactory (DependenciesProvider dependencies_provider)
+      : dependencies_provider_ (std::move (dependencies_provider))
   {
   }
 
@@ -50,7 +52,7 @@ public:
 
   template <typename TrackT> auto get_builder () const
   {
-    auto builder = Builder<TrackT> (track_deps_);
+    auto builder = Builder<TrackT> (dependencies_provider_ ());
     return builder;
   }
 
@@ -97,22 +99,25 @@ public:
   template <typename TrackT>
   auto clone_new_object_identity (const TrackT &other) const
   {
-    return track_deps_.plugin_registry_.clone_object (
-      other, track_deps_.plugin_registry_);
+    auto track_dependencies = dependencies_provider_ ();
+    return track_dependencies.plugin_registry_.clone_object (
+      other, track_dependencies.plugin_registry_);
   }
 
   template <typename TrackT>
   auto clone_object_snapshot (const TrackT &other, QObject &owner) const
   {
+    auto     track_dependencies = dependencies_provider_ ();
     TrackT * new_obj{};
 
     new_obj = other.clone_qobject (
-      &owner, utils::ObjectCloneType::Snapshot, track_deps_.plugin_registry_);
+      &owner, utils::ObjectCloneType::Snapshot,
+      track_dependencies.plugin_registry_);
     return new_obj;
   }
 
 private:
-  FinalTrackDependencies track_deps_;
+  DependenciesProvider dependencies_provider_;
 };
 
 } // namespace zrythm::structure::tracks

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "utils/units.h"
+#include "dsp/audio_device_info.h"
 
 namespace zrythm::dsp
 {
@@ -15,6 +15,10 @@ class IAudioCallback;
  *
  * This interface decouples AudioEngine and DspGraphDispatcher from
  * juce::AudioDeviceManager, allowing for easier testing and flexibility.
+ *
+ * The hardware interface is the source of truth for device configuration.
+ * It guarantees that get_device_info() returns up-to-date values during
+ * any about_to_start() callback.
  */
 class IHardwareAudioInterface
 {
@@ -22,14 +26,11 @@ public:
   virtual ~IHardwareAudioInterface () = default;
 
   /**
-   * @brief Returns the current block length (buffer size) in frames.
+   * @brief Returns the current audio device information.
+   *
+   * Guaranteed to return up-to-date values during about_to_start() callbacks.
    */
-  virtual units::sample_u32_t get_block_length () const = 0;
-
-  /**
-   * @brief Returns the current sample rate.
-   */
-  virtual units::sample_rate_t get_sample_rate () const = 0;
+  [[nodiscard]] virtual AudioDeviceInfo get_device_info () const = 0;
 
   /**
    * @brief Adds an audio callback to receive audio I/O events.

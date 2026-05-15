@@ -68,10 +68,10 @@ GraphNode::print_node_to_str () const
 
 void
 GraphNode::compensate_latency (
-  dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const units::sample_u32_t          remaining_preroll_frames,
-  const dsp::ITransport             &transport,
-  const dsp::TempoMap               &tempo_map) const
+  dsp::graph::ProcessBlockInfo &time_nfo,
+  const units::sample_u32_t     remaining_preroll_frames,
+  const dsp::ITransport        &transport,
+  const dsp::TempoMap          &tempo_map) const
 {
   /* if the playhead is before the loop-end point and the
    * latency-compensated position is after the loop-end point it means
@@ -85,59 +85,47 @@ GraphNode::compensate_latency (
   auto       adjusted_playhead_position =
     transport.get_playhead_position_after_adding_frames_in_audio_thread (
       playhead_pos, route_playback_latency_ - remaining_preroll_frames);
-  time_nfo.g_start_frame_ = adjusted_playhead_position;
-  time_nfo.g_start_frame_w_offset_ =
-    adjusted_playhead_position + time_nfo.local_offset_;
+  time_nfo.transport_position_ =
+    adjusted_playhead_position + time_nfo.buffer_offset_;
 }
 
 void
 GraphNode::process_chunks_after_splitting_at_loop_points (
-  dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport             &transport,
-  const dsp::TempoMap               &tempo_map) const
+  dsp::graph::ProcessBlockInfo &time_nfo,
+  const dsp::ITransport        &transport,
+  const dsp::TempoMap          &tempo_map) const
 {
-  /* split at loop points */
+  // split at loop points
   for (
     units::sample_u32_t num_processable_frames;
     (num_processable_frames = au::min (
        transport.is_loop_point_met_in_audio_thread (
-         time_nfo.g_start_frame_w_offset_, time_nfo.nframes_),
+         time_nfo.transport_position_, time_nfo.nframes_),
        time_nfo.nframes_))
     != units::samples (0);)
     {
-      // z_debug (
-      //   "splitting from {} (num processable frames {})",
-      //   time_nfo.g_start_frame_w_offset_, num_processable_frames);
+      // process chunk
+      processable_.process_block (
+        dsp::graph::ProcessBlockInfo{
+          .transport_position_ = time_nfo.transport_position_,
+          .buffer_offset_ = time_nfo.buffer_offset_,
+          .nframes_ = num_processable_frames },
+        transport, tempo_map);
 
-      /* temporarily change the nframes to avoid having to declare a separate
-       * dsp::graph::EngineProcessTimeInfo */
-      const auto orig_nframes = time_nfo.nframes_;
-      time_nfo.nframes_ = num_processable_frames;
+      time_nfo.nframes_ -= num_processable_frames;
 
-      // process current chunk
-      processable_.process_block (time_nfo, transport, tempo_map);
-
-      /* calculate the remaining frames */
-      time_nfo.nframes_ = orig_nframes - num_processable_frames;
-
-      /* loop back to loop start */
-      auto [transport_loop_start_pos, transport_loop_end_pos] =
-        transport.get_loop_range_positions ();
-      const auto frames_to_add =
-        (num_processable_frames + transport_loop_start_pos)
-        - transport_loop_end_pos;
-      time_nfo.g_start_frame_w_offset_ += frames_to_add;
-      time_nfo.g_start_frame_ += frames_to_add;
-      time_nfo.local_offset_ += num_processable_frames;
+      // loop back to loop start
+      time_nfo.transport_position_ = transport.get_loop_range_positions ().first;
+      time_nfo.buffer_offset_ += num_processable_frames;
     }
 }
 
 void
 GraphNode::process (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const units::sample_u64_t         remaining_preroll_frames,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) const
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const units::sample_u64_t    remaining_preroll_frames,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) const
 {
   // if node is bypassed, skip processing
   if (bypass_) [[unlikely]]
@@ -153,6 +141,12 @@ GraphNode::process (
       return;
     }
 
+  // Always include the buffer offset in transport_position so that
+  // processors see the correct timeline position for their chunk,
+  // regardless of transport state.  When rolling, compensate_latency()
+  // will overwrite this with the full latency-adjusted value.
+  time_nfo.transport_position_ += time_nfo.buffer_offset_;
+
   /* compensate latency when rolling */
   if (transport.get_play_state () == dsp::ITransport::PlayState::Rolling)
     {
@@ -161,8 +155,6 @@ GraphNode::process (
     }
 
   process_chunks_after_splitting_at_loop_points (time_nfo, transport, tempo_map);
-
-  assert (time_nfo.g_start_frame_w_offset_ >= time_nfo.g_start_frame_);
 
   if (time_nfo.nframes_ > units::samples (0))
     {
@@ -297,7 +289,7 @@ GraphNodeCollection::update_latencies ()
   z_debug ("done setting all latencies to 0");
 
   z_debug ("iterating over {} nodes...", nodes.size ());
-  units::sample_u32_t max_playback_latency;
+  units::sample_u32_t max_playback_latency = units::samples (0);
   for (auto &node : nodes)
     {
       node->playback_latency_ = node->get_single_playback_latency ();
@@ -356,11 +348,11 @@ GraphNodeCollection::find_node_for_processable (
 }
 
 void
-EngineProcessTimeInfo::print () const
+ProcessBlockInfo::print () const
 {
   z_info (
-    "Global start frame: {} (with offset {}) | local offset: {} | num frames: {}",
-    g_start_frame_, g_start_frame_w_offset_, local_offset_, nframes_);
+    "Transport position: {} | buffer offset: {} | num frames: {}",
+    transport_position_, buffer_offset_, nframes_);
 }
 
 } // namespace zrythm::dsp::graph

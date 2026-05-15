@@ -1,15 +1,19 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <map>
 #include <string_view>
 
+#include "dsp/audio_input_selection.h"
 #include "dsp/snap_grid.h"
 #include "structure/arrangement/timeline.h"
 #include "structure/project/arranger_tool.h"
 #include "structure/project/clip_editor.h"
 #include "structure/project/project.h"
+#include "structure/tracks/track.h"
+#include "utils/qt.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -63,6 +67,21 @@ public:
   dsp::SnapGrid *                    snapGridTimeline () const;
   dsp::SnapGrid *                    snapGridEditor () const;
 
+  Q_INVOKABLE dsp::AudioInputSelection *
+  audioInputSelectionForTrack (const structure::tracks::Track * track);
+
+  dsp::AudioInputSelection *
+  find_audio_input_selection (const structure::tracks::Track::Uuid &uuid) const;
+
+  static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
+
+Q_SIGNALS:
+  void audioInputSelectionChanged ();
+
+private:
+  dsp::AudioInputSelection * get_or_create_audio_input_selection (
+    const structure::tracks::Track::Uuid &uuid);
+
 private:
   static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
   static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
@@ -70,6 +89,7 @@ private:
   friend void           from_json (const nlohmann::json &j, ProjectUiState &p);
 
 private:
+  Project            &project_;
   utils::AppSettings &app_settings_;
 
   /** Currently selected arranger tool. */
@@ -86,6 +106,13 @@ private:
 
   /** Snap/grid settings for the editor (piano roll). */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_editor_;
+
+  /** Map of track UUID to audio input selection (lazy-created, pruned on save).
+   */
+  std::map<
+    structure::tracks::Track::Uuid,
+    utils::QObjectUniquePtr<dsp::AudioInputSelection>>
+    audio_input_selections_;
 };
 
 } // namespace zrythm::structure::project

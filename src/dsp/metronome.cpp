@@ -78,9 +78,9 @@ Metronome::find_and_queue_metronome_samples (
 
 void
 Metronome::custom_process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   if (!enabled_.load ())
     {
@@ -95,9 +95,9 @@ Metronome::custom_process_block (
     transport.get_play_state () == dsp::ITransport::PlayState::Rolling
     && transport.metronome_countin_frames_remaining () == units::samples (0))
     {
-      const auto loffset = time_nfo.local_offset_;
+      const auto loffset = time_nfo.buffer_offset_;
       const auto nframes = time_nfo.nframes_;
-      const auto playhead_before = time_nfo.g_start_frame_w_offset_;
+      const auto playhead_before = time_nfo.transport_position_;
       const auto playhead_after_ignoring_loops = playhead_before + nframes;
       const auto playhead_after_taking_loops_into_account =
         transport.get_playhead_position_after_adding_frames_in_audio_thread (
@@ -186,9 +186,9 @@ Metronome::queue_metronome (
 
 void
 Metronome::queue_metronome_countin (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  const dsp::ITransport                   &transport,
-  const dsp::TempoMap                     &tempo_map)
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  const dsp::ITransport              &transport,
+  const dsp::TempoMap                &tempo_map)
 {
   const auto countin_frames_remaining =
     transport.metronome_countin_frames_remaining ();
@@ -206,7 +206,7 @@ Metronome::queue_metronome_countin (
   units::sample_t frames_per_bar;
   {
     const auto current_musical_pos = tempo_map.tick_to_musical_position (
-      frame_to_tick (time_nfo.g_start_frame_));
+      frame_to_tick (time_nfo.transport_position_));
     const auto tick_at_bar_start = tempo_map.musical_position_to_tick (
       TempoMap::MusicalPosition{
         .bar = current_musical_pos.bar, .beat = 1, .sixteenth = 1, .tick = 0 });
@@ -227,7 +227,7 @@ Metronome::queue_metronome_countin (
     frames_per_beat = frame_at_beat_end - frame_at_beat_start;
   }
 
-  const auto full_block_size = time_nfo.local_offset_ + time_nfo.nframes_;
+  const auto full_block_size = time_nfo.buffer_offset_ + time_nfo.nframes_;
 
   // used to avoid appending beat events where we already have bar events
   boost::container::static_vector<units::sample_u64_t, 16> queued_events;
@@ -251,8 +251,8 @@ Metronome::queue_metronome_countin (
             {
               // render click at out[idx]
               if (
-                idx >= time_nfo.local_offset_
-                && idx < (time_nfo.local_offset_ + time_nfo.nframes_)
+                idx >= time_nfo.buffer_offset_
+                && idx < (time_nfo.buffer_offset_ + time_nfo.nframes_)
                 && !std::ranges::contains (queued_events, idx))
                 {
                   queue_metronome (emphasis, idx);

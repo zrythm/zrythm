@@ -30,8 +30,7 @@ public:
 
   ~JuceHardwareAudioInterface () override;
 
-  [[nodiscard]] units::sample_u32_t  get_block_length () const override;
-  [[nodiscard]] units::sample_rate_t get_sample_rate () const override;
+  [[nodiscard]] AudioDeviceInfo get_device_info () const override;
 
   void add_audio_callback (IAudioCallback * callback) override;
   void remove_audio_callback (IAudioCallback * callback) override;
@@ -75,8 +74,9 @@ private:
     {
       juce::ScopedNoDenormals no_denormals;
       callback_.process_audio (
-        inputChannelData, numInputChannels, outputChannelData,
-        numOutputChannels, numSamples);
+        { inputChannelData, static_cast<size_t> (numInputChannels) },
+        { outputChannelData, static_cast<size_t> (numOutputChannels) },
+        units::samples (numSamples));
     }
 
     void audioDeviceAboutToStart (juce::AudioIODevice * device) override;

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "commands/change_qobject_property_command.h"
 #include "commands/resize_arranger_objects_command.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "undo/undo_stack.h"
@@ -52,6 +53,8 @@ public:
   Q_INVOKABLE bool deleteObjects ();
 
   Q_INVOKABLE bool cloneObjects ();
+
+  Q_INVOKABLE bool toggleMute ();
 
 private:
   auto extractSelectedObjects () const -> SelectedObjectsVector;

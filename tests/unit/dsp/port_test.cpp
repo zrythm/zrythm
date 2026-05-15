@@ -25,9 +25,7 @@ public:
   MOCK_METHOD (
     void,
     process_block,
-    (dsp::graph::EngineProcessTimeInfo,
-     const dsp::ITransport &,
-     const dsp::TempoMap &),
+    (dsp::graph::ProcessBlockInfo, const dsp::ITransport &, const dsp::TempoMap &),
     (noexcept, override));
 };
 

@@ -5,17 +5,24 @@ qt_add_library(zrythm_controllers_lib STATIC)
 
 target_sources(zrythm_controllers_lib
   PRIVATE
+    audio_recording_session.cpp
     project_json_serializer.cpp
     project_loader.cpp
     project_saver.cpp
+    recording_coordinator.cpp
+    recording_materializer.cpp
     transport_controller.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
+      audio_recording_session.h
       project_json_serializer.h
       project_loader.h
       project_saver.h
+      recording_coordinator.h
+      recording_materializer.h
+      recording_mode.h
       transport_controller.h
 )
 
@@ -47,4 +54,4 @@ qt_add_qml_module(zrythm_controllers_lib
 )
 
 target_precompile_headers(zrythm_controllers_lib REUSE_FROM zrythm_undo_lib)
-target_precompile_headers(zrythm_controllers_libplugin REUSE_FROM zrythm_controllers_lib)
+set_target_properties(zrythm_controllers_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

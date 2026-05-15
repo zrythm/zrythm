@@ -40,9 +40,45 @@ protected:
       plugin_registry,      port_registry,
       param_registry,       obj_registry,
       *track_registry,      transport,
-      [] { return false; },
+      [] { return false; }, {},
     };
     return track_registry->create_object<MidiTrack> (std::move (deps));
+  }
+
+  void wait_for_complete_count (int expected, int timeout_ms = 5000)
+  {
+    ASSERT_TRUE (
+      QTest::qWaitFor (
+        [this, expected] {
+          return aggregator->cacheCompleteCount () >= expected;
+        },
+        timeout_ms))
+      << "Timed out waiting for cacheCompleteCount >= " << expected << " (got "
+      << aggregator->cacheCompleteCount () << ")";
+  }
+
+  void wait_for_counts_reset (int timeout_ms = 5000)
+  {
+    ASSERT_TRUE (
+      QTest::qWaitFor (
+        [this] {
+          return aggregator->cachePendingCount () == 0
+                 && aggregator->cacheCompleteCount () == 0;
+        },
+        timeout_ms))
+      << "Timed out waiting for counts to reset";
+  }
+
+  void wait_for_complete_count_on (
+    PlaybackCacheActivityAggregator &agg,
+    int                              expected,
+    int                              timeout_ms = 5000)
+  {
+    ASSERT_TRUE (
+      QTest::qWaitFor (
+        [&agg, expected] { return agg.cacheCompleteCount () >= expected; },
+        timeout_ms))
+      << "Timed out waiting for cacheCompleteCount >= " << expected;
   }
 
   std::unique_ptr<ScopedQCoreApplication> app_;
@@ -76,7 +112,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CompleteCountFromRegeneration)
   track_obj->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (20.0, 30.0) });
 
-  QTest::qWait (200);
+  wait_for_complete_count (2);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 2);
 }
 
@@ -88,18 +124,17 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemove)
 
   track_obj->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
 
-  int complete_before = aggregator->cacheCompleteCount ();
-  EXPECT_GT (complete_before, 0);
+  EXPECT_GT (aggregator->cacheCompleteCount (), 0);
 
   track_collection->remove_track (track.id ());
-  QTest::qWait (50);
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cachePendingCount (), 0);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnClear)
+TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemoveAllTracks)
 {
   auto track1 = create_midi_track ();
   auto track2 = create_midi_track ();
@@ -111,11 +146,12 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnClear)
   track2.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
-  QTest::qWait (200);
+  wait_for_complete_count (2);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 2);
 
-  track_collection->clear ();
-  QTest::qWait (50);
+  track_collection->remove_track (track1.id ());
+  track_collection->remove_track (track2.id ());
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cachePendingCount (), 0);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
@@ -134,7 +170,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, MultipleTracksCompleteCount)
   track1.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (20.0, 30.0) });
 
-  QTest::qWait (200);
+  wait_for_complete_count (3);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 3);
 }
 
@@ -150,7 +186,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnCountChange)
   track.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
-  QTest::qWait (200);
+  ASSERT_TRUE (complete_spy.wait (5000));
   EXPECT_GE (complete_spy.count (), 1);
 }
 
@@ -166,42 +202,42 @@ TEST_F (PlaybackCacheActivityAggregatorTest, DetectsExistingTracksOnSetCollectio
   track.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
-  QTest::qWait (200);
+  wait_for_complete_count_on (*late_aggregator, 1);
   EXPECT_EQ (late_aggregator->cacheCompleteCount (), 1);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, TracksAddedAfterClearAreStillTracked)
+TEST_F (
+  PlaybackCacheActivityAggregatorTest,
+  TracksAddedAfterRemovalAreStillTracked)
 {
   // Add a track and generate some cache activity
   auto track1 = create_midi_track ();
   track_collection->add_track (track1);
   track1.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
-  // Clear the collection (triggers modelAboutToBeReset)
-  track_collection->clear ();
-  QTest::qWait (50);
+  track_collection->remove_track (track1.id ());
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 
-  // Add a new track after the clear — the aggregator should still be
-  // connected to modelAboutToBeReset and rowsInserted, so this track's
-  // activity should be picked up.
+  // Add a new track after the removal — the aggregator should still be
+  // connected to rowsInserted, so this track's activity should be picked up.
   auto track2 = create_midi_track ();
   track_collection->add_track (track2);
   track2.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (5.0, 15.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
-  // A second clear should also work (verifies the connection survived)
-  track_collection->clear ();
-  QTest::qWait (50);
+  // A second removal should also work (verifies the connection survived)
+  track_collection->remove_track (track2.id ());
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
 
-TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnClear)
+TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnRemoval)
 {
   QSignalSpy pending_spy (
     aggregator.get (),
@@ -215,15 +251,14 @@ TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnClear)
 
   track.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  ASSERT_TRUE (complete_spy.wait (5000));
 
-  // Clear spy counts so we only measure the clear-related emissions
+  // Clear spy counts so we only measure the removal-related emissions
   pending_spy.clear ();
   complete_spy.clear ();
 
-  // Clear the collection — disconnectAll() emits both signals
-  track_collection->clear ();
-  QTest::qWait (50);
+  // Remove the track — disconnectAll() emits both signals
+  track_collection->remove_track (track.id ());
 
   EXPECT_GE (pending_spy.count (), 1);
   EXPECT_GE (complete_spy.count (), 1);
@@ -256,13 +291,13 @@ TEST_F (
   // Trigger cache regeneration on the automation track
   at_ptr->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
   // Remove the track — aggregator should reset all counts including
   // automation track entries
   track_collection->remove_track (track.id ());
-  QTest::qWait (50);
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cachePendingCount (), 0);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 }
@@ -273,7 +308,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnSetCollectionNull)
   track_collection->add_track (track);
   track.get_object_base ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_GT (aggregator->cacheCompleteCount (), 0);
 
   // Setting collection to null should clear all counts
@@ -306,19 +341,19 @@ TEST_F (
   // Trigger cache regeneration on the automation track
   at_ptr->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 
   // Remove only the automation track (not the whole track)
   atl->remove_automation_track (*at_ptr);
-  QTest::qWait (50);
+  wait_for_counts_reset ();
   EXPECT_EQ (aggregator->cachePendingCount (), 0);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 0);
 
   // Track itself should still be tracked
   track_obj->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (20.0, 30.0) });
-  QTest::qWait (200);
+  wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
 }
 

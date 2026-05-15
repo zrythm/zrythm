@@ -56,8 +56,7 @@ InternalPluginBase::prepare_for_processing_impl (
 }
 
 void
-InternalPluginBase::process_impl (
-  dsp::graph::EngineProcessTimeInfo time_info) noexcept
+InternalPluginBase::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
 {
   // Simple pass-through implementation
 }

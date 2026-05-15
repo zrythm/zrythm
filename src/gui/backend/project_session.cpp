@@ -8,8 +8,10 @@
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
+#include <QPointer>
 #include <QQmlEngine>
 
 namespace zrythm::gui
@@ -31,9 +33,11 @@ ProjectSession::ProjectSession (
           },
           this)),
       quantize_opts_editor_ (
-        std::make_unique<old_dsp::QuantizeOptions> (utils::NoteLength::Note_1_8)),
+        std::make_unique<old_dsp::QuantizeOptions> (
+          dsp::notes::NoteLength::Note_1_8)),
       quantize_opts_timeline_ (
-        std::make_unique<old_dsp::QuantizeOptions> (utils::NoteLength::Note_1_1)),
+        std::make_unique<old_dsp::QuantizeOptions> (
+          dsp::notes::NoteLength::Note_1_1)),
       arranger_object_creator_ (
         utils::make_qobject_unique<actions::ArrangerObjectCreator> (
           *undo_stack_,
@@ -78,9 +82,142 @@ ProjectSession::ProjectSession (
           this))
 {
   project_->setParent (this);
+
+  project_->set_audio_input_selection_provider (
+    [this] (const structure::tracks::Track::Uuid &uuid)
+      -> dsp::AudioInputSelection * {
+      return ui_state_->find_audio_input_selection (uuid);
+    });
+
+  QObject::connect (
+    ui_state_.get (),
+    &structure::project::ProjectUiState::audioInputSelectionChanged, this,
+    [this] { project_->engine ()->graph_dispatcher ().recalc_graph (false); });
+
+  recording_coordinator_ =
+    utils::make_qobject_unique<controllers::RecordingCoordinator> (this);
+
+  // The recording callback captures a raw pointer to the coordinator.
+  // This is safe because ~ProjectSession() deactivates the engine (stopping
+  // all audio callbacks) before member destruction begins, so the coordinator
+  // outlives all callback invocations.
+  auto * coordinator = recording_coordinator_.get ();
+  project_->install_recording_callback (
+    [coordinator] (
+      const structure::tracks::Track::Uuid &track_id,
+      units::sample_t timeline_position, const dsp::ITransport &transport,
+      const dsp::MidiEventVector * midi_events,
+      std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
+        stereo_ports) {
+      auto * session = coordinator->session_for_track (track_id);
+      if (session == nullptr)
+        return;
+
+      if (stereo_ports.has_value ())
+        {
+          session->write_samples (
+            timeline_position, transport.recording_enabled (),
+            stereo_ports->first, stereo_ports->second);
+        }
+    });
+
+  auto * collection = project_->tracklist ()->collection ();
+  QObject::connect (
+    collection, &structure::tracks::TrackCollection::trackRecordingArmedChanged,
+    this,
+    [this,
+     coordinator_ptr = QPointer<controllers::RecordingCoordinator> (
+       coordinator)] (structure::tracks::Track * track, bool armed) {
+      if (coordinator_ptr.isNull ())
+        return;
+      if (armed)
+        {
+          static constexpr auto kDefaultMaxBlockLength = units::samples (8192u);
+          auto block_length = project_->engine ()->block_length ();
+          coordinator_ptr->arm_track (
+            track->get_uuid (),
+            block_length > units::samples (0u)
+              ? block_length
+              : kDefaultMaxBlockLength);
+        }
+      else
+        {
+          coordinator_ptr->disarm_track (track->get_uuid ());
+        }
+    });
+
+  auto * transport = project_->getTransport ();
+  QObject::connect (
+    transport, &dsp::Transport::playStateChanged, this,
+    [coordinator_ptr = QPointer<controllers::RecordingCoordinator> (
+       coordinator)] (dsp::ITransport::PlayState new_state) {
+      if (coordinator_ptr.isNull ())
+        return;
+      if (new_state == dsp::ITransport::PlayState::Paused)
+        {
+          coordinator_ptr->finalizeAllSessions ();
+        }
+    });
+
+  QObject::connect (
+    project_->engine (), &dsp::AudioEngine::blockLengthChanged, coordinator,
+    [coordinator] (int block_length) {
+      coordinator->prepare_for_processing (units::samples (block_length));
+    });
+
+  recording_materializer_ = utils::make_qobject_unique<
+    controllers::RecordingMaterializer> (
+    *recording_coordinator_, *undo_stack_,
+    [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
+       arranger_object_creator_.get ()),
+     project_ptr = QPointer<structure::project::Project> (project_.get ())] (
+      structure::tracks::TrackUuid track_id, units::sample_t start_position,
+      const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
+      -> controllers::RecordingMaterializer::RegionCreationResult {
+      if (creator_ptr.isNull () || project_ptr.isNull ())
+        return std::nullopt;
+
+      auto track_var = project_ptr->tracklist ()->get_track (track_id);
+      if (!track_var.has_value ())
+        return std::nullopt;
+
+      auto * track = std::visit (
+        [] (auto * t) -> structure::tracks::Track * { return t; }, *track_var);
+
+      assert (!track->lanes ()->lanes ().empty ());
+
+      const auto actual_lane_idx =
+        std::max (lane_index, track->lanes ()->lanes ().size () - 1);
+      track->lanes ()->create_missing_lanes (actual_lane_idx);
+      auto * lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
+
+      const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
+        units::precise_sample_t (start_position));
+
+      const auto clip_name = utils::Utf8String::from_qstring (
+        QObject::tr ("Recording %1").arg (track->name ()));
+
+      auto region_ref = creator_ptr->add_audio_region_for_recording (
+        *track, *lane, initial_frames, clip_name, start_ticks.in (units::ticks));
+
+      return controllers::RecordingMaterializer::CreatedRegion{
+        std::move (region_ref), actual_lane_idx
+      };
+    },
+    [&settings = app_settings_] () {
+      using controllers::recording::RecordingMode;
+      return static_cast<RecordingMode> (std::clamp (
+        settings.recordingMode (), 0,
+        static_cast<int> (RecordingMode::TakesMuted)));
+    },
+    this);
 }
 
-ProjectSession::~ProjectSession () = default;
+ProjectSession::~ProjectSession ()
+{
+  project_->engine ()->deactivate ();
+  recording_materializer_.reset ();
+}
 
 QString
 ProjectSession::title () const
@@ -168,6 +305,12 @@ controllers::TransportController *
 ProjectSession::transportController () const
 {
   return transport_controller_.get ();
+}
+
+controllers::RecordingCoordinator *
+ProjectSession::recordingCoordinator () const
+{
+  return recording_coordinator_.get ();
 }
 
 actions::ArrangerObjectSelectionOperator *

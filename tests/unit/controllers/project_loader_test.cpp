@@ -183,7 +183,7 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
   auto         clip_ref =
     project->get_file_audio_source_registry ().create_object<dsp::FileAudioSource> (
       buffer, dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
-      project->engine ()->get_sample_rate (), test_bpm,
+      project->engine ()->sample_rate (), test_bpm,
       utils::Utf8String::from_utf8_encoded_string ("test_clip"));
   auto clip_id = clip_ref.id ();
 

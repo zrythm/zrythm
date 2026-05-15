@@ -58,12 +58,8 @@ TEST_F (MidiPanicProcessorTest, BasicPanicOperation)
 {
   // Request panic and process block
   panic_proc_->request_panic ();
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   panic_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify 16 channels worth of All Notes Off messages
@@ -81,12 +77,8 @@ TEST_F (MidiPanicProcessorTest, BasicPanicOperation)
 
 TEST_F (MidiPanicProcessorTest, MultiplePanicRequests)
 {
-  const dsp::graph::EngineProcessTimeInfo time_nfo = {
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  const auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   // First panic request
   panic_proc_->request_panic ();
@@ -121,9 +113,8 @@ TEST_F (MidiPanicProcessorTest, ResourceManagement)
   panic_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   panic_proc_->request_panic ();
   panic_proc_->process_block (
-    { .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    { .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = units::samples (512) },
     *mock_transport_, *tempo_map_);
   EXPECT_EQ (midi_out_->midi_events_.queued_events_.size (), 16);
@@ -132,12 +123,8 @@ TEST_F (MidiPanicProcessorTest, ResourceManagement)
 TEST_F (MidiPanicProcessorTest, ZeroFramesProcessing)
 {
   panic_proc_->request_panic ();
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0));
   panic_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Should still process panic even with 0 frames
@@ -150,12 +137,8 @@ TEST_F (MidiPanicProcessorTest, LargeBufferHandling)
   panic_proc_->prepare_for_processing (nullptr, sample_rate_, large_size);
 
   panic_proc_->request_panic ();
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = large_size
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), large_size);
   panic_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify all 16 channels processed

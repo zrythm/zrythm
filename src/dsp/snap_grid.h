@@ -6,8 +6,8 @@
 #include <functional>
 #include <vector>
 
+#include "dsp/note_type.h"
 #include "dsp/tempo_map.h"
-#include "utils/note_type.h"
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -39,18 +39,18 @@ class SnapGrid : public QObject
     bool beatsVisible READ beatsVisible WRITE setBeatsVisible NOTIFY
       beatsVisibleChanged)
   Q_PROPERTY (
-    zrythm::utils::NoteLength snapNoteLength READ snapNoteLength WRITE
+    zrythm::dsp::notes::NoteLength snapNoteLength READ snapNoteLength WRITE
       setSnapNoteLength NOTIFY snapNoteLengthChanged)
   Q_PROPERTY (
-    zrythm::utils::NoteType snapNoteType READ snapNoteType WRITE setSnapNoteType
-      NOTIFY snapNoteTypeChanged)
+    zrythm::dsp::notes::NoteType snapNoteType READ snapNoteType WRITE
+      setSnapNoteType NOTIFY snapNoteTypeChanged)
   Q_PROPERTY (
     NoteLengthType lengthType READ lengthType WRITE setLengthType NOTIFY
       lengthTypeChanged)
   Q_PROPERTY (QString snapString READ snapString NOTIFY snapChanged)
   QML_ELEMENT
+  QML_EXTENDED_NAMESPACE (zrythm::dsp::notes)
   QML_UNCREATABLE ("")
-  QML_EXTENDED_NAMESPACE (zrythm::utils)
 
 public:
   enum class NoteLengthType
@@ -72,7 +72,7 @@ public:
 
   SnapGrid (
     const TempoMap          &tempo_map,
-    utils::NoteLength        default_note_length,
+    dsp::notes::NoteLength   default_note_length,
     LastObjectLengthProvider last_object_length_provider,
     QObject *                parent = nullptr);
 
@@ -95,11 +95,11 @@ public:
   bool beatsVisible () const { return beats_visible_; }
   void setBeatsVisible (bool visible);
 
-  utils::NoteLength snapNoteLength () const { return snap_note_length_; }
-  void              setSnapNoteLength (utils::NoteLength length);
+  dsp::notes::NoteLength snapNoteLength () const { return snap_note_length_; }
+  void                   setSnapNoteLength (dsp::notes::NoteLength length);
 
-  utils::NoteType snapNoteType () const { return snap_note_type_; }
-  void            setSnapNoteType (utils::NoteType type);
+  dsp::notes::NoteType snapNoteType () const { return snap_note_type_; }
+  void                 setSnapNoteType (dsp::notes::NoteType type);
 
   NoteLengthType lengthType () const { return length_type_; }
   void           setLengthType (NoteLengthType type);
@@ -141,10 +141,10 @@ public:
   void clear_callbacks ();
 
   static constexpr int get_ticks_from_length_and_type (
-    utils::NoteLength length,
-    utils::NoteType   type,
-    int               ticks_per_bar,
-    int               ticks_per_beat)
+    dsp::notes::NoteLength length,
+    dsp::notes::NoteType   type,
+    int                    ticks_per_bar,
+    int                    ticks_per_beat)
   {
     assert (ticks_per_beat > 0);
     assert (ticks_per_bar > 0);
@@ -152,51 +152,51 @@ public:
     int ticks = 0;
     switch (length)
       {
-      case utils::NoteLength::Bar:
+      case dsp::notes::NoteLength::Bar:
         ticks = ticks_per_bar;
         break;
-      case utils::NoteLength::Beat:
+      case dsp::notes::NoteLength::Beat:
         ticks = ticks_per_beat;
         break;
-      case utils::NoteLength::Note_2_1:
+      case dsp::notes::NoteLength::Note_2_1:
         ticks = 8 * TempoMap::get_ppq ();
         break;
-      case utils::NoteLength::Note_1_1:
+      case dsp::notes::NoteLength::Note_1_1:
         ticks = 4 * TempoMap::get_ppq ();
         break;
-      case utils::NoteLength::Note_1_2:
+      case dsp::notes::NoteLength::Note_1_2:
         ticks = 2 * TempoMap::get_ppq ();
         break;
-      case utils::NoteLength::Note_1_4:
+      case dsp::notes::NoteLength::Note_1_4:
         ticks = TempoMap::get_ppq ();
         break;
-      case utils::NoteLength::Note_1_8:
+      case dsp::notes::NoteLength::Note_1_8:
         ticks = TempoMap::get_ppq () / 2;
         break;
-      case utils::NoteLength::Note_1_16:
+      case dsp::notes::NoteLength::Note_1_16:
         ticks = TempoMap::get_ppq () / 4;
         break;
-      case utils::NoteLength::Note_1_32:
+      case dsp::notes::NoteLength::Note_1_32:
         ticks = TempoMap::get_ppq () / 8;
         break;
-      case utils::NoteLength::Note_1_64:
+      case dsp::notes::NoteLength::Note_1_64:
         ticks = TempoMap::get_ppq () / 16;
         break;
-      case utils::NoteLength::Note_1_128:
+      case dsp::notes::NoteLength::Note_1_128:
         ticks = TempoMap::get_ppq () / 32;
         break;
       }
 
     switch (type)
       {
-      case utils::NoteType::Normal:
+      case dsp::notes::NoteType::Normal:
         break;
-      case utils::NoteType::Dotted:
+      case dsp::notes::NoteType::Dotted:
         ticks = 3 * ticks;
         assert (ticks % 2 == 0);
         ticks = ticks / 2;
         break;
-      case utils::NoteType::Triplet:
+      case dsp::notes::NoteType::Triplet:
         ticks = 2 * ticks;
         assert (ticks % 3 == 0);
         ticks = ticks / 3;
@@ -207,8 +207,8 @@ public:
   }
 
   static QString stringize_length_and_type (
-    utils::NoteLength note_length,
-    utils::NoteType   note_type);
+    dsp::notes::NoteLength note_length,
+    dsp::notes::NoteType   note_type);
 
 Q_SIGNALS:
   void snapAdaptiveChanged ();
@@ -246,19 +246,20 @@ private:
    * If adaptive snap is turned on, it calculates the corresponding note length,
    * otherwise returns the specified note length as-is.
    */
-  constexpr utils::NoteLength get_effective_note_length () const
+  constexpr dsp::notes::NoteLength get_effective_note_length () const
   {
     return snap_adaptive_
              ? (sixteenths_visible_
-                  ? utils::NoteLength::Note_1_16
-                  : (beats_visible_ ? utils::NoteLength::Beat : utils::NoteLength::Bar))
+                  ? dsp::notes::NoteLength::Note_1_16
+                  : (beats_visible_ ? dsp::notes::NoteLength::Beat
+                                    : dsp::notes::NoteLength::Bar))
              : snap_note_length_;
   }
 
 private:
-  bool              snap_adaptive_ = false;
-  utils::NoteLength snap_note_length_{ utils::NoteLength::Note_1_4 };
-  utils::NoteType   snap_note_type_{ utils::NoteType::Normal };
+  bool                   snap_adaptive_ = false;
+  dsp::notes::NoteLength snap_note_length_{ dsp::notes::NoteLength::Note_1_4 };
+  dsp::notes::NoteType   snap_note_type_{ dsp::notes::NoteType::Normal };
 
   /** Whether to snap to the grid. */
   bool snap_to_grid_ = true;
@@ -286,7 +287,7 @@ private:
    * @brief This is only used as the default object length eg, when creating new
    * objects.
    */
-  utils::NoteLength default_note_length_;
+  dsp::notes::NoteLength default_note_length_;
 
   const TempoMap                  &tempo_map_;
   std::optional<SnapEventCallback> event_callback_;

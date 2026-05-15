@@ -50,9 +50,12 @@ protected:
       *track_registry_,
       transport_,
       soloed_tracks_exist_getter_,
+      {},
     };
-    track_factory_ =
-      std::make_unique<structure::tracks::TrackFactory> (factory_deps);
+    track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
+      [factory_deps] () -> structure::tracks::FinalTrackDependencies {
+        return factory_deps;
+      });
 
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
@@ -85,9 +88,9 @@ protected:
 
     // Create mock snap grids
     snap_grid_timeline = std::make_unique<dsp::SnapGrid> (
-      tempo_map_, utils::NoteLength::Note_1_4, [] () { return 100.0; });
+      tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 100.0; });
     snap_grid_editor = std::make_unique<dsp::SnapGrid> (
-      tempo_map_, utils::NoteLength::Note_1_4, [] () { return 50.0; });
+      tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 50.0; });
 
     // Create arranger object factory with proper dependencies
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{

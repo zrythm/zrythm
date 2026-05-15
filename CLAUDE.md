@@ -36,11 +36,21 @@ ctest --test-dir builddir_cmake -R "TransportControllerTest" --output-on-failure
 ctest --test-dir builddir_cmake -N
 
 # Run specific test binary directly
-./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests
+./builddir_cmake/products/bin/zrythm_dsp_unit_tests
 
 # Run specific test case with filter
-./builddir_cmake/products/bin/zrythm_dsp_tempo_map_unit_tests --gtest_filter=TempoMapTest.testCaseName
+./builddir_cmake/products/bin/zrythm_dsp_unit_tests --gtest_filter=TempoMapTest.testCaseName
 ```
+
+### Test Binary Target Names
+
+Test binary targets follow a strict naming convention. **Do not guess target names** — derive them from the pattern:
+
+- **Unit tests**: `zrythm_<path_with_underscores>_unit_tests` — where `<path_with_underscores>` is the directory path under `tests/unit/` with `/` replaced by `_` (e.g., `tests/unit/structure/tracks/` → `zrythm_structure_tracks_unit_tests`)
+- **Benchmarks**: `zrythm_<path_with_underscores>_benchmarks` (same pattern, under `tests/benchmarks/`)
+- **Integration tests**: `zrythm_integration_tests`
+
+When unsure, list all targets with: `ctest --test-dir builddir_cmake -N`
 
 ### Packaging
 
@@ -125,6 +135,8 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
 - **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
+- See [AI_POLICY.md](doc/dev/AI_POLICY.md) for `Assisted-by:` trailers, which must be included in commit messages
+- Use `Fixes #123` for bugfixes, `Implements #123` for new features and the git trailer `GitLab-Work-Item: #123` to specify relations to GitLab issues (work items)
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
 
@@ -191,7 +203,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 
 ### General
 
-- **Never remove unrelated code when making edits.** This includes comments, blank lines, and any code not directly related to the change. Only modify what is necessary for the task.
+- **Never use the Write tool on existing files.** Always use the Edit tool to make targeted changes, preserving all existing comments, blank lines, and formatting. The Write tool may only be used for new files that don't exist yet.
 
 ### C++23
 
@@ -205,6 +217,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `ptr == nullptr` instead of `!ptr` when doing null checks
 - Use `std::numbers` instead of macros for number constants like `M_PI`
 - Use ranges and range-based for-loops instead of C-style for-loops
+- Use `std::span` instead of array pointers and sizes
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
@@ -212,6 +225,7 @@ Zrythm makes extensive use of modern C++ features:
 - Avoid variable shadowing: use descriptive prefixes (e.g., `project_foo` instead of `foo`) when local variables would shadow class members
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 - Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
+- Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
 
 ### Unit Safety
 
@@ -239,6 +253,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
+- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers
 - When connecting signals, use the overload that takes:
   1. The source object instance
   2. The source object signal
@@ -303,6 +318,13 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`
 - Enclose the unit test classes and functions inside the namespace of the class being tested (avoid `using namespace`)
+
+### Flaky Test Prevention
+
+- Use condition variables, latches, `QSignalSpy::wait()`, or `QTest::qWaitFor()` for synchronization — never `sleep()` or timed waits such as `QTest::qWait()`
+- Make temp directories unique per test (e.g., prepend test name) and clean them up in teardown
+- Avoid depending on real-time clocks, network, or filesystem state in unit tests; mock or abstract these away
+- Use deterministic seeds for any randomized test inputs (e.g., pass a fixed seed to `std::mt19937`)
 
 ### Test Utilities
 

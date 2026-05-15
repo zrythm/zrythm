@@ -423,7 +423,7 @@ JucePlugin::prepare_for_processing_impl (
 }
 
 void
-JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
+JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;
@@ -431,7 +431,7 @@ JucePlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
   const int num_juce_plugin_inputs = juce_plugin_->getTotalNumInputChannels ();
   const int num_juce_plugin_outputs = juce_plugin_->getTotalNumOutputChannels ();
 
-  const auto local_offset = time_info.local_offset_;
+  const auto local_offset = time_info.buffer_offset_;
   const auto nframes = time_info.nframes_;
 
   // Copy input audio to JUCE buffer

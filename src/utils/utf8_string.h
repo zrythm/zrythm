@@ -281,5 +281,5 @@ struct fmt::formatter<zrythm::utils::Utf8String>
 static inline size_t
 qHash (const zrythm::utils::Utf8String &t, size_t seed = 0) noexcept
 {
-  return qHash (t.view (), seed); // <-- qHash used as public API
+  return qHash (t.to_qstring (), seed);
 }

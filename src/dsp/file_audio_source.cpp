@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cassert>
+#include <limits>
 #include <mutex>
 #include <utility>
 
@@ -52,24 +53,6 @@ FileAudioSource::FileAudioSource (
   ch_frames_ = buf;
   convert_mono_to_stereo ();
   bpm_ = current_bpm;
-}
-
-FileAudioSource::FileAudioSource (
-  const channels_t          channels,
-  const units::sample_u64_t nframes,
-  units::sample_rate_t      project_sample_rate,
-  bpm_t                     current_bpm,
-  const utils::Utf8String  &name,
-  QObject *                 parent)
-    : QObject (parent)
-{
-  ch_frames_.setSize (
-    channels, nframes.in<int> (units::samples), false, true, false);
-  name_ = name;
-  bpm_ = current_bpm;
-  samplerate_ = project_sample_rate;
-  assert (samplerate_ > units::sample_rate (0));
-  bit_depth_ = BitDepth::BIT_DEPTH_32;
 }
 
 void
@@ -174,10 +157,23 @@ FileAudioSource::expand_with_frames (const utils::audio::AudioBuffer &frames)
   z_return_if_fail (frames.getNumChannels () == ch_frames_.getNumChannels ());
   z_return_if_fail (frames.getNumSamples () > 0);
 
-  units::sample_u64_t prev_end = units::samples (ch_frames_.getNumSamples ());
-  ch_frames_.setSize (
-    ch_frames_.getNumChannels (),
-    ch_frames_.getNumSamples () + frames.getNumSamples (), true, false);
+  const auto current = static_cast<int64_t> (ch_frames_.getNumSamples ());
+  const auto added = static_cast<int64_t> (frames.getNumSamples ());
+  const auto needed = std::min (
+    current + added, static_cast<int64_t> (std::numeric_limits<int>::max ()));
+  const auto grown = std::min (
+    std::max (needed, current + (current / 2)),
+    static_cast<int64_t> (std::numeric_limits<int>::max ()));
+  units::sample_u64_t prev_end = units::samples (current);
+
+  // Geometric growth (1.5x): over-allocate to amortize reallocations across
+  // repeated expand_with_frames() calls (e.g., during recording).  JUCE's
+  // setSize with avoidReallocating=true will increase allocation when needed
+  // but never shrink it, so we first grow to `grown` (expanding the underlying
+  // allocation), then shrink the logical size back to `needed` while keeping
+  // the larger allocation intact.
+  ch_frames_.setSize (ch_frames_.getNumChannels (), grown, true, false, true);
+  ch_frames_.setSize (ch_frames_.getNumChannels (), needed, true, false, true);
   replace_frames (frames, prev_end);
 }
 

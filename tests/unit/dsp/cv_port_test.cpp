@@ -75,12 +75,8 @@ TEST_F (CVPortTest, BufferClearing)
 TEST_F (CVPortTest, SignalProcessing)
 {
   // Process output port (signal generation)
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify signal was processed
@@ -93,12 +89,8 @@ TEST_F (CVPortTest, RingBufferWriting)
   // Enable ring buffer writing
   RingBufferOwningPortMixin::RingBufferReader reader (*output_port);
 
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Check ring buffer contents

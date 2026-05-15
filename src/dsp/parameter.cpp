@@ -83,6 +83,10 @@ to_json (nlohmann::json &j, const ParameterRange &p)
   j["max"] = p.maxf_;
   j["def"] = p.deff_;
   j["zero"] = p.zerof_;
+  if (p.type_ == ParameterRange::Type::Enumeration)
+    {
+      j["enumLabels"] = p.enum_labels_;
+    }
 }
 
 void
@@ -95,6 +99,29 @@ from_json (const nlohmann::json &j, ParameterRange &p)
   j.at ("def").get_to (p.deff_);
   if (j.contains ("zero"))
     j.at ("zero").get_to (p.zerof_);
+  if (p.type_ == ParameterRange::Type::Enumeration)
+    {
+      if (!j.contains ("enumLabels"))
+        {
+          throw std::runtime_error (
+            "Enumeration parameter missing required 'enumLabels'");
+        }
+      j.at ("enumLabels").get_to (p.enum_labels_);
+      if (p.enum_labels_.empty ())
+        {
+          throw std::runtime_error (
+            "Enumeration parameter has empty enumLabels");
+        }
+      const auto expected_count =
+        static_cast<size_t> (std::round (p.maxf_ - p.minf_ + 1.f));
+      if (p.enum_labels_.size () != expected_count)
+        {
+          throw std::runtime_error (
+            fmt::format (
+              "Enumeration label count ({}) does not match range ({}-{}+1={})",
+              p.enum_labels_.size (), p.minf_, p.maxf_, expected_count));
+        }
+    }
 }
 
 ProcessorParameter::ProcessorParameter (
@@ -103,8 +130,9 @@ ProcessorParameter::ProcessorParameter (
   ParameterRange    range,
   utils::Utf8String label,
   QObject *         parent)
-    : QObject (parent), unique_id_ (std::move (unique_id)), range_ (range),
-      label_ (std::move (label)), base_value_ (range.convertTo0To1 (range.deff_)),
+    : QObject (parent), unique_id_ (std::move (unique_id)),
+      range_ (std::move (range)), label_ (std::move (label)),
+      base_value_ (range_.convertTo0To1 (range_.deff_)),
       modulation_input_uuid_ (
         { port_registry.create_object<
           CVPort> (label_ + u8" Mod In", PortFlow::Input) })
@@ -113,9 +141,9 @@ ProcessorParameter::ProcessorParameter (
 
 void
 ProcessorParameter::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   float current_val = base_value_.load ();
 
@@ -130,7 +158,7 @@ ProcessorParameter::process_block (
   if (automation_value_provider_)
     {
       const auto val = std::invoke (
-        automation_value_provider_.value (), time_nfo.g_start_frame_w_offset_);
+        automation_value_provider_.value (), time_nfo.transport_position_);
       if (val.has_value ())
         {
           current_val = std::clamp (val.value (), 0.f, 1.f);
@@ -151,7 +179,7 @@ ProcessorParameter::process_block (
 
       // modulation value [0, 1]
       auto modulation_base_val =
-        src_port->buf_[time_nfo.local_offset_.in (units::samples)];
+        src_port->buf_[time_nfo.buffer_offset_.in (units::samples)];
 
       // if bipolar, convert to [-1, 1]
       if (conn->bipolar_)

@@ -66,12 +66,8 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   const auto event = midi_in.midi_events_.active_events_.at (0);
 
   // Process
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
@@ -99,12 +95,8 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
     }
 
   // Process
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
@@ -222,12 +214,8 @@ TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0));
 
   // Should handle without crashing
   midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -252,12 +240,8 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
       in.buffers ()->setSample (1, i, cosf (static_cast<float> (i) * 0.1f));
     }
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (large_size)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (large_size));
   audio_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
@@ -285,12 +269,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     }
 
   // First process call
-  dsp::graph::EngineProcessTimeInfo time_nfo1{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo1 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   audio_proc_->process_block (time_nfo1, *mock_transport_, *tempo_map_);
 
   // Verify first processing
@@ -309,12 +289,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
     }
 
   // Second process call
-  dsp::graph::EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = units::samples (256),
-    .g_start_frame_w_offset_ = units::samples (256),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo2 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (256), units::samples (256));
   audio_proc_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
 
   // Verify second processing (should not accumulate with first)
@@ -332,12 +308,8 @@ TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
       in.buffers ()->setSample (1, i, static_cast<float> (i) * -0.03f);
     }
 
-  dsp::graph::EngineProcessTimeInfo time_nfo3{
-    .g_start_frame_ = units::samples (512),
-    .g_start_frame_w_offset_ = units::samples (512),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (128)
-  };
+  auto time_nfo3 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (512), units::samples (128));
   audio_proc_->process_block (time_nfo3, *mock_transport_, *tempo_map_);
 
   // Verify third processing

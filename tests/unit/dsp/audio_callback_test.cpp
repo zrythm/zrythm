@@ -8,6 +8,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+namespace zrythm
+{
 using namespace testing;
 using namespace zrythm::dsp;
 using namespace zrythm::test_helpers;
@@ -27,16 +29,16 @@ protected:
   {
     return
       [this] (
-        const float * const * input_channel_data, int num_input_channels,
-        float * const * output_channel_data, int num_output_channels,
-        int num_samples) {
+        std::span<const float * const> input_channels,
+        std::span<float * const>       output_channels,
+        units::sample_u32_t            num_samples) {
         process_cb_called_ = true;
         process_call_count_++;
-        last_num_input_channels_ = num_input_channels;
-        last_num_output_channels_ = num_output_channels;
+        last_num_input_channels_ = static_cast<int> (input_channels.size ());
+        last_num_output_channels_ = static_cast<int> (output_channels.size ());
         last_num_samples_ = num_samples;
-        last_input_channel_data_ = input_channel_data;
-        last_output_channel_data_ = output_channel_data;
+        last_input_channel_data_ = input_channels.data ();
+        last_output_channel_data_ = output_channels.data ();
       };
   }
 
@@ -53,7 +55,10 @@ protected:
 
   static auto create_empty_process_cb ()
   {
-    return [] (const float * const *, int, float * const *, int, int) { };
+    return
+      [] (
+        std::span<const float * const>, std::span<float * const>,
+        units::sample_u32_t) { };
   }
   static auto create_empty_about_to_start_cb ()
   {
@@ -71,7 +76,7 @@ protected:
   int                   process_call_count_ = 0;
   int                   last_num_input_channels_ = 0;
   int                   last_num_output_channels_ = 0;
-  int                   last_num_samples_ = 0;
+  units::sample_u32_t   last_num_samples_;
   const float * const * last_input_channel_data_ = nullptr;
   float * const *       last_output_channel_data_ = nullptr;
 
@@ -123,13 +128,15 @@ TEST_F (AudioCallbackTest, ProcessAudio)
   float * output_channels[] = { output_data1.data (), output_data2.data () };
 
   audio_callback.process_audio (
-    input_channels, num_channels, output_channels, num_channels, num_samples);
+    { input_channels, static_cast<size_t> (num_channels) },
+    { output_channels, static_cast<size_t> (num_channels) },
+    units::samples (num_samples));
 
   EXPECT_TRUE (process_cb_called_);
   EXPECT_EQ (process_call_count_, 1);
   EXPECT_EQ (last_num_input_channels_, num_channels);
   EXPECT_EQ (last_num_output_channels_, num_channels);
-  EXPECT_EQ (last_num_samples_, num_samples);
+  EXPECT_EQ (last_num_samples_, units::samples (num_samples));
   EXPECT_EQ (last_input_channel_data_, input_channels);
   EXPECT_EQ (last_output_channel_data_, output_channels);
 
@@ -155,7 +162,9 @@ TEST_F (AudioCallbackTest, ProcessAudioZeroChannels)
   const float * input_channels[] = { nullptr };
   float *       output_channels[] = { nullptr };
 
-  audio_callback.process_audio (input_channels, 0, output_channels, 0, 128);
+  audio_callback.process_audio (
+    { input_channels, static_cast<size_t> (0) },
+    { output_channels, static_cast<size_t> (0) }, units::samples (128));
 
   EXPECT_TRUE (process_cb_called_);
   EXPECT_EQ (last_num_input_channels_, 0);
@@ -179,8 +188,9 @@ TEST_F (AudioCallbackTest, ProcessAudioMultipleCalls)
   for (int i = 0; i < 3; ++i)
     {
       audio_callback.process_audio (
-        input_channels, num_channels, output_channels, num_channels,
-        num_samples);
+        { input_channels, static_cast<size_t> (num_channels) },
+        { output_channels, static_cast<size_t> (num_channels) },
+        units::samples (num_samples));
     }
 
   EXPECT_EQ (process_call_count_, 3);
@@ -247,15 +257,13 @@ TEST_F (AudioCallbackTest, ProcessCallbackModifiesOutput)
 {
   AudioCallback::EngineProcessCallback modifying_process_cb =
     [] (
-      const float * const *, int, float * const * output_channel_data,
-      int num_output_channels, int num_samples) {
-      for (int ch = 0; ch < num_output_channels; ++ch)
+      std::span<const float * const>, std::span<float * const> output_channels,
+      units::sample_u32_t num_samples) {
+      for (auto * ch_data : output_channels)
         {
-          auto * ch_data = output_channel_data[ch];
-          for (int i = 0; i < num_samples; ++i)
-            {
-              ch_data[i] = 0.75f;
-            }
+          std::ranges::fill (
+            std::span{ ch_data, num_samples.in<size_t> (units::samples) },
+            0.75f);
         }
     };
 
@@ -272,7 +280,8 @@ TEST_F (AudioCallbackTest, ProcessCallbackModifiesOutput)
 
   // AudioCallback clears to 0, then our callback sets to 0.75
   audio_callback.process_audio (
-    input_channels, 0, output_channels, 2, num_samples);
+    { input_channels, static_cast<size_t> (0) },
+    { output_channels, static_cast<size_t> (2) }, units::samples (num_samples));
 
   for (const auto &sample : output_data1)
     {
@@ -292,7 +301,6 @@ TEST_F (AudioCallbackTest, CallbackOrderInRealScenario)
 
   AudioCallback audio_callback (process_cb, about_to_start_cb, stopped_cb);
 
-  // Simulate typical audio device lifecycle
   audio_callback.about_to_start ();
   EXPECT_TRUE (about_to_start_called_);
   EXPECT_FALSE (process_cb_called_);
@@ -305,11 +313,13 @@ TEST_F (AudioCallbackTest, CallbackOrderInRealScenario)
   const float *                  input_channels[] = { nullptr };
 
   audio_callback.process_audio (
-    input_channels, 0, output_channels, 1, num_samples);
+    { input_channels, static_cast<size_t> (0) },
+    { output_channels, static_cast<size_t> (1) }, units::samples (num_samples));
   EXPECT_TRUE (process_cb_called_);
   EXPECT_FALSE (stopped_called_);
 
   // Simulate device stop
   audio_callback.stopped ();
   EXPECT_TRUE (stopped_called_);
+}
 }

@@ -50,11 +50,11 @@ CVPort::release_resources ()
 
 void
 CVPort::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
-  const auto sub_offset = time_nfo.local_offset_.in (units::samples);
+  const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
   const auto sub_nframes = time_nfo.nframes_.in (units::samples);
   for (const auto &[src_port, conn] : port_sources ())
     {
@@ -82,7 +82,7 @@ CVPort::process_block (
   if (num_ring_buffer_readers_ > 0)
     {
       cv_ring_->force_write_multiple (
-        &buf_[time_nfo.local_offset_.in (units::samples)],
+        &buf_[time_nfo.buffer_offset_.in (units::samples)],
         time_nfo.nframes_.in (units::samples));
     }
 }

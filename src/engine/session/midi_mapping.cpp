@@ -83,7 +83,7 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
   if (dest->range ().type_ == dsp::ParameterRange::Type::Toggle)
     {
       dest->setBaseValue (
-        dest->range ().is_toggled (dest->baseValue ()) ? 0.f : 1.f);
+        dest->range ().isToggled (dest->baseValue ()) ? 0.f : 1.f);
     }
   /* else if not toggle set the control value received */
   else

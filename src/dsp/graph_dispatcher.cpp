@@ -40,14 +40,14 @@ DspGraphDispatcher::get_max_route_playback_latency ()
 
 void
 DspGraphDispatcher::preprocess_at_start_of_cycle (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo) noexcept
+  const dsp::graph::ProcessBlockInfo &time_nfo) noexcept
 {
 
   // TODO: fill live key-press events for the currently active piano roll
   {
 #if 0
     [[maybe_unused]] auto &midi_events = piano_roll_events_;
-    if (time_nfo.local_offset_ == 0 && CLIP_EDITOR->has_region ())
+    if (time_nfo.buffer_offset_ == 0 && CLIP_EDITOR->has_region ())
       {
 // FIXME!!!! threading bug here. clip editor region & track may be
 // changed in the main (UI) thread while this is attempted
@@ -67,13 +67,13 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
                     target_port.midi_events_.active_events_.append_w_filter (
                       midi_events,
                       track->pianoRollTrackMixin ()->midi_channels_to_allow (),
-                      time_nfo.local_offset_, time_nfo.nframes_);
+                      time_nfo.buffer_offset_, time_nfo.nframes_);
                   }
                 /* otherwise append normally */
                 else
                   {
                     target_port.midi_events_.active_events_.append (
-                      midi_events, time_nfo.local_offset_, time_nfo.nframes_);
+                      midi_events, time_nfo.buffer_offset_, time_nfo.nframes_);
                   }
                 midi_events.clear ();
               }
@@ -86,17 +86,16 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
 
 void
 DspGraphDispatcher::start_cycle (
-  const ITransport                 &current_transport_state,
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  units::sample_u64_t               remaining_latency_preroll,
-  bool                              realtime_context,
-  const dsp::TempoMap              &tempo_map) noexcept
+  const ITransport            &current_transport_state,
+  dsp::graph::ProcessBlockInfo time_nfo,
+  units::sample_u64_t          remaining_latency_preroll,
+  bool                         realtime_context,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   if (scheduler_ == nullptr)
     {
       return;
     }
-  assert (time_nfo.g_start_frame_w_offset_ >= time_nfo.g_start_frame_);
 
   /* only set the kickoff thread when called from a realtime context during
    * audio processing (sometimes this method is called from the UI thread to
@@ -117,8 +116,9 @@ DspGraphDispatcher::recalc_graph (bool soft)
 {
   z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
 
-  const auto sample_rate = hw_interface_.get_sample_rate ();
-  const auto buffer_size = hw_interface_.get_block_length ();
+  const auto device_info = hw_interface_.get_device_info ();
+  const auto sample_rate = device_info.sample_rate;
+  const auto buffer_size = device_info.block_length;
 
   const auto rebuild_graph = [&] () {
     graph::Graph graph;

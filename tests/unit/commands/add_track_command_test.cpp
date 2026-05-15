@@ -53,6 +53,7 @@ protected:
     track_registry_,
     transport_,
     soloed_tracks_exist_getter_,
+    {},
   };
   structure::tracks::TrackUuidReference test_track_ref_{ track_registry_ };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;

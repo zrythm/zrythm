@@ -3,6 +3,7 @@
 
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
+#include "structure/tracks/clip_playback_data_provider.h"
 #include "structure/tracks/track_processor.h"
 
 namespace zrythm::structure::scenes

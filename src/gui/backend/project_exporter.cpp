@@ -23,8 +23,8 @@ ProjectExporter::exportAudio (
   const QString                &projectTitle)
 {
   dsp::GraphRenderer::RenderOptions options{
-    .sample_rate_ = project->engine ()->get_sample_rate (),
-    .block_length_ = project->engine ()->get_block_length ()
+    .sample_rate_ = project->engine ()->sample_rate (),
+    .block_length_ = project->engine ()->block_length ()
   };
   dsp::AudioEngine::EngineState state{};
   project->engine ()->wait_for_pause (state, false, true);

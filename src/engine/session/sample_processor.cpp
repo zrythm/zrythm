@@ -114,9 +114,9 @@ SampleProcessor::init_loaded (device_io::AudioEngine * engine)
 
 void
 SampleProcessor::process_block (
-  dsp::graph::EngineProcessTimeInfo time_nfo,
-  const dsp::ITransport            &transport,
-  const dsp::TempoMap              &tempo_map) noexcept
+  dsp::graph::ProcessBlockInfo time_nfo,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
 #if 0
   const auto    cycle_offset = time_nfo.local_offset_;

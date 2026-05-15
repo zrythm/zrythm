@@ -43,13 +43,13 @@ MidiTimelineDataProvider::get_midi_events () const
 
 void
 MidiTimelineDataProvider::process_midi_events (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState               transport_state,
-  dsp::MidiEventVector                    &output_buffer) noexcept
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  dsp::ITransport::PlayState          transport_state,
+  dsp::MidiEventVector               &output_buffer) noexcept
 {
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
-  const auto current_transport_position = time_nfo.g_start_frame_w_offset_;
+  const auto current_transport_position = time_nfo.transport_position_;
 
   // Check for transport position jump (seek, loop, etc.)
   const bool transport_position_jumped =
@@ -70,7 +70,7 @@ MidiTimelineDataProvider::process_midi_events (
       for (const auto channel : std::views::iota (1, 17))
         {
           output_buffer.add_all_notes_off (
-            channel, time_nfo.local_offset_,
+            channel, time_nfo.buffer_offset_,
             true); // All notes off
         }
     }
@@ -82,21 +82,21 @@ MidiTimelineDataProvider::process_midi_events (
         farbot::ThreadType::realtime>
                  midi_seq{ active_midi_playback_sequence_ };
       const auto first_idx = midi_seq->getNextIndexAtTime (
-        time_nfo.g_start_frame_w_offset_.in<double> (units::samples));
+        time_nfo.transport_position_.in<double> (units::samples));
       for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
         {
           const auto * event = midi_seq->getEventPointer (i);
           const auto   timestamp_dbl = event->message.getTimeStamp ();
           if (
             timestamp_dbl
-            >= (time_nfo.g_start_frame_w_offset_ + time_nfo.nframes_)
-                 .in<double> (units::samples))
+            >= time_nfo.end_position ().in<double> (units::samples))
             {
               break;
             }
 
           const auto local_timestamp =
-            units::samples (timestamp_dbl) - time_nfo.g_start_frame_;
+            time_nfo.buffer_offset_
+            + (units::samples (timestamp_dbl) - time_nfo.transport_position_);
           output_buffer.add_raw (
             event->message.getRawData (), event->message.getRawDataSize (),
             au::floor_as<uint32_t> (units::samples, local_timestamp));
@@ -162,17 +162,17 @@ AudioTimelineDataProvider::get_audio_regions () const
 
 void
 AudioTimelineDataProvider::process_audio_events (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState               transport_state,
-  std::span<float>                         output_left,
-  std::span<float>                         output_right) noexcept
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  dsp::ITransport::PlayState          transport_state,
+  std::span<float>                    output_left,
+  std::span<float>                    output_right) noexcept
 {
   // Set to true to enable debug logging for timeline data provider
   static constexpr bool TIMELINE_DATA_PROVIDER_DEBUG = false;
 
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
-  const auto current_transport_position = time_nfo.g_start_frame_w_offset_;
+  const auto current_transport_position = time_nfo.transport_position_;
 
   // Only process audio events if transport is rolling
   if (!transport_rolling)
@@ -186,7 +186,7 @@ AudioTimelineDataProvider::process_audio_events (
   decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::realtime>
     audio_regions{ active_audio_regions_ };
 
-  const auto start_frame = time_nfo.g_start_frame_w_offset_;
+  const auto start_frame = time_nfo.transport_position_;
   const auto end_frame = start_frame + time_nfo.nframes_;
 
   if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
@@ -457,9 +457,9 @@ AutomationTimelineDataProvider::get_automation_value_rt (
 
 void
 AutomationTimelineDataProvider::process_automation_events (
-  const dsp::graph::EngineProcessTimeInfo &time_nfo,
-  dsp::ITransport::PlayState               transport_state,
-  std::span<float>                         output_values) noexcept
+  const dsp::graph::ProcessBlockInfo &time_nfo,
+  dsp::ITransport::PlayState          transport_state,
+  std::span<float>                    output_values) noexcept
 {
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
@@ -470,7 +470,7 @@ AutomationTimelineDataProvider::process_automation_events (
       return;
     }
 
-  const auto start_frame = time_nfo.g_start_frame_w_offset_;
+  const auto start_frame = time_nfo.transport_position_;
   const auto nframes = time_nfo.nframes_;
 
   // Generate automation values for each sample in the time range

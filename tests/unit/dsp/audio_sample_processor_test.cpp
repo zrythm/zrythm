@@ -134,12 +134,8 @@ TEST_F (AudioSampleProcessorTest, BasicAudioProcessing)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -169,12 +165,8 @@ TEST_F (AudioSampleProcessorTest, VolumeScaling)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (3)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (3));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -202,12 +194,8 @@ TEST_F (AudioSampleProcessorTest, StartOffset)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -248,12 +236,8 @@ TEST_F (AudioSampleProcessorTest, MultipleSamples)
   processor_->add_sample_to_process (left_sample);
   processor_->add_sample_to_process (right_sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (3)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (3));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -284,12 +268,8 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
   processor_->add_sample_to_process (sample);
 
   // First cycle - process 5 frames
-  dsp::graph::EngineProcessTimeInfo time_nfo1{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo1 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo1, *mock_transport_, *tempo_map_);
 
@@ -300,12 +280,8 @@ TEST_F (AudioSampleProcessorTest, SampleSpanningMultipleCycles)
     }
 
   // Second cycle - process remaining 5 frames
-  dsp::graph::EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = units::samples (5),
-    .g_start_frame_w_offset_ = units::samples (5),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo2 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (5), units::samples (5));
 
   processor_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
 
@@ -334,12 +310,8 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -351,12 +323,8 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
 
   // Process another cycle - frames 5-9, sample still hasn't started (starts at
   // 10)
-  dsp::graph::EngineProcessTimeInfo time_nfo2{
-    .g_start_frame_ = units::samples (5),
-    .g_start_frame_w_offset_ = units::samples (5),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo2 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (5), units::samples (5));
 
   processor_->process_block (time_nfo2, *mock_transport_, *tempo_map_);
 
@@ -367,12 +335,8 @@ TEST_F (AudioSampleProcessorTest, LargeStartOffset)
     }
 
   // Process a third cycle - frames 10-14, sample should start here
-  dsp::graph::EngineProcessTimeInfo time_nfo3{
-    .g_start_frame_ = units::samples (10),
-    .g_start_frame_w_offset_ = units::samples (10),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo3 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (10), units::samples (5));
 
   processor_->process_block (time_nfo3, *mock_transport_, *tempo_map_);
 
@@ -402,12 +366,8 @@ TEST_F (AudioSampleProcessorTest, ChannelIndexValidation)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (3)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (3));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -436,12 +396,8 @@ TEST_F (AudioSampleProcessorTest, EmptyBuffer)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -467,12 +423,8 @@ TEST_F (AudioSampleProcessorTest, ZeroFrames)
 
   processor_->add_sample_to_process (sample);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (0) // Zero frames
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (0)); // Zero frames
 
   // Should not crash
   EXPECT_NO_THROW (
@@ -500,12 +452,8 @@ TEST_F (AudioSampleProcessorTest, PrepareForProcessing)
   // We can verify this by processing and checking no samples are played
   const auto * port = processor_->get_output_audio_port_non_rt ();
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (5)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (5));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -543,12 +491,8 @@ TEST_F (AudioSampleProcessorTest, ConcurrentSampleProcessing)
   processor_->add_sample_to_process (sample1);
   processor_->add_sample_to_process (sample2);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (4)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (4));
 
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 

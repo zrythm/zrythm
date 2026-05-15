@@ -19,6 +19,7 @@ ZrythmToolBar {
     TransportControls {
       id: transportControls
 
+      appSettings: root.appSettings
       metronome: root.controlRoom.metronome
       tempoMap: root.project.tempoMap
       transport: root.project.transport

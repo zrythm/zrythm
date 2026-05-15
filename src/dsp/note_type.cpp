@@ -1,15 +1,15 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <unordered_map>
 
+#include "dsp/note_type.h"
+#include "utils/logger.h"
+
 #include <QtGlobal>
 #include <QtTranslation>
 
-#include "./logger.h"
-#include "./note_type.h"
-
-namespace zrythm::utils
+namespace zrythm::dsp::notes
 {
 
 QT_WARNING_PUSH
@@ -52,4 +52,4 @@ note_type_to_str (NoteType type)
   return it->second;
 }
 
-} // namespace zrythm::utils
+} // namespace zrythm::dsp::notes

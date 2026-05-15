@@ -19,8 +19,8 @@ TrackCollection::TrackCollection (
     [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
-          const auto  &track_ref = tracks ().at (i);
-          const auto * track = track_ref.get_object_base ();
+          const auto &track_ref = tracks ().at (i);
+          auto *      track = track_ref.get_object_base ();
           if (auto * channel = track->channel ())
             {
               QObject::connect (
@@ -36,6 +36,26 @@ TrackCollection::TrackCollection (
                 &dsp::ProcessorParameter::baseValueChanged, this,
                 &TrackCollection::numListenedTracksChanged);
             }
+
+          auto * recording_param = track->recordingParam ();
+          if (recording_param)
+            {
+              auto track_id = track->get_uuid ();
+              recording_param_connections_[track_id] = QObject::connect (
+                recording_param, &dsp::ProcessorParameter::baseValueChanged,
+                this,
+                [this, track_ptr = QPointer<Track> (track),
+                 recording_param] (float val) {
+                  if (track_ptr.isNull ())
+                    return;
+                  Q_EMIT trackRecordingArmedChanged (
+                    track_ptr, recording_param->range ().isToggled (val));
+                });
+              Q_EMIT trackRecordingArmedChanged (
+                track,
+                recording_param->range ().isToggled (
+                  recording_param->baseValue ()));
+            }
         }
       Q_EMIT numSoloedTracksChanged ();
       Q_EMIT numMutedTracksChanged ();
@@ -46,8 +66,8 @@ TrackCollection::TrackCollection (
     [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
-          const auto  &track_ref = tracks ().at (i);
-          const auto * track = track_ref.get_object_base ();
+          const auto &track_ref = tracks ().at (i);
+          auto *      track = track_ref.get_object_base ();
           if (auto * channel = track->channel ())
             {
               QObject::disconnect (
@@ -62,6 +82,14 @@ TrackCollection::TrackCollection (
                 &channel->fader ()->get_listen_param (),
                 &dsp::ProcessorParameter::baseValueChanged, this,
                 &TrackCollection::numListenedTracksChanged);
+            }
+
+          auto track_id = track->get_uuid ();
+          auto conn_it = recording_param_connections_.find (track_id);
+          if (conn_it != recording_param_connections_.end ())
+            {
+              QObject::disconnect (conn_it->second);
+              recording_param_connections_.erase (conn_it);
             }
         }
     });
@@ -315,16 +343,6 @@ TrackCollection::move_track (const Track::Uuid &track_id, int pos)
     }
 
   endMoveRows ();
-}
-
-void
-TrackCollection::clear ()
-{
-  beginResetModel ();
-  tracks_.clear ();
-  expanded_tracks_.clear ();
-  folder_parent_.clear ();
-  endResetModel ();
 }
 
 // ========================================================================

@@ -152,10 +152,13 @@ public:
         }
       else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
         {
+          utils::audio::AudioBuffer dummy_buf (1, 1);
+          dummy_buf.clear ();
           auto file_audio_source =
             dependencies_.file_audio_source_registry_.create_object<
               dsp::FileAudioSource> (
-              1, units::samples (1), units::sample_rate (44100), 120, u8"dummy");
+              dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
+              units::sample_rate (44100), 120, u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
             file_audio_source);
@@ -330,18 +333,6 @@ public:
         .with_clip (std::move (clip_id))
         .build_in_registry ();
     return obj;
-  }
-
-  auto create_empty_audio_region_for_recording (
-    int                      num_channels,
-    const utils::Utf8String &clip_name,
-    double                   start_ticks)
-  {
-    auto clip = dependencies_.file_audio_source_registry_.create_object<
-      dsp::FileAudioSource> (
-      num_channels, units::samples (1), sample_rate_provider_ (),
-      bpm_provider_ (), clip_name);
-    return create_audio_region_with_clip (std::move (clip), start_ticks);
   }
 
   auto create_audio_region_from_file (const QString &absPath, double startTicks)

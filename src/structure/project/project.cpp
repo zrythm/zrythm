@@ -31,7 +31,7 @@ Project::Project (
   dsp::Fader                                     &monitor_fader,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
-      tempo_map_ (hw_interface.get_sample_rate ()),
+      tempo_map_ (hw_interface.get_device_info ().sample_rate),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
       plugin_host_window_provider_ (std::move (plugin_host_window_provider)),
       file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
@@ -75,7 +75,7 @@ Project::Project (
                      zrythm::structure::project::ProjectPathProvider::
                        ProjectPath::AudioFilePoolDir);
           },
-          [this] () { return audio_engine_->get_sample_rate (); })),
+          [this] () { return audio_engine_->sample_rate (); })),
       tracklist_ (
         utils::make_qobject_unique<
           structure::tracks::Tracklist> (*track_registry_, this)),
@@ -111,7 +111,7 @@ Project::Project (
                   dsp::CurveOptions::Algorithm,
                   app_settings_.automationCurveAlgorithm ());
               } },
-          [&] () { return audio_engine_->get_sample_rate (); },
+          [&] () { return audio_engine_->sample_rate (); },
           [&] () { return tempo_map ().tempo_at_tick (units::ticks (0)); })),
       plugin_factory_ (
         utils::make_qobject_unique<plugins::PluginFactory> (
@@ -132,15 +132,15 @@ Project::Project (
                   std::move (callback));
               },
             .sample_rate_provider_ =
-              [this] () { return audio_engine_->get_sample_rate (); },
+              [this] () { return audio_engine_->sample_rate (); },
             .buffer_size_provider_ =
-              [this] () { return audio_engine_->get_block_length (); },
+              [this] () { return audio_engine_->block_length (); },
             .top_level_window_provider_ = plugin_host_window_provider_,
           },
           this)),
-      track_factory_ (
-        std::make_unique<structure::tracks::TrackFactory> (
-          get_final_track_dependencies ())),
+      track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {
+        return get_final_track_dependencies ();
+      })),
       tempo_object_manager_ (
         utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
           *arranger_object_registry_,
@@ -169,6 +169,12 @@ Project::Project (
           return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
         }())
 {
+  QObject::connect (
+    audio_engine_.get (), &dsp::AudioEngine::sampleRateChanged,
+    tempo_map_wrapper_.get (), [this] (int new_rate) {
+      tempo_map_wrapper_->setSampleRate (static_cast<double> (new_rate));
+    });
+
   // Keep up-to-date realtime cache of tracks
   // Note: this is thread-safe since tracks are only added/removed while the
   // graph is paused
@@ -230,7 +236,13 @@ Project::Project (
     tempo_map_wrapper_.get (), rebuild_tempo_map);
 }
 
-Project::~Project () = default;
+Project::~Project ()
+{
+  if (audio_engine_->activated ())
+    {
+      audio_engine_->deactivate ();
+    }
+}
 
 dsp::Fader &
 Project::monitor_fader () const
@@ -244,9 +256,26 @@ Project::metronome () const
   return metronome_;
 }
 
+void
+Project::install_recording_callback (
+  structure::tracks::TrackRecordingCallback callback)
+{
+  if (track_recording_callback_)
+    {
+      throw std::runtime_error (
+        "install_recording_callback called more than once");
+    }
+  track_recording_callback_ = std::move (callback);
+}
+
 structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies () const
 {
+  if (!track_recording_callback_)
+    {
+      throw std::runtime_error (
+        "Recording callback not installed — call install_recording_callback() first");
+    }
   return structure::tracks::FinalTrackDependencies{
     *tempo_map_wrapper_,
     *file_audio_source_registry_,
@@ -266,7 +295,8 @@ Project::get_final_track_dependencies () const
           }
         return ch->fader ()->currently_soloed_rt ();
       });
-    }
+    },
+    track_recording_callback_
   };
 }
 
@@ -376,7 +406,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
                structure::project::ProjectPathProvider::ProjectPath::
                  AudioFilePoolDir);
     },
-    [&obj] () { return obj.audio_engine_->get_sample_rate (); });
+    [&obj] () { return obj.audio_engine_->sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
     *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
   obj.port_connections_manager_ =
@@ -517,11 +547,11 @@ struct PluginBuilderForDeserialization
             project.plugin_format_manager_->createPluginInstanceAsync (
               description, initialSampleRate, initialBufferSize, callback);
           },
-          [&project = project_] () {
-            return project.audio_engine_->get_sample_rate ();
+          [engine = project_.audio_engine_.get ()] () {
+            return engine->sample_rate ();
           },
-          [&project = project_] () {
-            return project.audio_engine_->get_block_length ();
+          [engine = project_.audio_engine_.get ()] () {
+            return engine->block_length ();
           },
           project_.plugin_host_window_provider_);
       }

@@ -3,7 +3,10 @@
 
 #pragma once
 
+#include <optional>
+
 #include "dsp/audio_callback.h"
+#include "dsp/audio_input_processor.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
 #include "dsp/hardware_audio_interface.h"
@@ -22,6 +25,7 @@ class AudioEngine : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (int sampleRate READ sampleRate NOTIFY sampleRateChanged)
+  Q_PROPERTY (int blockLength READ blockLength NOTIFY blockLengthChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -72,11 +76,32 @@ public:
     return load_measurer_.getLoadAsPercentage ();
   }
 
-  int sampleRate () const { return get_sample_rate ().in (units::sample_rate); }
+  /**
+   * @brief Current sample rate from the hardware interface (QML-friendly).
+   */
+  int sampleRate () const;
+  /**
+   * @brief Current block length from the hardware interface (QML-friendly).
+   */
+  int blockLength () const;
 
   Q_SIGNAL void sampleRateChanged (int sampleRate);
+  Q_SIGNAL void blockLengthChanged (int blockLength);
 
   // =========================================================
+
+  /**
+   * @brief Current sample rate as a unit type.
+   */
+  units::sample_rate_t sample_rate () const;
+  /**
+   * @brief Current block length as a unit type.
+   */
+  units::sample_u32_t block_length () const;
+  /**
+   * @brief Current audio device name from the hardware interface.
+   */
+  utils::Utf8String device_name () const;
 
   /**
    * @param force_pause Whether to force transport
@@ -87,7 +112,18 @@ public:
 
   void resume (const EngineState &state);
 
+  /**
+   * @brief Activate the engine if not already active.
+   *
+   * This method is idempotent.
+   */
   Q_INVOKABLE void activate ();
+
+  /**
+   * @brief Deactivates the engine if active.
+   *
+   * This method is idempotent.
+   */
   Q_INVOKABLE void deactivate ();
 
   /**
@@ -144,6 +180,15 @@ public:
   auto * midi_panic_processor () const { return midi_panic_processor_.get (); }
 
   /**
+   * @brief Returns the audio input processor, or nullptr if no audio device has
+   * started.
+   */
+  auto * audio_input_processor () const
+  {
+    return audio_input_processor_.get ();
+  }
+
+  /**
    * Queues MIDI note off to event queues.
    */
   void panic_all ();
@@ -159,16 +204,6 @@ public:
   auto get_processing_lock () [[clang::blocking]]
   {
     return SemaphoreRAII (process_lock_, true);
-  }
-
-  units::sample_u32_t get_block_length () const
-  {
-    return hw_interface_.get_block_length ();
-  }
-
-  units::sample_rate_t get_sample_rate () const
-  {
-    return hw_interface_.get_sample_rate ();
   }
 
   /**
@@ -261,9 +296,22 @@ private:
   std::atomic<State> state_{ State::Uninitialized };
   static_assert (decltype (state_)::is_always_lock_free);
 
+  std::optional<dsp::AudioDeviceInfo> cached_device_info_;
+
   utils::QObjectUniquePtr<dsp::MidiPanicProcessor> midi_panic_processor_;
 
   std::unique_ptr<AudioCallback> audio_callback_;
+
+  utils::QObjectUniquePtr<AudioInputProcessor> audio_input_processor_;
+
+  /**
+   * @brief Current hardware audio input channels, updated each audio callback.
+   *
+   * Only accessed on the audio callback thread. Set at the start of
+   * process_audio(), cleared before return. AudioInputProcessor's provider
+   * reads it synchronously during the same callback.
+   */
+  std::span<const float * const> current_hw_input_;
 
   /**
    * @brief Whether the audio callback is currently periodically getting

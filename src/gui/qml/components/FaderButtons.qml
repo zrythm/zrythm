@@ -46,21 +46,75 @@ ColumnLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     checkable: true
-    checked: root.track.recordableTrackMixin ? root.track.recordableTrackMixin.recording : false
+    checked: root.track.recordingParam?.range.isToggled(root.track.recordingParam.baseValue) ?? false
     icon.color: checked ? "#ff0000" : palette.buttonText
     icon.source: ResourceManager.getIconUrl("zrythm-dark", "media-record.svg")
-    visible: root.track.recordableTrackMixin !== null
+    visible: root.track.recordingParam !== null
 
-    Binding {
-      property: "recording"
-      restoreMode: Binding.RestoreNone
-      target: root.track.recordableTrackMixin
-      value: recordButton.checked
-      when: root.track.recordableTrackMixin !== null
+    onClicked: {
+      const param = root.track.recordingParam;
+      param.baseValue = param.range.isToggled(param.baseValue) ? 0.0 : 1.0;
     }
 
     ToolTip {
       text: qsTr("Record")
+    }
+  }
+
+  // Monitor mode button (cycles Off → On → Auto)
+  ToolButton {
+    id: monitorButton
+
+    property ProcessorParameter monitorParam: root.track.monitorParam
+
+    function updateColor(): void {
+      if (!monitorParam)
+        return;
+      const idx = monitorParam.range.enumIndex(monitorParam.baseValue);
+      switch (idx) {
+      case 0:
+        monitorButton.icon.color = palette.mid;
+        break;
+      case 1:
+        monitorButton.icon.color = palette.highlight;
+        break;
+      default:
+        monitorButton.icon.color = palette.buttonText;
+        break;
+      }
+    }
+
+    Layout.fillHeight: true
+    Layout.fillWidth: true
+    icon.source: ResourceManager.getIconUrl("zrythm-dark", "audition.svg")
+    visible: monitorParam !== null
+
+    Component.onCompleted: updateColor()
+    onClicked: {
+      if (!monitorParam)
+        return;
+      const idx = monitorParam.range.enumIndex(monitorParam.baseValue);
+      const next = (idx + 1) % monitorParam.range.enumCount();
+      monitorParam.baseValue = monitorParam.range.normalizedEnumValue(next);
+    }
+    onMonitorParamChanged: updateColor()
+
+    Connections {
+      function onBaseValueChanged() {
+        monitorButton.updateColor();
+      }
+
+      enabled: monitorButton.monitorParam !== null
+      target: monitorButton.monitorParam
+    }
+
+    ToolTip {
+      text: {
+        if (!root.track.monitorParam)
+          return "";
+        const idx = root.track.monitorParam.range.enumIndex(root.track.monitorParam.baseValue);
+        return qsTr("Monitor: %1").arg(root.track.monitorParam.range.enumLabel(idx));
+      }
     }
   }
 
@@ -162,7 +216,6 @@ ColumnLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
-    icon.color: palette.buttonText
     icon.source: ResourceManager.getIconUrl("gnome-icon-library", "settings-symbolic.svg")
 
     onClicked:

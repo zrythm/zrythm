@@ -63,12 +63,8 @@ TEST_F (MidiPortTest, MidiEventHandling)
     1, 60, 100, units::samples (0));
 
   // Process input port
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   input_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify event was processed
@@ -86,12 +82,8 @@ TEST_F (MidiPortTest, RingBufferFunctionality)
     2, 1, 127, units::samples (20));
 
   // Process output port
-  dsp::graph::EngineProcessTimeInfo time_info{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = BLOCK_LENGTH
-  };
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
   // Verify event was added to ring buffer

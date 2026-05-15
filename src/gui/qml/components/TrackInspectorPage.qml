@@ -13,8 +13,10 @@ ColumnLayout {
   id: root
 
   required property AudioEngine audioEngine
+  required property DeviceManager deviceManager
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
+  required property ProjectSession session
   required property Track track
   required property TrackSelectionModel trackSelectionModel
   required property UndoStack undoStack
@@ -109,6 +111,161 @@ ColumnLayout {
             }
 
             target: root.track
+          }
+        }
+      }
+    }
+  }
+
+  Loader {
+    Layout.fillWidth: true
+    active: root.track.type === Track.Audio
+    visible: active
+
+    sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "source-pick-symbolic.svg")
+      title: qsTr("Device Input")
+
+      frameContentItem: ColumnLayout {
+        spacing: 4
+
+        Label {
+          Layout.fillWidth: true
+          text: qsTr("Audio Input")
+        }
+
+        ComboBox {
+          id: inputSelector
+
+          property AudioInputSelection inputSel: root.session.uiState.audioInputSelectionForTrack(root.track)
+
+          function formatInput(info: audioInputInfo): string {
+            if (info.stereo)
+              return qsTr("Input %1-%2 (Stereo)").arg(info.firstChannel + 1).arg(info.firstChannel + 2);
+            return qsTr("Input %1 (Mono)").arg(info.firstChannel + 1);
+          }
+
+          function updateCurrentIndex(): void {
+            if (!inputSel || inputSel.deviceName === "") {
+              currentIndex = 0;
+              return;
+            }
+            for (let i = 1; i < count; ++i) {
+              const info = model[i].inputInfo;
+              if (info && info.deviceName === inputSel.deviceName && info.firstChannel === inputSel.firstChannel && info.stereo === inputSel.stereo) {
+                currentIndex = i;
+                return;
+              }
+            }
+            currentIndex = 0;
+          }
+
+          Layout.fillWidth: true
+          model: {
+            const inputs = [
+              {
+                "display": qsTr("None"),
+                "inputInfo": null
+              }
+            ];
+            if (root.deviceManager) {
+              for (const info of root.deviceManager.availableAudioInputs)
+                inputs.push({
+                  "display": formatInput(info),
+                  "inputInfo": info
+                });
+            }
+            return inputs;
+          }
+          textRole: "display"
+
+          Component.onCompleted: updateCurrentIndex()
+          onActivated: function (index: int): void {
+            if (index === 0) {
+              inputSelector.inputSel.deviceName = "";
+              return;
+            }
+            const info = model[index].inputInfo;
+            inputSelector.inputSel.deviceName = info.deviceName;
+            inputSelector.inputSel.firstChannel = info.firstChannel;
+            inputSelector.inputSel.stereo = info.stereo;
+          }
+          onInputSelChanged: updateCurrentIndex()
+          onModelChanged: updateCurrentIndex()
+
+          Connections {
+            function onDeviceNameChanged() {
+              inputSelector.updateCurrentIndex();
+            }
+
+            function onFirstChannelChanged() {
+              inputSelector.updateCurrentIndex();
+            }
+
+            function onStereoChanged() {
+              inputSelector.updateCurrentIndex();
+            }
+
+            target: inputSelector.inputSel
+          }
+
+          Connections {
+            function onAvailableAudioInputsChanged() {
+              inputSelector.updateCurrentIndex();
+            }
+
+            target: root.deviceManager
+          }
+        }
+
+        Label {
+          Layout.fillWidth: true
+          text: qsTr("Monitoring")
+          visible: monitorSelector.visible
+        }
+
+        ComboBox {
+          id: monitorSelector
+
+          property ProcessorParameter monitorParam: root.track.monitorParam
+
+          Layout.fillWidth: true
+          model: {
+            if (!monitorParam)
+              return [];
+            const labels = [];
+            for (let i = 0; i < monitorParam.range.enumCount(); ++i) {
+              labels.push(monitorParam.range.enumLabel(i));
+            }
+            return labels;
+          }
+          visible: monitorParam !== null
+
+          Component.onCompleted: {
+            if (monitorParam) {
+              currentIndex = monitorParam.range.enumIndex(monitorParam.baseValue);
+            }
+          }
+          onActivated: function (index: int): void {
+            if (monitorParam) {
+              monitorParam.baseValue = monitorParam.range.normalizedEnumValue(index);
+            }
+          }
+          onMonitorParamChanged: {
+            if (monitorParam) {
+              currentIndex = monitorParam.range.enumIndex(monitorParam.baseValue);
+            }
+          }
+
+          Connections {
+            function onBaseValueChanged() {
+              if (monitorSelector.monitorParam) {
+                monitorSelector.currentIndex = monitorSelector.monitorParam.range.enumIndex(monitorSelector.monitorParam.baseValue);
+              }
+            }
+
+            enabled: monitorSelector.monitorParam !== null
+            target: monitorSelector.monitorParam
           }
         }
       }

@@ -32,7 +32,6 @@ target_sources(zrythm_structure_tracks_lib
     piano_roll_track.cpp
     playback_cache_activity_aggregator.cpp
     playback_cache_activity_tracker.cpp
-    recordable_track.cpp
     track.cpp
     track_collection.cpp
     track_lane.cpp
@@ -65,7 +64,6 @@ target_sources(zrythm_structure_tracks_lib
       piano_roll_track.h
       playback_cache_activity_aggregator.h
       playback_cache_activity_tracker.h
-      recordable_track.h
       singleton_tracks.h
       track.h
       track_all.h
@@ -104,4 +102,4 @@ qt_add_qml_module(zrythm_structure_tracks_lib
     TARGET zrythm_plugins_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmTracks
 )
-target_precompile_headers(zrythm_structure_tracks_libplugin REUSE_FROM zrythm_structure_tracks_lib)
+set_target_properties(zrythm_structure_tracks_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)

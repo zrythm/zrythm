@@ -30,7 +30,6 @@ target_sources(zrythm_utils_lib
     mem.cpp
     midi.cpp
     networking.cpp
-    note_type.cpp
     pcg_rand.cpp
     playback_cache_scheduler.cpp
     resampler.cpp
@@ -84,7 +83,6 @@ target_sources(zrythm_utils_lib
       monotonic_time_provider.h
       mpmc_queue.h
       networking.h
-      note_type.h
       object_pool.h
       optional_ref.h
       pcg_rand.h
@@ -138,6 +136,6 @@ qt_add_qml_module(zrythm_utils_lib
   VERSION 1.0
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmUtils
 )
-target_precompile_headers(zrythm_utils_libplugin REUSE_FROM zrythm_utils_lib)
+set_target_properties(zrythm_utils_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 add_library(zrythm::utils_lib ALIAS zrythm_utils_lib)

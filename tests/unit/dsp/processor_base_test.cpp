@@ -43,9 +43,7 @@ public:
   MOCK_METHOD (
     void,
     custom_process_block,
-    (dsp::graph::EngineProcessTimeInfo,
-     const dsp::ITransport &,
-     const dsp::TempoMap &),
+    (dsp::graph::ProcessBlockInfo, const dsp::ITransport &, const dsp::TempoMap &),
     (noexcept, override));
 
 private:
@@ -76,7 +74,7 @@ protected:
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillRepeatedly (
-        [&] (dsp::graph::EngineProcessTimeInfo time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo time_nfo, auto &, auto &) {
           // Simple passthrough
           auto &in =
             processor_->get_input_ports ()
@@ -159,12 +157,8 @@ TEST_F (ProcessorBaseTest, Processing)
   // Set expectations
   expect_passthrough_at_half_volume ();
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify processing (half volume)
@@ -194,12 +188,8 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   // Set expectations
   expect_passthrough_at_half_volume ();
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (512)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
 
   // First process call
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -319,12 +309,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
       captured = ct.changes ();
     });
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   ASSERT_EQ (captured.size (), 1u);
@@ -342,12 +328,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerSkipsUnchangedParams)
 
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   // First cycle: change detected
   EXPECT_CALL (
@@ -377,12 +359,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsParamEdit)
 
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   // First cycle
   EXPECT_CALL (
@@ -426,12 +404,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerRecordsMultipleParams)
 
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  dsp::graph::EngineProcessTimeInfo time_nfo{
-    .g_start_frame_ = units::samples (0),
-    .g_start_frame_w_offset_ = units::samples (0),
-    .local_offset_ = units::samples (0),
-    .nframes_ = units::samples (256)
-  };
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
 
   // First cycle: both change
   EXPECT_CALL (
@@ -472,10 +446,9 @@ TEST_F (ProcessorBaseTest, EdgeCases)
 
   // Test Case 1: nframes exceeds max_block_length_
   {
-    dsp::graph::EngineProcessTimeInfo time_nfo{
-      .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    dsp::graph::ProcessBlockInfo time_nfo{
+      .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = max_block_length_ + units::samples (100) // Exceeds
                                                            // max_block_length_
     };
@@ -484,13 +457,11 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillOnce (
-        [&] (
-          dsp::graph::EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo corrected_time_nfo, auto &, auto &) {
           // Verify correction was applied
           EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_);
-          EXPECT_EQ (corrected_time_nfo.local_offset_, units::samples (0));
-          EXPECT_EQ (
-            corrected_time_nfo.g_start_frame_w_offset_, units::samples (0));
+          EXPECT_EQ (corrected_time_nfo.buffer_offset_, units::samples (0));
+          EXPECT_EQ (corrected_time_nfo.transport_position_, units::samples (0));
         });
 
     processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -498,10 +469,9 @@ TEST_F (ProcessorBaseTest, EdgeCases)
 
   // Test Case 2: local_offset + nframes exceeds max_block_length_
   {
-    dsp::graph::EngineProcessTimeInfo time_nfo{
-      .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (500),
+    dsp::graph::ProcessBlockInfo time_nfo{
+      .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (500),
       .nframes_ = units::samples (600) // 500 + 600 = 1100 > max_block_length_
                                        // (1024)
     };
@@ -510,15 +480,13 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillOnce (
-        [&] (
-          dsp::graph::EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo corrected_time_nfo, auto &, auto &) {
           // Verify correction was applied
           EXPECT_EQ (
             corrected_time_nfo.nframes_,
             max_block_length_ - units::samples (500));
-          EXPECT_EQ (corrected_time_nfo.local_offset_, units::samples (500));
-          EXPECT_EQ (
-            corrected_time_nfo.g_start_frame_w_offset_, units::samples (500));
+          EXPECT_EQ (corrected_time_nfo.buffer_offset_, units::samples (500));
+          EXPECT_EQ (corrected_time_nfo.transport_position_, units::samples (0));
         });
 
     processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -526,10 +494,9 @@ TEST_F (ProcessorBaseTest, EdgeCases)
 
   // Test Case 3: local_offset >= max_block_length_ (should result in 0 frames)
   {
-    dsp::graph::EngineProcessTimeInfo time_nfo{
-      .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ =
+    dsp::graph::ProcessBlockInfo time_nfo{
+      .transport_position_ = units::samples (0),
+      .buffer_offset_ =
         max_block_length_ + units::samples (50), // Exceeds max_block_length_
       .nframes_ = units::samples (100)
     };
@@ -538,13 +505,11 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillOnce (
-        [&] (
-          dsp::graph::EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo corrected_time_nfo, auto &, auto &) {
           // Verify correction was applied - should process 0 frames
           EXPECT_EQ (corrected_time_nfo.nframes_, units::samples (0));
-          EXPECT_LT (corrected_time_nfo.local_offset_, max_block_length_);
-          EXPECT_LT (
-            corrected_time_nfo.g_start_frame_w_offset_, max_block_length_);
+          EXPECT_LT (corrected_time_nfo.buffer_offset_, max_block_length_);
+          EXPECT_LT (corrected_time_nfo.transport_position_, max_block_length_);
         });
 
     processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -553,10 +518,9 @@ TEST_F (ProcessorBaseTest, EdgeCases)
   // Test Case 4: Edge case where local_offset + nframes equals
   // max_block_length_ (no correction needed)
   {
-    dsp::graph::EngineProcessTimeInfo time_nfo{
-      .g_start_frame_ = units::samples (0),
-      .g_start_frame_w_offset_ = units::samples (0),
-      .local_offset_ = units::samples (0),
+    dsp::graph::ProcessBlockInfo time_nfo{
+      .transport_position_ = units::samples (0),
+      .buffer_offset_ = units::samples (0),
       .nframes_ = max_block_length_ // Exactly matches max_block_length_
     };
 
@@ -564,13 +528,11 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillOnce (
-        [&] (
-          dsp::graph::EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo corrected_time_nfo, auto &, auto &) {
           // Verify no correction was applied
           EXPECT_EQ (corrected_time_nfo.nframes_, max_block_length_);
-          EXPECT_EQ (corrected_time_nfo.local_offset_, units::samples (0));
-          EXPECT_EQ (
-            corrected_time_nfo.g_start_frame_w_offset_, units::samples (0));
+          EXPECT_EQ (corrected_time_nfo.buffer_offset_, units::samples (0));
+          EXPECT_EQ (corrected_time_nfo.transport_position_, units::samples (0));
         });
 
     processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
@@ -578,10 +540,9 @@ TEST_F (ProcessorBaseTest, EdgeCases)
 
   // Test Case 5: Small offset with nframes exceeding max_block_length_
   {
-    dsp::graph::EngineProcessTimeInfo time_nfo{
-      .g_start_frame_ = units::samples (1000),
-      .g_start_frame_w_offset_ = units::samples (1000),
-      .local_offset_ = units::samples (100),
+    dsp::graph::ProcessBlockInfo time_nfo{
+      .transport_position_ = units::samples (1000),
+      .buffer_offset_ = units::samples (100),
       .nframes_ = max_block_length_ // 100 + 1024 > max_block_length_ (1024)
     };
 
@@ -589,15 +550,14 @@ TEST_F (ProcessorBaseTest, EdgeCases)
       *processor_,
       custom_process_block (::testing::_, ::testing::_, ::testing::_))
       .WillOnce (
-        [&] (
-          dsp::graph::EngineProcessTimeInfo corrected_time_nfo, auto &, auto &) {
+        [&] (dsp::graph::ProcessBlockInfo corrected_time_nfo, auto &, auto &) {
           // Verify correction was applied
           EXPECT_EQ (
             corrected_time_nfo.nframes_,
             max_block_length_ - units::samples (100));
-          EXPECT_EQ (corrected_time_nfo.local_offset_, units::samples (100));
+          EXPECT_EQ (corrected_time_nfo.buffer_offset_, units::samples (100));
           EXPECT_EQ (
-            corrected_time_nfo.g_start_frame_w_offset_, units::samples (1100));
+            corrected_time_nfo.transport_position_, units::samples (1000));
         });
 
     processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);

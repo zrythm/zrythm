@@ -8,7 +8,6 @@
 #include "structure/tracks/channel.h"
 #include "structure/tracks/piano_roll_track.h"
 #include "structure/tracks/playback_cache_activity_tracker.h"
-#include "structure/tracks/recordable_track.h"
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane_list.h"
 #include "structure/tracks/track_processor.h"
@@ -27,6 +26,13 @@ namespace zrythm::structure::tracks
 {
 using SoloedTracksExistGetter = std::function<bool ()>;
 
+using TrackRecordingCallback = std::function<void (
+  const utils::UuidIdentifiableObject<Track>::Uuid &,
+  units::sample_t,
+  const dsp::ITransport &,
+  const dsp::MidiEventVector *,
+  std::optional<TrackProcessor::ConstStereoPortPair>)>;
+
 struct BaseTrackDependencies
 {
   const dsp::TempoMapWrapper          &tempo_map_;
@@ -37,6 +43,7 @@ struct BaseTrackDependencies
   arrangement::ArrangerObjectRegistry &obj_registry_;
   const dsp::ITransport               &transport_;
   SoloedTracksExistGetter              soloed_tracks_exist_getter_;
+  TrackRecordingCallback               track_recording_callback;
 };
 
 /**
@@ -74,8 +81,9 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (
     zrythm::structure::tracks::TrackLaneList * lanes READ lanes CONSTANT)
   Q_PROPERTY (
-    zrythm::structure::tracks::RecordableTrackMixin * recordableTrackMixin READ
-      recordableTrackMixin CONSTANT)
+    zrythm::dsp::ProcessorParameter * recordingParam READ recordingParam CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::ProcessorParameter * monitorParam READ monitorParam CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::PianoRollTrackMixin * pianoRollTrackMixin READ
       pianoRollTrackMixin CONSTANT)
@@ -441,10 +449,8 @@ public:
 
   TrackLaneList * lanes () const { return lanes_.get (); }
 
-  RecordableTrackMixin * recordableTrackMixin () const
-  {
-    return recordable_track_mixin_.get ();
-  }
+  dsp::ProcessorParameter * recordingParam () const;
+  dsp::ProcessorParameter * monitorParam () const;
 
   PianoRollTrackMixin * pianoRollTrackMixin () const
   {
@@ -633,7 +639,6 @@ private:
   static constexpr auto kModulatorsKey = "modulators"sv;
   static constexpr auto kModulatorMacroProcessorsKey =
     "modulatorMacroProcessors"sv;
-  static constexpr auto kRecordingParamKey = "recordingParam"sv;
   static constexpr auto kPianoRollKey = "pianoRoll"sv;
   static constexpr auto kClipLauncherModeKey = "clipLauncherMode"sv;
   friend void           to_json (nlohmann::json &j, const Track &track);
@@ -645,8 +650,6 @@ private:
   [[nodiscard]] utils::QObjectUniquePtr<plugins::PluginGroup>
                                                        make_modulators ();
   [[nodiscard]] utils::QObjectUniquePtr<TrackLaneList> make_lanes ();
-  [[nodiscard]] utils::QObjectUniquePtr<RecordableTrackMixin>
-  make_recordable_track_mixin ();
   [[nodiscard]] utils::QObjectUniquePtr<PianoRollTrackMixin>
   make_piano_roll_track_mixin ();
 
@@ -750,8 +753,6 @@ protected:
 
   utils::QObjectUniquePtr<TrackLaneList> lanes_;
 
-  utils::QObjectUniquePtr<RecordableTrackMixin> recordable_track_mixin_;
-
   utils::QObjectUniquePtr<PianoRollTrackMixin> piano_roll_track_mixin_;
 
   /**
@@ -783,7 +784,6 @@ protected:
      modulators_,
      modulator_macro_processors_,
      lanes_,
-     recordable_track_mixin_,
      piano_roll_track_mixin_,
      clip_launcher_mode_),
     ())
@@ -804,7 +804,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
     arrangement::ArrangerObjectRegistry &obj_registry,
     TrackRegistry                       &track_registry,
     const dsp::ITransport               &transport,
-    SoloedTracksExistGetter              soloed_tracks_exist_getter)
+    SoloedTracksExistGetter              soloed_tracks_exist_getter,
+    TrackRecordingCallback               recording_callback)
       : BaseTrackDependencies (
           tempo_map,
           file_audio_source_registry,
@@ -813,7 +814,8 @@ struct FinalTrackDependencies : public BaseTrackDependencies
           param_registry,
           obj_registry,
           transport,
-          std::move (soloed_tracks_exist_getter)),
+          std::move (soloed_tracks_exist_getter),
+          std::move (recording_callback)),
         track_registry_ (track_registry)
   {
   }

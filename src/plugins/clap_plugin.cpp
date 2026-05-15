@@ -755,7 +755,7 @@ ClapPlugin::release_resources_impl ()
 }
 
 void
-ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
+ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
 {
   ScopedBool audio_thread_guard{ is_audio_thread };
 
@@ -823,7 +823,7 @@ ClapPlugin::process_impl (dsp::graph::EngineProcessTimeInfo time_info) noexcept
   int32_t status = CLAP_PROCESS_SLEEP;
   if (pimpl_->isPluginProcessing ())
     {
-      const auto local_offset = time_info.local_offset_;
+      const auto local_offset = time_info.buffer_offset_;
       const auto nframes = time_info.nframes_;
 
       // Copy input audio to JUCE buffer

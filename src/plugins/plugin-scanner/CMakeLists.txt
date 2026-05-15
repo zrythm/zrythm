@@ -10,6 +10,8 @@ target_link_libraries(plugin-scanner
   zrythm::juce_libs
   zrythm_plugins_lib
 )
+set_target_properties(plugin-scanner PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+
 target_include_directories(plugin-scanner
   PRIVATE
     ${CMAKE_SOURCE_DIR}/src

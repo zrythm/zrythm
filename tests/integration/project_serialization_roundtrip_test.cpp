@@ -271,7 +271,18 @@ protected:
 
     // Process again so the baseValue changes propagate to the underlying
     // plugin (JUCE/CLAP) before the state blob is captured during save.
-    process_until_timeout (*original_bundle->project);
+    // Wait until the value stabilizes to avoid a race where the plugin
+    // reports back its stale default before processing the new value.
+    if (freq_param != nullptr)
+      {
+        process_until_true (*original_bundle->project, [&] () {
+          return std::abs (freq_param->baseValue () - test_value) < 0.01f;
+        });
+      }
+    else
+      {
+        process_until_timeout (*original_bundle->project);
+      }
 
     // === Step 2: Save the project ===
     auto save_future = ProjectSaver::save (
@@ -608,7 +619,8 @@ TEST_F (
 
   auto &plugin_reg = bundle->project->get_plugin_registry ().get_hash_map ();
   ASSERT_EQ (plugin_reg.size (), 1);
-  auto plugin_it = plugin_reg.begin ();
+  auto                      plugin_it = plugin_reg.begin ();
+  dsp::ProcessorParameter * freq_param = nullptr;
   std::visit (
     [&] (auto &&pl) {
       for (const auto &param_ref : pl->get_parameters ())
@@ -618,13 +630,17 @@ TEST_F (
           if (param->label ().contains (u8"Frequency"))
             {
               freq_range = param->range ();
+              freq_param = param;
               param->setBaseValue (correct_value);
             }
         }
     },
     plugin_it->second);
+  ASSERT_NE (freq_param, nullptr);
 
-  process_until_timeout (*bundle->project);
+  process_until_true (*bundle->project, [&] () {
+    return std::abs (freq_param->baseValue () - correct_value) < 0.01f;
+  });
 
   auto save_future = ProjectSaver::save (
     *bundle->project, *bundle->ui_state, *bundle->undo_stack, TEST_APP_VERSION,
@@ -714,10 +730,31 @@ TEST_F (
     load_result.result ().json, *reload_bundle->project,
     *reload_bundle->ui_state, *reload_bundle->undo_stack);
 
+  // Find the Frequency parameter in the reloaded plugin for condition checking
+  auto &reload_plugin_reg =
+    reload_bundle->project->get_plugin_registry ().get_hash_map ();
+  ASSERT_EQ (reload_plugin_reg.size (), 1);
+  dsp::ProcessorParameter * reload_freq_param = nullptr;
+  std::visit (
+    [&] (auto &&pl) {
+      for (const auto &param_ref : pl->get_parameters ())
+        {
+          auto * param =
+            param_ref.template get_object_as<dsp::ProcessorParameter> ();
+          if (param->label ().contains (u8"Frequency"))
+            reload_freq_param = param;
+        }
+    },
+    reload_plugin_reg.begin ()->second);
+  ASSERT_NE (reload_freq_param, nullptr);
+
   // Process so the audio thread runs and the host has a chance to apply
-  // baseValues
+  // baseValues from the plugin state blob.
   EXPECT_NO_FATAL_FAILURE ({
-    process_until_timeout (*reload_bundle->project);
+    process_until_true (*reload_bundle->project, [&] () {
+      return utils::math::floats_near (
+        reload_freq_param->baseValue (), correct_value, 0.01f);
+    });
   });
 
   // === Step 5: Save reloaded project and verify state blob ===

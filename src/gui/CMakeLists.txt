@@ -257,6 +257,7 @@ set(rel_qml_file_paths
   components/PluginSelectionModel.qml
   components/PluginSlotList.qml
   components/PluginSlotView.qml
+  components/RecordSplitButton.qml
   components/RightDock.qml
   components/Ruler.qml
   components/LoadController.qml

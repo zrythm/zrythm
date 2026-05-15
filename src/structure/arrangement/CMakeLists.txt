@@ -99,7 +99,7 @@ qt_add_qml_module(zrythm_arrangement_lib
     TARGET zrythm_dsp_lib
   OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ZrythmArrangement
 )
-target_precompile_headers(zrythm_arrangement_libplugin REUSE_FROM zrythm_arrangement_lib)
+set_target_properties(zrythm_arrangement_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
 
 # TODO: port these too
 target_sources(zrythm_gui_lib
