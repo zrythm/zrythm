@@ -49,14 +49,6 @@ Control {
   hoverEnabled: true
   implicitWidth: 20
 
-  ContextMenu.menu: Menu {
-    MenuItem {
-      text: qsTr("Test")
-
-      onTriggered: console.log("Clicked")
-    }
-  }
-
   MouseArea {
     id: dragArea
 

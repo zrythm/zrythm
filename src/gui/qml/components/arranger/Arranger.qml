@@ -377,7 +377,7 @@ Item {
     }
 
     console.log("Updated temporary QML arranger objects with", root.tempQmlArrangerObjects.length, "objects");
-  // console.log(tempQmlArrangerObjects);
+    // console.log(tempQmlArrangerObjects);
   }
 
   implicitHeight: 100
@@ -448,7 +448,16 @@ Item {
       height: root.enableYScroll ? 600 : scrollView.height
       width: root.ruler.contentWidth
 
-      ContextMenu.menu: Menu {
+      onActiveFocusChanged: {
+        console.log("active focus", activeFocus, root);
+      }
+      onArrangerIsActiveChanged: {
+        appWindow.activeArranger = arrangerIsActive ? root : null;
+      }
+
+      Menu {
+        id: arrangerContextMenu
+
         onAboutToHide: {
           arrangerContent.arrangerIsActive = Qt.binding(function () {
             return arrangerContent.activeFocus;
@@ -473,13 +482,13 @@ Item {
         MenuItem {
           action: arrangerContent.appWindow.deleteAction
         }
-      }
 
-      onActiveFocusChanged: {
-        console.log("active focus", activeFocus, root);
-      }
-      onArrangerIsActiveChanged: {
-        appWindow.activeArranger = arrangerIsActive ? root : null;
+        MenuSeparator {
+        }
+
+        MenuItem {
+          action: arrangerContent.appWindow.toggleMuteAction
+        }
       }
 
       Image {
@@ -810,6 +819,10 @@ Item {
           if (action === Arranger.None) {
             if (mouse.button === Qt.MiddleButton) {
               action = Arranger.StartingPanning;
+            } else if (mouse.button === Qt.RightButton) {
+              if (root.hoveredObject) {
+                root.hoveredObject.requestSelection(mouse);
+              }
             } else if (mouse.button === Qt.LeftButton) {
               if (root.hoveredObject) {
                 root.hoveredObject.requestSelection(mouse);
@@ -843,7 +856,11 @@ Item {
           }
           root.updateCursor();
         }
-        onReleased: {
+        onReleased: mouse => {
+          if (mouse.button === Qt.RightButton) {
+            arrangerContextMenu.popup();
+            return;
+          }
           if (action === Arranger.StartingMovingCopy) {
             // Ctrl+click without drag — perform the deferred toggle.
             root.handleDeferredCtrlClickToggle();
