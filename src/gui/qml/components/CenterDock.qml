@@ -307,10 +307,7 @@ ColumnLayout {
             undoStack: root.session.undoStack
             unifiedObjectsModel: unifiedObjectsModel
 
-            Synchronizer on arrangerContentHeight {
-              sourceObject: unpinnedTracklist
-              sourceProperty: "contentHeight"
-            }
+            arrangerContentHeight: Math.max(unpinnedTracklist.contentHeight, unpinnedTimelineArranger.height)
           }
 
           TimelineMinimap {
