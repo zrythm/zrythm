@@ -27,10 +27,8 @@ Control {
 
     c = Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
 
-    if (root._isMuted) {
-      const hsl = Qt.hsla(c.hslHue, c.hslSaturation / 2, c.hslLightness, c.alpha);
-      c = hsl;
-    }
+    if (root._isMuted)
+      c = QmlUtils.saturate(c, 0.0);
 
     return c;
   }

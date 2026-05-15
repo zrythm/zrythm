@@ -1871,4 +1871,104 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesInvalidVelocity)
     }
 }
 
+// Test toggleMute mutes unmuted objects
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
+{
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+
+  bool result = operator_->toggleMute ();
+  EXPECT_TRUE (result);
+
+  EXPECT_TRUE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test toggleMute unmutes muted objects
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
+{
+  note_ref.get_object_base ()->mute ()->setMuted (true);
+  midi_region_ref.get_object_base ()->mute ()->setMuted (true);
+
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  bool result = operator_->toggleMute ();
+  EXPECT_TRUE (result);
+
+  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test toggleMute with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteNoSelection)
+{
+  selection_model_->clear ();
+
+  bool result = operator_->toggleMute ();
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test toggleMute undo/redo
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
+{
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (2, 0), QItemSelectionModel::Select);
+
+  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+
+  operator_->toggleMute ();
+  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+
+  undo_stack_->undo ();
+  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+
+  undo_stack_->redo ();
+  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+}
+
+// Test toggleMute skips non-muteable objects (markers have no Mute feature)
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
+{
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (1, 0), QItemSelectionModel::Select);
+
+  EXPECT_EQ (marker_ref.get_object_base ()->mute (), nullptr);
+  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
+
+  bool result = operator_->toggleMute ();
+  EXPECT_TRUE (result);
+
+  EXPECT_TRUE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test toggleMute with only non-muteable objects
+TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteOnlyNonMuteableObjects)
+{
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+
+  bool result = operator_->toggleMute ();
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
 } // namespace zrythm::actions

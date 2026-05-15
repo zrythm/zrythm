@@ -31,6 +31,19 @@ ApplicationWindow {
       }
     }
   }
+  readonly property Action toggleMuteAction: Action {
+    id: toggleMuteAction
+
+    enabled: root.activeArranger !== null
+    shortcut: "Shift+M"
+    text: qsTr("Toggle &Mute")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.selectionOperator.toggleMute();
+      }
+    }
+  }
   required property DeviceManager deviceManager
   readonly property Action fullScreenAction: Action {
     id: fullScreenAction

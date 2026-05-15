@@ -241,6 +241,54 @@ ArrangerObjectSelectionOperator::cloneObjects ()
 }
 
 bool
+ArrangerObjectSelectionOperator::toggleMute ()
+{
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected for mute toggle");
+      return false;
+    }
+
+  struct MuteTarget
+  {
+    QObject * mute_obj;
+    bool      current_muted;
+  };
+
+  std::vector<MuteTarget> targets;
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto * mute = obj_ref.get_object_base ()->mute ();
+      if (mute != nullptr)
+        {
+          targets.push_back ({ mute, mute->muted () });
+        }
+    }
+
+  if (targets.empty ())
+    {
+      z_debug ("No muteable objects selected");
+      return false;
+    }
+
+  const bool new_muted = !targets.front ().current_muted;
+
+  undo_stack_.beginMacro (
+    new_muted
+      ? QObject::tr ("Mute %1 Objects").arg (targets.size ())
+      : QObject::tr ("Unmute %1 Objects").arg (targets.size ()));
+  for (const auto &target : targets)
+    {
+      undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
+        *target.mute_obj, "muted", new_muted));
+    }
+  undo_stack_.endMacro ();
+
+  return true;
+}
+
+bool
 ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
 {
   return process_vertical_move (delta);
