@@ -1006,6 +1006,7 @@ qt_policy(SET QTP0005 NEW)
 target_compile_definitions(Qt6::Core INTERFACE
   "QT_ENABLE_STRICT_MODE_UP_TO=0x061100"
   "QT_NO_KEYWORDS"
+  "QT_NO_CONTEXTLESS_CONNECT"
 )
 get_filename_component(QT6_CMAKE_DIR "${Qt6_DIR}" DIRECTORY)
 get_filename_component(QT6_PREFIX_PATH "${QT6_CMAKE_DIR}/../.." ABSOLUTE)
