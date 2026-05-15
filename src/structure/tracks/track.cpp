@@ -212,9 +212,21 @@ Track::make_automation_tracklist ()
       .object_registry_ = base_dependencies_.obj_registry_ },
     this);
 
-  // Listen to height changes
+  // Listen to automation visibility and data changes
   QObject::connect (
     atl.get (), &AutomationTracklist::automationVisibleChanged, this,
+    &Track::fullVisibleHeightChanged);
+  QObject::connect (
+    atl.get (), &AutomationTracklist::dataChanged, this,
+    &Track::fullVisibleHeightChanged);
+  QObject::connect (
+    atl.get (), &AutomationTracklist::rowsInserted, this,
+    &Track::fullVisibleHeightChanged);
+  QObject::connect (
+    atl.get (), &AutomationTracklist::rowsRemoved, this,
+    &Track::fullVisibleHeightChanged);
+  QObject::connect (
+    atl.get (), &AutomationTracklist::modelReset, this,
     &Track::fullVisibleHeightChanged);
 
   return atl;
@@ -364,7 +376,7 @@ Track::generate_basic_automation_tracks ()
   auto * ath = atl->get_first_invisible_automation_track_holder ();
   if (ath != nullptr)
     {
-      ath->created_by_user_ = true;
+      ath->setCreatedByUser (true);
       ath->setVisible (true);
     }
 

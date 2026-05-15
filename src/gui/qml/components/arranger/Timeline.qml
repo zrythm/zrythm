@@ -319,6 +319,9 @@ Arranger {
     text: "Some text"
   }
 
+  component ATHRoleData: QtObject {
+    property AutomationTrackHolder automationTrackHolder
+  }
   component PlaybackCacheActivityOverlay: Item {
     id: overlay
 
@@ -769,10 +772,16 @@ Arranger {
               }
             }
           }
-          model: AutomationTracklistProxyModel {
-            showOnlyCreated: true
-            showOnlyVisible: true
-            sourceModel: automationLoader.automationTracklist
+          model: SortFilterProxyModel {
+            model: automationLoader.automationTracklist
+
+            filters: [
+              FunctionFilter {
+                function filter(data: ATHRoleData): bool {
+                  return data.automationTrackHolder.createdByUser && data.automationTrackHolder.visible;
+                }
+              }
+            ]
           }
         }
       }

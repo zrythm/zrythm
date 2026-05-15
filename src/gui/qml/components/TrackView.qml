@@ -386,14 +386,16 @@ Control {
           id: automationLoader
 
           Layout.fillWidth: true
+          Layout.maximumHeight: Layout.preferredHeight
+          Layout.minimumHeight: Layout.preferredHeight
+          Layout.preferredHeight: (item as AutomationTracksListView)?.contentHeight ?? 0
           active: root.track.automationTracklist && root.track.automationTracklist.automationVisible
+          visible: active
 
           sourceComponent: AutomationTracksListView {
             id: automationTracksListView
 
-            height: contentHeight
             track: root.track
-            width: automationLoader.width
           }
         }
       }
@@ -411,11 +413,7 @@ Control {
       }
     }
   }
-  Behavior on height {
-    animation: Style.propertyAnimation
-    // FIXME: stops working after some operations, not sure why
-    enabled: !root.isResizing
-  }
+
 
   SelectionTracker {
     id: selectionTracker

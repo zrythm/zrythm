@@ -12,6 +12,35 @@ AutomationTracklist::AutomationTracklist (
   QObject *                           parent)
     : QAbstractListModel (parent), dependencies_ (registries)
 {
+  QObject::connect (
+    this, &AutomationTracklist::rowsInserted, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          auto * ath = automation_track_holders ().at (i).get ();
+          auto   emit_data_changed = [this, ath] () {
+            const auto &holders = automation_track_holders ();
+            auto        it = std::ranges::find (
+              holders, ath,
+              &utils::QObjectUniquePtr<AutomationTrackHolder>::get);
+            if (it != holders.end ())
+              {
+                auto row =
+                  static_cast<int> (std::distance (holders.begin (), it));
+                auto idx = index (row);
+                Q_EMIT dataChanged (idx, idx);
+              }
+          };
+          QObject::connect (
+            ath, &AutomationTrackHolder::visibleChanged, this,
+            emit_data_changed);
+          QObject::connect (
+            ath, &AutomationTrackHolder::createdByUserChanged, this,
+            emit_data_changed);
+          QObject::connect (
+            ath, &AutomationTrackHolder::heightChanged, this, emit_data_changed);
+        }
+    });
 }
 
 void
@@ -74,7 +103,7 @@ AutomationTracklist::showNextAvailableAutomationTrack (
   /* if any invisible at exists, show it */
   if (new_at != nullptr)
     {
-      new_at->created_by_user_ = true;
+      new_at->setCreatedByUser (true);
       new_at->setVisible (true);
 
       /* move it after the clicked automation track */
@@ -321,7 +350,7 @@ AutomationTracklist::remove_automation_track (AutomationTrack &at)
       if (first_invisible_at != nullptr)
         {
           if (!first_invisible_at->created_by_user_)
-            first_invisible_at->created_by_user_ = true;
+            first_invisible_at->setCreatedByUser (true);
 
           first_invisible_at->setVisible (true);
         }
@@ -349,7 +378,7 @@ AutomationTracklist::setAutomationVisible (const bool visible)
           auto * at = get_first_invisible_automation_track_holder ();
           if (at != nullptr)
             {
-              at->created_by_user_ = true;
+              at->setCreatedByUser (true);
               at->setVisible (true);
             }
         }
@@ -400,7 +429,7 @@ from_json (const nlohmann::json &j, AutomationTracklist &ats)
       auto automation_track_holder =
         utils::make_qobject_unique<AutomationTrackHolder> (ats.dependencies_);
       from_json (ath_json, *automation_track_holder);
-      ats.automation_tracks_.emplace_back (std::move (automation_track_holder));
+      ats.add_automation_track (std::move (automation_track_holder));
     }
   j.at (AutomationTracklist::kAutomationVisibleKey)
     .get_to (ats.automation_visible_);

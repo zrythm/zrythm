@@ -95,7 +95,7 @@ ListView {
             triggeredOnStart: true
 
             onTriggered: {
-              currentValueLabel.text = automationTrackItem.automationTrackHolder.automationTrack.parameter.range.convertFrom0To1(automationTrackItem.automationTrackHolder.automationTrack.parameter.currentValue());
+              currentValueLabel.text = "%1%".arg(Math.round(automationTrackItem.automationTrackHolder.automationTrack.parameter.currentValue() * 100));
             }
           }
         }
@@ -233,41 +233,22 @@ ListView {
       anchors.right: parent.right
       resizeTarget: automationTrackItem.automationTrackHolder
     }
+  }
+  model: SortFilterProxyModel {
+    id: proxyModel
 
-    Connections {
-      function onHeightChanged() {
-        control.track.fullVisibleHeightChanged();
+    model: control.track.automationTracklist
+
+    filters: [
+      FunctionFilter {
+        function filter(data: ATHRoleData): bool {
+          return data.automationTrackHolder.createdByUser && data.automationTrackHolder.visible;
+        }
       }
-
-      target: automationTrackItem.automationTrackHolder
-    }
-  }
-  Behavior on implicitHeight {
-    animation: Style.propertyAnimation
-  }
-  model: AutomationTracklistProxyModel {
-    showOnlyCreated: true
-    showOnlyVisible: true
-    sourceModel: control.track.automationTracklist
+    ]
   }
 
-  Connections {
-    function onDataChanged() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    function onModelReset() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    function onRowsInserted() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    function onRowsRemoved() {
-      control.track.fullVisibleHeightChanged();
-    }
-
-    target: control.model
+  component ATHRoleData: QtObject {
+    property AutomationTrackHolder automationTrackHolder
   }
 }

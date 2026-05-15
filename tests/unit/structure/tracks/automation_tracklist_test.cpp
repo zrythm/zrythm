@@ -136,7 +136,7 @@ TEST_F (AutomationTracklistTest, VisibilityManagement)
   EXPECT_FALSE (holder->created_by_user_);
 
   // Show track
-  holder->created_by_user_ = true;
+  holder->setCreatedByUser (true);
   holder->setVisible (true);
   EXPECT_TRUE (holder->visible ());
 
@@ -217,7 +217,7 @@ TEST_F (AutomationTracklistTest, FindTracks)
         automation_tracklist->index (0),
         AutomationTracklist::AutomationTrackHolderRole)
       .value<AutomationTrackHolder *> ();
-  holder1->created_by_user_ = true;
+  holder1->setCreatedByUser (true);
   holder1->setVisible (true);
 
   auto * holder2 =
@@ -226,7 +226,7 @@ TEST_F (AutomationTracklistTest, FindTracks)
         automation_tracklist->index (1),
         AutomationTracklist::AutomationTrackHolderRole)
       .value<AutomationTrackHolder *> ();
-  holder2->created_by_user_ = true;
+  holder2->setCreatedByUser (true);
   holder2->setVisible (true);
 
   // Test navigation
@@ -288,7 +288,7 @@ TEST_F (AutomationTracklistTest, FirstInvisibleTrack)
   EXPECT_FALSE (holder->created_by_user_);
 
   // Mark as created and visible
-  holder->created_by_user_ = true;
+  holder->setCreatedByUser (true);
   holder->setVisible (true);
 
   // Now should return nullptr since no invisible tracks
@@ -334,7 +334,7 @@ TEST_F (AutomationTracklistTest, Serialization)
         automation_tracklist->index (0),
         AutomationTracklist::AutomationTrackHolderRole)
       .value<AutomationTrackHolder *> ();
-  holder->created_by_user_ = true;
+  holder->setCreatedByUser (true);
   holder->setVisible (true);
 
   // Set visibility of the tracklist itself

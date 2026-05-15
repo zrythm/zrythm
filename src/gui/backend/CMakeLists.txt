@@ -7,8 +7,6 @@ target_sources(zrythm_gui_lib
     action_controller.cpp
     alert_manager.h
     alert_manager.cpp
-    automation_tracklist_proxy_model.h
-    automation_tracklist_proxy_model.cpp
     # carla_discovery.h
     # carla_discovery.cpp
     cursor_manager.h

@@ -24,6 +24,9 @@ class AutomationTrackHolder : public QObject
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
   Q_PROPERTY (
+    bool createdByUser READ createdByUser WRITE setCreatedByUser NOTIFY
+      createdByUserChanged)
+  Q_PROPERTY (
     zrythm::structure::tracks::AutomationTrack * automationTrack READ
       automationTrack CONSTANT)
   QML_UNCREATABLE ("")
@@ -80,6 +83,17 @@ public:
     Q_EMIT visibleChanged (visible);
   }
   Q_SIGNAL void visibleChanged (bool visible);
+
+  bool createdByUser () const { return created_by_user_; }
+  void setCreatedByUser (bool created)
+  {
+    if (created == created_by_user_)
+      return;
+
+    created_by_user_ = created;
+    Q_EMIT createdByUserChanged (created);
+  }
+  Q_SIGNAL void createdByUserChanged (bool created);
 
   AutomationTrack * automationTrack () const
   {
