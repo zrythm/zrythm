@@ -10,6 +10,7 @@
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
 #include "dsp/hardware_audio_interface.h"
+#include "dsp/midi_input_processor.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
@@ -190,6 +191,11 @@ public:
   }
 
   /**
+   * @brief Returns the MIDI input processor, or nullptr if not yet created.
+   */
+  auto * midi_input_processor () const { return midi_input_processor_.get (); }
+
+  /**
    * Queues MIDI note off to event queues.
    */
   void panic_all ();
@@ -303,6 +309,16 @@ private:
   std::unique_ptr<AudioCallback> audio_callback_;
 
   utils::QObjectUniquePtr<AudioInputProcessor> audio_input_processor_;
+
+  utils::QObjectUniquePtr<MidiInputProcessor> midi_input_processor_;
+
+  /**
+   * @brief Current MIDI events from hardware, updated each audio callback.
+   *
+   * Only accessed on the audio callback thread. MidiInputProcessor's provider
+   * reads it synchronously during the same callback.
+   */
+  juce::MidiBuffer current_midi_events_;
 
   /**
    * @brief Current hardware audio input channels, updated each audio callback.

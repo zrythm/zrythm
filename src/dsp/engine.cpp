@@ -100,6 +100,7 @@ AudioEngine::AudioEngine (
 
             const auto process_status = this->process (guard, numSamples);
             current_hw_input_ = {};
+            current_midi_events_.clear ();
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
                 // Note: the monitor output ports below require the processing
@@ -125,7 +126,8 @@ AudioEngine::AudioEngine (
             cached_device_info_ = info;
             // Keep old processor alive because the graph recalc needs to call
             // release_resources on it
-            auto old_processor = std::move (audio_input_processor_);
+            auto old_audio_processor = std::move (audio_input_processor_);
+            auto old_midi_processor = std::move (midi_input_processor_);
 
             audio_input_processor_ = utils::make_qobject_unique<
               AudioInputProcessor> (
@@ -133,6 +135,12 @@ AudioEngine::AudioEngine (
                 return current_hw_input_;
               },
               info.input_channel_count, local_registry_, this);
+            midi_input_processor_ = utils::make_qobject_unique<
+              MidiInputProcessor> (
+              [this] () -> const juce::MidiBuffer & {
+                return current_midi_events_;
+              },
+              local_registry_, this);
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
               nullptr, info.sample_rate, info.block_length);
