@@ -22,6 +22,7 @@
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/float_ranges.h"
+#include "utils/io_utils.h"
 #include "utils/utf8_string.h"
 
 // FIXME: temporarily disabled - engine-process not currently used
