@@ -104,9 +104,9 @@ public:
     return "audioSources";
   }
 
-  ArrangerObjectListModel * get_child_list_model () const override
+  std::vector<ArrangerObjectListModel *> get_child_list_models () const override
   {
-    return ArrangerObjectOwner<AudioSourceObject>::get_model ();
+    return { ArrangerObjectOwner<AudioSourceObject>::get_model () };
   }
 
 private:

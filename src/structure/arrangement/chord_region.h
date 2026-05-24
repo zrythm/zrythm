@@ -38,9 +38,9 @@ public:
     return "chordObjects";
   }
 
-  ArrangerObjectListModel * get_child_list_model () const override
+  std::vector<ArrangerObjectListModel *> get_child_list_models () const override
   {
-    return ArrangerObjectOwner<ChordObject>::get_model ();
+    return { ArrangerObjectOwner<ChordObject>::get_model () };
   }
 
 private:

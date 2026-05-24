@@ -69,7 +69,7 @@ ArrangerObjectListModel::connect_object_signals (int index)
 
   // For objects that contain other objects, also emit on children
   // content changes
-  if (auto * owner_model = obj->get_child_list_model ())
+  for (auto * owner_model : obj->get_child_list_models ())
     {
       QObject::connect (
         owner_model, &ArrangerObjectListModel::contentChanged, this,
@@ -94,7 +94,7 @@ ArrangerObjectListModel::disconnect_object_signals (int index)
   QObject::disconnect (obj, &ArrangerObject::propertiesChanged, this, nullptr);
 
   // Disconnect from children's contentChanged for ArrangerObjectOwner types
-  if (auto * owner_model = obj->get_child_list_model ())
+  for (auto * owner_model : obj->get_child_list_models ())
     {
       QObject::disconnect (
         owner_model, &ArrangerObjectListModel::contentChanged, this, nullptr);

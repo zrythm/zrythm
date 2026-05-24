@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_fwd.h"
@@ -133,9 +135,9 @@ public:
   // Convenience getter
   auto &get_tempo_map () const { return tempo_map_; }
 
-  virtual ArrangerObjectListModel * get_child_list_model () const
+  virtual std::vector<ArrangerObjectListModel *> get_child_list_models () const
   {
-    return nullptr;
+    return {};
   }
 
 protected:

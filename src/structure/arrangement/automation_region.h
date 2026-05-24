@@ -74,9 +74,9 @@ public:
     return "automationPoints";
   }
 
-  ArrangerObjectListModel * get_child_list_model () const override
+  std::vector<ArrangerObjectListModel *> get_child_list_models () const override
   {
-    return ArrangerObjectOwner<AutomationPoint>::get_model ();
+    return { ArrangerObjectOwner<AutomationPoint>::get_model () };
   }
 
 private:

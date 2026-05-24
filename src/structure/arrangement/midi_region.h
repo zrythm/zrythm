@@ -57,9 +57,12 @@ public:
     return "midiControlEvents";
   }
 
-  ArrangerObjectListModel * get_child_list_model () const override
+  std::vector<ArrangerObjectListModel *> get_child_list_models () const override
   {
-    return ArrangerObjectOwner<MidiNote>::get_model ();
+    return {
+      ArrangerObjectOwner<MidiNote>::get_model (),
+      ArrangerObjectOwner<MidiControlEvent>::get_model (),
+    };
   }
 
 private:
