@@ -49,8 +49,8 @@ CPMDeclarePackage(clap-juce-extensions
 # juce
 CPMDeclarePackage(juce
   NAME juce
-  VERSION 8.0.12
-  GIT_TAG 29396c22c93392d6738e021b83196283d6e4d850
+  VERSION 8.0.13
+  GIT_TAG 7c9d3783b127263d72bb65fe0a7e2dc8a02a7ac2
   GITHUB_REPOSITORY juce-framework/JUCE
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
