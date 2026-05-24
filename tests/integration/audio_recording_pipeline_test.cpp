@@ -124,12 +124,13 @@ protected:
 
   void start_engine_and_wait_for_cycles (size_t min_cycles = 2)
   {
-    initial_process_count_ = mock_hw_->process_call_count ();
     project_->engine ()->activate ();
     project_->engine ()->graph_dispatcher ().recalc_graph (false);
     project_->engine ()->set_running (true);
     project_->getTransport ()->setPlayState (
       dsp::ITransport::PlayState::RollRequested);
+
+    initial_process_count_ = mock_hw_->process_call_count ();
 
     process_events_until_true ([this, min_cycles] () {
       return mock_hw_->process_call_count ()
