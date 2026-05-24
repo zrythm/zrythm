@@ -187,7 +187,10 @@ TEST (ViewsTest, QObjectCastToMatching)
   BaseTestObject    base;
   DerivedTestObject derived (0);
   auto              result =
-    std::vector<BaseTestObject *>{ &base, &derived }
+    std::vector<BaseTestObject *>{
+      static_cast<BaseTestObject *> (&base),
+      static_cast<BaseTestObject *> (&derived)
+    }
     | qobject_cast_to<DerivedTestObject> | std::ranges::to<std::vector> ();
 
   ASSERT_EQ (result.size (), 2u);
@@ -212,7 +215,10 @@ TEST (ViewsTest, QObjectCastAndFilterMatching)
   BaseTestObject    base;
   DerivedTestObject derived (0);
   auto              result =
-    std::vector<BaseTestObject *>{ &base, &derived }
+    std::vector<BaseTestObject *>{
+      static_cast<BaseTestObject *> (&base),
+      static_cast<BaseTestObject *> (&derived)
+    }
     | qobject_cast_and_filter<DerivedTestObject>
     | std::ranges::to<std::vector> ();
 
@@ -235,7 +241,11 @@ TEST (ViewsTest, QObjectCastAndFilterWithNulls)
 {
   DerivedTestObject derived (0);
   auto              result =
-    std::vector<BaseTestObject *>{ nullptr, &derived, nullptr }
+    std::vector<BaseTestObject *>{
+      static_cast<BaseTestObject *> (nullptr),
+      static_cast<BaseTestObject *> (&derived),
+      static_cast<BaseTestObject *> (nullptr)
+    }
     | qobject_cast_and_filter<DerivedTestObject>
     | std::ranges::to<std::vector> ();
 

@@ -571,8 +571,8 @@ INSTANTIATE_TEST_SUITE_P (
   ObjectRegistryDestruction,
   ObjectRegistryDestructionWithExternalRefsTest,
   ::testing::Bool (),
-  [] (const ::testing::TestParamInfo<bool> &info) {
-    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  [] (const ::testing::TestParamInfo<bool> &param_info) {
+    return param_info.param ? "ReferencedFirst" : "ContainerFirst";
   });
 
 /**
@@ -627,8 +627,8 @@ INSTANTIATE_TEST_SUITE_P (
   ObjectRegistryDestruction,
   ObjectRegistryDestructionViaQtParentChildTest,
   ::testing::Bool (),
-  [] (const ::testing::TestParamInfo<bool> &info) {
-    return info.param ? "ReferencedFirst" : "ContainerFirst";
+  [] (const ::testing::TestParamInfo<bool> &param_info) {
+    return param_info.param ? "ReferencedFirst" : "ContainerFirst";
   });
 
 TEST (GetTypedTest, ReturnsCorrectObject)
