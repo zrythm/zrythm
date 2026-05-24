@@ -28,9 +28,6 @@ template <FinalArrangerObjectSubclass ChildT> class ArrangerObjectOwner
 {
 public:
   using ArrangerObjectChildType = ChildT;
-  using ArrangerObjectListModel =
-    structure::arrangement::ArrangerObjectListModel;
-
   template <typename T>
   explicit ArrangerObjectOwner (utils::IObjectRegistry &registry, T &derived)
     requires std::derived_from<T, QObject>
