@@ -107,7 +107,7 @@ protected:
 
     std::vector<float> l (num_frames, 0.5f);
     std::vector<float> r (num_frames, 0.3f);
-    session->write_samples (position, transport_recording, l, r);
+    session->write (position, transport_recording, l, r);
     coordinator_->process_pending ();
   }
 

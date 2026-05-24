@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "controllers/audio_recording_session.h"
+#include "controllers/recording_session.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <QObject>

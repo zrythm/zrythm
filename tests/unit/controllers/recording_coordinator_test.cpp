@@ -99,7 +99,7 @@ TEST_F (RecordingCoordinatorTest, SessionAcceptsWritesAfterArm)
 
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session->write_samples (units::samples (0), true, l, r);
+  session->write (units::samples (0), true, l, r);
   EXPECT_EQ (session->state (), AudioRecordingSession::State::Capturing);
 }
 
@@ -293,7 +293,7 @@ TEST_F (
 
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session->write_samples (units::samples (0), true, l, r);
+  session->write (units::samples (0), true, l, r);
 
   QSignalSpy data_spy (
     coordinator_.get (), &RecordingCoordinator::audioDataReady);
@@ -319,7 +319,7 @@ TEST_F (RecordingCoordinatorTest, EndAllSessionsResetsSessionForReuse)
 
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session->write_samples (units::samples (0), true, l, r);
+  session->write (units::samples (0), true, l, r);
 
   QSignalSpy ended_spy (
     coordinator_.get (), &RecordingCoordinator::recordingSessionEnded);
@@ -333,7 +333,7 @@ TEST_F (RecordingCoordinatorTest, EndAllSessionsResetsSessionForReuse)
   EXPECT_EQ (session->state (), AudioRecordingSession::State::Armed)
     << "Session should be reset to Armed";
 
-  session->write_samples (units::samples (0), true, l, r);
+  session->write (units::samples (0), true, l, r);
   EXPECT_EQ (session->state (), AudioRecordingSession::State::Capturing)
     << "Reset session should accept writes again";
 }
@@ -365,7 +365,7 @@ TEST_F (
 
   std::vector<float> l (256, 0.5f);
   std::vector<float> r (256, 0.3f);
-  session->write_samples (units::samples (0), true, l, r);
+  session->write (units::samples (0), true, l, r);
 
   QSignalSpy data_spy (
     coordinator_.get (), &RecordingCoordinator::audioDataReady);

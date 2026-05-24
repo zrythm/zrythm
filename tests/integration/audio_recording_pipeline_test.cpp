@@ -13,9 +13,9 @@
 
 #include <algorithm>
 
-#include "controllers/audio_recording_session.h"
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
+#include "controllers/recording_session.h"
 #include "dsp/audio_input_processor.h"
 #include "dsp/graph.h"
 #include "structure/arrangement/arranger_object_all.h"
@@ -57,7 +57,7 @@ protected:
           return;
         if (stereo_ports.has_value ())
           {
-            session->write_samples (
+            session->write (
               timeline_position, transport.recording_enabled (),
               stereo_ports->first, stereo_ports->second);
           }

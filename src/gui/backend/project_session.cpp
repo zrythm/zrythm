@@ -112,7 +112,7 @@ ProjectSession::ProjectSession (
 
       if (stereo_ports.has_value ())
         {
-          session->write_samples (
+          session->write (
             timeline_position, transport.recording_enabled (),
             stereo_ports->first, stereo_ports->second);
         }
