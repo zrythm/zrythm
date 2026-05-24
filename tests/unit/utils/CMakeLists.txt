@@ -23,7 +23,6 @@ add_executable(zrythm_utils_unit_tests
   midi_test.cpp
   monotonic_time_provider_test.cpp
   mpmc_queue_test.cpp
-  networking_test.cpp
   object_pool_test.cpp
   playback_cache_scheduler_test.cpp
   qt_test.cpp
@@ -50,7 +49,6 @@ set_target_properties(zrythm_utils_unit_tests PROPERTIES
 target_link_libraries(zrythm_utils_unit_tests PRIVATE
   zrythm::gtest_for_tests
   zrythm::utils_lib
-  httplib::httplib
   zrythm_test_helpers_lib
 )
 

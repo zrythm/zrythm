@@ -16,6 +16,8 @@
 
 #define BUILD_TYPE "${CMAKE_BUILD_TYPE}"
 
+#define LATEST_RELEASE_VER_URL "@latest_release_ver_url@"
+
 #define CARLA_BINARIES_DIR "@ZRYTHM_CARLA_BINARIES_DIR@"
 
 #cmakedefine01 CARLA_HAVE_AUDIO_PORT_HINTS

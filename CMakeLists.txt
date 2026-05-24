@@ -296,6 +296,7 @@ set(purchase_url "https://www.zrythm.org/en/download.html")
 set(license_url "${main_repo_url}/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt")
 set(trademark_policy_url "${main_repo_url}/-/raw/master/TRADEMARKS.md")
 set(bug_report_api_endpoint "https://accounts.zrythm.org/api/v1/error-reports/new")
+set(latest_release_ver_url "https://www.zrythm.org/zrythm-version.txt")
 set(PLUGIN_SCANNER_UUID "f47ac10b")
 set(ZRYTHM_SVG_ICON "${CMAKE_CURRENT_SOURCE_DIR}/src/gui/resources/icons/zrythm-dark/scalable/apps/zrythm.svg")
 set(ZRYTHM_ICNS_FILE_NAME "Zrythm.icns")
@@ -980,9 +981,6 @@ add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
 CPMGetPackage(tbb)
 CPMGetPackage(farbot)
-if(ZRYTHM_TESTS)
-  CPMGetPackage(cpp_httplib)
-endif()
 
 find_package(Qt6 6.11
   COMPONENTS

@@ -22,8 +22,6 @@
 #include "utils/env.h"
 #include "utils/exceptions.h"
 #include "utils/float_ranges.h"
-#include "utils/io_utils.h"
-#include "utils/networking.h"
 #include "utils/utf8_string.h"
 
 // FIXME: temporarily disabled - engine-process not currently used
@@ -252,19 +250,6 @@ Zrythm::is_release (bool official)
 
   return !utils::Utf8String::from_utf8_encoded_string (PACKAGE_VERSION)
             .contains_substr (u8"g");
-}
-
-/**
- * @param callback A GAsyncReadyCallback to call when the
- *   request is satisfied.
- * @param callback_data Data to pass to @p callback.
- */
-void
-Zrythm::fetch_latest_release_ver_async (
-  networking::URL::GetContentsAsyncCallback callback)
-{
-  networking::URL ("https://www.zrythm.org/zrythm-version.txt")
-    .get_page_contents_async (8000, callback);
 }
 
 /**

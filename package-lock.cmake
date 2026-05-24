@@ -231,22 +231,6 @@ CPMDeclarePackage(tbb
   SYSTEM YES
   OPTIONS ${tbb_opts}
 )
-# cpp_httplib
-CPMDeclarePackage(cpp_httplib
-  NAME cpp_httplib
-  VERSION 0.20.1
-  GIT_TAG 3af7f2c16147f3fbc6e4d717032daf505dc1652c
-  GITHUB_REPOSITORY yhirose/cpp-httplib
-  SYSTEM YES
-  EXCLUDE_FROM_ALL YES
-  OPTIONS
-    "HTTPLIB_USE_OPENSSL_IF_AVAILABLE OFF"
-    "HTTPLIB_USE_ZSTD_IF_AVAILABLE OFF"
-    "HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF"
-    "HTTPLIB_USE_ZLIB_IF_AVAILABLE OFF"
-    "HTTPLIB_INSTALL OFF"
-  SBOM_SKIP YES
-)
 # farbot
 CPMDeclarePackage(farbot
   NAME farbot

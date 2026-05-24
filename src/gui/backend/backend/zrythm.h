@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "utils/monotonic_time_provider.h"
-#include "utils/networking.h"
 #include "utils/symap.h"
 #include "utils/types.h"
 #include "utils/version.h"
@@ -87,14 +86,6 @@ public:
    * @note This only does regex checking.
    */
   static bool is_release (bool official);
-
-  /**
-   * @param callback A GAsyncReadyCallback to call when the
-   *   request is satisfied.
-   * @param callback_data Data to pass to @p callback.
-   */
-  static void fetch_latest_release_ver_async (
-    networking::URL::GetContentsAsyncCallback callback);
 
   /**
    * Returns whether the given release string is the latest
