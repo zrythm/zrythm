@@ -364,11 +364,9 @@ public:
    * @param value Either pitch (int), automation point value (double) or chord
    * ID.
    */
-  template <structure::arrangement::RegionObject RegionT>
+  template <structure::arrangement::EditorObject ChildT>
   auto create_editor_object (double startTicks, std::variant<int, double> value)
-    requires (!std::is_same_v<RegionT, structure::arrangement::AudioRegion>)
   {
-    using ChildT = typename RegionT::ArrangerObjectChildType;
     auto builder =
       std::move (get_builder<ChildT> ().with_start_ticks (startTicks));
     if constexpr (std::is_same_v<ChildT, MidiNote>)

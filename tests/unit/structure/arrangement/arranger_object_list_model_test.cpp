@@ -250,7 +250,7 @@ TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
 
   // Add the note to the region - this should trigger the region's model to emit
   // contentChanged
-  region->add_object (note_ref);
+  region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
   // The region model should emit contentChanged when its children change
   // This verifies the connection is established between the region's internal

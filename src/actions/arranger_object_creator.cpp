@@ -196,7 +196,8 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
               .with_start_ticks (0)
               .with_end_ticks (mn_len_ticks)
               .build_in_registry ();
-          mr->add_object (mn);
+          mr->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
+            mn);
         }
     }
 
@@ -234,7 +235,101 @@ ArrangerObjectCreator::addMidiNote (
   double                               startTicks,
   int                                  pitch)
 {
-  return add_editor_object (*region, startTicks, pitch);
+  return add_editor_object<structure::arrangement::MidiNote> (
+    *region, startTicks, pitch);
+}
+
+structure::arrangement::AutomationPoint *
+ArrangerObjectCreator::addAutomationPoint (
+  structure::arrangement::AutomationRegion * region,
+  double                                     startTicks,
+  double                                     value)
+{
+  return add_editor_object<structure::arrangement::AutomationPoint> (
+    *region, startTicks, value);
+}
+
+structure::arrangement::ChordObject *
+ArrangerObjectCreator::addChordObject (
+  structure::arrangement::ChordRegion * region,
+  double                                startTicks,
+  const int                             chordIndex)
+{
+  return add_editor_object<structure::arrangement::ChordObject> (
+    *region, startTicks, chordIndex);
+}
+
+structure::arrangement::MidiRegion *
+ArrangerObjectCreator::addEmptyMidiRegionToClip (
+  structure::tracks::Track *    track,
+  structure::scenes::ClipSlot * clipSlot)
+{
+  auto mr_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::MidiRegion> ()
+      .with_start_ticks (0)
+      .build_in_registry ();
+  clipSlot->setRegion (
+    mr_ref.get_object_as<structure::arrangement::MidiRegion> ());
+  return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
+}
+
+structure::arrangement::AudioRegion *
+ArrangerObjectCreator::add_audio_region_with_clip (
+  structure::tracks::Track         &track,
+  structure::tracks::TrackLane     &lane,
+  dsp::FileAudioSourceUuidReference clip_id,
+  double                            start_ticks)
+{
+  auto obj_ref = arranger_object_factory_.create_audio_region_with_clip (
+    std::move (clip_id), start_ticks);
+  add_laned_object (track, lane, obj_ref);
+  return obj_ref.get_object_as<structure::arrangement::AudioRegion> ();
+}
+
+structure::arrangement::ScaleObject *
+ArrangerObjectCreator::add_scale_object (
+  structure::tracks::ChordTrack             &chord_track,
+  utils::QObjectUniquePtr<dsp::MusicalScale> scale,
+  double                                     start_ticks)
+{
+  auto obj_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::ScaleObject> ()
+      .with_start_ticks (start_ticks)
+      .with_scale (std::move (scale))
+      .build_in_registry ();
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<structure::arrangement::ScaleObject> (
+      chord_track, obj_ref));
+  return obj_ref.get_object_as<structure::arrangement::ScaleObject> ();
+}
+
+structure::arrangement::ArrangerObjectUuidReference
+ArrangerObjectCreator::add_audio_region_for_recording (
+  structure::tracks::Track        &track,
+  structure::tracks::TrackLane    &lane,
+  const utils::audio::AudioBuffer &initial_frames,
+  const utils::Utf8String         &clip_name,
+  double                           start_ticks)
+{
+  auto region_ref =
+    arranger_object_factory_.create_audio_region_from_audio_buffer (
+      initial_frames, utils::audio::BitDepth::BIT_DEPTH_32, clip_name,
+      start_ticks);
+  add_laned_object (track, lane, region_ref);
+  return region_ref;
+}
+
+structure::arrangement::AudioRegion *
+ArrangerObjectCreator::addAudioRegionFromFile (
+  structure::tracks::Track *     track,
+  structure::tracks::TrackLane * lane,
+  const QString                 &absPath,
+  double                         startTicks)
+{
+  auto ar_ref = arranger_object_factory_.create_audio_region_from_file (
+    absPath, startTicks);
+  add_laned_object (*track, *lane, ar_ref);
+  return ar_ref.get_object_as<structure::arrangement::AudioRegion> ();
 }
 
 structure::arrangement::AudioRegion *

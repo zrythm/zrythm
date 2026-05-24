@@ -184,8 +184,8 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   const double editor_start_ticks = 150.0;
   const int    editor_pitch = 64;
 
-  auto midi_note_ref = factory->create_editor_object<MidiRegion> (
-    editor_start_ticks, editor_pitch);
+  auto midi_note_ref =
+    factory->create_editor_object<MidiNote> (editor_start_ticks, editor_pitch);
 
   auto * midi_note = midi_note_ref.get_object_as<MidiNote> ();
   EXPECT_NE (midi_note, nullptr);
@@ -197,7 +197,7 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   const double automation_start_ticks = 200.0;
   const double automation_value = 0.5;
 
-  auto automation_point_ref = factory->create_editor_object<AutomationRegion> (
+  auto automation_point_ref = factory->create_editor_object<AutomationPoint> (
     automation_start_ticks, automation_value);
 
   auto * automation_point =

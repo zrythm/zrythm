@@ -5,6 +5,7 @@
 
 #include "dsp/midi_event.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/arrangement/midi_control_event.h"
 #include "structure/arrangement/midi_note.h"
 
 namespace zrythm::structure::arrangement
@@ -16,10 +17,17 @@ namespace zrythm::structure::arrangement
  * controller data. It is specific to instrument/MIDI tracks and can be
  * constructed from a MIDI file or a chord descriptor.
  */
-class MidiRegion final : public ArrangerObject, public ArrangerObjectOwner<MidiNote>
+class MidiRegion final
+    : public ArrangerObject,
+      public ArrangerObjectOwner<MidiNote>,
+      public ArrangerObjectOwner<MidiControlEvent>
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (MidiRegion, midiNotes, MidiNote)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    MidiRegion,
+    midiControlEvents,
+    MidiControlEvent)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -43,6 +51,11 @@ public:
   {
     return "midiNotes";
   }
+  std::string
+  get_field_name_for_serialization (const MidiControlEvent *) const override
+  {
+    return "midiControlEvents";
+  }
 
   ArrangerObjectListModel * get_child_list_model () const override
   {
@@ -58,18 +71,23 @@ private:
   friend void to_json (nlohmann::json &j, const MidiRegion &region)
   {
     to_json (j, static_cast<const ArrangerObject &> (region));
-    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
+    to_json (j, static_cast<const ArrangerObjectOwner<MidiNote> &> (region));
+    to_json (
+      j, static_cast<const ArrangerObjectOwner<MidiControlEvent> &> (region));
   }
   friend void from_json (const nlohmann::json &j, MidiRegion &region)
   {
     from_json (j, static_cast<ArrangerObject &> (region));
-    from_json (j, static_cast<ArrangerObjectOwner &> (region));
+    from_json (j, static_cast<ArrangerObjectOwner<MidiNote> &> (region));
+    from_json (j, static_cast<ArrangerObjectOwner<MidiControlEvent> &> (region));
   }
 
 private:
   BOOST_DESCRIBE_CLASS (
     MidiRegion,
-    (ArrangerObject, ArrangerObjectOwner<MidiNote>),
+    (ArrangerObject,
+     ArrangerObjectOwner<MidiNote>,
+     ArrangerObjectOwner<MidiControlEvent>),
     (),
     (),
     ())

@@ -78,7 +78,8 @@ protected:
       ->bounds ()
       ->length ()
       ->setSamples (static_cast<double> (end_frames - start_frames));
-    region->add_object (note_ref);
+    region->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
+      note_ref);
   }
 
   // Helper function to create a MIDI event provider from a MIDI sequence

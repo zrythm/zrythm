@@ -69,6 +69,7 @@ public:
     AudioRegion,
     ChordRegion,
     AutomationRegion,
+    MidiControlEvent,
     MidiNote,
     ChordObject,
     ScaleObject,

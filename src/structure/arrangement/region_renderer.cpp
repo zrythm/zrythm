@@ -45,10 +45,11 @@ RegionRenderer::handle_midi_region_range (
   // Add notes for this loop segment
   for (
     const auto * note :
-    region.get_children_view () | std::views::filter ([] (const auto * n) {
-      // Only check unmuted notes
-      return !n->mute ()->muted ();
-    }))
+    region.ArrangerObjectOwner<MidiNote>::get_children_view ()
+      | std::views::filter ([] (const auto * n) {
+          // Only check unmuted notes
+          return !n->mute ()->muted ();
+        }))
     {
       const auto note_virtual_start = units::ticks (note->position ()->ticks ());
       const auto note_virtual_end =
@@ -76,6 +77,57 @@ RegionRenderer::handle_midi_region_range (
         juce::MidiMessage::noteOff (
           1, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
         note_absolute_end.in (units::ticks));
+    }
+
+  for (
+    const auto * ev :
+    region.ArrangerObjectOwner<MidiControlEvent>::get_children_view ()
+      | std::views::filter ([&] (const auto * e) {
+          const auto start = units::ticks (e->position ()->ticks ());
+          return start >= virtual_range.first && start < virtual_range.second;
+        }))
+    {
+      const auto ev_absolute_start = std::max (
+        absolute_start,
+        absolute_start
+          + (units::ticks (ev->position ()->ticks ()) - virtual_range.first));
+
+      const auto ch = ev->midiChannel () + 1;
+      switch (ev->controlEventType ())
+        {
+        case MidiControlEvent::EventType::ControlChange:
+          events.addEvent (
+            juce::MidiMessage::controllerEvent (
+              ch, ev->midiController (),
+              static_cast<std::uint8_t> (ev->midiValue ())),
+            ev_absolute_start.in (units::ticks));
+          break;
+        case MidiControlEvent::EventType::PitchBend:
+          events.addEvent (
+            juce::MidiMessage::pitchWheel (
+              ch, static_cast<int> (ev->midiValue ())),
+            ev_absolute_start.in (units::ticks));
+          break;
+        case MidiControlEvent::EventType::ChannelPressure:
+          events.addEvent (
+            juce::MidiMessage::channelPressureChange (
+              ch, static_cast<std::uint8_t> (ev->midiValue ())),
+            ev_absolute_start.in (units::ticks));
+          break;
+        case MidiControlEvent::EventType::PolyKeyPressure:
+          events.addEvent (
+            juce::MidiMessage::aftertouchChange (
+              ch, ev->midiController (),
+              static_cast<std::uint8_t> (ev->midiValue ())),
+            ev_absolute_start.in (units::ticks));
+          break;
+        case MidiControlEvent::EventType::ProgramChange:
+          events.addEvent (
+            juce::MidiMessage::programChange (
+              ch, static_cast<std::uint8_t> (ev->midiValue ())),
+            ev_absolute_start.in (units::ticks));
+          break;
+        }
     }
 }
 

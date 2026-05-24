@@ -10,6 +10,7 @@
 namespace zrythm::structure::arrangement
 {
 class ArrangerObject;
+class MidiControlEvent;
 class MidiNote;
 class MidiRegion;
 class AudioRegion;
@@ -46,6 +47,11 @@ concept NamedObject = RegionObject<T> || std::is_same_v<T, Marker>;
 template <typename T>
 concept BoundedObject = RegionObject<T> || std::is_same_v<T, MidiNote>;
 
+template <typename T>
+concept EditorObject =
+  std::is_same_v<T, MidiControlEvent> || std::is_same_v<T, MidiNote>
+  || std::is_same_v<T, AutomationPoint> || std::is_same_v<T, ChordObject>;
+
 using ArrangerObjectVariant = std::variant<
   MidiNote,
   ChordObject,
@@ -58,7 +64,8 @@ using ArrangerObjectVariant = std::variant<
   Marker,
   AudioSourceObject,
   TempoObject,
-  TimeSignatureObject>;
+  TimeSignatureObject,
+  MidiControlEvent>;
 using ArrangerObjectPtrVariant =
   utils::to_pointer_variant<ArrangerObjectVariant>;
 

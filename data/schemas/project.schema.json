@@ -1359,6 +1359,51 @@
         }
       ]
     },
+    "midiControlEvent": {
+      "$comment": "MIDI control event (CC, pitch bend, etc.) (derives from arrangerObjectBase)",
+      "allOf": [
+        {
+          "$ref": "#/definitions/arrangerObjectBase"
+        },
+        {
+          "properties": {
+            "type": {
+              "const": 12
+            },
+            "controlType": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4,
+              "description": "Control event type: 0=ControlChange, 1=PitchBend, 2=ChannelPressure, 3=PolyKeyPressure, 4=ProgramChange"
+            },
+            "channel": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 15,
+              "description": "MIDI channel (0-15)"
+            },
+            "controller": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 127,
+              "description": "Controller number (0-127), used for CC and PolyKeyPressure"
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16383,
+              "description": "Value (0-127 for most types, 0-16383 for PitchBend)"
+            }
+          },
+          "required": [
+            "controlType",
+            "channel",
+            "controller",
+            "value"
+          ]
+        }
+      ]
+    },
     "midiNote": {
       "$comment": "MIDI note (derives from arrangerObjectBase)",
       "allOf": [
@@ -1404,6 +1449,10 @@
             "midiNotes": {
               "$ref": "#/definitions/uuidArray",
               "description": "UUID references to midiNote objects in registry.arrangerObjects"
+            },
+            "midiControlEvents": {
+              "$ref": "#/definitions/uuidArray",
+              "description": "UUID references to midiControlEvent objects in registry.arrangerObjects"
             }
           }
         }
@@ -1681,6 +1730,9 @@
     "knownArrangerObject": {
       "$comment": "Polymorphic reference for any known arranger object type",
       "oneOf": [
+        {
+          "$ref": "#/definitions/midiControlEvent"
+        },
         {
           "$ref": "#/definitions/midiNote"
         },

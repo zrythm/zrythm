@@ -508,7 +508,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
         .with_pitch (60)
         .with_velocity (100)
         .build_in_registry ();
-    region->add_object (note_ref);
+    region->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
+      note_ref);
   }
 
   create_ui_state_and_undo_stack (*original_project);

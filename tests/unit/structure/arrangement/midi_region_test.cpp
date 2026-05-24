@@ -40,7 +40,24 @@ protected:
       length_ticks);
 
     // Add to region
-    region->add_object (note_ref);
+    region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
+  }
+
+  void add_midi_control_event (
+    MidiControlEvent::EventType type,
+    int                         channel,
+    int                         controller,
+    int                         value,
+    double                      position_ticks)
+  {
+    auto ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+    auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
+    ev->setControlType (type);
+    ev->setChannel (channel);
+    ev->setController (controller);
+    ev->setValue (value);
+    ev->position ()->setTicks (position_ticks);
+    region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
   }
 
   std::unique_ptr<dsp::TempoMap> tempo_map;
@@ -57,14 +74,16 @@ TEST_F (MidiRegionTest, InitialState)
   EXPECT_NE (region->name (), nullptr);
   EXPECT_NE (region->color (), nullptr);
   EXPECT_NE (region->mute (), nullptr);
-  EXPECT_EQ (region->get_children_vector ().size (), 0);
+  EXPECT_EQ (
+    region->ArrangerObjectOwner<MidiNote>::get_children_vector ().size (), 0);
 }
 
 TEST_F (MidiRegionTest, Serialization)
 {
   // Add a note
   add_midi_note (60, 90, 100, 50);
-  const auto midi_note_id = region->get_children_view ()[0]->get_uuid ();
+  const auto midi_note_id =
+    region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0]->get_uuid ();
 
   // Serialize
   nlohmann::json j;
@@ -75,11 +94,80 @@ TEST_F (MidiRegionTest, Serialization)
   from_json (j, *new_region);
 
   // Verify deserialization
-  EXPECT_EQ (new_region->get_children_vector ().size (), 1);
-  auto note = new_region->get_children_view ()[0];
+  EXPECT_EQ (
+    new_region->ArrangerObjectOwner<MidiNote>::get_children_vector ().size (),
+    1);
+  auto note = new_region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0];
   EXPECT_EQ (note->pitch (), 60);
   EXPECT_EQ (note->velocity (), 90);
   EXPECT_EQ (midi_note_id, note->get_uuid ());
+}
+
+TEST_F (MidiRegionTest, SerializationWithControlEvents)
+{
+  add_midi_control_event (
+    MidiControlEvent::EventType::ControlChange, 0, 74, 100, 120);
+
+  const auto control_event_id =
+    region->ArrangerObjectOwner<MidiControlEvent>::get_children_view ()[0]
+      ->get_uuid ();
+
+  nlohmann::json j;
+  to_json (j, *region);
+
+  auto new_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+  from_json (j, *new_region);
+
+  EXPECT_EQ (
+    new_region->ArrangerObjectOwner<MidiControlEvent>::get_children_vector ()
+      .size (),
+    1);
+  auto * ev =
+    new_region->ArrangerObjectOwner<MidiControlEvent>::get_children_view ()[0];
+  EXPECT_EQ (ev->controlType (), MidiControlEvent::EventType::ControlChange);
+  EXPECT_EQ (ev->midiChannel (), 0);
+  EXPECT_EQ (ev->midiController (), 74);
+  EXPECT_EQ (ev->midiValue (), 100);
+  EXPECT_EQ (control_event_id, ev->get_uuid ());
+}
+
+TEST_F (MidiRegionTest, SerializationWithBothNotesAndControlEvents)
+{
+  add_midi_note (60, 90, 100, 50);
+  add_midi_control_event (
+    MidiControlEvent::EventType::PitchBend, 1, 0, 8192, 110);
+
+  const auto note_id =
+    region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0]->get_uuid ();
+  const auto control_id =
+    region->ArrangerObjectOwner<MidiControlEvent>::get_children_view ()[0]
+      ->get_uuid ();
+
+  nlohmann::json j;
+  to_json (j, *region);
+
+  auto new_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+  from_json (j, *new_region);
+
+  EXPECT_EQ (
+    new_region->ArrangerObjectOwner<MidiNote>::get_children_vector ().size (),
+    1);
+  EXPECT_EQ (
+    new_region->ArrangerObjectOwner<MidiControlEvent>::get_children_vector ()
+      .size (),
+    1);
+
+  auto * note =
+    new_region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0];
+  EXPECT_EQ (note->pitch (), 60);
+  EXPECT_EQ (note_id, note->get_uuid ());
+
+  auto * ev =
+    new_region->ArrangerObjectOwner<MidiControlEvent>::get_children_view ()[0];
+  EXPECT_EQ (ev->controlType (), MidiControlEvent::EventType::PitchBend);
+  EXPECT_EQ (ev->midiChannel (), 1);
+  EXPECT_EQ (ev->midiValue (), 8192);
+  EXPECT_EQ (control_id, ev->get_uuid ());
 }
 
 } // namespace zrythm::structure::arrangement

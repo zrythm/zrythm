@@ -73,7 +73,7 @@ protected:
     midi_note->bounds ()->length ()->setTicks (50.0); // Note duration
 
     // Add the note to the region
-    region->add_object (note_ref);
+    region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
     // Keep a reference to the region to prevent it from being deleted
     region_refs.push_back (std::move (region_ref));
@@ -542,7 +542,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
   auto region = create_midi_region (0.0, 200.0);
 
   // Mute the note in our region
-  auto note_view = region->get_children_view ();
+  auto note_view = region->ArrangerObjectOwner<MidiNote>::get_children_view ();
   if (!note_view.empty ())
     {
       note_view[0]->mute ()->setMuted (true);
@@ -1757,10 +1757,10 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
   midi_note->setVelocity (80);
   midi_note->position ()->setSamples (25);
   midi_note->bounds ()->length ()->setSamples (50);
-  region->add_object (note_ref);
+  region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
   // Mute only the first note (pitch 60), not the entire region
-  auto note_view = region->get_children_view ();
+  auto note_view = region->ArrangerObjectOwner<MidiNote>::get_children_view ();
   note_view[0]->mute ()->setMuted (true);
 
   // Create a vector of regions

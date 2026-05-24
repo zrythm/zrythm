@@ -29,6 +29,7 @@ target_sources(zrythm_arrangement_lib
     fadeable_object.cpp
     loopable_object.cpp
     marker.cpp
+    midi_control_event.cpp
     midi_note.cpp
     midi_region.cpp
     muteable_object.cpp
@@ -66,6 +67,7 @@ target_sources(zrythm_arrangement_lib
       fadeable_object.h
       loopable_object.h
       marker.h
+      midi_control_event.h
       midi_note.h
       midi_region.h
       muteable_object.h

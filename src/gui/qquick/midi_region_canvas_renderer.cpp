@@ -29,7 +29,8 @@ MidiRegionCanvasRenderer::synchronize (QCanvasPainterItem * item)
   if (region == nullptr || canvas_width_ <= 0 || canvas_height_ <= 0)
     return;
 
-  const auto children = region->get_children_view ();
+  const auto children = region->ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_view ();
   if (children.empty ())
     return;
 

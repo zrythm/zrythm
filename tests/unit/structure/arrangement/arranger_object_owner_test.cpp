@@ -298,7 +298,8 @@ protected:
       factory->template get_builder<ChildT> ()
         .with_start_ticks (start_ticks)
         .build_in_registry ();
-    region_ref->get_object_as<RegionT> ()->add_object (child_ref);
+    region_ref->get_object_as<RegionT> ()
+      ->ArrangerObjectOwner<ChildT>::add_object (child_ref);
     return child_ref;
   }
 
@@ -348,11 +349,16 @@ TYPED_TEST (ArrangerObjectOwnerParentTest, CloneSetsParentObjectOnChildren)
   auto * cloned_region = cloned_region_ref.template get_object_as<TypeParam> ();
 
   // Verify the cloned region has children
-  ASSERT_EQ (cloned_region->get_children_vector ().size (), 1)
+  ASSERT_EQ (
+    cloned_region
+      ->ArrangerObjectOwner<typename TestFixture::ChildT>::get_children_vector ()
+      .size (),
+    1)
     << "Cloned region should have the same number of children as original";
 
   // Get the cloned child
-  auto * cloned_child = cloned_region->get_children_view ()[0];
+  auto * cloned_child = cloned_region->ArrangerObjectOwner<
+    typename TestFixture::ChildT>::get_children_view ()[0];
 
   // Verify parentObject is set on cloned children
   EXPECT_EQ (cloned_child->parentObject (), cloned_region)
@@ -386,11 +392,16 @@ TYPED_TEST (
   from_json (j, *new_region);
 
   // Verify the deserialized region has children
-  ASSERT_EQ (new_region->get_children_vector ().size (), 1)
+  ASSERT_EQ (
+    new_region
+      ->ArrangerObjectOwner<typename TestFixture::ChildT>::get_children_vector ()
+      .size (),
+    1)
     << "Deserialized region should have the same number of children";
 
   // Get the deserialized child
-  auto * deserialized_child = new_region->get_children_view ()[0];
+  auto * deserialized_child = new_region->ArrangerObjectOwner<
+    typename TestFixture::ChildT>::get_children_view ()[0];
 
   // Verify parentObject is set on deserialized children
   EXPECT_EQ (deserialized_child->parentObject (), new_region)

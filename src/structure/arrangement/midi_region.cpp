@@ -15,10 +15,14 @@ MidiRegion::MidiRegion (
         tempo_map,
         ArrangerObjectFeatures::Region,
         parent),
-      ArrangerObjectOwner (object_registry, *this)
+      ArrangerObjectOwner<MidiNote> (object_registry, *this),
+      ArrangerObjectOwner<MidiControlEvent> (object_registry, *this)
 {
   QObject::connect (
     midiNotes (), &ArrangerObjectListModel::contentChanged, this,
+    &MidiRegion::contentChanged);
+  QObject::connect (
+    midiControlEvents (), &ArrangerObjectListModel::contentChanged, this,
     &MidiRegion::contentChanged);
 }
 
@@ -34,5 +38,9 @@ init_from (
   init_from (
     static_cast<ArrangerObjectOwner<MidiNote> &> (obj),
     static_cast<const ArrangerObjectOwner<MidiNote> &> (other), clone_type);
+  init_from (
+    static_cast<ArrangerObjectOwner<MidiControlEvent> &> (obj),
+    static_cast<const ArrangerObjectOwner<MidiControlEvent> &> (other),
+    clone_type);
 }
 }
