@@ -184,14 +184,13 @@ TEST (ViewsTest, FilterNullNoNulls)
 
 TEST (ViewsTest, QObjectCastToMatching)
 {
-  BaseTestObject    base;
-  DerivedTestObject derived (0);
-  auto              result =
-    std::vector<BaseTestObject *>{
-      static_cast<BaseTestObject *> (&base),
-      static_cast<BaseTestObject *> (&derived)
-    }
-    | qobject_cast_to<DerivedTestObject> | std::ranges::to<std::vector> ();
+  BaseTestObject                base;
+  DerivedTestObject             derived (0);
+  std::vector<BaseTestObject *> objs;
+  objs.push_back (&base);
+  objs.push_back (&derived);
+  auto result =
+    objs | qobject_cast_to<DerivedTestObject> | std::ranges::to<std::vector> ();
 
   ASSERT_EQ (result.size (), 2u);
   EXPECT_EQ (result[0], nullptr);
@@ -212,14 +211,13 @@ TEST (ViewsTest, QObjectCastToNoneMatch)
 
 TEST (ViewsTest, QObjectCastAndFilterMatching)
 {
-  BaseTestObject    base;
-  DerivedTestObject derived (0);
-  auto              result =
-    std::vector<BaseTestObject *>{
-      static_cast<BaseTestObject *> (&base),
-      static_cast<BaseTestObject *> (&derived)
-    }
-    | qobject_cast_and_filter<DerivedTestObject>
+  BaseTestObject                base;
+  DerivedTestObject             derived (0);
+  std::vector<BaseTestObject *> objs;
+  objs.push_back (&base);
+  objs.push_back (&derived);
+  auto result =
+    objs | qobject_cast_and_filter<DerivedTestObject>
     | std::ranges::to<std::vector> ();
 
   ASSERT_EQ (result.size (), 1u);
@@ -239,14 +237,13 @@ TEST (ViewsTest, QObjectCastAndFilterNoneMatch)
 
 TEST (ViewsTest, QObjectCastAndFilterWithNulls)
 {
-  DerivedTestObject derived (0);
-  auto              result =
-    std::vector<BaseTestObject *>{
-      static_cast<BaseTestObject *> (nullptr),
-      static_cast<BaseTestObject *> (&derived),
-      static_cast<BaseTestObject *> (nullptr)
-    }
-    | qobject_cast_and_filter<DerivedTestObject>
+  DerivedTestObject             derived (0);
+  std::vector<BaseTestObject *> objs;
+  objs.push_back (nullptr);
+  objs.push_back (&derived);
+  objs.push_back (nullptr);
+  auto result =
+    objs | qobject_cast_and_filter<DerivedTestObject>
     | std::ranges::to<std::vector> ();
 
   ASSERT_EQ (result.size (), 1u);
