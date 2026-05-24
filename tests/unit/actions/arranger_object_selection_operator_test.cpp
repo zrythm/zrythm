@@ -6,6 +6,9 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
+#include "utils/variant_helpers.h"
 
 #include "unit/actions/arranger_object_selection_operator_test.h"
 #include "unit/actions/mock_undo_stack.h"
@@ -22,16 +25,13 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
-    // Setup providers for factory
     sample_rate_provider = [] () { return units::sample_rate (44100); };
     bpm_provider = [] () { return 120.0; };
 
-    // Create factory
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map,
-        .object_registry_ = object_registry,
-        .file_audio_source_registry_ = file_audio_source_registry,
+        .registry_ = registry_,
         .musical_mode_getter_ = [] () { return true; },
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
@@ -39,22 +39,18 @@ protected:
           [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
       sample_rate_provider, bpm_provider);
 
-    // Create test objects
-    marker_ref = object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
-    note_ref = object_registry.create_object<structure::arrangement::MidiNote> (
-      *tempo_map);
-    midi_region_ref =
-      object_registry.create_object<structure::arrangement::MidiRegion> (
-        *tempo_map, object_registry, file_audio_source_registry);
-    audio_region_ref = object_registry.create_object<
-      structure::arrangement::AudioRegion> (
-      *tempo_map, object_registry, file_audio_source_registry,
-      [] () { return true; });
-    tempo_ref = object_registry.create_object<
-      structure::arrangement::TempoObject> (*tempo_map);
-    time_signature_ref = object_registry.create_object<
-      structure::arrangement::TimeSignatureObject> (*tempo_map);
+    marker_ref = utils::create_object<structure::arrangement::Marker> (
+      registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
+    note_ref = utils::create_object<structure::arrangement::MidiNote> (
+      registry_, *tempo_map);
+    midi_region_ref = utils::create_object<structure::arrangement::MidiRegion> (
+      registry_, *tempo_map, registry_);
+    audio_region_ref = utils::create_object<structure::arrangement::AudioRegion> (
+      registry_, *tempo_map, registry_, [] () { return true; });
+    tempo_ref = utils::create_object<structure::arrangement::TempoObject> (
+      registry_, *tempo_map);
+    time_signature_ref = utils::create_object<
+      structure::arrangement::TimeSignatureObject> (registry_, *tempo_map);
 
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (marker_ref);
@@ -70,12 +66,12 @@ protected:
       .push_back (time_signature_ref);
 
     // Store original positions and set initial values for testing
-    marker_ref.get_object_base ()->position ()->setTicks (0.0);
-    note_ref.get_object_base ()->position ()->setTicks (1000.0);
-    midi_region_ref.get_object_base ()->position ()->setTicks (2000.0);
-    audio_region_ref.get_object_base ()->position ()->setTicks (3000.0);
-    tempo_ref.get_object_base ()->position ()->setTicks (4000.0);
-    time_signature_ref.get_object_base ()->position ()->setTicks (5000.0);
+    marker_ref.get ()->position ()->setTicks (0.0);
+    note_ref.get ()->position ()->setTicks (1000.0);
+    midi_region_ref.get ()->position ()->setTicks (2000.0);
+    audio_region_ref.get ()->position ()->setTicks (3000.0);
+    tempo_ref.get ()->position ()->setTicks (4000.0);
+    time_signature_ref.get ()->position ()->setTicks (5000.0);
 
     // Set initial length for resize tests
     note_ref.get_object_as<structure::arrangement::MidiNote> ()
@@ -103,18 +99,15 @@ protected:
       ->endOffset ()
       ->setTicks (300.0);
 
+    original_positions_.push_back (marker_ref.get ()->position ()->ticks ());
+    original_positions_.push_back (note_ref.get ()->position ()->ticks ());
     original_positions_.push_back (
-      marker_ref.get_object_base ()->position ()->ticks ());
+      midi_region_ref.get ()->position ()->ticks ());
     original_positions_.push_back (
-      note_ref.get_object_base ()->position ()->ticks ());
+      audio_region_ref.get ()->position ()->ticks ());
+    original_positions_.push_back (tempo_ref.get ()->position ()->ticks ());
     original_positions_.push_back (
-      midi_region_ref.get_object_base ()->position ()->ticks ());
-    original_positions_.push_back (
-      audio_region_ref.get_object_base ()->position ()->ticks ());
-    original_positions_.push_back (
-      tempo_ref.get_object_base ()->position ()->ticks ());
-    original_positions_.push_back (
-      time_signature_ref.get_object_base ()->position ()->ticks ());
+      time_signature_ref.get ()->position ()->ticks ());
 
     // Create undo stack
     undo_stack_ = create_mock_undo_stack ();
@@ -123,8 +116,7 @@ protected:
     selection_model_ = std::make_unique<QItemSelectionModel> (&list_model_);
 
     // Create mock owner for testing
-    mock_owner_ = std::make_unique<MockArrangerObjectOwner> (
-      object_registry, file_audio_source_registry);
+    mock_owner_ = std::make_unique<MockArrangerObjectOwner> (registry_);
 
     // Add the objects to the mock owner
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
@@ -148,7 +140,7 @@ protected:
       return std::visit (
         [&] (auto &&obj)
           -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
           if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
@@ -203,9 +195,8 @@ protected:
       *undo_stack_, *selection_model_, mock_owner_provider, *factory);
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  structure::arrangement::ArrangerObjectRegistry object_registry;
+  std::unique_ptr<dsp::TempoMap>                               tempo_map;
+  utils::ObjectRegistry                                        registry_;
   structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
   std::vector<double>                              original_positions_;
   std::unique_ptr<undo::UndoStack>                 undo_stack_;
@@ -217,23 +208,17 @@ protected:
     sample_rate_provider;
   structure::arrangement::ArrangerObjectFactory::BpmProvider     bpm_provider;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
-  structure::arrangement::ArrangerObjectUuidReference            note_ref{
-    object_registry
-  };
-  structure::arrangement::ArrangerObjectUuidReference marker_ref{
-    object_registry
-  };
+  structure::arrangement::ArrangerObjectUuidReference note_ref{ registry_ };
+  structure::arrangement::ArrangerObjectUuidReference marker_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference audio_region_ref{
-    object_registry
+    registry_
   };
   structure::arrangement::ArrangerObjectUuidReference midi_region_ref{
-    object_registry
+    registry_
   };
-  structure::arrangement::ArrangerObjectUuidReference tempo_ref{
-    object_registry
-  };
+  structure::arrangement::ArrangerObjectUuidReference tempo_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference time_signature_ref{
-    object_registry
+    registry_
   };
 };
 
@@ -259,13 +244,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 
   // Only selected objects (marker and note) should be moved by tick_delta
   // Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
@@ -287,7 +272,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
   // Move objects to position 100 first to allow negative movement
   for (const auto &obj_ref : test_objects_)
     {
-      if (auto * obj = obj_ref.get_object_base ())
+      if (auto * obj = obj_ref.get ())
         {
           obj->position ()->setTicks (100.0);
         }
@@ -300,12 +285,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 
   // Only selected objects (marker and note) should be moved backward by
   // tick_delta Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (marker_obj->position ()->ticks (), 50);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 50);
     }
@@ -328,13 +313,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
 
   // Only selected objects (marker and note) should remain at original positions
   // Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0]);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), original_positions_[1]);
     }
@@ -362,7 +347,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
   // Move objects to position 0 first
   for (auto &obj_ref : test_objects_)
     {
-      if (auto * obj = obj_ref.get_object_base ())
+      if (auto * obj = obj_ref.get ())
         {
           obj->position ()->setTicks (0.0);
         }
@@ -375,12 +360,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
 
   // Only selected objects (marker and note) should remain at position 0 (no
   // movement) Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (marker_obj->position ()->ticks (), 0.0);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 0.0);
     }
@@ -407,13 +392,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 
   // Verify only selected objects moved
   // Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
@@ -423,13 +408,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   undo_stack_->undo ();
   // Verify only selected objects restored
   // Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0]);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), original_positions_[1]);
     }
@@ -438,13 +423,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   undo_stack_->redo ();
   // Verify only selected objects moved again
   // Check marker (index 0)
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
     }
   // Check note (index 1)
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         note_obj->position ()->ticks (), original_positions_[1] + tick_delta);
@@ -461,80 +446,33 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
   const int pitch_delta = 5;
 
   // Store original pitch for MIDI note
-  int original_pitch = 0;
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              original_pitch = obj->pitch ();
-            }
-        },
-        obj_ref.get_object ());
-    }
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  ASSERT_NE (note_obj, nullptr);
+  int original_pitch = note_obj->pitch ();
 
   bool result = operator_->moveNotesByPitch (pitch_delta);
   EXPECT_TRUE (result);
 
   // MIDI notes should be moved by pitch_delta
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->pitch (), original_pitch + pitch_delta);
 
   // Command should be pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
 
   // Test undo/redo
   undo_stack_->undo ();
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->pitch (), original_pitch);
 
   undo_stack_->redo ();
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch + pitch_delta);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->pitch (), original_pitch + pitch_delta);
 }
 
 // Test moveAutomationPointsByDelta functionality
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
 {
   // Create an automation point for testing
-  auto automation_point_ref = object_registry.create_object<
-    structure::arrangement::AutomationPoint> (*tempo_map);
+  auto automation_point_ref = utils::create_object<
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
 
   // Set initial value
   automation_point_ref
@@ -559,13 +497,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
   EXPECT_TRUE (result);
 
   // Only selected automation point should be moved by delta
-  if (
-    auto * auto_obj =
-      automation_point_ref
-        .get_object_as<structure::arrangement::AutomationPoint> ())
-    {
-      EXPECT_FLOAT_EQ (auto_obj->value (), 0.7f); // 0.5 + 0.2
-    }
+  auto * auto_obj = automation_point_ref.get_object_as<
+    structure::arrangement::AutomationPoint> ();
+  ASSERT_NE (auto_obj, nullptr);
+  EXPECT_FLOAT_EQ (auto_obj->value (), 0.7f); // 0.5 + 0.2
 
   // Command should be pushed to undo stack
   EXPECT_EQ (undo_stack_->index (), 1);
@@ -573,12 +508,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
   // Test undo/redo
   undo_stack_->undo ();
 
-  const auto * auto_obj = automation_point_ref.get_object_as<
+  const auto * auto_obj_after_undo = automation_point_ref.get_object_as<
     structure::arrangement::AutomationPoint> ();
-  EXPECT_FLOAT_EQ (auto_obj->value (), 0.5f);
+  ASSERT_NE (auto_obj_after_undo, nullptr);
+  EXPECT_FLOAT_EQ (auto_obj_after_undo->value (), 0.5f);
 
   undo_stack_->redo ();
-  EXPECT_FLOAT_EQ (auto_obj->value (), 0.7f);
+  EXPECT_FLOAT_EQ (auto_obj_after_undo->value (), 0.7f);
 }
 
 // Test moveNotesByPitch with no selection (no-op)
@@ -616,40 +552,17 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
     list_model_.index (1, 0), QItemSelectionModel::Select);
 
   // Find MIDI note and set its pitch to 125 (close to max)
-  int original_pitch = 0;
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              obj->setPitch (125);
-              original_pitch = 125;
-            }
-        },
-        obj_ref.get_object ());
-    }
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  ASSERT_NE (note_obj, nullptr);
+  note_obj->setPitch (125);
+  int original_pitch = 125;
 
   // Try to move by 5 (would result in pitch 130, which is out of range)
   bool result = operator_->moveNotesByPitch (5);
   EXPECT_FALSE (result);
 
   // Pitch should remain unchanged
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->pitch (), original_pitch);
 
   // No command should be pushed for invalid movement
   EXPECT_EQ (undo_stack_->index (), 0);
@@ -674,8 +587,8 @@ TEST_F (
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelta)
 {
   // Create an automation point with value 0.9
-  auto automation_point_ref = object_registry.create_object<
-    structure::arrangement::AutomationPoint> (*tempo_map);
+  auto automation_point_ref = utils::create_object<
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
 
   automation_point_ref
     .get_object_as<structure::arrangement::AutomationPoint> ()
@@ -706,8 +619,8 @@ TEST_F (
   MoveAutomationPointsByDeltaInvalidValue)
 {
   // Create an automation point with value 0.9
-  auto automation_point_ref = object_registry.create_object<
-    structure::arrangement::AutomationPoint> (*tempo_map);
+  auto automation_point_ref = utils::create_object<
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
 
   automation_point_ref
     .get_object_as<structure::arrangement::AutomationPoint> ()
@@ -732,6 +645,7 @@ TEST_F (
   // Value should remain unchanged
   const auto * auto_obj = automation_point_ref.get_object_as<
     structure::arrangement::AutomationPoint> ();
+  ASSERT_NE (auto_obj, nullptr);
   EXPECT_FLOAT_EQ (auto_obj->value (), 0.9f);
 
   // No command should be pushed for invalid movement
@@ -802,9 +716,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsNoSelection)
 // Test deleteObjects with undeletable objects
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 { // Create a non-deletable marker (start marker)
-  auto start_marker_ref =
-    object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
   // Clear existing objects and add only non-deletable marker
   test_objects_.get<structure::arrangement::random_access_index> ().clear ();
@@ -831,9 +744,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 {
   // Create a non-deletable marker (start marker)
-  auto start_marker_ref =
-    object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
   // Add non-deletable marker to existing objects and to mock owner
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
@@ -1146,7 +1058,7 @@ TEST_F (
     QItemSelectionModel::Select); // Select only MidiNote
 
   // Set MIDI note position to a small positive value first
-  if (auto * note_obj = note_ref.get_object_base ())
+  if (auto * note_obj = note_ref.get ())
     {
       note_obj->position ()->setTicks (10.0);
     }
@@ -1266,7 +1178,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
     commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
 
   // Verify tempo object was moved
-  if (auto * tempo_obj = tempo_ref.get_object_base ())
+  if (auto * tempo_obj = tempo_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         tempo_obj->position ()->ticks (), original_positions_[4] + tick_delta);
@@ -1283,7 +1195,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
     QItemSelectionModel::Select); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
-  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+  time_signature_ref.get ()->position ()->setTicks (0.0);
 
   const double tick_delta = 3840.0; // Move to next bar (assuming 4/4, 120 BPM)
 
@@ -1300,7 +1212,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
     commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
 
   // Verify time signature object was moved
-  if (auto * ts_obj = time_signature_ref.get_object_base ())
+  if (auto * ts_obj = time_signature_ref.get ())
     {
       EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), tick_delta);
     }
@@ -1319,7 +1231,7 @@ TEST_F (
     QItemSelectionModel::Select); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
-  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+  time_signature_ref.get ()->position ()->setTicks (0.0);
 
   const double tick_delta = 100.0; // Move to non-bar boundary position
 
@@ -1330,7 +1242,7 @@ TEST_F (
   EXPECT_EQ (undo_stack_->index (), 0);
 
   // Verify time signature object was not moved
-  if (auto * ts_obj = time_signature_ref.get_object_base ())
+  if (auto * ts_obj = time_signature_ref.get ())
     {
       EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), 0.0);
     }
@@ -1362,12 +1274,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
     commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
 
   // Verify both objects were moved
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
     }
-  if (auto * tempo_obj = tempo_ref.get_object_base ())
+  if (auto * tempo_obj = tempo_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         tempo_obj->position ()->ticks (), original_positions_[4] + tick_delta);
@@ -1389,7 +1301,7 @@ TEST_F (
     QItemSelectionModel::Select); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
-  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+  time_signature_ref.get ()->position ()->setTicks (0.0);
 
   const double tick_delta = 3840.0; // Move to next bar
 
@@ -1407,12 +1319,12 @@ TEST_F (
     commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId);
 
   // Verify both objects were moved
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0] + tick_delta);
     }
-  if (auto * ts_obj = time_signature_ref.get_object_base ())
+  if (auto * ts_obj = time_signature_ref.get ())
     {
       EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), tick_delta);
     }
@@ -1433,7 +1345,7 @@ TEST_F (
     QItemSelectionModel::Select); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
-  time_signature_ref.get_object_base ()->position ()->setTicks (0.0);
+  time_signature_ref.get ()->position ()->setTicks (0.0);
 
   const double tick_delta = 100.0; // Move to non-bar boundary position
 
@@ -1444,12 +1356,12 @@ TEST_F (
   EXPECT_EQ (undo_stack_->index (), 0);
 
   // Verify neither object was moved
-  if (auto * marker_obj = marker_ref.get_object_base ())
+  if (auto * marker_obj = marker_ref.get ())
     {
       EXPECT_DOUBLE_EQ (
         marker_obj->position ()->ticks (), original_positions_[0]);
     }
-  if (auto * ts_obj = time_signature_ref.get_object_base ())
+  if (auto * ts_obj = time_signature_ref.get ())
     {
       EXPECT_DOUBLE_EQ (ts_obj->position ()->ticks (), 0.0);
     }
@@ -1537,9 +1449,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
 {
   // Create a non-deletable marker (start marker) - using same logic as
   // cloneable check
-  auto start_marker_ref =
-    object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
 
   // Clear existing objects and add only uncloneable marker
   test_objects_.get<structure::arrangement::random_access_index> ().clear ();
@@ -1701,72 +1612,23 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocities)
   const int velocity_delta = 15;
 
   // Store original velocity for MIDI note
-  int original_velocity = 0;
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              original_velocity = obj->velocity ();
-            }
-        },
-        obj_ref.get_object ());
-    }
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  ASSERT_NE (note_obj, nullptr);
+  int original_velocity = note_obj->velocity ();
 
   bool result = operator_->changeVelocities (velocity_delta);
   EXPECT_TRUE (result);
 
   // MIDI notes should have velocity changed
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->velocity (), original_velocity + velocity_delta);
 
   // Undo should restore original velocity
   undo_stack_->undo ();
-
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->velocity (), original_velocity);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->velocity (), original_velocity);
 
   // Redo should apply velocity change again
   undo_stack_->redo ();
-
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->velocity (), original_velocity + velocity_delta);
 }
 
 // Test changeVelocities with no selection (no-op)
@@ -1804,71 +1666,25 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesInvalidVelocity)
     list_model_.index (1, 0), QItemSelectionModel::Select);
 
   // Find MIDI note and set its velocity to 120 (close to max)
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              obj->setVelocity (120);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
+  ASSERT_NE (note_obj, nullptr);
+  note_obj->setVelocity (120);
 
   // Try to change by 20 (would result in velocity 140, which is out of range)
   bool result = operator_->changeVelocities (20);
   EXPECT_FALSE (result);
 
   // Velocity should remain unchanged
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->velocity (), 120);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->velocity (), 120);
 
   // Try negative delta that would go below 0
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              obj->setVelocity (5);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  note_obj->setVelocity (5);
 
   result = operator_->changeVelocities (-10);
   EXPECT_FALSE (result);
 
   // Velocity should remain unchanged
-  for (const auto &obj_ref : test_objects_)
-    {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              EXPECT_EQ (obj->velocity (), 5);
-            }
-        },
-        obj_ref.get_object ());
-    }
+  EXPECT_EQ (note_obj->velocity (), 5);
 }
 
 // Test toggleMute mutes unmuted objects
@@ -1880,22 +1696,22 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
   selection_model_->select (
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
-  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
-  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
 
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
 
-  EXPECT_TRUE (note_ref.get_object_base ()->mute ()->muted ());
-  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_TRUE (note_ref.get ()->mute ()->muted ());
+  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
   EXPECT_EQ (undo_stack_->index (), 1);
 }
 
 // Test toggleMute unmutes muted objects
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
 {
-  note_ref.get_object_base ()->mute ()->setMuted (true);
-  midi_region_ref.get_object_base ()->mute ()->setMuted (true);
+  note_ref.get ()->mute ()->setMuted (true);
+  midi_region_ref.get ()->mute ()->setMuted (true);
 
   selection_model_->clear ();
   selection_model_->select (
@@ -1906,8 +1722,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
 
-  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
-  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
   EXPECT_EQ (undo_stack_->index (), 1);
 }
 
@@ -1928,16 +1744,16 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
   selection_model_->select (
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
-  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
 
   operator_->toggleMute ();
-  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
 
   undo_stack_->undo ();
-  EXPECT_FALSE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
 
   undo_stack_->redo ();
-  EXPECT_TRUE (midi_region_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
 }
 
 // Test toggleMute skips non-muteable objects (markers have no Mute feature)
@@ -1949,13 +1765,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
   selection_model_->select (
     list_model_.index (1, 0), QItemSelectionModel::Select);
 
-  EXPECT_EQ (marker_ref.get_object_base ()->mute (), nullptr);
-  EXPECT_FALSE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_EQ (marker_ref.get ()->mute (), nullptr);
+  EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
 
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
 
-  EXPECT_TRUE (note_ref.get_object_base ()->mute ()->muted ());
+  EXPECT_TRUE (note_ref.get ()->mute ()->muted ());
   EXPECT_EQ (undo_stack_->index (), 1);
 }
 

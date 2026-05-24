@@ -30,13 +30,16 @@ target_sources(zrythm_utils_lib
     mem.cpp
     midi.cpp
     networking.cpp
+    object_registry.cpp
     pcg_rand.cpp
     playback_cache_scheduler.cpp
     resampler.cpp
     rt_thread_id.cpp
-    utf8_string.cpp
     symap.cpp
     threads.cpp
+    utf8_string.cpp
+    uuid_reference.cpp
+    uuid_identifiable.cpp
     uuid_identifiable_object.cpp
     # vamp.cpp
     version.cpp
@@ -103,6 +106,11 @@ target_sources(zrythm_utils_lib
       types.h
       units.h
       utils.h
+      iobject_registry.h
+      object_registry.h
+      registry_utils.h
+      typed_uuid_reference.h
+      uuid_reference.h
       uuid_identifiable_object.h
       # vamp.h
       variant_helpers.h

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_protocol.h"
-#include "utils/gtest_wrapper.h"
 
+#include <gtest/gtest.h>
 #include <juce_core/juce_core.h>
 
 using namespace zrythm::plugins;

@@ -6,6 +6,7 @@
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port_all.h"
 #include "utils/float_ranges.h"
+#include "utils/registry_utils.h"
 
 #include <fmt/format.h>
 
@@ -13,35 +14,37 @@ namespace zrythm::dsp
 {
 
 ModulatorMacroProcessor::ModulatorMacroProcessor (
-  ProcessorBaseDependencies dependencies,
-  int                       idx,
-  QObject *                 parent)
+  utils::IObjectRegistry &registry,
+  int                     idx,
+  QObject *               parent)
     : QObject (parent),
       ProcessorBase (
-        dependencies,
+        registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format (
             "{} Modulator Macro Processor",
             format_qstr (QObject::tr ("Macro {}"), idx + 1)))),
-      dependencies_ (dependencies),
       name_ (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Macro {}"), idx + 1)))
 {
-  add_parameter (dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-    dependencies.port_registry_,
-    dsp::ProcessorParameter::UniqueId (
-      utils::Utf8String::from_utf8_encoded_string (
-        fmt::format ("macro_{}", idx + 1))),
-    dsp::ParameterRange{
-      dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.75f },
-    name_));
+  add_parameter (
+    utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
+      dsp::ProcessorParameter::UniqueId (
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("macro_{}", idx + 1))),
+      dsp::ParameterRange{
+        dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.75f },
+      name_));
 
   {
-    add_input_port (dependencies.port_registry_.create_object<dsp::CVPort> (
-      utils::Utf8String::from_qstring (
-        format_qstr (QObject::tr ("Macro {} CV In"), idx + 1)),
-      dsp::PortFlow::Input));
+    add_input_port (
+      utils::create_object<dsp::CVPort> (
+        registry,
+        utils::Utf8String::from_qstring (
+          format_qstr (QObject::tr ("Macro {} CV In"), idx + 1)),
+        dsp::PortFlow::Input));
     auto &cv_in = get_cv_in_port ();
     cv_in.set_full_designation_provider (this);
     cv_in.set_symbol (
@@ -50,10 +53,12 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   }
 
   {
-    add_output_port (dependencies.port_registry_.create_object<dsp::CVPort> (
-      utils::Utf8String::from_qstring (
-        format_qstr (QObject::tr ("Macro {} CV Out"), idx + 1)),
-      dsp::PortFlow::Output));
+    add_output_port (
+      utils::create_object<dsp::CVPort> (
+        registry,
+        utils::Utf8String::from_qstring (
+          format_qstr (QObject::tr ("Macro {} CV Out"), idx + 1)),
+        dsp::PortFlow::Output));
     auto &cv_out = get_cv_out_port ();
     cv_out.set_full_designation_provider (this);
     cv_out.set_symbol (

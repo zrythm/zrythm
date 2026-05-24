@@ -5,6 +5,8 @@
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 
@@ -28,33 +30,19 @@ protected:
     // Create track registry and related components
     singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
     track_collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
     track_routing_ =
-      std::make_unique<structure::tracks::TrackRouting> (track_registry_);
+      std::make_unique<structure::tracks::TrackRouting> (registry_);
 
     // Create tempo map and transport
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
-    // Create file audio source registry
-    file_audio_source_registry_ =
-      std::make_unique<dsp::FileAudioSourceRegistry> ();
-    obj_registry_ =
-      std::make_unique<structure::arrangement::ArrangerObjectRegistry> ();
-
     // Create track factory dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      *tempo_map_wrapper_,
-      *file_audio_source_registry_,
-      plugin_registry_,
-      port_registry_,
-      param_registry_,
-      *obj_registry_,
-      track_registry_,
-      *transport_,
-      soloed_tracks_exist_getter_,
-      {},
+      *tempo_map_wrapper_,         registry_, *transport_,
+      soloed_tracks_exist_getter_, {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -180,9 +168,7 @@ protected:
   std::unique_ptr<plugins::PluginFactory> create_plugin_factory ()
   {
     auto factory_deps = plugins::PluginFactory::CommonFactoryDependencies{
-      .plugin_registry_ = plugin_registry_,
-      .processor_base_dependencies_{
-                                    .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+      .registry = registry_,
       .create_plugin_instance_async_func_ = create_mock_async_func (),
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
@@ -192,10 +178,7 @@ protected:
     return std::make_unique<plugins::PluginFactory> (std::move (factory_deps));
   }
 
-  dsp::PortRegistry                port_registry_;
-  dsp::ProcessorParameterRegistry  param_registry_{ port_registry_ };
-  plugins::PluginRegistry          plugin_registry_;
-  structure::tracks::TrackRegistry track_registry_;
+  utils::ObjectRegistry                               registry_;
   std::unique_ptr<structure::tracks::SingletonTracks> singleton_tracks_;
   std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
   std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;
@@ -206,18 +189,16 @@ protected:
   std::unique_ptr<PluginImporter>                     plugin_importer_;
 
   // Additional dependencies for track factory
-  std::unique_ptr<dsp::TempoMap>                tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>         tempo_map_wrapper_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
-  std::unique_ptr<structure::arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<dsp::graph_test::MockTransport>                 transport_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
 
   // Test tracking
-  bool instantiation_finished_called_;
-  plugins::PluginUuidReference last_instantiated_plugin_ref_{ plugin_registry_ };
+  bool                         instantiation_finished_called_;
+  plugins::PluginUuidReference last_instantiated_plugin_ref_{ registry_ };
   plugins::PluginFactory::InstantiationFinishedHandler
     instantiation_finished_handler_;
 
@@ -252,11 +233,12 @@ TEST_F (PluginImporterTest, ImportInstrumentPlugin)
   QCoreApplication::processEvents ();
 
   // Should have created an instrument track
-  auto instrument_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::InstrumentTrack> ();
-  EXPECT_GE (
-    std::distance (instrument_tracks.begin (), instrument_tracks.end ()), 1);
+  auto instrument_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::InstrumentTrack> ()
+             != nullptr;
+    });
+  EXPECT_GE (instrument_count, 1);
 
   // Should have called instantiation handler
   EXPECT_TRUE (instantiation_finished_called_);
@@ -274,11 +256,12 @@ TEST_F (PluginImporterTest, ImportMidiModifierPlugin)
   QCoreApplication::processEvents ();
 
   // Should have created a MIDI bus track
-  auto midi_bus_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::MidiBusTrack> ();
-  EXPECT_GE (
-    std::distance (midi_bus_tracks.begin (), midi_bus_tracks.end ()), 1);
+  auto midi_bus_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::MidiBusTrack> ()
+             != nullptr;
+    });
+  EXPECT_GE (midi_bus_count, 1);
 
   // Should have called instantiation handler
   EXPECT_TRUE (instantiation_finished_called_);
@@ -296,11 +279,12 @@ TEST_F (PluginImporterTest, ImportEffectPlugin)
   QCoreApplication::processEvents ();
 
   // Should have created an audio bus track
-  auto audio_bus_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::AudioBusTrack> ();
-  EXPECT_GE (
-    std::distance (audio_bus_tracks.begin (), audio_bus_tracks.end ()), 1);
+  auto audio_bus_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::AudioBusTrack> ()
+             != nullptr;
+    });
+  EXPECT_GE (audio_bus_count, 1);
 
   // Should have called instantiation handler
   EXPECT_TRUE (instantiation_finished_called_);
@@ -329,22 +313,25 @@ TEST_F (PluginImporterTest, ImportMultiplePluginTypes)
   QCoreApplication::processEvents ();
 
   // Should have created tracks of each type
-  auto instrument_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::InstrumentTrack> ();
-  auto midi_bus_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::MidiBusTrack> ();
-  auto audio_bus_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::AudioBusTrack> ();
+  auto instrument_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::InstrumentTrack> ()
+             != nullptr;
+    });
+  auto midi_bus_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::MidiBusTrack> ()
+             != nullptr;
+    });
+  auto audio_bus_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::AudioBusTrack> ()
+             != nullptr;
+    });
 
-  EXPECT_GE (
-    std::distance (instrument_tracks.begin (), instrument_tracks.end ()), 1);
-  EXPECT_GE (
-    std::distance (midi_bus_tracks.begin (), midi_bus_tracks.end ()), 1);
-  EXPECT_GE (
-    std::distance (audio_bus_tracks.begin (), audio_bus_tracks.end ()), 1);
+  EXPECT_GE (instrument_count, 1);
+  EXPECT_GE (midi_bus_count, 1);
+  EXPECT_GE (audio_bus_count, 1);
 }
 
 // Test undo/redo functionality for plugin import
@@ -382,7 +369,7 @@ TEST_F (PluginImporterTest, InstantiationFinishedHandlerCalled)
 
   // Handler should have been called
   EXPECT_TRUE (instantiation_finished_called_);
-  EXPECT_TRUE (plugin_registry_.contains (last_instantiated_plugin_ref_.id ()));
+  EXPECT_TRUE (utils::contains (registry_, last_instantiated_plugin_ref_.id ()));
 }
 
 // Test that plugin is added to correct plugin group
@@ -395,13 +382,20 @@ TEST_F (PluginImporterTest, PluginAddedToCorrectGroup)
   QCoreApplication::processEvents ();
 
   // For instrument plugin, should be added to instrument group
-  auto instrument_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::InstrumentTrack> ();
-  ASSERT_GE (
-    std::distance (instrument_tracks.begin (), instrument_tracks.end ()), 1);
+  auto instrument_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::InstrumentTrack> ()
+             != nullptr;
+    });
+  ASSERT_GE (instrument_count, 1);
 
-  auto * instrument_track = *instrument_tracks.begin ();
+  auto instrument_it =
+    std::ranges::find_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::InstrumentTrack> ()
+             != nullptr;
+    });
+  auto * instrument_track =
+    instrument_it->template get_object_as<structure::tracks::InstrumentTrack> ();
   EXPECT_NE (instrument_track->channel ()->instruments (), nullptr);
   EXPECT_GE (instrument_track->channel ()->instruments ()->rowCount (), 1);
 }
@@ -480,11 +474,12 @@ TEST_F (PluginImporterTest, MultipleImportsSameType)
   QCoreApplication::processEvents ();
 
   // Should have created two audio bus tracks
-  auto audio_bus_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::AudioBusTrack> ();
-  EXPECT_GE (
-    std::distance (audio_bus_tracks.begin (), audio_bus_tracks.end ()), 2);
+  auto audio_bus_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::AudioBusTrack> ()
+             != nullptr;
+    });
+  EXPECT_GE (audio_bus_count, 2);
 }
 
 // Test error handling when plugin factory fails
@@ -509,11 +504,12 @@ TEST_F (PluginImporterTest, TrackCreatorCalledCorrectly)
   QCoreApplication::processEvents ();
 
   // Should have created an instrument track via track creator
-  auto instrument_tracks =
-    track_collection_->get_track_span ()
-      .get_elements_derived_from<structure::tracks::InstrumentTrack> ();
-  EXPECT_GE (
-    std::distance (instrument_tracks.begin (), instrument_tracks.end ()), 1);
+  auto instrument_count =
+    std::ranges::count_if (track_collection_->tracks (), [] (const auto &ref) {
+      return ref.template get_object_as<structure::tracks::InstrumentTrack> ()
+             != nullptr;
+    });
+  EXPECT_GE (instrument_count, 1);
 }
 
 // Test plugin configuration creation

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_routing.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/structure/tracks/mock_track.h"
 #include <gmock/gmock.h>
@@ -15,8 +17,8 @@ class TrackRoutingTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    track_registry_ = std::make_unique<TrackRegistry> ();
-    track_routing_ = std::make_unique<TrackRouting> (*track_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
+    track_routing_ = std::make_unique<TrackRouting> (*registry_);
   }
 
   std::unique_ptr<MockTrack> createMockTrack (
@@ -29,9 +31,9 @@ protected:
       MockTrack::TrackFeatures::Automation | MockTrack::TrackFeatures::Lanes);
   }
 
-  MockTrackFactory               mock_track_factory_;
-  std::unique_ptr<TrackRegistry> track_registry_;
-  std::unique_ptr<TrackRouting>  track_routing_;
+  MockTrackFactory                       mock_track_factory_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<TrackRouting>          track_routing_;
 };
 
 TEST_F (TrackRoutingTest, NullSourceCannotBeRouted)

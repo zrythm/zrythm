@@ -6,6 +6,8 @@
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_factory.h"
 #include "undo/undo_stack.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
@@ -19,23 +21,12 @@ class TrackCollectionOperatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Set up dependencies for TrackFactory
-    track_registry_ = std::make_unique<structure::tracks::TrackRegistry> ();
     track_collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (*track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
 
-    // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,
-      file_audio_source_registry_,
-      plugin_registry_,
-      port_registry_,
-      param_registry_,
-      obj_registry_,
-      *track_registry_,
-      transport_,
-      soloed_tracks_exist_getter_,
-      {},
+      tempo_map_wrapper_,          registry_, transport_,
+      soloed_tracks_exist_getter_, {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -64,20 +55,14 @@ protected:
     return track_factory_->create_empty_track<structure::tracks::FolderTrack> ();
   }
 
-  // Create minimal dependencies for track creation
-  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::graph_test::MockTransport                 transport_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry          registry_;
+  dsp::graph_test::MockTransport transport_;
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
 
-  std::unique_ptr<structure::tracks::TrackRegistry>   track_registry_;
   std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
   std::unique_ptr<structure::tracks::TrackFactory>    track_factory_;
   std::unique_ptr<undo::UndoStack>                    undo_stack_;
@@ -103,7 +88,7 @@ TEST_F (TrackCollectionOperatorTest, MoveTracksWithNullCollection)
   track_collection_->add_track (track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
   track_collection_operator_->moveTracks (tracks, 0);
 
@@ -119,7 +104,7 @@ TEST_F (TrackCollectionOperatorTest, MoveTracksWithNullUndoStack)
   track_collection_->add_track (track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
   track_collection_operator_->moveTracks (tracks, 0);
 
@@ -148,9 +133,9 @@ TEST_F (TrackCollectionOperatorTest, MoveTracksWithNullTrackInList)
   track_collection_->add_track (track2);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
   tracks.append (nullptr); // Add null track
-  tracks.append (track2.get_object_base ());
+  tracks.append (track2.get ());
 
   track_collection_operator_->moveTracks (tracks, 0);
 
@@ -179,7 +164,7 @@ TEST_F (TrackCollectionOperatorTest, MoveSingleTrackForward)
 
   // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
 
   track_collection_operator_->moveTracks (tracks, 3);
 
@@ -204,7 +189,7 @@ TEST_F (TrackCollectionOperatorTest, MoveSingleTrackBackward)
 
   // Move track3 to position 0
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track3.get_object_base ());
+  tracks.append (track3.get ());
 
   track_collection_operator_->moveTracks (tracks, 0);
 
@@ -226,7 +211,7 @@ TEST_F (TrackCollectionOperatorTest, MoveSingleTrackToSamePosition)
 
   // Move track2 to position 1 (where it already is)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track2.get_object_base ());
+  tracks.append (track2.get ());
 
   track_collection_operator_->moveTracks (tracks, 1);
 
@@ -254,8 +239,8 @@ TEST_F (TrackCollectionOperatorTest, MoveMultipleAdjacentTracks)
 
   // Move track2 and track3 after track4 (pre-removal target 4)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track2.get_object_base ());
-  tracks.append (track3.get_object_base ());
+  tracks.append (track2.get ());
+  tracks.append (track3.get ());
 
   track_collection_operator_->moveTracks (tracks, 4);
 
@@ -282,8 +267,8 @@ TEST_F (TrackCollectionOperatorTest, MoveNonAdjacentTracks)
 
   // Move track2 and track4 after track5 (pre-removal target 5)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track2.get_object_base ());
-  tracks.append (track4.get_object_base ());
+  tracks.append (track2.get ());
+  tracks.append (track4.get ());
 
   track_collection_operator_->moveTracks (tracks, 5);
 
@@ -311,7 +296,7 @@ TEST_F (TrackCollectionOperatorTest, UndoAfterMove)
 
   // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
 
   track_collection_operator_->moveTracks (tracks, 3);
 
@@ -341,7 +326,7 @@ TEST_F (TrackCollectionOperatorTest, RedoAfterUndo)
 
   // Move track1 to the end (pre-removal target 3)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
 
   track_collection_operator_->moveTracks (tracks, 3);
   undo_stack_->undo ();
@@ -367,7 +352,7 @@ TEST_F (TrackCollectionOperatorTest, MultipleUndoRedoCycles)
   track_collection_->add_track (track3);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
 
   track_collection_operator_->moveTracks (tracks, 3);
 
@@ -395,7 +380,7 @@ TEST_F (TrackCollectionOperatorTest, CommandTextInUndoStack)
   track_collection_->add_track (track2);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track1.get_object_base ());
+  tracks.append (track1.get ());
 
   track_collection_operator_->moveTracks (tracks, 1);
 
@@ -416,8 +401,8 @@ TEST_F (TrackCollectionOperatorTest, UndoMultipleTracksMove)
 
   // Move track2 and track3 (pre-removal target 4)
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track2.get_object_base ());
-  tracks.append (track3.get_object_base ());
+  tracks.append (track2.get ());
+  tracks.append (track3.get ());
 
   track_collection_operator_->moveTracks (tracks, 4);
 
@@ -460,7 +445,7 @@ TEST_F (TrackCollectionOperatorTest, MoveFolderAutoExpandsDescendants)
   // Pass only the folder to moveTracks - operator should auto-expand to
   // include child1 and child2.
   QList<structure::tracks::Track *> tracks;
-  tracks.append (folder.get_object_base ());
+  tracks.append (folder.get ());
 
   // Pre-removal target 4 = past-the-end of [folder, child1, child2, other]
   track_collection_operator_->moveTracks (tracks, 4);
@@ -503,7 +488,7 @@ TEST_F (TrackCollectionOperatorTest, MoveIntoFolderByEnclosingFolder)
   // get_enclosing_folder(2) should detect folder since its last_child_index
   // (0+2=2) covers position 2.
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
   track_collection_operator_->moveTracks (tracks, 2);
 
@@ -535,9 +520,9 @@ TEST_F (TrackCollectionOperatorTest, MoveIntoFolderExplicitTarget)
 
   // Move 'track' right after folder, explicitly targeting the folder.
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
-  track_collection_operator_->moveTracks (tracks, 1, folder.get_object_base ());
+  track_collection_operator_->moveTracks (tracks, 1, folder.get ());
 
   // Expected: [folder, track, other]
   EXPECT_EQ (track_collection_->get_track_index (folder.id ()), 0);
@@ -570,7 +555,7 @@ TEST_F (TrackCollectionOperatorTest, MoveOutOfFolder)
   // get_enclosing_folder(3) returns nullopt because folder's last_child_index
   // (1) < 3.
   QList<structure::tracks::Track *> tracks;
-  tracks.append (child.get_object_base ());
+  tracks.append (child.get ());
 
   track_collection_operator_->moveTracks (tracks, 3);
 
@@ -603,7 +588,7 @@ TEST_F (TrackCollectionOperatorTest, UndoFolderMoveWithDescendants)
   track_collection_->set_track_expanded (folder.id (), true);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (folder.get_object_base ());
+  tracks.append (folder.get ());
 
   track_collection_operator_->moveTracks (tracks, 4);
   undo_stack_->undo ();
@@ -635,7 +620,7 @@ TEST_F (TrackCollectionOperatorTest, DeleteUndeletableTrackThrows)
   track_collection_->add_track (chord_track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (chord_track.get_object_base ());
+  tracks.append (chord_track.get ());
 
   EXPECT_THROW (
     track_collection_operator_->deleteTracks (tracks), std::invalid_argument);
@@ -652,8 +637,8 @@ TEST_F (TrackCollectionOperatorTest, DeleteMixedDeletableUndeletableThrows)
   track_collection_->add_track (chord_track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (audio.get_object_base ());
-  tracks.append (chord_track.get_object_base ());
+  tracks.append (audio.get ());
+  tracks.append (chord_track.get ());
 
   EXPECT_THROW (
     track_collection_operator_->deleteTracks (tracks), std::invalid_argument);
@@ -683,7 +668,7 @@ TEST_F (TrackCollectionOperatorTest, DeleteWithNullCollection)
   track_collection_->add_track (track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
   // Should not crash and no command pushed
   track_collection_operator_->deleteTracks (tracks);
@@ -698,7 +683,7 @@ TEST_F (TrackCollectionOperatorTest, DeleteWithNullUndoStack)
   track_collection_->add_track (track);
 
   QList<structure::tracks::Track *> tracks;
-  tracks.append (track.get_object_base ());
+  tracks.append (track.get ());
 
   // Should not crash and no command pushed
   track_collection_operator_->deleteTracks (tracks);

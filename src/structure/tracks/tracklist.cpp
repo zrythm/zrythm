@@ -7,12 +7,11 @@
 namespace zrythm::structure::tracks
 {
 
-Tracklist::Tracklist (TrackRegistry &track_registry, QObject * parent)
-    : QObject (parent), track_registry_ (track_registry),
+Tracklist::Tracklist (utils::IObjectRegistry &registry, QObject * parent)
+    : QObject (parent), registry_ (registry),
       track_collection_ (
-        utils::make_qobject_unique<TrackCollection> (track_registry, this)),
-      track_routing_ (
-        utils::make_qobject_unique<TrackRouting> (track_registry, this)),
+        utils::make_qobject_unique<TrackCollection> (registry, this)),
+      track_routing_ (utils::make_qobject_unique<TrackRouting> (registry, this)),
       singleton_tracks_ (utils::make_qobject_unique<SingletonTracks> (this))
 {
 }
@@ -78,9 +77,9 @@ Tracklist::getTrackForTimelineObject (
     case arrangement::ArrangerObject::Type::AudioRegion:
       {
         // Search through all tracks with lanes for this region
-        for (const auto &track_var : collection ()->get_track_span ())
+        for (const auto &track_ref : collection ()->tracks ())
           {
-            auto * track = tracks::from_variant (track_var);
+            auto * track = track_ref.get ();
             if (track->lanes () != nullptr)
               {
                 for (auto * lane : track->lanes ()->lanes_view ())
@@ -109,9 +108,9 @@ Tracklist::getTrackForTimelineObject (
     case arrangement::ArrangerObject::Type::AutomationRegion:
       {
         // Search through all tracks with automation tracklists for this region
-        for (const auto &track_var : collection ()->get_track_span ())
+        for (const auto &track_ref : collection ()->tracks ())
           {
-            auto * track = tracks::from_variant (track_var);
+            auto * track = track_ref.get ();
             if (track->automationTracklist () != nullptr)
               {
                 for (
@@ -171,9 +170,9 @@ Tracklist::getTrackLaneForObject (
     case arrangement::ArrangerObject::Type::AudioRegion:
       {
         // Search through all tracks with lanes for this region
-        for (const auto &track_var : collection ()->get_track_span ())
+        for (const auto &track_ref : collection ()->tracks ())
           {
-            auto * track = tracks::from_variant (track_var);
+            auto * track = track_ref.get ();
             if (track->lanes () != nullptr)
               {
                 for (auto * lane : track->lanes ()->lanes_view ())
@@ -212,17 +211,16 @@ Tracklist::get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const
 {
   for (const auto &tr_ref : collection ()->tracks ())
     {
-      auto * tr = tracks::from_variant (tr_ref.get_object ());
+      auto * tr = tr_ref.get ();
       auto * channel = tr->channel ();
       if (channel == nullptr)
         continue;
 
-      std::vector<plugins::PluginPtrVariant> plugins;
+      std::vector<plugins::PluginUuidReference> plugins;
       channel->get_plugins (plugins);
       if (
         std::ranges::contains (
-          plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base),
-          plugin_id, &plugins::Plugin::get_uuid))
+          plugins, plugin_id, &plugins::PluginUuidReference::id))
         {
           return tr_ref;
         }
@@ -243,7 +241,7 @@ Tracklist::mark_track_for_bounce (
 #if 0
   std::visit (
     [&] (auto &&track) {
-      using TrackT = base_type<decltype (track)>;
+      using TrackT = utils::base_type<decltype (track)>;
       if constexpr (!std::derived_from<TrackT, ChannelTrack>)
         return;
 
@@ -288,7 +286,7 @@ Tracklist::mark_track_for_bounce (
                   mark_track_for_bounce (
                     direct_out_derived, bounce, false, false, true);
                 },
-                convert_to_variant<TrackPtrVariant> (direct_out));
+                convert_to_variant_qobj<TrackPtrVariant> (direct_out));
             }
         }
 
@@ -321,7 +319,7 @@ Tracklist::mark_track_for_bounce (
 bool
 Tracklist::should_be_visible (const Track::Uuid &track_id) const
 {
-  auto track = from_variant (get_track (track_id).value ());
+  const auto * track = get_track (track_id);
   if (!track->visible ())
     return false;
 
@@ -347,35 +345,29 @@ Tracklist::add_folder_parents (
   bool                          prepend) const
 {
   for (
-    const auto &cur_track_var :
-    get_track_span ()
-      | std::views::filter (
-        TrackSpan::derived_from_type_projection<FoldableTrack>))
+    auto * cur_track :
+    collection ()->tracks ()
+      | std::views::transform (&TrackUuidReference::get)
+      | std::views::transform (
+        [] (Track * t) -> FoldableTrack * { return qobject_cast<FoldableTrack *> (t); })
+      | std::views::filter ([] (FoldableTrack * p) { return p != nullptr; }))
     {
-      std::visit (
-        [&] (const auto &cur_track) {
-          using TrackT = base_type<decltype (cur_track)>;
-          if constexpr (std::derived_from<TrackT, FoldableTrack>)
-            {
-              /* last position covered by the foldable track cur_track */
-              int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
+      // last position covered by the foldable track cur_track
+      int last_covered_pos = cur_track->pos_ + (cur_track->size_ - 1);
 
-              if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
-                {
-                  if (prepend)
-                    {
-                      parents.insert (parents.begin (), cur_track);
-                    }
-                  else
-                    {
-                      parents.push_back (cur_track);
-                    }
-                }
+      if (cur_track->pos_ < pos_ && pos_ <= last_covered_pos)
+        {
+          if (prepend)
+            {
+              parents.insert (parents.begin (), cur_track);
             }
-        },
-        cur_track_var);
+          else
+            {
+              parents.push_back (cur_track);
+            }
+        }
     }
-  }
+}
 
 void
 Tracklist::remove_from_folder_parents (const Track::Uuid &track_id)
@@ -396,29 +388,13 @@ Tracklist::multiply_track_heights (
   bool   check_only,
   bool   fire_events)
 {
-  auto span = collection ()->get_track_span ();
-  for (const auto &track_var : span)
+  for (const auto &track_ref : collection ()->tracks ())
     {
-      bool ret = std::visit (
-        [&] (auto &&track) {
-          if (visible_only && !should_be_visible (track->get_uuid ()))
-            return true;
+      auto * track = track_ref.get ();
+      if (visible_only && !should_be_visible (track->get_uuid ()))
+        continue;
 
-          if (!track->multiply_heights (multiplier, visible_only, check_only))
-            {
-              return false;
-            }
-
-          if (!check_only && fire_events)
-            {
-              /* FIXME should be event */
-              // track_widget_update_size (tr->widget_);
-            }
-
-          return true;
-        },
-        track_var);
-      if (!ret)
+      if (!track->multiply_heights (multiplier, visible_only, check_only))
         {
           return false;
         }
@@ -434,7 +410,7 @@ Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
   return std::nullopt;
 #if 0
   auto span =
-    get_track_span () | std::views::filter (TrackSpan::visible_projection);
+    get_track_span () | std::views::filter (co::visible_projection);
   auto current_it =
     std::ranges::find (span, track_id, TrackSpan::uuid_projection);
   auto found = std::ranges::next (current_it, delta);
@@ -453,7 +429,7 @@ Tracklist::clear_selections_for_object_siblings (
   auto obj_var = PROJECT->find_arranger_object_by_id (object_id);
   std::visit (
     [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
+      using ObjT = utils::base_type<decltype (obj)>;
       if constexpr (std::derived_from<ObjT, arrangement::RegionOwnedObject>)
         {
           auto region = obj->get_region ();
@@ -502,7 +478,7 @@ Tracklist::get_timeline_objects () const
             {
               std::visit (
                 [&] (auto &&o) {
-                  using ObjT = base_type<decltype (o)>;
+                  using ObjT = utils::base_type<decltype (o)>;
                   if constexpr (arrangement::BoundedObject<ObjT>)
                     {
                       if (arrangement::ArrangerObjectSpan::bounds_projection (o)
@@ -648,28 +624,23 @@ from_json (const nlohmann::json &j, Tracklist &t)
   from_json (j, *t.track_collection_);
   for (const auto &track_ref : t.track_collection_->tracks ())
     {
-      const auto track_var = track_ref.get_object ();
-      std::visit (
-        [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
-          if constexpr (std::is_same_v<TrackT, ChordTrack>)
-            {
-              t.singletonTracks ()->setChordTrack (track);
-            }
-          else if constexpr (std::is_same_v<TrackT, MarkerTrack>)
-            {
-              t.singletonTracks ()->setMarkerTrack (track);
-            }
-          else if constexpr (std::is_same_v<TrackT, MasterTrack>)
-            {
-              t.singletonTracks ()->setMasterTrack (track);
-            }
-          else if constexpr (std::is_same_v<TrackT, ModulatorTrack>)
-            {
-              t.singletonTracks ()->setModulatorTrack (track);
-            }
-        },
-        track_var);
+      auto * track = track_ref.get ();
+      if (auto * chord = qobject_cast<ChordTrack *> (track))
+        {
+          t.singletonTracks ()->setChordTrack (chord);
+        }
+      else if (auto * marker = qobject_cast<MarkerTrack *> (track))
+        {
+          t.singletonTracks ()->setMarkerTrack (marker);
+        }
+      else if (auto * master = qobject_cast<MasterTrack *> (track))
+        {
+          t.singletonTracks ()->setMasterTrack (master);
+        }
+      else if (auto * modulator = qobject_cast<ModulatorTrack *> (track))
+        {
+          t.singletonTracks ()->setModulatorTrack (modulator);
+        }
     }
   from_json (j, *t.track_routing_);
 }

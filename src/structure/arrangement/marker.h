@@ -1,10 +1,12 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include "structure/arrangement/arranger_object.h"
 #include "utils/icloneable.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::arrangement
 {
@@ -61,16 +63,8 @@ private:
   init_from (Marker &obj, const Marker &other, utils::ObjectCloneType clone_type);
 
   static constexpr auto kMarkerTypeKey = "markerType"sv;
-  friend void           to_json (nlohmann::json &j, const Marker &m)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (m));
-    j[kMarkerTypeKey] = m.marker_type_;
-  }
-  friend void from_json (const nlohmann::json &j, Marker &m)
-  {
-    from_json (j, static_cast<ArrangerObject &> (m));
-    j.at (kMarkerTypeKey).get_to (m.marker_type_);
-  }
+  friend void           to_json (nlohmann::json &j, const Marker &m);
+  friend void           from_json (const nlohmann::json &j, Marker &m);
 
 private:
   /** Marker type. */

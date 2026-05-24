@@ -3,10 +3,11 @@
 
 #include "commands/move_plugins_command.h"
 #include "dsp/parameter.h"
-#include "dsp/processor_base.h"
-#include "plugins/plugin.h"
+#include "plugins/internal_plugin_base.h"
 #include "plugins/plugin_group.h"
 #include "structure/tracks/automation_tracklist.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -19,14 +20,10 @@ protected:
   void SetUp () override
   {
     source_group_ = std::make_unique<plugins::PluginGroup> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
     target_group_ = std::make_unique<plugins::PluginGroup> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
 
     source_atl_ =
@@ -46,10 +43,8 @@ protected:
   plugins::PluginUuidReference
   create_and_append_plugin (plugins::PluginGroup &group)
   {
-    auto ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    auto ref = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
     group.append_plugin (ref);
     return ref;
   }
@@ -72,23 +67,16 @@ protected:
     return { target_group_.get (), target_atl_.get () };
   }
 
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  plugins::PluginRegistry         plugin_registry_;
+  utils::ObjectRegistry registry_;
 
   std::unique_ptr<plugins::PluginGroup> source_group_;
   std::unique_ptr<plugins::PluginGroup> target_group_;
 
-  dsp::TempoMap                tempo_map_{ units::sample_rate (44100) };
-  dsp::TempoMapWrapper         tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry file_audio_source_registry_;
-  structure::arrangement::ArrangerObjectRegistry         object_registry_;
+  dsp::TempoMap        tempo_map_{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper_{ tempo_map_ };
   structure::tracks::AutomationTrackHolder::Dependencies atl_deps_{
     .tempo_map_ = tempo_map_wrapper_,
-    .file_audio_source_registry_ = file_audio_source_registry_,
-    .port_registry_ = port_registry_,
-    .param_registry_ = param_registry_,
-    .object_registry_ = object_registry_
+    .registry_ = registry_,
   };
 
   std::unique_ptr<structure::tracks::AutomationTracklist> source_atl_;
@@ -557,18 +545,17 @@ TEST_F (MovePluginsCommandTest, MovePluginNotInSourceThrows)
 TEST_F (MovePluginsCommandTest, MovePluginWithSingleAutomationTrack)
 {
   auto   ref = create_and_append_plugin (*source_group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
   // Create a parameter and automation track for it
-  auto param_ref = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Test Param");
   plugin->add_parameter (param_ref);
 
   auto at = utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-    tempo_map_wrapper_, file_audio_source_registry_, object_registry_,
-    param_ref);
+    tempo_map_wrapper_, registry_, param_ref);
   source_atl_->add_automation_track (std::move (at));
   ASSERT_EQ (source_atl_->rowCount (), 1);
   ASSERT_EQ (target_atl_->rowCount (), 0);
@@ -598,20 +585,20 @@ TEST_F (MovePluginsCommandTest, MovePluginWithSingleAutomationTrack)
 TEST_F (MovePluginsCommandTest, MovePluginWithMultipleAutomationTracks)
 {
   auto   ref = create_and_append_plugin (*source_group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
   // Create 3 parameters with automation tracks
-  auto param0 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param0 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 0");
-  auto param1 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param1 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 1");
-  auto param2 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_2"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param2 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_2"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 2");
   plugin->add_parameter (param0);
   plugin->add_parameter (param1);
@@ -619,13 +606,13 @@ TEST_F (MovePluginsCommandTest, MovePluginWithMultipleAutomationTracks)
 
   source_atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param0));
+      tempo_map_wrapper_, registry_, param0));
   source_atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param1));
+      tempo_map_wrapper_, registry_, param1));
   source_atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param2));
+      tempo_map_wrapper_, registry_, param2));
   ASSERT_EQ (source_atl_->rowCount (), 3);
 
   MovePluginsCommand cmd (

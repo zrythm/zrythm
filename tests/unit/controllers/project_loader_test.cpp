@@ -6,6 +6,7 @@
 #include "project_json_serializer_test.h"
 #include "structure/project/project_path_provider.h"
 #include "utils/audio.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/qt_helpers.h"
 
@@ -180,11 +181,11 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
     }
 
   const double test_bpm = 120.0;
-  auto         clip_ref =
-    project->get_file_audio_source_registry ().create_object<dsp::FileAudioSource> (
-      buffer, dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
-      project->engine ()->sample_rate (), test_bpm,
-      utils::Utf8String::from_utf8_encoded_string ("test_clip"));
+  auto         clip_ref = utils::create_object<dsp::FileAudioSource> (
+    project->get_registry (), buffer,
+    dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
+    project->engine ()->sample_rate (), test_bpm,
+    utils::Utf8String::from_utf8_encoded_string ("test_clip"));
   auto clip_id = clip_ref.id ();
 
   // Save the project (this writes audio files to disk via
@@ -225,17 +226,16 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
     json, *loaded_project, *loaded_ui_state, *loaded_undo_stack);
 
   // Verify the FileAudioSource was loaded correctly
-  auto * loaded_clip = std::get<dsp::FileAudioSource *> (
-    loaded_project->get_file_audio_source_registry ().find_by_id_or_throw (
-      clip_id));
+  auto &loaded_clip = utils::get_typed<dsp::FileAudioSource> (
+    loaded_project->get_registry (), clip_id);
 
   // These fields are serialized in JSON
-  EXPECT_EQ (loaded_clip->get_name ().view (), "test_clip");
-  EXPECT_EQ (loaded_clip->get_bpm (), test_bpm);
+  EXPECT_EQ (loaded_clip.get_name ().view (), "test_clip");
+  EXPECT_EQ (loaded_clip.get_bpm (), test_bpm);
 
   // These fields are read from the audio file during init_loaded()
-  EXPECT_EQ (loaded_clip->get_num_channels (), num_channels);
-  EXPECT_EQ (loaded_clip->get_num_frames (), num_frames);
+  EXPECT_EQ (loaded_clip.get_num_channels (), num_channels);
+  EXPECT_EQ (loaded_clip.get_num_frames (), num_frames);
 }
 
 } // namespace zrythm::controllers

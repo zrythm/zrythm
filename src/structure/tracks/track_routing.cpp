@@ -8,8 +8,8 @@
 
 namespace zrythm::structure::tracks
 {
-TrackRouting::TrackRouting (TrackRegistry &track_registry, QObject * parent)
-    : QObject (parent), track_registry_ (track_registry)
+TrackRouting::TrackRouting (utils::IObjectRegistry &registry, QObject * parent)
+    : QObject (parent), registry_ (registry)
 {
 }
 
@@ -17,8 +17,7 @@ QVariant
 TrackRouting::getOutputTrack (const Track * source) const
 {
   auto output = get_output_track (source->get_uuid ());
-  return output ? QVariant::fromStdVariant (output.value ().get_object ())
-                : QVariant{};
+  return output ? QVariant::fromValue (output->get ()) : QVariant{};
 }
 
 void
@@ -126,7 +125,7 @@ TrackRouting::get_output_track (const TrackUuid &source) const
       return std::nullopt;
     }
 
-  return TrackUuidReference{ it->second, track_registry_ };
+  return TrackUuidReference{ it->second, registry_ };
 }
 
 void

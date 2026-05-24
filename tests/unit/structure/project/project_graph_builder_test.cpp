@@ -9,6 +9,7 @@
 #include "structure/tracks/track.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
+#include "utils/object_registry.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_settings_backend.h"
@@ -46,34 +47,23 @@ protected:
     app_settings_ =
       std::make_unique<utils::AppSettings> (std::move (mock_backend));
 
-    port_registry_ = std::make_unique<dsp::PortRegistry> (nullptr);
-    param_registry_ = std::make_unique<dsp::ProcessorParameterRegistry> (
-      *port_registry_, nullptr);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     monitor_fader_ = utils::make_qobject_unique<dsp::Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      dsp::PortType::Audio, true, false,
+      *registry_, dsp::PortType::Audio, true, false,
       [] () -> utils::Utf8String { return u8"Test Control Room"; },
       [] (bool) { return false; });
 
     juce::AudioSampleBuffer emphasis_sample (2, 512);
     juce::AudioSampleBuffer normal_sample (2, 512);
     metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      emphasis_sample, normal_sample, true, 1.0f, nullptr);
+      *registry_, emphasis_sample, normal_sample, true, 1.0f, nullptr);
   }
 
   void TearDown () override
   {
     metronome_.reset ();
     monitor_fader_.reset ();
-    param_registry_.reset ();
-    port_registry_.reset ();
+    registry_.reset ();
     app_settings_.reset ();
     plugin_format_manager_.reset ();
     hw_interface_.reset ();
@@ -147,16 +137,15 @@ protected:
     });
   }
 
-  std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;
-  std::filesystem::path                            project_dir_;
-  std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface_;
-  std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager_;
-  test_helpers::MockSettingsBackend *              mock_backend_ptr_{};
-  std::unique_ptr<utils::AppSettings>              app_settings_;
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  utils::QObjectUniquePtr<dsp::Fader>              monitor_fader_;
-  utils::QObjectUniquePtr<dsp::Metronome>          metronome_;
+  std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;
+  std::filesystem::path                           project_dir_;
+  std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface_;
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
+  test_helpers::MockSettingsBackend *             mock_backend_ptr_{};
+  std::unique_ptr<utils::AppSettings>             app_settings_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  utils::QObjectUniquePtr<dsp::Fader>             monitor_fader_;
+  utils::QObjectUniquePtr<dsp::Metronome>         metronome_;
 };
 
 TEST_F (ProjectGraphBuilderTest, DefaultTracksGraphIsValidAfterFinalizeNodes)

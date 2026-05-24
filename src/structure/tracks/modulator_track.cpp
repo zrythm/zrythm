@@ -26,10 +26,7 @@ ModulatorTrack::ModulatorTrack (FinalTrackDependencies dependencies)
     {
       modulator_macro_processors_.emplace_back (
         utils::make_qobject_unique<dsp::ModulatorMacroProcessor> (
-          dsp::ModulatorMacroProcessor::ProcessorBaseDependencies{
-            .port_registry_ = base_dependencies_.port_registry_,
-            .param_registry_ = base_dependencies_.param_registry_ },
-          i, this));
+          base_dependencies_.registry_, i, this));
     }
 }
 

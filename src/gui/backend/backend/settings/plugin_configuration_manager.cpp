@@ -225,15 +225,15 @@ PluginConfigurationManager::activate_plugin_configuration (
           auto name = utils::Utf8String::from_qstring (
             format_qstr (QObject::tr ("{} Output"), descr.getName ()));
           UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-            convert_to_variant<TrackPtrVariant> (group), *PORT_CONNECTIONS_MGR,
+            convert_to_variant_qobj<TrackPtrVariant> (group), *PORT_CONNECTIONS_MGR,
             name));
           num_actions++;
 
           auto pl_audio_outs = std::visit (
             [&] (auto &&pl) {
               return std::ranges::to<std::vector> (
-                dsp::PortSpan{ pl->get_output_ports () }
-                  .template get_elements_by_type<dsp::AudioPort> ());
+                utils::resolve_elements_as<dsp::AudioPort> (
+                  pl->get_output_ports ()));
             },
             pl_var.value ());
 
@@ -249,7 +249,7 @@ PluginConfigurationManager::activate_plugin_configuration (
               name = utils::Utf8String::from_utf8_encoded_string (
                 format_str ("{} {}", descr.getName (), i + 1));
               UNDO_MANAGER->perform (new gui::actions::RenameTrackAction (
-                convert_to_variant<TrackPtrVariant> (fx_track),
+                convert_to_variant_qobj<TrackPtrVariant> (fx_track),
                 *PORT_CONNECTIONS_MGR, name));
               num_actions++;
 
@@ -279,7 +279,7 @@ PluginConfigurationManager::activate_plugin_configuration (
                 TrackSpan{ std::ranges::to<std::vector> (
                   TRACKLIST->get_track_span ().get_selected_tracks ()) },
                 *PORT_CONNECTIONS_MGR,
-                convert_to_variant<TrackPtrVariant> (group)));
+                convert_to_variant_qobj<TrackPtrVariant> (group)));
               num_actions++;
 
               int  l_index = has_stereo_outputs ? i * 2 : i;

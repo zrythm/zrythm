@@ -27,7 +27,7 @@
 
 auto REQUIRE_OBJ_TRACK_NAME_HASH_MATCHES_TRACK =
   [] (const auto &obj, const Track &track) {
-    using T = base_type<decltype (obj)>;
+    using T = utils::base_type<decltype (obj)>;
     if constexpr (std::derived_from<T, RegionImpl<T>>)
       {
         ASSERT_TRUE (obj->id_.track_name_hash_ == track.get_name_hash ());

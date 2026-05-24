@@ -5,6 +5,8 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/automation_track.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -17,23 +19,21 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    registry = std::make_unique<utils::ObjectRegistry> ();
 
-    // Create processor parameter registry and add a test parameter
-    param_id = processor_param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    auto param_id = utils::create_object<dsp::ProcessorParameter> (
+      *registry, *registry, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
       u8"Test Parameter");
 
-    // Create automation track
     automation_track = std::make_unique<AutomationTrack> (
-      *tempo_map_wrapper, file_audio_source_registry, obj_registry,
-      std::move (param_id));
+      *tempo_map_wrapper, *registry, std::move (param_id));
   }
 
   auto create_automation_region (int64_t timeline_pos_samples, int64_t length)
   {
-    auto region_ref = obj_registry.create_object<arrangement::AutomationRegion> (
-      *tempo_map, obj_registry, file_audio_source_registry, nullptr);
+    auto region_ref = utils::create_object<arrangement::AutomationRegion> (
+      *registry, *tempo_map, *registry, nullptr);
     region_ref.get_object_as<arrangement::AutomationRegion> ()
       ->position ()
       ->setSamples (static_cast<double> (timeline_pos_samples));
@@ -49,8 +49,8 @@ protected:
     double                          value,
     double                          position_ticks)
   {
-    auto point_ref =
-      obj_registry.create_object<arrangement::AutomationPoint> (*tempo_map);
+    auto point_ref = utils::create_object<arrangement::AutomationPoint> (
+      *registry, *tempo_map);
     point_ref.get_object_as<arrangement::AutomationPoint> ()->setValue (
       static_cast<float> (value));
     point_ref.get_object_as<arrangement::AutomationPoint> ()
@@ -59,14 +59,10 @@ protected:
     region->add_object (point_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap>        tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  dsp::PortRegistry                     port_registry;
-  dsp::ProcessorParameterRegistry processor_param_registry{ port_registry };
-  dsp::ProcessorParameterUuidReference param_id{ processor_param_registry };
-  arrangement::ArrangerObjectRegistry  obj_registry;
-  dsp::FileAudioSourceRegistry         file_audio_source_registry;
-  std::unique_ptr<AutomationTrack>     automation_track;
+  std::unique_ptr<dsp::TempoMap>         tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>  tempo_map_wrapper;
+  std::unique_ptr<utils::ObjectRegistry> registry;
+  std::unique_ptr<AutomationTrack>       automation_track;
 };
 
 TEST_F (AutomationTrackTest, InitialState)
@@ -249,37 +245,34 @@ TEST_F (AutomationTrackTest, GenerateAutomationTracks)
   class MockProcessor : public dsp::ProcessorBase
   {
   public:
-    MockProcessor (dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
-        : ProcessorBase (dependencies, u8"MockProcessor"),
-          param_registry_ (dependencies.param_registry_)
+    MockProcessor (utils::IObjectRegistry &registry)
+        : ProcessorBase (registry, u8"MockProcessor"), registry_ (registry)
     {
-      // Create test parameters
-      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
-        dependencies.port_registry_,
-        dsp::ProcessorParameter::UniqueId (u8"param1"),
-        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
-        u8"Param 1"));
+      add_parameter (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param1"),
+          dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+          u8"Param 1"));
       get_parameters ()
         .at (0)
         .get_object_as<dsp::ProcessorParameter> ()
         ->set_automatable (true);
 
-      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
-        dependencies.port_registry_,
-        dsp::ProcessorParameter::UniqueId (u8"param2"),
-        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, -1.0f, 1.0f),
-        u8"Param 2"));
+      add_parameter (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param2"),
+          dsp::ParameterRange (dsp::ParameterRange::Type::Linear, -1.0f, 1.0f),
+          u8"Param 2"));
       get_parameters ()
         .at (1)
         .get_object_as<dsp::ProcessorParameter> ()
         ->set_automatable (true);
 
-      // Non-automatable parameter
-      add_parameter (param_registry_.create_object<dsp::ProcessorParameter> (
-        dependencies.port_registry_,
-        dsp::ProcessorParameter::UniqueId (u8"param3"),
-        dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 100.0f),
-        u8"Param 3"));
+      add_parameter (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param3"),
+          dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 100.0f),
+          u8"Param 3"));
       get_parameters ()
         .at (2)
         .get_object_as<dsp::ProcessorParameter> ()
@@ -287,18 +280,13 @@ TEST_F (AutomationTrackTest, GenerateAutomationTracks)
     }
 
   private:
-    dsp::ProcessorParameterRegistry &param_registry_;
+    utils::IObjectRegistry &registry_;
   };
 
-  MockProcessor processor{
-    MockProcessor::ProcessorBaseDependencies{
-                                             .port_registry_ = port_registry,
-                                             .param_registry_ = processor_param_registry }
-  };
+  MockProcessor                                         processor{ *registry };
   std::vector<utils::QObjectUniquePtr<AutomationTrack>> tracks;
   generate_automation_tracks_for_processor (
-    tracks, processor, *tempo_map_wrapper, file_audio_source_registry,
-    obj_registry);
+    tracks, processor, *tempo_map_wrapper, *registry);
 
   // Should create tracks for automatable parameters only (2 of 3)
   EXPECT_EQ (tracks.size (), 2);
@@ -327,9 +315,9 @@ TEST_F (AutomationTrackTest, Serialization)
 
   // Create dummy track with same parameters
   auto dummy_track = std::make_unique<AutomationTrack> (
-    *tempo_map_wrapper, file_audio_source_registry, obj_registry,
+    *tempo_map_wrapper, *registry,
     dsp::ProcessorParameterUuidReference (
-      automation_track->parameter ()->get_uuid (), processor_param_registry));
+      automation_track->parameter ()->get_uuid (), *registry));
 
   // Deserialize into dummy track
   from_json (j, *dummy_track);
@@ -346,14 +334,14 @@ TEST_F (AutomationTrackTest, Serialization)
   EXPECT_EQ (dummy_regions.size (), 1);
 
   auto * dummy_region =
-    std::get<arrangement::AutomationRegion *> (dummy_regions[0].get_object ());
+    dummy_regions[0].get_object_as<arrangement::AutomationRegion> ();
   EXPECT_EQ (dummy_region->position ()->samples (), 100);
   EXPECT_EQ (dummy_region->bounds ()->length ()->samples (), 200);
 
   const auto &dummy_points = dummy_region->get_children_vector ();
   EXPECT_EQ (dummy_points.size (), 1);
   auto * dummy_point =
-    std::get<arrangement::AutomationPoint *> (dummy_points[0].get_object ());
+    dummy_points[0].get_object_as<arrangement::AutomationPoint> ();
   EXPECT_FLOAT_EQ (dummy_point->value (), 0.5f);
   EXPECT_EQ (
     dummy_point->position ()->ticks (),

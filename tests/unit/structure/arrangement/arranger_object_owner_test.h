@@ -28,12 +28,10 @@ class MockArrangerObjectOwner
 
 public:
   MockArrangerObjectOwner (
-    ArrangerObjectRegistry       &registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject *                     parent = nullptr)
-      : QObject (parent),
-        ArrangerObjectOwner<MidiNote> (registry, file_audio_source_registry, *this),
-        ArrangerObjectOwner<Marker> (registry, file_audio_source_registry, *this)
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr)
+      : QObject (parent), ArrangerObjectOwner<MidiNote> (registry, *this),
+        ArrangerObjectOwner<Marker> (registry, *this)
   {
   }
 

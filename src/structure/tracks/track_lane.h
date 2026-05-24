@@ -21,8 +21,7 @@ namespace zrythm::structure::tracks
  * AudioRegion objects. In practice, only one list will be used.
  */
 class TrackLane
-    : public QObject,
-      public utils::UuidIdentifiableObject<TrackLane>,
+    : public utils::UuidIdentifiableObject<TrackLane>,
       public arrangement::ArrangerObjectOwner<arrangement::MidiRegion>,
       public arrangement::ArrangerObjectOwner<arrangement::AudioRegion>
 {
@@ -57,21 +56,16 @@ public:
 
   struct TrackLaneDependencies
   {
-    structure::arrangement::ArrangerObjectRegistry &obj_registry_;
-    dsp::FileAudioSourceRegistry                   &file_audio_source_registry_;
-    SoloedLanesExistFunc                            soloed_lanes_exist_func_;
+    utils::IObjectRegistry &registry_;
+    SoloedLanesExistFunc    soloed_lanes_exist_func_;
   };
 
   TrackLane (TrackLaneDependencies dependencies, QObject * parent = nullptr)
-      : QObject (parent),
-        arrangement::ArrangerObjectOwner<arrangement::MidiRegion> (
-          dependencies.obj_registry_,
-          dependencies.file_audio_source_registry_,
-          *this),
-        arrangement::ArrangerObjectOwner<arrangement::AudioRegion> (
-          dependencies.obj_registry_,
-          dependencies.file_audio_source_registry_,
-          *this),
+      : utils::UuidIdentifiableObject<TrackLane> (parent),
+        arrangement::ArrangerObjectOwner<
+          arrangement::MidiRegion> (dependencies.registry_, *this),
+        arrangement::ArrangerObjectOwner<
+          arrangement::AudioRegion> (dependencies.registry_, *this),
         soloed_lanes_exist_func_ (
           std::move (dependencies.soloed_lanes_exist_func_))
   {

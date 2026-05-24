@@ -60,15 +60,12 @@ ProjectSession::ProjectSession (
           *track_creator_,
           [] (plugins::PluginUuidReference plugin_ref) {
             z_debug ("Plugin instantiation completed");
-            plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ())
-              ->setUiVisible (true);
+            plugin_ref.get ()->setUiVisible (true);
           },
           this)),
       plugin_operator_ (
-        utils::make_qobject_unique<actions::PluginOperator> (
-          *undo_stack_,
-          project_->get_plugin_registry (),
-          this)),
+        utils::make_qobject_unique<
+          actions::PluginOperator> (*undo_stack_, project_->get_registry (), this)),
       file_importer_ (
         utils::make_qobject_unique<actions::FileImporter> (
           *undo_stack_,
@@ -177,12 +174,9 @@ ProjectSession::ProjectSession (
       if (creator_ptr.isNull () || project_ptr.isNull ())
         return std::nullopt;
 
-      auto track_var = project_ptr->tracklist ()->get_track (track_id);
-      if (!track_var.has_value ())
+      auto * track = project_ptr->tracklist ()->get_track (track_id);
+      if (track == nullptr)
         return std::nullopt;
-
-      auto * track = std::visit (
-        [] (auto * t) -> structure::tracks::Track * { return t; }, *track_var);
 
       assert (!track->lanes ()->lanes ().empty ());
 
@@ -323,7 +317,7 @@ ProjectSession::createArrangerObjectSelectionOperator (
       return std::visit (
         [&] (const auto &obj)
           -> actions::ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
-          using ObjT = base_type<decltype (obj)>;
+          using ObjT = utils::base_type<decltype (obj)>;
           if constexpr (structure::arrangement::LaneOwnedObject<ObjT>)
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<

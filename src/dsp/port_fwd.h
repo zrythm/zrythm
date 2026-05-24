@@ -35,7 +35,7 @@ class MidiPort;
 class AudioPort;
 class CVPort;
 using PortVariant = std::variant<MidiPort, AudioPort, CVPort>;
-using PortPtrVariant = to_pointer_variant<PortVariant>;
+using PortPtrVariant = utils::to_pointer_variant<PortVariant>;
 
 template <typename T>
 concept FinalPortSubclass =

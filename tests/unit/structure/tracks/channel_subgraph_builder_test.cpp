@@ -11,7 +11,9 @@
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_send.h"
 #include "structure/tracks/channel_subgraph_builder.h"
-#include "utils/gtest_wrapper.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
+#include "utils/views.h"
 
 #include <QObject>
 
@@ -26,8 +28,8 @@ namespace zrythm::structure::tracks
 class MockTrackProcessor : public dsp::ProcessorBase
 {
 public:
-  MockTrackProcessor (dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
-      : dsp::ProcessorBase (dependencies, u8"MockTrackProcessor")
+  MockTrackProcessor (utils::IObjectRegistry &registry)
+      : dsp::ProcessorBase (registry, u8"MockTrackProcessor")
   {
   }
 
@@ -49,10 +51,7 @@ class ChannelSubgraphBuilderTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-    plugin_registry_ = std::make_unique<plugins::PluginRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     name_provider_ = [] { return u8"Test Channel"; };
     should_be_muted_cb_ = [] (bool solo_status) { return false; };
@@ -73,19 +72,15 @@ protected:
   std::unique_ptr<Channel> createAudioChannel ()
   {
     return std::make_unique<Channel> (
-      *plugin_registry_,
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Audio, name_provider_, false, should_be_muted_cb_);
+      *registry_, dsp::PortType::Audio, name_provider_, false,
+      should_be_muted_cb_);
   }
 
   std::unique_ptr<Channel> createMidiChannel ()
   {
     return std::make_unique<Channel> (
-      *plugin_registry_,
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Midi, name_provider_, false, should_be_muted_cb_);
+      *registry_, dsp::PortType::Midi, name_provider_, false,
+      should_be_muted_cb_);
   }
 
   plugins::PluginUuidReference createMockPlugin (
@@ -105,10 +100,8 @@ protected:
     plugins::PluginConfiguration config;
     config.descr_ = std::move (descriptor);
 
-    auto ref = plugin_registry_->create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      nullptr);
+    auto ref = utils::create_object<plugins::InternalPluginBase> (
+      *registry_, *registry_, nullptr);
     auto * pl = ref.get_object_as<plugins::InternalPluginBase> ();
     pl->set_configuration (config);
 
@@ -150,23 +143,22 @@ protected:
   {
     if (type == dsp::PortType::Audio)
       {
-        return port_registry_->create_object<dsp::AudioPort> (
-          name, dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Mono, 1);
+        return utils::create_object<dsp::AudioPort> (
+          *registry_, name, dsp::PortFlow::Output,
+          dsp::AudioPort::BusLayout::Mono, 1);
       }
     else if (type == dsp::PortType::Midi)
       {
-        return port_registry_->create_object<dsp::MidiPort> (
-          name, dsp::PortFlow::Output);
+        return utils::create_object<dsp::MidiPort> (
+          *registry_, name, dsp::PortFlow::Output);
       }
     throw std::runtime_error ("Unsupported port type");
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
-  Channel::NameProvider                            name_provider_;
-  dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
-  dsp::graph::Graph                                graph_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  Channel::NameProvider                  name_provider_;
+  dsp::Fader::ShouldBeMutedCallback      should_be_muted_cb_;
+  dsp::graph::Graph                      graph_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t  max_block_length_{ units::samples (1024u) };
 
@@ -201,15 +193,13 @@ protected:
   std::unique_ptr<MockTrackProcessor>
   createMockTrackProcessor (dsp::PortType type, int num_channels = 2)
   {
-    auto processor = std::make_unique<
-      MockTrackProcessor> (dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    auto processor = std::make_unique<MockTrackProcessor> (*registry_);
 
     // Add appropriate output ports
     if (type == dsp::PortType::Audio)
       {
-        auto port_ref = port_registry_->create_object<dsp::AudioPort> (
-          u8"Track Out", dsp::PortFlow::Output,
+        auto port_ref = utils::create_object<dsp::AudioPort> (
+          *registry_, u8"Track Out", dsp::PortFlow::Output,
           num_channels == 1
             ? dsp::AudioPort::BusLayout::Mono
             : dsp::AudioPort::BusLayout::Stereo,
@@ -218,8 +208,8 @@ protected:
       }
     else if (type == dsp::PortType::Midi)
       {
-        auto port_ref = port_registry_->create_object<dsp::MidiPort> (
-          u8"Track MIDI Out", dsp::PortFlow::Output);
+        auto port_ref = utils::create_object<dsp::MidiPort> (
+          *registry_, u8"Track MIDI Out", dsp::PortFlow::Output);
         processor->add_output_port (port_ref);
       }
 
@@ -240,15 +230,12 @@ protected:
       graph_.add_node_for_processable (track_processor);
     for (const auto &port_ref : track_processor.get_output_ports ())
       {
-        std::visit (
-          [&] (auto &&port) {
-            auto * node = graph_.add_node_for_processable (*port);
-            if (connect)
-              {
-                track_processor_node->connect_to (*node);
-              }
-          },
-          port_ref.get_object ());
+        auto * port = port_ref.get ();
+        auto * node = graph_.add_node_for_processable (*port);
+        if (connect)
+          {
+            track_processor_node->connect_to (*node);
+          }
       }
   }
 
@@ -256,31 +243,21 @@ protected:
     const dsp::ProcessorBase &src_processor,
     const dsp::ProcessorBase &dest_processor)
   {
-    using ObjectView = utils::UuidIdentifiableObjectView<dsp::PortRegistry>;
-    const auto object_getter = [] (auto &&port_ref) {
-      return port_ref.get_object ();
-    };
     const auto src_output_ports =
-      src_processor.get_output_ports () | std::views::transform (object_getter);
+      src_processor.get_output_ports ()
+      | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get);
     const auto dest_input_ports =
-      dest_processor.get_input_ports () | std::views::transform (object_getter);
+      dest_processor.get_input_ports ()
+      | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get);
 
     auto src_midi_out_ports =
-      src_output_ports
-      | std::views::filter (ObjectView::type_projection<dsp::MidiPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::MidiPort>);
+      src_output_ports | utils::views::qobject_cast_and_filter<dsp::MidiPort>;
     auto dest_midi_in_ports =
-      dest_input_ports
-      | std::views::filter (ObjectView::type_projection<dsp::MidiPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::MidiPort>);
+      dest_input_ports | utils::views::qobject_cast_and_filter<dsp::MidiPort>;
     auto src_audio_out_ports =
-      src_output_ports
-      | std::views::filter (ObjectView::type_projection<dsp::AudioPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::AudioPort>);
+      src_output_ports | utils::views::qobject_cast_and_filter<dsp::AudioPort>;
     auto dest_audio_in_ports =
-      dest_input_ports
-      | std::views::filter (ObjectView::type_projection<dsp::AudioPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::AudioPort>);
+      dest_input_ports | utils::views::qobject_cast_and_filter<dsp::AudioPort>;
 
     const auto verify_conns =
       [this, &src_processor, &dest_processor] (const auto &ports) {
@@ -308,9 +285,9 @@ protected:
     auto * postfader =
       findNodeForProcessable (audio_channel_->get_audio_post_fader ());
 
-    EXPECT_NONNULL (prefader);
-    EXPECT_NONNULL (fader);
-    EXPECT_NONNULL (postfader);
+    EXPECT_NE (prefader, nullptr);
+    EXPECT_NE (fader, nullptr);
+    EXPECT_NE (postfader, nullptr);
 
     // Verify processors are connected correctly
     verifyProcessorsConnected (
@@ -333,9 +310,9 @@ protected:
     auto * postfader =
       findNodeForProcessable (midi_channel_->get_midi_post_fader ());
 
-    EXPECT_NONNULL (prefader);
-    EXPECT_NONNULL (fader);
-    EXPECT_NONNULL (postfader);
+    EXPECT_NE (prefader, nullptr);
+    EXPECT_NE (fader, nullptr);
+    EXPECT_NE (postfader, nullptr);
 
     // Verify processors are connected correctly
     verifyProcessorsConnected (
@@ -524,12 +501,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
-  audio_channel_->get_plugins (plugin_vars);
-  EXPECT_EQ (plugin_vars.size (), 2);
+  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
+  audio_channel_->get_plugins (plugin_refs);
+  EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
-    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
+    plugin_refs | std::views::transform (&plugins::PluginUuidReference::get);
 
   // Verify connections
   verifyProcessorsConnected (*track_processor, *plugins[0]);
@@ -572,12 +549,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithMidiPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
-  midi_channel_->get_plugins (plugin_vars);
-  EXPECT_EQ (plugin_vars.size (), 2);
+  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
+  midi_channel_->get_plugins (plugin_refs);
+  EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
-    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
+    plugin_refs | std::views::transform (&plugins::PluginUuidReference::get);
 
   // Verify connections
   verifyProcessorsConnected (*track_processor, *plugins[0]);
@@ -596,8 +573,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   ASSERT_NE (audio_channel_, nullptr);
 
   // Create a destination audio input port and set it on the send BEFORE building
-  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Destination Track Input", dsp::PortFlow::Input,
+  auto dest_port_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
     dsp::AudioPort::BusLayout::Stereo, 2);
 
   auto &send = audio_channel_->pre_fader_sends ().front ();
@@ -608,7 +585,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Add destination port node to graph (required for connection)
-  graph_.add_node_for_processable (*dest_port_ref.get_object_base ());
+  graph_.add_node_for_processable (*dest_port_ref.get ());
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -631,8 +608,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
     *audio_channel_->pre_fader_sends ().front ());
 
   // Verify send output is connected to destination port by ChannelSubgraphBuilder
-  EXPECT_TRUE (hasConnection (
-    send->get_stereo_out_port (), *dest_port_ref.get_object_base ()));
+  EXPECT_TRUE (
+    hasConnection (send->get_stereo_out_port (), *dest_port_ref.get ()));
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
@@ -641,8 +618,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   ASSERT_NE (audio_channel_, nullptr);
 
   // Create a destination audio input port and set it on the send BEFORE building
-  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Destination Track Input", dsp::PortFlow::Input,
+  auto dest_port_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
     dsp::AudioPort::BusLayout::Stereo, 2);
 
   auto &send = audio_channel_->post_fader_sends ().front ();
@@ -653,7 +630,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
 
   // Add destination port node to graph (required for connection)
-  graph_.add_node_for_processable (*dest_port_ref.get_object_base ());
+  graph_.add_node_for_processable (*dest_port_ref.get ());
 
   // Create mock track processor
   auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
@@ -675,8 +652,8 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
     audio_channel_->get_fader (), *audio_channel_->post_fader_sends ().front ());
 
   // Verify send output is connected to destination port by ChannelSubgraphBuilder
-  EXPECT_TRUE (hasConnection (
-    send->get_stereo_out_port (), *dest_port_ref.get_object_base ()));
+  EXPECT_TRUE (
+    hasConnection (send->get_stereo_out_port (), *dest_port_ref.get ()));
 }
 
 TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
@@ -705,12 +682,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithSingleMonoAudioPlugin)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
-  audio_channel_->get_plugins (plugin_vars);
-  EXPECT_EQ (plugin_vars.size (), 1);
+  std::vector<plugins::PluginUuidReference> plugin_refs;
+  audio_channel_->get_plugins (plugin_refs);
+  EXPECT_EQ (plugin_refs.size (), 1);
 
   auto plugins =
-    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
+    plugin_refs | std::views::transform (&plugins::PluginUuidReference::get);
 
   // Check that we have connections between components
   verifyProcessorsConnected (*track_processor, *plugins.front ());
@@ -752,12 +729,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
-  audio_channel_->get_plugins (plugin_vars);
-  EXPECT_EQ (plugin_vars.size (), 2);
+  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
+  audio_channel_->get_plugins (plugin_refs);
+  EXPECT_EQ (plugin_refs.size (), 2);
 
   auto plugins =
-    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
+    plugin_refs | std::views::transform (&plugins::PluginUuidReference::get);
 
   // Verify connections handle asymmetric I/O correctly
   verifyProcessorsConnected (*track_processor, *plugins.front ());
@@ -805,12 +782,12 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithInstrumentPlugin)
   });
 
   // Get plugin objects
-  std::vector<zrythm::plugins::PluginPtrVariant> plugin_vars;
-  audio_channel_->get_plugins (plugin_vars);
-  EXPECT_EQ (plugin_vars.size (), 1);
+  std::vector<zrythm::plugins::PluginUuidReference> plugin_refs;
+  audio_channel_->get_plugins (plugin_refs);
+  EXPECT_EQ (plugin_refs.size (), 1);
 
   auto plugins =
-    plugin_vars | std::views::transform (&plugins::plugin_ptr_variant_to_base);
+    plugin_refs | std::views::transform ([] (auto &ref) { return ref.get (); });
 
   // Verify MIDI to audio conversion path
   verifyProcessorsConnected (*track_processor, *plugins.front ());

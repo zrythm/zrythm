@@ -49,10 +49,10 @@ public:
    */
   template <RegionObject RegionType>
   void generate_events (
-    this auto                       &self,
-    const dsp::TempoMap             &tempo_map,
-    RangeOf<const RegionType *> auto regions,
-    utils::ExpandableTickRange       affected_range)
+    this auto                              &self,
+    const dsp::TempoMap                    &tempo_map,
+    utils::RangeOf<const RegionType *> auto regions,
+    utils::ExpandableTickRange              affected_range)
   {
     // Convert tick range to sample range
     const auto sample_interval = [&affected_range, &tempo_map] ()
@@ -181,9 +181,9 @@ public:
    * @param affected_range The range of ticks to process.
    */
   void generate_midi_events (
-    const dsp::TempoMap                          &tempo_map,
-    RangeOf<const arrangement::MidiRegion *> auto midi_regions,
-    utils::ExpandableTickRange                    affected_range)
+    const dsp::TempoMap                                 &tempo_map,
+    utils::RangeOf<const arrangement::MidiRegion *> auto midi_regions,
+    utils::ExpandableTickRange                           affected_range)
   {
     generate_events<arrangement::MidiRegion> (
       tempo_map, midi_regions, affected_range);
@@ -201,9 +201,9 @@ public:
    * @param affected_range The range of ticks to process.
    */
   void generate_midi_events (
-    const dsp::TempoMap                           &tempo_map,
-    RangeOf<const arrangement::ChordRegion *> auto chord_regions,
-    utils::ExpandableTickRange                     affected_range)
+    const dsp::TempoMap                                  &tempo_map,
+    utils::RangeOf<const arrangement::ChordRegion *> auto chord_regions,
+    utils::ExpandableTickRange                            affected_range)
   {
     generate_events<arrangement::ChordRegion> (
       tempo_map, chord_regions, affected_range);
@@ -310,9 +310,9 @@ public:
    * @param affected_range The range of ticks to process.
    */
   void generate_audio_events (
-    const dsp::TempoMap                           &tempo_map,
-    RangeOf<const arrangement::AudioRegion *> auto audio_regions,
-    utils::ExpandableTickRange                     affected_range)
+    const dsp::TempoMap                                  &tempo_map,
+    utils::RangeOf<const arrangement::AudioRegion *> auto audio_regions,
+    utils::ExpandableTickRange                            affected_range)
   {
     generate_events<arrangement::AudioRegion> (
       tempo_map, audio_regions, affected_range);
@@ -401,9 +401,9 @@ public:
    * @param affected_range The range of ticks to process.
    */
   void generate_automation_events (
-    const dsp::TempoMap                                &tempo_map,
-    RangeOf<const arrangement::AutomationRegion *> auto automation_regions,
-    utils::ExpandableTickRange                          affected_range)
+    const dsp::TempoMap &tempo_map,
+    utils::RangeOf<const arrangement::AutomationRegion *> auto automation_regions,
+    utils::ExpandableTickRange affected_range)
   {
     generate_events<arrangement::AutomationRegion> (
       tempo_map, automation_regions, affected_range);

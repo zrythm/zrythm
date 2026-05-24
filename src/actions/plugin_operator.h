@@ -6,6 +6,7 @@
 #include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 #include "undo/undo_stack.h"
+#include "utils/iobject_registry.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -20,9 +21,9 @@ class PluginOperator : public QObject
 
 public:
   explicit PluginOperator (
-    undo::UndoStack         &undo_stack,
-    plugins::PluginRegistry &plugin_registry,
-    QObject *                parent = nullptr)
+    undo::UndoStack        &undo_stack,
+    utils::IObjectRegistry &plugin_registry,
+    QObject *               parent = nullptr)
       : QObject (parent), plugin_registry_ (plugin_registry),
         undo_stack_ (undo_stack)
   {
@@ -60,8 +61,8 @@ public:
     structure::tracks::Track * track);
 
 private:
-  plugins::PluginRegistry &plugin_registry_;
-  undo::UndoStack         &undo_stack_;
+  utils::IObjectRegistry &plugin_registry_;
+  undo::UndoStack        &undo_stack_;
 };
 
 } // namespace zrythm::actions

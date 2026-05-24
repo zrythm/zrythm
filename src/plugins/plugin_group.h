@@ -84,11 +84,10 @@ public:
   Q_ENUM (DeviceGroupType)
 
   PluginGroup (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    plugins::PluginRegistry                      &plugin_registry,
-    DeviceGroupType                               type,
-    ProcessingTypeHint                            processing_type,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    DeviceGroupType         type,
+    ProcessingTypeHint      processing_type,
+    QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (PluginGroup)
   ~PluginGroup () override;
 
@@ -128,12 +127,9 @@ public:
 
   QVariant element_at_idx (size_t idx) const;
 
-  /**
-   * @brief Returns all plugins in the group (scanning recursively).
-   *
-   * @param pls Vector to add plugins to.
-   */
-  void get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
+  void get_plugins (
+    std::vector<plugins::PluginUuidReference> &plugins,
+    bool                                       recursive = true) const;
 
 private:
   static constexpr auto kDeviceGroupsKey = "deviceGroups"sv;
@@ -142,12 +138,11 @@ private:
   friend void           from_json (const nlohmann::json &j, PluginGroup &l);
 
 private:
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
-  plugins::PluginRegistry                      &plugin_registry_;
-  const ProcessingTypeHint                      processing_type_;
-  const DeviceGroupType                         type_;
-  utils::QObjectUniquePtr<dsp::Fader>           fader_;
-  QString                                       name_;
+  utils::IObjectRegistry             &registry_;
+  const ProcessingTypeHint            processing_type_;
+  const DeviceGroupType               type_;
+  utils::QObjectUniquePtr<dsp::Fader> fader_;
+  QString                             name_;
 
   struct DeviceGroupImpl;
   std::unique_ptr<DeviceGroupImpl> pimpl_;

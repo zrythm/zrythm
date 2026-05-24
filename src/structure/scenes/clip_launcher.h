@@ -20,9 +20,9 @@ class ClipLauncher : public QObject
 
 public:
   ClipLauncher (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    const tracks::TrackCollection       &track_collection,
-    QObject *                            parent = nullptr);
+    utils::IObjectRegistry        &registry,
+    const tracks::TrackCollection &track_collection,
+    QObject *                      parent = nullptr);
 
   SceneList * scenes () const { return scene_list_.get (); }
 
@@ -37,8 +37,8 @@ private:
 private:
   utils::QObjectUniquePtr<SceneList> scene_list_;
 
-  arrangement::ArrangerObjectRegistry &object_registry_;
-  const tracks::TrackCollection       &track_collection_;
+  utils::IObjectRegistry        &registry_;
+  const tracks::TrackCollection &track_collection_;
 };
 
 } // namespace zrythm::structure::scenes

@@ -93,7 +93,7 @@ public:
    * automatable. If false, no parameter will be automatable.
    */
   Fader (
-    dsp::ProcessorBase::ProcessorBaseDependencies      dependencies,
+    utils::IObjectRegistry                            &registry,
     dsp::PortType                                      signal_type,
     bool                                               hard_limit_output,
     bool                                               make_params_automatable,
@@ -249,43 +249,14 @@ public:
   friend void
   init_from (Fader &obj, const Fader &other, utils::ObjectCloneType clone_type);
 
-  dsp::ProcessorParameter &get_amp_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*amp_id_));
-  }
-  dsp::ProcessorParameter &get_balance_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*balance_id_));
-  }
-  dsp::ProcessorParameter &get_mute_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*mute_id_));
-  }
-  dsp::ProcessorParameter &get_solo_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*solo_id_));
-  }
-  dsp::ProcessorParameter &get_listen_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*listen_id_));
-  }
-  dsp::ProcessorParameter &get_mono_compat_enabled_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (
-        *mono_compat_enabled_id_));
-  }
-  dsp::ProcessorParameter &get_swap_phase_param () const
-  {
-    return *std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (*swap_phase_id_));
-  }
-  dsp::AudioPort &get_stereo_in_port () const
+  dsp::ProcessorParameter &get_amp_param () const;
+  dsp::ProcessorParameter &get_balance_param () const;
+  dsp::ProcessorParameter &get_mute_param () const;
+  dsp::ProcessorParameter &get_solo_param () const;
+  dsp::ProcessorParameter &get_listen_param () const;
+  dsp::ProcessorParameter &get_mono_compat_enabled_param () const;
+  dsp::ProcessorParameter &get_swap_phase_param () const;
+  dsp::AudioPort          &get_stereo_in_port () const
   {
     if (!is_audio ())
       {

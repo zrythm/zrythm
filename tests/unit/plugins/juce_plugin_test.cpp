@@ -8,6 +8,7 @@
 #include "plugins/juce_plugin.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
+#include "utils/object_registry.h"
 #include "utils/serialization.h"
 
 #include "helpers/scoped_juce_qapplication.h"
@@ -87,9 +88,7 @@ class JucePluginTest
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     sample_rate_ = units::sample_rate (48000);
     buffer_size_ = units::samples (1024);
@@ -180,13 +179,12 @@ protected:
       });
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<JucePlugin>                      plugin_;
-  std::unique_ptr<PluginDescriptor>                descriptor_;
-  std::unique_ptr<PluginConfiguration>             config_;
-  std::unique_ptr<MockAudioPluginInstance>         mock_plugin_;
-  units::sample_rate_t                             sample_rate_{};
+  std::unique_ptr<utils::ObjectRegistry>   registry_;
+  std::unique_ptr<JucePlugin>              plugin_;
+  std::unique_ptr<PluginDescriptor>        descriptor_;
+  std::unique_ptr<PluginConfiguration>     config_;
+  std::unique_ptr<MockAudioPluginInstance> mock_plugin_;
+  units::sample_rate_t                     sample_rate_{};
   units::sample_u32_t buffer_size_{ units::samples (1024) };
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
@@ -195,9 +193,7 @@ private:
   void setupJucePlugin (JucePlugin::CreatePluginInstanceAsyncFunc func)
   {
     plugin_ = std::make_unique<JucePlugin> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      func, [this] () { return sample_rate_; },
+      *registry_, func, [this] () { return sample_rate_; },
       [this] () { return buffer_size_; }, createMockTopLevelWindowProvider ());
   }
 };
@@ -231,16 +227,16 @@ TEST_F (JucePluginTest, AsyncInstantiationSuccess)
   const auto &in_ports = plugin_->get_input_ports ();
   EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (in_ports.at (0).get_object ()));
+    qobject_cast<dsp::AudioPort *> (in_ports.at (0).get ()) != nullptr);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (in_ports.at (1).get_object ()));
+    qobject_cast<dsp::MidiPort *> (in_ports.at (1).get ()) != nullptr);
 
   const auto &out_ports = plugin_->get_output_ports ();
   EXPECT_EQ (out_ports.size (), 2);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (out_ports.at (0).get_object ()));
+    qobject_cast<dsp::AudioPort *> (out_ports.at (0).get ()) != nullptr);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (out_ports.at (1).get_object ()));
+    qobject_cast<dsp::MidiPort *> (out_ports.at (1).get ()) != nullptr);
 }
 
 TEST_F (JucePluginTest, AsyncInstantiationFailure)
@@ -403,8 +399,7 @@ TEST_F (JucePluginTest, StateSavingLoading)
     });
 
   auto deserialized_plugin = std::make_unique<JucePlugin> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    *registry_,
     [&mock] (
       const juce::PluginDescription &, double, int,
       std::function<void (
@@ -713,8 +708,7 @@ TEST_F (JucePluginTest, SerializationPreservesState)
 
   // Create new plugin instance for deserialization
   auto deserialized_plugin = std::make_unique<JucePlugin> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    *registry_,
     [] (
       const juce::PluginDescription &, double, int,
       std::function<void (
@@ -761,9 +755,9 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   const auto &in_ports = deserialized_plugin->get_input_ports ();
   EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::AudioPort *> (in_ports.at (0).get_object ()));
+    qobject_cast<dsp::AudioPort *> (in_ports.at (0).get ()) != nullptr);
   EXPECT_TRUE (
-    std::holds_alternative<dsp::MidiPort *> (in_ports.at (1).get_object ()));
+    qobject_cast<dsp::MidiPort *> (in_ports.at (1).get ()) != nullptr);
 
   const auto &out_ports = deserialized_plugin->get_output_ports ();
   EXPECT_EQ (out_ports.size (), 2);
@@ -882,8 +876,7 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
 
   // Create new plugin instance for deserialization
   auto deserialized_plugin = std::make_unique<JucePlugin> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    *registry_,
     [&mock] (
       const juce::PluginDescription &, double, int,
       std::function<void (

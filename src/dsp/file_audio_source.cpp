@@ -22,12 +22,17 @@
 namespace zrythm::dsp
 {
 
+FileAudioSource::FileAudioSource (QObject * parent)
+    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
+{
+}
+
 FileAudioSource::FileAudioSource (
   const std::filesystem::path &full_path,
   units::sample_rate_t         project_sample_rate,
   bpm_t                        current_bpm,
   QObject *                    parent)
-    : QObject (parent)
+    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
 {
   init_from_file (full_path, project_sample_rate, current_bpm);
 }
@@ -39,7 +44,7 @@ FileAudioSource::FileAudioSource (
   bpm_t                            current_bpm,
   const utils::Utf8String         &name,
   QObject *                        parent)
-    : QObject (parent)
+    : utils::UuidIdentifiableObject<FileAudioSource> (parent)
 {
   if (buf.getNumSamples () == 0)
     {
@@ -321,21 +326,24 @@ FileAudioSourceWriter::write_to_file ()
     }
 }
 
+static constexpr auto kNameKey = "name"sv;
+static constexpr auto kBpmKey = "bpm"sv;
+
 void
 to_json (nlohmann::json &j, const FileAudioSource &clip)
 {
   to_json (
     j, static_cast<const FileAudioSource::UuidIdentifiableObject &> (clip));
-  j[FileAudioSource::kNameKey] = clip.name_;
-  j[FileAudioSource::kBpmKey] = clip.bpm_;
+  j[kNameKey] = clip.name_;
+  j[kBpmKey] = clip.bpm_;
 }
 
 void
 from_json (const nlohmann::json &j, FileAudioSource &clip)
 {
   from_json (j, static_cast<FileAudioSource::UuidIdentifiableObject &> (clip));
-  j.at (FileAudioSource::kNameKey).get_to (clip.name_);
-  j.at (FileAudioSource::kBpmKey).get_to (clip.bpm_);
+  j.at (kNameKey).get_to (clip.name_);
+  j.at (kBpmKey).get_to (clip.bpm_);
 }
 
 } // namespace zrythm::dsp

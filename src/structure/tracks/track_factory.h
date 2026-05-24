@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/tracks/track_all.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::structure::tracks
 {
@@ -40,7 +41,7 @@ public:
     auto build ()
     {
       auto obj_ref =
-        track_deps_.track_registry_.create_object<TrackT> (track_deps_);
+        utils::create_object<TrackT> (track_deps_.registry_, track_deps_);
       auto * track = obj_ref.template get_object_as<TrackT> ();
       track->set_default_name ();
       return obj_ref;
@@ -100,8 +101,7 @@ public:
   auto clone_new_object_identity (const TrackT &other) const
   {
     auto track_dependencies = dependencies_provider_ ();
-    return track_dependencies.plugin_registry_.clone_object (
-      other, track_dependencies.plugin_registry_);
+    return utils::clone_object (other, track_dependencies.registry_);
   }
 
   template <typename TrackT>
@@ -111,8 +111,7 @@ public:
     TrackT * new_obj{};
 
     new_obj = other.clone_qobject (
-      &owner, utils::ObjectCloneType::Snapshot,
-      track_dependencies.plugin_registry_);
+      &owner, utils::ObjectCloneType::Snapshot, track_dependencies.registry_);
     return new_obj;
   }
 

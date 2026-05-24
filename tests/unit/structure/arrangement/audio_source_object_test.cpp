@@ -5,6 +5,8 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "utils/audio.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 
@@ -22,9 +24,10 @@ protected:
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
     // Create & register a dummy audio source
-    source_ref = registry.create_object<dsp::FileAudioSource> (
-      utils::audio::AudioBuffer (2, 512), utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.0, u8"Test Audio Source");
+    source_ref = utils::create_object<dsp::FileAudioSource> (
+      registry, utils::audio::AudioBuffer (2, 512),
+      utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
+      u8"Test Audio Source");
 
     // Create audio source object
     source_object = std::make_unique<AudioSourceObject> (
@@ -32,7 +35,7 @@ protected:
   }
 
   std::unique_ptr<dsp::TempoMap>                   tempo_map;
-  dsp::FileAudioSourceRegistry                     registry;
+  utils::ObjectRegistry                            registry;
   std::optional<dsp::FileAudioSourceUuidReference> source_ref;
   std::shared_ptr<dsp::FileAudioSource>            dummy_audio_source;
   std::unique_ptr<AudioSourceObject>               source_object;
@@ -56,9 +59,10 @@ TEST_F (AudioSourceObjectTest, Serialization)
   nlohmann::json j;
   to_json (j, *source_object);
 
-  auto dummy_source_ref = registry.create_object<dsp::FileAudioSource> (
-    utils::audio::AudioBuffer (2, 16), utils::audio::BitDepth::BIT_DEPTH_32,
-    units::sample_rate (44100), 120.0, u8"Unused dummy Audio Source");
+  auto dummy_source_ref = utils::create_object<dsp::FileAudioSource> (
+    registry, utils::audio::AudioBuffer (2, 16),
+    utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
+    u8"Unused dummy Audio Source");
 
   // Create new object
   auto new_source_object = std::make_unique<AudioSourceObject> (
@@ -91,8 +95,7 @@ TEST_F (AudioSourceObjectTest, ObjectCloning)
 // rebuilt to reflect the new buffer state.
 TEST_F (AudioSourceObjectTest, AudioSourceReflectsRepopulatedBuffer)
 {
-  auto * file_source = std::get<dsp::FileAudioSource *> (
-    registry.find_by_id_or_throw (source_ref->id ()));
+  auto * file_source = source_ref->get ();
   ASSERT_EQ (file_source->get_num_frames (), 512);
   ASSERT_EQ (source_object->get_audio_source ().getTotalLength (), 512);
 
@@ -117,8 +120,7 @@ TEST_F (AudioSourceObjectTest, BufferChangeEmitsPropertiesChanged)
   QSignalSpy spy (source_object.get (), &ArrangerObject::propertiesChanged);
   ASSERT_TRUE (spy.isValid ());
 
-  auto * file_source = std::get<dsp::FileAudioSource *> (
-    registry.find_by_id_or_throw (source_ref->id ()));
+  auto * file_source = source_ref->get ();
 
   // Simulate buffer change as happens during init_loaded()
   file_source->clear_frames ();

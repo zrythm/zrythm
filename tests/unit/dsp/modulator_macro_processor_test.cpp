@@ -4,6 +4,8 @@
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port.h"
 #include "dsp/port_connection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -20,10 +22,8 @@ protected:
   void SetUp () override
   {
     // Create macro processor
-    macro_processor = std::make_unique<ModulatorMacroProcessor> (
-      ModulatorMacroProcessor::ProcessorBaseDependencies{
-        .port_registry_ = port_registry, .param_registry_ = param_registry },
-      0, nullptr);
+    macro_processor =
+      std::make_unique<ModulatorMacroProcessor> (registry, 0, nullptr);
 
     // Get references to ports
     cv_in = &macro_processor->get_cv_in_port ();
@@ -31,8 +31,9 @@ protected:
     macro_param = &macro_processor->get_macro_param ();
 
     // Create modulation source
-    mod_source_ref = port_registry.create_object<CVPort> (
-      utils::Utf8String::from_utf8_encoded_string ("LFO"), PortFlow::Output);
+    mod_source_ref = utils::create_object<CVPort> (
+      registry, utils::Utf8String::from_utf8_encoded_string ("LFO"),
+      PortFlow::Output);
     mod_source = mod_source_ref->get_object_as<CVPort> ();
 
     // Prepare for processing
@@ -53,8 +54,7 @@ protected:
     tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
   }
 
-  dsp::PortRegistry                        port_registry;
-  dsp::ProcessorParameterRegistry          param_registry{ port_registry };
+  utils::ObjectRegistry                    registry;
   std::unique_ptr<ModulatorMacroProcessor> macro_processor;
 
   // Port references
@@ -63,10 +63,10 @@ protected:
   ProcessorParameter * macro_param{};
 
   // Modulation source
-  std::optional<PortUuidReference>           mod_source_ref;
-  CVPort *                                   mod_source{};
-  std::unique_ptr<graph_test::MockTransport> mock_transport_;
-  std::unique_ptr<dsp::TempoMap>             tempo_map_;
+  std::optional<utils::TypedUuidReference<CVPort>> mod_source_ref;
+  CVPort *                                         mod_source{};
+  std::unique_ptr<graph_test::MockTransport>       mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                   tempo_map_;
 };
 
 TEST_F (ModulatorMacroProcessorTest, BasicConstruction)
@@ -127,8 +127,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
   cv_in->set_port_sources (sources);
 
   // Create second modulation source
-  auto mod_source2_ref = port_registry.create_object<CVPort> (
-    utils::Utf8String::from_utf8_encoded_string ("LFO2"), PortFlow::Output);
+  auto mod_source2_ref = utils::create_object<CVPort> (
+    registry, utils::Utf8String::from_utf8_encoded_string ("LFO2"),
+    PortFlow::Output);
   auto mod_source2 = mod_source2_ref.get_object_as<CVPort> ();
   mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
   for (
@@ -191,10 +192,7 @@ TEST_F (ModulatorMacroProcessorTest, SerializationRoundTrip)
   to_json (j, *macro_processor);
 
   // Create new processor from JSON
-  ModulatorMacroProcessor new_processor (
-    ModulatorMacroProcessor::ProcessorBaseDependencies{
-      .port_registry_ = port_registry, .param_registry_ = param_registry },
-    3, nullptr);
+  ModulatorMacroProcessor new_processor (registry, 3, nullptr);
   from_json (j, new_processor);
 
   // Verify properties match original

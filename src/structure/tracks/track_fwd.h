@@ -37,16 +37,8 @@ using TrackVariant = std::variant<
   AudioTrack,
   ChordTrack,
   ModulatorTrack>;
-using TrackPtrVariant = to_pointer_variant<TrackVariant>;
-using TrackRefVariant = to_reference_variant<TrackVariant>;
-using TrackConstRefVariant = to_const_reference_variant<TrackVariant>;
-using TrackUniquePtrVariant = to_unique_ptr_variant<TrackVariant>;
-using OptionalTrackPtrVariant = std::optional<TrackPtrVariant>;
-
+using TrackPtrVariant = utils::to_pointer_variant<TrackVariant>;
 using TrackUuid = utils::UuidIdentifiableObject<Track>::Uuid;
-
-using TrackResolver =
-  utils::UuidIdentifiablObjectResolver<TrackPtrVariant, TrackUuid>;
 
 template <typename TrackT>
 concept FinalTrackSubclass =

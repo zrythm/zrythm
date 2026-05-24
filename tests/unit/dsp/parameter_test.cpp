@@ -13,6 +13,8 @@
 #include "utils/enum_utils.h"
 #include "utils/format_boost.h"
 #include "utils/logger.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 
@@ -32,8 +34,8 @@ protected:
   void SetUp () override
   {
     // Create parameter with new constructor
-    param_ref = param_registry.create_object<ProcessorParameter> (
-      port_registry,
+    param_ref = utils::create_object<ProcessorParameter> (
+      registry, registry,
       ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string ("Cutoff")),
       ParameterRange (
@@ -44,8 +46,9 @@ protected:
       param->get_modulation_input_port_ref ().get_object_as<CVPort> ();
 
     // Create modulation source CV port
-    mod_source_ref = port_registry.create_object<CVPort> (
-      utils::Utf8String::from_utf8_encoded_string ("LFO"), PortFlow::Output);
+    mod_source_ref = utils::create_object<CVPort> (
+      registry, utils::Utf8String::from_utf8_encoded_string ("LFO"),
+      PortFlow::Output);
     mod_source = mod_source_ref->get_object_as<CVPort> ();
 
     // Set up processing
@@ -73,16 +76,15 @@ protected:
     tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
   }
 
-  dsp::PortRegistry               port_registry;
-  dsp::ProcessorParameterRegistry param_registry{ port_registry };
-  std::optional<ProcessorParameterUuidReference> param_ref;
-  ProcessorParameter *                           param;
-  CVPort *                                       param_mod_input{};
-  std::optional<PortUuidReference>               mod_source_ref;
-  CVPort *                                       mod_source{};
-  std::vector<CVPort *>                          mod_sources;
-  std::unique_ptr<graph_test::MockTransport>     mock_transport_;
-  std::unique_ptr<dsp::TempoMap>                 tempo_map_;
+  utils::ObjectRegistry                            registry;
+  std::optional<ProcessorParameterUuidReference>   param_ref;
+  ProcessorParameter *                             param;
+  CVPort *                                         param_mod_input{};
+  std::optional<utils::TypedUuidReference<CVPort>> mod_source_ref;
+  CVPort *                                         mod_source{};
+  std::vector<CVPort *>                            mod_sources;
+  std::unique_ptr<graph_test::MockTransport>       mock_transport_;
+  std::unique_ptr<dsp::TempoMap>                   tempo_map_;
 };
 
 TEST_F (ProcessorParameterTest, BasicParameterSetup)
@@ -200,8 +202,9 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
 TEST_F (ProcessorParameterTest, MultipleModulationSources)
 {
   // Create second modulation source
-  auto mod_source2_ref = port_registry.create_object<CVPort> (
-    utils::Utf8String::from_utf8_encoded_string ("LFO2"), PortFlow::Output);
+  auto mod_source2_ref = utils::create_object<CVPort> (
+    registry, utils::Utf8String::from_utf8_encoded_string ("LFO2"),
+    PortFlow::Output);
   auto mod_source2 = mod_source2_ref.get_object_as<CVPort> ();
   mod_source2->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
@@ -284,7 +287,7 @@ TEST_F (ProcessorParameterTest, SerializationRoundTrip)
 
   // Create new param from JSON
   auto new_param = std::make_unique<ProcessorParameter> (
-    port_registry,
+    registry,
     ProcessorParameter::UniqueId (
       utils::Utf8String::from_utf8_encoded_string ("Cutoff")),
     ParameterRange (
@@ -302,19 +305,19 @@ TEST_F (ProcessorParameterTest, ParameterTypeHandling)
 {
   // Test Linear type
   ProcessorParameter linearParam (
-    port_registry, ProcessorParameter::UniqueId (u8"linear"),
+    registry, ProcessorParameter::UniqueId (u8"linear"),
     ParameterRange (ParameterRange::Type::Linear, 4.f, 8.f), u8"Linear");
   EXPECT_FLOAT_EQ (linearParam.range ().convertFrom0To1 (0.5f), 6.f);
 
   // Test Logarithmic type
   ProcessorParameter logParam (
-    port_registry, ProcessorParameter::UniqueId (u8"log"),
+    registry, ProcessorParameter::UniqueId (u8"log"),
     ParameterRange (ParameterRange::Type::Logarithmic, 20.f, 20000.f), u8"Log");
   EXPECT_NEAR (logParam.range ().convertFrom0To1 (0.8f), 5023.7734f, 0.1f);
 
   // Test Toggle type
   ProcessorParameter toggleParam (
-    port_registry, ProcessorParameter::UniqueId (u8"toggle"),
+    registry, ProcessorParameter::UniqueId (u8"toggle"),
     ParameterRange (ParameterRange::Type::Toggle, 0.f, 1.f), u8"Toggle");
   EXPECT_FLOAT_EQ (
     toggleParam.range ().convertFrom0To1 (0.5f), 1.f); // Should clamp to 1
@@ -383,19 +386,28 @@ TEST_F (ProcessorParameterTest, NoModulationSources)
 }
 TEST_F (ProcessorParameterTest, ParameterRegistryLifecycle)
 {
-  // Verify initial parameter is registered
-  EXPECT_EQ (param_registry.size (), 1);
+  // Verify initial registry state (param + its internal CV port + mod source)
+  const auto initial_size =
+    registry.count_matching<dsp::ProcessorParameter> ()
+    + registry.count_matching<dsp::CVPort> ();
+  EXPECT_EQ (initial_size, 3u);
 
-  // Create second parameter
-  auto param2_ref =
-    std::make_optional (param_registry.create_object<ProcessorParameter> (
-      port_registry, ProcessorParameter::UniqueId (u8"Resonance"),
+  // Create second parameter (adds param + its internal CV port)
+  auto param2_ref = std::make_optional (
+    utils::create_object<ProcessorParameter> (
+      registry, registry, ProcessorParameter::UniqueId (u8"Resonance"),
       ParameterRange (ParameterRange::Type::Linear, 0.f, 1.f), u8"Resonance"));
-  EXPECT_EQ (param_registry.size (), 2);
+  EXPECT_EQ (
+    registry.count_matching<dsp::ProcessorParameter> ()
+      + registry.count_matching<dsp::CVPort> (),
+    initial_size + 2);
 
-  // Release reference - should deregister
+  // Release reference - should deregister both the param and its internal port
   param2_ref.reset ();
-  EXPECT_EQ (param_registry.size (), 1);
+  EXPECT_EQ (
+    registry.count_matching<dsp::ProcessorParameter> ()
+      + registry.count_matching<dsp::CVPort> (),
+    initial_size);
 }
 
 TEST_F (ProcessorParameterTest, UuidReferenceSerialization)
@@ -405,7 +417,7 @@ TEST_F (ProcessorParameterTest, UuidReferenceSerialization)
   to_json (j, param_ref.value ());
 
   // Create new reference from JSON
-  ProcessorParameterUuidReference new_ref (param_registry);
+  ProcessorParameterUuidReference new_ref (registry);
   from_json (j, new_ref);
 
   // Verify same object
@@ -416,17 +428,29 @@ TEST_F (ProcessorParameterTest, UuidReferenceSerialization)
 
 TEST_F (ProcessorParameterTest, RegistryLookupByUniqueId)
 {
-  // Find by unique ID
-  auto * found_param =
-    param_registry.find_by_unique_id (param->get_unique_id ());
+  // Find by unique ID via iteration
+  ProcessorParameter * found_param = nullptr;
+  registry.for_each_matching<dsp::ProcessorParameter> (
+    [&] (dsp::ProcessorParameter &pp) {
+      if (pp.get_unique_id () == param->get_unique_id ())
+        {
+          found_param = &pp;
+        }
+    });
   EXPECT_NE (found_param, nullptr);
   EXPECT_EQ (found_param, param);
 
   // Test non-existent ID
   ProcessorParameter::UniqueId non_existent (u8"NonExistent");
-  EXPECT_THROW (
-    param_registry.find_by_unique_id_or_throw (non_existent),
-    std::runtime_error);
+  bool                         found = false;
+  registry.for_each_matching<dsp::ProcessorParameter> (
+    [&] (dsp::ProcessorParameter &pp) {
+      if (pp.get_unique_id () == non_existent)
+        {
+          found = true;
+        }
+    });
+  EXPECT_FALSE (found);
 }
 TEST_F (ProcessorParameterTest, Formatting)
 {

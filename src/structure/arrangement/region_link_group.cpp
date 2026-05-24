@@ -56,7 +56,8 @@ RegionLinkGroup::remove_region (
           std::visit (
             [&] (auto &&last_region) {
               if constexpr (
-                std::derived_from<base_type<decltype (last_region)>, Region>)
+                std::derived_from<
+                  utils::base_type<decltype (last_region)>, Region>)
                 {
                   remove_region (*last_region, true, update_identifier);
                 }
@@ -78,7 +79,7 @@ RegionLinkGroup::remove_region (
       if (update_identifier)
         r->update_identifier ();
     },
-    convert_to_variant<RegionPtrVariant> (&region));
+    convert_to_variant_qobj<RegionPtrVariant> (&region));
 }
 
 void
@@ -93,7 +94,7 @@ RegionLinkGroup::update (const Region &main_region)
       z_return_if_fail (region_var.has_value ());
       std::visit (
         [&] (auto &&region) {
-          using RegionT = base_type<decltype (region)>;
+          using RegionT = utils::base_type<decltype (region)>;
           if constexpr (std::derived_from<RegionT, Region>)
             {
               z_debug (

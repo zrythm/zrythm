@@ -22,7 +22,7 @@ TrackCollectionOperator::moveTracks (
     return;
 
   // Convert Track* list to TrackUuidReference vector
-  auto &registry = collection_->get_track_registry ();
+  auto &registry = collection_->get_registry ();
   std::vector<structure::tracks::TrackUuidReference> track_refs;
   track_refs.reserve (tracks.size ());
 
@@ -70,7 +70,7 @@ TrackCollectionOperator::deleteTracks (
   if ((collection_ == nullptr) || (undo_stack_ == nullptr) || tracks.isEmpty ())
     return;
 
-  auto &registry = collection_->get_track_registry ();
+  auto &registry = collection_->get_registry ();
   std::vector<structure::tracks::TrackUuidReference> track_refs;
   track_refs.reserve (tracks.size ());
 

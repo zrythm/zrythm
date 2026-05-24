@@ -18,8 +18,7 @@ namespace zrythm::dsp
  * @brief Audio port specifics.
  */
 class AudioPort final
-    : public QObject,
-      public Port,
+    : public Port,
       public RingBufferOwningPortMixin,
       public PortConnectionsCacheMixin<AudioPort>,
       private utils::QElapsedTimeProvider

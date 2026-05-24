@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/relocate_arranger_object_command.h"
+#include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/automation_track.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -16,17 +19,28 @@ protected:
   void SetUp () override
   {
     // Create a test parameter
-    auto param_ref = param_registry_.create_object<dsp::ProcessorParameter> (
-      port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
       utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
 
     // Create source and target automation tracks
     source_at_ = std::make_unique<tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, obj_registry_, param_ref);
+      tempo_map_wrapper_, registry_, param_ref);
     target_at_ = std::make_unique<tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, obj_registry_, param_ref);
+      tempo_map_wrapper_, registry_, param_ref);
+
+    factory_ = std::make_unique<arrangement::ArrangerObjectFactory> (
+      arrangement::ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = tempo_map_,
+        .registry_ = registry_,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
 
     // Create test automation region
     create_test_region ();
@@ -42,28 +56,22 @@ protected:
   void create_test_region ()
   {
     // Create an automation region
-    dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-    automation_region_ref_ =
-      obj_registry_.create_object<arrangement::AutomationRegion> (
-        tempo_map_, obj_registry_, file_audio_source_registry_);
+    auto builder = factory_->get_builder<arrangement::AutomationRegion> ();
+    automation_region_ref_ = builder.build_in_registry ();
 
     // Add region to source automation track
     source_at_->add_object (automation_region_ref_);
   }
 
-  dsp::TempoMap                       tempo_map_{ units::sample_rate (44100) };
-  dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
-  arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::FileAudioSourceRegistry        file_audio_source_registry_;
-  dsp::PortRegistry                   port_registry_;
-  dsp::ProcessorParameterRegistry     param_registry_{ port_registry_ };
+  dsp::TempoMap         tempo_map_{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry registry_;
+  std::unique_ptr<arrangement::ArrangerObjectFactory> factory_;
 
   std::unique_ptr<tracks::AutomationTrack> source_at_;
   std::unique_ptr<tracks::AutomationTrack> target_at_;
 
-  arrangement::ArrangerObjectUuidReference automation_region_ref_{
-    obj_registry_
-  };
+  arrangement::ArrangerObjectUuidReference automation_region_ref_{ registry_ };
 };
 
 // Test initial state after construction

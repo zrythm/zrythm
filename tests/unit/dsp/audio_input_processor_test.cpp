@@ -4,6 +4,7 @@
 #include "dsp/audio_input_processor.h"
 #include "dsp/audio_port.h"
 #include "dsp/graph_node.h"
+#include "utils/object_registry.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -16,9 +17,7 @@ class AudioInputProcessorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<PortRegistry> (nullptr);
-    param_registry_ =
-      std::make_unique<ProcessorParameterRegistry> (*port_registry_, nullptr);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     sample_rate_ = units::sample_rate (48000);
     max_block_length_ = units::samples (256);
@@ -45,28 +44,25 @@ protected:
 
     auto provider = [this] () -> std::span<const float * const> {
       for (int i = 0; i < num_channels_; ++i)
-        input_ptrs_[i] = input_data_[i].data ();
+        input_ptrs_[i] = input_data_.at (i).data ();
       return { input_ptrs_.data (), static_cast<size_t> (num_channels_) };
     };
 
     processor_ = std::make_unique<AudioInputProcessor> (
-      provider, units::channels (num_channels),
-      ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+      provider, units::channels (num_channels), *registry_);
     processor_->prepare_for_processing (
       nullptr, sample_rate_, max_block_length_);
   }
 
-  std::unique_ptr<PortRegistry>               port_registry_;
-  std::unique_ptr<ProcessorParameterRegistry> param_registry_;
-  units::sample_rate_t                        sample_rate_;
-  units::sample_u32_t                         max_block_length_;
-  std::unique_ptr<graph_test::MockTransport>  mock_transport_;
-  std::unique_ptr<dsp::TempoMap>              tempo_map_;
-  std::unique_ptr<AudioInputProcessor>        processor_;
-  std::vector<std::vector<float>>             input_data_;
-  std::vector<const float *>                  input_ptrs_;
-  int                                         num_channels_ = 0;
+  std::unique_ptr<utils::ObjectRegistry>     registry_;
+  units::sample_rate_t                       sample_rate_;
+  units::sample_u32_t                        max_block_length_;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
+  std::unique_ptr<AudioInputProcessor>       processor_;
+  std::vector<std::vector<float>>            input_data_;
+  std::vector<const float *>                 input_ptrs_;
+  int                                        num_channels_ = 0;
 };
 
 // ========================================================================
@@ -95,7 +91,7 @@ TEST_F (AudioInputProcessorTest, MonoPortNames)
 {
   setup_processor_with_4_channels ();
   const auto &outputs = processor_->get_output_ports ();
-  auto *      mono0 = outputs[2].get_object_as<AudioPort> ();
+  auto *      mono0 = outputs.at (2).get_object_as<AudioPort> ();
   EXPECT_TRUE (mono0->get_label ().view ().contains ("1"));
 }
 
@@ -103,9 +99,7 @@ TEST_F (AudioInputProcessorTest, OddChannelCountCreatesFewerStereoPorts)
 {
   auto provider = [] () -> std::span<const float * const> { return {}; };
   processor_ = std::make_unique<AudioInputProcessor> (
-    provider, units::channels (3),
-    ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    provider, units::channels (3), *registry_);
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   const auto &outputs = processor_->get_output_ports ();
@@ -123,9 +117,7 @@ TEST_F (AudioInputProcessorTest, ZeroChannelsCreatesNoPorts)
 {
   auto provider = [] () -> std::span<const float * const> { return {}; };
   processor_ = std::make_unique<AudioInputProcessor> (
-    provider, units::channels (0),
-    ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    provider, units::channels (0), *registry_);
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   const auto &outputs = processor_->get_output_ports ();
@@ -195,9 +187,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithEmptyProviderIsNoOp)
   auto empty_provider = [] () -> std::span<const float * const> { return {}; };
 
   processor_ = std::make_unique<AudioInputProcessor> (
-    empty_provider, units::channels (4),
-    ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    empty_provider, units::channels (4), *registry_);
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -306,9 +296,7 @@ TEST_F (AudioInputProcessorTest, FindOutputPortReturnsNullptrForZeroChannels)
 {
   auto provider = [] () -> std::span<const float * const> { return {}; };
   processor_ = std::make_unique<AudioInputProcessor> (
-    provider, units::channels (0),
-    ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    provider, units::channels (0), *registry_);
   auto * port = processor_->find_output_port (0, false);
   EXPECT_EQ (port, nullptr);
 }

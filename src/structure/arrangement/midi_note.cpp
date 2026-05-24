@@ -5,6 +5,7 @@
 #include "structure/arrangement/midi_note.h"
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {
@@ -34,7 +35,7 @@ MidiNote::listen (bool listen)
   auto track_var = get_track ();
   std::visit (
     [&] (auto &&track) {
-      using TrackT = base_type<decltype (track)>;
+      using TrackT = utils::base_type<decltype (track)>;
       if constexpr (std::derived_from<TrackT, tracks::PianoRollTrack>)
         {
           auto &events =
@@ -126,7 +127,7 @@ MidiNote::set_pitch (const uint8_t val)
       auto track_var = region->get_track ();
       std::visit (
         [&] (auto &&track) {
-          using TrackT = base_type<decltype (track)>;
+          using TrackT = utils::base_type<decltype (track)>;
           if constexpr (std::derived_from<TrackT, tracks::PianoRollTrack>)
             {
               auto &midi_events =
@@ -156,4 +157,19 @@ init_from (MidiNote &obj, const MidiNote &other, utils::ObjectCloneType clone_ty
 
 MidiNote::~MidiNote () = default;
 
+void
+to_json (nlohmann::json &j, const MidiNote &note)
+{
+  to_json (j, static_cast<const ArrangerObject &> (note));
+  j[MidiNote::kVelocityKey] = note.velocity_;
+  j[MidiNote::kPitchKey] = note.pitch_;
+}
+
+void
+from_json (const nlohmann::json &j, MidiNote &note)
+{
+  from_json (j, static_cast<ArrangerObject &> (note));
+  j.at (MidiNote::kVelocityKey).get_to (note.velocity_);
+  j.at (MidiNote::kPitchKey).get_to (note.pitch_);
+}
 }

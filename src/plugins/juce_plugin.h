@@ -40,7 +40,7 @@ public:
    * @param parent Parent QObject
    */
   JucePlugin (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+    utils::IObjectRegistry                &registry,
     CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
     std::function<units::sample_rate_t ()> sample_rate_provider,
     std::function<units::sample_u32_t ()>  buffer_size_provider,

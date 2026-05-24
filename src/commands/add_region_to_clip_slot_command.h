@@ -24,7 +24,7 @@ public:
   {
   }
 
-  void redo () override { slot_.setRegion (object_ref_.get_object_base ()); }
+  void redo () override { slot_.setRegion (object_ref_.get ()); }
   void undo () override { slot_.clearRegion (); }
 
 private:

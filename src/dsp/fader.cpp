@@ -11,6 +11,7 @@
 #include "utils/float_ranges.h"
 #include "utils/math_utils.h"
 #include "utils/midi.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::dsp
 {
@@ -24,22 +25,21 @@ static constexpr auto mono_compat_enabled_id_str = "mono_compat_enabled"sv;
 static constexpr auto swap_phase_id_str = "swap_phase"sv;
 
 Fader::Fader (
-  dsp::ProcessorBase::ProcessorBaseDependencies      dependencies,
+  utils::IObjectRegistry                            &registry,
   dsp::PortType                                      signal_type,
   bool                                               hard_limit_output,
   bool                                               make_params_automatable,
   std::optional<std::function<utils::Utf8String ()>> owner_name_provider,
   ShouldBeMutedCallback                              should_be_muted_cb,
   QObject *                                          parent)
-    : QObject (parent), dsp::ProcessorBase (dependencies, u8"Fader"),
+    : QObject (parent), dsp::ProcessorBase (registry, u8"Fader"),
       signal_type_ (signal_type), hard_limit_output_ (hard_limit_output),
       should_be_muted_cb_ (std::move (should_be_muted_cb))
 {
   {
     /* set volume */
-    auto amp_id = dependencies.param_registry_.create_object<
-      dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    auto amp_id = utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (amp_id_str)),
       dsp::ParameterRange (
@@ -50,9 +50,8 @@ Fader::Fader (
     get_amp_param ().set_automatable (make_params_automatable);
 
     /* set pan */
-    auto balance_id = dependencies.param_registry_.create_object<
-      dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    auto balance_id = utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (balance_id_str)),
       dsp::ParameterRange (
@@ -65,9 +64,8 @@ Fader::Fader (
 
   {
     /* set mute */
-    auto mute_id = dependencies.param_registry_.create_object<
-      dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    auto mute_id = utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (mute_id_str)),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
@@ -79,9 +77,8 @@ Fader::Fader (
 
   {
     /* set solo */
-    auto solo_id = dependencies.param_registry_.create_object<
-      dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    auto solo_id = utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (solo_id_str)),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
@@ -93,9 +90,8 @@ Fader::Fader (
 
   {
     /* set listen */
-    auto listen_id = dependencies.param_registry_.create_object<
-      dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    auto listen_id = utils::create_object<dsp::ProcessorParameter> (
+      registry, registry,
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (listen_id_str)),
       dsp::ParameterRange (dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f),
@@ -109,9 +105,9 @@ Fader::Fader (
     {
       {
         /* set mono compat */
-        auto mono_compat_enabled_id = dependencies.param_registry_.create_object<
+        auto mono_compat_enabled_id = utils::create_object<
           dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+          registry, registry,
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (
               mono_compat_enabled_id_str)),
@@ -125,9 +121,8 @@ Fader::Fader (
 
       {
         /* set swap phase */
-        auto swap_phase_id = dependencies.param_registry_.create_object<
-          dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+        auto swap_phase_id = utils::create_object<dsp::ProcessorParameter> (
+          registry, registry,
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (swap_phase_id_str)),
           dsp::ParameterRange (
@@ -148,8 +143,9 @@ Fader::Fader (
         sym = u8"fader_in";
 
         /* stereo in */
-        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
-          name, dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Stereo, 2);
+        auto port = utils::create_object<dsp::AudioPort> (
+          registry, name, dsp::PortFlow::Input,
+          dsp::AudioPort::BusLayout::Stereo, 2);
         port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
         add_input_port (port);
       }
@@ -162,8 +158,9 @@ Fader::Fader (
 
         {
           /* stereo out */
-          auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
-            name, dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo, 2);
+          auto port = utils::create_object<dsp::AudioPort> (
+            registry, name, dsp::PortFlow::Output,
+            dsp::AudioPort::BusLayout::Stereo, 2);
           port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
           add_output_port (port);
         }
@@ -178,8 +175,9 @@ Fader::Fader (
         name =
           utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader in"));
         sym = u8"ch_midi_fader_in";
-        add_input_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-          name, dsp::PortFlow::Input));
+        add_input_port (
+          utils::create_object<dsp::MidiPort> (
+            registry, name, dsp::PortFlow::Input));
         auto &midi_in_port = get_midi_in_port ();
         midi_in_port.set_symbol (sym);
       }
@@ -191,8 +189,9 @@ Fader::Fader (
         name =
           utils::Utf8String::from_qstring (QObject::tr ("Ch MIDI Fader out"));
         sym = u8"ch_midi_fader_out";
-        add_output_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-          name, dsp::PortFlow::Output));
+        add_output_port (
+          utils::create_object<dsp::MidiPort> (
+            registry, name, dsp::PortFlow::Output));
         auto &midi_out_port = get_midi_out_port ();
         midi_out_port.set_symbol (sym);
       }
@@ -215,7 +214,7 @@ Fader::init_param_caches ()
 {
   for (const auto &param_ref : get_parameters ())
     {
-      const auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+      const auto * param = param_ref.get ();
 
       const auto &id_str = type_safe::get (param->get_unique_id ()).view ();
 
@@ -506,5 +505,43 @@ from_json (const nlohmann::json &j, Fader &fader)
   from_json (j, static_cast<dsp::ProcessorBase &> (fader));
   j.at (Fader::kMidiModeKey).get_to (fader.midi_mode_);
   fader.init_param_caches ();
+}
+
+dsp::ProcessorParameter &
+Fader::get_amp_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (registry (), *amp_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_balance_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (registry (), *balance_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_mute_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (registry (), *mute_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_solo_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (registry (), *solo_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_listen_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (registry (), *listen_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_mono_compat_enabled_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *mono_compat_enabled_id_);
+}
+dsp::ProcessorParameter &
+Fader::get_swap_phase_param () const
+{
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *swap_phase_id_);
 }
 }

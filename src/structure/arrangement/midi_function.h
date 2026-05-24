@@ -3,11 +3,14 @@
 
 #pragma once
 
+#include <span>
+
 #include "dsp/curve.h"
-#include "structure/arrangement/arranger_object_span.h"
 
 namespace zrythm::structure::arrangement
 {
+class MidiNote;
+
 class MidiFunction
 {
 public:
@@ -55,6 +58,6 @@ public:
    * @param type Function type.
    * @throw ZrythmException on error.
    */
-  static void apply (ArrangerObjectSpan sel, Type type, Options opts);
+  static void apply (std::span<MidiNote *> sel, Type type, Options opts);
 };
 }

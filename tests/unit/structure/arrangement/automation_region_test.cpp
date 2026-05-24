@@ -3,6 +3,7 @@
 
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/object_registry.h"
 
 #include <gtest/gtest.h>
 
@@ -14,8 +15,7 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    region = std::make_unique<AutomationRegion> (
-      *tempo_map, registry, file_audio_source_registry, nullptr);
+    region = std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
 
     // Set up region properties
     region->position ()->setTicks (100);
@@ -25,8 +25,8 @@ protected:
   auto create_automation_point (double value)
   {
     // Create AutomationPoint using registry
-    auto point_ref =
-      registry.create_object<AutomationPoint> (*tempo_map, region.get ());
+    auto point_ref = utils::create_object<AutomationPoint> (
+      registry, *tempo_map, region.get ());
     point_ref.get_object_as<AutomationPoint> ()->setValue (
       static_cast<float> (value));
     return point_ref;
@@ -41,8 +41,7 @@ protected:
   }
 
   std::unique_ptr<dsp::TempoMap>    tempo_map;
-  ArrangerObjectRegistry            registry;
-  dsp::FileAudioSourceRegistry      file_audio_source_registry;
+  utils::ObjectRegistry             registry;
   std::unique_ptr<AutomationRegion> region;
 };
 
@@ -181,8 +180,8 @@ TEST_F (AutomationRegionTest, Serialization)
   to_json (j, *region);
 
   // Create new region
-  auto new_region = std::make_unique<AutomationRegion> (
-    *tempo_map, registry, file_audio_source_registry, nullptr);
+  auto new_region =
+    std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
   from_json (j, *new_region);
 
   // Verify deserialization
@@ -200,8 +199,8 @@ TEST_F (AutomationRegionTest, ObjectCloning)
   const auto original_id = region->get_children_view ()[0]->get_uuid ();
 
   // Clone region with new identities
-  auto cloned_region = std::make_unique<AutomationRegion> (
-    *tempo_map, registry, file_audio_source_registry, nullptr);
+  auto cloned_region =
+    std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
   init_from (*cloned_region, *region, utils::ObjectCloneType::NewIdentity);
 
   // Verify cloning

@@ -7,16 +7,11 @@
 namespace zrythm::structure::arrangement
 {
 TempoObjectManager::TempoObjectManager (
-  ArrangerObjectRegistry       &arranger_object_registry,
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  QObject *                     parent)
-    : QObject (parent),
-      ArrangerObjectOwner<
-        TempoObject> (arranger_object_registry, file_audio_source_registry, *this),
-      ArrangerObjectOwner<TimeSignatureObject> (
-        arranger_object_registry,
-        file_audio_source_registry,
-        *this)
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : utils::UuidIdentifiableObject<TempoObjectManager> (parent),
+      ArrangerObjectOwner<TempoObject> (registry, *this),
+      ArrangerObjectOwner<TimeSignatureObject> (registry, *this)
 {
 }
 

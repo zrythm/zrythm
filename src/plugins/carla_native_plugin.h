@@ -68,7 +68,7 @@ public:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  CarlaNativePlugin (ProcessorBaseDependencies dependencies);
+  CarlaNativePlugin (utils::IObjectRegistry &registry);
 
   /**
    * Deactivates, cleanups and frees the instance.

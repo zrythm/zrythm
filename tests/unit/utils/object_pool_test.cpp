@@ -4,10 +4,11 @@
 #include <thread>
 #include <vector>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/object_pool.h"
 
 #include <QtGlobal>
+
+#include <gtest/gtest.h>
 
 class TestObject
 {

@@ -15,6 +15,7 @@
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/tempo_object_manager.h"
+#include "structure/project/project_registry.h"
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
@@ -71,12 +72,9 @@ class Project final : public QObject
       tempoObjectManager CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
-  friend struct PluginBuilderForDeserialization;
-
 public:
   using TrackUuid = structure::tracks::TrackUuid;
   using PluginPtrVariant = plugins::PluginPtrVariant;
-  using PluginRegistry = plugins::PluginRegistry;
   using ProjectDirectoryPathProvider =
     std::function<std::filesystem::path (bool for_backup)>;
 
@@ -138,63 +136,12 @@ public:
    */
   void add_default_tracks ();
 
-  structure::tracks::FinalTrackDependencies
-  get_final_track_dependencies () const;
+  structure::tracks::FinalTrackDependencies get_final_track_dependencies ();
 
-  auto &get_file_audio_source_registry () const
+  utils::IObjectRegistry       &get_registry () { return project_registry_; }
+  const utils::IObjectRegistry &get_registry () const
   {
-    return *file_audio_source_registry_;
-  }
-  auto &get_track_registry () const { return *track_registry_; }
-  auto &get_plugin_registry () const { return *plugin_registry_; }
-  auto &get_port_registry () const { return *port_registry_; }
-  auto &get_param_registry () const { return *param_registry_; }
-  auto &get_arranger_object_registry () const
-  {
-    return *arranger_object_registry_;
-  }
-
-  /**
-   * Finds the Port corresponding to the identifier.
-   *
-   * @param id The PortIdentifier to use for searching.
-   *
-   * @note Ported from Port::find_from_identifier() in older code.
-   */
-  std::optional<dsp::PortPtrVariant>
-  find_port_by_id (const dsp::Port::Uuid &id) const
-  {
-    return get_port_registry ().find_by_id (id);
-  }
-
-  dsp::ProcessorParameter *
-  find_param_by_id (const dsp::ProcessorParameter::Uuid &id) const
-  {
-    const auto opt_var = get_param_registry ().find_by_id (id);
-    if (opt_var.has_value ())
-      {
-        return std::get<dsp::ProcessorParameter *> (opt_var.value ());
-      }
-    return nullptr;
-  }
-
-  std::optional<plugins::PluginPtrVariant>
-  find_plugin_by_id (plugins::Plugin::Uuid id) const
-  {
-    return get_plugin_registry ().find_by_id (id);
-  }
-
-  std::optional<zrythm::structure::tracks::TrackPtrVariant>
-  find_track_by_id (structure::tracks::Track::Uuid id) const
-  {
-    return get_track_registry ().find_by_id (id);
-  }
-
-  std::optional<zrythm::structure::arrangement::ArrangerObjectPtrVariant>
-  find_arranger_object_by_id (
-    structure::arrangement::ArrangerObject::Uuid id) const
-  {
-    return get_arranger_object_registry ().find_by_id (id);
+    return project_registry_;
   }
 
   const auto &tempo_map () const { return tempo_map_; }
@@ -220,13 +167,7 @@ public:
 
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
-  static constexpr auto kFileAudioSourceRegistryKey =
-    "fileAudioSourceRegistry"sv;
-  static constexpr auto kPortRegistryKey = "portRegistry"sv;
-  static constexpr auto kParameterRegistryKey = "paramRegistry"sv;
-  static constexpr auto kPluginRegistryKey = "pluginRegistry"sv;
-  static constexpr auto kArrangerObjectRegistryKey = "arrangerObjectRegistry"sv;
-  static constexpr auto kTrackRegistryKey = "trackRegistry"sv;
+  static constexpr auto kRegistryKey = "registry"sv;
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
@@ -244,14 +185,7 @@ private:
 
   plugins::PluginHostWindowFactory plugin_host_window_provider_;
 
-  utils::QObjectUniquePtr<dsp::FileAudioSourceRegistry>
-                                             file_audio_source_registry_;
-  utils::QObjectUniquePtr<dsp::PortRegistry> port_registry_;
-  utils::QObjectUniquePtr<dsp::ProcessorParameterRegistry> param_registry_;
-  utils::QObjectUniquePtr<PluginRegistry>                  plugin_registry_;
-  utils::QObjectUniquePtr<structure::arrangement::ArrangerObjectRegistry>
-    arranger_object_registry_;
-  utils::QObjectUniquePtr<structure::tracks::TrackRegistry> track_registry_;
+  ProjectRegistry project_registry_;
 
   ProjectDirectoryPathProvider project_directory_path_provider_;
 
@@ -294,11 +228,11 @@ public:
 
   /**
    * @brief Realtime cache of tracks
+   *
+   * Thread-safe because tracks are only added/removed while the graph is
+   * paused (engine not running).
    */
-  boost::unordered_flat_map<
-    structure::tracks::TrackUuid,
-    structure::tracks::TrackPtrVariant>
-    tracks_rt_;
+  std::vector<structure::tracks::Track *> tracks_rt_;
 
 private:
   utils::QObjectUniquePtr<structure::scenes::ClipLauncher> clip_launcher_;

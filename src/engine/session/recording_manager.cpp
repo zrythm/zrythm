@@ -69,7 +69,7 @@ RecordingManager::start_unended_note (
 
   /* add to unended notes */
   unended_notes_per_region_.at (mr.get_uuid ())
-    .push_back (std::get<MidiNote *> (mn.get_object ()));
+    .push_back (mn.get_object_as<MidiNote> ());
 }
 
 std::optional<structure::arrangement::ArrangerObjectPtrVariant>
@@ -142,7 +142,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
     {
       std::visit (
         [&] (auto &&region) {
-          using ObjT = base_type<decltype (region)>;
+          using ObjT = utils::base_type<decltype (region)>;
           if constexpr (RegionObject<ObjT>)
             {
               if (is_automation != std::is_same_v<ObjT, AutomationRegion>)
@@ -188,7 +188,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
     {
       std::visit (
         [&] (auto &&r) {
-          using ObjT = base_type<decltype (r)>;
+          using ObjT = utils::base_type<decltype (r)>;
           if constexpr (std::is_same_v<ObjT, AudioRegion>)
             {
 // TODO
@@ -216,7 +216,7 @@ RecordingManager::handle_stop_recording (bool is_automation)
     {
       std::visit (
         [&] (auto &&obj) {
-          using ObjT = base_type<decltype (obj)>;
+          using ObjT = utils::base_type<decltype (obj)>;
           auto found_obj_var = obj->find_in_project ();
           z_return_if_fail (found_obj_var);
           auto * found_obj = std::get<ObjT *> (found_obj_var.value ());
@@ -276,7 +276,7 @@ RecordingManager::handle_recording (
   /* ---- handle start/stop/pause recording events ---- */
   std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
 
       if (tr->recordableTrackMixin ())
         {
@@ -568,7 +568,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
       if (tr->automationTracklist ())
         {
 
@@ -593,7 +593,7 @@ RecordingManager::handle_pause_event (const RecordingEvent &ev)
 #if 0
                   std::visit (
                     [&] (auto &&r) {
-                      using RegionT = base_type<decltype (r)>;
+                      using RegionT = utils::base_type<decltype (r)>;
                       if constexpr (std::derived_from<RegionT, LaneOwnedObject>)
                         if constexpr (std::derived_from<TrackT, LanedTrack>)
                           {
@@ -648,7 +648,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   return std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
 
       /* position to resume from */
       Position resume_pos (
@@ -688,7 +688,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                     {
                       std::visit (
                         [&] (auto &&r) {
-                          if constexpr (RegionObject<base_type<decltype (r)>>)
+                          if constexpr (RegionObject<utils::base_type<decltype (r)>>)
                             {
                               r->mute ()->setMuted (true);
                             }
@@ -787,7 +787,7 @@ RecordingManager::handle_resume_event (const RecordingEvent &ev)
                   std::visit (
                     [&] (auto &&region) {
                       if constexpr (
-                        RegionWithChildren<base_type<decltype (region)>>)
+                        RegionWithChildren<utils::base_type<decltype (region)>>)
                         {
                           if (resume_pos < region->get_position ())
                             {
@@ -955,7 +955,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
       if constexpr (std::derived_from<TrackT, RecordableTrack>)
         {
           z_return_if_fail (tr->recording_region_);
@@ -971,7 +971,7 @@ RecordingManager::handle_midi_event (const RecordingEvent &ev)
 
           std::visit (
             [&] (auto &&region) {
-              using RegionT = base_type<decltype (region)>;
+              using RegionT = utils::base_type<decltype (region)>;
 
               if constexpr (
                 std::derived_from<RegionT, structure::arrangement::Region>)
@@ -1105,7 +1105,7 @@ RecordingManager::handle_automation_event (const RecordingEvent &ev)
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
       if constexpr (AutomatableTrack<TrackT>)
         {
           auto  &atl = tr->automation_tracklist_;
@@ -1220,7 +1220,7 @@ RecordingManager::handle_start_recording (
   auto tr_var = *TRACKLIST->get_track (ev.track_uuid_);
   std::visit (
     [&] (auto &&tr) {
-      using TrackT = base_type<decltype (tr)>;
+      using TrackT = utils::base_type<decltype (tr)>;
       AutomationTrack * at{};
       if (is_automation)
         {
@@ -1403,7 +1403,7 @@ RecordingManager::process_events ()
             auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &&tr) {
-                using TrackT = base_type<decltype (tr)>;
+                using TrackT = utils::base_type<decltype (tr)>;
                 if constexpr (RecordableTrack<TrackT>)
                   {
                     z_debug (
@@ -1428,7 +1428,7 @@ RecordingManager::process_events ()
             auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &tr) {
-                using TrackT = base_type<decltype (tr)>;
+                using TrackT = utils::base_type<decltype (tr)>;
                 if constexpr (AutomatableTrack<TrackT>)
                   {
 // TODO
@@ -1473,7 +1473,7 @@ RecordingManager::process_events ()
             auto tr_var = *TRACKLIST->get_track (ev->track_uuid_);
             std::visit (
               [&] (auto &tr) {
-                using TrackT = base_type<decltype (tr)>;
+                using TrackT = utils::base_type<decltype (tr)>;
                 if constexpr (AutomatableTrack<TrackT>)
                   {
 // TODO

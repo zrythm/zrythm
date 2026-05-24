@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_descriptor_list.h"
-#include "utils/gtest_wrapper.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -13,6 +12,7 @@
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace zrythm::test_helpers;
 using namespace std::chrono_literals;

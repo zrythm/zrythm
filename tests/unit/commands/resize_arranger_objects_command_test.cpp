@@ -3,6 +3,9 @@
 
 #include "commands/resize_arranger_objects_command.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -16,23 +19,34 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
+    factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
+      structure::arrangement::ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = *tempo_map,
+        .registry_ = object_registry,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+
     // Create test objects with different features
-    marker_ref = object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
+    auto marker_builder =
+      factory->get_builder<structure::arrangement::Marker> ();
+    marker_ref = marker_builder.build_in_registry ();
 
-    midi_region_ref =
-      object_registry.create_object<structure::arrangement::MidiRegion> (
-        *tempo_map, object_registry, file_audio_source_registry);
+    auto midi_region_builder =
+      factory->get_builder<structure::arrangement::MidiRegion> ();
+    midi_region_ref = midi_region_builder.build_in_registry ();
 
-    audio_region_ref = object_registry.create_object<
-      structure::arrangement::AudioRegion> (
-      *tempo_map, object_registry, file_audio_source_registry,
-      [] () { return true; });
+    auto audio_region_builder =
+      factory->get_builder<structure::arrangement::AudioRegion> ();
+    audio_region_ref = audio_region_builder.build_in_registry ();
 
     // Set initial positions and properties
-    marker_ref.get_object_base ()->position ()->setTicks (1000.0);
+    marker_ref.get ()->position ()->setTicks (1000.0);
 
-    midi_region_ref.get_object_base ()->position ()->setTicks (2000.0);
+    midi_region_ref.get ()->position ()->setTicks (2000.0);
     if (
       auto * region =
         midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ())
@@ -40,7 +54,7 @@ protected:
         region->bounds ()->length ()->setTicks (4000.0);
       }
 
-    audio_region_ref.get_object_base ()->position ()->setTicks (3000.0);
+    audio_region_ref.get ()->position ()->setTicks (3000.0);
     if (
       auto * region =
         audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ())
@@ -57,9 +71,9 @@ protected:
       }
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  structure::arrangement::ArrangerObjectRegistry object_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
+  std::unique_ptr<dsp::TempoMap> tempo_map;
+  utils::ObjectRegistry          object_registry;
+  std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
 
   structure::arrangement::ArrangerObjectUuidReference marker_ref{
     object_registry
@@ -82,8 +96,7 @@ TEST_F (ResizeArrangerObjectsCommandTest, InitialState)
     objects, ResizeType::Bounds, ResizeDirection::FromEnd, 100.0);
 
   // Objects should still be at original positions
-  EXPECT_DOUBLE_EQ (
-    marker_ref.get_object_base ()->position ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (marker_ref.get ()->position ()->ticks (), 1000.0);
 }
 
 // Test bounds resize from end

@@ -9,16 +9,13 @@ namespace zrythm::structure::tracks
 {
 AutomationTrack::AutomationTrack (
   const dsp::TempoMapWrapper          &tempo_map,
-  dsp::FileAudioSourceRegistry        &file_audio_source_registry,
-  ArrangerObjectRegistry              &obj_registry,
+  utils::IObjectRegistry              &registry,
   dsp::ProcessorParameterUuidReference param_id,
   QObject *                            parent)
     : QObject (parent),
-      arrangement::ArrangerObjectOwner<arrangement::AutomationRegion> (
-        obj_registry,
-        file_audio_source_registry,
-        *this),
-      tempo_map_ (tempo_map), object_registry_ (obj_registry),
+      arrangement::ArrangerObjectOwner<
+        arrangement::AutomationRegion> (registry, *this),
+      tempo_map_ (tempo_map), registry_ (registry),
       param_id_ (std::move (param_id)),
       automation_data_provider_ (
         utils::make_qobject_unique<arrangement::AutomationTimelineDataProvider> (

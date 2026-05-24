@@ -21,7 +21,7 @@ TrackCreator::addEmptyTrackFromType (
   auto track_ref = track_factory_.create_empty_track (trackType);
 
   {
-    auto * track = track_ref.get_object_base ();
+    auto * track = track_ref.get ();
     track->setName (
       get_unique_name_for_track (track->get_uuid (), track->get_name ())
         .to_qstring ());
@@ -32,19 +32,18 @@ TrackCreator::addEmptyTrackFromType (
     new commands::AddEmptyTrackCommand (track_collection_, track_ref));
 
   // if audio output route to master
-  std::visit (
-    [&] (auto * track) {
-      if (track->output_signal_type () == dsp::PortType::Audio)
-        {
-          undo_stack_.push (new commands::RouteTrackCommand (
-            track_routing_, track_ref.id (),
-            singleton_tracks_.masterTrack ()->get_uuid ()));
-        }
-    },
-    track_ref.get_object ());
+  {
+    auto * track = track_ref.get ();
+    if (track->output_signal_type () == dsp::PortType::Audio)
+      {
+        undo_stack_.push (new commands::RouteTrackCommand (
+          track_routing_, track_ref.id (),
+          singleton_tracks_.masterTrack ()->get_uuid ()));
+      }
+  }
   undo_stack_.endMacro ();
 
-  return QVariant::fromStdVariant (track_ref.get_object ());
+  return QVariant::fromValue (track_ref.get ());
 }
 
 utils::Utf8String
@@ -53,12 +52,11 @@ TrackCreator::get_unique_name_for_track (
   const utils::Utf8String              &name) const
 {
   const auto name_is_unique = [&] (const utils::Utf8String &name_to_check) {
-    auto track_ids_to_check = std::ranges::to<std::vector> (
-      std::views::filter (track_collection_.tracks (), [&] (const auto &ref) {
-        return ref.id () != track_to_skip;
-      }));
-    return !structure::tracks::TrackSpan{ track_ids_to_check }.contains_track_name (
-      name_to_check);
+    return !std::ranges::any_of (
+      track_collection_.tracks (), [&] (const auto &ref) {
+        return ref.id () != track_to_skip
+               && ref.get ()->get_name () == name_to_check;
+      });
   };
 
   auto new_name = name;

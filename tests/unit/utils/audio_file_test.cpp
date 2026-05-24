@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio_file.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/math_utils.h"
+
+#include <gtest/gtest.h>
 
 using namespace zrythm;
 using namespace zrythm::utils::audio;

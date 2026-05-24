@@ -11,7 +11,9 @@
 #include "structure/tracks/track_fwd.h"
 #include "structure/tracks/track_lane_list.h"
 #include "structure/tracks/track_processor.h"
+#include "utils/iobject_registry.h"
 #include "utils/playback_cache_scheduler.h"
+#include "utils/typed_uuid_reference.h"
 
 #include <QColor>
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -35,15 +37,11 @@ using TrackRecordingCallback = std::function<void (
 
 struct BaseTrackDependencies
 {
-  const dsp::TempoMapWrapper          &tempo_map_;
-  dsp::FileAudioSourceRegistry        &file_audio_source_registry_;
-  plugins::PluginRegistry             &plugin_registry_;
-  dsp::PortRegistry                   &port_registry_;
-  dsp::ProcessorParameterRegistry     &param_registry_;
-  arrangement::ArrangerObjectRegistry &obj_registry_;
-  const dsp::ITransport               &transport_;
-  SoloedTracksExistGetter              soloed_tracks_exist_getter_;
-  TrackRecordingCallback               track_recording_callback;
+  const dsp::TempoMapWrapper &tempo_map_;
+  utils::IObjectRegistry     &registry_;
+  const dsp::ITransport      &transport_;
+  SoloedTracksExistGetter     soloed_tracks_exist_getter_;
+  TrackRecordingCallback      track_recording_callback;
 };
 
 /**
@@ -57,7 +55,7 @@ struct BaseTrackDependencies
  * Subclasses of `Track` represent specific types of tracks, such as
  * MIDI tracks, instrument tracks, and audio tracks.
  */
-class Track : public QObject, public utils::UuidIdentifiableObject<Track>
+class Track : public utils::UuidIdentifiableObject<Track>
 {
   Q_OBJECT
   Q_PROPERTY (Type type READ type CONSTANT)
@@ -96,15 +94,11 @@ class Track : public QObject, public utils::UuidIdentifiableObject<Track>
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
-  using Plugin = plugins::Plugin;
-  using PluginUuid = Plugin::Uuid;
+  using PluginUuid = plugins::Plugin::Uuid;
   using PortType = dsp::PortType;
-  using PluginRegistry = plugins::PluginRegistry;
-  using PluginPtrVariant = PluginRegistry::VariantType;
   using ArrangerObject = structure::arrangement::ArrangerObject;
   using ArrangerObjectPtrVariant =
     structure::arrangement::ArrangerObjectPtrVariant;
-  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
   using Color = utils::Color;
 
   enum class Type : uint8_t
@@ -304,7 +298,7 @@ public:
       return Type::MidiGroup;
     else
       {
-        static_assert (dependent_false_v<T>, "Unknown track type");
+        static_assert (utils::dependent_false_v<T>, "Unknown track type");
       }
   }
 
@@ -541,7 +535,8 @@ public:
   /**
    * Fills in the given array with all plugins in the track.
    */
-  void collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
+  void
+  collect_plugins (std::vector<plugins::PluginUuidReference> &plugins) const;
 
 // TODO
 #if 0
@@ -566,23 +561,8 @@ public:
    */
   void generate_basic_automation_tracks ();
 
-  auto &get_plugin_registry () const
-  {
-    return base_dependencies_.plugin_registry_;
-  }
-  auto &get_plugin_registry () { return base_dependencies_.plugin_registry_; }
-  auto &get_port_registry () const { return base_dependencies_.port_registry_; }
-  auto &get_port_registry () { return base_dependencies_.port_registry_; }
-  auto &get_param_registry () const
-  {
-    return base_dependencies_.param_registry_;
-  }
-  auto &get_param_registry () { return base_dependencies_.param_registry_; }
-  auto &get_object_registry () const
-  {
-    return base_dependencies_.obj_registry_;
-  }
-  auto &get_object_registry () { return base_dependencies_.obj_registry_; }
+  auto &get_registry () const { return base_dependencies_.registry_; }
+  auto &get_registry () { return base_dependencies_.registry_; }
 
   TrackProcessor * get_track_processor () const { return processor_.get (); }
 
@@ -598,8 +578,7 @@ protected:
   {
     structure::tracks::generate_automation_tracks_for_processor (
       ats, processor, base_dependencies_.tempo_map_,
-      base_dependencies_.file_audio_source_registry_,
-      base_dependencies_.obj_registry_);
+      base_dependencies_.registry_);
   }
 
   /**
@@ -789,38 +768,24 @@ protected:
     ())
 };
 
-using TrackRegistry = utils::OwningObjectRegistry<TrackPtrVariant, Track>;
-using TrackRegistryRef = std::reference_wrapper<TrackRegistry>;
-using TrackUuidReference = utils::UuidReference<TrackRegistry>;
+using TrackUuidReference = utils::TypedUuidReference<Track>;
 
 struct FinalTrackDependencies : public BaseTrackDependencies
 {
   FinalTrackDependencies (
-    const dsp::TempoMapWrapper          &tempo_map,
-    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
-    plugins::PluginRegistry             &plugin_registry,
-    dsp::PortRegistry                   &port_registry,
-    dsp::ProcessorParameterRegistry     &param_registry,
-    arrangement::ArrangerObjectRegistry &obj_registry,
-    TrackRegistry                       &track_registry,
-    const dsp::ITransport               &transport,
-    SoloedTracksExistGetter              soloed_tracks_exist_getter,
-    TrackRecordingCallback               recording_callback)
+    const dsp::TempoMapWrapper &tempo_map,
+    utils::IObjectRegistry     &registry,
+    const dsp::ITransport      &transport,
+    SoloedTracksExistGetter     soloed_tracks_exist_getter,
+    TrackRecordingCallback      recording_callback)
       : BaseTrackDependencies (
           tempo_map,
-          file_audio_source_registry,
-          plugin_registry,
-          port_registry,
-          param_registry,
-          obj_registry,
+          registry,
           transport,
           std::move (soloed_tracks_exist_getter),
-          std::move (recording_callback)),
-        track_registry_ (track_registry)
+          std::move (recording_callback))
   {
   }
-
-  TrackRegistry &track_registry_;
 
   BaseTrackDependencies to_base_dependencies ()
   {

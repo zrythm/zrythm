@@ -4,25 +4,27 @@
 #include "dsp/audio_input_processor.h"
 #include "dsp/audio_port.h"
 #include "utils/float_ranges.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::dsp
 {
 
 AudioInputProcessor::AudioInputProcessor (
-  InputDataProvider         provider,
-  units::channel_count_t    hw_input_channel_count,
-  ProcessorBaseDependencies dependencies,
-  QObject *                 parent)
+  InputDataProvider       provider,
+  units::channel_count_t  hw_input_channel_count,
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
     : QObject (parent),
       ProcessorBase (
-        dependencies,
+        registry,
         utils::Utf8String::from_utf8_encoded_string ("Audio Input Processor")),
       provider_ (std::move (provider))
 {
   const auto hw_chans = hw_input_channel_count.in<int> (units::channels);
   for (int i = 0; i + 1 < hw_chans; i += 2)
     {
-      auto port_ref = dependencies.port_registry_.create_object<AudioPort> (
+      auto port_ref = utils::create_object<AudioPort> (
+        registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("Input {}-{}", i + 1, i + 2)),
         PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
@@ -33,7 +35,8 @@ AudioInputProcessor::AudioInputProcessor (
 
   for (int i = 0; i < hw_chans; ++i)
     {
-      auto port_ref = dependencies.port_registry_.create_object<AudioPort> (
+      auto port_ref = utils::create_object<AudioPort> (
+        registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("Input {}", i + 1)),
         PortFlow::Output, AudioPort::BusLayout::Mono, 1);

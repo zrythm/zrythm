@@ -5,6 +5,8 @@
 #include "structure/tracks/audio_track.h"
 #include "structure/tracks/folder_track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 
@@ -19,66 +21,50 @@ protected:
   void SetUp () override
   {
     // Create track registry
-    track_registry = std::make_unique<TrackRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     // Create test dependencies
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     // Create track collection
-    track_collection = std::make_unique<TrackCollection> (*track_registry);
+    track_collection = std::make_unique<TrackCollection> (*registry_);
   }
 
   // Helper to create a folder track
   TrackUuidReference create_folder_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {},
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
     };
 
-    return track_registry->create_object<FolderTrack> (std::move (deps));
+    return utils::create_object<FolderTrack> (*registry_, std::move (deps));
   }
 
   // Helper to create an audio bus track
   TrackUuidReference create_audio_bus_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
     };
 
-    return track_registry->create_object<AudioBusTrack> (std::move (deps));
+    return utils::create_object<AudioBusTrack> (*registry_, std::move (deps));
   }
 
   TrackUuidReference create_audio_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {},
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
     };
-    return track_registry->create_object<AudioTrack> (std::move (deps));
+    return utils::create_object<AudioTrack> (*registry_, std::move (deps));
   }
 
-  std::unique_ptr<dsp::TempoMap>        tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  dsp::PortRegistry                     port_registry;
-  dsp::ProcessorParameterRegistry       param_registry{ port_registry };
-  structure::arrangement::ArrangerObjectRegistry obj_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  plugins::PluginRegistry                        plugin_registry;
-  dsp::graph_test::MockTransport                 transport;
-  std::unique_ptr<TrackRegistry>                 track_registry;
-  std::unique_ptr<TrackCollection>               track_collection;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  std::unique_ptr<TrackCollection>                track_collection;
 };
 
 TEST_F (TrackCollectionTest, InitialState)
@@ -384,7 +370,7 @@ TEST_F (TrackCollectionTest, Serialization)
   to_json (j, *track_collection);
 
   // Create new collection for deserialization
-  auto new_collection = std::make_unique<TrackCollection> (*track_registry);
+  auto new_collection = std::make_unique<TrackCollection> (*registry_);
   from_json (j, *new_collection);
 
   // Verify deserialization
@@ -427,9 +413,9 @@ TEST_F (TrackCollectionTest, SoloMuteListenCounts)
   EXPECT_EQ (track_collection->numListenedTracks (), 0);
 
   // Get track objects to access their faders
-  auto track1_obj = track1.get_object_base ();
-  auto track2_obj = track2.get_object_base ();
-  auto track3_obj = track3.get_object_base ();
+  auto track1_obj = track1.get ();
+  auto track2_obj = track2.get ();
+  auto track3_obj = track3.get ();
 
   // Test solo counts
   track1_obj->channel ()->fader ()->get_solo_param ().setBaseValue (
@@ -518,7 +504,7 @@ TEST_F (TrackCollectionTest, SoloMuteListenSignals)
   listened_signals = 0;
 
   // Change parameters and verify signals are emitted
-  auto track_obj = track.get_object_base ();
+  auto track_obj = track.get ();
   track_obj->channel ()->fader ()->get_solo_param ().setBaseValue (1.0f);
   EXPECT_GT (soloed_signals, 0);
 
@@ -992,7 +978,7 @@ TEST_F (TrackCollectionTest, RecordingSignalEmittedOnAdd)
 
   ASSERT_EQ (spy.count (), 1);
   auto args = spy.takeFirst ();
-  EXPECT_EQ (args.at (0).value<Track *> (), track.get_object_base ());
+  EXPECT_EQ (args.at (0).value<Track *> (), track.get ());
   EXPECT_FALSE (args.at (1).toBool ());
 }
 
@@ -1005,13 +991,13 @@ TEST_F (TrackCollectionTest, RecordingSignalEmittedOnToggle)
     track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
   ASSERT_TRUE (spy.isValid ());
 
-  auto * recording_param = track.get_object_base ()->recordingParam ();
+  auto * recording_param = track.get ()->recordingParam ();
   ASSERT_NE (recording_param, nullptr);
   recording_param->setBaseValue (1.0f);
 
   ASSERT_EQ (spy.count (), 1);
   auto args = spy.takeFirst ();
-  EXPECT_EQ (args.at (0).value<Track *> (), track.get_object_base ());
+  EXPECT_EQ (args.at (0).value<Track *> (), track.get ());
   EXPECT_TRUE (args.at (1).toBool ());
 }
 
@@ -1032,7 +1018,7 @@ TEST_F (TrackCollectionTest, SignalDisconnectedOnRemoval)
   auto track = create_audio_track ();
   track_collection->add_track (track);
 
-  auto * recording_param = track.get_object_base ()->recordingParam ();
+  auto * recording_param = track.get ()->recordingParam ();
   ASSERT_NE (recording_param, nullptr);
   recording_param->setBaseValue (1.0f);
 
@@ -1058,19 +1044,19 @@ TEST_F (TrackCollectionTest, RecordingSignalForTrackAmongMultipleTracks)
     track_collection.get (), &TrackCollection::trackRecordingArmedChanged);
   ASSERT_TRUE (spy.isValid ());
 
-  auto * param1 = track1.get_object_base ()->recordingParam ();
-  auto * param2 = track2.get_object_base ()->recordingParam ();
+  auto * param1 = track1.get ()->recordingParam ();
+  auto * param2 = track2.get ()->recordingParam ();
 
   param1->setBaseValue (1.0f);
   ASSERT_EQ (spy.count (), 1);
   auto args1 = spy.takeFirst ();
-  EXPECT_EQ (args1.at (0).value<Track *> (), track1.get_object_base ());
+  EXPECT_EQ (args1.at (0).value<Track *> (), track1.get ());
   EXPECT_TRUE (args1.at (1).toBool ());
 
   param2->setBaseValue (1.0f);
   ASSERT_EQ (spy.count (), 1);
   auto args2 = spy.takeFirst ();
-  EXPECT_EQ (args2.at (0).value<Track *> (), track2.get_object_base ());
+  EXPECT_EQ (args2.at (0).value<Track *> (), track2.get ());
   EXPECT_TRUE (args2.at (1).toBool ());
 }
 

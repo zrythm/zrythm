@@ -3,6 +3,8 @@
 
 #include "structure/tracks/singleton_tracks.h"
 #include "structure/tracks/track_all.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <qsignalspy.h>
 
@@ -17,11 +19,12 @@ protected:
   void SetUp () override
   {
     // Create track registry
-    track_registry = std::make_unique<TrackRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     // Create test dependencies
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     // Create singleton tracks
     singleton_tracks = std::make_unique<SingletonTracks> ();
@@ -31,68 +34,47 @@ protected:
   TrackUuidReference create_chord_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {},
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
     };
 
-    return track_registry->create_object<ChordTrack> (std::move (deps));
+    return utils::create_object<ChordTrack> (*registry_, std::move (deps));
   }
 
   // Helper to create a modulator track
   TrackUuidReference create_modulator_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
     };
 
-    return track_registry->create_object<ModulatorTrack> (std::move (deps));
+    return utils::create_object<ModulatorTrack> (*registry_, std::move (deps));
   }
 
   // Helper to create a master track
   TrackUuidReference create_master_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
     };
 
-    return track_registry->create_object<MasterTrack> (std::move (deps));
+    return utils::create_object<MasterTrack> (*registry_, std::move (deps));
   }
 
   // Helper to create a marker track
   TrackUuidReference create_marker_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
     };
 
-    return track_registry->create_object<MarkerTrack> (std::move (deps));
+    return utils::create_object<MarkerTrack> (*registry_, std::move (deps));
   }
 
-  std::unique_ptr<dsp::TempoMap>        tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  dsp::PortRegistry                     port_registry;
-  dsp::ProcessorParameterRegistry       param_registry{ port_registry };
-  structure::arrangement::ArrangerObjectRegistry obj_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  plugins::PluginRegistry                        plugin_registry;
-  dsp::graph_test::MockTransport                 transport;
-  std::unique_ptr<TrackRegistry>                 track_registry;
-  std::unique_ptr<SingletonTracks>               singleton_tracks;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  std::unique_ptr<SingletonTracks>                singleton_tracks;
 };
 
 TEST_F (SingletonTracksTest, InitialState)

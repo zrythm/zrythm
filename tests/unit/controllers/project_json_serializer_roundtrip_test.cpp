@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "project_json_serializer_test.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::controllers
 {
@@ -47,7 +48,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_MinimalProject)
   EXPECT_TRUE (j2["projectData"].contains ("tempoMap"));
   EXPECT_TRUE (j2["projectData"].contains ("transport"));
   EXPECT_TRUE (j2["projectData"].contains ("tracklist"));
-  EXPECT_TRUE (j2["projectData"].contains ("registries"));
+  EXPECT_TRUE (j2["projectData"].contains ("registry"));
 
   auto &tm1 = j1["projectData"]["tempoMap"];
   auto &tm2 = j2["projectData"]["tempoMap"];
@@ -274,10 +275,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   auto original_project = create_minimal_project ();
   ASSERT_NE (original_project, nullptr);
 
-  // Create a plugin in the project's plugin registry
-  auto &plugin_registry = original_project->get_plugin_registry ();
-  auto &project_port_registry = original_project->get_port_registry ();
-  auto &project_param_registry = original_project->get_param_registry ();
+  // Create a plugin in the project's registry
+  auto &project_registry = original_project->get_registry ();
 
   // Create plugin descriptor
   auto descriptor = std::make_unique<plugins::PluginDescriptor> ();
@@ -288,12 +287,9 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   config.descr_ = std::move (descriptor);
 
   // Create the plugin
-  auto plugin_ref = plugin_registry.create_object<plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = project_port_registry,
-      .param_registry_ = project_param_registry },
-    nullptr);
-  auto * plugin = plugin_ref.get_object_as<plugins::InternalPluginBase> ();
+  auto plugin_ref = utils::create_object<plugins::InternalPluginBase> (
+    project_registry, project_registry, nullptr);
+  auto * plugin = plugin_ref.get ();
   plugin->set_configuration (config);
 
   create_ui_state_and_undo_stack (*original_project);
@@ -306,7 +302,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_WithPlugin)
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j1); });
 
   // Verify plugin is in the registry with correct structure
-  auto &plugins1 = j1["projectData"]["registries"]["pluginRegistry"];
+  auto &plugins1 = j1["projectData"]["registry"]["plugins"];
   EXPECT_EQ (plugins1.size (), 1);
   EXPECT_TRUE (plugins1[0].contains ("protocol"));
   EXPECT_TRUE (plugins1[0].contains ("configuration"));
@@ -399,14 +395,14 @@ TYPED_TEST (TrackRoundTripTest, RoundTrip_PreservesTrack)
 
   // Verify automation track counts match for each track
   {
-    auto &regs1 = j1["projectData"]["registries"];
-    auto &regs2 = j2["projectData"]["registries"];
+    auto &regs1 = j1["projectData"]["registry"];
+    auto &regs2 = j2["projectData"]["registry"];
 
     // Build map of track ID -> track JSON for both serializations
     std::map<std::string, const nlohmann::json *> tracks_by_id1, tracks_by_id2;
-    for (const auto &track_json : regs1["trackRegistry"])
+    for (const auto &track_json : regs1["tracks"])
       tracks_by_id1[track_json["id"].get<std::string> ()] = &track_json;
-    for (const auto &track_json : regs2["trackRegistry"])
+    for (const auto &track_json : regs2["tracks"])
       tracks_by_id2[track_json["id"].get<std::string> ()] = &track_json;
 
     // Check automation track counts for each track
@@ -528,7 +524,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
   }) << "MIDI region serialization should produce schema-valid JSON";
 
   // Verify arranger objects are in the registry
-  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  auto &obj_registry = j1["projectData"]["registry"]["arrangerObjects"];
   EXPECT_GE (obj_registry.size (), 2)
     << "Should have at least MIDI region and MIDI note";
 
@@ -573,9 +569,9 @@ TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
 
     utils::audio::AudioBuffer dummy_buf (2, 1);
     dummy_buf.clear ();
-    auto &file_registry = original_project->get_file_audio_source_registry ();
-    auto  audio_source_ref = file_registry.create_object<dsp::FileAudioSource> (
-      dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto &file_registry = original_project->get_registry ();
+    auto  audio_source_ref = utils::create_object<dsp::FileAudioSource> (
+      file_registry, dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120, u8"test_audio.wav");
 
     auto region_ref =
@@ -601,7 +597,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
     << "Check for property name mismatches (e.g., clipStartPos vs clipStartPosition)";
 
   // Verify arranger objects are in the registry
-  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  auto &obj_registry = j1["projectData"]["registry"]["arrangerObjects"];
   EXPECT_GE (obj_registry.size (), 2)
     << "Should have at least audio region and audio source object";
 
@@ -676,7 +672,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AutomationRegionWithPoint_Validates)
   }) << "Automation region serialization should produce schema-valid JSON";
 
   // Verify arranger objects are in the registry
-  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  auto &obj_registry = j1["projectData"]["registry"]["arrangerObjects"];
   EXPECT_GE (obj_registry.size (), 2)
     << "Should have at least automation region and automation point";
 
@@ -753,7 +749,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
   }) << "Chord region serialization should produce schema-valid JSON";
 
   // Verify arranger objects are in the registry
-  auto &obj_registry = j1["projectData"]["registries"]["arrangerObjectRegistry"];
+  auto &obj_registry = j1["projectData"]["registry"]["arrangerObjects"];
   EXPECT_GE (obj_registry.size (), 2)
     << "Should have at least chord region and chord object";
 

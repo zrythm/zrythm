@@ -44,16 +44,8 @@ private:
     utils::ObjectCloneType clone_type);
 
   static constexpr auto kChordIndexKey = "chordIndex"sv;
-  friend void           to_json (nlohmann::json &j, const ChordObject &co)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (co));
-    j[kChordIndexKey] = co.chord_index_;
-  }
-  friend void from_json (const nlohmann::json &j, ChordObject &co)
-  {
-    from_json (j, static_cast<ArrangerObject &> (co));
-    j.at (kChordIndexKey).get_to (co.chord_index_);
-  }
+  friend void           to_json (nlohmann::json &j, const ChordObject &co);
+  friend void           from_json (const nlohmann::json &j, ChordObject &co);
 
 private:
   /** The index of the chord it belongs to (0 topmost). */

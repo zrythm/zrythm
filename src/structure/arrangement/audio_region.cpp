@@ -13,18 +13,16 @@ namespace zrythm::structure::arrangement
 {
 
 AudioRegion::AudioRegion (
-  const dsp::TempoMap          &tempo_map,
-  ArrangerObjectRegistry       &object_registry,
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  GlobalMusicalModeGetter       musical_mode_getter,
-  QObject *                     parent) noexcept
+  const dsp::TempoMap    &tempo_map,
+  utils::IObjectRegistry &object_registry,
+  GlobalMusicalModeGetter musical_mode_getter,
+  QObject *               parent) noexcept
     : ArrangerObject (
         Type::AudioRegion,
         tempo_map,
         ArrangerObjectFeatures::Region | ArrangerObjectFeatures::Fading,
         parent),
-      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this),
-      file_audio_source_registry_ (file_audio_source_registry),
+      ArrangerObjectOwner (object_registry, *this),
       global_musical_mode_getter_ (std::move (musical_mode_getter))
 {
 }

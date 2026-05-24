@@ -3,6 +3,8 @@
 
 #include "structure/scenes/clip_launcher.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -18,46 +20,32 @@ class ClipLauncherTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<tracks::TrackRegistry> ();
-
-    // Create test dependencies
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
 
-    // Create object registries
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
     // Create track collection
-    track_collection_ =
-      std::make_unique<tracks::TrackCollection> (*track_registry_);
+    track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
 
     // Create a clip launcher
     clip_launcher_ =
-      std::make_unique<ClipLauncher> (*obj_registry_, *track_collection_);
+      std::make_unique<ClipLauncher> (*registry_, *track_collection_);
   }
 
   void TearDown () override
   {
     clip_launcher_.reset ();
     track_collection_.reset ();
-    obj_registry_.reset ();
     tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
-    track_registry_.reset ();
+    registry_.reset ();
   }
 
-  std::unique_ptr<ClipLauncher>                        clip_launcher_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<tracks::TrackCollection>             track_collection_;
-  std::unique_ptr<tracks::TrackRegistry>               track_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>                tempo_map_wrapper_;
-  dsp::PortRegistry                                    port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::graph_test::MockTransport  transport_;
+  std::unique_ptr<ClipLauncher>            clip_launcher_;
+  std::unique_ptr<tracks::TrackCollection> track_collection_;
+  std::unique_ptr<utils::ObjectRegistry>   registry_;
+  std::unique_ptr<dsp::TempoMap>           tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>    tempo_map_wrapper_;
 };
 
 TEST_F (ClipLauncherTest, InitialState)

@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/concurrency.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 TEST (ConcurrencyTest, AtomicBoolRAII)
 {

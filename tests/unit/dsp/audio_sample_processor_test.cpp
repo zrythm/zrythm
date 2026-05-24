@@ -5,6 +5,7 @@
 #include "dsp/audio_sample_processor.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
+#include "utils/object_registry.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -17,13 +18,9 @@ class AudioSampleProcessorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<PortRegistry> ();
-    param_registry_ =
-      std::make_unique<ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    processor_ = std::make_unique<
-      AudioSampleProcessor> (ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    processor_ = std::make_unique<AudioSampleProcessor> (*registry_);
 
     sample_rate_ = units::sample_rate (48000);
     max_block_length_ = units::samples (1024);
@@ -47,13 +44,12 @@ protected:
       nullptr, sample_rate_, max_block_length_);
   }
 
-  std::unique_ptr<PortRegistry>               port_registry_;
-  std::unique_ptr<ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<AudioSampleProcessor>       processor_;
-  units::sample_rate_t                        sample_rate_;
-  units::sample_u32_t                         max_block_length_;
-  std::unique_ptr<graph_test::MockTransport>  mock_transport_;
-  std::unique_ptr<dsp::TempoMap>              tempo_map_;
+  std::unique_ptr<utils::ObjectRegistry>     registry_;
+  std::unique_ptr<AudioSampleProcessor>      processor_;
+  units::sample_rate_t                       sample_rate_;
+  units::sample_u32_t                        max_block_length_;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)

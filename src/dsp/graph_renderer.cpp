@@ -9,6 +9,7 @@
 #include "dsp/transport.h"
 #include "utils/audio.h"
 #include "utils/format.h"
+#include "utils/logger.h"
 
 #include <QtConcurrentRun>
 

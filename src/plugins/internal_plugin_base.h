@@ -27,8 +27,8 @@ public:
    * @param parent Parent QObject
    */
   InternalPluginBase (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   ~InternalPluginBase () override;
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_panic_processor.h"
+#include "utils/object_registry.h"
 
 #include <QObject>
 
@@ -17,15 +18,11 @@ class MidiPanicProcessorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<PortRegistry> ();
-    param_registry_ =
-      std::make_unique<ProcessorParameterRegistry> (*port_registry_);
-    dependencies_ = std::make_unique<ProcessorBase::ProcessorBaseDependencies> (
-      *port_registry_, *param_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     sample_rate_ = units::sample_rate (48000);
     max_block_length_ = units::samples (1024);
 
-    panic_proc_ = std::make_unique<MidiPanicProcessor> (*dependencies_, nullptr);
+    panic_proc_ = std::make_unique<MidiPanicProcessor> (*registry_, nullptr);
     panic_proc_->prepare_for_processing (
       nullptr, sample_rate_, max_block_length_);
 
@@ -43,15 +40,13 @@ protected:
       panic_proc_->release_resources ();
   }
 
-  std::unique_ptr<PortRegistry>                             port_registry_;
-  std::unique_ptr<ProcessorParameterRegistry>               param_registry_;
-  std::unique_ptr<ProcessorBase::ProcessorBaseDependencies> dependencies_;
-  units::sample_rate_t                                      sample_rate_;
-  units::sample_u32_t                                       max_block_length_;
-  std::unique_ptr<MidiPanicProcessor>                       panic_proc_;
-  dsp::MidiPort *                                           midi_out_;
-  std::unique_ptr<graph_test::MockTransport>                mock_transport_;
-  std::unique_ptr<dsp::TempoMap>                            tempo_map_;
+  std::unique_ptr<utils::ObjectRegistry>     registry_;
+  units::sample_rate_t                       sample_rate_;
+  units::sample_u32_t                        max_block_length_;
+  std::unique_ptr<MidiPanicProcessor>        panic_proc_;
+  dsp::MidiPort *                            midi_out_;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (MidiPanicProcessorTest, BasicPanicOperation)

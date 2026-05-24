@@ -25,12 +25,12 @@ class Metronome : public QObject, public AudioSampleProcessor
 
 public:
   Metronome (
-    ProcessorBaseDependencies dependencies,
-    juce::AudioSampleBuffer   emphasis_sample,
-    juce::AudioSampleBuffer   normal_sample,
-    bool                      initially_enabled = true,
-    float                     initial_volume = 1.f,
-    QObject *                 parent = nullptr);
+    utils::IObjectRegistry &registry,
+    juce::AudioSampleBuffer emphasis_sample,
+    juce::AudioSampleBuffer normal_sample,
+    bool                    initially_enabled = true,
+    float                   initial_volume = 1.f,
+    QObject *               parent = nullptr);
 
   // ============================================================================
   // QML Interface

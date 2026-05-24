@@ -99,15 +99,9 @@ private:
   };
 
 public:
-  struct ProcessorBaseDependencies
-  {
-    dsp::PortRegistry               &port_registry_;
-    dsp::ProcessorParameterRegistry &param_registry_;
-  };
-
   ProcessorBase (
-    ProcessorBaseDependencies dependencies,
-    utils::Utf8String         name = { u8"ProcessorBase" });
+    utils::IObjectRegistry &registry,
+    utils::Utf8String       name = { u8"ProcessorBase" });
 
   ~ProcessorBase () override;
 
@@ -182,7 +176,7 @@ protected:
 
   virtual void custom_release_resources () { }
 
-  auto dependencies () const { return dependencies_; }
+  auto registry () const -> utils::IObjectRegistry & { return registry_; }
 
 private:
   static constexpr auto kProcessorNameKey = "processorName"sv;
@@ -193,7 +187,7 @@ private:
   friend void           from_json (const nlohmann::json &j, ProcessorBase &p);
 
 private:
-  ProcessorBaseDependencies                         dependencies_;
+  utils::IObjectRegistry                           &registry_;
   utils::Utf8String                                 name_;
   std::vector<dsp::PortUuidReference>               input_ports_;
   std::vector<dsp::PortUuidReference>               output_ports_;

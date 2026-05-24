@@ -7,9 +7,7 @@
 
 namespace zrythm::structure::arrangement
 {
-Timeline::Timeline (
-  const structure::arrangement::ArrangerObjectRegistry &registry,
-  QObject *                                             parent)
+Timeline::Timeline (const utils::IObjectRegistry &registry, QObject * parent)
     : QObject (parent),
       editor_settings_ (utils::make_qobject_unique<EditorSettings> (this))
 {

@@ -33,6 +33,7 @@ target_sources(zrythm_dsp_lib
     kmeter_dsp.cpp
     metronome.cpp
     midi_event.cpp
+    midi_panic_processor.cpp
     midi_port.cpp
     note_type.cpp
     modulator_macro_processor.cpp
@@ -104,7 +105,6 @@ target_sources(zrythm_dsp_lib
       playhead_qml_adapter.h
       port.h
       port_all.h
-      port_span.h
       port_connection.h
       port_connections_manager.h
       processor_base.h

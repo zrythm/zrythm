@@ -1,12 +1,19 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <functional>
+#include <string_view>
+
 #include "dsp/graph_node.h"
 #include "dsp/port_connection.h"
 #include "dsp/port_fwd.h"
+#include "utils/typed_uuid_reference.h"
+#include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
+
+using namespace std::string_view_literals;
 
 namespace zrythm::dsp
 {
@@ -23,10 +30,9 @@ namespace zrythm::dsp
  * as tracks, plugins, etc., and ports themselves are part of the processing
  * graph.
  */
-class Port
-    : public dsp::graph::IProcessable,
-      public utils::UuidIdentifiableObject<Port>
+class Port : public utils::UuidIdentifiableObject<Port>, public dsp::graph::IProcessable
 {
+  Q_OBJECT
   Q_DISABLE_COPY_MOVE (Port)
 public:
   using FullDesignationProvider =
@@ -92,7 +98,11 @@ public:
   PortFlow flow () const { return flow_; }
 
 protected:
-  Port (utils::Utf8String label, PortType type = {}, PortFlow flow = {});
+  Port (
+    utils::Utf8String label,
+    PortType          type = {},
+    PortFlow          flow = {},
+    QObject *         parent = nullptr);
 
   friend void
   init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type);
@@ -186,7 +196,8 @@ public:
 
   auto &port_sources () const { return port_sources_; }
 
-  void set_port_sources (this auto &self, RangeOf<PortT *> auto source_ports)
+  void
+  set_port_sources (this auto &self, utils::RangeOf<PortT *> auto source_ports)
     [[clang::blocking]]
   {
     self.port_sources_.clear ();
@@ -210,11 +221,6 @@ private:
   // std::vector<ElementType> port_destinations_;
 };
 
-using PortRegistry = utils::OwningObjectRegistry<PortPtrVariant, Port>;
-using PortRegistryRef = std::reference_wrapper<PortRegistry>;
-using PortUuidReference = utils::UuidReference<PortRegistry>;
+using PortUuidReference = utils::TypedUuidReference<Port>;
 
 } // namespace zrythm::dsp
-
-void
-from_json (const nlohmann::json &j, zrythm::dsp::PortRegistry &registry);

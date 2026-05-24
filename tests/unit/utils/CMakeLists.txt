@@ -31,9 +31,12 @@ add_executable(zrythm_utils_unit_tests
   ranges_test.cpp
   ring_buffer_test.cpp
   string_test.cpp
+  test_uuid_identifiable_qobjects.h
   units_test.cpp
-  uuid_identifiable_object_test.h
   uuid_identifiable_object_test.cpp
+  uuid_reference_test.h
+  uuid_reference_test.cpp
+  variant_helpers_test.h
   variant_helpers_test.cpp
   version_test.cpp
   views_test.cpp

@@ -76,7 +76,7 @@ PluginImporter::import (
         [this, track_or_group,
          index] (plugins::PluginUuidReference inner_plugin_ref) {
           const auto * descr =
-            inner_plugin_ref.get_object_base ()->configuration ()->descriptor ();
+            inner_plugin_ref.get ()->configuration ()->descriptor ();
           z_debug ("Plugin instance ready. Importing {}", descr->name ());
 
           // Begin macro for undo/redo

@@ -97,7 +97,7 @@ PluginParameterListModel::rebuild_cache ()
 
   for (const auto &ref : param_refs)
     {
-      auto * param = ref.get_object_as<dsp::ProcessorParameter> ();
+      auto * param = ref.get ();
       if (
         param != nullptr && !param->hidden () && param != bypass_param
         && param != gain_param)

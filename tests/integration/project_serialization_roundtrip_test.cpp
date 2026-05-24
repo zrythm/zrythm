@@ -64,8 +64,7 @@ decode_faust_state (const QByteArray &raw_state)
 static std::map<std::string, float>
 get_faust_state_from_json (const nlohmann::json &project_json)
 {
-  const auto &plugin_reg =
-    project_json["projectData"]["registries"]["pluginRegistry"];
+  const auto &plugin_reg = project_json["projectData"]["registry"]["plugins"];
   if (plugin_reg.empty ())
     return {};
   const auto &plugin_json = plugin_reg[0];
@@ -211,20 +210,20 @@ protected:
       << "Plugin instantiation did not complete";
 
     // === Step 1b: Capture original plugin state for later comparison ===
-    auto &original_plugin_registry =
-      original_bundle->project->get_plugin_registry ();
-    ASSERT_EQ (original_plugin_registry.get_hash_map ().size (), 1);
+    auto &original_registry = original_bundle->project->get_registry ();
+    ASSERT_EQ (original_registry.count_matching<plugins::Plugin> (), 1);
 
-    auto original_plugin_var =
-      original_plugin_registry.get_hash_map () | std::views::values
-      | std::views::take (1);
-    auto original_plugin_it = original_plugin_var.begin ();
-    ASSERT_NE (original_plugin_it, original_plugin_var.end ());
+    plugins::PluginPtrVariant original_plugin_var;
+    original_registry.for_each_matching<plugins::Plugin> (
+      [&] (plugins::Plugin &pl) {
+        original_plugin_var =
+          utils::convert_to_variant_qobj<plugins::PluginPtrVariant> (&pl);
+      });
 
     // Capture param count and verify it matches expectations
     const size_t original_param_count = std::visit (
       [] (auto &&pl) { return pl->get_parameters ().size (); },
-      *original_plugin_it);
+      original_plugin_var);
     if (expected_param_count.has_value ())
       {
         EXPECT_EQ (original_param_count, *expected_param_count)
@@ -267,7 +266,7 @@ protected:
               }
           }
       },
-      *original_plugin_it);
+      original_plugin_var);
 
     // Process again so the baseValue changes propagate to the underlying
     // plugin (JUCE/CLAP) before the state blob is captured during save.
@@ -307,7 +306,7 @@ protected:
     // === Step 2b: Verify state data is present and contains correct values ===
     {
       const auto &plugin_reg =
-        original_json["projectData"]["registries"]["pluginRegistry"];
+        original_json["projectData"]["registry"]["plugins"];
       ASSERT_EQ (plugin_reg.size (), 1)
         << "Expected exactly 1 plugin in registry";
       const auto &plugin_json = plugin_reg[0];
@@ -374,14 +373,14 @@ protected:
       *loaded_bundle->ui_state, *loaded_bundle->undo_stack);
 
     // === Step 4: Get loaded plugin reference ===
-    auto &loaded_plugin_registry =
-      loaded_bundle->project->get_plugin_registry ();
-    EXPECT_GE (loaded_plugin_registry.get_hash_map ().size (), 1);
+    auto &loaded_registry = loaded_bundle->project->get_registry ();
+    EXPECT_GE (loaded_registry.count_matching<plugins::Plugin> (), 1);
 
-    auto loaded_plugins =
-      loaded_plugin_registry.get_hash_map () | std::views::values;
-    auto loaded_plugin_it = loaded_plugins.begin ();
-    ASSERT_NE (loaded_plugin_it, loaded_plugins.end ());
+    plugins::PluginPtrVariant loaded_plugin_var;
+    loaded_registry.for_each_matching<plugins::Plugin> ([&] (plugins::Plugin &pl) {
+      loaded_plugin_var =
+        utils::convert_to_variant_qobj<plugins::PluginPtrVariant> (&pl);
+    });
 
     // === Step 4a: Process and wait for parameter sync to settle ===
     // All snapshots must have a matching param with the expected value.
@@ -415,7 +414,7 @@ protected:
                         param->baseValue (), snap.value, 0.01f);
                     });
                 },
-                *loaded_plugin_it);
+                loaded_plugin_var);
             });
           }
       }) << "Processing a plugin after loading a project should not crash";
@@ -424,7 +423,7 @@ protected:
     // === Step 4b: Verify param count consistency (no duplication) ===
     const size_t loaded_param_count = std::visit (
       [] (auto &&pl) { return pl->get_parameters ().size (); },
-      *loaded_plugin_it);
+      loaded_plugin_var);
     EXPECT_EQ (loaded_param_count, original_param_count)
       << "Param count mismatch: original=" << original_param_count
       << " loaded=" << loaded_param_count;
@@ -453,7 +452,7 @@ protected:
               << original_snap.name.toStdString ();
           }
       },
-      *loaded_plugin_it);
+      loaded_plugin_var);
 
     // === Step 5: Save the loaded project again and compare registries ===
     auto resave_dir = project_dir_ / "resave_test";
@@ -617,9 +616,12 @@ TEST_F (
   constexpr float     stale_value = 0.25f;
   dsp::ParameterRange freq_range{};
 
-  auto &plugin_reg = bundle->project->get_plugin_registry ().get_hash_map ();
-  ASSERT_EQ (plugin_reg.size (), 1);
-  auto                      plugin_it = plugin_reg.begin ();
+  auto &plugin_reg = bundle->project->get_registry ();
+  ASSERT_EQ (plugin_reg.count_matching<plugins::Plugin> (), 1);
+  plugins::PluginPtrVariant plugin_var;
+  plugin_reg.for_each_matching<plugins::Plugin> ([&] (plugins::Plugin &pl) {
+    plugin_var = utils::convert_to_variant_qobj<plugins::PluginPtrVariant> (&pl);
+  });
   dsp::ProcessorParameter * freq_param = nullptr;
   std::visit (
     [&] (auto &&pl) {
@@ -635,7 +637,7 @@ TEST_F (
             }
         }
     },
-    plugin_it->second);
+    plugin_var);
   ASSERT_NE (freq_param, nullptr);
 
   process_until_true (*bundle->project, [&] () {
@@ -671,7 +673,7 @@ TEST_F (
     }
 
   // === Step 3: Modify baseValue in JSON to create a divergence ===
-  auto &param_reg = saved_json["projectData"]["registries"]["paramRegistry"];
+  auto &param_reg = saved_json["projectData"]["registry"]["parameters"];
   bool  modified = false;
   for (auto &param_json : param_reg)
     {
@@ -731,10 +733,14 @@ TEST_F (
     *reload_bundle->ui_state, *reload_bundle->undo_stack);
 
   // Find the Frequency parameter in the reloaded plugin for condition checking
-  auto &reload_plugin_reg =
-    reload_bundle->project->get_plugin_registry ().get_hash_map ();
-  ASSERT_EQ (reload_plugin_reg.size (), 1);
+  auto &reload_registry = reload_bundle->project->get_registry ();
+  ASSERT_EQ (reload_registry.count_matching<plugins::Plugin> (), 1);
   dsp::ProcessorParameter * reload_freq_param = nullptr;
+  plugins::PluginPtrVariant reload_plugin_var;
+  reload_registry.for_each_matching<plugins::Plugin> ([&] (plugins::Plugin &pl) {
+    reload_plugin_var =
+      utils::convert_to_variant_qobj<plugins::PluginPtrVariant> (&pl);
+  });
   std::visit (
     [&] (auto &&pl) {
       for (const auto &param_ref : pl->get_parameters ())
@@ -745,7 +751,7 @@ TEST_F (
             reload_freq_param = param;
         }
     },
-    reload_plugin_reg.begin ()->second);
+    reload_plugin_var);
   ASSERT_NE (reload_freq_param, nullptr);
 
   // Process so the audio thread runs and the host has a chance to apply

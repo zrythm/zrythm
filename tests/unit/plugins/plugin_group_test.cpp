@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_group.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -16,35 +18,27 @@ class DeviceGroupTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-    plugin_registry_ = std::make_unique<PluginRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     device_group_ = std::make_unique<PluginGroup> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      *plugin_registry_, PluginGroup::DeviceGroupType::Audio,
+      *registry_, PluginGroup::DeviceGroupType::Audio,
       PluginGroup::ProcessingTypeHint::Parallel);
   }
 
   void TearDown () override
   {
     device_group_.reset ();
-    plugin_registry_.reset ();
-    param_registry_.reset ();
-    port_registry_.reset ();
+    registry_.reset ();
   }
 
   Plugin * get_plugin_at_idx (const auto idx) const
   {
-    return device_group_->element_at_idx (idx).template value<Plugin *> ();
+    auto var = device_group_->element_at_idx (idx);
+    return qobject_cast<Plugin *> (var.template value<QObject *> ());
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<PluginRegistry>                  plugin_registry_;
-  std::unique_ptr<PluginGroup>                     device_group_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<PluginGroup>           device_group_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t  max_block_length_{ units::samples (1024) };
 };
@@ -57,9 +51,8 @@ TEST_F (DeviceGroupTest, ConstructionAndBasicProperties)
 TEST_F (DeviceGroupTest, AppendPlugin)
 {
   // Create a InternalPluginBase
-  auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto plugin_ref =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
   // Create plugin configuration
   auto descriptor = std::make_unique<PluginDescriptor> ();
@@ -69,7 +62,7 @@ TEST_F (DeviceGroupTest, AppendPlugin)
   config.descr_ = std::move (descriptor);
 
   // Get the plugin and set configuration
-  auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
   plugin->set_configuration (config);
 
   // Test signal emission
@@ -91,10 +84,8 @@ TEST_F (DeviceGroupTest, InsertPluginAtSpecificIndex)
   std::vector<PluginUuidReference> plugins;
   for (int i = 0; i < 3; ++i)
     {
-      auto plugin_ref = plugin_registry_->create_object<
-        InternalPluginBase> (dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_ });
+      auto plugin_ref =
+        utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -103,7 +94,7 @@ TEST_F (DeviceGroupTest, InsertPluginAtSpecificIndex)
       PluginConfiguration config;
       config.descr_ = std::move (descriptor);
 
-      auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+      auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
       plugin->set_configuration (config);
 
       plugins.push_back (plugin_ref);
@@ -123,40 +114,36 @@ TEST_F (DeviceGroupTest, InsertPluginAtSpecificIndex)
   // Verify order
   EXPECT_EQ (
     get_plugin_at_idx (0)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[0].get_object ())->get_uuid ());
+    plugins[0].get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (1)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[2].get_object ())->get_uuid ());
+    plugins[2].get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (2)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[1].get_object ())->get_uuid ());
+    plugins[1].get_object_as<InternalPluginBase> ()->get_uuid ());
 }
 
 TEST_F (DeviceGroupTest, InsertPluginAtEnd)
 {
   // Create two test plugins
-  auto plugin_ref1 = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
-  auto plugin_ref2 = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto plugin_ref1 =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
+  auto plugin_ref2 =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
   auto descriptor1 = std::make_unique<PluginDescriptor> ();
   descriptor1->name_ = u8"Test InternalPluginBase 1";
   descriptor1->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config1;
   config1.descr_ = std::move (descriptor1);
-  std::get<InternalPluginBase *> (plugin_ref1.get_object ())
-    ->set_configuration (config1);
+  plugin_ref1.get_object_as<InternalPluginBase> ()->set_configuration (config1);
 
   auto descriptor2 = std::make_unique<PluginDescriptor> ();
   descriptor2->name_ = u8"Test InternalPluginBase 2";
   descriptor2->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config2;
   config2.descr_ = std::move (descriptor2);
-  std::get<InternalPluginBase *> (plugin_ref2.get_object ())
-    ->set_configuration (config2);
+  plugin_ref2.get_object_as<InternalPluginBase> ()->set_configuration (config2);
 
   // Insert at end (index -1)
   device_group_->insert_plugin (plugin_ref1, -1);
@@ -165,25 +152,24 @@ TEST_F (DeviceGroupTest, InsertPluginAtEnd)
   EXPECT_EQ (device_group_->rowCount (), 2);
   EXPECT_EQ (
     get_plugin_at_idx (0)->get_uuid (),
-    std::get<InternalPluginBase *> (plugin_ref1.get_object ())->get_uuid ());
+    plugin_ref1.get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (1)->get_uuid (),
-    std::get<InternalPluginBase *> (plugin_ref2.get_object ())->get_uuid ());
+    plugin_ref2.get_object_as<InternalPluginBase> ()->get_uuid ());
 }
 
 TEST_F (DeviceGroupTest, RemovePlugin)
 {
   // Create a InternalPluginBase
-  auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto plugin_ref =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
   auto descriptor = std::make_unique<PluginDescriptor> ();
   descriptor->name_ = u8"Test InternalPluginBase";
   descriptor->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config;
   config.descr_ = std::move (descriptor);
-  auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
   plugin->set_configuration (config);
 
   // Add plugin
@@ -204,16 +190,15 @@ TEST_F (DeviceGroupTest, RemovePlugin)
 TEST_F (DeviceGroupTest, RemoveNonExistentPlugin)
 {
   // Create a InternalPluginBase
-  auto plugin_ref = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto plugin_ref =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
   auto descriptor = std::make_unique<PluginDescriptor> ();
   descriptor->name_ = u8"Test InternalPluginBase";
   descriptor->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config;
   config.descr_ = std::move (descriptor);
-  auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
   plugin->set_configuration (config);
 
   // Try to remove non-existent plugin
@@ -227,10 +212,8 @@ TEST_F (DeviceGroupTest, QmlModelInterface)
   std::vector<PluginUuidReference> plugins;
   for (int i = 0; i < 3; ++i)
     {
-      auto plugin_ref = plugin_registry_->create_object<
-        InternalPluginBase> (dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_ });
+      auto plugin_ref =
+        utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -239,7 +222,7 @@ TEST_F (DeviceGroupTest, QmlModelInterface)
       PluginConfiguration config;
       config.descr_ = std::move (descriptor);
 
-      auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+      auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
       plugin->set_configuration (config);
 
       plugins.push_back (plugin_ref);
@@ -285,10 +268,8 @@ TEST_F (DeviceGroupTest, JsonSerializationRoundtrip)
   std::vector<PluginUuidReference> original_plugins;
   for (int i = 0; i < 3; ++i)
     {
-      auto plugin_ref = plugin_registry_->create_object<
-        InternalPluginBase> (dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_ });
+      auto plugin_ref =
+        utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -297,7 +278,7 @@ TEST_F (DeviceGroupTest, JsonSerializationRoundtrip)
       PluginConfiguration config;
       config.descr_ = std::move (descriptor);
 
-      auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+      auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
       plugin->set_configuration (config);
 
       original_plugins.push_back (plugin_ref);
@@ -309,9 +290,7 @@ TEST_F (DeviceGroupTest, JsonSerializationRoundtrip)
 
   // Create new DeviceGroup and deserialize
   PluginGroup deserialized_list (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    *plugin_registry_, PluginGroup::DeviceGroupType::Audio,
+    *registry_, PluginGroup::DeviceGroupType::Audio,
     PluginGroup::ProcessingTypeHint::Parallel);
   from_json (j, deserialized_list);
 
@@ -336,9 +315,7 @@ TEST_F (DeviceGroupTest, EmptyJsonSerialization)
 
   // Create new DeviceGroup and deserialize
   PluginGroup deserialized_list (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    *plugin_registry_, PluginGroup::DeviceGroupType::Audio,
+    *registry_, PluginGroup::DeviceGroupType::Audio,
     PluginGroup::ProcessingTypeHint::Parallel);
   from_json (j, deserialized_list);
 
@@ -348,28 +325,24 @@ TEST_F (DeviceGroupTest, EmptyJsonSerialization)
 TEST_F (DeviceGroupTest, ModelSignals)
 {
   // Create test plugins
-  auto plugin_ref1 = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
-  auto plugin_ref2 = plugin_registry_->create_object<InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  auto plugin_ref1 =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
+  auto plugin_ref2 =
+    utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
   auto descriptor1 = std::make_unique<PluginDescriptor> ();
   descriptor1->name_ = u8"Test InternalPluginBase 1";
   descriptor1->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config1;
   config1.descr_ = std::move (descriptor1);
-  std::get<InternalPluginBase *> (plugin_ref1.get_object ())
-    ->set_configuration (config1);
+  plugin_ref1.get_object_as<InternalPluginBase> ()->set_configuration (config1);
 
   auto descriptor2 = std::make_unique<PluginDescriptor> ();
   descriptor2->name_ = u8"Test InternalPluginBase 2";
   descriptor2->protocol_ = Protocol::ProtocolType::Internal;
   PluginConfiguration config2;
   config2.descr_ = std::move (descriptor2);
-  std::get<InternalPluginBase *> (plugin_ref2.get_object ())
-    ->set_configuration (config2);
+  plugin_ref2.get_object_as<InternalPluginBase> ()->set_configuration (config2);
 
   // Test rowsInserted signal
   QSignalSpy insert_spy (
@@ -380,7 +353,7 @@ TEST_F (DeviceGroupTest, ModelSignals)
   // Test rowsRemoved signal
   QSignalSpy remove_spy (device_group_.get (), &QAbstractItemModel::rowsRemoved);
   device_group_->remove_plugin (
-    std::get<InternalPluginBase *> (plugin_ref1.get_object ())->get_uuid ());
+    plugin_ref1.get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (remove_spy.count (), 1);
 }
 
@@ -390,10 +363,8 @@ TEST_F (DeviceGroupTest, MultipleOperations)
   std::vector<PluginUuidReference> plugins;
   for (int i = 0; i < 5; ++i)
     {
-      auto plugin_ref = plugin_registry_->create_object<
-        InternalPluginBase> (dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_ });
+      auto plugin_ref =
+        utils::create_object<InternalPluginBase> (*registry_, *registry_);
 
       auto descriptor = std::make_unique<PluginDescriptor> ();
       descriptor->name_ = utils::Utf8String::from_utf8_encoded_string (
@@ -402,7 +373,7 @@ TEST_F (DeviceGroupTest, MultipleOperations)
       PluginConfiguration config;
       config.descr_ = std::move (descriptor);
 
-      auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+      auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
       plugin->set_configuration (config);
 
       plugins.push_back (plugin_ref);
@@ -414,7 +385,7 @@ TEST_F (DeviceGroupTest, MultipleOperations)
   device_group_->insert_plugin (plugins[2], 1);
   device_group_->append_plugin (plugins[3]);
   device_group_->remove_plugin (
-    std::get<InternalPluginBase *> (plugins[1].get_object ())->get_uuid ());
+    plugins[1].get_object_as<InternalPluginBase> ()->get_uuid ());
   device_group_->insert_plugin (plugins[4], 1);
 
   // Verify final state
@@ -423,16 +394,16 @@ TEST_F (DeviceGroupTest, MultipleOperations)
   // Verify order: [0, 4, 2, 3]
   EXPECT_EQ (
     get_plugin_at_idx (0)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[0].get_object ())->get_uuid ());
+    plugins[0].get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (1)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[4].get_object ())->get_uuid ());
+    plugins[4].get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (2)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[2].get_object ())->get_uuid ());
+    plugins[2].get_object_as<InternalPluginBase> ()->get_uuid ());
   EXPECT_EQ (
     get_plugin_at_idx (3)->get_uuid (),
-    std::get<InternalPluginBase *> (plugins[3].get_object ())->get_uuid ());
+    plugins[3].get_object_as<InternalPluginBase> ()->get_uuid ());
 }
 
 } // namespace zrythm::plugins

@@ -33,9 +33,9 @@ class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
 
 public:
   ModulatorMacroProcessor (
-    ProcessorBaseDependencies dependencies,
-    int                       idx,
-    QObject *                 parent = nullptr);
+    utils::IObjectRegistry &registry,
+    int                     idx,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -91,10 +91,7 @@ public:
   }
 
   /** Control port controlling the amount. */
-  auto &get_macro_param ()
-  {
-    return *get_parameters ().front ().get_object_as<dsp::ProcessorParameter> ();
-  }
+  auto &get_macro_param () { return *get_parameters ().front ().get (); }
 
 private:
   static constexpr auto kNameKey = "name"sv;
@@ -102,8 +99,6 @@ private:
   friend void from_json (const nlohmann::json &j, ModulatorMacroProcessor &p);
 
 private:
-  ProcessorBaseDependencies dependencies_;
-
   /**
    * Name to be shown in the modulators tab.
    *

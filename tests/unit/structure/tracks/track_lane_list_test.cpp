@@ -4,6 +4,8 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_lane_list.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QObject>
 #include <QSignalSpy>
@@ -24,26 +26,16 @@ protected:
     scoped_qapplication_ =
       std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-    file_audio_source_registry_ =
-      std::make_unique<dsp::FileAudioSourceRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    // Create dependencies for TrackLane
-    TrackLane::TrackLaneDependencies deps{
-      .obj_registry_ = *obj_registry_,
-      .file_audio_source_registry_ = *file_audio_source_registry_,
-    };
-
-    lane_list_ = std::make_unique<TrackLaneList> (
-      deps.obj_registry_, deps.file_audio_source_registry_);
+    lane_list_ = std::make_unique<TrackLaneList> (*registry_);
   }
 
   void TearDown () override { lane_list_.reset (); }
 
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
-  bool                                          soloed_lanes_exist_ = false;
-  std::unique_ptr<TrackLaneList>                lane_list_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  bool                                   soloed_lanes_exist_ = false;
+  std::unique_ptr<TrackLaneList>         lane_list_;
   std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qapplication_;
 };
 
@@ -223,13 +215,7 @@ TEST_F (TrackLaneListTest, JsonSerializationRoundtrip)
   nlohmann::json j = *lane_list_;
 
   // Create new list from JSON
-  TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
-    .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-  };
-  TrackLaneList deserialized_list (
-    deps.obj_registry_, deps.file_audio_source_registry_);
+  TrackLaneList deserialized_list (*registry_);
 
   // Deserialize from JSON
   from_json (j, deserialized_list);
@@ -256,13 +242,7 @@ TEST_F (TrackLaneListTest, EmptyListSerialization)
 
   nlohmann::json j = *lane_list_;
 
-  TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
-    .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
-  };
-  TrackLaneList deserialized_list (
-    deps.obj_registry_, deps.file_audio_source_registry_);
+  TrackLaneList deserialized_list (*registry_);
 
   from_json (j, deserialized_list);
 
@@ -487,8 +467,8 @@ TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
   // Create a MIDI region and add it to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane);
 
   // Add the region to the lane - this should trigger the signal
   lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
@@ -516,8 +496,8 @@ TEST_F (TrackLaneListTest, SignalConnectionsOnLaneOperations)
   // Create and add a MIDI region to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane);
 
   lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region_ref);
@@ -549,8 +529,8 @@ TEST_F (TrackLaneListTest, ExpandableTickRangeInLaneContext)
   // Create a MIDI region with specific position and bounds
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane);
   auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
   region->position ()->setTicks (100.0);
   region->bounds ()->setLengthTicks (50.0);
@@ -598,14 +578,14 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
   // Add to first lane
-  auto region1_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane1);
+  auto region1_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane1);
   lane1->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region1_ref);
 
   // Add to second lane
-  auto region2_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane2);
+  auto region2_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane2);
   lane2->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region2_ref);
 
@@ -620,9 +600,8 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   lane_list_->removeLane (0);
 
   // Only the remaining lane should trigger signals
-  auto region3_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_,
-    lane_list_->at (0));
+  auto region3_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane_list_->at (0));
   lane_list_->at (0)->arrangement::
     ArrangerObjectOwner<arrangement::MidiRegion>::add_object (region3_ref);
 
@@ -638,8 +617,8 @@ TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
   auto * lane = lane_list_->addLane ();
   auto   tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    *tempo_map, *obj_registry_, *file_audio_source_registry_, lane);
+  auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, *tempo_map, *registry_, lane);
   auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
   region->position ()->setTicks (100.0);
   region->bounds ()->setLengthTicks (50.0);
@@ -651,12 +630,7 @@ TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
   nlohmann::json j = *lane_list_;
 
   // 3. Deserialize into a fresh TrackLaneList
-  TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
-  };
-  auto deserialized = std::make_unique<TrackLaneList> (
-    deps.obj_registry_, deps.file_audio_source_registry_);
+  auto deserialized = std::make_unique<TrackLaneList> (*registry_);
   from_json (j, *deserialized);
 
   ASSERT_EQ (deserialized->size (), 1);

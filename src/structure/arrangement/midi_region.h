@@ -27,10 +27,9 @@ class MidiRegion final : public ArrangerObject, public ArrangerObjectOwner<MidiN
 
 public:
   MidiRegion (
-    const dsp::TempoMap          &tempo_map,
-    ArrangerObjectRegistry       &object_registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject *                     parent = nullptr);
+    const dsp::TempoMap    &tempo_map,
+    utils::IObjectRegistry &object_registry,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -43,6 +42,11 @@ public:
   std::string get_field_name_for_serialization (const MidiNote *) const override
   {
     return "midiNotes";
+  }
+
+  ArrangerObjectListModel * get_child_list_model () const override
+  {
+    return ArrangerObjectOwner<MidiNote>::get_model ();
   }
 
 private:

@@ -5,6 +5,7 @@
 
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "utils/iobject_registry.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -60,38 +61,18 @@ class MockArrangerObjectOwner
 
 public:
   MockArrangerObjectOwner (
-    structure::arrangement::ArrangerObjectRegistry &registry,
-    dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
-    QObject *                                       parent = nullptr)
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr)
       : QObject (parent),
-        ArrangerObjectOwner<structure::arrangement::MidiNote> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::Marker> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::MidiRegion> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::AudioRegion> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::AutomationPoint> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::TempoObject> (
-          registry,
-          file_audio_source_registry,
-          *this),
-        ArrangerObjectOwner<structure::arrangement::TimeSignatureObject> (
-          registry,
-          file_audio_source_registry,
-          *this)
+        ArrangerObjectOwner<structure::arrangement::MidiNote> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::Marker> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::MidiRegion> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::AudioRegion> (registry, *this),
+        ArrangerObjectOwner<
+          structure::arrangement::AutomationPoint> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::TempoObject> (registry, *this),
+        ArrangerObjectOwner<
+          structure::arrangement::TimeSignatureObject> (registry, *this)
   {
   }
 

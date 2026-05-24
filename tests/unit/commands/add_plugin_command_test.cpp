@@ -3,8 +3,9 @@
 
 #include "commands/add_plugin_command.h"
 #include "plugins/internal_plugin_base.h"
-#include "plugins/plugin_all.h"
 #include "plugins/plugin_group.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -16,31 +17,19 @@ class AddPluginCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create a test plugin group
     plugin_group_ = std::make_unique<plugins::PluginGroup> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
 
-    // Create a test plugin
     create_test_plugin ();
   }
 
-  void TearDown () override
-  {
-    // Clean up in reverse order of creation
-    plugin_group_.reset ();
-  }
+  void TearDown () override { plugin_group_.reset (); }
 
   void create_test_plugin ()
   {
-    // Create a simple test plugin
-    test_plugin_ref_ = plugin_registry_.create_object<
-      plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    test_plugin_ref_ = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
   }
 
   static auto
@@ -49,12 +38,9 @@ protected:
     return group.element_at_idx (idx).value<plugins::Plugin *> ()->get_uuid ();
   }
 
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  plugins::PluginRegistry         plugin_registry_;
-
+  utils::ObjectRegistry                 registry_;
   std::unique_ptr<plugins::PluginGroup> plugin_group_;
-  plugins::PluginUuidReference          test_plugin_ref_{ plugin_registry_ };
+  plugins::PluginUuidReference          test_plugin_ref_{ registry_ };
 };
 
 // Test initial state after construction
@@ -82,16 +68,10 @@ TEST_F (AddPluginCommandTest, RedoAddsPluginAppend)
 TEST_F (AddPluginCommandTest, RedoAddsPluginAtIndex)
 {
   // Add some dummy plugins first
-  auto dummy_plugin1 = plugin_registry_.create_object<
-    plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    nullptr);
-  auto dummy_plugin2 = plugin_registry_.create_object<
-    plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    nullptr);
+  auto dummy_plugin1 = utils::create_object<plugins::InternalPluginBase> (
+    registry_, registry_, nullptr);
+  auto dummy_plugin2 = utils::create_object<plugins::InternalPluginBase> (
+    registry_, registry_, nullptr);
 
   plugin_group_->append_plugin (dummy_plugin1);
   plugin_group_->append_plugin (dummy_plugin2);
@@ -167,11 +147,8 @@ TEST_F (AddPluginCommandTest, CommandId)
 TEST_F (AddPluginCommandTest, MultiplePluginsSameGroup)
 {
   // Create second plugin
-  auto second_plugin_ref = plugin_registry_.create_object<
-    plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    nullptr);
+  auto second_plugin_ref = utils::create_object<plugins::InternalPluginBase> (
+    registry_, registry_, nullptr);
 
   AddPluginCommand command1 (*plugin_group_, test_plugin_ref_);
   AddPluginCommand command2 (*plugin_group_, second_plugin_ref);
@@ -202,10 +179,8 @@ TEST_F (AddPluginCommandTest, MultiplePluginsSameGroup)
 TEST_F (AddPluginCommandTest, AddPluginAtIndexBeyondEnd)
 {
   // Add a dummy plugin first
-  auto dummy_plugin = plugin_registry_.create_object<plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    nullptr);
+  auto dummy_plugin = utils::create_object<plugins::InternalPluginBase> (
+    registry_, registry_, nullptr);
 
   plugin_group_->append_plugin (dummy_plugin);
 
@@ -224,10 +199,8 @@ TEST_F (AddPluginCommandTest, AddPluginAtIndexBeyondEnd)
 TEST_F (AddPluginCommandTest, AddPluginAtStart)
 {
   // Add a dummy plugin first
-  auto dummy_plugin = plugin_registry_.create_object<plugins::InternalPluginBase> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    nullptr);
+  auto dummy_plugin = utils::create_object<plugins::InternalPluginBase> (
+    registry_, registry_, nullptr);
 
   plugin_group_->append_plugin (dummy_plugin);
 
@@ -247,9 +220,7 @@ TEST_F (AddPluginCommandTest, DifferentPluginGroupTypes)
 {
   // Test with MIDI plugin group
   auto midi_plugin_group = std::make_unique<plugins::PluginGroup> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    plugin_registry_, plugins::PluginGroup::DeviceGroupType::MIDI,
+    registry_, plugins::PluginGroup::DeviceGroupType::MIDI,
     plugins::PluginGroup::ProcessingTypeHint::Serial);
 
   AddPluginCommand midi_command (*midi_plugin_group, test_plugin_ref_);
@@ -264,9 +235,7 @@ TEST_F (AddPluginCommandTest, DifferentPluginGroupTypes)
 
   // Test with Instrument plugin group
   auto instrument_plugin_group = std::make_unique<plugins::PluginGroup> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-    plugin_registry_, plugins::PluginGroup::DeviceGroupType::Instrument,
+    registry_, plugins::PluginGroup::DeviceGroupType::Instrument,
     plugins::PluginGroup::ProcessingTypeHint::Serial);
 
   AddPluginCommand instrument_command (
@@ -311,8 +280,7 @@ TEST_F (AddPluginCommandTest, PluginReferenceMoved)
 
 TEST_F (AddPluginCommandTest, UndoClosesPluginWindow)
 {
-  auto * plugin =
-    plugins::plugin_ptr_variant_to_base (test_plugin_ref_.get_object ());
+  auto * plugin = test_plugin_ref_.get ();
   plugin->setUiVisible (true);
 
   AddPluginCommand command (*plugin_group_, test_plugin_ref_);
@@ -325,8 +293,7 @@ TEST_F (AddPluginCommandTest, UndoClosesPluginWindow)
 
 TEST_F (AddPluginCommandTest, UndoAfterReopenClosesPluginWindow)
 {
-  auto * plugin =
-    plugins::plugin_ptr_variant_to_base (test_plugin_ref_.get_object ());
+  auto * plugin = test_plugin_ref_.get ();
   plugin->setUiVisible (true);
 
   AddPluginCommand command (*plugin_group_, test_plugin_ref_);

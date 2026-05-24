@@ -5,6 +5,7 @@
 
 #include "dsp/parameter.h"
 #include "utils/icloneable.h"
+#include "utils/iobject_registry.h"
 
 #define MIDI_MAPPINGS (PROJECT->midi_mappings_)
 
@@ -20,9 +21,7 @@ class MidiMapping : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  MidiMapping (
-    dsp::ProcessorParameterRegistry &param_registry,
-    QObject *                        parent = nullptr);
+  MidiMapping (utils::IObjectRegistry &registry, QObject * parent = nullptr);
   Q_DISABLE_COPY_MOVE (MidiMapping)
 
 public:
@@ -56,14 +55,14 @@ private:
     j.at (kDeviceIdKey).get_to (mapping.device_id_);
     if (j.contains (kDestIdKey))
       {
-        mapping.dest_id_.emplace (mapping.param_registry_);
+        mapping.dest_id_.emplace (mapping.registry_);
         j.at (kDestIdKey).get_to (*mapping.dest_id_);
       }
     mapping.enabled_.store (j.at (kEnabledKey).get<bool> ());
   }
 
 public:
-  dsp::ProcessorParameterRegistry &param_registry_;
+  utils::IObjectRegistry &registry_;
 
   /** Raw MIDI signal. */
   std::array<midi_byte_t, 3> key_ = {};
@@ -89,7 +88,7 @@ public:
 class MidiMappings final
 {
 public:
-  MidiMappings (dsp::ProcessorParameterRegistry &param_registry);
+  MidiMappings (utils::IObjectRegistry &registry);
 
   /**
    * Binds the CC represented by the given raw buffer (must be size 3) to the
@@ -183,7 +182,7 @@ public:
   std::vector<std::unique_ptr<MidiMapping>> mappings_;
 
 private:
-  dsp::ProcessorParameterRegistry &param_registry_;
+  utils::IObjectRegistry &registry_;
 };
 
 }

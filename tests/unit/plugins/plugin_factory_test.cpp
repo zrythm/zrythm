@@ -4,6 +4,8 @@
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -20,22 +22,14 @@ class PluginFactoryTest
 protected:
   void SetUp () override
   {
-    // Create registries
-    plugin_registry_ = std::make_unique<PluginRegistry> ();
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-
-    // Create factory
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     factory_ = create_factory ();
   }
 
   void TearDown () override
   {
     factory_.reset ();
-    plugin_registry_.reset ();
-    param_registry_.reset ();
-    port_registry_.reset ();
+    registry_.reset ();
   }
 
   // Helper to create a mock async plugin instance function
@@ -98,9 +92,7 @@ protected:
   std::unique_ptr<PluginFactory> create_factory ()
   {
     auto factory_deps = PluginFactory::CommonFactoryDependencies{
-      .plugin_registry_ = *plugin_registry_,
-      .processor_base_dependencies_{
-                                    .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+      .registry = *registry_,
       .create_plugin_instance_async_func_ = create_mock_async_func (),
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
@@ -110,10 +102,8 @@ protected:
     return std::make_unique<PluginFactory> (std::move (factory_deps));
   }
 
-  std::unique_ptr<PluginRegistry>                  plugin_registry_;
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<PluginFactory>                   factory_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<PluginFactory>         factory_;
 
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t  buffer_size_{ units::samples (1024) };
@@ -138,10 +128,10 @@ TEST_F (PluginFactoryTest, CreateDifferentPluginTypes)
   auto internal_plugin_ref = factory_->create_plugin_from_setting (
     *internal_config, internal_finish_options);
   auto * internal_plugin =
-    std::get<InternalPluginBase *> (internal_plugin_ref.get_object ());
+    internal_plugin_ref.get_object_as<InternalPluginBase> ();
   EXPECT_NE (internal_plugin, nullptr);
   EXPECT_EQ (internal_plugin->get_protocol (), Protocol::ProtocolType::Internal);
-  EXPECT_TRUE (plugin_registry_->contains (internal_plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, internal_plugin->get_uuid ()));
 
   // Test ClapPlugin creation
   auto clap_config = create_test_configuration (Protocol::ProtocolType::CLAP);
@@ -151,10 +141,10 @@ TEST_F (PluginFactoryTest, CreateDifferentPluginTypes)
 
   auto clap_plugin_ref =
     factory_->create_plugin_from_setting (*clap_config, clap_finish_options);
-  auto * clap_plugin = std::get<ClapPlugin *> (clap_plugin_ref.get_object ());
+  auto * clap_plugin = clap_plugin_ref.get_object_as<ClapPlugin> ();
   EXPECT_NE (clap_plugin, nullptr);
   EXPECT_EQ (clap_plugin->get_protocol (), Protocol::ProtocolType::CLAP);
-  EXPECT_TRUE (plugin_registry_->contains (clap_plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, clap_plugin->get_uuid ()));
 
   // Test JucePlugin creation
   auto juce_config = create_test_configuration (Protocol::ProtocolType::VST3);
@@ -164,10 +154,10 @@ TEST_F (PluginFactoryTest, CreateDifferentPluginTypes)
 
   auto juce_plugin_ref =
     factory_->create_plugin_from_setting (*juce_config, juce_finish_options);
-  auto * juce_plugin = std::get<JucePlugin *> (juce_plugin_ref.get_object ());
+  auto * juce_plugin = juce_plugin_ref.get_object_as<JucePlugin> ();
   EXPECT_NE (juce_plugin, nullptr);
   EXPECT_EQ (juce_plugin->get_protocol (), Protocol::ProtocolType::VST3);
-  EXPECT_TRUE (plugin_registry_->contains (juce_plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, juce_plugin->get_uuid ()));
 }
 
 // Test create_plugin_from_setting with different protocols
@@ -183,7 +173,7 @@ TEST_F (PluginFactoryTest, CreatePluginFromSetting)
   auto internal_plugin_ref = factory_->create_plugin_from_setting (
     *internal_config, internal_finish_options);
   auto * internal_plugin =
-    std::get<InternalPluginBase *> (internal_plugin_ref.get_object ());
+    internal_plugin_ref.get_object_as<InternalPluginBase> ();
   EXPECT_NE (internal_plugin, nullptr);
   EXPECT_EQ (internal_plugin->get_protocol (), Protocol::ProtocolType::Internal);
 
@@ -195,7 +185,7 @@ TEST_F (PluginFactoryTest, CreatePluginFromSetting)
 
   auto clap_plugin_ref =
     factory_->create_plugin_from_setting (*clap_config, clap_finish_options);
-  auto * clap_plugin = std::get<ClapPlugin *> (clap_plugin_ref.get_object ());
+  auto * clap_plugin = clap_plugin_ref.get_object_as<ClapPlugin> ();
   EXPECT_NE (clap_plugin, nullptr);
   EXPECT_EQ (clap_plugin->get_protocol (), Protocol::ProtocolType::CLAP);
 
@@ -207,7 +197,7 @@ TEST_F (PluginFactoryTest, CreatePluginFromSetting)
 
   auto vst3_plugin_ref =
     factory_->create_plugin_from_setting (*vst3_config, vst3_finish_options);
-  auto * vst3_plugin = std::get<JucePlugin *> (vst3_plugin_ref.get_object ());
+  auto * vst3_plugin = vst3_plugin_ref.get_object_as<JucePlugin> ();
   EXPECT_NE (vst3_plugin, nullptr);
   EXPECT_EQ (vst3_plugin->get_protocol (), Protocol::ProtocolType::VST3);
 }
@@ -235,15 +225,12 @@ TEST_F (PluginFactoryTest, PluginRegistration)
     }
 
   // Verify all plugins are registered
-  EXPECT_EQ (plugin_registry_->size (), num_plugins);
-
   for (const auto &ref : plugin_refs)
     {
-      EXPECT_TRUE (plugin_registry_->contains (ref.id ()));
+      EXPECT_TRUE (utils::contains (*registry_, ref.id ()));
 
       // Verify we can retrieve the plugin
-      auto plugin_var = plugin_registry_->find_by_id (ref.id ());
-      EXPECT_TRUE (plugin_var.has_value ());
+      EXPECT_NE (&utils::get_typed<Plugin> (*registry_, ref.id ()), nullptr);
     }
 }
 
@@ -261,7 +248,7 @@ TEST_F (PluginFactoryTest, PluginConfigurationApplied)
 
   auto plugin_ref =
     factory_->create_plugin_from_setting (*config, finish_options);
-  auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
 
   EXPECT_NE (plugin, nullptr);
   EXPECT_EQ (plugin->get_name (), u8"Custom Test Plugin");
@@ -287,10 +274,10 @@ TEST_F (PluginFactoryTest, InstantiationFinishedHandlerAsync)
   auto juce_config = create_test_configuration (Protocol::ProtocolType::VST3);
   auto juce_plugin_ref =
     factory_->create_plugin_from_setting (*juce_config, finish_options);
-  auto * juce_plugin = std::get<JucePlugin *> (juce_plugin_ref.get_object ());
+  auto * juce_plugin = juce_plugin_ref.get_object_as<JucePlugin> ();
 
   EXPECT_NE (juce_plugin, nullptr);
-  EXPECT_TRUE (plugin_registry_->contains (juce_plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, juce_plugin->get_uuid ()));
 
   // Process events to handle async instantiation
   QCoreApplication::processEvents ();
@@ -310,12 +297,12 @@ TEST_F (PluginFactoryTest, FactoryDependenciesUsed)
 
   auto plugin_ref =
     factory_->create_plugin_from_setting (*config, finish_options);
-  auto * plugin = std::get<InternalPluginBase *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<InternalPluginBase> ();
 
   EXPECT_NE (plugin, nullptr);
 
   // Verify plugin is in registry
-  EXPECT_TRUE (plugin_registry_->contains (plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, plugin->get_uuid ()));
 }
 
 // Test multiple plugins can be created independently
@@ -340,9 +327,9 @@ TEST_F (PluginFactoryTest, MultiplePluginsIndependent)
     factory_->create_plugin_from_setting (*juce_config, finish_options);
 
   // Verify each plugin is independent
-  auto * plugin1 = std::get<InternalPluginBase *> (ref1.get_object ());
-  auto * plugin2 = std::get<ClapPlugin *> (ref2.get_object ());
-  auto * plugin3 = std::get<JucePlugin *> (ref3.get_object ());
+  auto * plugin1 = ref1.get_object_as<InternalPluginBase> ();
+  auto * plugin2 = ref2.get_object_as<ClapPlugin> ();
+  auto * plugin3 = ref3.get_object_as<JucePlugin> ();
 
   EXPECT_NE (plugin1, nullptr);
   EXPECT_NE (plugin2, nullptr);
@@ -353,9 +340,9 @@ TEST_F (PluginFactoryTest, MultiplePluginsIndependent)
   EXPECT_EQ (plugin3->get_protocol (), Protocol::ProtocolType::VST3);
 
   // All should be registered
-  EXPECT_TRUE (plugin_registry_->contains (plugin1->get_uuid ()));
-  EXPECT_TRUE (plugin_registry_->contains (plugin2->get_uuid ()));
-  EXPECT_TRUE (plugin_registry_->contains (plugin3->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, plugin1->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, plugin2->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, plugin3->get_uuid ()));
 
   // Verify they have different UUIDs
   EXPECT_NE (plugin1->get_uuid (), plugin2->get_uuid ());
@@ -371,9 +358,7 @@ TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
   constexpr auto custom_buffer_size = units::samples (512);
 
   auto factory_deps = PluginFactory::CommonFactoryDependencies{
-    .plugin_registry_ = *plugin_registry_,
-    .processor_base_dependencies_{
-                                  .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
+    .registry = *registry_,
     .create_plugin_instance_async_func_ = create_mock_async_func (),
     .sample_rate_provider_ =
       [custom_sample_rate] () { return custom_sample_rate; },
@@ -392,10 +377,10 @@ TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
 
   auto plugin_ref =
     custom_factory->create_plugin_from_setting (*juce_config, finish_options);
-  auto * plugin = std::get<JucePlugin *> (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get_object_as<JucePlugin> ();
 
   EXPECT_NE (plugin, nullptr);
-  EXPECT_TRUE (plugin_registry_->contains (plugin->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, plugin->get_uuid ()));
 }
 
 // Test error handling for invalid configurations

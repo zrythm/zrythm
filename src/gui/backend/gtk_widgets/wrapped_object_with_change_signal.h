@@ -92,7 +92,7 @@ using WrappedObjectWithChangeSignal = struct _WrappedObjectWithChangeSignal
       ExtPort,
       FileBrowserLocation>>;
   using ObjPtrVariant =
-    merge_variants_t<std::variant<std::nullptr_t>, to_pointer_variant<ObjVariant>>;
+    merge_variants_t<std::variant<std::nullptr_t>, utils::to_pointer_variant<ObjVariant>>;
 
   WrappedObjectType type;
   ObjPtrVariant     obj = nullptr;

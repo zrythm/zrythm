@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/tracks/track.h"
+#include "utils/object_registry.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gmock/gmock.h>
@@ -39,21 +40,14 @@ class MockTrackFactory
 public:
   MockTrackFactory ()
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-    plugin_registry_ = std::make_unique<plugins::PluginRegistry> ();
-    file_audio_source_registry_ =
-      std::make_unique<dsp::FileAudioSourceRegistry> ();
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     base_dependencies_ = std::make_unique<BaseTrackDependencies> (
-      *tempo_map_wrapper_, *file_audio_source_registry_, *plugin_registry_,
-      *port_registry_, *param_registry_, *obj_registry_, *transport_,
-      [] { return false; });
+      *tempo_map_wrapper_, *registry_, *transport_, [] { return false; },
+      TrackRecordingCallback{});
   }
 
   std::unique_ptr<MockTrack> createMockTrack (
@@ -69,15 +63,11 @@ public:
       type, in_type, out_type, features, *base_dependencies_);
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry>    file_audio_source_registry_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>                tempo_map_wrapper_;
-  std::unique_ptr<dsp::graph_test::MockTransport>      transport_;
-  std::unique_ptr<BaseTrackDependencies>               base_dependencies_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
+  std::unique_ptr<BaseTrackDependencies>          base_dependencies_;
 
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
 };

@@ -42,7 +42,6 @@ class AutomationTrack
   QML_UNCREATABLE ("")
 
 public:
-  using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
   using AutomationRegion = arrangement::AutomationRegion;
   using AutomationPoint = arrangement::AutomationPoint;
 
@@ -68,8 +67,7 @@ public:
   /** Creates an automation track for the given parameter. */
   AutomationTrack (
     const dsp::TempoMapWrapper          &tempo_map,
-    dsp::FileAudioSourceRegistry        &file_audio_source_registry,
-    ArrangerObjectRegistry              &obj_registry,
+    utils::IObjectRegistry              &registry,
     dsp::ProcessorParameterUuidReference param_id,
     QObject *                            parent = nullptr);
 
@@ -78,10 +76,7 @@ public:
   // QML Interface
   // ========================================================================
 
-  dsp::ProcessorParameter * parameter () const
-  {
-    return param_id_.get_object_as<dsp::ProcessorParameter> ();
-  }
+  dsp::ProcessorParameter * parameter () const { return param_id_.get (); }
 
   AutomationMode getAutomationMode () const { return automation_mode_.load (); }
   void           setAutomationMode (AutomationMode automation_mode);
@@ -213,7 +208,7 @@ private:
 
 private:
   const dsp::TempoMapWrapper &tempo_map_;
-  ArrangerObjectRegistry     &object_registry_;
+  utils::IObjectRegistry     &registry_;
 
   /** Parameter this AutomationTrack is for. */
   dsp::ProcessorParameterUuidReference param_id_;
@@ -248,20 +243,18 @@ generate_automation_tracks_for_processor (
   std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
   const dsp::ProcessorBase                              &processor,
   const dsp::TempoMapWrapper                            &tempo_map,
-  dsp::FileAudioSourceRegistry        &file_audio_source_registry,
-  arrangement::ArrangerObjectRegistry &object_registry)
+  utils::IObjectRegistry                                &registry)
 {
   z_debug ("generating automation tracks for {}...", processor.get_node_name ());
   for (const auto &param_ref : processor.get_parameters ())
     {
-      auto * const param =
-        param_ref.template get_object_as<dsp::ProcessorParameter> ();
+      auto * const param = param_ref.get ();
       if (!param->automatable ())
         continue;
 
       ret.emplace_back (
         utils::make_qobject_unique<AutomationTrack> (
-          tempo_map, file_audio_source_registry, object_registry, param_ref));
+          tempo_map, registry, param_ref));
     }
 }
 }

@@ -5,7 +5,6 @@
 
 #include <atomic>
 
-#include "dsp/midi_port.h"
 #include "dsp/processor_base.h"
 
 namespace zrythm::dsp
@@ -20,13 +19,8 @@ class MidiPanicProcessor final : public QObject, public dsp::ProcessorBase
 
 public:
   MidiPanicProcessor (
-    ProcessorBaseDependencies dependencies,
-    QObject *                 parent = nullptr)
-      : QObject (parent), dsp::ProcessorBase (dependencies, u8"MIDI Panic")
-  {
-    add_output_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-      u8"Panic MIDI out", dsp::PortFlow::Output));
-  }
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   /**
    * @brief Request panic messages to be sent.

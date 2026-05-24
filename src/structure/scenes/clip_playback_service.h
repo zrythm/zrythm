@@ -29,9 +29,9 @@ class ClipPlaybackService : public QObject
 
 public:
   explicit ClipPlaybackService (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    const tracks::TrackCollection       &track_collection,
-    QObject *                            parent = nullptr);
+    utils::IObjectRegistry        &registry,
+    const tracks::TrackCollection &track_collection,
+    QObject *                      parent = nullptr);
 
   // ========================================================================
   // Clip Operations
@@ -240,8 +240,8 @@ private:
   void checkPlaybackState ();
 
 private:
-  arrangement::ArrangerObjectRegistry &object_registry_;
-  const tracks::TrackCollection       &track_collection_;
+  utils::IObjectRegistry        &registry_;
+  const tracks::TrackCollection &track_collection_;
 
   /**
    * @brief Track of currently playing clips by track UUID.

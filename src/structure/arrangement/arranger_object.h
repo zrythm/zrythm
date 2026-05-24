@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -12,12 +12,15 @@
 #include "structure/arrangement/loopable_object.h"
 #include "structure/arrangement/muteable_object.h"
 #include "structure/arrangement/named_object.h"
+#include "utils/typed_uuid_reference.h"
 #include "utils/units.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
 namespace zrythm::structure::arrangement
 {
+
+class ArrangerObjectListModel;
 /**
  * @brief Base class for all objects in the arranger.
  *
@@ -26,9 +29,7 @@ namespace zrythm::structure::arrangement
  * It provides common functionality and properties shared by all these
  * objects.
  */
-class ArrangerObject
-    : public QObject,
-      public utils::UuidIdentifiableObject<ArrangerObject>
+class ArrangerObject : public utils::UuidIdentifiableObject<ArrangerObject>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -131,6 +132,11 @@ public:
   // Convenience getter
   auto &get_tempo_map () const { return tempo_map_; }
 
+  virtual ArrangerObjectListModel * get_child_list_model () const
+  {
+    return nullptr;
+  }
+
 protected:
   enum class ArrangerObjectFeatures : std::uint8_t
   {
@@ -221,11 +227,9 @@ private:
     (type_, position_, bounds_, loop_range_, fade_range_, mute_, color_, name_))
 };
 
-using ArrangerObjectRegistry =
-  utils::OwningObjectRegistry<ArrangerObjectPtrVariant, ArrangerObject>;
-using ArrangerObjectUuidReference = utils::UuidReference<ArrangerObjectRegistry>;
+using ArrangerObjectUuidReference = utils::TypedUuidReference<ArrangerObject>;
 
 template <typename T>
 concept FinalArrangerObjectSubclass =
-  std::derived_from<T, ArrangerObject> && CompleteType<T>;
+  std::derived_from<T, ArrangerObject> && utils::CompleteType<T>;
 }

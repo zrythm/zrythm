@@ -6,6 +6,10 @@
 #include "dsp/file_audio_source.h"
 #include "structure/arrangement/arranger_object.h"
 #include "structure/arrangement/arranger_object_list_model.h"
+#include "utils/registry_utils.h"
+#include "utils/serialization.h"
+
+#include <nlohmann/json.hpp>
 
 #define DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES( \
   ClassType, QPropertyName, ChildType) \
@@ -28,13 +32,9 @@ public:
     structure::arrangement::ArrangerObjectListModel;
 
   template <typename T>
-  explicit ArrangerObjectOwner (
-    ArrangerObjectRegistry       &registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    T                            &derived)
+  explicit ArrangerObjectOwner (utils::IObjectRegistry &registry, T &derived)
     requires std::derived_from<T, QObject>
-      : registry_ (registry),
-        file_audio_source_registry_ (file_audio_source_registry)
+      : registry_ (registry)
   {
     if constexpr (std::derived_from<T, ArrangerObject>)
       {
@@ -153,24 +153,27 @@ public:
             std::optional<ArrangerObjectUuidReference> clone_ref;
             if constexpr (std::is_same_v<ChildT, AudioSourceObject>)
               {
-                clone_ref = obj.registry_.clone_object (
-                  *child, child->get_tempo_map (),
-                  obj.file_audio_source_registry_, child->audio_source_ref ());
+                clone_ref = utils::clone_object (
+                  *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
+                  child->get_tempo_map (), obj.registry_,
+                  child->audio_source_ref ());
               }
             else if constexpr (RegionObject<ChildT>)
               {
-                // TODO
+                z_warning ("RegionObject clone not implemented - skipping");
                 continue;
               }
             else if constexpr (std::is_same_v<ChildT, Marker>)
               {
-                clone_ref = obj.registry_.clone_object (
-                  *child, child->get_tempo_map (), child->markerType ());
+                clone_ref = utils::clone_object (
+                  *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
+                  child->get_tempo_map (), child->markerType ());
               }
             else
               {
-                clone_ref =
-                  obj.registry_.clone_object (*child, child->get_tempo_map ());
+                clone_ref = utils::clone_object (
+                  *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
+                  child->get_tempo_map ());
               }
 
             if (clone_ref)
@@ -201,8 +204,7 @@ private:
   }
 
 private:
-  ArrangerObjectRegistry                          &registry_;
-  dsp::FileAudioSourceRegistry                    &file_audio_source_registry_;
+  utils::IObjectRegistry                          &registry_;
   ArrangerObjectRefMultiIndexContainer             children_;
   utils::QObjectUniquePtr<ArrangerObjectListModel> list_model_;
 

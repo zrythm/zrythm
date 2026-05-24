@@ -25,9 +25,7 @@ class Timeline : public QObject
   QML_UNCREATABLE ("")
 
 public:
-  Timeline (
-    const structure::arrangement::ArrangerObjectRegistry &registry,
-    QObject *                                             parent = nullptr);
+  Timeline (const utils::IObjectRegistry &registry, QObject * parent = nullptr);
 
   // =========================================================
   // QML interface

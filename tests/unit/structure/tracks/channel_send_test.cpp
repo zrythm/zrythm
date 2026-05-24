@@ -7,6 +7,8 @@
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "structure/tracks/channel_send.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QObject>
 
@@ -21,19 +23,13 @@ class ChannelSendTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    audio_send_ = std::make_unique<ChannelSend> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Audio, 0, true);
+    audio_send_ =
+      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Audio, 0, true);
 
-    midi_send_ = std::make_unique<ChannelSend> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Midi, 1, false);
+    midi_send_ =
+      std::make_unique<ChannelSend> (*registry_, dsp::PortType::Midi, 1, false);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
@@ -52,8 +48,7 @@ protected:
       }
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
   units::sample_rate_t         sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t          max_block_length_{ units::samples (1024u) };
   std::unique_ptr<ChannelSend> audio_send_;
@@ -150,8 +145,8 @@ TEST_F (ChannelSendTest, DestinationPort)
   EXPECT_FALSE (audio_send_->destination_port ().has_value ());
 
   // Create a destination audio input port
-  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Destination Input", dsp::PortFlow::Input,
+  auto dest_port_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Destination Input", dsp::PortFlow::Input,
     dsp::AudioPort::BusLayout::Stereo, 2);
 
   // Set destination
@@ -168,12 +163,13 @@ TEST_F (ChannelSendTest, DestinationPort)
 TEST_F (ChannelSendTest, DestinationPortTypeValidation)
 {
   // Create an audio input port
-  auto audio_input_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio Input", dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Stereo, 2);
+  auto audio_input_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Audio Input", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Stereo, 2);
 
   // Create a MIDI input port
-  auto midi_input_ref = port_registry_->create_object<dsp::MidiPort> (
-    u8"MIDI Input", dsp::PortFlow::Input);
+  auto midi_input_ref = utils::create_object<dsp::MidiPort> (
+    *registry_, u8"MIDI Input", dsp::PortFlow::Input);
 
   // Audio send should accept audio input
   EXPECT_NO_THROW (audio_send_->set_destination_port (audio_input_ref));
@@ -193,9 +189,9 @@ TEST_F (ChannelSendTest, DestinationPortTypeValidation)
 TEST_F (ChannelSendTest, DestinationPortFlowValidation)
 {
   // Create an audio OUTPUT port (wrong flow)
-  auto audio_output_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio Output", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo,
-    2);
+  auto audio_output_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Audio Output", dsp::PortFlow::Output,
+    dsp::AudioPort::BusLayout::Stereo, 2);
 
   // Audio send should reject output ports
   EXPECT_THROW (
@@ -366,8 +362,8 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   audio_send_->enabledParam ()->setBaseValue (1.0f);
 
   // Set a destination port
-  auto dest_port_ref = port_registry_->create_object<dsp::AudioPort> (
-    u8"Destination Input", dsp::PortFlow::Input,
+  auto dest_port_ref = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Destination Input", dsp::PortFlow::Input,
     dsp::AudioPort::BusLayout::Stereo, 2);
   audio_send_->set_destination_port (dest_port_ref);
 
@@ -375,10 +371,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   nlohmann::json j = *audio_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, 2, false);
+  ChannelSend deserialized (*registry_, dsp::PortType::Audio, 2, false);
 
   from_json (j, deserialized);
 
@@ -402,9 +395,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   // Verify destination port was serialized
   EXPECT_TRUE (deserialized.has_destination ());
   EXPECT_TRUE (deserialized.destination_port ().has_value ());
-  EXPECT_EQ (
-    deserialized.destination_port ()->id (),
-    dest_port_ref.get_object_base ()->get_uuid ());
+  EXPECT_EQ (deserialized.destination_port ()->id (), dest_port_ref.id ());
 }
 
 TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
@@ -419,10 +410,7 @@ TEST_F (ChannelSendTest, JsonSerializationMidiRoundtrip)
   nlohmann::json j = *midi_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Midi, 3, true);
+  ChannelSend deserialized (*registry_, dsp::PortType::Midi, 3, true);
 
   from_json (j, deserialized);
 
@@ -451,10 +439,7 @@ TEST_F (ChannelSendTest, JsonSerializationWithoutDestination)
   nlohmann::json j = *audio_send_;
 
   // Create new send from JSON
-  ChannelSend deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, 2, false);
+  ChannelSend deserialized (*registry_, dsp::PortType::Audio, 2, false);
 
   from_json (j, deserialized);
 
@@ -466,20 +451,11 @@ TEST_F (ChannelSendTest, JsonSerializationWithoutDestination)
 TEST_F (ChannelSendTest, DifferentSlotNumbers)
 {
   // Test different slot numbers create different parameter IDs
-  ChannelSend send1 (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, 0, true);
+  ChannelSend send1 (*registry_, dsp::PortType::Audio, 0, true);
 
-  ChannelSend send2 (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, 1, true);
+  ChannelSend send2 (*registry_, dsp::PortType::Audio, 1, true);
 
-  ChannelSend send3 (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, 2, true);
+  ChannelSend send3 (*registry_, dsp::PortType::Audio, 2, true);
 
   EXPECT_NE (
     send1.amountParam ()->get_unique_id (),

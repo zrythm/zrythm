@@ -3,9 +3,10 @@
 
 #include "commands/add_track_command.h"
 #include "plugins/internal_plugin_base.h"
-#include "plugins/plugin_all.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -18,54 +19,35 @@ class AddEmptyTrackCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create a test track
-    auto track_ref = track_registry_.create_object<
-      structure::tracks::AudioTrack> (dependencies_);
+    auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+      registry_, dependencies_);
     test_track_ref_ = track_ref;
 
-    // Initialize collection
     collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
   }
 
-  // Create minimal dependencies for track creation
-  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::graph_test::MockTransport                 transport_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  dsp::graph_test::MockTransport transport_;
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
 
-  structure::tracks::TrackRegistry track_registry_;
+  utils::ObjectRegistry registry_;
 
   structure::tracks::FinalTrackDependencies dependencies_{
-    tempo_map_wrapper_,
-    file_audio_source_registry_,
-    plugin_registry_,
-    port_registry_,
-    param_registry_,
-    obj_registry_,
-    track_registry_,
-    transport_,
-    soloed_tracks_exist_getter_,
-    {},
+    tempo_map_wrapper_, registry_, transport_, soloed_tracks_exist_getter_, {},
   };
-  structure::tracks::TrackUuidReference test_track_ref_{ track_registry_ };
+  structure::tracks::TrackUuidReference test_track_ref_{ registry_ };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
 
   plugins::PluginUuidReference
   create_and_append_plugin_to_channel (structure::tracks::Track &track)
   {
     auto * channel = track.channel ();
-    auto   ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    auto   ref = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
     channel->inserts ()->append_plugin (ref);
     return ref;
   }
@@ -146,8 +128,8 @@ TEST_F (AddEmptyTrackCommandTest, CommandText)
 TEST_F (AddEmptyTrackCommandTest, DifferentTrackTypes)
 {
   // Test with MIDI track
-  auto midi_track_ref =
-    track_registry_.create_object<structure::tracks::MidiTrack> (dependencies_);
+  auto midi_track_ref = utils::create_object<structure::tracks::MidiTrack> (
+    registry_, dependencies_);
 
   AddEmptyTrackCommand midi_command (*collection_, midi_track_ref);
 
@@ -160,8 +142,8 @@ TEST_F (AddEmptyTrackCommandTest, DifferentTrackTypes)
   EXPECT_EQ (collection_->track_count (), 0);
 
   // Test with Instrument track
-  auto instrument_track_ref = track_registry_.create_object<
-    structure::tracks::InstrumentTrack> (dependencies_);
+  auto instrument_track_ref = utils::create_object<
+    structure::tracks::InstrumentTrack> (registry_, dependencies_);
 
   AddEmptyTrackCommand instrument_command (*collection_, instrument_track_ref);
 
@@ -178,8 +160,8 @@ TEST_F (AddEmptyTrackCommandTest, DifferentTrackTypes)
 TEST_F (AddEmptyTrackCommandTest, MultipleTracksSameCollection)
 {
   // Create second track
-  auto second_track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto second_track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
 
   AddEmptyTrackCommand command1 (*collection_, test_track_ref_);
   AddEmptyTrackCommand command2 (*collection_, second_track_ref);
@@ -211,9 +193,9 @@ TEST_F (AddEmptyTrackCommandTest, MultipleTracksSameCollection)
 
 TEST_F (AddEmptyTrackCommandTest, UndoClosesPluginWindows)
 {
-  auto * track = structure::tracks::from_variant (test_track_ref_.get_object ());
-  auto plugin_ref = create_and_append_plugin_to_channel (*track);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  auto * track = test_track_ref_.get ();
+  auto   plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugin_ref.get ();
   plugin->setUiVisible (true);
 
   AddEmptyTrackCommand command (*collection_, test_track_ref_);
@@ -226,9 +208,9 @@ TEST_F (AddEmptyTrackCommandTest, UndoClosesPluginWindows)
 
 TEST_F (AddEmptyTrackCommandTest, UndoAfterReopenClosesPluginWindows)
 {
-  auto * track = structure::tracks::from_variant (test_track_ref_.get_object ());
-  auto plugin_ref = create_and_append_plugin_to_channel (*track);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  auto * track = test_track_ref_.get ();
+  auto   plugin_ref = create_and_append_plugin_to_channel (*track);
+  auto * plugin = plugin_ref.get ();
   plugin->setUiVisible (true);
 
   AddEmptyTrackCommand command (*collection_, test_track_ref_);

@@ -145,7 +145,7 @@ ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
       fmt::format (
         "{} - {} [{}]",
         track_ref.has_value ()
-          ? structure::tracks::from_variant (track_ref->get_object ())->name ()
+          ? track_ref->get ()->name ()
           : QObject::tr ("<no track>"),
         plugin.get_node_name (),
         plugin.configuration ()->descriptor ()->format ())),

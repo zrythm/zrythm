@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -15,19 +17,16 @@ protected:
   void SetUp () override
   {
     // Create track registry
-    track_registry = std::make_unique<TrackRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     // Create test dependencies
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     // Create factory dependencies
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {},
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
     };
 
     // Create factory
@@ -35,16 +34,11 @@ protected:
       [deps] () -> FinalTrackDependencies { return deps; });
   }
 
-  std::unique_ptr<dsp::TempoMap>        tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  dsp::PortRegistry                     port_registry;
-  dsp::ProcessorParameterRegistry       param_registry{ port_registry };
-  structure::arrangement::ArrangerObjectRegistry obj_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  plugins::PluginRegistry                        plugin_registry;
-  dsp::graph_test::MockTransport                 transport;
-  std::unique_ptr<TrackRegistry>                 track_registry;
-  std::unique_ptr<TrackFactory>                  factory;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  std::unique_ptr<TrackFactory>                   factory;
 };
 
 // Test basic track creation for different types
@@ -56,7 +50,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * audio_track = audio_track_ref.get_object_as<AudioTrack> ();
   EXPECT_NE (audio_track, nullptr);
   EXPECT_EQ (audio_track->type (), Track::Type::Audio);
-  EXPECT_TRUE (track_registry->contains (audio_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_track->get_uuid ()));
 
   // Test MidiTrack creation
   auto   midi_track_builder = factory->get_builder<MidiTrack> ();
@@ -64,7 +58,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * midi_track = midi_track_ref.get_object_as<MidiTrack> ();
   EXPECT_NE (midi_track, nullptr);
   EXPECT_EQ (midi_track->type (), Track::Type::Midi);
-  EXPECT_TRUE (track_registry->contains (midi_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_track->get_uuid ()));
 
   // Test InstrumentTrack creation
   auto   instrument_track_builder = factory->get_builder<InstrumentTrack> ();
@@ -73,7 +67,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
     instrument_track_ref.get_object_as<InstrumentTrack> ();
   EXPECT_NE (instrument_track, nullptr);
   EXPECT_EQ (instrument_track->type (), Track::Type::Instrument);
-  EXPECT_TRUE (track_registry->contains (instrument_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, instrument_track->get_uuid ()));
 
   // Test MasterTrack creation
   auto   master_track_builder = factory->get_builder<MasterTrack> ();
@@ -81,7 +75,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * master_track = master_track_ref.get_object_as<MasterTrack> ();
   EXPECT_NE (master_track, nullptr);
   EXPECT_EQ (master_track->type (), Track::Type::Master);
-  EXPECT_TRUE (track_registry->contains (master_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, master_track->get_uuid ()));
 
   // Test ChordTrack creation
   auto   chord_track_builder = factory->get_builder<ChordTrack> ();
@@ -89,7 +83,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * chord_track = chord_track_ref.get_object_as<ChordTrack> ();
   EXPECT_NE (chord_track, nullptr);
   EXPECT_EQ (chord_track->type (), Track::Type::Chord);
-  EXPECT_TRUE (track_registry->contains (chord_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, chord_track->get_uuid ()));
 
   // Test MarkerTrack creation
   auto   marker_track_builder = factory->get_builder<MarkerTrack> ();
@@ -97,7 +91,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * marker_track = marker_track_ref.get_object_as<MarkerTrack> ();
   EXPECT_NE (marker_track, nullptr);
   EXPECT_EQ (marker_track->type (), Track::Type::Marker);
-  EXPECT_TRUE (track_registry->contains (marker_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, marker_track->get_uuid ()));
 
   // Test ModulatorTrack creation
   auto   modulator_track_builder = factory->get_builder<ModulatorTrack> ();
@@ -105,7 +99,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * modulator_track = modulator_track_ref.get_object_as<ModulatorTrack> ();
   EXPECT_NE (modulator_track, nullptr);
   EXPECT_EQ (modulator_track->type (), Track::Type::Modulator);
-  EXPECT_TRUE (track_registry->contains (modulator_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, modulator_track->get_uuid ()));
 
   // Test AudioBusTrack creation
   auto   audio_bus_track_builder = factory->get_builder<AudioBusTrack> ();
@@ -113,7 +107,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * audio_bus_track = audio_bus_track_ref.get_object_as<AudioBusTrack> ();
   EXPECT_NE (audio_bus_track, nullptr);
   EXPECT_EQ (audio_bus_track->type (), Track::Type::AudioBus);
-  EXPECT_TRUE (track_registry->contains (audio_bus_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_bus_track->get_uuid ()));
 
   // Test MidiBusTrack creation
   auto   midi_bus_track_builder = factory->get_builder<MidiBusTrack> ();
@@ -121,7 +115,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * midi_bus_track = midi_bus_track_ref.get_object_as<MidiBusTrack> ();
   EXPECT_NE (midi_bus_track, nullptr);
   EXPECT_EQ (midi_bus_track->type (), Track::Type::MidiBus);
-  EXPECT_TRUE (track_registry->contains (midi_bus_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_bus_track->get_uuid ()));
 
   // Test AudioGroupTrack creation
   auto   audio_group_track_builder = factory->get_builder<AudioGroupTrack> ();
@@ -130,7 +124,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
     audio_group_track_ref.get_object_as<AudioGroupTrack> ();
   EXPECT_NE (audio_group_track, nullptr);
   EXPECT_EQ (audio_group_track->type (), Track::Type::AudioGroup);
-  EXPECT_TRUE (track_registry->contains (audio_group_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_group_track->get_uuid ()));
 
   // Test MidiGroupTrack creation
   auto   midi_group_track_builder = factory->get_builder<MidiGroupTrack> ();
@@ -139,7 +133,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
     midi_group_track_ref.get_object_as<MidiGroupTrack> ();
   EXPECT_NE (midi_group_track, nullptr);
   EXPECT_EQ (midi_group_track->type (), Track::Type::MidiGroup);
-  EXPECT_TRUE (track_registry->contains (midi_group_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_group_track->get_uuid ()));
 
   // Test FolderTrack creation
   auto   folder_track_builder = factory->get_builder<FolderTrack> ();
@@ -147,7 +141,7 @@ TEST_F (TrackFactoryTest, CreateBasicTracks)
   auto * folder_track = folder_track_ref.get_object_as<FolderTrack> ();
   EXPECT_NE (folder_track, nullptr);
   EXPECT_EQ (folder_track->type (), Track::Type::Folder);
-  EXPECT_TRUE (track_registry->contains (folder_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, folder_track->get_uuid ()));
 }
 
 // Test builder pattern with build_for_deserialization
@@ -159,21 +153,21 @@ TEST_F (TrackFactoryTest, BuilderPatternDeserialization)
   EXPECT_NE (audio_track, nullptr);
   EXPECT_EQ (audio_track->type (), Track::Type::Audio);
   // Should not be registered in registry for deserialization
-  EXPECT_FALSE (track_registry->contains (audio_track->get_uuid ()));
+  EXPECT_FALSE (utils::contains (*registry_, audio_track->get_uuid ()));
 
   // Test MidiTrack build_for_deserialization
   auto midi_track_builder = factory->get_builder<MidiTrack> ();
   auto midi_track = midi_track_builder.build_for_deserialization ();
   EXPECT_NE (midi_track, nullptr);
   EXPECT_EQ (midi_track->type (), Track::Type::Midi);
-  EXPECT_FALSE (track_registry->contains (midi_track->get_uuid ()));
+  EXPECT_FALSE (utils::contains (*registry_, midi_track->get_uuid ()));
 
   // Test InstrumentTrack build_for_deserialization
   auto instrument_track_builder = factory->get_builder<InstrumentTrack> ();
   auto instrument_track = instrument_track_builder.build_for_deserialization ();
   EXPECT_NE (instrument_track, nullptr);
   EXPECT_EQ (instrument_track->type (), Track::Type::Instrument);
-  EXPECT_FALSE (track_registry->contains (instrument_track->get_uuid ()));
+  EXPECT_FALSE (utils::contains (*registry_, instrument_track->get_uuid ()));
 }
 
 // Test factory convenience methods
@@ -184,26 +178,26 @@ TEST_F (TrackFactoryTest, ConvenienceMethods)
   auto * audio_track = audio_track_ref.get_object_as<AudioTrack> ();
   EXPECT_NE (audio_track, nullptr);
   EXPECT_EQ (audio_track->type (), Track::Type::Audio);
-  EXPECT_TRUE (track_registry->contains (audio_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_track->get_uuid ()));
 
   auto   midi_track_ref = factory->create_empty_track<MidiTrack> ();
   auto * midi_track = midi_track_ref.get_object_as<MidiTrack> ();
   EXPECT_NE (midi_track, nullptr);
   EXPECT_EQ (midi_track->type (), Track::Type::Midi);
-  EXPECT_TRUE (track_registry->contains (midi_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_track->get_uuid ()));
 
   // Test create_empty_track with enum type
   auto   audio_track_ref2 = factory->create_empty_track (Track::Type::Audio);
   auto * audio_track2 = audio_track_ref2.get_object_as<AudioTrack> ();
   EXPECT_NE (audio_track2, nullptr);
   EXPECT_EQ (audio_track2->type (), Track::Type::Audio);
-  EXPECT_TRUE (track_registry->contains (audio_track2->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_track2->get_uuid ()));
 
   auto   midi_track_ref2 = factory->create_empty_track (Track::Type::Midi);
   auto * midi_track2 = midi_track_ref2.get_object_as<MidiTrack> ();
   EXPECT_NE (midi_track2, nullptr);
   EXPECT_EQ (midi_track2->type (), Track::Type::Midi);
-  EXPECT_TRUE (track_registry->contains (midi_track2->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_track2->get_uuid ()));
 
   auto instrument_track_ref =
     factory->create_empty_track (Track::Type::Instrument);
@@ -211,44 +205,44 @@ TEST_F (TrackFactoryTest, ConvenienceMethods)
     instrument_track_ref.get_object_as<InstrumentTrack> ();
   EXPECT_NE (instrument_track, nullptr);
   EXPECT_EQ (instrument_track->type (), Track::Type::Instrument);
-  EXPECT_TRUE (track_registry->contains (instrument_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, instrument_track->get_uuid ()));
 
   auto   master_track_ref = factory->create_empty_track (Track::Type::Master);
   auto * master_track = master_track_ref.get_object_as<MasterTrack> ();
   EXPECT_NE (master_track, nullptr);
   EXPECT_EQ (master_track->type (), Track::Type::Master);
-  EXPECT_TRUE (track_registry->contains (master_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, master_track->get_uuid ()));
 
   auto   chord_track_ref = factory->create_empty_track (Track::Type::Chord);
   auto * chord_track = chord_track_ref.get_object_as<ChordTrack> ();
   EXPECT_NE (chord_track, nullptr);
   EXPECT_EQ (chord_track->type (), Track::Type::Chord);
-  EXPECT_TRUE (track_registry->contains (chord_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, chord_track->get_uuid ()));
 
   auto   marker_track_ref = factory->create_empty_track (Track::Type::Marker);
   auto * marker_track = marker_track_ref.get_object_as<MarkerTrack> ();
   EXPECT_NE (marker_track, nullptr);
   EXPECT_EQ (marker_track->type (), Track::Type::Marker);
-  EXPECT_TRUE (track_registry->contains (marker_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, marker_track->get_uuid ()));
 
   auto modulator_track_ref =
     factory->create_empty_track (Track::Type::Modulator);
   auto * modulator_track = modulator_track_ref.get_object_as<ModulatorTrack> ();
   EXPECT_NE (modulator_track, nullptr);
   EXPECT_EQ (modulator_track->type (), Track::Type::Modulator);
-  EXPECT_TRUE (track_registry->contains (modulator_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, modulator_track->get_uuid ()));
 
   auto audio_bus_track_ref = factory->create_empty_track (Track::Type::AudioBus);
   auto * audio_bus_track = audio_bus_track_ref.get_object_as<AudioBusTrack> ();
   EXPECT_NE (audio_bus_track, nullptr);
   EXPECT_EQ (audio_bus_track->type (), Track::Type::AudioBus);
-  EXPECT_TRUE (track_registry->contains (audio_bus_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_bus_track->get_uuid ()));
 
   auto midi_bus_track_ref = factory->create_empty_track (Track::Type::MidiBus);
   auto * midi_bus_track = midi_bus_track_ref.get_object_as<MidiBusTrack> ();
   EXPECT_NE (midi_bus_track, nullptr);
   EXPECT_EQ (midi_bus_track->type (), Track::Type::MidiBus);
-  EXPECT_TRUE (track_registry->contains (midi_bus_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_bus_track->get_uuid ()));
 
   auto audio_group_track_ref =
     factory->create_empty_track (Track::Type::AudioGroup);
@@ -256,7 +250,7 @@ TEST_F (TrackFactoryTest, ConvenienceMethods)
     audio_group_track_ref.get_object_as<AudioGroupTrack> ();
   EXPECT_NE (audio_group_track, nullptr);
   EXPECT_EQ (audio_group_track->type (), Track::Type::AudioGroup);
-  EXPECT_TRUE (track_registry->contains (audio_group_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, audio_group_track->get_uuid ()));
 
   auto midi_group_track_ref =
     factory->create_empty_track (Track::Type::MidiGroup);
@@ -264,13 +258,13 @@ TEST_F (TrackFactoryTest, ConvenienceMethods)
     midi_group_track_ref.get_object_as<MidiGroupTrack> ();
   EXPECT_NE (midi_group_track, nullptr);
   EXPECT_EQ (midi_group_track->type (), Track::Type::MidiGroup);
-  EXPECT_TRUE (track_registry->contains (midi_group_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, midi_group_track->get_uuid ()));
 
   auto   folder_track_ref = factory->create_empty_track (Track::Type::Folder);
   auto * folder_track = folder_track_ref.get_object_as<FolderTrack> ();
   EXPECT_NE (folder_track, nullptr);
   EXPECT_EQ (folder_track->type (), Track::Type::Folder);
-  EXPECT_TRUE (track_registry->contains (folder_track->get_uuid ()));
+  EXPECT_TRUE (utils::contains (*registry_, folder_track->get_uuid ()));
 }
 
 // Test object registration in registry
@@ -286,24 +280,14 @@ TEST_F (TrackFactoryTest, ObjectRegistration)
       track_refs.push_back (ref);
     }
 
-  // Verify all tracks are registered
-  EXPECT_EQ (track_registry->size (), num_tracks);
-
+  // Verify all tracks are registered in the unified registry
   for (const auto &ref : track_refs)
     {
-      EXPECT_TRUE (track_registry->contains (ref.id ()));
+      EXPECT_TRUE (utils::contains (*registry_, ref.id ()));
 
-      // Verify we can retrieve the track
-      auto track_var = track_registry->find_by_id (ref.id ());
-      EXPECT_TRUE (track_var.has_value ());
-
-      // Verify it's the correct type
-      std::visit (
-        [&] (auto * track) {
-          EXPECT_NE (track, nullptr);
-          EXPECT_EQ (track->type (), Track::Type::Audio);
-        },
-        track_var.value ());
+      auto * track = ref.get ();
+      EXPECT_NE (track, nullptr);
+      EXPECT_EQ (track->type (), Track::Type::Audio);
     }
 }
 
@@ -314,17 +298,12 @@ TEST_F (TrackFactoryTest, TrackNamesAreNonEmpty)
   auto test_track_has_non_empty_name = [&] (Track::Type type) {
     auto track_ref = factory->create_empty_track (type);
 
-    // Use visit to handle the variant and get the track
-    std::visit (
-      [&] (auto * track) {
-        EXPECT_NE (track, nullptr);
+    auto * track = track_ref.get ();
+    EXPECT_NE (track, nullptr);
 
-        // Track should have a non-empty name
-        auto name = track->get_name ();
-        EXPECT_FALSE (name.empty ());
-        EXPECT_FALSE (name.str ().empty ());
-      },
-      track_ref.get_object ());
+    auto name = track->get_name ();
+    EXPECT_FALSE (name.empty ());
+    EXPECT_FALSE (name.str ().empty ());
   };
 
   // Test all track types
@@ -349,17 +328,12 @@ TEST_F (TrackFactoryTest, BuilderTrackNamesAreNonEmpty)
   auto test_builder_track_has_non_empty_name = [&] (auto builder) {
     auto track_ref = builder.build ();
 
-    // Use visit to handle the variant and get the track
-    std::visit (
-      [&] (auto * track) {
-        EXPECT_NE (track, nullptr);
+    auto * track = track_ref.get ();
+    EXPECT_NE (track, nullptr);
 
-        // Track should have a non-empty name
-        auto name = track->get_name ();
-        EXPECT_FALSE (name.empty ());
-        EXPECT_FALSE (name.str ().empty ());
-      },
-      track_ref.get_object ());
+    auto name = track->get_name ();
+    EXPECT_FALSE (name.empty ());
+    EXPECT_FALSE (name.str ().empty ());
   };
 
   // Test all track types via builder

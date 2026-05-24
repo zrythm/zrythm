@@ -15,17 +15,7 @@ namespace zrythm::dsp
 class AudioSampleProcessor : public dsp::ProcessorBase
 {
 public:
-  AudioSampleProcessor (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies)
-      : dsp::ProcessorBase (dependencies)
-  {
-
-    auto out_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
-      u8"Stereo Out", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
-    out_ref.get_object_as<dsp::AudioPort> ()->set_symbol (u8"stereo_out");
-    add_output_port (out_ref);
-    set_name (u8"Audio Sample Processor");
-  }
+  AudioSampleProcessor (utils::IObjectRegistry &registry);
 
   /**
    * A sample playback handle to be used by the engine.

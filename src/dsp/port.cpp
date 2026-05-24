@@ -8,8 +8,10 @@
 
 namespace zrythm::dsp
 {
-Port::Port (utils::Utf8String label, PortType type, PortFlow flow)
-    : type_ (type), flow_ (flow), label_ (std::move (label))
+Port::
+  Port (utils::Utf8String label, PortType type, PortFlow flow, QObject * parent)
+    : utils::UuidIdentifiableObject<Port> (parent), type_ (type), flow_ (flow),
+      label_ (std::move (label))
 {
 }
 
@@ -50,25 +52,3 @@ from_json (const nlohmann::json &j, Port &p)
 }
 
 } // namespace zrythm::dsp
-
-struct PortRegistryBuilder
-{
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    if constexpr (std::is_same_v<T, zrythm::dsp::AudioPort>)
-      {
-        return std::make_unique<T> (
-          u8"", zrythm::dsp::PortFlow{}, zrythm::dsp::AudioPort::BusLayout{}, 0,
-          zrythm::dsp::AudioPort::Purpose::Main);
-      }
-    else
-      {
-        return std::make_unique<T> (u8"", zrythm::dsp::PortFlow{});
-      }
-  }
-};
-void
-from_json (const nlohmann::json &j, zrythm::dsp::PortRegistry &registry)
-{
-  from_json_with_builder (j, registry, PortRegistryBuilder{});
-}

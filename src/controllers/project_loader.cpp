@@ -135,19 +135,33 @@ void
 ProjectLoader::wait_for_plugin_instantiations (
   const structure::project::Project &project)
 {
-  const auto &registry = project.get_plugin_registry ();
+  const auto &registry = project.get_registry ();
 
-  while (std::ranges::any_of (
-    registry.get_hash_map () | std::views::values, [] (const auto &plugin_var) {
-      return std::visit (
-        [&] (auto &&plugin_ptr) {
-          return plugin_ptr->instantiationStatus ()
-                 == plugins::Plugin::InstantiationStatus::Pending;
-        },
-        plugin_var);
-    }))
+  const auto deadline =
+    std::chrono::steady_clock::now () + std::chrono::seconds (30);
+
+  bool has_pending = true;
+  while (has_pending)
     {
-      QCoreApplication::processEvents ();
+      has_pending = false;
+      registry.for_each_matching<plugins::Plugin> ([&] (const auto &plugin) {
+        if (
+          plugin.instantiationStatus ()
+          == plugins::Plugin::InstantiationStatus::Pending)
+          {
+            has_pending = true;
+          }
+      });
+      if (has_pending)
+        {
+          if (std::chrono::steady_clock::now () >= deadline)
+            {
+              z_warning (
+                "Timed out waiting for plugin instantiations after 30 seconds");
+              break;
+            }
+          QCoreApplication::processEvents ();
+        }
     }
 }
 }

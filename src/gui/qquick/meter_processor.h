@@ -8,8 +8,8 @@
 #include "dsp/peak_dsp.h"
 #include "dsp/port.h"
 #include "dsp/true_peak_dsp.h"
+#include "utils/qt.h"
 #include "utils/types.h"
-#include "utils/variant_helpers.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -36,7 +36,7 @@ class MeterProcessor : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (QVariant port READ port WRITE setPort REQUIRED)
+  Q_PROPERTY (zrythm::dsp::Port * port READ port WRITE setPort REQUIRED)
   Q_PROPERTY (int channel READ channel WRITE setChannel)
   Q_PROPERTY (
     zrythm::dsp::AudioEngine * audioEngine READ audioEngine WRITE setAudioEngine
@@ -59,17 +59,14 @@ public:
     METER_ALGORITHM_K,
   };
 
-  using MeterPortVariant = std::variant<dsp::MidiPort, dsp::AudioPort>;
-  using MeterPortPtrVariant = to_pointer_variant<MeterPortVariant>;
-
   MeterProcessor (QObject * parent = nullptr);
 
   // ================================================================
   // QML Interface
   // ================================================================
 
-  QVariant port () const { return QVariant::fromValue (port_obj_); }
-  void     setPort (QVariant port_var);
+  dsp::Port * port () const { return port_; }
+  void        setPort (dsp::Port * port);
 
   int  channel () const { return channel_; }
   void setChannel (int channel);
@@ -104,7 +101,7 @@ private:
 
 public:
   /** Port associated with this meter. */
-  QPointer<QObject> port_obj_;
+  QPointer<dsp::Port> port_;
 
   // RAII request for port ring buffers to be filled
   std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
@@ -152,6 +149,8 @@ private:
   int channel_{};
 
   QPointer<dsp::AudioEngine> audio_engine_;
+
+  utils::QObjectUniquePtr<QTimer> timer_;
 
   boost::container::static_vector<dsp::MidiEvent, 256> tmp_events_;
 };

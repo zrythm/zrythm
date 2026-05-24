@@ -5,11 +5,11 @@
 
 #include "dsp/graph_node.h"
 #include "dsp/itransport.h"
-#include "utils/gtest_wrapper.h"
 #include "utils/utf8_string.h"
 
 #include "./graph_helpers.h"
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace testing;
 

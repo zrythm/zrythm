@@ -6,6 +6,8 @@
 
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/mock_qobject.h"
 
@@ -35,16 +37,14 @@ protected:
         sample_buffer->setSample (1, i, -0.5f);
       }
 
-    auto source_ref = file_audio_source_registry.create_object<
-      dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"DummySource");
-    auto audio_source_object_ref = registry.create_object<AudioSourceObject> (
-      *tempo_map, file_audio_source_registry, source_ref);
+    auto audio_source_object_ref = utils::create_object<AudioSourceObject> (
+      registry, *tempo_map, registry, source_ref);
 
     region = std::make_unique<AudioRegion> (
-      *tempo_map, registry, file_audio_source_registry, musical_mode_getter,
-      parent.get ());
+      *tempo_map, registry, musical_mode_getter, parent.get ());
 
     region->set_source (audio_source_object_ref);
 
@@ -57,8 +57,7 @@ protected:
   std::unique_ptr<MockQObject>         parent;
   bool                                 global_musical_mode_enabled{ true };
   AudioRegion::GlobalMusicalModeGetter musical_mode_getter;
-  ArrangerObjectRegistry               registry;
-  dsp::FileAudioSourceRegistry         file_audio_source_registry;
+  utils::ObjectRegistry                registry;
   std::unique_ptr<AudioRegion>         region;
 };
 
@@ -152,8 +151,7 @@ TEST_F (AudioRegionTest, Serialization)
 
   // Create new region
   auto new_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, file_audio_source_registry, musical_mode_getter,
-    parent.get ());
+    *tempo_map, registry, musical_mode_getter, parent.get ());
   from_json (j, *new_region);
 
   // Verify state
@@ -174,8 +172,7 @@ TEST_F (AudioRegionTest, Copying)
 
   // Create target
   auto target = std::make_unique<AudioRegion> (
-    *tempo_map, registry, file_audio_source_registry, musical_mode_getter,
-    parent.get ());
+    *tempo_map, registry, musical_mode_getter, parent.get ());
 
   // Copy
   init_from (*target, *region, utils::ObjectCloneType::Snapshot);

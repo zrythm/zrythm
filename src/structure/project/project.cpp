@@ -34,14 +34,7 @@ Project::Project (
       tempo_map_ (hw_interface.get_device_info ().sample_rate),
       tempo_map_wrapper_ (new dsp::TempoMapWrapper (tempo_map_, this)),
       plugin_host_window_provider_ (std::move (plugin_host_window_provider)),
-      file_audio_source_registry_ (new dsp::FileAudioSourceRegistry (this)),
-      port_registry_ (new dsp::PortRegistry (this)),
-      param_registry_ (
-        new dsp::ProcessorParameterRegistry (*port_registry_, this)),
-      plugin_registry_ (new PluginRegistry (this)),
-      arranger_object_registry_ (
-        new structure::arrangement::ArrangerObjectRegistry (this)),
-      track_registry_ (new structure::tracks::TrackRegistry (this)),
+      project_registry_ (this),
       project_directory_path_provider_ (
         std::move (project_directory_path_provider)),
       hw_interface_ (hw_interface),
@@ -57,7 +50,7 @@ Project::Project (
               [this] () { return app_settings_.metronomeCountIn (); },
             .recording_preroll_bars_ =
               [this] () { return app_settings_.recordingPreroll (); },
-},
+          },
           this)),
       audio_engine_ (
         utils::make_qobject_unique<dsp::AudioEngine> (
@@ -68,7 +61,7 @@ Project::Project (
           this)),
       pool_ (
         std::make_unique<dsp::AudioPool> (
-          *file_audio_source_registry_,
+          project_registry_,
           [this] (bool backup) {
             return project_directory_path_provider_ (backup)
                    / structure::project::ProjectPathProvider::get_path (
@@ -78,23 +71,22 @@ Project::Project (
           [this] () { return audio_engine_->sample_rate (); })),
       tracklist_ (
         utils::make_qobject_unique<
-          structure::tracks::Tracklist> (*track_registry_, this)),
+          structure::tracks::Tracklist> (project_registry_, this)),
       clip_launcher_ (
         utils::make_qobject_unique<structure::scenes::ClipLauncher> (
-          *arranger_object_registry_,
+          project_registry_,
           *tracklist_->collection (),
           this)),
       clip_playback_service_ (
         utils::make_qobject_unique<structure::scenes::ClipPlaybackService> (
-          *arranger_object_registry_,
+          project_registry_,
           *tracklist_->collection (),
           this)),
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
           structure::arrangement::ArrangerObjectFactory::Dependencies{
             .tempo_map_ = tempo_map (),
-            .object_registry_ = *arranger_object_registry_,
-            .file_audio_source_registry_ = *file_audio_source_registry_,
+            .registry_ = project_registry_,
             .musical_mode_getter_ =
               [this] () { return app_settings_.musicalMode (); },
             .last_timeline_obj_len_provider_ =
@@ -116,11 +108,7 @@ Project::Project (
       plugin_factory_ (
         utils::make_qobject_unique<plugins::PluginFactory> (
           plugins::PluginFactory::CommonFactoryDependencies{
-            .plugin_registry_ = *plugin_registry_,
-            .processor_base_dependencies_ =
-              dsp::ProcessorBase::ProcessorBaseDependencies{
-                .port_registry_ = *port_registry_,
-                .param_registry_ = *param_registry_ },
+            .registry = project_registry_,
             .create_plugin_instance_async_func_ =
               [plugin_format_manager] (
                 const juce::PluginDescription &description,
@@ -142,10 +130,8 @@ Project::Project (
         return get_final_track_dependencies ();
       })),
       tempo_object_manager_ (
-        utils::make_qobject_unique<structure::arrangement::TempoObjectManager> (
-          *arranger_object_registry_,
-          *file_audio_source_registry_,
-          this)),
+        utils::make_qobject_unique<
+          structure::arrangement::TempoObjectManager> (project_registry_, this)),
       monitor_fader_ (monitor_fader), metronome_ (metronome),
       graph_dispatcher_ (
         std::unique_ptr<dsp::graph::IGraphBuilder> (
@@ -184,8 +170,7 @@ Project::Project (
       for (int i = first; i <= last; ++i)
         {
           const auto &track = tracklist_->collection ()->tracks ().at (i);
-          const auto  track_id = track.id ();
-          tracks_rt_[track_id] = track.get_object ();
+          tracks_rt_.push_back (track.get ());
         }
     });
   QObject::connect (
@@ -194,9 +179,9 @@ Project::Project (
     [this] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
-          const auto track_id =
-            tracklist_->collection ()->tracks ().at (i).id ();
-          tracks_rt_.erase (track_id);
+          const auto &track = tracklist_->collection ()->tracks ().at (i);
+          auto *      ptr = track.get ();
+          std::erase (tracks_rt_, ptr);
         }
     });
 
@@ -269,7 +254,7 @@ Project::install_recording_callback (
 }
 
 structure::tracks::FinalTrackDependencies
-Project::get_final_track_dependencies () const
+Project::get_final_track_dependencies ()
 {
   if (!track_recording_callback_)
     {
@@ -277,17 +262,9 @@ Project::get_final_track_dependencies () const
         "Recording callback not installed — call install_recording_callback() first");
     }
   return structure::tracks::FinalTrackDependencies{
-    *tempo_map_wrapper_,
-    *file_audio_source_registry_,
-    *plugin_registry_,
-    *port_registry_,
-    *param_registry_,
-    *arranger_object_registry_,
-    *track_registry_,
-    *transport_,
+    *tempo_map_wrapper_, project_registry_, *transport_,
     [this] () {
-      return std::ranges::any_of (tracks_rt_, [] (const auto &track_var) {
-        const auto * track = structure::tracks::from_variant (track_var.second);
+      return std::ranges::any_of (tracks_rt_, [] (const auto * track) {
         const auto * ch = track->channel ();
         if (ch == nullptr)
           {
@@ -399,7 +376,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
   // obj.audio_engine_ = utils::clone_qobject (
   //   *other.audio_engine_, &obj, clone_type, &obj, obj.device_manager_);
   obj.pool_ = utils::clone_unique (
-    *other.pool_, clone_type, *obj.file_audio_source_registry_,
+    *other.pool_, clone_type, obj.project_registry_,
     [&obj] (bool backup) {
       return obj.project_directory_path_provider_ (backup)
              / structure::project::ProjectPathProvider::get_path (
@@ -408,7 +385,7 @@ init_from (Project &obj, const Project &other, utils::ObjectCloneType clone_type
     },
     [&obj] () { return obj.audio_engine_->sample_rate (); });
   obj.tracklist_ = utils::clone_qobject (
-    *other.tracklist_, &obj, clone_type, *obj.track_registry_, &obj);
+    *other.tracklist_, &obj, clone_type, obj.project_registry_);
   obj.port_connections_manager_ =
     utils::clone_qobject (*other.port_connections_manager_, &obj);
 
@@ -470,131 +447,21 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
   j[Project::kClipLauncherKey] = project.clip_launcher_;
 
-  // Nest registries under a "registries" key as per schema
-  nlohmann::json registries = nlohmann::json::object ();
-  registries[Project::kPortRegistryKey] = project.port_registry_;
-  registries[Project::kParameterRegistryKey] = project.param_registry_;
-  registries[Project::kPluginRegistryKey] = project.plugin_registry_;
-  registries[Project::kArrangerObjectRegistryKey] =
-    project.arranger_object_registry_;
-  registries[Project::kTrackRegistryKey] = project.track_registry_;
-  registries[Project::kFileAudioSourceRegistryKey] =
-    project.file_audio_source_registry_;
-  j["registries"] = registries;
+  j[Project::kRegistryKey] = project.project_registry_;
 }
-
-struct ArrangerObjectBuilderForDeserialization
-{
-  ArrangerObjectBuilderForDeserialization (const Project &project)
-      : project_ (project)
-  {
-  }
-
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    return project_.arrangerObjectFactory ()->get_builder<T> ().build_empty ();
-  }
-
-  const Project &project_;
-};
-
-struct TrackBuilderForDeserialization
-{
-  TrackBuilderForDeserialization (const Project &project) : project_ (project)
-  {
-  }
-
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    return project_.track_factory_->get_builder<T> ()
-      .build_for_deserialization ();
-  }
-
-  const Project &project_;
-};
-
-struct PluginBuilderForDeserialization
-{
-  PluginBuilderForDeserialization (const Project &project) : project_ (project)
-  {
-  }
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    if constexpr (std::derived_from<T, plugins::InternalPluginBase>)
-      {
-        return std::make_unique<T> (plugins::Plugin::ProcessorBaseDependencies{
-          .port_registry_ = project_.get_port_registry (),
-          .param_registry_ = project_.get_param_registry () });
-      }
-    else if constexpr (std::is_same_v<T, plugins::ClapPlugin>)
-      {
-        return std::make_unique<T> (
-          plugins::Plugin::ProcessorBaseDependencies{
-            .port_registry_ = project_.get_port_registry (),
-            .param_registry_ = project_.get_param_registry () },
-          project_.plugin_host_window_provider_);
-      }
-    else
-      {
-        return std::make_unique<T> (
-          plugins::Plugin::ProcessorBaseDependencies{
-            .port_registry_ = project_.get_port_registry (),
-            .param_registry_ = project_.get_param_registry () },
-          [&project = project_] (
-            const juce::PluginDescription &description,
-            double initialSampleRate, int initialBufferSize,
-            juce::AudioPluginFormat::PluginCreationCallback callback) {
-            project.plugin_format_manager_->createPluginInstanceAsync (
-              description, initialSampleRate, initialBufferSize, callback);
-          },
-          [engine = project_.audio_engine_.get ()] () {
-            return engine->sample_rate ();
-          },
-          [engine = project_.audio_engine_.get ()] () {
-            return engine->block_length ();
-          },
-          project_.plugin_host_window_provider_);
-      }
-  }
-
-  const Project &project_;
-};
-
-struct FileAudioSourceBuilderForDeserialization
-{
-  template <typename T> std::unique_ptr<T> build () const
-  {
-    return std::make_unique<T> ();
-  }
-};
 
 void
 from_json (const nlohmann::json &j, Project &project)
 {
-  // Required fields
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
 
-  // Deserialize registries from nested structure (required)
-  const auto &registries = j.at ("registries");
-  registries.at (Project::kPortRegistryKey).get_to (*project.port_registry_);
-  registries.at (Project::kParameterRegistryKey)
-    .get_to (*project.param_registry_);
-  from_json_with_builder (
-    registries.at (Project::kPluginRegistryKey), *project.plugin_registry_,
-    PluginBuilderForDeserialization{ project });
-  // FileAudioSourceRegistry must be deserialized before ArrangerObjectRegistry
-  // because AudioSourceObject references FileAudioSource
-  from_json_with_builder (
-    registries.at (Project::kFileAudioSourceRegistryKey),
-    *project.file_audio_source_registry_,
-    FileAudioSourceBuilderForDeserialization{});
-  from_json_with_builder (
-    registries.at (Project::kArrangerObjectRegistryKey),
-    *project.arranger_object_registry_,
-    ArrangerObjectBuilderForDeserialization{ project });
-  from_json_with_builder (
-    registries.at (Project::kTrackRegistryKey), *project.track_registry_,
-    TrackBuilderForDeserialization{ project });
+  project.project_registry_.set_deserialization_dependencies (
+    {
+      *project.track_factory_,
+      *project.arranger_object_factory_,
+      *project.plugin_factory_,
+    });
+  j.at (Project::kRegistryKey).get_to (project.project_registry_);
 
   // Transport is required
   j.at (Project::kTransportKey).get_to (*project.transport_);

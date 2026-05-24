@@ -19,8 +19,7 @@ namespace zrythm::dsp
  * The range is assumed to be 0 to 1.
  */
 class CVPort final
-    : public QObject,
-      public Port,
+    : public Port,
       public RingBufferOwningPortMixin,
       public PortConnectionsCacheMixin<CVPort>
 {

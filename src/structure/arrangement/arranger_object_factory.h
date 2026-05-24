@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -25,8 +26,7 @@ public:
       std::function<dsp::CurveOptions::Algorithm ()>;
 
     const dsp::TempoMap             &tempo_map_;
-    ArrangerObjectRegistry          &object_registry_;
-    dsp::FileAudioSourceRegistry    &file_audio_source_registry_;
+    utils::IObjectRegistry          &registry_;
     MusicalModeGetter                musical_mode_getter_;
     LastTimelineObjectLengthProvider last_timeline_obj_len_provider_;
     LastEditorObjectLengthProvider   last_editor_obj_len_provider_;
@@ -134,15 +134,13 @@ public:
       if constexpr (std::is_same_v<ObjT, AudioRegion>)
         {
           ret = std::make_unique<ObjT> (
-            dependencies_.tempo_map_, dependencies_.object_registry_,
-            dependencies_.file_audio_source_registry_,
+            dependencies_.tempo_map_, dependencies_.registry_,
             dependencies_.musical_mode_getter_);
         }
       else if constexpr (RegionObject<ObjT>)
         {
           ret = std::make_unique<ObjT> (
-            dependencies_.tempo_map_, dependencies_.object_registry_,
-            dependencies_.file_audio_source_registry_);
+            dependencies_.tempo_map_, dependencies_.registry_);
         }
       else if constexpr (std::is_same_v<ObjT, Marker>)
         {
@@ -154,13 +152,12 @@ public:
         {
           utils::audio::AudioBuffer dummy_buf (1, 1);
           dummy_buf.clear ();
-          auto file_audio_source =
-            dependencies_.file_audio_source_registry_.create_object<
-              dsp::FileAudioSource> (
-              dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
-              units::sample_rate (44100), 120, u8"dummy");
+          auto file_audio_source = utils::create_object<dsp::FileAudioSource> (
+            dependencies_.registry_, dummy_buf,
+            utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+            120, u8"dummy");
           ret = std::make_unique<ObjT> (
-            dependencies_.tempo_map_, dependencies_.file_audio_source_registry_,
+            dependencies_.tempo_map_, dependencies_.registry_,
             file_audio_source);
         }
       else
@@ -174,15 +171,15 @@ public:
     {
       auto obj_ref = [&] () {
         auto obj_unique_ptr = build_empty ();
-        dependencies_.object_registry_.register_object (obj_unique_ptr.get ());
+        dependencies_.registry_.register_object (*obj_unique_ptr);
         structure::arrangement::ArrangerObjectUuidReference ret_ref{
-          obj_unique_ptr->get_uuid (), dependencies_.object_registry_
+          obj_unique_ptr->get_uuid (), dependencies_.registry_
         };
         obj_unique_ptr.release ();
         return ret_ref;
       }();
 
-      auto * obj = std::get<ObjT *> (obj_ref.get_object ());
+      auto * obj = obj_ref.template get_object_as<ObjT> ();
 
       if constexpr (RegionObject<ObjT>)
         {
@@ -215,10 +212,9 @@ public:
         {
           if constexpr (std::is_same_v<ObjT, AudioRegion>)
             {
-              auto source_object = dependencies_.object_registry_.create_object<
-                AudioSourceObject> (
-                dependencies_.tempo_map_,
-                dependencies_.file_audio_source_registry_, clip_id_.value ());
+              auto source_object = utils::create_object<AudioSourceObject> (
+                dependencies_.registry_, dependencies_.tempo_map_,
+                dependencies_.registry_, clip_id_.value ());
               obj->set_source (source_object);
               obj->bounds ()->length ()->setSamples (
                 clip_id_.value ()
@@ -337,10 +333,9 @@ public:
 
   auto create_audio_region_from_file (const QString &absPath, double startTicks)
   {
-    auto clip = dependencies_.file_audio_source_registry_.create_object<
-      dsp::FileAudioSource> (
-      utils::Utf8String::from_qstring (absPath), sample_rate_provider_ (),
-      bpm_provider_ ());
+    auto clip = utils::create_object<dsp::FileAudioSource> (
+      dependencies_.registry_, utils::Utf8String::from_qstring (absPath),
+      sample_rate_provider_ (), bpm_provider_ ());
     return create_audio_region_with_clip (std::move (clip), startTicks);
   }
 
@@ -356,9 +351,9 @@ public:
     const utils::Utf8String         &clip_name,
     double                           start_ticks) const
   {
-    auto clip = dependencies_.file_audio_source_registry_.create_object<
-      dsp::FileAudioSource> (
-      buf, bit_depth, sample_rate_provider_ (), bpm_provider_ (), clip_name);
+    auto clip = utils::create_object<dsp::FileAudioSource> (
+      dependencies_.registry_, buf, bit_depth, sample_rate_provider_ (),
+      bpm_provider_ (), clip_name);
     return create_audio_region_with_clip (std::move (clip), start_ticks);
   }
 
@@ -398,32 +393,35 @@ public:
   {
     if constexpr (std::is_same_v<ObjT, AudioRegion>)
       {
-        return dependencies_.object_registry_.clone_object (
-          other, dependencies_.tempo_map_, dependencies_.object_registry_,
-          dependencies_.file_audio_source_registry_,
+        return utils::clone_object (
+          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
+          dependencies_.tempo_map_, dependencies_.registry_,
           dependencies_.musical_mode_getter_);
       }
     else if constexpr (RegionObject<ObjT>)
       {
-        return dependencies_.object_registry_.clone_object (
-          other, dependencies_.tempo_map_, dependencies_.object_registry_,
-          dependencies_.file_audio_source_registry_);
+        return utils::clone_object (
+          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
+          dependencies_.tempo_map_, dependencies_.registry_);
       }
     else if constexpr (std::is_same_v<ObjT, Marker>)
       {
-        return dependencies_.object_registry_.clone_object (
-          other, dependencies_.tempo_map_, other.markerType ());
+        return utils::clone_object (
+          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
+          dependencies_.tempo_map_, other.markerType ());
       }
     else if constexpr (std::is_same_v<ObjT, AudioSourceObject>)
       {
-        return dependencies_.object_registry_.clone_object (
-          other, dependencies_.tempo_map_,
-          dependencies_.file_audio_source_registry_, other.audio_source_ref ());
+        return utils::clone_object (
+          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
+          dependencies_.tempo_map_, dependencies_.registry_,
+          other.audio_source_ref ());
       }
     else
       {
-        return dependencies_.object_registry_.clone_object (
-          other, dependencies_.tempo_map_);
+        return utils::clone_object (
+          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
+          dependencies_.tempo_map_);
       }
   }
 

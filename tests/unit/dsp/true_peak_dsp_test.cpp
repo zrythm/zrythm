@@ -5,7 +5,8 @@
 #include <numbers>
 
 #include "dsp/true_peak_dsp.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 namespace zrythm::dsp
 {

@@ -1453,7 +1453,7 @@ region_draw (Region * self, GtkSnapshot * snapshot, GdkRectangle * rect)
       /* draw any remaining parts */
       std::visit (
         [&] (auto &&region) {
-          using T = base_type<decltype (region)>;
+          using T = utils::base_type<decltype (region)>;
           if constexpr (std::is_same_v<T, MidiRegion>)
             draw_midi_region (region, snapshot, &full_rect, &draw_rect);
           else if constexpr (std::is_same_v<T, AutomationRegion>)

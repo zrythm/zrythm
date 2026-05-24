@@ -1,14 +1,17 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <array>
 #include <list>
 #include <vector>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/views.h"
 
-using namespace zrythm::utils::views;
+#include "./test_uuid_identifiable_qobjects.h"
+#include <gtest/gtest.h>
+
+namespace zrythm::utils::views
+{
 
 TEST (ViewsTest, EnumerateVector)
 {
@@ -146,4 +149,97 @@ TEST (ViewsTest, EnumerateTake)
     }
 
   EXPECT_EQ (count, 2);
+}
+
+TEST (ViewsTest, FilterNullPointers)
+{
+  int  a = 1, b = 2, c = 3;
+  auto result =
+    std::vector<int *>{ &a, nullptr, &b, nullptr, &c } | filter_null
+    | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 3u);
+  EXPECT_EQ (result[0], &a);
+  EXPECT_EQ (result[1], &b);
+  EXPECT_EQ (result[2], &c);
+}
+
+TEST (ViewsTest, FilterNullAllNulls)
+{
+  auto result =
+    std::vector<int *>{ nullptr, nullptr, nullptr } | filter_null
+    | std::ranges::to<std::vector> ();
+
+  EXPECT_TRUE (result.empty ());
+}
+
+TEST (ViewsTest, FilterNullNoNulls)
+{
+  int  a = 1, b = 2;
+  auto result =
+    std::vector<int *>{ &a, &b } | filter_null | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 2u);
+}
+
+TEST (ViewsTest, QObjectCastToMatching)
+{
+  BaseTestObject    base;
+  DerivedTestObject derived (0);
+  auto              result =
+    std::vector<BaseTestObject *>{ &base, &derived }
+    | qobject_cast_to<DerivedTestObject> | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 2u);
+  EXPECT_EQ (result[0], nullptr);
+  EXPECT_EQ (result[1], &derived);
+}
+
+TEST (ViewsTest, QObjectCastToNoneMatch)
+{
+  BaseTestObject a, b;
+  auto           result =
+    std::vector<BaseTestObject *>{ &a, &b }
+    | qobject_cast_to<DerivedTestObject> | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 2u);
+  EXPECT_EQ (result[0], nullptr);
+  EXPECT_EQ (result[1], nullptr);
+}
+
+TEST (ViewsTest, QObjectCastAndFilterMatching)
+{
+  BaseTestObject    base;
+  DerivedTestObject derived (0);
+  auto              result =
+    std::vector<BaseTestObject *>{ &base, &derived }
+    | qobject_cast_and_filter<DerivedTestObject>
+    | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 1u);
+  EXPECT_EQ (result[0], &derived);
+}
+
+TEST (ViewsTest, QObjectCastAndFilterNoneMatch)
+{
+  BaseTestObject a, b;
+  auto           result =
+    std::vector<BaseTestObject *>{ &a, &b }
+    | qobject_cast_and_filter<DerivedTestObject>
+    | std::ranges::to<std::vector> ();
+
+  EXPECT_TRUE (result.empty ());
+}
+
+TEST (ViewsTest, QObjectCastAndFilterWithNulls)
+{
+  DerivedTestObject derived (0);
+  auto              result =
+    std::vector<BaseTestObject *>{ nullptr, &derived, nullptr }
+    | qobject_cast_and_filter<DerivedTestObject>
+    | std::ranges::to<std::vector> ();
+
+  ASSERT_EQ (result.size (), 1u);
+  EXPECT_EQ (result[0], &derived);
+}
 }

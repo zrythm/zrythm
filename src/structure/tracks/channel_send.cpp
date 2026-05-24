@@ -4,6 +4,7 @@
 #include "structure/tracks/channel_send.h"
 #include "utils/float_ranges.h"
 #include "utils/math_utils.h"
+#include "utils/registry_utils.h"
 
 #include <fmt/format.h>
 
@@ -11,28 +12,29 @@ namespace zrythm::structure::tracks
 {
 
 ChannelSend::ChannelSend (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  dsp::PortType                                 signal_type,
-  int                                           slot,
-  bool                                          is_prefader,
-  QObject *                                     parent)
-    : QObject (parent), dsp::ProcessorBase (dependencies),
+  utils::IObjectRegistry &object_registry,
+  dsp::PortType           signal_type,
+  int                     slot,
+  bool                    is_prefader,
+  QObject *               parent)
+    : QObject (parent), dsp::ProcessorBase (object_registry),
       signal_type_ (signal_type), is_prefader_ (is_prefader)
 {
   // Amount parameter (volume/gain)
-  add_parameter (dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-    dependencies.port_registry_,
-    dsp::ProcessorParameter::UniqueId (
-      utils::Utf8String::from_utf8_encoded_string (
-        fmt::format ("channel_send_{}_amount", slot + 1))),
-    dsp::ParameterRange (
-      dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
-    utils::Utf8String::from_qstring (QObject::tr ("Amount"))));
+  add_parameter (
+    utils::create_object<dsp::ProcessorParameter> (
+      registry (), registry (),
+      dsp::ProcessorParameter::UniqueId (
+        utils::Utf8String::from_utf8_encoded_string (
+          fmt::format ("channel_send_{}_amount", slot + 1))),
+      dsp::ParameterRange (
+        dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
+      utils::Utf8String::from_qstring (QObject::tr ("Amount"))));
 
   // Enabled parameter (toggle)
   add_parameter (
-    dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-      dependencies.port_registry_,
+    utils::create_object<dsp::ProcessorParameter> (
+      registry (), registry (),
       dsp::ProcessorParameter::UniqueId (
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("channel_send_{}_enabled", slot + 1))),
@@ -42,8 +44,8 @@ ChannelSend::ChannelSend (
   if (is_audio ())
     {
       {
-        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
-          u8"Audio Input", dsp::PortFlow::Input,
+        auto port = utils::create_object<dsp::AudioPort> (
+          registry (), u8"Audio Input", dsp::PortFlow::Input,
           dsp::AudioPort::BusLayout::Stereo, 2);
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
@@ -52,8 +54,8 @@ ChannelSend::ChannelSend (
       }
 
       {
-        auto port = dependencies.port_registry_.create_object<dsp::AudioPort> (
-          u8"Audio Output", dsp::PortFlow::Output,
+        auto port = utils::create_object<dsp::AudioPort> (
+          registry (), u8"Audio Output", dsp::PortFlow::Output,
           dsp::AudioPort::BusLayout::Stereo, 2);
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
@@ -63,17 +65,21 @@ ChannelSend::ChannelSend (
     }
   else if (is_midi ())
     {
-      add_input_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-        utils::Utf8String::from_qstring (QObject::tr ("MIDI input")),
-        dsp::PortFlow::Input));
+      add_input_port (
+        utils::create_object<dsp::MidiPort> (
+          registry (),
+          utils::Utf8String::from_qstring (QObject::tr ("MIDI input")),
+          dsp::PortFlow::Input));
       auto &midi_in_port = get_midi_in_port ();
       midi_in_port.set_symbol (
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("channel_send_{}_midi_in", slot + 1)));
 
-      add_output_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-        utils::Utf8String::from_qstring (QObject::tr ("MIDI output")),
-        dsp::PortFlow::Output));
+      add_output_port (
+        utils::create_object<dsp::MidiPort> (
+          registry (),
+          utils::Utf8String::from_qstring (QObject::tr ("MIDI output")),
+          dsp::PortFlow::Output));
       auto &midi_out_port = get_midi_out_port ();
       midi_out_port.set_symbol (
         utils::Utf8String::from_utf8_encoded_string (
@@ -89,7 +95,7 @@ ChannelSend::ChannelSend (
 dsp::ProcessorParameter *
 ChannelSend::enabledParam () const
 {
-  return get_parameters ().at (1).get_object_as<dsp::ProcessorParameter> ();
+  return get_parameters ().at (1).get ();
 }
 
 QVariant
@@ -97,7 +103,7 @@ ChannelSend::destinationPort () const
 {
   if (destination_port_)
     {
-      return QVariant::fromStdVariant (destination_port_->get_object ());
+      return QVariant::fromValue (destination_port_->get ());
     }
   return QVariant{};
 }
@@ -107,22 +113,20 @@ ChannelSend::setDestinationPort (const QVariant &port)
 {
   const auto * port_ptr = port.value<dsp::Port *> ();
   set_destination_port (
-    dsp::PortUuidReference{
-      port_ptr->get_uuid (), dependencies ().port_registry_ });
+    dsp::PortUuidReference{ port_ptr->get_uuid (), registry () });
 }
 
 void
 ChannelSend::set_destination_port (dsp::PortUuidReference port)
 {
-  // Validate that the port is an input port
-  if (!port.get_object_base ()->is_input ())
+  auto * port_ptr = port.get_object_as<dsp::Port> ();
+  if (!port_ptr->is_input ())
     {
       throw std::invalid_argument (
         "Destination port must be an input port, not an output port");
     }
 
-  // Validate that the port type matches the send type
-  const auto port_type = port.get_object_base ()->type ();
+  const auto port_type = port_ptr->type ();
   if (port_type != signal_type_)
     {
       throw std::invalid_argument (
@@ -248,7 +252,7 @@ from_json (const nlohmann::json &j, ChannelSend &p)
   j.at (ChannelSend::kIsPrefaderKey).get_to (p.is_prefader_);
   if (j.contains (ChannelSend::kDestinationPortKey))
     {
-      p.destination_port_.emplace (p.dependencies ().port_registry_);
+      p.destination_port_.emplace (p.registry ());
       j.at (ChannelSend::kDestinationPortKey).get_to (*p.destination_port_);
     }
 }

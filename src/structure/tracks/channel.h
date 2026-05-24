@@ -8,6 +8,7 @@
 #include "plugins/plugin_group.h"
 #include "structure/tracks/channel_send.h"
 #include "utils/icloneable.h"
+#include "utils/object_registry.h"
 
 namespace zrythm::structure::tracks
 {
@@ -22,8 +23,8 @@ class ChannelMidiPassthroughProcessor final
 
 public:
   ChannelMidiPassthroughProcessor (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 };
 
 class ChannelAudioPassthroughProcessor final
@@ -36,8 +37,8 @@ class ChannelAudioPassthroughProcessor final
 
 public:
   ChannelAudioPassthroughProcessor (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 };
 
 /**
@@ -78,13 +79,12 @@ public:
 
 public:
   explicit Channel (
-    plugins::PluginRegistry                      &plugin_registry,
-    dsp::ProcessorBase::ProcessorBaseDependencies processor_dependencies,
-    dsp::PortType                                 signal_type,
-    NameProvider                                  name_provider,
-    bool                                          hard_limit_fader_output,
-    dsp::Fader::ShouldBeMutedCallback             should_be_muted_cb,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry           &registry,
+    dsp::PortType                     signal_type,
+    NameProvider                      name_provider,
+    bool                              hard_limit_fader_output,
+    dsp::Fader::ShouldBeMutedCallback should_be_muted_cb,
+    QObject *                         parent = nullptr);
 
   // ============================================================================
   // QML Interface
@@ -121,7 +121,7 @@ public:
    *
    * @param pls Vector to add plugins to.
    */
-  void get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const;
+  void get_plugins (std::vector<plugins::PluginUuidReference> &plugins) const;
 
   /**
    * @brief Removes the given plugin.
@@ -156,19 +156,12 @@ private:
   friend void to_json (nlohmann::json &j, const Channel &c);
   friend void from_json (const nlohmann::json &j, Channel &c);
 
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies () const
-  {
-    return dependencies_;
-  }
+  utils::IObjectRegistry &registry () const { return registry_; }
 
 private:
-  dsp::ProcessorBase::ProcessorBaseDependencies local_processor_deps ();
+  utils::IObjectRegistry &registry_;
 
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies_;
-  plugins::PluginRegistry                      &plugin_registry_;
-
-  dsp::PortRegistry               local_port_registry_;
-  dsp::ProcessorParameterRegistry local_param_registry_;
+  utils::QObjectUniquePtr<utils::ObjectRegistry> local_registry_;
 
   NameProvider name_provider_;
 

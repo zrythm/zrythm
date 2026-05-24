@@ -6,6 +6,7 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/object_registry.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
@@ -19,32 +20,21 @@ class TrackCreatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Set up dependencies
-    track_registry_ = std::make_unique<structure::tracks::TrackRegistry> ();
-
     // Create singleton tracks
     singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
 
     // Create track collection
     track_collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (*track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
 
     // Create track routing
     track_routing_ =
-      std::make_unique<structure::tracks::TrackRouting> (*track_registry_);
+      std::make_unique<structure::tracks::TrackRouting> (registry_);
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,
-      file_audio_source_registry_,
-      plugin_registry_,
-      port_registry_,
-      param_registry_,
-      obj_registry_,
-      *track_registry_,
-      transport_,
-      soloed_tracks_exist_getter_,
-      {},
+      tempo_map_wrapper_,          registry_, transport_,
+      soloed_tracks_exist_getter_, {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -86,20 +76,14 @@ protected:
       *singleton_tracks_);
   }
 
-  // Create minimal dependencies for track creation
-  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::graph_test::MockTransport                 transport_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry          registry_;
+  dsp::graph_test::MockTransport transport_;
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
 
-  std::unique_ptr<structure::tracks::TrackRegistry>   track_registry_;
   std::unique_ptr<structure::tracks::SingletonTracks> singleton_tracks_;
   std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
   std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;

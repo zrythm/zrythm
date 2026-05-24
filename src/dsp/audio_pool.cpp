@@ -5,38 +5,45 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <utility>
 
 #include <fmt/std.h>
 
 #include "dsp/audio_pool.h"
-#include "utils/enum_utils.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
+#include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
 
 namespace zrythm::dsp
 {
 
 AudioPool::AudioPool (
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  ProjectPoolPathGetter         path_getter,
-  SampleRateGetter              sr_getter)
+  utils::IObjectRegistry &registry,
+  ProjectPoolPathGetter   path_getter,
+  SampleRateGetter        sr_getter)
     : sample_rate_getter_ (std::move (sr_getter)),
-      project_pool_path_getter_ (std::move (path_getter)),
-      clip_registry_ (file_audio_source_registry)
+      project_pool_path_getter_ (std::move (path_getter)), registry_ (registry)
 {
+}
+
+void
+AudioPool::for_each_clip (
+  std::function<void (dsp::FileAudioSource &)> visitor) const
+{
+  registry_.for_each_matching<dsp::FileAudioSource> (std::move (visitor));
 }
 
 void
 AudioPool::init_loaded ()
 {
-  for (auto * clip : get_clip_ptrs ())
-    {
-      const auto name = clip->get_name ();
-      clip->init_from_file (
-        get_clip_path (clip->get_uuid (), false), sample_rate_getter_ (),
-        clip->get_bpm ());
-      clip->set_name (name);
-    }
+  for_each_clip ([&] (dsp::FileAudioSource &clip) {
+    const auto name = clip.get_name ();
+    clip.init_from_file (
+      get_clip_path (clip.get_uuid (), false), sample_rate_getter_ (),
+      clip.get_bpm ());
+    clip.set_name (name);
+  });
 }
 
 void
@@ -144,15 +151,13 @@ auto
 AudioPool::duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file)
   -> FileAudioSourceUuidReference
 {
-  auto * const clip = std::get<dsp::FileAudioSource *> (
-    clip_registry_.find_by_id_or_throw (clip_id));
+  auto &clip = utils::get_typed<dsp::FileAudioSource> (registry_, clip_id);
 
-  auto new_clip_ref = clip_registry_.create_object<FileAudioSource> (
-    clip->get_samples (), clip->get_bit_depth (), sample_rate_getter_ (), 140.f,
-    clip->get_name ());
+  auto new_clip_ref = utils::create_object<FileAudioSource> (
+    registry_, clip.get_samples (), clip.get_bit_depth (),
+    sample_rate_getter_ (), 140.f, clip.get_name ());
 
-  z_debug (
-    "duplicating clip {} to {}...", clip->get_name (), new_clip_ref.id ());
+  z_debug ("duplicating clip {} to {}...", clip.get_name (), new_clip_ref.id ());
 
   if (write_file)
     {
@@ -177,14 +182,10 @@ AudioPool::remove_unused (bool backup)
   for (const auto &path : files)
     {
       bool found = false;
-      for (const auto &clip_id : clip_registry_.get_uuids ())
-        {
-          if (get_clip_path (clip_id, backup) == path)
-            {
-              found = true;
-              break;
-            }
-        }
+      for_each_clip ([&] (dsp::FileAudioSource &clip) {
+        if (get_clip_path (clip.get_uuid (), backup) == path)
+          found = true;
+      });
 
       /* if file not found in pool clips, delete */
       if (!found)
@@ -200,16 +201,14 @@ AudioPool::remove_unused (bool backup)
 void
 AudioPool::reload_clip_frame_bufs ()
 {
-  for (auto * clip : get_clip_ptrs ())
-    {
-      if (clip->get_num_frames () == 0)
-        {
-          /* load from the file */
-          clip->init_from_file (
-            get_clip_path (clip->get_uuid (), false), sample_rate_getter_ (),
-            std::nullopt);
-        }
-    }
+  for_each_clip ([&] (dsp::FileAudioSource &clip) {
+    if (clip.get_num_frames () == 0)
+      {
+        clip.init_from_file (
+          get_clip_path (clip.get_uuid (), false), sample_rate_getter_ (),
+          std::nullopt);
+      }
+  });
 }
 
 struct WriteClipData
@@ -241,7 +240,8 @@ AudioPool::write_to_disk (bool is_backup)
     }
 
   // write clips in parallel
-  const auto clips = get_clip_ptrs () | std::ranges::to<std::vector> ();
+  std::vector<FileAudioSource *> clips;
+  for_each_clip ([&] (dsp::FileAudioSource &clip) { clips.push_back (&clip); });
   std::vector<std::exception_ptr> exceptions;
   std::mutex                      error_mutex;
   const unsigned                  num_workers =
@@ -312,16 +312,18 @@ AudioPool::write_to_disk (bool is_backup)
   z_debug ("done writing clips, {}", *this);
 }
 
+static constexpr auto kLastKnownFileHashesKey = "fileHashes"sv;
+
 void
 to_json (nlohmann::json &j, const AudioPool &pool)
 {
-  j[AudioPool::kLastKnownFileHashesKey] = pool.last_known_file_hashes_;
+  j[kLastKnownFileHashesKey] = pool.last_known_file_hashes_;
 }
 
 void
 from_json (const nlohmann::json &j, AudioPool &pool)
 {
-  j.at (AudioPool::kLastKnownFileHashesKey).get_to (pool.last_known_file_hashes_);
+  j.at (kLastKnownFileHashesKey).get_to (pool.last_known_file_hashes_);
 }
 
 } // namespace zrythm::dsp

@@ -5,6 +5,8 @@
 #include "dsp/tempo_map.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/automation_tracklist.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -17,46 +19,36 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    registry = std::make_unique<utils::ObjectRegistry> ();
 
-    // Create test parameters
-    param_id1 = processor_param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry, dsp::ProcessorParameter::UniqueId (u8"test_param1"),
+    param_id1 = utils::create_object<dsp::ProcessorParameter> (
+      *registry, *registry, dsp::ProcessorParameter::UniqueId (u8"test_param1"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
       u8"Test Parameter 1");
 
-    param_id2 = processor_param_registry.create_object<dsp::ProcessorParameter> (
-      port_registry, dsp::ProcessorParameter::UniqueId (u8"test_param2"),
+    param_id2 = utils::create_object<dsp::ProcessorParameter> (
+      *registry, *registry, dsp::ProcessorParameter::UniqueId (u8"test_param2"),
       dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
       u8"Test Parameter 2");
 
-    // Create automation tracklist
-    automation_tracklist = std::make_unique<
-      AutomationTracklist> (AutomationTrackHolder::Dependencies{
-      .tempo_map_ = *tempo_map_wrapper,
-      .file_audio_source_registry_ = file_audio_source_registry,
-      .port_registry_ = port_registry,
-      .param_registry_ = processor_param_registry,
-      .object_registry_ = obj_registry });
+    automation_tracklist = std::make_unique<AutomationTracklist> (
+      AutomationTrackHolder::Dependencies{
+        .tempo_map_ = *tempo_map_wrapper, .registry_ = *registry });
   }
 
-  // Helper to create an automation track
   utils::QObjectUniquePtr<AutomationTrack>
   create_automation_track (dsp::ProcessorParameterUuidReference param_id)
   {
     return utils::make_qobject_unique<AutomationTrack> (
-      *tempo_map_wrapper, file_audio_source_registry, obj_registry,
-      std::move (param_id));
+      *tempo_map_wrapper, *registry, std::move (param_id));
   }
 
-  std::unique_ptr<dsp::TempoMap>        tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  dsp::PortRegistry                     port_registry;
-  dsp::ProcessorParameterRegistry processor_param_registry{ port_registry };
-  dsp::ProcessorParameterUuidReference param_id1{ processor_param_registry };
-  dsp::ProcessorParameterUuidReference param_id2{ processor_param_registry };
-  structure::arrangement::ArrangerObjectRegistry obj_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  std::unique_ptr<AutomationTracklist>           automation_tracklist;
+  std::unique_ptr<dsp::TempoMap>                      tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>               tempo_map_wrapper;
+  std::unique_ptr<utils::ObjectRegistry>              registry;
+  std::optional<dsp::ProcessorParameterUuidReference> param_id1;
+  std::optional<dsp::ProcessorParameterUuidReference> param_id2;
+  std::unique_ptr<AutomationTracklist>                automation_tracklist;
 };
 
 TEST_F (AutomationTracklistTest, InitialState)
@@ -76,7 +68,7 @@ TEST_F (AutomationTracklistTest, AutomationVisibility)
 
 TEST_F (AutomationTracklistTest, AddAutomationTrack)
 {
-  auto   at = create_automation_track (param_id1);
+  auto   at = create_automation_track (*param_id1);
   auto * track_ptr = at.get ();
   automation_tracklist->add_automation_track (std::move (at));
 
@@ -93,11 +85,11 @@ TEST_F (AutomationTracklistTest, AddAutomationTrack)
 
 TEST_F (AutomationTracklistTest, RemoveAutomationTrack)
 {
-  auto   at1 = create_automation_track (param_id1);
+  auto   at1 = create_automation_track (*param_id1);
   auto * track1_ptr = at1.get ();
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto   at2 = create_automation_track (param_id2);
+  auto   at2 = create_automation_track (*param_id2);
   auto * track2_ptr = at2.get ();
   automation_tracklist->add_automation_track (std::move (at2));
 
@@ -120,7 +112,7 @@ TEST_F (AutomationTracklistTest, RemoveAutomationTrack)
 
 TEST_F (AutomationTracklistTest, VisibilityManagement)
 {
-  auto   at = create_automation_track (param_id1);
+  auto   at = create_automation_track (*param_id1);
   auto * track_ptr = at.get ();
   automation_tracklist->add_automation_track (std::move (at));
 
@@ -151,11 +143,11 @@ TEST_F (AutomationTracklistTest, VisibilityManagement)
 
 TEST_F (AutomationTracklistTest, TrackMovement)
 {
-  auto   at1 = create_automation_track (param_id1);
+  auto   at1 = create_automation_track (*param_id1);
   auto * track1_ptr = at1.get ();
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto   at2 = create_automation_track (param_id2);
+  auto   at2 = create_automation_track (*param_id2);
   auto * track2_ptr = at2.get ();
   automation_tracklist->add_automation_track (std::move (at2));
 
@@ -202,11 +194,11 @@ TEST_F (AutomationTracklistTest, TrackMovement)
 
 TEST_F (AutomationTracklistTest, FindTracks)
 {
-  auto   at1 = create_automation_track (param_id1);
+  auto   at1 = create_automation_track (*param_id1);
   auto * track1_ptr = at1.get ();
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto   at2 = create_automation_track (param_id2);
+  auto   at2 = create_automation_track (*param_id2);
   auto * track2_ptr = at2.get ();
   automation_tracklist->add_automation_track (std::move (at2));
 
@@ -251,12 +243,12 @@ TEST_F (AutomationTracklistTest, FindTracks)
 TEST_F (AutomationTracklistTest, ClearObjects)
 {
   {
-    auto at = create_automation_track (param_id1);
+    auto at = create_automation_track (*param_id1);
     automation_tracklist->add_automation_track (std::move (at));
   }
   automation_tracklist->automation_track_at (0)->add_object (
-    obj_registry.create_object<arrangement::AutomationRegion> (
-      *tempo_map, obj_registry, file_audio_source_registry));
+    utils::create_object<arrangement::AutomationRegion> (
+      *registry, *tempo_map, *registry));
 
   EXPECT_EQ (
     automation_tracklist->automation_track_at (0)->get_children_vector ().size (),
@@ -278,7 +270,7 @@ TEST_F (AutomationTracklistTest, FirstInvisibleTrack)
     nullptr);
 
   // Add a track
-  auto at = create_automation_track (param_id1);
+  auto at = create_automation_track (*param_id1);
   automation_tracklist->add_automation_track (std::move (at));
 
   // Should return the new track since it's not created by user
@@ -300,7 +292,7 @@ TEST_F (AutomationTracklistTest, FirstInvisibleTrack)
 TEST_F (AutomationTracklistTest, AutomationVisibilityShowsFirstTrack)
 {
   {
-    auto at = create_automation_track (param_id1);
+    auto at = create_automation_track (*param_id1);
     automation_tracklist->add_automation_track (std::move (at));
   }
 
@@ -321,10 +313,10 @@ TEST_F (AutomationTracklistTest, AutomationVisibilityShowsFirstTrack)
 TEST_F (AutomationTracklistTest, Serialization)
 {
   // Add tracks to tracklist
-  auto at1 = create_automation_track (param_id1);
+  auto at1 = create_automation_track (*param_id1);
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto at2 = create_automation_track (param_id2);
+  auto at2 = create_automation_track (*param_id2);
   automation_tracklist->add_automation_track (std::move (at2));
 
   // Set visibility for one track
@@ -345,13 +337,9 @@ TEST_F (AutomationTracklistTest, Serialization)
   to_json (j, *automation_tracklist);
 
   // Create dummy tracklist with same dependencies
-  auto dummy_tracklist = std::make_unique<
-    AutomationTracklist> (AutomationTrackHolder::Dependencies{
-    .tempo_map_ = *tempo_map_wrapper,
-    .file_audio_source_registry_ = file_audio_source_registry,
-    .port_registry_ = port_registry,
-    .param_registry_ = processor_param_registry,
-    .object_registry_ = obj_registry });
+  auto dummy_tracklist =
+    std::make_unique<AutomationTracklist> (AutomationTrackHolder::Dependencies{
+      .tempo_map_ = *tempo_map_wrapper, .registry_ = *registry });
 
   // Deserialize into dummy tracklist
   from_json (j, *dummy_tracklist);
@@ -389,17 +377,17 @@ TEST_F (AutomationTracklistTest, Serialization)
 TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
 {
   // Create an automation track with a region containing a point
-  auto   at1 = create_automation_track (param_id1);
+  auto   at1 = create_automation_track (*param_id1);
   auto * track_ptr = at1.get ();
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto region_ref = obj_registry.create_object<arrangement::AutomationRegion> (
-    *tempo_map, obj_registry, file_audio_source_registry);
+  auto region_ref = utils::create_object<arrangement::AutomationRegion> (
+    *registry, *tempo_map, *registry);
   auto * region = region_ref.get_object_as<arrangement::AutomationRegion> ();
   track_ptr->add_object (region_ref);
 
   auto point_ref =
-    obj_registry.create_object<arrangement::AutomationPoint> (*tempo_map);
+    utils::create_object<arrangement::AutomationPoint> (*registry, *tempo_map);
   auto * point = point_ref.get_object_as<arrangement::AutomationPoint> ();
   point->setValue (0.75f);
   region->add_object (point_ref);
@@ -411,13 +399,9 @@ TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
   to_json (j, *automation_tracklist);
 
   // Deserialize into new tracklist
-  auto tracklist2 = std::make_unique<
-    AutomationTracklist> (AutomationTrackHolder::Dependencies{
-    .tempo_map_ = *tempo_map_wrapper,
-    .file_audio_source_registry_ = file_audio_source_registry,
-    .port_registry_ = port_registry,
-    .param_registry_ = processor_param_registry,
-    .object_registry_ = obj_registry });
+  auto tracklist2 =
+    std::make_unique<AutomationTracklist> (AutomationTrackHolder::Dependencies{
+      .tempo_map_ = *tempo_map_wrapper, .registry_ = *registry });
   from_json (j, *tracklist2);
 
   // Verify the automation track retained its region

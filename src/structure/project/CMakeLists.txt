@@ -38,6 +38,7 @@ target_sources(zrythm_structure_project_lib
     project.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
+    project_registry.cpp
     project_ui_state.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -48,6 +49,7 @@ target_sources(zrythm_structure_project_lib
       project.h
       project_graph_builder.h
       project_path_provider.h
+      project_registry.h
       project_ui_state.h
 )
 

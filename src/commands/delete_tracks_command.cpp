@@ -72,9 +72,7 @@ DeleteTracksCommand::undo ()
   // Restore original expanded states for foldable tracks
   for (const auto &info : tracks_)
     {
-      if (
-        structure::tracks::Track::type_is_foldable (
-          structure::tracks::from_variant (info.ref.get_object ())->type ()))
+      if (structure::tracks::Track::type_is_foldable (info.ref.get ()->type ()))
         {
           collection_.set_track_expanded (
             info.ref.id (), info.original_expanded_state);

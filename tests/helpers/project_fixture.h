@@ -45,15 +45,9 @@ protected:
     app_settings_ =
       std::make_unique<utils::AppSettings> (std::move (mock_backend));
 
-    port_registry_ = std::make_unique<dsp::PortRegistry> (nullptr);
-    param_registry_ = std::make_unique<dsp::ProcessorParameterRegistry> (
-      *port_registry_, nullptr);
+    registry_ = std::make_unique<utils::ObjectRegistry> (nullptr);
     monitor_fader_ = utils::make_qobject_unique<dsp::Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      dsp::PortType::Audio,
+      *registry_, dsp::PortType::Audio,
       true,  // hard_limit_output
       false, // make_params_automatable
       [] () -> utils::Utf8String { return u8"Test Control Room"; },
@@ -62,11 +56,7 @@ protected:
     juce::AudioSampleBuffer emphasis_sample (2, 512);
     juce::AudioSampleBuffer normal_sample (2, 512);
     metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_,
-        .param_registry_ = *param_registry_,
-      },
-      emphasis_sample, normal_sample, true, 1.0f, nullptr);
+      *registry_, emphasis_sample, normal_sample, true, 1.0f, nullptr);
   }
 
   void TearDown () override
@@ -104,16 +94,15 @@ protected:
     return project;
   }
 
-  std::unique_ptr<QTemporaryDir>                   temp_dir_obj_;
-  std::filesystem::path                            project_dir_;
-  std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface_;
-  std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager_;
-  MockSettingsBackend *                            mock_backend_ptr_{};
-  std::unique_ptr<utils::AppSettings>              app_settings_;
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  utils::QObjectUniquePtr<dsp::Fader>              monitor_fader_;
-  utils::QObjectUniquePtr<dsp::Metronome>          metronome_;
+  std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;
+  std::filesystem::path                           project_dir_;
+  std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface_;
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
+  MockSettingsBackend *                           mock_backend_ptr_{};
+  std::unique_ptr<utils::AppSettings>             app_settings_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  utils::QObjectUniquePtr<dsp::Fader>             monitor_fader_;
+  utils::QObjectUniquePtr<dsp::Metronome>         metronome_;
 };
 
 } // namespace zrythm::test_helpers

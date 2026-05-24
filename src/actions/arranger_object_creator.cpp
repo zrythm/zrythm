@@ -5,6 +5,7 @@
 
 #include "actions/arranger_object_creator.h"
 #include "commands/add_region_to_clip_slot_command.h"
+#include "utils/variant_helpers.h"
 
 namespace zrythm::actions
 {
@@ -16,7 +17,7 @@ ArrangerObjectCreator::add_laned_object (
 {
   std::visit (
     [&] (auto &&obj) {
-      using ObjectT = base_type<decltype (obj)>;
+      using ObjectT = utils::base_type<decltype (obj)>;
       if constexpr (
         std::is_same_v<ObjectT, structure::arrangement::MidiRegion>
         || std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
@@ -28,7 +29,8 @@ ArrangerObjectCreator::add_laned_object (
             new commands::AddArrangerObjectCommand<ObjectT> (lane, obj_ref));
         }
     },
-    obj_ref.get_object ());
+    utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
 }
 
 void
@@ -39,7 +41,7 @@ ArrangerObjectCreator::add_object_to_clip_slot (
 {
   std::visit (
     [&] (auto &&obj) {
-      using ObjectT = base_type<decltype (obj)>;
+      using ObjectT = utils::base_type<decltype (obj)>;
       if constexpr (
         std::is_same_v<ObjectT, structure::arrangement::MidiRegion>
         || std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
@@ -51,7 +53,8 @@ ArrangerObjectCreator::add_object_to_clip_slot (
             new commands::AddRegionToClipSlotCommand (slot, obj_ref));
         }
     },
-    obj_ref.get_object ());
+    utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
 }
 
 structure::arrangement::Marker *

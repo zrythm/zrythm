@@ -5,6 +5,8 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_fwd.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/scoped_qcoreapplication.h"
 
@@ -44,22 +46,18 @@ protected:
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames)
   {
-    auto clip_ref = file_audio_source_registry_.create_object<
-      dsp::FileAudioSource> (
-      initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto clip_ref = utils::create_object<dsp::FileAudioSource> (
+      registry_, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"RecordingClip");
 
     auto source_obj_ref =
-      obj_registry_.create_object<structure::arrangement::AudioSourceObject> (
-        *tempo_map_, file_audio_source_registry_, clip_ref);
+      utils::create_object<structure::arrangement::AudioSourceObject> (
+        registry_, *tempo_map_, registry_, clip_ref);
 
-    auto region_ref = obj_registry_.create_object<
-      structure::arrangement::AudioRegion> (
-      *tempo_map_, obj_registry_, file_audio_source_registry_,
-      [] () { return true; });
+    auto region_ref = utils::create_object<structure::arrangement::AudioRegion> (
+      registry_, *tempo_map_, registry_, [] () { return true; });
 
-    auto * region =
-      region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+    auto * region = region_ref.get ();
     region->set_source (source_obj_ref);
 
     source_obj_refs_.push_back (std::move (source_obj_ref));
@@ -130,7 +128,7 @@ protected:
     if (children.empty ())
       return nullptr;
     auto clip_ref = children.front ()->audio_source_ref ();
-    return clip_ref.get_object_as<dsp::FileAudioSource> ();
+    return clip_ref.get ();
   }
 
   std::unique_ptr<zrythm::test_helpers::ScopedQCoreApplication> app_;
@@ -139,8 +137,7 @@ protected:
   std::unique_ptr<undo::UndoStack>                              undo_stack_;
   std::unique_ptr<RecordingMaterializer>                        materializer_;
 
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry_;
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
+  utils::ObjectRegistry registry_;
 
   std::vector<structure::arrangement::ArrangerObjectUuidReference> region_refs_;
   std::vector<structure::arrangement::ArrangerObjectUuidReference>

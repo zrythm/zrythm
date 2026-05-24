@@ -56,7 +56,7 @@ wrapped_object_with_change_signal_get_display_name (void * data)
 
   return std::visit (
     [&] (auto &&obj) -> char * {
-      using ObjT = base_type<decltype (obj)>;
+      using ObjT = utils::base_type<decltype (obj)>;
       if constexpr (
         std::is_same_v<ChordPresetPack, ObjT>
         || std::is_same_v<zrythm::plugins::PluginDescriptor, ObjT>)
@@ -169,7 +169,7 @@ finalize (WrappedObjectWithChangeSignal * self)
       std::visit (
         [&] (auto &&obj) {
           if constexpr (
-            !std::is_same_v<std::nullptr_t, base_type<decltype (obj)>>)
+            !std::is_same_v<std::nullptr_t, utils::base_type<decltype (obj)>>)
             {
               self->free_func (obj);
             }

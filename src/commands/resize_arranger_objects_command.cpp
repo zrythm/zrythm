@@ -23,7 +23,7 @@ ResizeArrangerObjectsCommand::ResizeArrangerObjectsCommand (
       OriginalState state;
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
 
           // Always store position
           state.position = units::ticks (obj->position ()->ticks ());
@@ -56,7 +56,7 @@ ResizeArrangerObjectsCommand::ResizeArrangerObjectsCommand (
             }
 
           if constexpr (
-            is_derived_from_template_v<
+            utils::is_derived_from_template_v<
               structure::arrangement::ArrangerObjectOwner, ObjectT>)
             {
               auto children = obj->get_children_view ();
@@ -67,7 +67,8 @@ ResizeArrangerObjectsCommand::ResizeArrangerObjectsCommand (
                 }
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
 
       original_states_.push_back (state);
     }
@@ -83,7 +84,7 @@ ResizeArrangerObjectsCommand::undo ()
 
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
 
           // Restore position
           obj->position ()->setTicks (original_state.position.in (units::ticks));
@@ -120,7 +121,7 @@ ResizeArrangerObjectsCommand::undo ()
 
           // Restore children positions
           if constexpr (
-            is_derived_from_template_v<
+            utils::is_derived_from_template_v<
               structure::arrangement::ArrangerObjectOwner, ObjectT>)
             {
               if (
@@ -138,7 +139,8 @@ ResizeArrangerObjectsCommand::undo ()
                 }
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
     }
 }
 
@@ -152,7 +154,7 @@ ResizeArrangerObjectsCommand::redo ()
 
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
           switch (type_)
             {
             case ResizeType::Bounds:
@@ -178,7 +180,7 @@ ResizeArrangerObjectsCommand::redo ()
 
                         // Adjust children positions accordingly
                         if constexpr (
-                          is_derived_from_template_v<
+                          utils::is_derived_from_template_v<
                             structure::arrangement::ArrangerObjectOwner, ObjectT>)
                           {
                             for (const auto &child : obj->get_children_view ())
@@ -263,7 +265,7 @@ ResizeArrangerObjectsCommand::redo ()
                         else if (new_clip_start_pos < 0.0)
                           {
                             if constexpr (
-                              is_derived_from_template_v<
+                              utils::is_derived_from_template_v<
                                 structure::arrangement::ArrangerObjectOwner,
                                 ObjectT>)
                               {
@@ -321,7 +323,8 @@ ResizeArrangerObjectsCommand::redo ()
               }
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
     }
   last_redo_timestamp_ = std::chrono::steady_clock::now ();
 }

@@ -12,10 +12,8 @@
 
 namespace zrythm::engine::session
 {
-MidiMapping::MidiMapping (
-  dsp::ProcessorParameterRegistry &param_registry,
-  QObject *                        parent)
-    : QObject (parent), param_registry_ (param_registry)
+MidiMapping::MidiMapping (utils::IObjectRegistry &registry, QObject * parent)
+    : QObject (parent), registry_ (registry)
 {
 }
 
@@ -31,8 +29,8 @@ init_from (
   obj.enabled_.store (other.enabled_.load ());
 }
 
-MidiMappings::MidiMappings (dsp::ProcessorParameterRegistry &param_registry)
-    : param_registry_ (param_registry)
+MidiMappings::MidiMappings (utils::IObjectRegistry &registry)
+    : registry_ (registry)
 {
 }
 
@@ -44,7 +42,7 @@ MidiMappings::bind_at (
   int                                  idx,
   bool                                 fire_events)
 {
-  auto mapping = std::make_unique<MidiMapping> (param_registry_);
+  auto mapping = std::make_unique<MidiMapping> (registry_);
   mapping->key_ = buf;
   mapping->device_id_ = device_id;
   mapping->dest_id_ = dest_port;
@@ -53,9 +51,7 @@ MidiMappings::bind_at (
   mappings_.insert (mappings_.begin () + idx, std::move (mapping));
 
   auto str = utils::midi::midi_ctrl_change_get_description (buf);
-  z_info (
-    "bounded MIDI mapping from {} to {}", str,
-    dest_port.get_object_as<dsp::ProcessorParameter> ()->label ());
+  z_info ("bounded MIDI mapping from {} to {}", str, dest_port.get ()->label ());
 }
 
 void
@@ -78,7 +74,7 @@ MidiMappings::get_mapping_index (const MidiMapping &mapping) const
 void
 MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
-  auto * dest = dest_id_->get_object_as<dsp::ProcessorParameter> ();
+  auto * dest = dest_id_->get ();
   /* if toggle, reverse value */
   if (dest->range ().type_ == dsp::ParameterRange::Type::Toggle)
     {
@@ -194,7 +190,7 @@ from_json (const nlohmann::json &j, MidiMappings &mappings)
 {
   for (const auto &mapping_json : j.at (MidiMappings::kMappingsKey))
     {
-      auto mapping = std::make_unique<MidiMapping> (mappings.param_registry_);
+      auto mapping = std::make_unique<MidiMapping> (mappings.registry_);
       from_json (mapping_json, *mapping);
       mappings.mappings_.push_back (std::move (mapping));
     }

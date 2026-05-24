@@ -6,6 +6,9 @@
 #include "dsp/file_audio_source.h"
 #include "structure/arrangement/arranger_object.h"
 #include "utils/icloneable.h"
+#include "utils/iobject_registry.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::structure::arrangement
 {
@@ -36,7 +39,7 @@ public:
    */
   AudioSourceObject (
     const dsp::TempoMap              &tempo_map,
-    dsp::FileAudioSourceRegistry     &registry,
+    utils::IObjectRegistry           &registry,
     dsp::FileAudioSourceUuidReference source,
     QObject *                         parent = nullptr);
   Q_DISABLE_COPY_MOVE (AudioSourceObject)
@@ -59,18 +62,14 @@ private:
     utils::ObjectCloneType   clone_type);
 
   static constexpr auto kFileAudioSourceKey = "fileAudioSource"sv;
-  friend void to_json (nlohmann::json &j, const AudioSourceObject &obj)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (obj));
-    j[kFileAudioSourceKey] = obj.source_id_;
-  }
+  friend void to_json (nlohmann::json &j, const AudioSourceObject &obj);
   friend void from_json (const nlohmann::json &j, AudioSourceObject &obj);
 
   Q_SLOT void generate_audio_source ();
   void        connect_file_audio_source_signals ();
 
 private:
-  dsp::FileAudioSourceRegistry                  &registry_;
+  utils::IObjectRegistry                        &registry_;
   dsp::FileAudioSourceUuidReference              source_id_;
   std::unique_ptr<juce::PositionableAudioSource> source_;
 

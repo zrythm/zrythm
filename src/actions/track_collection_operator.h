@@ -108,11 +108,11 @@ private:
    */
   [[nodiscard]] std::vector<structure::tracks::TrackUuidReference>
   expand_with_descendants (
-    RangeOf<structure::tracks::TrackUuidReference> auto &&track_refs) const
+    utils::RangeOf<structure::tracks::TrackUuidReference> auto &&track_refs) const
   {
     assert (collection_ != nullptr);
 
-    auto &registry = collection_->get_track_registry ();
+    auto &registry = collection_->get_registry ();
 
     auto seen =
       track_refs

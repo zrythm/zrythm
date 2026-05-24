@@ -4,6 +4,7 @@
 #include "structure/arrangement/chord_object.h"
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {
@@ -34,5 +35,19 @@ ChordObject::setChordDescriptorIndex (int descr)
     return;
   chord_index_ = descr;
   Q_EMIT chordDescriptorIndexChanged (descr);
+}
+
+void
+to_json (nlohmann::json &j, const ChordObject &co)
+{
+  to_json (j, static_cast<const ArrangerObject &> (co));
+  j[ChordObject::kChordIndexKey] = co.chord_index_;
+}
+
+void
+from_json (const nlohmann::json &j, ChordObject &co)
+{
+  from_json (j, static_cast<ArrangerObject &> (co));
+  j.at (ChordObject::kChordIndexKey).get_to (co.chord_index_);
 }
 }

@@ -13,6 +13,9 @@
 
 #include <type_safe/strong_typedef.hpp>
 
+namespace zrythm::utils
+{
+
 // Helper to detect if DerivedT inherits from any specialization of BaseTemplateT
 template <template <typename...> class BaseTemplateT, typename DerivedT>
 struct is_derived_from_template
@@ -259,3 +262,4 @@ static_assert (!ObjectBuilder<InvalidBuilder>);
 
 template <typename T>
 concept EnumType = std::is_enum_v<T>;
+} // namespace zrythm::utils

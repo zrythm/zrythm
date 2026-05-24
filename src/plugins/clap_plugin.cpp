@@ -47,7 +47,9 @@
 #include "plugins/plugin_library.h"
 #include "utils/concurrency.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
 #include "utils/raii_utils.h"
+#include "utils/registry_utils.h"
 #include "utils/views.h"
 
 #include <QFile>
@@ -253,10 +255,10 @@ private:
 };
 
 ClapPlugin::ClapPlugin (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  PluginHostWindowFactory                       host_window_factory,
-  QObject *                                     parent)
-    : Plugin (dependencies, parent),
+  utils::IObjectRegistry &registry,
+  PluginHostWindowFactory host_window_factory,
+  QObject *               parent)
+    : Plugin (registry, parent),
       ClapHostBase (
         "Zrythm",
         "Alexandros Theodotou",
@@ -1325,20 +1327,20 @@ ClapPlugin::create_ports_from_clap_plugin ()
       const auto midi_out_ports = pimpl_->plugin_->notePortsCount (false);
       for (const auto i : std::views::iota (0u, midi_in_ports))
         {
-          auto port_ref =
-            dependencies ().port_registry_.create_object<dsp::MidiPort> (
-              utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("MIDI Input {}", i + 1)),
-              dsp::PortFlow::Input);
+          auto port_ref = utils::create_object<dsp::MidiPort> (
+            registry (),
+            utils::Utf8String::from_utf8_encoded_string (
+              fmt::format ("MIDI Input {}", i + 1)),
+            dsp::PortFlow::Input);
           add_input_port (port_ref);
         }
       for (const auto i : std::views::iota (0u, midi_out_ports))
         {
-          auto port_ref =
-            dependencies ().port_registry_.create_object<dsp::MidiPort> (
-              utils::Utf8String::from_utf8_encoded_string (
-                fmt::format ("MIDI Output {}", i + 1)),
-              dsp::PortFlow::Output);
+          auto port_ref = utils::create_object<dsp::MidiPort> (
+            registry (),
+            utils::Utf8String::from_utf8_encoded_string (
+              fmt::format ("MIDI Output {}", i + 1)),
+            dsp::PortFlow::Output);
           add_output_port (port_ref);
         }
     }
@@ -1362,14 +1364,13 @@ ClapPlugin::create_ports_from_clap_plugin ()
             }
           return dsp::AudioPort::BusLayout{};
         }();
-        auto port_ref =
-          dependencies ().port_registry_.create_object<dsp::AudioPort> (
-            utils::Utf8String::from_utf8_encoded_string (nfo.name),
-            is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout,
-            nfo.channel_count,
-            index == 0
-              ? dsp::AudioPort::Purpose::Main
-              : dsp::AudioPort::Purpose::Sidechain);
+        auto port_ref = utils::create_object<dsp::AudioPort> (
+          registry (), utils::Utf8String::from_utf8_encoded_string (nfo.name),
+          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout,
+          nfo.channel_count,
+          index == 0
+            ? dsp::AudioPort::Purpose::Main
+            : dsp::AudioPort::Purpose::Sidechain);
         if (is_input)
           {
             add_input_port (port_ref);
@@ -1461,8 +1462,7 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
   for (
     const auto &[idx, param_ref] : utils::views::enumerate (get_parameters ()))
     {
-      param_index_map[param_ref.get_object_as<dsp::ProcessorParameter> ()] =
-        static_cast<size_t> (idx);
+      param_index_map[param_ref.get ()] = static_cast<size_t> (idx);
     }
 
   // 3. scan the params.
@@ -1500,7 +1500,7 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
           dsp::ProcessorParameter * zrythm_param = nullptr;
           for (const auto &param_ref : get_parameters ())
             {
-              auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
+              auto * p = param_ref.get ();
               if (p->get_unique_id () == unique_id)
                 {
                   zrythm_param = p;
@@ -1535,14 +1535,12 @@ ClapPlugin::paramsRescan (uint32_t flags) noexcept
                     }
                 }
 
-              auto zrythm_param_ref =
-                dependencies ()
-                  .param_registry_.create_object<dsp::ProcessorParameter> (
-                    dependencies ().port_registry_, unique_id, range,
-                    utils::Utf8String::from_utf8_encoded_string (info.name));
+              auto zrythm_param_ref = utils::create_object<
+                dsp::ProcessorParameter> (
+                registry (), registry (), unique_id, range,
+                utils::Utf8String::from_utf8_encoded_string (info.name));
               add_parameter (zrythm_param_ref);
-              zrythm_param =
-                zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
+              zrythm_param = zrythm_param_ref.get ();
               zrythm_param->set_automatable (
                 (info.flags & CLAP_PARAM_IS_AUTOMATABLE) != 0);
 

@@ -22,10 +22,9 @@ class ChordRegion final
 
 public:
   ChordRegion (
-    const dsp::TempoMap          &tempo_map,
-    ArrangerObjectRegistry       &object_registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject *                     parent = nullptr);
+    const dsp::TempoMap    &tempo_map,
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -37,6 +36,11 @@ public:
   get_field_name_for_serialization (const ChordObject *) const override
   {
     return "chordObjects";
+  }
+
+  ArrangerObjectListModel * get_child_list_model () const override
+  {
+    return ArrangerObjectOwner<ChordObject>::get_model ();
   }
 
 private:

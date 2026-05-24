@@ -205,7 +205,7 @@ SampleProcessor::process_block (
         {
           std::visit (
             [&] (auto &&track) {
-              using TrackT = base_type<decltype (track)>;
+              using TrackT = utils::base_type<decltype (track)>;
               if constexpr (ProcessableTrack<TrackT>)
                 {
                   dsp::graph::EngineProcessTimeInfo inner_time_nfo = {
@@ -310,7 +310,7 @@ SampleProcessor::queue_file_or_chord_preset (
     {
       std::visit (
         [&] (auto &&tr) {
-          using TrackT = base_type<decltype (tr)>;
+          using TrackT = utils::base_type<decltype (tr)>;
           /* remove state dir if instrument */
           if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
             {
@@ -343,7 +343,7 @@ SampleProcessor::queue_file_or_chord_preset (
       PROJECT->get_track_registry (), PROJECT->get_plugin_registry (),
       PROJECT->get_port_registry (), PROJECT->get_arranger_object_registry (),
       true);
-    auto * track = std::get<MasterTrack *> (track_ref.get_object ());
+    auto * track = track_ref.get_object_as<MasterTrack> ();
     track->set_name (*tracklist_, u8"Sample Processor Master", false);
     tracklist_->master_track_ = track;
     tracklist_->insert_track (
@@ -360,7 +360,7 @@ SampleProcessor::queue_file_or_chord_preset (
           PROJECT->get_port_registry (),
           PROJECT->get_arranger_object_registry (), true);
       auto * audio_track =
-        std::get<AudioTrack *> (audio_track_ref.get_object ());
+        audio_track_ref.get_object_as<AudioTrack> ();
       audio_track->set_name (*tracklist_, u8"Sample processor audio", false);
       tracklist_->insert_track (
         audio_track_ref, static_cast<int> (tracklist_->track_count ()),
@@ -398,7 +398,7 @@ SampleProcessor::queue_file_or_chord_preset (
           PROJECT->get_port_registry (),
           PROJECT->get_arranger_object_registry (), true);
       auto * instrument_track =
-        std::get<InstrumentTrack *> (instrument_track_ref.get_object ());
+        instrument_track_ref.get_object_as<InstrumentTrack> ();
       instrument_track->set_name (
         *tracklist_, u8"Sample processor instrument", false);
       tracklist_->insert_track (
@@ -408,7 +408,7 @@ SampleProcessor::queue_file_or_chord_preset (
         {
           auto pl_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
             *instrument_setting_);
-          auto * pl = std::get<CarlaNativePlugin *> (pl_ref.get_object ());
+          auto * pl = pl_ref.get_object_as<CarlaNativePlugin> ();
           pl->instantiate ();
           pl->activate (true);
           z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
@@ -431,7 +431,7 @@ SampleProcessor::queue_file_or_chord_preset (
                   PROJECT->get_plugin_registry (), PROJECT->get_port_registry (),
                   PROJECT->get_arranger_object_registry (), true);
               auto * midi_track =
-                std::get<MidiTrack *> (midi_track_ref.get_object ());
+                midi_track_ref.get_object_as<MidiTrack> ();
               midi_track->set_name (
                 *tracklist_,
                 utils::Utf8String::from_utf8_encoded_string (

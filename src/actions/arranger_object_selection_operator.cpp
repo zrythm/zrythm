@@ -10,6 +10,7 @@
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/ranges.h"
+#include "utils/variant_helpers.h"
 
 namespace zrythm::actions
 {
@@ -54,17 +55,14 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
   // Create and push command
   auto command = [&selected_objects, tick_delta] ()
     -> std::unique_ptr<commands::MoveArrangerObjectsCommand> {
-    if (
-      std::ranges::any_of (selected_objects, [] (auto &&object_ref) {
-        return std::visit (
-          [] (const auto &obj) {
-            using ObjectT = base_type<decltype (obj)>;
-            return std::is_same_v<ObjectT, structure::arrangement::TempoObject>
-                   || std::is_same_v<
-                     ObjectT, structure::arrangement::TimeSignatureObject>;
-          },
-          object_ref.get_object ());
-      }))
+    if (std::ranges::any_of (selected_objects, [] (auto &&object_ref) {
+          return object_ref.template get_object_as<
+                   structure::arrangement::TempoObject> ()
+                   != nullptr
+                 || object_ref.template get_object_as<
+                      structure::arrangement::TimeSignatureObject> ()
+                      != nullptr;
+        }))
       {
         return std::make_unique<
           commands::MoveTempoMapAffectingArrangerObjectsCommand> (
@@ -104,18 +102,12 @@ ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
   // Validate velocity changes
   const auto all_valid = std::ranges::all_of (
     selected_objects, [velocity_delta] (const auto &obj_ref) {
-      return std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
-            {
-              const auto new_velocity = obj->velocity () + velocity_delta;
-              return new_velocity >= 0 && new_velocity <= 127;
-            }
-          return false;
-        },
-        obj_ref.get_object ());
+      auto * note =
+        obj_ref.template get_object_as<structure::arrangement::MidiNote> ();
+      if (note == nullptr)
+        return false;
+      const auto new_velocity = note->velocity () + velocity_delta;
+      return new_velocity >= 0 && new_velocity <= 127;
     });
 
   if (!all_valid)
@@ -148,11 +140,13 @@ ArrangerObjectSelectionOperator::deleteObjects ()
   // Check for undeletable objects
   const auto all_deletable =
     std::ranges::all_of (selected_objects, [] (const auto &obj_ref) {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
       return std::visit (
         [] (const auto &obj) {
           return structure::arrangement::is_arranger_object_deletable (*obj);
         },
-        obj_ref.get_object ());
+        obj_var);
     });
   if (!all_deletable)
     {
@@ -165,7 +159,9 @@ ArrangerObjectSelectionOperator::deleteObjects ()
     QObject::tr ("Delete %1 Objects").arg (selected_objects.size ()));
   for (const auto &obj_ref : selected_objects)
     {
-      auto owner_var = object_owner_provider_ (obj_ref.get_object ());
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      auto owner_var = object_owner_provider_ (obj_var);
       std::visit (
         [&] (auto &owner) {
           if (owner == nullptr)
@@ -198,11 +194,13 @@ ArrangerObjectSelectionOperator::cloneObjects ()
   // Check for uncloneable objects
   const auto all_cloneable =
     std::ranges::all_of (selected_objects, [] (const auto &obj_ref) {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
       return std::visit (
         [] (const auto &obj) {
           return structure::arrangement::is_arranger_object_deletable (*obj);
         },
-        obj_ref.get_object ());
+        obj_var);
     });
   if (!all_cloneable)
     {
@@ -215,13 +213,16 @@ ArrangerObjectSelectionOperator::cloneObjects ()
     QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
   for (const auto &obj_ref : selected_objects)
     {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
       auto new_obj_ref = std::visit (
-        [&] (const auto &obj) {
+        [&] (const auto &obj)
+          -> structure::arrangement::ArrangerObjectUuidReference {
           return object_factory_.clone_new_object_identity (*obj);
         },
-        obj_ref.get_object ());
+        obj_var);
 
-      auto owner_var = object_owner_provider_ (obj_ref.get_object ());
+      auto owner_var = object_owner_provider_ (obj_var);
       std::visit (
         [&] (auto &owner) {
           if (owner == nullptr)
@@ -259,7 +260,7 @@ ArrangerObjectSelectionOperator::toggleMute ()
   std::vector<MuteTarget> targets;
   for (const auto &obj_ref : selected_objects)
     {
-      auto * mute = obj_ref.get_object_base ()->mute ();
+      auto * mute = obj_ref.get ()->mute ();
       if (mute != nullptr)
         {
           targets.push_back ({ mute, mute->muted () });
@@ -394,10 +395,11 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
   double                       tick_delta)
 {
   return std::ranges::all_of (objects, [tick_delta] (const auto &obj_ref) {
-    const auto obj_var = obj_ref.get_object ();
+    auto obj_var = utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
     return std::visit (
       [&] (auto &&obj) {
-        using ObjectT = base_type<decltype (obj)>;
+        using ObjectT = utils::base_type<decltype (obj)>;
         const double new_position = obj->position ()->ticks () + tick_delta;
         const auto   timeline_position = [&] () {
           const auto * parent_obj = obj->parentObject ();
@@ -434,14 +436,14 @@ ArrangerObjectSelectionOperator::validateVerticalMovement (
   double                       delta)
 {
   return zrythm::ranges::all_equal (
-           objects,
-           [] (const auto &obj_ref) {
-             return obj_ref.get_object_base ()->type ();
-           })
+           objects, [] (const auto &obj_ref) { return obj_ref.get ()->type (); })
          && std::ranges::all_of (objects, [delta] (const auto &obj_ref) {
+              auto obj_var = utils::convert_to_variant_qobj<
+                structure::arrangement::ArrangerObjectPtrVariant> (
+                obj_ref.get ());
               return std::visit (
                 [&] (auto &&obj) {
-                  using ObjectT = base_type<decltype (obj)>;
+                  using ObjectT = utils::base_type<decltype (obj)>;
                   if constexpr (
                     std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
                     {
@@ -460,7 +462,7 @@ ArrangerObjectSelectionOperator::validateVerticalMovement (
 
                   return false; // Object unsupported for delta moving
                 },
-                obj_ref.get_object ());
+                obj_var);
             });
 }
 
@@ -473,13 +475,16 @@ ArrangerObjectSelectionOperator::validateResize (
 {
   return std::ranges::all_of (
     objects, [type, direction, delta] (const auto &obj_ref) {
-      const auto &obj = obj_ref.get_object_base ();
+      auto * obj = obj_ref.get ();
       assert (obj != nullptr);
       switch (type)
         {
         case commands::ResizeType::Bounds:
         case commands::ResizeType::LoopPoints:
-          return validateBoundsResize (obj_ref.get_object (), direction, delta);
+          return validateBoundsResize (
+            utils::convert_to_variant_qobj<
+              structure::arrangement::ArrangerObjectPtrVariant> (obj),
+            direction, delta);
         case commands::ResizeType::Fades:
           return validateFadesResize (*obj, direction, delta);
         default:
@@ -496,7 +501,7 @@ ArrangerObjectSelectionOperator::validateBoundsResize (
 {
   return std::visit (
     [&] (const auto &obj) {
-      using ObjectT = base_type<decltype (obj)>;
+      using ObjectT = utils::base_type<decltype (obj)>;
       if (obj->bounds () == nullptr)
         return false; // Object doesn't support bounds
 

@@ -16,12 +16,10 @@ RemovePluginsCommand::RemovePluginsCommand (
 {
   for (const auto &info : plugin_infos_)
     {
-      std::vector<plugins::PluginPtrVariant> plugins;
+      std::vector<plugins::PluginUuidReference> plugins;
       info.source_group->get_plugins (plugins);
-      if (
-        !std::ranges::contains (
-          plugins | std::views::transform (plugins::plugin_ptr_variant_to_base),
-          info.plugin_ref.id (), &plugins::Plugin::get_uuid))
+      if (!std::ranges::contains (
+            plugins, info.plugin_ref.id (), &plugins::PluginUuidReference::id))
         {
           throw std::invalid_argument (
             "Source group does not include the plugin");
@@ -102,7 +100,7 @@ RemovePluginsCommand::remove_plugin_automation (
   const plugins::PluginUuidReference     &plugin_ref,
   structure::tracks::AutomationTracklist &atl)
 {
-  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get ();
 
   // Collect matching automation tracks first to avoid iterator invalidation
   std::vector<structure::tracks::AutomationTrack *> tracks_to_remove;
@@ -112,8 +110,7 @@ RemovePluginsCommand::remove_plugin_automation (
       if (
         std::ranges::any_of (
           plugin->get_parameters (), [at_param] (const auto &pl_param_ref) {
-            return pl_param_ref.template get_object_as<dsp::ProcessorParameter> ()
-                   == at_param;
+            return pl_param_ref.get () == at_param;
           }))
         {
           tracks_to_remove.push_back (at);

@@ -47,11 +47,11 @@ public:
    * @param slot Slot, used only in parameter/port names.
    */
   ChannelSend (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    dsp::PortType                                 signal_type,
-    int                                           slot,
-    bool                                          is_prefader,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    dsp::PortType           signal_type,
+    int                     slot,
+    bool                    is_prefader,
+    QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (ChannelSend)
   ~ChannelSend () override;
 
@@ -65,7 +65,7 @@ public:
    */
   dsp::ProcessorParameter * amountParam () const
   {
-    return get_parameters ().front ().get_object_as<dsp::ProcessorParameter> ();
+    return get_parameters ().front ().get ();
   }
 
   /**

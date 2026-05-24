@@ -28,10 +28,10 @@ public:
   using InputDataProvider = std::function<std::span<const float * const> ()>;
 
   AudioInputProcessor (
-    InputDataProvider         provider,
-    units::channel_count_t    hw_input_channel_count,
-    ProcessorBaseDependencies dependencies,
-    QObject *                 parent = nullptr);
+    InputDataProvider       provider,
+    units::channel_count_t  hw_input_channel_count,
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   void custom_process_block (
     dsp::graph::ProcessBlockInfo time_nfo,

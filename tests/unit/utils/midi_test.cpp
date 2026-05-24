@@ -1,8 +1,9 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/gtest_wrapper.h"
 #include "utils/midi.h"
+
+#include <gtest/gtest.h>
 
 using namespace zrythm::utils::midi;
 

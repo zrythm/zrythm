@@ -7,6 +7,8 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/midi_region.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 
@@ -29,7 +31,7 @@ protected:
     for (int i = 0; i < 5; i++)
       {
         auto note_ref =
-          registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+          utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
         auto * note = note_ref.get_object_as<MidiNote> ();
         note->setPitch (60 + i);
         note->setVelocity (90 + i);
@@ -42,8 +44,7 @@ protected:
 
   std::unique_ptr<dsp::TempoMap>           tempo_map;
   std::unique_ptr<MockQObject>             parent;
-  ArrangerObjectRegistry                   registry_;
-  dsp::FileAudioSourceRegistry             file_audio_source_registry_;
+  utils::ObjectRegistry                    registry_;
   ArrangerObjectRefMultiIndexContainer     objects_;
   std::unique_ptr<ArrangerObjectListModel> model_;
 };
@@ -94,7 +95,7 @@ TEST_F (ArrangerObjectListModelTest, InsertRows)
 {
   // Create new note
   auto new_note_ref =
-    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note_ptr = new_note_ref.get_object_as<MidiNote> ();
   note_ptr->setPitch (72);
 
@@ -167,7 +168,7 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnInsert)
 
   // Create new note
   auto new_note_ref =
-    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note_ptr = new_note_ref.get_object_as<MidiNote> ();
   note_ptr->setPitch (72);
   note_ptr->position ()->setTicks (100.0);
@@ -211,7 +212,7 @@ TEST_F (ArrangerObjectListModelTest, ExpandableTickRangeCalculation)
 {
   // Create a test object with specific position and bounds
   auto test_note_ref =
-    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * test_note = test_note_ref.get_object_as<MidiNote> ();
   test_note->position ()->setTicks (200.0);
   test_note->bounds ()->length ()->setTicks (100.0);
@@ -226,8 +227,8 @@ TEST_F (ArrangerObjectListModelTest, ExpandableTickRangeCalculation)
 TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
 {
   // Create a MIDI region (which is an ArrangerObjectOwner)
-  auto region_ref = registry_.create_object<MidiRegion> (
-    *tempo_map, registry_, file_audio_source_registry_, parent.get ());
+  auto region_ref = utils::create_object<MidiRegion> (
+    registry_, *tempo_map, registry_, parent.get ());
   auto * region = region_ref.get_object_as<MidiRegion> ();
 
   // Create a vector with the region
@@ -241,7 +242,8 @@ TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
     &region_model, &ArrangerObjectListModel::contentChanged);
 
   // Create a MIDI note to add to the region
-  auto note_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note = note_ref.get_object_as<MidiNote> ();
   note->position ()->setTicks (50.0);
   note->bounds ()->length ()->setTicks (20.0);
@@ -283,8 +285,8 @@ TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
 TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
 {
   // Create a parent object (MIDI region)
-  auto parent_region_ref = registry_.create_object<MidiRegion> (
-    *tempo_map, registry_, file_audio_source_registry_, parent.get ());
+  auto parent_region_ref = utils::create_object<MidiRegion> (
+    registry_, *tempo_map, registry_, parent.get ());
   auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
 
   // Create a new model with the parent arranger object
@@ -293,7 +295,7 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
 
   // Create a child note
   auto child_note_ref =
-    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * child_note = child_note_ref.get_object_as<MidiNote> ();
   child_note->setPitch (60);
 
@@ -315,8 +317,8 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
 TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
 {
   // Create a parent object (MIDI region)
-  auto parent_region_ref = registry_.create_object<MidiRegion> (
-    *tempo_map, registry_, file_audio_source_registry_, parent.get ());
+  auto parent_region_ref = utils::create_object<MidiRegion> (
+    registry_, *tempo_map, registry_, parent.get ());
   auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
 
   // Create a new model with the parent arranger object
@@ -325,7 +327,7 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
 
   // Create a child note
   auto child_note_ref =
-    registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * child_note = child_note_ref.get_object_as<MidiNote> ();
   child_note->setPitch (60);
 
@@ -357,17 +359,20 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
 TEST_F (ArrangerObjectListModelTest, SortedIndexAutoUpdate)
 {
   // Create objects with different positions
-  auto note1_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note1_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note1 = note1_ref.get_object_as<MidiNote> ();
   note1->position ()->setTicks (100.0);
   note1->setPitch (60);
 
-  auto note2_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note2_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note2 = note2_ref.get_object_as<MidiNote> ();
   note2->position ()->setTicks (50.0);
   note2->setPitch (62);
 
-  auto note3_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note3_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note3 = note3_ref.get_object_as<MidiNote> ();
   note3->position ()->setTicks (150.0);
   note3->setPitch (64);
@@ -417,12 +422,14 @@ TEST_F (ArrangerObjectListModelTest, SortedIndexAutoUpdate)
 TEST_F (ArrangerObjectListModelTest, SortedIndexSamePosition)
 {
   // Create objects with same position but different creation order
-  auto note1_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note1_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note1 = note1_ref.get_object_as<MidiNote> ();
   note1->position ()->setTicks (100.0);
   note1->setPitch (60);
 
-  auto note2_ref = registry_.create_object<MidiNote> (*tempo_map, parent.get ());
+  auto note2_ref =
+    utils::create_object<MidiNote> (registry_, *tempo_map, parent.get ());
   auto * note2 = note2_ref.get_object_as<MidiNote> ();
   note2->position ()->setTicks (100.0);
   note2->setPitch (62);

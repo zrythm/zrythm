@@ -24,12 +24,12 @@ namespace zrythm::test_helpers
 inline void
 expect_registries_match (const nlohmann::json &j1, const nlohmann::json &j2)
 {
-  const auto &regs1 = j1["projectData"]["registries"];
-  const auto &regs2 = j2["projectData"]["registries"];
+  const auto &regs1 = j1["projectData"]["registry"];
+  const auto &regs2 = j2["projectData"]["registry"];
 
   static constexpr std::array registry_names = {
-    "portRegistry",  "paramRegistry",          "pluginRegistry",
-    "trackRegistry", "arrangerObjectRegistry", "fileAudioSourceRegistry",
+    "ports",  "parameters",      "plugins",
+    "tracks", "arrangerObjects", "fileAudioSources",
   };
 
   for (const auto name : registry_names)

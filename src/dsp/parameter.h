@@ -7,14 +7,18 @@
 #include "dsp/cv_port.h"
 #include "dsp/graph_node.h"
 #include "dsp/midi_port.h"
+#include "utils/iobject_registry.h"
 #include "utils/math_utils.h"
 #include "utils/traits.h"
+#include "utils/typed_uuid_reference.h"
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <nlohmann/json_fwd.hpp>
+
+using namespace std::string_view_literals;
 
 namespace zrythm::dsp
 {
@@ -170,7 +174,7 @@ public:
     return enum_label (static_cast<size_t> (index)).to_qstring ();
   }
 
-  template <EnumType E> float normalized_from_enum (E value) const
+  template <utils::EnumType E> float normalized_from_enum (E value) const
   {
     assert (type_ == Type::Enumeration);
     const auto index = static_cast<size_t> (value);
@@ -178,7 +182,7 @@ public:
     return normalizedEnumValue (index);
   }
 
-  template <EnumType E> E enum_value (float normalized_val) const
+  template <utils::EnumType E> E enum_value (float normalized_val) const
   {
     assert (type_ == Type::Enumeration);
     return static_cast<E> (enumIndex (normalized_val));
@@ -246,9 +250,8 @@ public:
  * DSP graph and is expected to be processed manually by its processor.
  */
 class ProcessorParameter
-    : public QObject,
-      public dsp::graph::IProcessable,
-      public utils::UuidIdentifiableObject<ProcessorParameter>
+    : public utils::UuidIdentifiableObject<ProcessorParameter>,
+      public dsp::graph::IProcessable
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -270,7 +273,7 @@ public:
 
     explicit UniqueId () = default;
 
-    static_assert (StrongTypedef<UniqueId>);
+    static_assert (utils::StrongTypedef<UniqueId>);
 
     std::size_t hash () const { return qHash (type_safe::get (*this).view ()); }
   };
@@ -280,11 +283,11 @@ public:
     std::function<QPointer<ProcessorParameter> (const UniqueId &unique_id)>;
 
   ProcessorParameter (
-    PortRegistry     &port_registry,
-    UniqueId          unique_id,
-    ParameterRange    range,
-    utils::Utf8String label,
-    QObject *         parent = nullptr);
+    utils::IObjectRegistry &registry,
+    UniqueId                unique_id,
+    ParameterRange          range,
+    utils::Utf8String       label,
+    QObject *               parent = nullptr);
 
   /**
    * @brief Provides the automation value for a given sample position.
@@ -530,84 +533,9 @@ DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::ProcessorParameter::Uuid)
 
 namespace zrythm::dsp
 {
-/**
- * @brief Wrapper over a Uuid registry that provides (slow) lookup by unique ID.
- *
- * These helpers are mainly intended for use by plugins during project load so
- * we know which plugin parameter corresponds to which UUID (via UniqueId match).
- */
-class ProcessorParameterRegistry
-    : public utils::
-        OwningObjectRegistry<ProcessorParameterPtrVariant, ProcessorParameter>
-{
-public:
-  ProcessorParameterRegistry (
-    dsp::PortRegistry &port_registry,
-    QObject *          parent = nullptr)
-      : utils::OwningObjectRegistry<
-          ProcessorParameterPtrVariant,
-          ProcessorParameter> (parent),
-        port_registry_ (port_registry)
-  {
-  }
 
-  ProcessorParameter *
-  find_by_unique_id (const ProcessorParameter::UniqueId &id) const
-  {
-    const auto &map = get_hash_map ();
-    for (const auto &kv : map)
-      {
-        if (std::get<ProcessorParameter *> (kv.second)->get_unique_id () == id)
-          {
-            return std::get<ProcessorParameter *> (kv.second);
-          }
-      }
-    return nullptr;
-  }
-
-  ProcessorParameter *
-  find_by_unique_id_or_throw (const ProcessorParameter::UniqueId &id) const
-  {
-    auto * val = find_by_unique_id (id);
-    if (val == nullptr) [[unlikely]]
-      {
-        throw std::runtime_error (
-          fmt::format ("Processor Parameter with unique id {} not found", id));
-      }
-    return val;
-  }
-
-private:
-  struct ProcessorParameterRegistryBuilder
-  {
-    ProcessorParameterRegistryBuilder (dsp::PortRegistry &port_registry)
-        : port_registry_ (port_registry)
-    {
-    }
-
-    template <typename T> std::unique_ptr<T> build () const
-    {
-      return std::make_unique<T> (
-        port_registry_, ProcessorParameter::UniqueId (u8""), ParameterRange{},
-        u8"");
-    }
-
-    dsp::PortRegistry &port_registry_;
-  };
-
-  friend void
-  from_json (const nlohmann::json &j, ProcessorParameterRegistry &reg)
-  {
-    from_json_with_builder (
-      j, reg, ProcessorParameterRegistryBuilder{ reg.port_registry_ });
-  }
-
-private:
-  dsp::PortRegistry &port_registry_;
-};
-
-using ProcessorParameterUuidReference = utils::UuidReference<
-  utils::OwningObjectRegistry<ProcessorParameterPtrVariant, ProcessorParameter>>;
+using ProcessorParameterUuidReference =
+  utils::TypedUuidReference<ProcessorParameter>;
 
 } // namespace zrythm::dsp
 

@@ -1,22 +1,23 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/automation_region.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::structure::arrangement
 {
 AutomationRegion::AutomationRegion (
-  const dsp::TempoMap          &tempo_map,
-  ArrangerObjectRegistry       &object_registry,
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  QObject *                     parent)
+  const dsp::TempoMap    &tempo_map,
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
     : ArrangerObject (
         Type::AutomationRegion,
         tempo_map,
         ArrangerObjectFeatures::Region,
         parent),
-      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this)
+      ArrangerObjectOwner (registry, *this)
 {
 }
 
@@ -65,8 +66,7 @@ AutomationRegion::get_prev_ap (const AutomationPoint &ap) const
   if (
     it != get_children_vector ().end () && it != get_children_vector ().begin ())
     {
-      return std::get<AutomationPoint *> (
-        (*std::ranges::prev (it)).get_object ());
+      return (*std::ranges::prev (it)).template get_object_as<AutomationPoint> ();
     }
 
   return nullptr;
@@ -105,8 +105,7 @@ AutomationRegion::get_next_ap (const AutomationPoint &ap, bool check_positions)
     && std::ranges::next (it) != get_children_vector ().end ())
     {
 
-      return std::get<AutomationPoint *> (
-        (*std::ranges::next (it)).get_object ());
+      return (*std::ranges::next (it)).template get_object_as<AutomationPoint> ();
     }
 
   return nullptr;
@@ -125,5 +124,20 @@ init_from (
     static_cast<ArrangerObjectOwner<AutomationPoint> &> (obj),
     static_cast<const ArrangerObjectOwner<AutomationPoint> &> (other),
     clone_type);
+}
+
+void
+to_json (nlohmann::json &j, const AutomationRegion &region)
+{
+  to_json (j, static_cast<const ArrangerObject &> (region));
+  to_json (
+    j, static_cast<const ArrangerObjectOwner<AutomationPoint> &> (region));
+}
+
+void
+from_json (const nlohmann::json &j, AutomationRegion &region)
+{
+  from_json (j, static_cast<ArrangerObject &> (region));
+  from_json (j, static_cast<ArrangerObjectOwner<AutomationPoint> &> (region));
 }
 }

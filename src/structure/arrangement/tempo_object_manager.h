@@ -6,6 +6,7 @@
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/time_signature_object.h"
+#include "utils/uuid_identifiable_object.h"
 
 namespace zrythm::structure::arrangement
 {
@@ -14,7 +15,7 @@ namespace zrythm::structure::arrangement
  * @brief Manages tempo and time signature objects for a project.
  */
 class TempoObjectManager final
-    : public QObject,
+    : public utils::UuidIdentifiableObject<TempoObjectManager>,
       public ArrangerObjectOwner<TempoObject>,
       public ArrangerObjectOwner<TimeSignatureObject>
 {
@@ -32,9 +33,8 @@ class TempoObjectManager final
 
 public:
   TempoObjectManager (
-    ArrangerObjectRegistry       &arranger_object_registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject *                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   friend void init_from (
     TempoObjectManager       &obj,

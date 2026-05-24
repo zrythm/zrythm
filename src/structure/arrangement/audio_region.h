@@ -55,11 +55,10 @@ public:
 
 public:
   AudioRegion (
-    const dsp::TempoMap          &tempo_map,
-    ArrangerObjectRegistry       &object_registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    GlobalMusicalModeGetter       musical_mode_getter,
-    QObject *                     parent = nullptr) noexcept;
+    const dsp::TempoMap    &tempo_map,
+    utils::IObjectRegistry &object_registry,
+    GlobalMusicalModeGetter musical_mode_getter,
+    QObject *               parent = nullptr) noexcept;
 
   // ========================================================================
   // QML Interface
@@ -105,6 +104,11 @@ public:
     return "audioSources";
   }
 
+  ArrangerObjectListModel * get_child_list_model () const override
+  {
+    return ArrangerObjectOwner<AudioSourceObject>::get_model ();
+  }
+
 private:
   friend void init_from (
     AudioRegion           &obj,
@@ -117,8 +121,6 @@ private:
   friend void from_json (const nlohmann::json &j, AudioRegion &region);
 
 private:
-  dsp::FileAudioSourceRegistry &file_audio_source_registry_;
-
   /** Gain to apply to the audio (amplitude 0.0-2.0). */
   std::atomic<float> gain_ = 1.0f;
 

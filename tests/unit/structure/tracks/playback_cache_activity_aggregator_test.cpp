@@ -4,6 +4,8 @@
 #include "structure/tracks/midi_track.h"
 #include "structure/tracks/playback_cache_activity_aggregator.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -25,10 +27,11 @@ protected:
   {
     app_ = std::make_unique<ScopedQCoreApplication> ();
 
-    track_registry = std::make_unique<TrackRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
-    track_collection = std::make_unique<TrackCollection> (*track_registry);
+    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    track_collection = std::make_unique<TrackCollection> (*registry_);
     aggregator = std::make_unique<PlaybackCacheActivityAggregator> ();
     aggregator->setCollection (track_collection.get ());
   }
@@ -36,13 +39,9 @@ protected:
   TrackUuidReference create_midi_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper,   file_audio_source_registry,
-      plugin_registry,      port_registry,
-      param_registry,       obj_registry,
-      *track_registry,      transport,
-      [] { return false; }, {},
+      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
     };
-    return track_registry->create_object<MidiTrack> (std::move (deps));
+    return utils::create_object<MidiTrack> (*registry_, std::move (deps));
   }
 
   void wait_for_complete_count (int expected, int timeout_ms = 5000)
@@ -81,16 +80,11 @@ protected:
       << "Timed out waiting for cacheCompleteCount >= " << expected;
   }
 
-  std::unique_ptr<ScopedQCoreApplication> app_;
-  std::unique_ptr<dsp::TempoMap>          tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper>   tempo_map_wrapper;
-  dsp::PortRegistry                       port_registry;
-  dsp::ProcessorParameterRegistry         param_registry{ port_registry };
-  structure::arrangement::ArrangerObjectRegistry   obj_registry;
-  dsp::FileAudioSourceRegistry                     file_audio_source_registry;
-  plugins::PluginRegistry                          plugin_registry;
-  dsp::graph_test::MockTransport                   transport;
-  std::unique_ptr<TrackRegistry>                   track_registry;
+  std::unique_ptr<ScopedQCoreApplication>          app_;
+  std::unique_ptr<dsp::TempoMap>                   tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>            tempo_map_wrapper;
+  std::unique_ptr<dsp::graph_test::MockTransport>  transport_;
+  std::unique_ptr<utils::ObjectRegistry>           registry_;
   std::unique_ptr<TrackCollection>                 track_collection;
   std::unique_ptr<PlaybackCacheActivityAggregator> aggregator;
 };
@@ -105,7 +99,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CompleteCountFromRegeneration)
 {
   auto track = create_midi_track ();
   track_collection->add_track (track);
-  auto * track_obj = track.get_object_base ();
+  auto * track_obj = track.get ();
 
   track_obj->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
@@ -120,7 +114,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemove)
 {
   auto track = create_midi_track ();
   track_collection->add_track (track);
-  auto * track_obj = track.get_object_base ();
+  auto * track_obj = track.get ();
 
   track_obj->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
@@ -141,9 +135,9 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnRemoveAllTracks)
   track_collection->add_track (track1);
   track_collection->add_track (track2);
 
-  track1.get_object_base ()->regeneratePlaybackCaches (
+  track1.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  track2.get_object_base ()->regeneratePlaybackCaches (
+  track2.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
   wait_for_complete_count (2);
@@ -163,11 +157,11 @@ TEST_F (PlaybackCacheActivityAggregatorTest, MultipleTracksCompleteCount)
   track_collection->add_track (track1);
   track_collection->add_track (track2);
 
-  track1.get_object_base ()->regeneratePlaybackCaches (
+  track1.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  track2.get_object_base ()->regeneratePlaybackCaches (
+  track2.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
-  track1.get_object_base ()->regeneratePlaybackCaches (
+  track1.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (20.0, 30.0) });
 
   wait_for_complete_count (3);
@@ -183,7 +177,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnCountChange)
   auto track = create_midi_track ();
   track_collection->add_track (track);
 
-  track.get_object_base ()->regeneratePlaybackCaches (
+  track.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
   ASSERT_TRUE (complete_spy.wait (5000));
@@ -199,7 +193,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, DetectsExistingTracksOnSetCollectio
   auto late_aggregator = std::make_unique<PlaybackCacheActivityAggregator> ();
   late_aggregator->setCollection (track_collection.get ());
 
-  track.get_object_base ()->regeneratePlaybackCaches (
+  track.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
 
   wait_for_complete_count_on (*late_aggregator, 1);
@@ -213,7 +207,7 @@ TEST_F (
   // Add a track and generate some cache activity
   auto track1 = create_midi_track ();
   track_collection->add_track (track1);
-  track1.get_object_base ()->regeneratePlaybackCaches (
+  track1.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
   wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
@@ -226,7 +220,7 @@ TEST_F (
   // connected to rowsInserted, so this track's activity should be picked up.
   auto track2 = create_midi_track ();
   track_collection->add_track (track2);
-  track2.get_object_base ()->regeneratePlaybackCaches (
+  track2.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (5.0, 15.0) });
   wait_for_complete_count (1);
   EXPECT_EQ (aggregator->cacheCompleteCount (), 1);
@@ -249,7 +243,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, SignalsEmittedOnRemoval)
   auto track = create_midi_track ();
   track_collection->add_track (track);
 
-  track.get_object_base ()->regeneratePlaybackCaches (
+  track.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
   ASSERT_TRUE (complete_spy.wait (5000));
 
@@ -273,18 +267,17 @@ TEST_F (
   // Create a track and add it to the collection
   auto track = create_midi_track ();
   track_collection->add_track (track);
-  auto * track_obj = track.get_object_base ();
+  auto * track_obj = track.get ();
   auto * atl = track_obj->automationTracklist ();
   ASSERT_NE (atl, nullptr);
 
   // Add an automation track
-  auto param_id = param_registry.create_object<dsp::ProcessorParameter> (
-    port_registry, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+  auto param_id = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
     u8"Test Param");
   auto at = utils::make_qobject_unique<AutomationTrack> (
-    *tempo_map_wrapper, file_audio_source_registry, obj_registry,
-    std::move (param_id));
+    *tempo_map_wrapper, *registry_, std::move (param_id));
   auto * at_ptr = at.get ();
   atl->add_automation_track (std::move (at));
 
@@ -306,7 +299,7 @@ TEST_F (PlaybackCacheActivityAggregatorTest, CountsResetOnSetCollectionNull)
 {
   auto track = create_midi_track ();
   track_collection->add_track (track);
-  track.get_object_base ()->regeneratePlaybackCaches (
+  track.get ()->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 10.0) });
   wait_for_complete_count (1);
   EXPECT_GT (aggregator->cacheCompleteCount (), 0);
@@ -323,18 +316,17 @@ TEST_F (
 {
   auto track = create_midi_track ();
   track_collection->add_track (track);
-  auto * track_obj = track.get_object_base ();
+  auto * track_obj = track.get ();
   auto * atl = track_obj->automationTracklist ();
   ASSERT_NE (atl, nullptr);
 
   // Add an automation track
-  auto param_id = param_registry.create_object<dsp::ProcessorParameter> (
-    port_registry, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+  auto param_id = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
     u8"Test Param");
   auto at = utils::make_qobject_unique<AutomationTrack> (
-    *tempo_map_wrapper, file_audio_source_registry, obj_registry,
-    std::move (param_id));
+    *tempo_map_wrapper, *registry_, std::move (param_id));
   auto * at_ptr = at.get ();
   atl->add_automation_track (std::move (at));
 

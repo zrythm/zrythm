@@ -8,7 +8,16 @@
 namespace zrythm::structure::scenes
 {
 
-// Scene implementation
+Scene::Scene (
+  utils::IObjectRegistry        &registry,
+  const tracks::TrackCollection &track_collection,
+  QObject *                      parent)
+    : QObject (parent),
+      clip_slot_list_ (
+        utils::make_qobject_unique<ClipSlotList> (registry, track_collection, this))
+{
+}
+
 void
 Scene::setName (const QString &name)
 {
@@ -31,10 +40,10 @@ Scene::setColor (const QColor &color)
 
 // SceneList implementation
 SceneList::SceneList (
-  arrangement::ArrangerObjectRegistry &object_registry,
-  const tracks::TrackCollection       &track_collection,
-  QObject *                            parent)
-    : QAbstractListModel (parent), object_registry_ (object_registry),
+  utils::IObjectRegistry        &registry,
+  const tracks::TrackCollection &track_collection,
+  QObject *                      parent)
+    : QAbstractListModel (parent), registry_ (registry),
       track_collection_ (track_collection)
 {
 }
@@ -43,7 +52,7 @@ void
 SceneList::insert_scene (utils::QObjectUniquePtr<Scene> scene, int index)
 {
   beginInsertRows ({}, index, index);
-  scenes_.emplace_back (std::move (scene));
+  scenes_.insert (scenes_.begin () + index, std::move (scene));
   endInsertRows ();
 }
 
@@ -137,7 +146,7 @@ from_json (const nlohmann::json &j, SceneList &list)
       for (const auto &scene_json : j)
         {
           auto scene = utils::make_qobject_unique<Scene> (
-            list.object_registry_, list.track_collection_, &list);
+            list.registry_, list.track_collection_, &list);
           from_json (scene_json, *scene);
           list.scenes_.push_back (std::move (scene));
         }

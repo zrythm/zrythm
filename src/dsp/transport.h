@@ -393,8 +393,8 @@ public:
    * @param prev True for previous, false for next.
    */
   void goto_prev_or_next_marker (
-    bool                                  prev,
-    RangeOf<units::precise_tick_t> auto &&extra_markers)
+    bool                                         prev,
+    utils::RangeOf<units::precise_tick_t> auto &&extra_markers)
   {
     /* gather all markers */
     std::vector<units::precise_tick_t> marker_ticks;

@@ -64,7 +64,7 @@ PlaybackCacheActivityAggregator::setCollection (TrackCollection * collection)
       for (int i = first; i <= last; ++i)
         {
           const auto &track_ref = collection_->tracks ().at (i);
-          auto *      track = track_ref.get_object_base ();
+          auto *      track = track_ref.get ();
           connectToTrack (track);
         }
     });
@@ -75,7 +75,7 @@ PlaybackCacheActivityAggregator::setCollection (TrackCollection * collection)
       for (int i = first; i <= last; ++i)
         {
           const auto &track_ref = collection_->tracks ().at (i);
-          auto *      track = track_ref.get_object_base ();
+          auto *      track = track_ref.get ();
           disconnectFromTrack (track);
         }
     });
@@ -88,7 +88,7 @@ PlaybackCacheActivityAggregator::setCollection (TrackCollection * collection)
   // Connect to existing tracks
   for (const auto &track_ref : collection_->tracks ())
     {
-      auto * track = track_ref.get_object_base ();
+      auto * track = track_ref.get ();
       connectToTrack (track);
     }
 }

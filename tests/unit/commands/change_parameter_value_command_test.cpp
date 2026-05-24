@@ -3,7 +3,10 @@
 
 #include "commands/change_parameter_value_command.h"
 #include "dsp/parameter.h"
-#include "utils/gtest_wrapper.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
+
+#include <gtest/gtest.h>
 
 namespace zrythm::commands
 {
@@ -13,24 +16,21 @@ class ChangeParameterValueCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create test parameter
-    param_ref_ = param_registry_.create_object<dsp::ProcessorParameter> (
-      port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    param_ref_ = utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
       utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
-    param_ = param_ref_.get_object_as<dsp::ProcessorParameter> ();
+    param_ = param_ref_.get ();
     ASSERT_NE (param_, nullptr);
 
-    // Set initial value
     param_->setBaseValue (0.5f);
   }
 
   void TearDown () override { }
 
-  dsp::PortRegistry                    port_registry_;
-  dsp::ProcessorParameterRegistry      param_registry_{ port_registry_ };
-  dsp::ProcessorParameterUuidReference param_ref_{ param_registry_ };
+  utils::ObjectRegistry                registry_;
+  dsp::ProcessorParameterUuidReference param_ref_{ registry_ };
   dsp::ProcessorParameter *            param_ = nullptr;
 };
 
@@ -237,13 +237,13 @@ TEST_F (ChangeParameterValueCommandTest, CommandText)
 TEST_F (ChangeParameterValueCommandTest, DifferentParameterTypes)
 {
   // Create parameter with different range
-  auto param_ref2 =
-    std::make_optional (param_registry_.create_object<dsp::ProcessorParameter> (
-      port_registry_, dsp::ProcessorParameter::UniqueId (u8"volume_param"),
+  auto param_ref2 = std::optional (
+    utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"volume_param"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
       utils::Utf8String::from_utf8_encoded_string ("Volume")));
-  auto * param2 = param_ref2.value ().get_object_as<dsp::ProcessorParameter> ();
+  auto * param2 = param_ref2.value ().get ();
   ASSERT_NE (param2, nullptr);
 
   // Set initial value

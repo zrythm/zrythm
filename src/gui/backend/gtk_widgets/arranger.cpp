@@ -306,7 +306,7 @@ snap_selections_during_resize (ArrangerWidget * self, Position * pos, bool dry_r
 
   return std::visit (
     [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
+      using ObjT = utils::base_type<decltype (obj)>;
 
       Region * owner_region = nullptr;
       if constexpr (std::derived_from<ObjT, RegionOwnedObject>)
@@ -2391,7 +2391,7 @@ on_drag_begin_handle_hit_object (
 
   return std::visit (
     [&] (auto &&o) {
-      using ObjT = base_type<decltype (o)>;
+      using ObjT = utils::base_type<decltype (o)>;
       if (!o || o->is_frozen ())
         {
           return false;
@@ -2731,7 +2731,7 @@ on_drag_begin_handle_hit_object (
       std::visit (
         [&] (auto &&orig_sel) {
           constexpr bool is_timeline =
-            std::is_same_v<base_type<decltype (orig_sel)>, TimelineSelections *>;
+            std::is_same_v<utils::base_type<decltype (orig_sel)>, TimelineSelections *>;
 
           /* set index in prev lane for selected objects if timeline */
           if constexpr (is_timeline)

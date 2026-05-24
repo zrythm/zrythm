@@ -8,6 +8,7 @@
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/tempo_object_manager.h"
 #include "structure/arrangement/time_signature_object.h"
+#include "utils/object_registry.h"
 
 #include <QSignalSpy>
 
@@ -26,29 +27,27 @@ protected:
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create tempo object manager
-    tempo_manager = std::make_unique<TempoObjectManager> (
-      obj_registry, file_audio_source_registry);
+    tempo_manager = std::make_unique<TempoObjectManager> (obj_registry);
   }
 
   // Helper to create a tempo object
   ArrangerObjectUuidReference create_tempo_object (double bpm = 120.0)
   {
-    return obj_registry.create_object<TempoObject> (*tempo_map);
+    return utils::create_object<TempoObject> (obj_registry, *tempo_map);
   }
 
   // Helper to create a time signature object
   ArrangerObjectUuidReference
   create_time_signature_object (int numerator = 4, int denominator = 4)
   {
-    return obj_registry.create_object<TimeSignatureObject> (*tempo_map);
+    return utils::create_object<TimeSignatureObject> (obj_registry, *tempo_map);
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  std::unique_ptr<dsp::TempoMapWrapper>          tempo_map_wrapper;
-  structure::arrangement::ArrangerObjectRegistry obj_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
-  dsp::graph_test::MockTransport                 transport;
-  std::unique_ptr<TempoObjectManager>            tempo_manager;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 obj_registry;
+  dsp::graph_test::MockTransport        transport;
+  std::unique_ptr<TempoObjectManager>   tempo_manager;
 };
 
 // Test initial state
@@ -286,8 +285,7 @@ TEST_F (TempoObjectManagerTest, Serialization)
   to_json (j, *tempo_manager);
 
   // Create new manager for deserialization
-  auto new_manager = std::make_unique<TempoObjectManager> (
-    obj_registry, file_audio_source_registry);
+  auto new_manager = std::make_unique<TempoObjectManager> (obj_registry);
   from_json (j, *new_manager);
 
   // Verify deserialization
@@ -331,8 +329,7 @@ TEST_F (TempoObjectManagerTest, Copying)
   time_sig_ptr->setDenominator (16);
 
   // Create target manager
-  auto target_manager = std::make_unique<TempoObjectManager> (
-    obj_registry, file_audio_source_registry);
+  auto target_manager = std::make_unique<TempoObjectManager> (obj_registry);
 
   // Copy
   init_from (

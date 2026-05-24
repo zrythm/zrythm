@@ -10,58 +10,53 @@ namespace zrythm::structure::tracks
 {
 
 ChannelMidiPassthroughProcessor::ChannelMidiPassthroughProcessor (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  QObject *                                     parent)
-    : QObject (parent), dsp::MidiPassthroughProcessor (dependencies)
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : QObject (parent), dsp::MidiPassthroughProcessor (registry)
 {
   set_name (u8"MIDI PreFader");
 }
 
 ChannelAudioPassthroughProcessor::ChannelAudioPassthroughProcessor (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  QObject *                                     parent)
-    : QObject (parent), dsp::StereoPassthroughProcessor (dependencies)
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : QObject (parent), dsp::StereoPassthroughProcessor (registry)
 {
   set_name (u8"Audio PreFader");
 }
 
 Channel::Channel (
-  plugins::PluginRegistry                      &plugin_registry,
-  dsp::ProcessorBase::ProcessorBaseDependencies processor_dependencies,
-  dsp::PortType                                 signal_type,
-  NameProvider                                  name_provider,
-  bool                                          hard_limit_fader_output,
-  dsp::Fader::ShouldBeMutedCallback             should_be_muted_cb,
-  QObject *                                     parent)
-    : QObject (parent), dependencies_ (processor_dependencies),
-      plugin_registry_ (plugin_registry), local_port_registry_ (this),
-      local_param_registry_ (local_port_registry_, this),
+  utils::IObjectRegistry           &registry,
+  dsp::PortType                     signal_type,
+  NameProvider                      name_provider,
+  bool                              hard_limit_fader_output,
+  dsp::Fader::ShouldBeMutedCallback should_be_muted_cb,
+  QObject *                         parent)
+    : QObject (parent), registry_ (registry),
+      local_registry_ (utils::make_qobject_unique<utils::ObjectRegistry> (this)),
       name_provider_ (std::move (name_provider)), signal_type_ (signal_type),
       hard_limit_fader_output_ (hard_limit_fader_output),
       midi_fx_ (
         utils::make_qobject_unique<plugins::PluginGroup> (
-          dependencies_,
-          plugin_registry,
+          registry,
           plugins::PluginGroup::DeviceGroupType::MIDI,
           plugins::PluginGroup::ProcessingTypeHint::Serial,
           this)),
       instruments_ (
         utils::make_qobject_unique<plugins::PluginGroup> (
-          dependencies_,
-          plugin_registry,
+          registry,
           plugins::PluginGroup::DeviceGroupType::Instrument,
           plugins::PluginGroup::ProcessingTypeHint::Serial,
           this)),
       inserts_ (
         utils::make_qobject_unique<plugins::PluginGroup> (
-          dependencies_,
-          plugin_registry,
+          registry,
           plugins::PluginGroup::DeviceGroupType::Audio,
           plugins::PluginGroup::ProcessingTypeHint::Serial,
           this)),
       fader_ (
         utils::make_qobject_unique<dsp::Fader> (
-          dependencies (),
+          registry,
           signal_type_,
           hard_limit_fader_output_,
           true,
@@ -73,38 +68,29 @@ Channel::Channel (
   if (signal_type_ == PortType::Audio)
     {
       audio_prefader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (local_processor_deps (), this);
+        ChannelAudioPassthroughProcessor> (*local_registry_, this);
       audio_prefader_->set_name (u8"Audio Pre-Fader");
       audio_postfader_ = utils::make_qobject_unique<
-        ChannelAudioPassthroughProcessor> (local_processor_deps (), this);
+        ChannelAudioPassthroughProcessor> (*local_registry_, this);
       audio_postfader_->set_name (u8"Audio Post-Fader");
     }
   else if (signal_type_ == PortType::Midi)
     {
       midi_prefader_ = utils::make_qobject_unique<
-        ChannelMidiPassthroughProcessor> (local_processor_deps (), this);
+        ChannelMidiPassthroughProcessor> (*local_registry_, this);
       midi_prefader_->set_name (u8"MIDI Pre-Fader");
       midi_postfader_ = utils::make_qobject_unique<
-        ChannelMidiPassthroughProcessor> (local_processor_deps (), this);
+        ChannelMidiPassthroughProcessor> (*local_registry_, this);
       midi_postfader_->set_name (u8"MIDI Post-Fader");
     }
 
   /* init sends */
   prefader_sends_.emplace_back (
     utils::make_qobject_unique<ChannelSend> (
-      dependencies (), signal_type_, 0, true, this));
+      registry, signal_type_, 0, true, this));
   postfader_sends_.emplace_back (
     utils::make_qobject_unique<ChannelSend> (
-      dependencies (), signal_type_, 0, false, this));
-}
-
-dsp::ProcessorBase::ProcessorBaseDependencies
-Channel::local_processor_deps ()
-{
-  return dsp::ProcessorBase::ProcessorBaseDependencies{
-    .port_registry_ = local_port_registry_,
-    .param_registry_ = local_param_registry_,
-  };
+      registry, signal_type_, 0, false, this));
 }
 
 void
@@ -155,15 +141,12 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   std::optional<plugins::PluginUuidReference> ret;
 
   const auto check_plugin_list = [id, &ret] (auto &container) {
-    std::vector<plugins::PluginPtrVariant> plugins;
+    std::vector<plugins::PluginUuidReference> plugins;
     container->get_plugins (plugins);
-    const auto plugin_id_getter = [] (const auto &p_var) {
-      return std::visit ([] (const auto &p) { return p->get_uuid (); }, p_var);
-    };
-    auto it = std::ranges::find (plugins, id, plugin_id_getter);
+    auto it = std::ranges::find (plugins, id, &plugins::PluginUuidReference::id);
     if (it != plugins.end ())
       {
-        ret = container->remove_plugin (plugin_id_getter (*it));
+        ret = container->remove_plugin (it->id ());
       }
   };
   check_plugin_list (midi_fx_);
@@ -171,17 +154,14 @@ Channel::remove_plugin (plugins::Plugin::Uuid id)
   check_plugin_list (inserts_);
   assert (ret.has_value ());
 
-  std::visit (
-    [&] (auto &&plugin) {
-      z_debug ("Removing {} from {}", plugin->get_name (), name_provider_ ());
-    },
-    ret.value ().get_object ());
+  z_debug (
+    "Removing {} from {}", ret.value ().get ()->get_name (), name_provider_ ());
 
   return ret.value ();
 }
 
 void
-Channel::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
+Channel::get_plugins (std::vector<plugins::PluginUuidReference> &plugins) const
 {
   midi_fx_->get_plugins (plugins);
   instruments_->get_plugins (plugins);
@@ -210,7 +190,7 @@ from_json (const nlohmann::json &j, Channel &c)
     utils::views::enumerate (j.at (Channel::kPreFaderSendsKey)))
     {
       auto send = utils::make_qobject_unique<ChannelSend> (
-        c.dependencies (), c.signal_type_, index, true);
+        c.registry (), c.signal_type_, index, true);
       from_json (send_json, *send);
       c.prefader_sends_.at (index) = std::move (send);
     }
@@ -219,7 +199,7 @@ from_json (const nlohmann::json &j, Channel &c)
     utils::views::enumerate (j.at (Channel::kPostFaderSendsKey)))
     {
       auto send = utils::make_qobject_unique<ChannelSend> (
-        c.dependencies (), c.signal_type_, index, false);
+        c.registry (), c.signal_type_, index, false);
       from_json (send_json, *send);
       c.postfader_sends_.at (index) = std::move (send);
     }

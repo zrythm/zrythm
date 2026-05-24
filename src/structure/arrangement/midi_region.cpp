@@ -7,16 +7,15 @@
 namespace zrythm::structure::arrangement
 {
 MidiRegion::MidiRegion (
-  const dsp::TempoMap          &tempo_map,
-  ArrangerObjectRegistry       &object_registry,
-  dsp::FileAudioSourceRegistry &file_audio_source_registry,
-  QObject *                     parent)
+  const dsp::TempoMap    &tempo_map,
+  utils::IObjectRegistry &object_registry,
+  QObject *               parent)
     : ArrangerObject (
         Type::MidiRegion,
         tempo_map,
         ArrangerObjectFeatures::Region,
         parent),
-      ArrangerObjectOwner (object_registry, file_audio_source_registry, *this)
+      ArrangerObjectOwner (object_registry, *this)
 {
   QObject::connect (
     midiNotes (), &ArrangerObjectListModel::contentChanged, this,

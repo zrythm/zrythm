@@ -23,10 +23,8 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
         {
           if (is_parent_arranger_object)
             {
-              auto * obj_base =
-                objects_.get<random_access_index> ().at (i).get_object_base ();
-              obj_base->setParentObject (
-                qobject_cast<ArrangerObject *> (parent ()));
+              auto * obj = objects_.get<random_access_index> ().at (i).get ();
+              obj->setParentObject (qobject_cast<ArrangerObject *> (parent ()));
             }
 
           connect_object_signals (i);
@@ -40,9 +38,8 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
         {
           if (is_parent_arranger_object)
             {
-              auto * obj_base =
-                objects_.get<random_access_index> ().at (i).get_object_base ();
-              obj_base->setParentObject (nullptr);
+              auto * obj = objects_.get<random_access_index> ().at (i).get ();
+              obj->setParentObject (nullptr);
             }
 
           disconnect_object_signals (i);
@@ -53,75 +50,55 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
 void
 ArrangerObjectListModel::connect_object_signals (int index)
 {
-  const auto * obj_base =
-    objects_.get<random_access_index> ().at (index).get_object_base ();
+  const auto * obj = objects_.get<random_access_index> ().at (index).get ();
 
   // Emit once for the fact that we've added this object
-  Q_EMIT handle_object_change (obj_base);
+  Q_EMIT handle_object_change (obj);
 
   // Store initial position
   {
-    const auto obj_tick_range = get_object_tick_range (obj_base);
-    previous_object_ranges_[obj_base->get_uuid ()] = std::make_pair (
+    const auto obj_tick_range = get_object_tick_range (obj);
+    previous_object_ranges_[obj->get_uuid ()] = std::make_pair (
       units::ticks (obj_tick_range.first), units::ticks (obj_tick_range.second));
   }
 
   // Emit on property changes
   QObject::connect (
-    obj_base, &ArrangerObject::propertiesChanged, this,
-    [this, obj_base] () { handle_object_change (obj_base); });
+    obj, &ArrangerObject::propertiesChanged, this,
+    [this, obj] () { handle_object_change (obj); });
 
   // For objects that contain other objects, also emit on children
   // content changes
-  const auto obj_var =
-    objects_.get<random_access_index> ().at (index).get_object ();
-  std::visit (
-    [&] (auto &&obj) {
-      using ObjectT = base_type<decltype (obj)>;
-      if constexpr (is_derived_from_template_v<ArrangerObjectOwner, ObjectT>)
-        {
-          // Connect to children's contentChanged
-          QObject::connect (
-            obj->get_model (), &ArrangerObjectListModel::contentChanged, this,
-            [this, obj_base] (utils::ExpandableTickRange) {
-              // Emit contentChanged on parent object (e.e., MidiRegion)
-              handle_object_change (obj_base);
-            });
-        }
-    },
-    obj_var);
+  if (auto * owner_model = obj->get_child_list_model ())
+    {
+      QObject::connect (
+        owner_model, &ArrangerObjectListModel::contentChanged, this,
+        [this, obj] (utils::ExpandableTickRange) {
+          handle_object_change (obj);
+        });
+    }
 }
 
 void
 ArrangerObjectListModel::disconnect_object_signals (int index)
 {
-  const auto * obj_base =
-    objects_.get<random_access_index> ().at (index).get_object_base ();
+  const auto * obj = objects_.get<random_access_index> ().at (index).get ();
 
   // Emit content changed for the object being removed
-  handle_object_change (obj_base);
+  handle_object_change (obj);
 
   // Remove from previous ranges cache
-  previous_object_ranges_.erase (obj_base->get_uuid ());
+  previous_object_ranges_.erase (obj->get_uuid ());
 
   // Disconnect from property changes
-  QObject::disconnect (
-    obj_base, &ArrangerObject::propertiesChanged, this, nullptr);
+  QObject::disconnect (obj, &ArrangerObject::propertiesChanged, this, nullptr);
 
   // Disconnect from children's contentChanged for ArrangerObjectOwner types
-  const auto obj_var =
-    objects_.get<random_access_index> ().at (index).get_object ();
-  std::visit (
-    [&] (auto &&obj) {
-      using ObjectT = base_type<decltype (obj)>;
-      if constexpr (is_derived_from_template_v<ArrangerObjectOwner, ObjectT>)
-        {
-          QObject::disconnect (
-            obj->get_model (), &ArrangerObjectListModel::contentChanged, this,
-            nullptr);
-        }
-    },
-    obj_var);
+  if (auto * owner_model = obj->get_child_list_model ())
+    {
+      QObject::disconnect (
+        owner_model, &ArrangerObjectListModel::contentChanged, this, nullptr);
+    }
 }
 
 QHash<int, QByteArray>
@@ -142,9 +119,9 @@ ArrangerObjectListModel::data (const QModelIndex &index, int role) const
 
   if (role == ArrangerObjectPtrRole)
     {
-      return QVariant::fromStdVariant (
+      return QVariant::fromValue (
         objects_.get<random_access_index> ()[static_cast<size_t> (index_int)]
-          .get_object ());
+          .get ());
     }
   if (role == ArrangerObjectUuidReferenceRole)
     {

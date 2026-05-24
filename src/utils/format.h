@@ -19,7 +19,7 @@ format_str (std::string_view format, Args &&... args)
 }
 
 // Generic formatter for smart pointers (std::shared_ptr and std::unique_ptr)
-template <SmartPtr Ptr>
+template <zrythm::utils::SmartPtr Ptr>
 struct fmt::formatter<Ptr> : fmt::formatter<std::string_view>
 {
   template <typename FormatContext>

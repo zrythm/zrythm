@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/internal_plugin_base.h"
+#include "utils/logger.h"
 
 namespace zrythm::plugins
 {
 
 InternalPluginBase::InternalPluginBase (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  QObject *                                     parent)
-    : Plugin (dependencies, parent)
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : Plugin (registry, parent)
 {
   // Connect to configuration changes
   connect (

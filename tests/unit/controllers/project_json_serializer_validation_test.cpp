@@ -65,7 +65,7 @@ TEST_P (MissingProjectDataFieldTest, ProjectDataFieldMissing_Throws)
 INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingProjectDataFieldTest,
-  testing::Values ("tempoMap", "transport", "tracklist", "registries"),
+  testing::Values ("tempoMap", "transport", "tracklist", "registry"),
   [] (const testing::TestParamInfo<std::string> &param_info) {
     return "Missing_" + param_info.param;
   });
@@ -79,7 +79,7 @@ protected:
 
 TEST_P (MissingRegistryTest, RegistryMissing_Throws)
 {
-  j_["projectData"]["registries"].erase (GetParam ());
+  j_["projectData"]["registry"].erase (GetParam ());
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j_); },
     utils::exceptions::ZrythmException);
@@ -89,12 +89,12 @@ INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingRegistryTest,
   testing::Values (
-    "portRegistry",
-    "paramRegistry",
-    "pluginRegistry",
-    "trackRegistry",
-    "arrangerObjectRegistry",
-    "fileAudioSourceRegistry"),
+    "ports",
+    "parameters",
+    "plugins",
+    "tracks",
+    "arrangerObjects",
+    "fileAudioSources"),
   [] (const testing::TestParamInfo<std::string> &param_info) {
     return "Missing_" + param_info.param;
   });
@@ -150,7 +150,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
   track["type"] = 2;
   track["name"] = "Bad Track";
 
-  j["projectData"]["registries"]["trackRegistry"].push_back (track);
+  j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j); },
@@ -167,7 +167,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
   track["name"] = "Bad Color Track";
   track["color"] = "red";
 
-  j["projectData"]["registries"]["trackRegistry"].push_back (track);
+  j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j); },
@@ -183,7 +183,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
   track["type"] = 999;
   track["name"] = "Invalid Type Track";
 
-  j["projectData"]["registries"]["trackRegistry"].push_back (track);
+  j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j); },
@@ -237,7 +237,7 @@ TEST (ProjectJsonSerializerValidationTest, ValidateJson_UnicodeInTrackName)
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
   track["type"] = 2;
   track["name"] = "钢琴轨道 🎹";
-  j["projectData"]["registries"]["trackRegistry"].push_back (track);
+  j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_NO_THROW ({ ProjectJsonSerializer::validate_json (j); });
 }

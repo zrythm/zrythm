@@ -141,7 +141,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
 
       /* add one to the size group */
       if constexpr (
-        std::is_same_v<base_type<decltype (clip_editor_region)>, MidiRegion>)
+        std::is_same_v<utils::base_type<decltype (clip_editor_region)>, MidiRegion>)
         {
           auto pr_track = dynamic_cast<PianoRollTrack *> (track);
           gtk_stack_set_visible_child (
@@ -159,7 +159,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           gtk_widget_set_visible (GTK_WIDGET (self->toggle_listen_notes), true);
         }
       else if constexpr (
-        std::is_same_v<base_type<decltype (clip_editor_region)>, AudioRegion>)
+        std::is_same_v<utils::base_type<decltype (clip_editor_region)>, AudioRegion>)
         {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_AUDIO_EDITOR_SPACE));
@@ -168,7 +168,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           audio_editor_space_widget_refresh (self->audio_editor_space);
         }
       else if constexpr (
-        std::is_same_v<base_type<decltype (clip_editor_region)>, ChordRegion>)
+        std::is_same_v<utils::base_type<decltype (clip_editor_region)>, ChordRegion>)
         {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_CHORD_EDITOR_SPACE));
@@ -177,7 +177,7 @@ clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
           chord_editor_space_widget_refresh (self->chord_editor_space);
         }
       else if constexpr (
-        std::is_same_v<base_type<decltype (clip_editor_region)>, AutomationRegion>)
+        std::is_same_v<utils::base_type<decltype (clip_editor_region)>, AutomationRegion>)
         {
           gtk_stack_set_visible_child (
             self->editor_stack, GTK_WIDGET (MW_AUTOMATION_EDITOR_SPACE));

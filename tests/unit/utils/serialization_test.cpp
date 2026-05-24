@@ -3,9 +3,10 @@
 
 #include <numbers>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/serialization.h"
 #include "utils/units.h"
+
+#include <gtest/gtest.h>
 
 using namespace zrythm;
 using namespace zrythm::utils::serialization;
@@ -18,8 +19,6 @@ public:
   std::string str_value = "test";
   bool        bool_value = true;
   float       float_value = 3.14f;
-
-  std::string get_document_type () const { return "SimpleObject"; }
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (
     SimpleObject,
@@ -37,8 +36,6 @@ public:
   std::array<float, 3>     float_arr = { 1.1f, 2.2f, 3.3f };
   std::vector<std::string> str_vec = { "one", "two", "three" };
 
-  std::string get_document_type () const { return "ContainerObject"; }
-
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (ContainerObject, int_vec, float_arr, str_vec)
 };
 
@@ -50,7 +47,7 @@ public:
   std::vector<SimpleObject> simple_vec = { SimpleObject (), SimpleObject () };
   std::unique_ptr<SimpleObject> simple_ptr = std::make_unique<SimpleObject> ();
 
-  std::string get_document_type () const { return "NestedObject"; }
+  static std::string get_document_type () { return "NestedObject"; }
 
   NLOHMANN_DEFINE_TYPE_INTRUSIVE (NestedObject, simple, simple_vec, simple_ptr)
 };
@@ -129,7 +126,7 @@ TEST (SerializationTest, VariantSerializationPrimitives)
 
   VariantT deserialized;
   // clang fails to compile the next line unless this assert is here
-  static_assert (!VariantOfPointers<VariantT>);
+  static_assert (!utils::VariantOfPointers<VariantT>);
   variant_from_json_with_builder (
     json, deserialized, SerializationTestVariantBuilder{});
 

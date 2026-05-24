@@ -169,10 +169,7 @@ Track::make_track_processor (
   auto tp = utils::make_qobject_unique<TrackProcessor> (
     base_dependencies_.tempo_map_.get_tempo_map (), in_signal_type_.value (),
     [this] () { return get_name (); }, [this] () { return enabled (); }, caps,
-    TrackProcessor::ProcessorBaseDependencies{
-      .port_registry_ = base_dependencies_.port_registry_,
-      .param_registry_ = base_dependencies_.param_registry_ },
-    fill_events_cb, transform_midi_inputs_func,
+    base_dependencies_.registry_, fill_events_cb, transform_midi_inputs_func,
     append_midi_inputs_to_outputs_func, internal_recording_cb, this);
 
   init_cache_scheduler ();
@@ -205,11 +202,7 @@ Track::make_automation_tracklist ()
   auto atl = utils::make_qobject_unique<AutomationTracklist> (
     AutomationTrackHolder::Dependencies{
       .tempo_map_ = base_dependencies_.tempo_map_,
-      .file_audio_source_registry_ =
-        base_dependencies_.file_audio_source_registry_,
-      .port_registry_ = base_dependencies_.port_registry_,
-      .param_registry_ = base_dependencies_.param_registry_,
-      .object_registry_ = base_dependencies_.obj_registry_ },
+      .registry_ = base_dependencies_.registry_ },
     this);
 
   // Listen to automation visibility and data changes
@@ -236,11 +229,8 @@ utils::QObjectUniquePtr<Channel>
 Track::make_channel ()
 {
   return utils::make_qobject_unique<Channel> (
-    get_plugin_registry (),
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = get_port_registry (),
-      .param_registry_ = get_param_registry () },
-    out_signal_type_.value (), [&] () { return get_name (); }, is_master (),
+    base_dependencies_.registry_, out_signal_type_.value (),
+    [&] () { return get_name (); }, is_master (),
     [this] (bool fader_solo_status) {
       // Effectively muted if other track(s) is soloed and this isn't
       return base_dependencies_.soloed_tracks_exist_getter_ ()
@@ -253,11 +243,7 @@ utils::QObjectUniquePtr<plugins::PluginGroup>
 Track::make_modulators ()
 {
   return utils::make_qobject_unique<plugins::PluginGroup> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = base_dependencies_.port_registry_,
-      .param_registry_ = base_dependencies_.param_registry_ },
-    base_dependencies_.plugin_registry_,
-    plugins::PluginGroup::DeviceGroupType::CV,
+    base_dependencies_.registry_, plugins::PluginGroup::DeviceGroupType::CV,
     plugins::PluginGroup::ProcessingTypeHint::Custom, this);
 }
 
@@ -265,8 +251,7 @@ utils::QObjectUniquePtr<TrackLaneList>
 Track::make_lanes ()
 {
   auto ret = utils::make_qobject_unique<TrackLaneList> (
-    base_dependencies_.obj_registry_,
-    base_dependencies_.file_audio_source_registry_, this);
+    base_dependencies_.registry_, this);
 
   QObject::connect (
     ret.get (), &TrackLaneList::totalHeightChanged, this,
@@ -474,17 +459,12 @@ Track::multiply_heights (double multiplier, bool visible_only, bool check_only)
 bool
 Track::contains_uninstantiated_plugin () const
 {
-  std::vector<plugins::PluginPtrVariant> plugins;
+  std::vector<plugins::PluginUuidReference> plugins;
   collect_plugins (plugins);
-  return std::ranges::any_of (
-    plugins | std::views::transform ([] (const auto &pl_var) {
-      return std::visit (
-        [] (auto &&pl) -> plugins::Plugin * { return pl; }, pl_var);
-    }),
-    [] (const auto &pl) {
-      return pl->instantiationStatus ()
-             != plugins::Plugin::InstantiationStatus::Successful;
-    });
+  return std::ranges::any_of (plugins, [] (const auto &pl_ref) {
+    return pl_ref.get ()->instantiationStatus ()
+           != plugins::Plugin::InstantiationStatus::Successful;
+  });
 }
 
 void
@@ -554,7 +534,7 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
 }
 
 void
-Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
+Track::collect_plugins (std::vector<plugins::PluginUuidReference> &plugins) const
 {
   if (channel_)
     {
@@ -563,17 +543,7 @@ Track::collect_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
 
   if (modulators_)
     {
-      const auto count = modulators_->rowCount ();
-      for (const auto i : std::views::iota (0, count))
-        {
-          auto element = modulators_->element_at_idx (i);
-          if (element.canConvert<plugins::Plugin *> ())
-            {
-              plugins.push_back (
-                plugins::plugin_base_to_ptr_variant (
-                  element.value<plugins::Plugin *> ()));
-            }
-        }
+      modulators_->get_plugins (plugins);
     }
 }
 

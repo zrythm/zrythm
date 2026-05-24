@@ -9,13 +9,13 @@
 namespace zrythm::dsp
 {
 Metronome::Metronome (
-  ProcessorBaseDependencies dependencies,
-  juce::AudioSampleBuffer   emphasis_sample,
-  juce::AudioSampleBuffer   normal_sample,
-  bool                      initially_enabled,
-  float                     initial_volume,
-  QObject *                 parent)
-    : QObject (parent), dsp::AudioSampleProcessor (dependencies),
+  utils::IObjectRegistry &registry,
+  juce::AudioSampleBuffer emphasis_sample,
+  juce::AudioSampleBuffer normal_sample,
+  bool                    initially_enabled,
+  float                   initial_volume,
+  QObject *               parent)
+    : QObject (parent), dsp::AudioSampleProcessor (registry),
       emphasis_sample_buffer_ (std::move (emphasis_sample)),
       normal_sample_buffer_ (std::move (normal_sample)),
       volume_ (initial_volume), enabled_ (initially_enabled)

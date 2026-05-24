@@ -6,6 +6,7 @@
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 #include "utils/enum_utils.h"
+#include "utils/registry_utils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -125,17 +126,18 @@ from_json (const nlohmann::json &j, ParameterRange &p)
 }
 
 ProcessorParameter::ProcessorParameter (
-  PortRegistry     &port_registry,
-  UniqueId          unique_id,
-  ParameterRange    range,
-  utils::Utf8String label,
-  QObject *         parent)
-    : QObject (parent), unique_id_ (std::move (unique_id)),
-      range_ (std::move (range)), label_ (std::move (label)),
+  utils::IObjectRegistry &registry,
+  UniqueId                unique_id,
+  ParameterRange          range,
+  utils::Utf8String       label,
+  QObject *               parent)
+    : utils::UuidIdentifiableObject<ProcessorParameter> (parent),
+      unique_id_ (std::move (unique_id)), range_ (std::move (range)),
+      label_ (std::move (label)),
       base_value_ (range_.convertTo0To1 (range_.deff_)),
       modulation_input_uuid_ (
-        { port_registry.create_object<
-          CVPort> (label_ + u8" Mod In", PortFlow::Input) })
+        utils::create_object<
+          dsp::CVPort> (registry, label_ + u8" Mod In", dsp::PortFlow::Input))
 {
 }
 

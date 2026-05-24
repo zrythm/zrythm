@@ -7,6 +7,8 @@
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/tracks/clip_playback_data_provider.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 #include "utils/types.h"
 
 #include <gtest/gtest.h>
@@ -26,11 +28,7 @@ protected:
     provider_ = std::make_unique<ClipPlaybackDataProvider> (*tempo_map_);
 
     // Create an object registry
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
-    // Create a file audio source registry
-    file_audio_source_registry_ =
-      std::make_unique<dsp::FileAudioSourceRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
   }
 
   void TearDown () override
@@ -38,8 +36,7 @@ protected:
     region_refs.clear (); // Clear references first
     provider_.reset ();
     tempo_map_.reset ();
-    obj_registry_.reset ();
-    file_audio_source_registry_.reset ();
+    registry_.reset ();
   }
 
   // Helper function to create a MIDI region with notes at specific sample
@@ -51,8 +48,8 @@ protected:
                                                          // position in samples
   {
     // Create a MIDI region
-    auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-      *tempo_map_, *obj_registry_, *file_audio_source_registry_);
+    auto region_ref = utils::create_object<arrangement::MidiRegion> (
+      *registry_, *tempo_map_, *registry_);
     auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
 
     // Set the region's position
@@ -63,7 +60,7 @@ protected:
     for (const auto &[pitch, velocity, sample_pos] : notes)
       {
         auto note_ref =
-          obj_registry_->create_object<arrangement::MidiNote> (*tempo_map_);
+          utils::create_object<arrangement::MidiNote> (*registry_, *tempo_map_);
         auto midi_note = note_ref.get_object_as<arrangement::MidiNote> ();
 
         // Set the note's properties
@@ -162,18 +159,16 @@ protected:
       }
 
     // Create a mock audio source
-    auto source_ref = file_audio_source_registry_->create_object<
-      dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"DummySource");
     auto audio_source_object_ref =
-      obj_registry_->create_object<arrangement::AudioSourceObject> (
-        *tempo_map_, *file_audio_source_registry_, source_ref);
+      utils::create_object<arrangement::AudioSourceObject> (
+        *registry_, *tempo_map_, *registry_, source_ref);
 
     // Create the audio region
-    auto region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-      *tempo_map_, *obj_registry_, *file_audio_source_registry_,
-      [] () { return true; });
+    auto region_ref = utils::create_object<arrangement::AudioRegion> (
+      *registry_, *tempo_map_, *registry_, [] () { return true; });
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -205,18 +200,16 @@ protected:
       }
 
     // Create a mock audio source
-    auto source_ref = file_audio_source_registry_->create_object<
-      dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"ShortSource");
     auto audio_source_object_ref =
-      obj_registry_->create_object<arrangement::AudioSourceObject> (
-        *tempo_map_, *file_audio_source_registry_, source_ref);
+      utils::create_object<arrangement::AudioSourceObject> (
+        *registry_, *tempo_map_, *registry_, source_ref);
 
     // Create the audio region
-    auto region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-      *tempo_map_, *obj_registry_, *file_audio_source_registry_,
-      [] () { return true; });
+    auto region_ref = utils::create_object<arrangement::AudioRegion> (
+      *registry_, *tempo_map_, *registry_, [] () { return true; });
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -257,18 +250,16 @@ protected:
       }
 
     // Create a mock audio source
-    auto source_ref = file_audio_source_registry_->create_object<
-      dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"SineSource");
     auto audio_source_object_ref =
-      obj_registry_->create_object<arrangement::AudioSourceObject> (
-        *tempo_map_, *file_audio_source_registry_, source_ref);
+      utils::create_object<arrangement::AudioSourceObject> (
+        *registry_, *tempo_map_, *registry_, source_ref);
 
     // Create the audio region
-    auto region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-      *tempo_map_, *obj_registry_, *file_audio_source_registry_,
-      [] () { return true; });
+    auto region_ref = utils::create_object<arrangement::AudioRegion> (
+      *registry_, *tempo_map_, *registry_, [] () { return true; });
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -286,10 +277,9 @@ protected:
     return region;
   }
 
-  std::unique_ptr<ClipPlaybackDataProvider>            provider_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
+  std::unique_ptr<ClipPlaybackDataProvider> provider_;
+  std::unique_ptr<dsp::TempoMap>            tempo_map_;
+  std::unique_ptr<utils::ObjectRegistry>    registry_;
   std::vector<arrangement::ArrangerObjectUuidReference>
     region_refs; // Keep references
 };

@@ -7,6 +7,8 @@
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::dsp
 {
 
@@ -57,29 +59,10 @@ private:
   static constexpr std::string_view kBipolarKey = "bipolar";
   static constexpr std::string_view kSourceDestMappingKey =
     "sourceChannelToDestinationChannelMapping";
-  friend void to_json (nlohmann::json &j, const PortConnection &port_connection)
-  {
-    j[kSourceIdKey] = port_connection.src_id_;
-    j[kDestIdKey] = port_connection.dest_id_;
-    j[kMultiplierKey] = port_connection.multiplier_;
-    j[kLockedKey] = port_connection.locked_;
-    j[kEnabledKey] = port_connection.enabled_;
-    j[kBipolarKey] = port_connection.bipolar_;
-    j[kSourceDestMappingKey] =
-      port_connection.source_ch_to_destination_ch_mapping_;
-  }
   friend void
-  from_json (const nlohmann::json &j, PortConnection &port_connection)
-  {
-    j.at (kSourceIdKey).get_to (port_connection.src_id_);
-    j.at (kDestIdKey).get_to (port_connection.dest_id_);
-    j.at (kMultiplierKey).get_to (port_connection.multiplier_);
-    j.at (kLockedKey).get_to (port_connection.locked_);
-    j.at (kEnabledKey).get_to (port_connection.enabled_);
-    j.at (kBipolarKey).get_to (port_connection.bipolar_);
-    j.at (kSourceDestMappingKey)
-      .get_to (port_connection.source_ch_to_destination_ch_mapping_);
-  }
+  to_json (nlohmann::json &j, const PortConnection &port_connection);
+  friend void
+  from_json (const nlohmann::json &j, PortConnection &port_connection);
 
   friend void init_from (
     PortConnection        &obj,

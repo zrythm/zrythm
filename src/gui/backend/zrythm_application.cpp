@@ -133,18 +133,15 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   // AudioBuffers when --help/--version calls std::exit()
   impl_
     ->control_room_ = utils::make_qobject_unique<engine::session::ControlRoom> (
-    [this] () -> const engine::session::ControlRoom::RealtimeTracks & {
-      static boost::unordered_flat_map<
-        structure::tracks::TrackUuid, structure::tracks::TrackPtrVariant>
-        dummy_tracks;
+    [this] () -> engine::session::ControlRoom::RealtimeTracks {
       if (!impl_->project_manager_)
         {
-          return dummy_tracks;
+          return {};
         }
       auto * project_session = impl_->project_manager_->activeSession ();
       if (project_session == nullptr)
         {
-          return dummy_tracks;
+          return {};
         }
       return project_session->project ()->tracks_rt_;
     },

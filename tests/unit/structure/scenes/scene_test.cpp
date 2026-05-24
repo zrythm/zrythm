@@ -3,6 +3,8 @@
 
 #include "structure/scenes/scene.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -18,45 +20,27 @@ class SceneTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<tracks::TrackRegistry> ();
-
-    // Create test dependencies
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
-
-    // Create object registries
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
-    // Create track collection
-    track_collection_ =
-      std::make_unique<tracks::TrackCollection> (*track_registry_);
-
-    // Create a scene
-    scene_ = std::make_unique<Scene> (*obj_registry_, *track_collection_);
+    track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
+    scene_ = std::make_unique<Scene> (*registry_, *track_collection_);
   }
 
   void TearDown () override
   {
     scene_.reset ();
     track_collection_.reset ();
-    obj_registry_.reset ();
     tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
-    track_registry_.reset ();
+    registry_.reset ();
   }
 
-  std::unique_ptr<Scene>                               scene_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<tracks::TrackCollection>             track_collection_;
-  std::unique_ptr<tracks::TrackRegistry>               track_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>                tempo_map_wrapper_;
-  dsp::PortRegistry                                    port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::graph_test::MockTransport  transport_;
+  std::unique_ptr<Scene>                   scene_;
+  std::unique_ptr<tracks::TrackCollection> track_collection_;
+  std::unique_ptr<utils::ObjectRegistry>   registry_;
+  std::unique_ptr<dsp::TempoMap>           tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>    tempo_map_wrapper_;
 };
 
 TEST_F (SceneTest, InitialState)
@@ -131,46 +115,27 @@ class SceneListTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<tracks::TrackRegistry> ();
-
-    // Create test dependencies
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
-
-    // Create object registries
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
-    // Create track collection
-    track_collection_ =
-      std::make_unique<tracks::TrackCollection> (*track_registry_);
-
-    // Create a scene list
-    scene_list_ =
-      std::make_unique<SceneList> (*obj_registry_, *track_collection_);
+    track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
+    scene_list_ = std::make_unique<SceneList> (*registry_, *track_collection_);
   }
 
   void TearDown () override
   {
     scene_list_.reset ();
     track_collection_.reset ();
-    obj_registry_.reset ();
     tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
-    track_registry_.reset ();
+    registry_.reset ();
   }
 
-  std::unique_ptr<SceneList>                           scene_list_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<tracks::TrackCollection>             track_collection_;
-  std::unique_ptr<tracks::TrackRegistry>               track_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>                tempo_map_wrapper_;
-  dsp::PortRegistry                                    port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::graph_test::MockTransport  transport_;
+  std::unique_ptr<SceneList>               scene_list_;
+  std::unique_ptr<tracks::TrackCollection> track_collection_;
+  std::unique_ptr<utils::ObjectRegistry>   registry_;
+  std::unique_ptr<dsp::TempoMap>           tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>    tempo_map_wrapper_;
 };
 
 TEST_F (SceneListTest, InitialState)
@@ -183,8 +148,8 @@ TEST_F (SceneListTest, InitialState)
 TEST_F (SceneListTest, InsertScene)
 {
   // Create a scene
-  auto scene = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene->setName ("Test Scene");
 
   // Insert the scene
@@ -207,11 +172,11 @@ TEST_F (SceneListTest, InsertScene)
 TEST_F (SceneListTest, RemoveScene)
 {
   // Create and insert scenes
-  auto scene1 = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene1 =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene1->setName ("Scene 1");
-  auto scene2 = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene2 =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene2->setName ("Scene 2");
 
   scene_list_->insert_scene (std::move (scene1), 0);
@@ -237,14 +202,14 @@ TEST_F (SceneListTest, RemoveScene)
 TEST_F (SceneListTest, MoveScene)
 {
   // Create and insert scenes
-  auto scene1 = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene1 =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene1->setName ("Scene 1");
-  auto scene2 = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene2 =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene2->setName ("Scene 2");
-  auto scene3 = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene3 =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene3->setName ("Scene 3");
 
   scene_list_->insert_scene (std::move (scene1), 0);
@@ -284,8 +249,8 @@ TEST_F (SceneListTest, RoleNames)
 TEST_F (SceneListTest, DataAccess)
 {
   // Create and insert a scene
-  auto scene = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene->setName ("Test Scene");
 
   scene_list_->insert_scene (std::move (scene), 0);
@@ -315,8 +280,8 @@ TEST_F (SceneListTest, OutOfBoundsOperations)
   EXPECT_EQ (scene_list_->rowCount (), 0);
 
   // Test moving with invalid indices
-  auto scene = utils::make_qobject_unique<Scene> (
-    *obj_registry_, *track_collection_, nullptr);
+  auto scene =
+    utils::make_qobject_unique<Scene> (*registry_, *track_collection_, nullptr);
   scene_list_->insert_scene (std::move (scene), 0);
 
   // These should not crash

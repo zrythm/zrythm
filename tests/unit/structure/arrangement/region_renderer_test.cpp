@@ -4,6 +4,8 @@
 #include <cmath>
 
 #include "structure/arrangement/region_renderer.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -18,8 +20,7 @@ protected:
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
     // Set up MIDI region
-    midi_region = std::make_unique<MidiRegion> (
-      *tempo_map, registry, file_audio_source_registry, nullptr);
+    midi_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
     midi_region->position ()->setTicks (100);
     midi_region->bounds ()->length ()->setTicks (200);
     midi_region->loopRange ()->loopStartPosition ()->setTicks (50);
@@ -30,8 +31,8 @@ protected:
     setup_audio_region ();
 
     // Set up Automation region
-    automation_region = std::make_unique<AutomationRegion> (
-      *tempo_map, registry, file_audio_source_registry, nullptr);
+    automation_region =
+      std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
     automation_region->position ()->setTicks (100);
     automation_region->bounds ()->length ()->setTicks (200);
   }
@@ -39,7 +40,7 @@ protected:
   void add_automation_point (float value, double position_ticks)
   {
     // Create AutomationPoint using registry
-    auto   ap_ref = registry.create_object<AutomationPoint> (*tempo_map);
+    auto ap_ref = utils::create_object<AutomationPoint> (registry, *tempo_map);
     auto * ap = ap_ref.get_object_as<AutomationPoint> ();
     ap->setValue (value);
     ap->position ()->setTicks (position_ticks);
@@ -55,7 +56,7 @@ protected:
     double length_ticks)
   {
     // Create MidiNote using registry
-    auto   note_ref = registry.create_object<MidiNote> (*tempo_map);
+    auto   note_ref = utils::create_object<MidiNote> (registry, *tempo_map);
     auto * note = note_ref.get_object_as<MidiNote> ();
     note->setPitch (pitch);
     note->setVelocity (velocity);
@@ -73,8 +74,7 @@ protected:
 
     // Create audio region
     audio_region = std::make_unique<AudioRegion> (
-      *tempo_map, registry, file_audio_source_registry, [] () { return true; },
-      nullptr);
+      *tempo_map, registry, [] () { return true; }, nullptr);
 
     audio_region->set_source (audio_source_object_ref);
     audio_region->position ()->setSamples (1000);
@@ -107,13 +107,12 @@ protected:
         sample_buffer->setSample (1, i, static_cast<float> (std::cos (phase)));
       }
 
-    auto source_ref = file_audio_source_registry.create_object<
-      dsp::FileAudioSource> (
-      *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120.f, u8"SineTestSource");
 
-    return registry.create_object<AudioSourceObject> (
-      *tempo_map, file_audio_source_registry, source_ref);
+    return utils::create_object<AudioSourceObject> (
+      registry, *tempo_map, registry, source_ref);
   }
 
   // Helper function to get expected sine wave value at a specific sample
@@ -134,8 +133,7 @@ protected:
   }
 
   std::unique_ptr<dsp::TempoMap>    tempo_map;
-  ArrangerObjectRegistry            registry;
-  dsp::FileAudioSourceRegistry      file_audio_source_registry;
+  utils::ObjectRegistry             registry;
   std::unique_ptr<MidiRegion>       midi_region;
   std::unique_ptr<AudioRegion>      audio_region;
   std::unique_ptr<AutomationRegion> automation_region;
@@ -692,8 +690,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeIn)
   auto audio_source_object_ref = create_sine_wave_audio_source (5000);
 
   auto small_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, file_audio_source_registry, [] () { return true; },
-    nullptr);
+    *tempo_map, registry, [] () { return true; }, nullptr);
   small_region->set_source (audio_source_object_ref);
 
   // Set small region length (less than built-in fade frames)
@@ -724,8 +721,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeOut)
   auto audio_source_object_ref = create_sine_wave_audio_source (5000);
 
   auto fade_out_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, file_audio_source_registry, [] () { return true; },
-    nullptr);
+    *tempo_map, registry, [] () { return true; }, nullptr);
   fade_out_region->set_source (audio_source_object_ref);
 
   // Set region length to be just a bit more than built-in fade frames
@@ -876,8 +872,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionBeyondSourceLength)
 
   // Create a region that extends beyond the source length
   auto large_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, file_audio_source_registry, [] () { return true; },
-    nullptr);
+    *tempo_map, registry, [] () { return true; }, nullptr);
   large_region->set_source (audio_source_object_ref);
   large_region->position ()->setSamples (0);
   large_region->bounds ()->length ()->setSamples (

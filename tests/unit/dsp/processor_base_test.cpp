@@ -5,6 +5,8 @@
 #include "dsp/graph_builder.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QObject>
 
@@ -17,24 +19,22 @@ namespace zrythm::dsp
 class TestProcessor : public ProcessorBase
 {
 public:
-  TestProcessor (
-    PortRegistry               &port_registry,
-    ProcessorParameterRegistry &param_registry)
-      : ProcessorBase (
-          ProcessorBase::ProcessorBaseDependencies{
-            .port_registry_ = port_registry,
-            .param_registry_ = param_registry },
-          u8"TestProcessor"),
-        input_port_ (port_registry.create_object<dsp::AudioPort> (
-          u8"Input",
-          PortFlow::Input,
-          AudioPort::BusLayout::Mono,
-          1)),
-        output_port_ (port_registry.create_object<dsp::AudioPort> (
-          u8"Output",
-          PortFlow::Output,
-          AudioPort::BusLayout::Mono,
-          1))
+  TestProcessor (utils::IObjectRegistry &registry)
+      : ProcessorBase (registry, u8"TestProcessor"),
+        input_port_ (
+          utils::create_object<dsp::AudioPort> (
+            registry,
+            u8"Input",
+            PortFlow::Input,
+            AudioPort::BusLayout::Mono,
+            1)),
+        output_port_ (
+          utils::create_object<dsp::AudioPort> (
+            registry,
+            u8"Output",
+            PortFlow::Output,
+            AudioPort::BusLayout::Mono,
+            1))
   {
     add_input_port (input_port_);
     add_output_port (output_port_);
@@ -56,12 +56,9 @@ class ProcessorBaseTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<PortRegistry> ();
-    param_registry_ =
-      std::make_unique<ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    processor_ =
-      std::make_unique<TestProcessor> (*port_registry_, *param_registry_);
+    processor_ = std::make_unique<TestProcessor> (*registry_);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();
@@ -107,8 +104,7 @@ protected:
       }
   }
 
-  std::unique_ptr<PortRegistry>               port_registry_;
-  std::unique_ptr<ProcessorParameterRegistry> param_registry_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
   static constexpr auto          sample_rate_{ units::sample_rate (48000) };
   static constexpr auto          max_block_length_{ units::samples (1024) };
   std::unique_ptr<TestProcessor> processor_;
@@ -245,8 +241,8 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
 TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
 {
   processor_->add_parameter (
-    param_registry_->create_object<dsp::ProcessorParameter> (
-      *port_registry_, dsp::ProcessorParameter::UniqueId (u8"unique-id"),
+    utils::create_object<dsp::ProcessorParameter> (
+      *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"unique-id"),
       dsp::ParameterRange::make_toggle (true), u8"my-toggle"));
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
@@ -254,7 +250,7 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
   nlohmann::json j = *processor_;
 
   // Create new processor from JSON
-  TestProcessor deserialized (*port_registry_, *param_registry_);
+  TestProcessor deserialized (*registry_);
   from_json (j, deserialized);
 
   // Reinitialize after deserialization
@@ -290,8 +286,8 @@ TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
 
 TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
 {
-  auto param_ref = param_registry_->create_object<dsp::ProcessorParameter> (
-    *port_registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f },
     u8"TestParam");
   processor_->add_parameter (param_ref);
@@ -320,8 +316,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
 
 TEST_F (ProcessorBaseTest, ChangeTrackerSkipsUnchangedParams)
 {
-  auto param_ref = param_registry_->create_object<dsp::ProcessorParameter> (
-    *port_registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f },
     u8"TestParam");
   processor_->add_parameter (param_ref);
@@ -350,8 +346,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerSkipsUnchangedParams)
 
 TEST_F (ProcessorBaseTest, ChangeTrackerDetectsParamEdit)
 {
-  auto param_ref = param_registry_->create_object<dsp::ProcessorParameter> (
-    *port_registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f },
     u8"TestParam");
   processor_->add_parameter (param_ref);
@@ -390,12 +386,12 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsParamEdit)
 
 TEST_F (ProcessorBaseTest, ChangeTrackerRecordsMultipleParams)
 {
-  auto param1_ref = param_registry_->create_object<dsp::ProcessorParameter> (
-    *port_registry_, dsp::ProcessorParameter::UniqueId (u8"param-a"),
+  auto param1_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"param-a"),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.0f },
     u8"ParamA");
-  auto param2_ref = param_registry_->create_object<dsp::ProcessorParameter> (
-    *port_registry_, dsp::ProcessorParameter::UniqueId (u8"param-b"),
+  auto param2_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"param-b"),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.0f },
     u8"ParamB");
   processor_->add_parameter (param1_ref);

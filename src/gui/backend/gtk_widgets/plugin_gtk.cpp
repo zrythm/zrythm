@@ -70,7 +70,7 @@ plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin)
   std::visit (
     [&] (auto &&p) {
 #if HAVE_CARLA
-      using T = base_type<decltype (p)>;
+      using T = utils::base_type<decltype (p)>;
       const PluginSetting *                     setting = p->setting_.get ();
       const zrythm::plugins::PluginDescriptor * descr = setting->descr_.get ();
       bool open_with_carla = setting->open_with_carla_;

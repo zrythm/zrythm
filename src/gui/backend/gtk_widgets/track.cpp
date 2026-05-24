@@ -910,7 +910,7 @@ show_edit_name_popover (TrackWidget * self, TrackLane * lane)
             GTK_WIDGET (self), self->track_name_popover, l,
             bind_member_function (*l, &TrackLane::get_name),
             bind_member_function (
-              *l, &base_type<decltype (l)>::rename_with_action));
+              *l, &utils::base_type<decltype (l)>::rename_with_action));
         },
         convert_to_variant<TrackLanePtrVariant> (lane));
     }

@@ -55,7 +55,7 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
           CLIP_EDITOR->get_region_and_track ()->second;
         std::visit (
           [&] (auto &&track) {
-            using TrackT = base_type<decltype (track)>;
+            using TrackT = utils::base_type<decltype (track)>;
             if constexpr (structure::tracks::PianoRollTrack<TrackT>)
               {
                 auto &target_port =

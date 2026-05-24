@@ -832,8 +832,8 @@ CarlaNativePlugin::get_descriptor_from_cached (
 }
 #endif // HAVE_CARLA
 
-CarlaNativePlugin::CarlaNativePlugin (ProcessorBaseDependencies dependencies)
-    : Plugin (dependencies, *this)
+CarlaNativePlugin::CarlaNativePlugin (utils::IObjectRegistry &registry)
+    : Plugin (registry, *this)
 {
 }
 

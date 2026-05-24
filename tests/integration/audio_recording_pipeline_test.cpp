@@ -149,21 +149,19 @@ protected:
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames)
   {
-    auto &file_registry = project_->get_file_audio_source_registry ();
-    auto &obj_registry = project_->get_arranger_object_registry ();
+    auto &registry = project_->get_registry ();
     auto &tempo_map = project_->tempo_map ();
 
-    auto clip_ref = file_registry.create_object<dsp::FileAudioSource> (
-      initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
+    auto clip_ref = utils::create_object<dsp::FileAudioSource> (
+      registry, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
       project_->engine ()->sample_rate (), 120.f, u8"RecordingClip");
 
     auto source_obj_ref =
-      obj_registry.create_object<structure::arrangement::AudioSourceObject> (
-        tempo_map, file_registry, clip_ref);
+      utils::create_object<structure::arrangement::AudioSourceObject> (
+        registry, tempo_map, registry, clip_ref);
 
-    auto region_ref =
-      obj_registry.create_object<structure::arrangement::AudioRegion> (
-        tempo_map, obj_registry, file_registry, [] () { return true; });
+    auto region_ref = utils::create_object<structure::arrangement::AudioRegion> (
+      registry, tempo_map, registry, [] () { return true; });
 
     auto * region =
       region_ref.get_object_as<structure::arrangement::AudioRegion> ();

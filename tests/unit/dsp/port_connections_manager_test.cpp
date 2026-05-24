@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_connections_manager.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 namespace zrythm::dsp
 {

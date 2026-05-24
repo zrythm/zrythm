@@ -10,6 +10,8 @@
 #include "plugins/plugin_group.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/channel_send.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QObject>
 
@@ -24,10 +26,7 @@ class ChannelTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
-    plugin_registry_ = std::make_unique<plugins::PluginRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     name_provider_ = [] { return u8"Test Channel"; };
     should_be_muted_cb_ = [] (bool solo_status) { return false; };
@@ -52,19 +51,15 @@ protected:
   std::unique_ptr<Channel> createAudioChannel ()
   {
     return std::make_unique<Channel> (
-      *plugin_registry_,
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Audio, name_provider_, false, should_be_muted_cb_);
+      *registry_, dsp::PortType::Audio, name_provider_, false,
+      should_be_muted_cb_);
   }
 
   std::unique_ptr<Channel> createMidiChannel ()
   {
     return std::make_unique<Channel> (
-      *plugin_registry_,
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Midi, name_provider_, false, should_be_muted_cb_);
+      *registry_, dsp::PortType::Midi, name_provider_, false,
+      should_be_muted_cb_);
   }
 
   plugins::PluginUuidReference createMockPlugin ()
@@ -78,21 +73,17 @@ protected:
     plugins::PluginConfiguration config;
     config.descr_ = std::move (descriptor);
 
-    auto ref = plugin_registry_->create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      nullptr);
+    auto ref = utils::create_object<plugins::InternalPluginBase> (
+      *registry_, *registry_, nullptr);
     auto * pl = ref.get_object_as<plugins::InternalPluginBase> ();
     pl->set_configuration (config);
 
     return ref;
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<plugins::PluginRegistry>         plugin_registry_;
-  Channel::NameProvider                            name_provider_;
-  dsp::Fader::ShouldBeMutedCallback                should_be_muted_cb_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  Channel::NameProvider                  name_provider_;
+  dsp::Fader::ShouldBeMutedCallback      should_be_muted_cb_;
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t  max_block_length_{ units::samples (1024) };
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
@@ -208,10 +199,7 @@ TEST_F (ChannelTest, HardLimitFaderOutput)
 {
   // Test channel with hard limiting enabled
   auto hard_limit_channel = std::make_unique<Channel> (
-    *plugin_registry_,
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, name_provider_, true, should_be_muted_cb_);
+    *registry_, dsp::PortType::Audio, name_provider_, true, should_be_muted_cb_);
 
   EXPECT_NE (hard_limit_channel->fader (), nullptr);
   EXPECT_TRUE (hard_limit_channel->fader ()->hard_limiting_enabled ());
@@ -226,10 +214,8 @@ TEST_F (ChannelTest, NameProviderFunctionality)
   };
 
   auto channel = std::make_unique<Channel> (
-    *plugin_registry_,
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, custom_name_provider, false, should_be_muted_cb_);
+    *registry_, dsp::PortType::Audio, custom_name_provider, false,
+    should_be_muted_cb_);
 
   EXPECT_TRUE (name_provider_called);
   EXPECT_EQ (channel->fader ()->get_node_name (), u8"Custom Channel Name Fader");
@@ -244,10 +230,8 @@ TEST_F (ChannelTest, ShouldBeMutedCallback)
   };
 
   auto channel = std::make_unique<Channel> (
-    *plugin_registry_,
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, name_provider_, false, custom_should_be_muted);
+    *registry_, dsp::PortType::Audio, name_provider_, false,
+    custom_should_be_muted);
 
   EXPECT_FALSE (callback_called); // Not called during construction
   channel->fader ()->prepare_for_processing (
@@ -277,7 +261,7 @@ TEST_F (ChannelTest, InstrumentManagement)
   // Test instrument Q_PROPERTY
   EXPECT_EQ (
     midi_channel_->instruments ()->element_at_idx (0).value<plugins::Plugin *> (),
-    std::get<plugins::InternalPluginBase *> (mock_plugin_ref.get_object ()));
+    qobject_cast<plugins::InternalPluginBase *> (mock_plugin_ref.get ()));
 
   // Test removing instrument
   midi_channel_->instruments ()->remove_plugin (mock_plugin_ref.id ());

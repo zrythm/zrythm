@@ -59,7 +59,8 @@ using ArrangerObjectVariant = std::variant<
   AudioSourceObject,
   TempoObject,
   TimeSignatureObject>;
-using ArrangerObjectPtrVariant = to_pointer_variant<ArrangerObjectVariant>;
+using ArrangerObjectPtrVariant =
+  utils::to_pointer_variant<ArrangerObjectVariant>;
 
 using ArrangerObjectUuid = utils::UuidIdentifiableObject<ArrangerObject>::Uuid;
 

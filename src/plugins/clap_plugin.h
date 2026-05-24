@@ -37,9 +37,9 @@ public:
    * @param parent Parent QObject
    */
   ClapPlugin (
-    dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-    PluginHostWindowFactory                       host_window_factory,
-    QObject *                                     parent = nullptr);
+    utils::IObjectRegistry &registry,
+    PluginHostWindowFactory host_window_factory,
+    QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (ClapPlugin)
   ~ClapPlugin () override;
 

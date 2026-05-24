@@ -3,7 +3,10 @@
 
 #include "commands/add_region_to_clip_slot_command.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_factory.h"
 #include "structure/scenes/clip_slot.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -16,13 +19,22 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    musical_mode_getter = [&] () { return global_musical_mode_enabled; };
+
+    factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
+      structure::arrangement::ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = *tempo_map,
+        .registry_ = object_registry,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
 
     // Create a test AudioRegion
-    auto region_ref = object_registry.create_object<
-      structure::arrangement::AudioRegion> (
-      *tempo_map, object_registry, file_audio_source_registry,
-      musical_mode_getter);
+    auto region_builder =
+      factory->get_builder<structure::arrangement::AudioRegion> ();
+    auto region_ref = region_builder.build_in_registry ();
     test_region_ref = region_ref;
 
     // Create a clip slot
@@ -30,16 +42,13 @@ protected:
       std::make_unique<structure::scenes::ClipSlot> (object_registry, nullptr);
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  structure::arrangement::ArrangerObjectRegistry object_registry;
-  dsp::FileAudioSourceRegistry                   file_audio_source_registry;
+  std::unique_ptr<dsp::TempoMap> tempo_map;
+  utils::ObjectRegistry          object_registry;
+  std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
   structure::arrangement::ArrangerObjectUuidReference test_region_ref{
     object_registry
   };
   std::unique_ptr<structure::scenes::ClipSlot> clip_slot;
-  bool global_musical_mode_enabled{ true };
-  structure::arrangement::AudioRegion::GlobalMusicalModeGetter
-    musical_mode_getter;
 };
 
 // Test initial state after construction
@@ -60,7 +69,7 @@ TEST_F (AddRegionToClipSlotCommandTest, RedoSetsRegion)
 
   // After redo, the clip slot should have the region
   EXPECT_NE (clip_slot->region (), nullptr);
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
 }
 
 // Test undo operation clears region from clip slot
@@ -71,7 +80,7 @@ TEST_F (AddRegionToClipSlotCommandTest, UndoClearsRegion)
   // First set the region
   command.redo ();
   EXPECT_NE (clip_slot->region (), nullptr);
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
 
   // Then undo should clear it
   command.undo ();
@@ -86,7 +95,7 @@ TEST_F (AddRegionToClipSlotCommandTest, MultipleUndoRedoCycles)
   // First cycle
   command.redo ();
   EXPECT_NE (clip_slot->region (), nullptr);
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
 
   command.undo ();
   EXPECT_EQ (clip_slot->region (), nullptr);
@@ -94,7 +103,7 @@ TEST_F (AddRegionToClipSlotCommandTest, MultipleUndoRedoCycles)
   // Second cycle
   command.redo ();
   EXPECT_NE (clip_slot->region (), nullptr);
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
 
   command.undo ();
   EXPECT_EQ (clip_slot->region (), nullptr);
@@ -113,16 +122,16 @@ TEST_F (AddRegionToClipSlotCommandTest, CommandText)
 TEST_F (AddRegionToClipSlotCommandTest, DifferentRegionTypes)
 {
   // Test with MidiRegion
-  auto midi_region_ref =
-    object_registry.create_object<structure::arrangement::MidiRegion> (
-      *tempo_map, object_registry, file_audio_source_registry);
+  auto midi_builder =
+    factory->get_builder<structure::arrangement::MidiRegion> ();
+  auto midi_region_ref = midi_builder.build_in_registry ();
   structure::scenes::ClipSlot midi_clip_slot (object_registry, nullptr);
 
   AddRegionToClipSlotCommand midi_command (midi_clip_slot, midi_region_ref);
 
   midi_command.redo ();
   EXPECT_NE (midi_clip_slot.region (), nullptr);
-  EXPECT_EQ (midi_clip_slot.region (), midi_region_ref.get_object_base ());
+  EXPECT_EQ (midi_clip_slot.region (), midi_region_ref.get ());
 
   midi_command.undo ();
   EXPECT_EQ (midi_clip_slot.region (), nullptr);
@@ -132,20 +141,19 @@ TEST_F (AddRegionToClipSlotCommandTest, DifferentRegionTypes)
 TEST_F (AddRegionToClipSlotCommandTest, ReplaceExistingRegion)
 {
   // Set initial region
-  auto initial_region_ref = object_registry.create_object<
-    structure::arrangement::AudioRegion> (
-    *tempo_map, object_registry, file_audio_source_registry,
-    musical_mode_getter);
-  clip_slot->setRegion (initial_region_ref.get_object_base ());
-  EXPECT_EQ (clip_slot->region (), initial_region_ref.get_object_base ());
+  auto initial_builder =
+    factory->get_builder<structure::arrangement::AudioRegion> ();
+  auto initial_region_ref = initial_builder.build_in_registry ();
+  clip_slot->setRegion (initial_region_ref.get ());
+  EXPECT_EQ (clip_slot->region (), initial_region_ref.get ());
 
   // Create command with new region
   AddRegionToClipSlotCommand command (*clip_slot, test_region_ref);
 
   // Redo should replace the existing region
   command.redo ();
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
-  EXPECT_NE (clip_slot->region (), initial_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
+  EXPECT_NE (clip_slot->region (), initial_region_ref.get ());
 
   // Undo should clear the new region (not restore the old one)
   command.undo ();
@@ -156,22 +164,21 @@ TEST_F (AddRegionToClipSlotCommandTest, ReplaceExistingRegion)
 TEST_F (AddRegionToClipSlotCommandTest, ClipSlotWithExistingRegion)
 {
   // First set a region
-  clip_slot->setRegion (test_region_ref.get_object_base ());
-  EXPECT_EQ (clip_slot->region (), test_region_ref.get_object_base ());
+  clip_slot->setRegion (test_region_ref.get ());
+  EXPECT_EQ (clip_slot->region (), test_region_ref.get ());
 
   // Create another region
-  auto new_region_ref = object_registry.create_object<
-    structure::arrangement::AudioRegion> (
-    *tempo_map, object_registry, file_audio_source_registry,
-    musical_mode_getter);
+  auto new_builder =
+    factory->get_builder<structure::arrangement::AudioRegion> ();
+  auto new_region_ref = new_builder.build_in_registry ();
 
   // Create command to add new region
   AddRegionToClipSlotCommand command (*clip_slot, new_region_ref);
 
   // Redo should replace the existing region
   command.redo ();
-  EXPECT_EQ (clip_slot->region (), new_region_ref.get_object_base ());
-  EXPECT_NE (clip_slot->region (), test_region_ref.get_object_base ());
+  EXPECT_EQ (clip_slot->region (), new_region_ref.get ());
+  EXPECT_NE (clip_slot->region (), test_region_ref.get ());
 
   // Undo should clear the new region
   command.undo ();

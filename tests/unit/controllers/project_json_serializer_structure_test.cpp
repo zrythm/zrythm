@@ -64,7 +64,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_RequiredFields)
   EXPECT_TRUE (pd.contains ("tempoMap"));
   EXPECT_TRUE (pd.contains ("transport"));
   EXPECT_TRUE (pd.contains ("tracklist"));
-  EXPECT_TRUE (pd.contains ("registries"));
+  EXPECT_TRUE (pd.contains ("registry"));
 }
 
 // ============================================================================
@@ -231,21 +231,21 @@ TEST_F (ProjectSerializationTest, SerializeProject_RegistriesExist)
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &registries = j["projectData"]["registries"];
+  auto &registries = j["projectData"]["registry"];
 
-  EXPECT_TRUE (registries.contains ("portRegistry"));
-  EXPECT_TRUE (registries.contains ("paramRegistry"));
-  EXPECT_TRUE (registries.contains ("pluginRegistry"));
-  EXPECT_TRUE (registries.contains ("trackRegistry"));
-  EXPECT_TRUE (registries.contains ("arrangerObjectRegistry"));
-  EXPECT_TRUE (registries.contains ("fileAudioSourceRegistry"));
+  EXPECT_TRUE (registries.contains ("ports"));
+  EXPECT_TRUE (registries.contains ("parameters"));
+  EXPECT_TRUE (registries.contains ("plugins"));
+  EXPECT_TRUE (registries.contains ("tracks"));
+  EXPECT_TRUE (registries.contains ("arrangerObjects"));
+  EXPECT_TRUE (registries.contains ("fileAudioSources"));
 
-  EXPECT_TRUE (registries["portRegistry"].is_array ());
-  EXPECT_TRUE (registries["paramRegistry"].is_array ());
-  EXPECT_TRUE (registries["pluginRegistry"].is_array ());
-  EXPECT_TRUE (registries["trackRegistry"].is_array ());
-  EXPECT_TRUE (registries["arrangerObjectRegistry"].is_array ());
-  EXPECT_TRUE (registries["fileAudioSourceRegistry"].is_array ());
+  EXPECT_TRUE (registries["ports"].is_array ());
+  EXPECT_TRUE (registries["parameters"].is_array ());
+  EXPECT_TRUE (registries["plugins"].is_array ());
+  EXPECT_TRUE (registries["tracks"].is_array ());
+  EXPECT_TRUE (registries["arrangerObjects"].is_array ());
+  EXPECT_TRUE (registries["fileAudioSources"].is_array ());
 }
 
 TEST_F (ProjectSerializationTest, SerializeProject_PortRegistryStructure)
@@ -256,7 +256,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortRegistryStructure)
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &ports = j["projectData"]["registries"]["portRegistry"];
+  auto &ports = j["projectData"]["registry"]["ports"];
 
   for (const auto &port : ports)
     {
@@ -277,7 +277,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_ParamRegistryStructure)
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &params = j["projectData"]["registries"]["paramRegistry"];
+  auto &params = j["projectData"]["registry"]["parameters"];
 
   for (const auto &param : params)
     {
@@ -300,7 +300,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TrackRegistryStructure)
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &tracks = j["projectData"]["registries"]["trackRegistry"];
+  auto &tracks = j["projectData"]["registry"]["tracks"];
 
   for (const auto &track : tracks)
     {
@@ -328,7 +328,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_PluginRegistryStructure)
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &plugins = j["projectData"]["registries"]["pluginRegistry"];
+  auto &plugins = j["projectData"]["registry"]["plugins"];
 
   for (const auto &plugin : plugins)
     {
@@ -359,7 +359,7 @@ TEST_F (
 
   nlohmann::json j = ProjectJsonSerializer::serialize (
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
-  auto &sources = j["projectData"]["registries"]["fileAudioSourceRegistry"];
+  auto &sources = j["projectData"]["registry"]["fileAudioSources"];
 
   for (const auto &source : sources)
     {
@@ -478,7 +478,7 @@ TEST_F (ProjectSerializationTest, SerializeProject_TrackRegistryMatchesTracklist
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   std::set<std::string> registry_ids;
-  for (const auto &track : j["projectData"]["registries"]["trackRegistry"])
+  for (const auto &track : j["projectData"]["registry"]["tracks"])
     {
       registry_ids.insert (track["id"].get<std::string> ());
     }
@@ -506,12 +506,12 @@ TEST_F (ProjectSerializationTest, SerializeProject_PortReferencesAreValid)
     *project, *ui_state, *undo_stack, TEST_APP_VERSION, "Test");
 
   std::set<std::string> port_ids;
-  for (const auto &port : j["projectData"]["registries"]["portRegistry"])
+  for (const auto &port : j["projectData"]["registry"]["ports"])
     {
       port_ids.insert (port["id"].get<std::string> ());
     }
 
-  for (const auto &track : j["projectData"]["registries"]["trackRegistry"])
+  for (const auto &track : j["projectData"]["registry"]["tracks"])
     {
       if (track.contains ("processor"))
         {
@@ -607,7 +607,7 @@ TEST_F (ProjectSerializationTest, Deserialize_InvalidRegistryDataRejected)
 
   nlohmann::json bad_port;
   bad_port["id"] = "660e8400-e29b-41d4-a716-446655440001";
-  j["projectData"]["registries"]["portRegistry"].push_back (bad_port);
+  j["projectData"]["registry"]["ports"].push_back (bad_port);
 
   EXPECT_THROW (
     { ProjectJsonSerializer::validate_json (j); },

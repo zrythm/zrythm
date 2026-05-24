@@ -14,14 +14,8 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         PortType::Midi,
         TrackFeatures::Automation | TrackFeatures::Recording,
         dependencies.to_base_dependencies ()),
-      arrangement::ArrangerObjectOwner<ChordRegion> (
-        dependencies.obj_registry_,
-        dependencies.file_audio_source_registry_,
-        *this),
-      arrangement::ArrangerObjectOwner<ScaleObject> (
-        dependencies.obj_registry_,
-        dependencies.file_audio_source_registry_,
-        *this)
+      arrangement::ArrangerObjectOwner<ChordRegion> (dependencies.registry_, *this),
+      arrangement::ArrangerObjectOwner<ScaleObject> (dependencies.registry_, *this)
 {
   color_ = Color (QColor ("#1C8FFB"));
   icon_name_ = u8"gnome-icon-library-library-music-symbolic";

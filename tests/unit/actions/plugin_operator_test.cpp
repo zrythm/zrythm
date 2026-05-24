@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/plugin_operator.h"
-#include "dsp/parameter.h"
-#include "dsp/processor_base.h"
+#include "plugins/internal_plugin_base.h"
 #include "plugins/plugin_group.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/track.h"
 #include "undo/undo_stack.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/structure/tracks/mock_track.h"
@@ -23,22 +24,14 @@ protected:
   {
     undo_stack_ = create_mock_undo_stack ();
     plugin_operator_ =
-      std::make_unique<PluginOperator> (*undo_stack_, plugin_registry_);
+      std::make_unique<PluginOperator> (*undo_stack_, registry_);
 
     // Create source and target plugin groups
-    auto make_deps = [&] {
-      return dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_
-      };
-    };
-
     source_group_ = std::make_unique<plugins::PluginGroup> (
-      make_deps (), plugin_registry_,
-      plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
     target_group_ = std::make_unique<plugins::PluginGroup> (
-      make_deps (), plugin_registry_,
-      plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
   }
 
@@ -52,10 +45,8 @@ protected:
 
   plugins::Plugin * create_and_append_plugin (plugins::PluginGroup &group)
   {
-    auto ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    auto ref = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
     group.append_plugin (ref);
     return ref.get_object_as<plugins::InternalPluginBase> ();
   }
@@ -66,9 +57,7 @@ protected:
     return group.element_at_idx (idx).value<plugins::Plugin *> ()->get_uuid ();
   }
 
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  plugins::PluginRegistry         plugin_registry_;
+  utils::ObjectRegistry registry_;
 
   std::unique_ptr<undo::UndoStack> undo_stack_;
   std::unique_ptr<PluginOperator>  plugin_operator_;
@@ -80,15 +69,11 @@ protected:
   structure::tracks::MockTrackFactory track_factory_;
   dsp::TempoMap                       tempo_map_{ units::sample_rate (44100) };
   dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry        file_audio_source_registry_;
-  structure::arrangement::ArrangerObjectRegistry         object_registry_;
-  structure::tracks::AutomationTrackHolder::Dependencies atl_deps_{
-    .tempo_map_ = tempo_map_wrapper_,
-    .file_audio_source_registry_ = file_audio_source_registry_,
-    .port_registry_ = port_registry_,
-    .param_registry_ = param_registry_,
-    .object_registry_ = object_registry_
-  };
+
+  structure::tracks::AutomationTrackHolder::Dependencies make_atl_deps ()
+  {
+    return { .tempo_map_ = tempo_map_wrapper_, .registry_ = registry_ };
+  }
 };
 
 // --- Basic move ---
@@ -407,8 +392,8 @@ TEST_F (PluginOperatorTest, MovePluginWithAutomationBetweenTracks)
   // Create plugin with a parameter
   auto * pl = create_and_append_plugin (*source_group_);
 
-  auto param_ref = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
     u8"Test Param");
   pl->add_parameter (param_ref);
@@ -421,8 +406,7 @@ TEST_F (PluginOperatorTest, MovePluginWithAutomationBetweenTracks)
   // Add automation track for the parameter on the source track
   source_atl->add_automation_track (
     utils::make_qobject_unique<AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_,
-      param_ref));
+      tempo_map_wrapper_, registry_, param_ref));
   ASSERT_EQ (source_atl->rowCount (), source_atl_count_before + 1);
   ASSERT_EQ (target_atl->rowCount (), target_atl_count_before);
 

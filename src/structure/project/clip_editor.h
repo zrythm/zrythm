@@ -9,6 +9,7 @@
 #include "structure/arrangement/piano_roll.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_fwd.h"
+#include "utils/iobject_registry.h"
 
 class ArrangerSelections;
 
@@ -38,19 +39,12 @@ class ClipEditor : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
-  using ArrangerObjectRegistry = structure::arrangement::ArrangerObjectRegistry;
-  using TrackResolver = structure::tracks::TrackResolver;
-  using TrackPtrVariant = structure::tracks::TrackPtrVariant;
   using TrackUuid = structure::tracks::TrackUuid;
   using ArrangerObject = structure::arrangement::ArrangerObject;
-  using ArrangerObjectPtrVariant =
-    structure::arrangement::ArrangerObjectPtrVariant;
+  using Track = structure::tracks::Track;
 
 public:
-  ClipEditor (
-    ArrangerObjectRegistry &reg,
-    TrackResolver           track_resolver,
-    QObject *               parent = nullptr);
+  ClipEditor (utils::IObjectRegistry &reg, QObject * parent = nullptr);
 
   // ============================================================================
   // QML Interface
@@ -94,19 +88,11 @@ public:
   /**
    * Sets the track and refreshes the piano roll widgets.
    */
-  void set_region (ArrangerObject::Uuid region_id, TrackUuid track_id)
-  {
-    if (region_id_.has_value () && region_id_.value ().first == region_id)
-      return;
-
-    region_id_ = { region_id, track_id };
-    Q_EMIT regionChanged (
-      QVariant::fromStdVariant (get_region_and_track ().value ().first));
-  };
+  void set_region (ArrangerObject::Uuid region_id, TrackUuid track_id);
 
   bool has_region () const { return region_id_.has_value (); }
 
-  std::optional<std::pair<ArrangerObjectPtrVariant, TrackPtrVariant>>
+  std::optional<std::pair<ArrangerObject *, Track *>>
   get_region_and_track () const;
 
   friend void init_from (
@@ -124,8 +110,7 @@ private:
   friend void           from_json (const nlohmann::json &j, ClipEditor &editor);
 
 private:
-  ArrangerObjectRegistry &object_registry_;
-  TrackResolver           track_resolver_;
+  utils::IObjectRegistry &object_registry_;
 
   /** Region currently attached to the clip editor. */
   std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> region_id_;

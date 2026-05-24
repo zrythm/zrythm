@@ -3,11 +3,12 @@
 
 #pragma once
 
+#include <span>
+
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "structure/tracks/track_fwd.h"
-
-#include <boost/unordered/unordered_flat_map_fwd.hpp>
+#include "utils/object_registry.h"
 
 namespace zrythm::engine::session
 {
@@ -28,19 +29,17 @@ class ControlRoom : public QObject
   Q_PROPERTY (
     zrythm::dsp::ProcessorParameter * muteVolume READ muteVolume CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::ProcessorParameter * listenVolume READ muteVolume CONSTANT)
+    zrythm::dsp::ProcessorParameter * listenVolume READ listenVolume CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::ProcessorParameter * dimVolume READ muteVolume CONSTANT)
+    zrythm::dsp::ProcessorParameter * dimVolume READ dimVolume CONSTANT)
   Q_PROPERTY (zrythm::dsp::Fader * monitorFader READ monitorFader CONSTANT)
   Q_PROPERTY (zrythm::dsp::Metronome * metronome READ metronome CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
-  using RealtimeTracks = boost::unordered_flat_map<
-    structure::tracks::TrackUuid,
-    structure::tracks::TrackPtrVariant>;
-  using RealtimeTracksProvider = std::function<const RealtimeTracks &()>;
+  using RealtimeTracks = std::span<structure::tracks::Track * const>;
+  using RealtimeTracksProvider = std::function<RealtimeTracks ()>;
 
   ControlRoom (
     RealtimeTracksProvider rt_tracks_provider,
@@ -74,10 +73,9 @@ public:
 
 private:
   /**
-   * @brief Self-contained registries (just to satisfy port/fader requirements).
+   * @brief Self-contained registry (just to satisfy port/fader requirements).
    */
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
+  utils::ObjectRegistry registry_;
 
   /**
    * The volume to set muted channels to when

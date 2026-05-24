@@ -13,6 +13,7 @@
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
 #include "utils/qt.h"
+#include "utils/registry_utils.h"
 #include "utils/views.h"
 
 #include <boost/container/static_vector.hpp>
@@ -174,7 +175,7 @@ TrackProcessor::TrackProcessor (
   TrackNameProvider                      track_name_provider,
   EnabledProvider                        enabled_provider,
   Capabilities                           capabilities,
-  ProcessorBaseDependencies              dependencies,
+  utils::IObjectRegistry                &object_registry,
   std::optional<FillEventsCallback>      fill_events_cb,
   std::optional<TransformMidiInputsFunc> transform_midi_inputs_func,
   std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func,
@@ -182,7 +183,7 @@ TrackProcessor::TrackProcessor (
   QObject *           parent)
     : QObject (parent),
       dsp::ProcessorBase (
-        dependencies,
+        object_registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("{} Processor", track_name_provider ()))),
       is_midi_ (signal_type == dsp::PortType::Midi),
@@ -215,14 +216,16 @@ TrackProcessor::TrackProcessor (
       set_midi_providers_active (ActiveMidiEventProviders::Timeline, true);
 
       {
-        add_input_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-          u8"TP MIDI in", dsp::PortFlow::Input));
+        add_input_port (
+          utils::create_object<dsp::MidiPort> (
+            registry (), u8"TP MIDI in", dsp::PortFlow::Input));
         auto * midi_in = &get_midi_in_port ();
         midi_in->set_full_designation_provider (this);
         midi_in->set_symbol (u8"track_processor_midi_in");
 
-        add_output_port (dependencies.port_registry_.create_object<dsp::MidiPort> (
-          u8"TP MIDI out", dsp::PortFlow::Output));
+        add_output_port (
+          utils::create_object<dsp::MidiPort> (
+            registry (), u8"TP MIDI out", dsp::PortFlow::Output));
         auto * midi_out = &get_midi_out_port ();
         midi_out->set_full_designation_provider (this);
         midi_out->set_symbol (u8"track_processor_midi_out");
@@ -232,8 +235,8 @@ TrackProcessor::TrackProcessor (
       if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
         {
           add_input_port (
-            dependencies.port_registry_.create_object<dsp::MidiPort> (
-              u8"TP Piano Roll", dsp::PortFlow::Input));
+            utils::create_object<dsp::MidiPort> (
+              registry (), u8"TP Piano Roll", dsp::PortFlow::Input));
           auto &piano_roll = get_piano_roll_port ();
           piano_roll.set_full_designation_provider (this);
           piano_roll.set_symbol (u8"track_processor_piano_roll");
@@ -248,52 +251,53 @@ TrackProcessor::TrackProcessor (
 
               for (const auto j : std::views::iota (0, 128))
                 {
-                  add_parameter (dependencies.param_registry_.create_object<
-                                 dsp::ProcessorParameter> (
-                    dependencies.port_registry_,
-                    dsp::ProcessorParameter::UniqueId (
+                  add_parameter (
+                    utils::create_object<dsp::ProcessorParameter> (
+                      registry (), registry (),
+                      dsp::ProcessorParameter::UniqueId (
+                        utils::Utf8String::from_utf8_encoded_string (
+                          fmt::format (midi_cc_id_format_str, channel, j + 1))),
+                      dsp::ParameterRange (
+                        dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
                       utils::Utf8String::from_utf8_encoded_string (
-                        fmt::format (midi_cc_id_format_str, channel, j + 1))),
-                    dsp::ParameterRange (
-                      dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                    utils::Utf8String::from_utf8_encoded_string (
-                      fmt::format (
-                        "Ch{} {}", channel,
-                        utils::midi::midi_get_controller_name (j)))));
+                        fmt::format (
+                          "Ch{} {}", channel,
+                          utils::midi::midi_get_controller_name (j)))));
                 }
 
-              add_parameter (dependencies.param_registry_.create_object<
-                             dsp::ProcessorParameter> (
-                dependencies.port_registry_,
-                dsp::ProcessorParameter::UniqueId (
+              add_parameter (
+                utils::create_object<dsp::ProcessorParameter> (
+                  registry (), registry (),
+                  dsp::ProcessorParameter::UniqueId (
+                    utils::Utf8String::from_utf8_encoded_string (
+                      fmt::format (pitch_bend_id_format_str, i + 1))),
+                  dsp::ParameterRange (
+                    dsp::ParameterRange::Type::Integer, -8192.f, 8191.f, 0.f,
+                    0.f),
                   utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format (pitch_bend_id_format_str, i + 1))),
-                dsp::ParameterRange (
-                  dsp::ParameterRange::Type::Integer, -8192.f, 8191.f, 0.f, 0.f),
-                utils::Utf8String::from_utf8_encoded_string (
-                  fmt::format ("Ch{} Pitch bend", i + 1))));
+                    fmt::format ("Ch{} Pitch bend", i + 1))));
 
-              add_parameter (dependencies.param_registry_.create_object<
-                             dsp::ProcessorParameter> (
-                dependencies.port_registry_,
-                dsp::ProcessorParameter::UniqueId (
+              add_parameter (
+                utils::create_object<dsp::ProcessorParameter> (
+                  registry (), registry (),
+                  dsp::ProcessorParameter::UniqueId (
+                    utils::Utf8String::from_utf8_encoded_string (
+                      fmt::format (poly_key_pressure_id_format_str, i + 1))),
+                  dsp::ParameterRange (
+                    dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
                   utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format (poly_key_pressure_id_format_str, i + 1))),
-                dsp::ParameterRange (
-                  dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                utils::Utf8String::from_utf8_encoded_string (
-                  fmt::format ("Ch{} Poly key pressure", i + 1))));
+                    fmt::format ("Ch{} Poly key pressure", i + 1))));
 
-              add_parameter (dependencies.param_registry_.create_object<
-                             dsp::ProcessorParameter> (
-                dependencies.port_registry_,
-                dsp::ProcessorParameter::UniqueId (
+              add_parameter (
+                utils::create_object<dsp::ProcessorParameter> (
+                  registry (), registry (),
+                  dsp::ProcessorParameter::UniqueId (
+                    utils::Utf8String::from_utf8_encoded_string (
+                      fmt::format (channel_pressure_id_format_str, i + 1))),
+                  dsp::ParameterRange (
+                    dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
                   utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format (channel_pressure_id_format_str, i + 1))),
-                dsp::ParameterRange (
-                  dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                utils::Utf8String::from_utf8_encoded_string (
-                  fmt::format ("Ch{} Channel pressure", i + 1))));
+                    fmt::format ("Ch{} Channel pressure", i + 1))));
             }
         } // endif has MIDI CC
     }
@@ -302,11 +306,11 @@ TrackProcessor::TrackProcessor (
       impl_->timeline_audio_data_provider_ = utils::make_qobject_unique<
         arrangement::AudioTimelineDataProvider> (this);
       const auto init_stereo_out_ports = [&] (bool in) {
-        auto port_ref = dependencies.port_registry_.create_object<dsp::AudioPort> (
-          in ? u8"TP Stereo in" : u8"TP Stereo out",
+        auto port_ref = utils::create_object<dsp::AudioPort> (
+          registry (), in ? u8"TP Stereo in" : u8"TP Stereo out",
           in ? dsp::PortFlow::Input : dsp::PortFlow::Output,
           dsp::AudioPort::BusLayout::Stereo, 2);
-        auto * port = std::get<dsp::AudioPort *> (port_ref.get_object ());
+        auto * port = port_ref.get_object_as<dsp::AudioPort> ();
         port->set_full_designation_provider (this);
         port->set_symbol (
           utils::Utf8String (u8"track_processor_stereo_")
@@ -331,16 +335,16 @@ TrackProcessor::TrackProcessor (
   if (ENUM_BITSET_TEST (capabilities_, Capabilities::AudioTrack))
     {
       add_parameter (
-        dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+        utils::create_object<dsp::ProcessorParameter> (
+          registry (), registry (),
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (mono_param_id)),
           dsp::ParameterRange::make_toggle (false), u8"TP Mono Toggle"));
       impl_->mono_id_ = get_parameters ().back ().id ();
 
       add_parameter (
-        dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+        utils::create_object<dsp::ProcessorParameter> (
+          registry (), registry (),
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (input_gain_param_id)),
           dsp::ParameterRange (
@@ -349,8 +353,8 @@ TrackProcessor::TrackProcessor (
       impl_->input_gain_id_ = get_parameters ().back ().id ();
 
       add_parameter (
-        dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+        utils::create_object<dsp::ProcessorParameter> (
+          registry (), registry (),
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (output_gain_param_id)),
           dsp::ParameterRange (
@@ -358,29 +362,26 @@ TrackProcessor::TrackProcessor (
           u8"TP Output Gain"));
       impl_->output_gain_id_ = get_parameters ().back ().id ();
 
-      add_parameter (dependencies.param_registry_.create_object<
-                     dsp::ProcessorParameter> (
-        dependencies.port_registry_,
-        dsp::ProcessorParameter::UniqueId (
-          utils::Utf8String::from_utf8_encoded_string (monitor_audio_param_id)),
-        dsp::ParameterRange::make_enumeration ({ u8"Off", u8"On", u8"Auto" }, 2),
-        u8"Monitor mode"));
+      add_parameter (
+        utils::create_object<dsp::ProcessorParameter> (
+          registry (), registry (),
+          dsp::ProcessorParameter::UniqueId (
+            utils::Utf8String::from_utf8_encoded_string (monitor_audio_param_id)),
+          dsp::ParameterRange::make_enumeration ({ u8"Off", u8"On", u8"Auto" }, 2),
+          u8"Monitor mode"));
       impl_->monitor_audio_id_ = get_parameters ().back ().id ();
     }
 
   if (ENUM_BITSET_TEST (capabilities_, Capabilities::Recording))
     {
       add_parameter (
-        dependencies.param_registry_.create_object<dsp::ProcessorParameter> (
-          dependencies.port_registry_,
+        utils::create_object<dsp::ProcessorParameter> (
+          registry (), registry (),
           dsp::ProcessorParameter::UniqueId (
             utils::Utf8String::from_utf8_encoded_string (recording_param_id)),
           dsp::ParameterRange::make_toggle (false), u8"Track record"));
       impl_->recording_id_ = get_parameters ().back ().id ();
-      get_parameters ()
-        .back ()
-        .get_object_as<dsp::ProcessorParameter> ()
-        ->set_automatable (false);
+      get_parameters ().back ().get ()->set_automatable (false);
     }
 
   // generate MIDI CC caches and set up mappings
@@ -492,48 +493,46 @@ TrackProcessor::set_custom_midi_event_provider (
 dsp::ProcessorParameter &
 TrackProcessor::get_mono_param () const
 {
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (*impl_->mono_id_));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *impl_->mono_id_);
 }
 
 dsp::ProcessorParameter &
 TrackProcessor::get_input_gain_param () const
 {
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (*impl_->input_gain_id_));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *impl_->input_gain_id_);
 }
 
 dsp::ProcessorParameter &
 TrackProcessor::get_output_gain_param () const
 {
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (
-      *impl_->output_gain_id_));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *impl_->output_gain_id_);
 }
 
 dsp::ProcessorParameter &
 TrackProcessor::get_monitor_audio_param () const
 {
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (
-      *impl_->monitor_audio_id_));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *impl_->monitor_audio_id_);
 }
 
 dsp::ProcessorParameter &
 TrackProcessor::get_recording_param () const
 {
   assert (ENUM_BITSET_TEST (capabilities_, Capabilities::Recording));
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (*impl_->recording_id_));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (), *impl_->recording_id_);
 }
 
 dsp::ProcessorParameter &
 TrackProcessor::get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no)
 {
   assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
-  return *std::get<dsp::ProcessorParameter *> (
-    dependencies ().param_registry_.find_by_id_or_throw (
-      impl_->midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no)));
+  return utils::get_typed<dsp::ProcessorParameter> (
+    registry (),
+    impl_->midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no));
 }
 
 arrangement::AudioTimelineDataProvider &
@@ -694,7 +693,7 @@ TrackProcessor::add_events_from_midi_cc_control_ports (
   // returns if an event was added
   const auto add_event_for_cc_if_in_range =
     [&events, local_offset] [[nodiscard]] (
-      const RangeOf<dsp::ProcessorParameter::Uuid> auto &range,
+      const utils::RangeOf<dsp::ProcessorParameter::Uuid> auto &range,
       const dsp::ProcessorParameter &cc, const AddEventCallback &add_event_cb)
     -> bool {
     auto it = std::ranges::find (range, cc.get_uuid ());
@@ -790,7 +789,7 @@ TrackProcessor::set_param_id_caches ()
 
   for (const auto &param_ref : get_parameters ())
     {
-      const auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+      const auto * param = param_ref.get ();
 
       const auto &id_str = type_safe::get (param->get_unique_id ()).view ();
 
@@ -863,15 +862,15 @@ TrackProcessor::set_midi_mappings ()
     return;
 
   impl_->cc_mappings_ = std::make_unique<engine::session::MidiMappings> (
-    dependencies_.param_registry_);
+    registry ());
 
   for (const auto i : std::views::iota (0, 16))
     {
       for (const auto j : std::views::iota (0, 128))
         {
           auto   cc_port_id = impl_->midi_cc_caches_->midi_cc_ids_[(i * 128) + j];
-          auto * cc_port = std::get<dsp::ProcessorParameter *> (
-            dependencies_.param_registry_.find_by_id_or_throw (cc_port_id));
+          auto * cc_port = utils::get_typed<dsp::ProcessorParameter> (
+            registry (), cc_port_id);
 
           /* set caches */
           // cc_port->midi_channel_ = i + 1;
@@ -889,7 +888,7 @@ TrackProcessor::set_midi_mappings ()
 
           /* bind */
           impl_->cc_mappings_->bind_track (
-            buf, { cc_port->get_uuid (), dependencies_.param_registry_ }, false);
+            buf, { cc_port->get_uuid (), registry () }, false);
         } /* endforeach 0..127 */
     } /* endforeach 0..15 */
 }

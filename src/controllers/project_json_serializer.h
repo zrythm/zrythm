@@ -38,13 +38,14 @@ using namespace std::string_view_literals;
 class ProjectJsonSerializer
 {
 public:
-  static constexpr utils::Version SCHEMA_VERSION{ 2, 1, {} };
-  static constexpr auto           DOCUMENT_TYPE = "ZrythmProject"sv;
-  static constexpr auto           kProjectData = "projectData"sv;
-  static constexpr auto           kUiState = "uiState"sv;
-  static constexpr auto           kUndoHistory = "undoHistory"sv;
-  static constexpr auto           kDatetimeKey = "datetime"sv;
-  static constexpr auto           kTitle = "title"sv;
+  static constexpr utils::Version
+                        SCHEMA_VERSION{ .major = 2, .minor = 1, .patch = {} };
+  static constexpr auto DOCUMENT_TYPE = "ZrythmProject"sv;
+  static constexpr auto kProjectData = "projectData"sv;
+  static constexpr auto kUiState = "uiState"sv;
+  static constexpr auto kUndoHistory = "undoHistory"sv;
+  static constexpr auto kDatetimeKey = "datetime"sv;
+  static constexpr auto kTitle = "title"sv;
 
   /**
    * @brief Returns a json representation of the project.

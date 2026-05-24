@@ -10,11 +10,10 @@ namespace zrythm::structure::scenes
 {
 
 ClipPlaybackService::ClipPlaybackService (
-  arrangement::ArrangerObjectRegistry &object_registry,
-  const tracks::TrackCollection       &track_collection,
-  QObject *                            parent)
-    : QObject (parent), object_registry_ (object_registry),
-      track_collection_ (track_collection)
+  utils::IObjectRegistry        &registry,
+  const tracks::TrackCollection &track_collection,
+  QObject *                      parent)
+    : QObject (parent), registry_ (registry), track_collection_ (track_collection)
 {
 }
 
@@ -79,11 +78,10 @@ ClipPlaybackService::launchScene (
   // Launch each clip that has a region
   for (const auto &track : track_collection_.tracks ())
     {
-      auto * clipSlot =
-        clipSlotList->clipSlotForTrack (track.get_object_base ());
+      auto * clipSlot = clipSlotList->clipSlotForTrack (track.get ());
       if ((clipSlot != nullptr) && (clipSlot->region () != nullptr))
         {
-          launchClip (track.get_object_base (), clipSlot, quantize);
+          launchClip (track.get (), clipSlot, quantize);
         }
     }
 
@@ -112,11 +110,10 @@ ClipPlaybackService::stopScene (
   // Stop each playing clip in the scene
   for (const auto &track : track_collection_.tracks ())
     {
-      auto * clipSlot =
-        clipSlotList->clipSlotForTrack (track.get_object_base ());
+      auto * clipSlot = clipSlotList->clipSlotForTrack (track.get ());
       if ((clipSlot != nullptr) && isClipPlaying (clipSlot))
         {
-          stopClip (track.get_object_base (), clipSlot, quantize);
+          stopClip (track.get (), clipSlot, quantize);
         }
     }
 
@@ -130,8 +127,7 @@ ClipPlaybackService::stopAllClips (
   // Stop all currently playing clips
   for (const auto &[trackUuid, clipSlot] : playing_clips_)
     {
-      auto * track =
-        track_collection_.track_ref_at_id (trackUuid).get_object_base ();
+      auto * track = track_collection_.track_ref_at_id (trackUuid).get ();
       if (track != nullptr)
         {
           stopClip (track, clipSlot, quantize);
@@ -161,8 +157,7 @@ ClipPlaybackService::getClipPlaybackPosition (ClipSlot * clipSlot) const
       if (playingClipSlot == clipSlot)
         {
           // Get the track
-          auto * track =
-            track_collection_.track_ref_at_id (trackUuid).get_object_base ();
+          auto * track = track_collection_.track_ref_at_id (trackUuid).get ();
           if (track == nullptr)
             return -1.0;
 

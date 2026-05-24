@@ -24,9 +24,10 @@ class ArrangerObjectSelectionOperator : public QObject
 public:
   using SelectedObjectsVector =
     std::vector<structure::arrangement::ArrangerObjectUuidReference>;
-  using ArrangerObjectOwnerPtrVariant = to_pointer_variant<wrap_variant_t<
-    structure::arrangement::ArrangerObjectVariant,
-    structure::arrangement::ArrangerObjectOwner>>;
+  using ArrangerObjectOwnerPtrVariant =
+    utils::to_pointer_variant<utils::wrap_variant_t<
+      structure::arrangement::ArrangerObjectVariant,
+      structure::arrangement::ArrangerObjectOwner>>;
   using ObjectOwnerProvider = std::function<ArrangerObjectOwnerPtrVariant (
     structure::arrangement::ArrangerObjectPtrVariant)>;
 

@@ -16,7 +16,7 @@ class TrackRouting : public QObject
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
-  TrackRouting (TrackRegistry &track_registry, QObject * parent = nullptr);
+  TrackRouting (utils::IObjectRegistry &registry, QObject * parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -70,7 +70,7 @@ private:
   friend void           from_json (const nlohmann::json &j, TrackRouting &t);
 
 private:
-  TrackRegistry &track_registry_;
+  utils::IObjectRegistry &registry_;
 
   /**
    * @brief Track routes (source-destination mappings).

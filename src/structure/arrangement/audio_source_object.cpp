@@ -7,7 +7,7 @@ namespace zrythm::structure::arrangement
 {
 AudioSourceObject::AudioSourceObject (
   const dsp::TempoMap              &tempo_map,
-  dsp::FileAudioSourceRegistry     &registry,
+  utils::IObjectRegistry           &registry,
   dsp::FileAudioSourceUuidReference source,
   QObject *                         parent)
     : ArrangerObject (Type::AudioSourceObject, tempo_map, {}, parent),
@@ -58,7 +58,9 @@ init_from (
   const AudioSourceObject &other,
   utils::ObjectCloneType   clone_type)
 {
-  // Always preserved
+  init_from (
+    static_cast<ArrangerObject &> (obj),
+    static_cast<const ArrangerObject &> (other), clone_type);
   obj.source_id_ = other.source_id_;
 }
 
@@ -73,5 +75,12 @@ from_json (const nlohmann::json &j, AudioSourceObject &obj)
 }
 
 AudioSourceObject::~AudioSourceObject () = default;
+
+void
+to_json (nlohmann::json &j, const AudioSourceObject &obj)
+{
+  to_json (j, static_cast<const ArrangerObject &> (obj));
+  j[AudioSourceObject::kFileAudioSourceKey] = obj.source_id_;
+}
 
 }

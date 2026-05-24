@@ -15,13 +15,12 @@ namespace zrythm::structure::arrangement
 {
 
 void
-AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
+AutomationFunction::apply (std::span<AutomationPoint *> sel, Type type)
 {
   z_debug ("applying {}...", AutomationFunctionType_to_string (type));
 
-  const auto &sel = sel_var;
-  const auto  flip = [&] (const bool vertical) {
-    for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+  const auto flip = [&] (const bool vertical) {
+    for (auto * ap : sel)
       {
         if (vertical)
           {
@@ -36,9 +35,8 @@ AutomationFunction::apply (ArrangerObjectSpan sel_var, Type type)
   };
 
   const auto flatten = [&] () {
-    for (auto * ap : sel.template get_elements_by_type<AutomationPoint> ())
+    for (auto * ap : sel)
       {
-
         ap->curveOpts ()->setCurviness (1.0);
         ap->curveOpts ()->setAlgorithm (dsp::CurveOptions::Algorithm::Pulse);
       }

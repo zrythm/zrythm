@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/arranger_object_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -22,8 +24,7 @@ protected:
     factory = std::make_unique<ArrangerObjectFactory> (
       ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map,
-        .object_registry_ = object_registry,
-        .file_audio_source_registry_ = file_audio_source_registry,
+        .registry_ = object_registry,
         .musical_mode_getter_ = [] () { return true; },
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
@@ -35,8 +36,7 @@ protected:
   std::unique_ptr<dsp::TempoMap>            tempo_map;
   ArrangerObjectFactory::SampleRateProvider sample_rate_provider;
   ArrangerObjectFactory::BpmProvider        bpm_provider;
-  ArrangerObjectRegistry                    object_registry;
-  dsp::FileAudioSourceRegistry              file_audio_source_registry;
+  utils::ObjectRegistry                     object_registry;
   std::unique_ptr<ArrangerObjectFactory>    factory;
 };
 
@@ -49,7 +49,7 @@ TEST_F (ArrangerObjectFactoryTest, CreateBasicObjects)
   auto * midi_note = midi_note_ref.get_object_as<MidiNote> ();
   EXPECT_NE (midi_note, nullptr);
   EXPECT_EQ (midi_note->type (), ArrangerObject::Type::MidiNote);
-  EXPECT_TRUE (object_registry.contains (midi_note->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, midi_note->get_uuid ()));
 
   // Test Marker creation
   auto   marker_builder = factory->get_builder<Marker> ();
@@ -57,7 +57,7 @@ TEST_F (ArrangerObjectFactoryTest, CreateBasicObjects)
   auto * marker = marker_ref.get_object_as<Marker> ();
   EXPECT_NE (marker, nullptr);
   EXPECT_EQ (marker->type (), ArrangerObject::Type::Marker);
-  EXPECT_TRUE (object_registry.contains (marker->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, marker->get_uuid ()));
 
   // Test ChordObject creation
   auto   chord_object_builder = factory->get_builder<ChordObject> ();
@@ -65,7 +65,7 @@ TEST_F (ArrangerObjectFactoryTest, CreateBasicObjects)
   auto * chord_object = chord_object_ref.get_object_as<ChordObject> ();
   EXPECT_NE (chord_object, nullptr);
   EXPECT_EQ (chord_object->type (), ArrangerObject::Type::ChordObject);
-  EXPECT_TRUE (object_registry.contains (chord_object->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, chord_object->get_uuid ()));
 
   // Test AutomationPoint creation
   auto   automation_point_builder = factory->get_builder<AutomationPoint> ();
@@ -74,7 +74,7 @@ TEST_F (ArrangerObjectFactoryTest, CreateBasicObjects)
     automation_point_ref.get_object_as<AutomationPoint> ();
   EXPECT_NE (automation_point, nullptr);
   EXPECT_EQ (automation_point->type (), ArrangerObject::Type::AutomationPoint);
-  EXPECT_TRUE (object_registry.contains (automation_point->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, automation_point->get_uuid ()));
 }
 
 // Test builder pattern with various configurations
@@ -151,23 +151,12 @@ TEST_F (ArrangerObjectFactoryTest, ObjectRegistration)
     }
 
   // Verify all objects are registered
-  EXPECT_EQ (object_registry.size (), num_objects);
-
   for (const auto &ref : object_refs)
     {
-      EXPECT_TRUE (object_registry.contains (ref.id ()));
-
-      // Verify we can retrieve the object
-      auto obj_var = object_registry.find_by_id (ref.id ());
-      EXPECT_TRUE (obj_var.has_value ());
-
-      // Verify it's the correct type
-      std::visit (
-        [&] (auto * obj) {
-          EXPECT_NE (obj, nullptr);
-          EXPECT_EQ (obj->type (), ArrangerObject::Type::MidiNote);
-        },
-        obj_var.value ());
+      EXPECT_TRUE (utils::contains (object_registry, ref.id ()));
+      auto * obj = ref.get ();
+      EXPECT_NE (obj, nullptr);
+      EXPECT_EQ (obj->type (), ArrangerObject::Type::MidiNote);
     }
 }
 
@@ -177,9 +166,8 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   // Test create_audio_region_with_clip
   // First create a dummy audio source
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
-  auto source_ref = file_audio_source_registry.create_object<
-    dsp::FileAudioSource> (
-    *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
     units::sample_rate (44100), 120.0, u8"TestSource");
 
   const double start_ticks = 100.0;
@@ -190,7 +178,7 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   EXPECT_NE (audio_region, nullptr);
   EXPECT_EQ (audio_region->type (), ArrangerObject::Type::AudioRegion);
   EXPECT_EQ (audio_region->position ()->ticks (), start_ticks);
-  EXPECT_TRUE (object_registry.contains (audio_region->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, audio_region->get_uuid ()));
 
   // Test create_editor_object for MidiNote
   const double editor_start_ticks = 150.0;
@@ -203,7 +191,7 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   EXPECT_NE (midi_note, nullptr);
   EXPECT_EQ (midi_note->pitch (), editor_pitch);
   EXPECT_EQ (midi_note->position ()->ticks (), editor_start_ticks);
-  EXPECT_TRUE (object_registry.contains (midi_note->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, midi_note->get_uuid ()));
 
   // Test create_editor_object for AutomationPoint
   const double automation_start_ticks = 200.0;
@@ -217,7 +205,7 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   EXPECT_NE (automation_point, nullptr);
   EXPECT_DOUBLE_EQ (automation_point->value (), automation_value);
   EXPECT_EQ (automation_point->position ()->ticks (), automation_start_ticks);
-  EXPECT_TRUE (object_registry.contains (automation_point->get_uuid ()));
+  EXPECT_TRUE (utils::contains (object_registry, automation_point->get_uuid ()));
 }
 
 // Test build_empty method
@@ -227,17 +215,18 @@ TEST_F (ArrangerObjectFactoryTest, BuildEmptyObjects)
   auto empty_midi_note = factory->get_builder<MidiNote> ().build_empty ();
   EXPECT_NE (empty_midi_note, nullptr);
   EXPECT_EQ (empty_midi_note->type (), ArrangerObject::Type::MidiNote);
-  EXPECT_FALSE (object_registry.contains (empty_midi_note->get_uuid ()));
+  EXPECT_FALSE (utils::contains (object_registry, empty_midi_note->get_uuid ()));
 
   auto empty_marker = factory->get_builder<Marker> ().build_empty ();
   EXPECT_NE (empty_marker, nullptr);
   EXPECT_EQ (empty_marker->type (), ArrangerObject::Type::Marker);
-  EXPECT_FALSE (object_registry.contains (empty_marker->get_uuid ()));
+  EXPECT_FALSE (utils::contains (object_registry, empty_marker->get_uuid ()));
 
   auto empty_audio_region = factory->get_builder<AudioRegion> ().build_empty ();
   EXPECT_NE (empty_audio_region, nullptr);
   EXPECT_EQ (empty_audio_region->type (), ArrangerObject::Type::AudioRegion);
-  EXPECT_FALSE (object_registry.contains (empty_audio_region->get_uuid ()));
+  EXPECT_FALSE (
+    utils::contains (object_registry, empty_audio_region->get_uuid ()));
 }
 
 // Test clone_new_object_identity for different object types
@@ -273,7 +262,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
     original_midi_note->bounds ()->length ()->ticks ());
   EXPECT_EQ (cloned_midi_note->pitch (), original_midi_note->pitch ());
   EXPECT_EQ (cloned_midi_note->velocity (), original_midi_note->velocity ());
-  EXPECT_TRUE (object_registry.contains (cloned_midi_note_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_midi_note_uuid));
 
   // Test cloning Marker
   auto original_marker_ref =
@@ -300,7 +289,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
     original_marker->position ()->ticks ());
   EXPECT_EQ (cloned_marker->name ()->name (), original_marker->name ()->name ());
   EXPECT_EQ (cloned_marker->markerType (), original_marker->markerType ());
-  EXPECT_TRUE (object_registry.contains (cloned_marker_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_marker_uuid));
 
   // Test cloning AutomationPoint
   auto original_automation_point_ref =
@@ -330,7 +319,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
     original_automation_point->position ()->ticks ());
   EXPECT_FLOAT_EQ (
     cloned_automation_point->value (), original_automation_point->value ());
-  EXPECT_TRUE (object_registry.contains (cloned_automation_point_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_automation_point_uuid));
 }
 
 // Test clone_new_object_identity for AudioRegion using public API
@@ -338,9 +327,8 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioRegion)
 {
   // First create a dummy audio source
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
-  auto source_ref = file_audio_source_registry.create_object<
-    dsp::FileAudioSource> (
-    *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
     units::sample_rate (44100), 120.0, u8"TestSource");
 
   // Create audio region
@@ -367,7 +355,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioRegion)
   EXPECT_DOUBLE_EQ (
     cloned_audio_region->bounds ()->length ()->ticks (),
     original_audio_region->bounds ()->length ()->ticks ());
-  EXPECT_TRUE (object_registry.contains (cloned_audio_region_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_audio_region_uuid));
 }
 
 // Test clone_new_object_identity for MidiRegion
@@ -409,7 +397,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityMidiRegion)
   EXPECT_DOUBLE_EQ (
     cloned_midi_region->loopRange ()->loopEndPosition ()->ticks (),
     original_midi_region->loopRange ()->loopEndPosition ()->ticks ());
-  EXPECT_TRUE (object_registry.contains (cloned_midi_region_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_midi_region_uuid));
 }
 
 // Test clone_new_object_identity for AudioSourceObject
@@ -417,9 +405,8 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioSourceObject)
 {
   // First create a dummy audio source
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
-  auto source_ref = file_audio_source_registry.create_object<
-    dsp::FileAudioSource> (
-    *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
     units::sample_rate (44100), 120.0, u8"TestSource");
 
   auto original_audio_source_obj_ref =
@@ -441,7 +428,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioSourceObject)
 
   // Verify cloned object has different UUID
   EXPECT_NE (original_audio_source_obj_uuid, cloned_audio_source_obj_uuid);
-  EXPECT_TRUE (object_registry.contains (cloned_audio_source_obj_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_audio_source_obj_uuid));
 
   // Verify that the audio source reference is preserved (should have same
   // reference)
@@ -471,7 +458,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityTempoObject)
 
   // Verify cloned object has different UUID
   EXPECT_NE (original_tempo_obj_uuid, cloned_tempo_obj_uuid);
-  EXPECT_TRUE (object_registry.contains (cloned_tempo_obj_uuid));
+  EXPECT_TRUE (utils::contains (object_registry, cloned_tempo_obj_uuid));
 }
 
 // Test clone_new_object_identity for TimeSignatureObject
@@ -497,7 +484,8 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityTimeSignatureObject)
 
   // Verify cloned object has different UUID
   EXPECT_NE (original_time_signature_obj_uuid, cloned_time_signature_obj_uuid);
-  EXPECT_TRUE (object_registry.contains (cloned_time_signature_obj_uuid));
+  EXPECT_TRUE (
+    utils::contains (object_registry, cloned_time_signature_obj_uuid));
 }
 
 } // namespace zrythm::structure::arrangement

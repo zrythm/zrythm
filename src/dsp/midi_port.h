@@ -15,8 +15,7 @@ namespace zrythm::dsp
  * @brief MIDI port specifics.
  */
 class MidiPort final
-    : public QObject,
-      public Port,
+    : public Port,
       public PortConnectionsCacheMixin<MidiPort>,
       public RingBufferOwningPortMixin
 {

@@ -2,10 +2,22 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_sample_processor.h"
+#include "utils/registry_utils.h"
 #include "utils/types.h"
 
 namespace zrythm::dsp
 {
+
+AudioSampleProcessor::AudioSampleProcessor (utils::IObjectRegistry &registry)
+    : dsp::ProcessorBase (registry)
+{
+  auto out_ref = utils::create_object<dsp::AudioPort> (
+    registry, u8"Stereo Out", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+  out_ref.get_object_as<dsp::AudioPort> ()->set_symbol (u8"stereo_out");
+  add_output_port (out_ref);
+  set_name (u8"Audio Sample Processor");
+}
+
 void
 AudioSampleProcessor::custom_process_block (
   dsp::graph::ProcessBlockInfo time_nfo,

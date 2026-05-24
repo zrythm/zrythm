@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
 #include <fmt/std.h>
 
 #include "dsp/midi_event.h"

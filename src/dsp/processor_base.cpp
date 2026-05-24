@@ -19,9 +19,9 @@ ProcessorBase::ParameterChangeTracker::prepare (size_t count)
 }
 
 ProcessorBase::ProcessorBase (
-  ProcessorBaseDependencies dependencies,
-  utils::Utf8String         name)
-    : dependencies_ (dependencies), name_ (std::move (name))
+  utils::IObjectRegistry &registry,
+  utils::Utf8String       name)
+    : registry_ (registry), name_ (std::move (name))
 {
 }
 
@@ -35,16 +35,15 @@ ProcessorBase::set_name (const utils::Utf8String &name)
     return name_ + u8"/" + port.get_label ();
   };
 
-  const auto port_visitor = [&] (auto &&port) {
-    port->set_full_designation_provider (full_designation_provider);
-  };
   for (const auto &in_ref : input_ports_)
     {
-      std::visit (port_visitor, in_ref.get_object ());
+      if (auto * port = in_ref.get ())
+        port->set_full_designation_provider (full_designation_provider);
     }
   for (const auto &out_ref : output_ports_)
     {
-      std::visit (port_visitor, out_ref.get_object ());
+      if (auto * port = out_ref.get ())
+        port->set_full_designation_provider (full_designation_provider);
     }
 }
 
@@ -80,25 +79,27 @@ ProcessorBase::prepare_for_processing (
   processing_caches_->live_input_ports_.clear ();
   processing_caches_->live_output_ports_.clear ();
 
-  const auto port_visitor = [&] (auto &&port) {
-    port->prepare_for_processing (node, sample_rate, max_block_length);
+  const auto call_prepare_for_processing = [&] (auto &&processable) {
+    processable->prepare_for_processing (node, sample_rate, max_block_length);
   };
   for (const auto &in_ref : input_ports_)
     {
-      std::visit (port_visitor, in_ref.get_object ());
-      processing_caches_->live_input_ports_.push_back (in_ref.get_object ());
+      auto * raw = in_ref.get ();
+      auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
+      call_prepare_for_processing (raw);
+      processing_caches_->live_input_ports_.push_back (var);
     }
   for (const auto &out_ref : output_ports_)
     {
-      std::visit (port_visitor, out_ref.get_object ());
-      processing_caches_->live_output_ports_.push_back (out_ref.get_object ());
+      auto * raw = out_ref.get ();
+      auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
+      call_prepare_for_processing (raw);
+      processing_caches_->live_output_ports_.push_back (var);
     }
   for (const auto &param_ref : params_)
     {
-      processing_caches_->live_params_.push_back (
-        param_ref.get_object_as<dsp::ProcessorParameter> ());
-      processing_caches_->live_params_.back ()->prepare_for_processing (
-        node, sample_rate, max_block_length);
+      processing_caches_->live_params_.push_back (param_ref.get ());
+      call_prepare_for_processing (processing_caches_->live_params_.back ());
     }
 
   processing_caches_->change_tracker_.prepare (
@@ -110,14 +111,13 @@ ProcessorBase::prepare_for_processing (
 void
 ProcessorBase::release_resources ()
 {
-  const auto port_visitor = [&] (auto &&port) { port->release_resources (); };
-  for (const auto &in_ref : input_ports_)
+  for (const auto &in_var : input_ports_)
     {
-      std::visit (port_visitor, in_ref.get_object ());
+      in_var.get ()->release_resources ();
     }
-  for (const auto &out_ref : output_ports_)
+  for (const auto &out_var : output_ports_)
     {
-      std::visit (port_visitor, out_ref.get_object ());
+      out_var.get ()->release_resources ();
     }
 
   custom_release_resources ();
@@ -175,15 +175,15 @@ ProcessorBase::process_block (
   processing_caches_->change_tracker_.clear ();
 
   // clear input ports for next cycle
-  for (const auto &in_port_var : processing_caches_->live_input_ports_)
+  for (const auto &in_var : processing_caches_->live_input_ports_)
     {
       std::visit (
-        [&] (auto &&in_port) {
+        [&] (auto * in_port) {
           in_port->clear_buffer (
             time_nfo.buffer_offset_.in (units::samples),
             time_nfo.nframes_.in (units::samples));
         },
-        in_port_var);
+        in_var);
     }
 }
 
@@ -193,55 +193,45 @@ ProcessorBase::custom_process_block (
   const dsp::ITransport       &transport,
   const dsp::TempoMap         &tempo_map) noexcept
 {
-  using ObjectView = utils::UuidIdentifiableObjectView<PortRegistry>;
-
   const auto &in_ports = processing_caches_->live_input_ports_;
   const auto &out_ports = processing_caches_->live_output_ports_;
 
-  auto midi_in_ports =
-    in_ports | std::views::filter (ObjectView::type_projection<MidiPort>)
-    | std::views::transform (ObjectView::type_transformation<MidiPort>);
-  auto midi_out_ports =
-    out_ports | std::views::filter (ObjectView::type_projection<MidiPort>)
-    | std::views::transform (ObjectView::type_transformation<MidiPort>);
-  auto audio_in_ports =
-    in_ports | std::views::filter (ObjectView::type_projection<AudioPort>)
-    | std::views::transform (ObjectView::type_transformation<AudioPort>);
-  auto audio_out_ports =
-    out_ports | std::views::filter (ObjectView::type_projection<AudioPort>)
-    | std::views::transform (ObjectView::type_transformation<AudioPort>);
-  auto cv_in_ports =
-    in_ports | std::views::filter (ObjectView::type_projection<CVPort>)
-    | std::views::transform (ObjectView::type_transformation<CVPort>);
-  auto cv_out_ports =
-    out_ports | std::views::filter (ObjectView::type_projection<CVPort>)
-    | std::views::transform (ObjectView::type_transformation<CVPort>);
-  for (
-    const auto &[in_port, out_port] :
-    std::views::zip (midi_in_ports, midi_out_ports))
+  for (const auto &[in_var, out_var] : std::views::zip (in_ports, out_ports))
     {
-      out_port->clear_buffer (
-        time_nfo.buffer_offset_.in (units::samples),
-        time_nfo.nframes_.in (units::samples));
-      out_port->midi_events_.queued_events_.append (
-        in_port->midi_events_.active_events_, time_nfo.buffer_offset_,
-        time_nfo.nframes_);
-    }
-  for (
-    const auto &[in_port, out_port] :
-    std::views::zip (audio_in_ports, audio_out_ports))
-    {
-      out_port->copy_source_rt (*in_port, time_nfo);
-    }
-  for (
-    const auto &[in_port, out_port] :
-    std::views::zip (cv_in_ports, cv_out_ports))
-    {
-      const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
-      const auto sub_nframes = time_nfo.nframes_.in (units::samples);
-      utils::float_ranges::copy (
-        std::span (out_port->buf_).subspan (sub_offset, sub_nframes),
-        std::span (in_port->buf_).subspan (sub_offset, sub_nframes));
+      std::visit (
+        [&] (auto * in_port, auto * out_port) {
+          using InT = std::decay_t<decltype (in_port)>;
+          using OutT = std::decay_t<decltype (out_port)>;
+          if constexpr (
+            std::is_same_v<InT, dsp::MidiPort *>
+            && std::is_same_v<OutT, dsp::MidiPort *>)
+            {
+              out_port->clear_buffer (
+                time_nfo.buffer_offset_.in (units::samples),
+                time_nfo.nframes_.in (units::samples));
+              out_port->midi_events_.queued_events_.append (
+                in_port->midi_events_.active_events_, time_nfo.buffer_offset_,
+                time_nfo.nframes_);
+            }
+          else if constexpr (
+            std::is_same_v<InT, dsp::AudioPort *>
+            && std::is_same_v<OutT, dsp::AudioPort *>)
+            {
+              out_port->copy_source_rt (*in_port, time_nfo);
+            }
+          else if constexpr (
+            std::is_same_v<InT, dsp::CVPort *>
+            && std::is_same_v<OutT, dsp::CVPort *>)
+            {
+              const auto sub_offset =
+                time_nfo.buffer_offset_.in (units::samples);
+              const auto sub_nframes = time_nfo.nframes_.in (units::samples);
+              utils::float_ranges::copy (
+                std::span (out_port->buf_).subspan (sub_offset, sub_nframes),
+                std::span (in_port->buf_).subspan (sub_offset, sub_nframes));
+            }
+        },
+        in_var, out_var);
     }
 }
 
@@ -253,18 +243,15 @@ ProcessorGraphBuilder::add_nodes (
   const auto add_node_for_processable = [&] (auto &processable) {
     return graph.add_node_for_processable (processable);
   };
-  const auto port_visitor = [&] (auto * port) -> void {
-    add_node_for_processable (*port);
-  };
 
   add_node_for_processable (processor);
   for (const auto &port_ref : processor.get_input_ports ())
     {
-      std::visit (port_visitor, port_ref.get_object ());
+      add_node_for_processable (*port_ref.get ());
     }
   for (const auto &port_ref : processor.get_output_ports ())
     {
-      std::visit (port_visitor, port_ref.get_object ());
+      add_node_for_processable (*port_ref.get ());
     }
 }
 
@@ -278,25 +265,17 @@ ProcessorGraphBuilder::add_connections (
   z_return_if_fail (processor_node);
   for (const auto &port_ref : processor.get_input_ports ())
     {
-      std::visit (
-        [&] (auto &&port) {
-          auto * port_node =
-            graph.get_nodes ().find_node_for_processable (*port);
-          assert (port_node);
-          port_node->connect_to (*processor_node);
-        },
-        port_ref.get_object ());
+      auto * port_node =
+        graph.get_nodes ().find_node_for_processable (*port_ref.get ());
+      assert (port_node);
+      port_node->connect_to (*processor_node);
     }
   for (const auto &port_ref : processor.get_output_ports ())
     {
-      std::visit (
-        [&] (auto &&port) {
-          auto * port_node =
-            graph.get_nodes ().find_node_for_processable (*port);
-          z_return_if_fail (port_node);
-          processor_node->connect_to (*port_node);
-        },
-        port_ref.get_object ());
+      auto * port_node =
+        graph.get_nodes ().find_node_for_processable (*port_ref.get ());
+      z_return_if_fail (port_node);
+      processor_node->connect_to (*port_node);
     }
 }
 
@@ -315,22 +294,21 @@ from_json (const nlohmann::json &j, ProcessorBase &p)
   p.input_ports_.clear ();
   for (const auto &input_port : j.at (ProcessorBase::kInputPortsKey))
     {
-      auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
+      auto port_ref = dsp::PortUuidReference{ p.registry_ };
       from_json (input_port, port_ref);
       p.input_ports_.emplace_back (std::move (port_ref));
     }
   p.output_ports_.clear ();
   for (const auto &output_port : j.at (ProcessorBase::kOutputPortsKey))
     {
-      auto port_ref = dsp::PortUuidReference{ p.dependencies_.port_registry_ };
+      auto port_ref = dsp::PortUuidReference{ p.registry_ };
       from_json (output_port, port_ref);
       p.output_ports_.emplace_back (std::move (port_ref));
     }
   p.params_.clear ();
   for (const auto &param : j.at (ProcessorBase::kParametersKey))
     {
-      auto param_ref =
-        dsp::ProcessorParameterUuidReference{ p.dependencies_.param_registry_ };
+      auto param_ref = dsp::ProcessorParameterUuidReference{ p.registry_ };
       from_json (param, param_ref);
       p.params_.emplace_back (std::move (param_ref));
     }

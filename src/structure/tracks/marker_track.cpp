@@ -12,10 +12,7 @@ MarkerTrack::MarkerTrack (FinalTrackDependencies dependencies)
         std::nullopt,
         {},
         dependencies.to_base_dependencies ()),
-      arrangement::ArrangerObjectOwner<Marker> (
-        dependencies.obj_registry_,
-        dependencies.file_audio_source_registry_,
-        *this)
+      arrangement::ArrangerObjectOwner<Marker> (dependencies.registry_, *this)
 {
   main_height_ = DEF_HEIGHT / 2;
   icon_name_ = u8"gnome-icon-library-flag-filled-symbolic";

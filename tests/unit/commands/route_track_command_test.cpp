@@ -4,6 +4,7 @@
 #include "commands/route_track_command.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_routing.h"
+#include "utils/object_registry.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -16,45 +17,32 @@ class RouteTrackCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track routing
     track_routing_ =
-      std::make_unique<structure::tracks::TrackRouting> (track_registry_);
+      std::make_unique<structure::tracks::TrackRouting> (registry_);
 
-    // Create track factory with minimal dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,   file_audio_source_registry_,
-      plugin_registry_,     port_registry_,
-      param_registry_,      obj_registry_,
-      track_registry_,      transport_,
-      [] { return false; }, {},
+      tempo_map_wrapper_, registry_, transport_, [] { return false; }, {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
         return factory_deps;
       });
 
-    // Create test tracks
     source_track_ref_ = track_factory_->create_empty_track (
       structure::tracks::Track::Type::Audio);
     target_track_ref_ = track_factory_->create_empty_track (
       structure::tracks::Track::Type::Audio);
   }
 
-  // Create minimal dependencies for track creation
-  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::graph_test::MockTransport                 transport_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  dsp::graph_test::MockTransport transport_;
 
-  structure::tracks::TrackRegistry                 track_registry_;
+  utils::ObjectRegistry                            registry_;
   std::unique_ptr<structure::tracks::TrackRouting> track_routing_;
   std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
-  structure::tracks::TrackUuidReference source_track_ref_{ track_registry_ };
-  structure::tracks::TrackUuidReference target_track_ref_{ track_registry_ };
+  structure::tracks::TrackUuidReference source_track_ref_{ registry_ };
+  structure::tracks::TrackUuidReference target_track_ref_{ registry_ };
 };
 
 // Test initial state after construction

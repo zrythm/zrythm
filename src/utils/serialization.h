@@ -290,7 +290,7 @@ template <typename T> struct adl_serializer<zrythm::utils::QObjectUniquePtr<T>>
 };
 
 /// StrongTypedef specialization
-template <StrongTypedef T> struct adl_serializer<T>
+template <zrythm::utils::StrongTypedef T> struct adl_serializer<T>
 {
   static void to_json (json &json_value, const T &strong_type)
   {

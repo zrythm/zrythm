@@ -4,8 +4,9 @@
 #include <thread>
 #include <vector>
 
-#include "utils/gtest_wrapper.h"
 #include "utils/mpmc_queue.h"
+
+#include <gtest/gtest.h>
 
 TEST (MPMCQueueTest, BasicOperations)
 {

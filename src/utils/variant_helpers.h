@@ -5,7 +5,11 @@
 
 #include "utils/traits.h"
 
+#include <QObject>
 #include <QVariant>
+
+namespace zrythm::utils
+{
 
 // Primary template (false for non-variant types)
 template <typename T, typename Variant, typename = void>
@@ -125,24 +129,12 @@ template <typename... Ts> struct to_pointer_variant_impl<std::variant<Ts...>>
 template <typename Variant>
 using to_pointer_variant = typename to_pointer_variant_impl<Variant>::type;
 
-/**
- * @brief Converts a base pointer to a variant type.
- *
- * This function takes a base pointer and attempts to convert it to the
- * specified variant type. If the base pointer is null, a variant with a null
- * pointer is returned. Otherwise, the function uses dynamic_cast to attempt to
- * convert the base pointer to each type in the variant, and returns the first
- * successful conversion.
- *
- * @tparam Base The base type of the pointer.
- * @tparam Variant The variant type to convert to.
- * @param base_ptr The base pointer to convert.
- * @return The converted variant type.
- */
-template <typename Variant, typename Base>
-  requires std::is_pointer_v<std::variant_alternative_t<0, Variant>>
+namespace detail
+{
+
+template <typename Variant, typename Base, typename CastFn>
 auto
-convert_to_variant (const Base * base_ptr) -> Variant
+convert_to_variant_impl (const Base * base_ptr, CastFn &&cast_fn) -> Variant
 {
   if (!base_ptr)
     {
@@ -152,7 +144,7 @@ convert_to_variant (const Base * base_ptr) -> Variant
   Variant result{};
 
   auto trycast = [&]<typename T> () {
-    if (auto derived = dynamic_cast<const T *> (base_ptr))
+    if (auto derived = cast_fn.template operator()<T> (base_ptr))
       {
         result = const_cast<T *> (derived);
         return true;
@@ -164,9 +156,51 @@ convert_to_variant (const Base * base_ptr) -> Variant
     return (trycast.template operator()<std::remove_pointer_t<Ts>> () || ...);
   };
 
-  try_all_casts (static_cast<Variant *> (nullptr));
+  if (!try_all_casts (static_cast<Variant *> (nullptr)))
+    {
+      throw std::runtime_error ("convert_to_variant: no matching type");
+    }
 
   return result;
+}
+} // namespace detail
+
+/**
+ * @brief Converts a base pointer to a variant of pointers using dynamic_cast.
+ *
+ * If the base pointer is null, returns a default-constructed variant (null
+ * pointer of the first alternative type). Throws if no cast succeeds.
+ *
+ * @tparam Variant A std::variant of pointer types.
+ * @tparam Base The base type of the pointer.
+ * @param base_ptr The base pointer to convert.
+ * @return The converted variant type.
+ */
+template <typename Variant, typename Base>
+  requires std::is_pointer_v<std::variant_alternative_t<0, Variant>>
+auto
+convert_to_variant (const Base * base_ptr) -> Variant
+{
+  return detail::convert_to_variant_impl<Variant> (
+    base_ptr,
+    []<typename T> (const Base * p) { return dynamic_cast<const T *> (p); });
+}
+
+/**
+ * @brief Converts a QObject base pointer to a variant of pointers using
+ * qobject_cast.
+ *
+ * @copydetails convert_to_variant
+ */
+template <typename Variant, typename Base>
+  requires std::is_pointer_v<std::variant_alternative_t<0, Variant>>
+           && std::derived_from<Base, QObject>
+auto
+convert_to_variant_qobj (const Base * base_ptr) -> Variant
+{
+  return detail::convert_to_variant_impl<Variant> (
+    base_ptr,
+    []<typename T> (const Base * p) { return qobject_cast<const T *> (p); });
 }
 
 /**
@@ -204,3 +238,4 @@ struct wrap_variant_impl<std::variant<Ts...>, Wrapper>
  */
 template <typename Variant, template <typename> class Wrapper>
 using wrap_variant_t = typename wrap_variant_impl<Variant, Wrapper>::type;
+} // namespace zrythm::utils

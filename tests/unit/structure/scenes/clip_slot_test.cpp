@@ -8,6 +8,8 @@
 #include "structure/arrangement/midi_region.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -23,21 +25,10 @@ class ClipSlotTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<tracks::TrackRegistry> ();
-
-    // Create test dependencies
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-
-    // Create object registries
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
-    // Create track collection
-    track_collection_ =
-      std::make_unique<tracks::TrackCollection> (*track_registry_);
-
-    // Create a clip slot
-    clip_slot_ = std::make_unique<ClipSlot> (*obj_registry_);
+    track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
+    clip_slot_ = std::make_unique<ClipSlot> (*registry_);
   }
 
   void TearDown () override
@@ -45,16 +36,14 @@ protected:
     clip_slot_.reset ();
     region_refs_.clear ();
     track_collection_.reset ();
-    obj_registry_.reset ();
     tempo_map_.reset ();
-    track_registry_.reset ();
+    registry_.reset ();
   }
 
-  // Helper function to create a MIDI region
   arrangement::MidiRegion * create_midi_region ()
   {
-    auto region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-      *tempo_map_, *obj_registry_, file_audio_source_registry_);
+    auto region_ref = utils::create_object<arrangement::MidiRegion> (
+      *registry_, *tempo_map_, *registry_);
     auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
 
     // Set basic properties
@@ -67,12 +56,10 @@ protected:
     return region;
   }
 
-  std::unique_ptr<ClipSlot>                            clip_slot_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<tracks::TrackCollection>             track_collection_;
-  std::unique_ptr<tracks::TrackRegistry>               track_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  dsp::FileAudioSourceRegistry file_audio_source_registry_;
+  std::unique_ptr<ClipSlot>                             clip_slot_;
+  std::unique_ptr<tracks::TrackCollection>              track_collection_;
+  std::unique_ptr<utils::ObjectRegistry>                registry_;
+  std::unique_ptr<dsp::TempoMap>                        tempo_map_;
   std::vector<arrangement::ArrangerObjectUuidReference> region_refs_;
 };
 
@@ -235,44 +222,28 @@ class ClipSlotListTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<tracks::TrackRegistry> ();
-
-    // Create test dependencies
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
+    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
 
-    // Create object registries
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-
-    // Create track collection
-    track_collection_ =
-      std::make_unique<tracks::TrackCollection> (*track_registry_);
-
-    // Create some test tracks
     create_test_tracks ();
 
-    // Create a clip slot list
-    clip_slot_list_ = std::make_unique<ClipSlotList> (
-      *obj_registry_, *track_collection_, nullptr);
+    clip_slot_list_ =
+      std::make_unique<ClipSlotList> (*registry_, *track_collection_, nullptr);
   }
 
-  // Helper to create test tracks
   void create_test_tracks ()
   {
-    // Create 3 test tracks
     for (int i = 0; i < 3; ++i)
       {
         tracks::FinalTrackDependencies deps{
-          *tempo_map_wrapper_,  file_audio_source_registry_,
-          plugin_registry_,     port_registry_,
-          param_registry_,      *obj_registry_,
-          *track_registry_,     transport_,
-          [] { return false; }, {}
+          *tempo_map_wrapper_, *registry_, *transport_, [] { return false; }, {}
         };
 
-        auto track_ref = track_registry_->create_object<tracks::FolderTrack> (
-          std::move (deps));
+        auto track_ref = utils::create_object<tracks::FolderTrack> (
+          *registry_, std::move (deps));
         track_collection_->add_track (track_ref);
       }
   }
@@ -281,22 +252,16 @@ protected:
   {
     clip_slot_list_.reset ();
     track_collection_.reset ();
-    obj_registry_.reset ();
     tempo_map_.reset ();
-    track_registry_.reset ();
+    registry_.reset ();
   }
 
-  std::unique_ptr<ClipSlotList>                        clip_slot_list_;
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<tracks::TrackCollection>             track_collection_;
-  std::unique_ptr<tracks::TrackRegistry>               track_registry_;
-  std::unique_ptr<dsp::TempoMap>                       tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>                tempo_map_wrapper_;
-  dsp::PortRegistry                                    port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::graph_test::MockTransport  transport_;
+  std::unique_ptr<ClipSlotList>                   clip_slot_list_;
+  std::unique_ptr<tracks::TrackCollection>        track_collection_;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
+  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
 };
 
 TEST_F (ClipSlotListTest, InitialState)

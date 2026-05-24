@@ -4,6 +4,7 @@
 #include "dsp/audio_sample_processor.h"
 #include "dsp/metronome.h"
 #include "dsp/tempo_map.h"
+#include "utils/object_registry.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -16,9 +17,7 @@ class MetronomeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
     transport_ = std::make_unique<graph_test::MockTransport> ();
 
@@ -50,9 +49,7 @@ protected:
   std::unique_ptr<Metronome> create_metronome (float initial_volume = 1.0f)
   {
     auto metronome = std::make_unique<Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      emphasis_sample_, normal_sample_, true, initial_volume);
+      *registry_, emphasis_sample_, normal_sample_, true, initial_volume);
     metronome->set_queue_sample_callback (
       [this] (AudioSampleProcessor::PlayableSampleSingleChannel sample) {
         queued_samples_.push_back (sample);
@@ -82,12 +79,11 @@ protected:
     EXPECT_EQ (sample.buf_[0], expected_buffer.getSample (expected_channel, 0));
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
-  std::unique_ptr<TempoMap>                        tempo_map_;
-  std::unique_ptr<graph_test::MockTransport>       transport_;
-  juce::AudioSampleBuffer                          emphasis_sample_;
-  juce::AudioSampleBuffer                          normal_sample_;
+  std::unique_ptr<utils::ObjectRegistry>     registry_;
+  std::unique_ptr<TempoMap>                  tempo_map_;
+  std::unique_ptr<graph_test::MockTransport> transport_;
+  juce::AudioSampleBuffer                    emphasis_sample_;
+  juce::AudioSampleBuffer                    normal_sample_;
   boost::container::
     static_vector<AudioSampleProcessor::PlayableSampleSingleChannel, 128>
       queued_samples_;

@@ -5,6 +5,7 @@
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
+#include "utils/object_registry.h"
 
 #include <QObject>
 
@@ -19,22 +20,17 @@ class FaderTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
     // Create audio fader without hard limiting for most tests
     audio_fader_ = std::make_unique<Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Audio, false, true, [] { return u8"Test Track"; },
-      [] (bool solo_status) { return false; });
+      *registry_, dsp::PortType::Audio, false, true,
+      [] { return u8"Test Track"; }, [] (bool solo_status) { return false; });
 
     // Create MIDI fader without hard limiting and non-automatable parameters
     midi_fader_ = std::make_unique<Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-      dsp::PortType::Midi, false, false, [] { return u8"Test MIDI Track"; },
+      *registry_, dsp::PortType::Midi, false, false,
+      [] { return u8"Test MIDI Track"; },
       [] (bool solo_status) { return false; });
 
     // Set up mock transport
@@ -54,8 +50,7 @@ protected:
       }
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
   units::sample_rate_t   sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t    max_block_length_{ units::samples (1024) };
   std::unique_ptr<Fader> audio_fader_;
@@ -592,9 +587,7 @@ TEST_F (FaderTest, JsonSerializationRoundtrip)
 
   // Create new fader from JSON
   Fader deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
+    *registry_, dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
     [] (bool solo_status) { return false; });
 
   from_json (j, deserialized);
@@ -633,10 +626,8 @@ TEST_F (FaderTest, JsonSerializationMidiRoundtrip)
 
   // Create new fader from JSON
   Fader deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Midi, false, false, [] { return u8"Test MIDI Track"; },
-    [] (bool solo_status) { return false; });
+    *registry_, dsp::PortType::Midi, false, false,
+    [] { return u8"Test MIDI Track"; }, [] (bool solo_status) { return false; });
 
   from_json (j, deserialized);
 
@@ -658,9 +649,7 @@ TEST_F (FaderTest, ShouldBeMutedCallback)
 {
   bool should_mute = false;
   auto fader_with_callback = std::make_unique<Fader> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
+    *registry_, dsp::PortType::Audio, true, true, [] { return u8"Test Track"; },
     [&should_mute] (bool solo_status) { return should_mute; });
 
   fader_with_callback->prepare_for_processing (
@@ -903,9 +892,8 @@ TEST_F (FaderTest, HardLimitingFunctionality)
 {
   // Create fader with hard limiting enabled
   auto hard_limit_fader = std::make_unique<Fader> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ },
-    dsp::PortType::Audio, true, true, [] { return u8"Test Track Hard Limit"; },
+    *registry_, dsp::PortType::Audio, true, true,
+    [] { return u8"Test Track Hard Limit"; },
     [] (bool solo_status) { return false; });
   EXPECT_TRUE (hard_limit_fader->hard_limiting_enabled ());
 

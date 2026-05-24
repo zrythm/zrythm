@@ -189,7 +189,7 @@ on_dnd_drop (
   zrythm::plugins::PluginDescriptor * descr = nullptr;
   std::visit (
     [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
+      using ObjT = utils::base_type<decltype (obj)>;
       if constexpr (std::is_same_v<ObjT, zrythm::plugins::PluginDescriptor>)
         {
           descr = obj;

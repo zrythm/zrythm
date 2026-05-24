@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/gtest_wrapper.h"
 #include "utils/utf8_string.h"
 
 #include <QtEnvironmentVariables>
 
+#include <gtest/gtest.h>
 #include <juce_core/juce_core.h>
 
 using namespace Qt::StringLiterals;

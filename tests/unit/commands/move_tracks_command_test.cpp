@@ -4,6 +4,8 @@
 #include "commands/move_tracks_command.h"
 #include "structure/tracks/folder_track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -16,54 +18,36 @@ class MoveTracksCommandTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create track registry
-    track_registry_ = std::make_unique<structure::tracks::TrackRegistry> ();
-
-    // Create tempo map
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
 
-    // Create track collection
     collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (*track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
   }
 
-  // Helper to create default track dependencies
   structure::tracks::FinalTrackDependencies make_deps ()
   {
     return structure::tracks::FinalTrackDependencies{
-      *tempo_map_wrapper_,  file_audio_source_registry_,
-      plugin_registry_,     port_registry_,
-      param_registry_,      obj_registry_,
-      *track_registry_,     transport_,
-      [] { return false; }, {},
+      *tempo_map_wrapper_, registry_, transport_, [] { return false; }, {},
     };
   }
 
-  // Helper to create an audio bus track
   structure::tracks::TrackUuidReference create_audio_bus_track ()
   {
-    return track_registry_->create_object<structure::tracks::AudioBusTrack> (
-      make_deps ());
+    return utils::create_object<structure::tracks::AudioBusTrack> (
+      registry_, make_deps ());
   }
 
-  // Helper to create a folder track
   structure::tracks::TrackUuidReference create_folder_track ()
   {
-    return track_registry_->create_object<structure::tracks::FolderTrack> (
-      make_deps ());
+    return utils::create_object<structure::tracks::FolderTrack> (
+      registry_, make_deps ());
   }
 
-  // Test dependencies
-  std::unique_ptr<dsp::TempoMap>        tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
-  dsp::PortRegistry                     port_registry_;
-  dsp::ProcessorParameterRegistry       param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry    obj_registry_;
-  dsp::FileAudioSourceRegistry                      file_audio_source_registry_;
-  plugins::PluginRegistry                           plugin_registry_;
-  dsp::graph_test::MockTransport                    transport_;
-  std::unique_ptr<structure::tracks::TrackRegistry> track_registry_;
+  std::unique_ptr<dsp::TempoMap>                      tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>               tempo_map_wrapper_;
+  dsp::graph_test::MockTransport                      transport_;
+  utils::ObjectRegistry                               registry_;
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
 };
 

@@ -31,6 +31,7 @@
 
 #include "dsp/engine.h"
 #include "utils/float_ranges.h"
+#include "utils/logger.h"
 
 namespace zrythm::dsp
 {
@@ -81,10 +82,7 @@ AudioEngine::AudioEngine (
       midi_in_ (
         std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input)),
       midi_panic_processor_ (
-        utils::make_qobject_unique<dsp::MidiPanicProcessor> (
-          dsp::MidiPanicProcessor::ProcessorBaseDependencies{
-            .port_registry_ = port_registry_,
-            .param_registry_ = param_registry_ })),
+        utils::make_qobject_unique<dsp::MidiPanicProcessor> (local_registry_)),
       audio_callback_ (
         std::make_unique<AudioCallback> (
           [this] (
@@ -134,11 +132,7 @@ AudioEngine::AudioEngine (
               [this] () -> std::span<const float * const> {
                 return current_hw_input_;
               },
-              info.input_channel_count,
-              AudioInputProcessor::ProcessorBaseDependencies{
-                .port_registry_ = port_registry_,
-                .param_registry_ = param_registry_ },
-              this);
+              info.input_channel_count, local_registry_, this);
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
               nullptr, info.sample_rate, info.block_length);

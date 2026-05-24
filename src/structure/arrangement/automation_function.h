@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object_span.h"
+#include <span>
 
 namespace zrythm::structure::arrangement
 {
+class AutomationPoint;
 
 class AutomationFunction
 {
@@ -25,7 +26,7 @@ public:
    * @param type Function type.
    * @throw ZrythmException on error.
    */
-  static void apply (ArrangerObjectSpan sel, Type type);
+  static void apply (std::span<AutomationPoint *> sel, Type type);
 };
 
 }

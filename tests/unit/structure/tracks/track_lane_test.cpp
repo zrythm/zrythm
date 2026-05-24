@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_lane.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QObject>
 
@@ -15,14 +17,10 @@ class TrackLaneTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    obj_registry_ = std::make_unique<arrangement::ArrangerObjectRegistry> ();
-    file_audio_source_registry_ =
-      std::make_unique<dsp::FileAudioSourceRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    // Create dependencies for TrackLane
     TrackLane::TrackLaneDependencies deps{
-      .obj_registry_ = *obj_registry_,
-      .file_audio_source_registry_ = *file_audio_source_registry_,
+      .registry_ = *registry_,
       .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
     };
 
@@ -36,11 +34,10 @@ protected:
     audio_lane_.reset ();
   }
 
-  std::unique_ptr<arrangement::ArrangerObjectRegistry> obj_registry_;
-  std::unique_ptr<dsp::FileAudioSourceRegistry> file_audio_source_registry_;
-  bool                                          soloed_lanes_exist_ = false;
-  std::unique_ptr<TrackLane>                    midi_lane_;
-  std::unique_ptr<TrackLane>                    audio_lane_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  bool                                   soloed_lanes_exist_ = false;
+  std::unique_ptr<TrackLane>             midi_lane_;
+  std::unique_ptr<TrackLane>             audio_lane_;
 };
 
 TEST_F (TrackLaneTest, ConstructionAndBasicProperties)
@@ -198,8 +195,8 @@ TEST_F (TrackLaneTest, MidiRegionManagement)
 
   // Create a MIDI region
   dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-  auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_);
+  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, tempo_map, *registry_);
 
   // Add region to lane
   midi_lane_->arrangement::ArrangerObjectOwner<
@@ -227,9 +224,8 @@ TEST_F (TrackLaneTest, AudioRegionManagement)
   // Create an audio region
   auto          musical_mode_getter = [] { return false; };
   dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-  auto audio_region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_,
-    musical_mode_getter);
+  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
+    *registry_, tempo_map, *registry_, musical_mode_getter);
 
   // Add region to lane
   audio_lane_->arrangement::ArrangerObjectOwner<
@@ -259,8 +255,8 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
 
   // Add a MIDI region
   dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-  auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_);
+  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, tempo_map, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
     arrangement::MidiRegion>::add_object (midi_region_ref);
 
@@ -269,8 +265,7 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
 
   // Create new lane from JSON
   TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
+    .registry_ = *registry_,
     .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
   };
   TrackLane deserialized_lane (deps);
@@ -304,9 +299,8 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
   // Add an audio region
   auto          musical_mode_getter = [] { return false; };
   dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-  auto audio_region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_,
-    musical_mode_getter);
+  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
+    *registry_, tempo_map, *registry_, musical_mode_getter);
   audio_lane_->arrangement::ArrangerObjectOwner<
     arrangement::AudioRegion>::add_object (audio_region_ref);
 
@@ -315,8 +309,7 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
 
   // Create new lane from JSON
   TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
+    .registry_ = *registry_,
     .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
   };
   TrackLane deserialized_lane (deps);
@@ -368,8 +361,7 @@ TEST_F (TrackLaneTest, EmptyLaneSerialization)
   nlohmann::json j = *midi_lane_;
 
   TrackLane::TrackLaneDependencies deps{
-    .obj_registry_ = *obj_registry_,
-    .file_audio_source_registry_ = *file_audio_source_registry_,
+    .registry_ = *registry_,
     .soloed_lanes_exist_func_ = [this] () { return soloed_lanes_exist_; }
   };
   TrackLane deserialized_lane (deps);
@@ -433,16 +425,15 @@ TEST_F (TrackLaneTest, RegionTypeSeparation)
   dsp::TempoMap tempo_map{ units::sample_rate (44100) };
 
   // Add MIDI region to MIDI lane
-  auto midi_region_ref = obj_registry_->create_object<arrangement::MidiRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_);
+  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+    *registry_, tempo_map, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
     arrangement::MidiRegion>::add_object (midi_region_ref);
 
   // Add audio region to audio lane
   auto musical_mode_getter = [] { return false; };
-  auto audio_region_ref = obj_registry_->create_object<arrangement::AudioRegion> (
-    tempo_map, *obj_registry_, *file_audio_source_registry_,
-    musical_mode_getter);
+  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
+    *registry_, tempo_map, *registry_, musical_mode_getter);
   audio_lane_->arrangement::ArrangerObjectOwner<
     arrangement::AudioRegion>::add_object (audio_region_ref);
 

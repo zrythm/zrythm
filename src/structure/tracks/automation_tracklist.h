@@ -34,11 +34,8 @@ class AutomationTrackHolder : public QObject
 public:
   struct Dependencies
   {
-    const dsp::TempoMapWrapper                     &tempo_map_;
-    dsp::FileAudioSourceRegistry                   &file_audio_source_registry_;
-    dsp::PortRegistry                              &port_registry_;
-    dsp::ProcessorParameterRegistry                &param_registry_;
-    structure::arrangement::ArrangerObjectRegistry &object_registry_;
+    const dsp::TempoMapWrapper &tempo_map_;
+    utils::IObjectRegistry     &registry_;
   };
 
   AutomationTrackHolder (Dependencies dependencies, QObject * parent = nullptr)
@@ -144,8 +141,6 @@ class AutomationTracklist : public QAbstractListModel
     bool automationVisible READ automationVisible WRITE setAutomationVisible
       NOTIFY automationVisibleChanged)
   QML_UNCREATABLE ("")
-
-  using ArrangerObjectRegistry = arrangement::ArrangerObjectRegistry;
 
 public:
   AutomationTracklist (
@@ -283,9 +278,6 @@ private:
   static constexpr auto kAutomationVisibleKey = "automationVisible"sv;
   friend void to_json (nlohmann::json &j, const AutomationTracklist &ats);
   friend void from_json (const nlohmann::json &j, AutomationTracklist &ats);
-
-  auto &get_port_registry () { return dependencies_.port_registry_; }
-  auto &get_port_registry () const { return dependencies_.port_registry_; }
 
   auto &automation_track_holders () { return automation_tracks_; }
   auto  get_iterator_for_automation_track (const AutomationTrack &at) const

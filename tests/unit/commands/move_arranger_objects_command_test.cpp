@@ -3,6 +3,9 @@
 
 #include "commands/move_arranger_objects_command.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/arranger_object_factory.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -16,33 +19,38 @@ protected:
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
 
+    factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
+      structure::arrangement::ArrangerObjectFactory::Dependencies{
+        .tempo_map_ = *tempo_map,
+        .registry_ = object_registry,
+        .musical_mode_getter_ = [] () { return true; },
+        .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+        .last_editor_obj_len_provider_ = [] () { return 50.0; },
+        .automation_curve_algorithm_provider_ =
+          [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+
     // Create test objects
-    auto marker_ref =
-      object_registry.create_object<structure::arrangement::Marker> (
-        *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
-    auto note_ref = object_registry.create_object<
-      structure::arrangement::MidiNote> (*tempo_map);
+    auto marker_builder =
+      factory->get_builder<structure::arrangement::Marker> ();
+    auto marker_ref = marker_builder.build_in_registry ();
+    auto note_builder =
+      factory->get_builder<structure::arrangement::MidiNote> ();
+    auto note_ref = note_builder.build_in_registry ();
 
     test_objects_.push_back (marker_ref);
     test_objects_.push_back (note_ref);
 
     // Store original positions
-    std::visit (
-      [&] (auto &&obj) {
-        original_positions_.push_back (
-          units::ticks (obj->position ()->ticks ()));
-      },
-      marker_ref.get_object ());
-    std::visit (
-      [&] (auto &&obj) {
-        original_positions_.push_back (
-          units::ticks (obj->position ()->ticks ()));
-      },
-      note_ref.get_object ());
+    original_positions_.push_back (
+      units::ticks (marker_ref.get ()->position ()->ticks ()));
+    original_positions_.push_back (
+      units::ticks (note_ref.get ()->position ()->ticks ()));
   }
 
-  std::unique_ptr<dsp::TempoMap>                 tempo_map;
-  structure::arrangement::ArrangerObjectRegistry object_registry;
+  std::unique_ptr<dsp::TempoMap> tempo_map;
+  utils::ObjectRegistry          object_registry;
+  std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
   std::vector<structure::arrangement::ArrangerObjectUuidReference> test_objects_;
   std::vector<units::precise_tick_t> original_positions_;
 };
@@ -55,7 +63,7 @@ TEST_F (MoveArrangerObjectsCommandTest, InitialState)
   // Objects should still be at original positions
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -75,7 +83,7 @@ TEST_F (MoveArrangerObjectsCommandTest, RedoMovesObjects)
   // Objects should be moved by tick_delta
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -99,7 +107,7 @@ TEST_F (MoveArrangerObjectsCommandTest, UndoRestoresPositions)
   // Objects should be back at original positions
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -118,7 +126,7 @@ TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
   command.redo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -129,7 +137,7 @@ TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
   command.undo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -141,7 +149,7 @@ TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
   command.redo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -152,7 +160,7 @@ TEST_F (MoveArrangerObjectsCommandTest, MultipleUndoRedoCycles)
   command.undo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -171,7 +179,7 @@ TEST_F (MoveArrangerObjectsCommandTest, ZeroTickDelta)
   // Objects should remain at original positions
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -182,7 +190,7 @@ TEST_F (MoveArrangerObjectsCommandTest, ZeroTickDelta)
   command.undo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -204,16 +212,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   int original_pitch = 0;
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              original_pitch = obj->pitch ();
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          original_pitch = note->pitch ();
+        }
     }
 
   command.redo ();
@@ -221,7 +225,7 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   // Check horizontal movement for all objects
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -232,16 +236,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   // Check vertical movement for MIDI notes
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch + vertical_delta);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->pitch (), original_pitch + vertical_delta);
+        }
     }
 
   command.undo ();
@@ -249,7 +249,7 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   // Check horizontal movement restored
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -260,16 +260,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VerticalMovementMidiNotes)
   // Check vertical movement restored for MIDI notes
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->pitch (), original_pitch);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->pitch (), original_pitch);
+        }
     }
 }
 
@@ -282,16 +278,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityChangesMidiNotes)
   int original_velocity = 0;
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              original_velocity = obj->velocity ();
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          original_velocity = note->velocity ();
+        }
     }
 
   // Create a command with velocity change (no horizontal movement)
@@ -304,16 +296,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityChangesMidiNotes)
   // Check velocity changed for MIDI notes
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->velocity (), original_velocity + velocity_delta);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->velocity (), original_velocity + velocity_delta);
+        }
     }
 
   command.undo ();
@@ -321,16 +309,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityChangesMidiNotes)
   // Check velocity restored for MIDI notes
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->velocity (), original_velocity);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->velocity (), original_velocity);
+        }
     }
 }
 
@@ -340,16 +324,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityClampingAtBoundaries)
   // First, set velocity to a high value
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              obj->setVelocity (120);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          note->setVelocity (120);
+        }
     }
 
   // Try to increase velocity beyond 127
@@ -362,16 +342,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityClampingAtBoundaries)
   // Velocity should be clamped to 127
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->velocity (), 127);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->velocity (), 127);
+        }
     }
 
   command.undo ();
@@ -379,16 +355,12 @@ TEST_F (MoveArrangerObjectsCommandTest, VelocityClampingAtBoundaries)
   // Velocity should be restored to 120
   for (const auto &obj_ref : test_objects_)
     {
-      std::visit (
-        [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
-          if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiNote *>)
-            {
-              EXPECT_EQ (obj->velocity (), 120);
-            }
-        },
-        obj_ref.get_object ());
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ())
+        {
+          EXPECT_EQ (note->velocity (), 120);
+        }
     }
 }
 
@@ -399,7 +371,7 @@ TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
   original_positions_.clear ();
   for (const auto &test_object : test_objects_)
     {
-      if (auto * obj = test_object.get_object_base ())
+      if (auto * obj = test_object.get ())
         {
           obj->position ()->setTicks (100.0);
           original_positions_.push_back (
@@ -415,7 +387,7 @@ TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
   // Objects should be moved backward by tick_delta
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -426,7 +398,7 @@ TEST_F (MoveArrangerObjectsCommandTest, NegativeTickDelta)
   command.undo ();
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -478,7 +450,7 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingSameObjects)
   // Verify objects moved by total delta (original + delta1 + delta2)
   for (size_t i = 0; i < test_objects_.size (); ++i)
     {
-      if (auto * obj = test_objects_[i].get_object_base ())
+      if (auto * obj = test_objects_[i].get ())
         {
           EXPECT_DOUBLE_EQ (
             obj->position ()->ticks (),
@@ -496,9 +468,8 @@ TEST_F (MoveArrangerObjectsCommandTest, CommandMergingDifferentObjects)
   // Create command with different objects
   std::vector<structure::arrangement::ArrangerObjectUuidReference>
        different_objects;
-  auto different_marker =
-    object_registry.create_object<structure::arrangement::Marker> (
-      *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
+  auto diff_builder = factory->get_builder<structure::arrangement::Marker> ();
+  auto different_marker = diff_builder.build_in_registry ();
   different_objects.push_back (different_marker);
 
   MoveArrangerObjectsCommand command1 (test_objects_, tick_delta);

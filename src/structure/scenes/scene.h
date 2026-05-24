@@ -3,9 +3,9 @@
 
 #pragma once
 
-#include "structure/arrangement/arranger_object.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/iobject_registry.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -26,15 +26,9 @@ class Scene : public QObject
 
 public:
   Scene (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    const tracks::TrackCollection       &track_collection,
-    QObject *                            parent = nullptr)
-      : QObject (parent),
-        clip_slot_list_ (
-          utils::make_qobject_unique<
-            ClipSlotList> (object_registry, track_collection, this))
-  {
-  }
+    utils::IObjectRegistry        &registry,
+    const tracks::TrackCollection &track_collection,
+    QObject *                      parent = nullptr);
 
   ClipSlotList * clipSlots () const { return clip_slot_list_.get (); }
 
@@ -72,9 +66,9 @@ class SceneList : public QAbstractListModel
 
 public:
   SceneList (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    const tracks::TrackCollection       &track_collection,
-    QObject *                            parent = nullptr);
+    utils::IObjectRegistry        &registry,
+    const tracks::TrackCollection &track_collection,
+    QObject *                      parent = nullptr);
 
   enum SceneListRoles
   {
@@ -126,7 +120,7 @@ private:
 
 private:
   std::vector<utils::QObjectUniquePtr<Scene>> scenes_;
-  arrangement::ArrangerObjectRegistry        &object_registry_;
+  utils::IObjectRegistry                     &registry_;
   const tracks::TrackCollection              &track_collection_;
 };
 }

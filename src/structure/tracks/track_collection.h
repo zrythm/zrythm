@@ -5,7 +5,7 @@
 
 #include <concepts>
 
-#include "structure/tracks/track_span.h"
+#include "structure/tracks/track.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -50,8 +50,8 @@ public:
   Q_ENUM (TrackRoles)
 
   TrackCollection (
-    TrackRegistry &track_registry,
-    QObject *      parent = nullptr) noexcept;
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr) noexcept;
   ~TrackCollection () noexcept override;
   Q_DISABLE_COPY_MOVE (TrackCollection)
 
@@ -90,7 +90,7 @@ public:
   /**
    * @brief Get the track at the given index.
    */
-  TrackPtrVariant get_track_at_index (size_t index) const;
+  Track * get_track_at_index (size_t index) const;
 
   /**
    * @brief Get the track reference at the given index.
@@ -190,11 +190,6 @@ public:
   void move_track (const Track::Uuid &track_id, int pos);
 
   /**
-   * @brief Get a span view of all tracks.
-   */
-  auto get_track_span () const { return TrackSpan{ tracks_ }; }
-
-  /**
    * @brief Get the underlying tracks vector.
    */
   const std::vector<TrackUuidReference> &tracks () const { return tracks_; }
@@ -202,7 +197,7 @@ public:
   /**
    * @brief Get the track registry.
    */
-  TrackRegistry &get_track_registry () const { return track_registry_; }
+  utils::IObjectRegistry &get_registry () const { return registry_; }
 
   /**
    * @brief Set the expanded state of a foldable track.
@@ -299,7 +294,7 @@ private:
   friend void from_json (const nlohmann::json &j, TrackCollection &collection);
 
 private:
-  TrackRegistry                  &track_registry_;
+  utils::IObjectRegistry         &registry_;
   std::vector<TrackUuidReference> tracks_;
 
   /**

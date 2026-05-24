@@ -191,7 +191,7 @@ public:
   Utf8String expand_env_vars () const;
 
   static Utf8String
-  join (RangeOf<Utf8String> auto &&strings, const Utf8String &delimiter)
+  join (utils::RangeOf<Utf8String> auto &&strings, const Utf8String &delimiter)
   {
     auto it = std::ranges::begin (strings);
     auto end = std::ranges::end (strings);

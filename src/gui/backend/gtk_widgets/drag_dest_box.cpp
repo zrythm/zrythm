@@ -83,7 +83,7 @@ get_available_ptrs_from_wrapped_obj (
 {
   std::visit (
     [&] (auto &&obj) {
-      using ObjT = base_type<decltype (obj)>;
+      using ObjT = utils::base_type<decltype (obj)>;
       if constexpr (std::is_same_v<ObjT, FileDescriptor>)
         {
           file_descr = obj;

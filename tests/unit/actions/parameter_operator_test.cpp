@@ -4,9 +4,11 @@
 #include "actions/parameter_operator.h"
 #include "dsp/parameter.h"
 #include "undo/undo_stack.h"
-#include "utils/gtest_wrapper.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/actions/mock_undo_stack.h"
+#include <gtest/gtest.h>
 
 namespace zrythm::actions
 {
@@ -17,8 +19,8 @@ protected:
   void SetUp () override
   {
     // Create test parameter
-    param_ref_ = param_registry_.create_object<dsp::ProcessorParameter> (
-      port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    param_ref_ = utils::create_object<dsp::ProcessorParameter> (
+      registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
       dsp::ParameterRange (
         dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
       utils::Utf8String::from_utf8_encoded_string ("Test Parameter"));
@@ -43,9 +45,8 @@ protected:
     undo_stack_.reset ();
   }
 
-  dsp::PortRegistry                           port_registry_;
-  dsp::ProcessorParameterRegistry             param_registry_{ port_registry_ };
-  dsp::ProcessorParameterUuidReference        param_ref_{ param_registry_ };
+  utils::ObjectRegistry                       registry_;
+  dsp::ProcessorParameterUuidReference        param_ref_{ registry_ };
   dsp::ProcessorParameter *                   param_ = nullptr;
   std::unique_ptr<undo::UndoStack>            undo_stack_;
   std::unique_ptr<ProcessorParameterOperator> operator_;
@@ -182,8 +183,8 @@ TEST_F (ParameterOperatorTest, OneValueChange)
 TEST_F (ParameterOperatorTest, DifferentParameterTypes)
 {
   // Create parameter with different range
-  auto param_ref2 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"volume_param"),
+  auto param_ref2 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"volume_param"),
     dsp::ParameterRange (
       dsp::ParameterRange::Type::GainAmplitude, 0.f, 2.f, 0.f, 1.f),
     utils::Utf8String::from_utf8_encoded_string ("Volume"));
@@ -212,8 +213,8 @@ TEST_F (ParameterOperatorTest, SignalEmissions)
     operator_.get (), &ProcessorParameterOperator::processorParameterChanged,
     operator_.get (), [&] () { param_changed = true; });
 
-  auto param_ref2 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"new_param"),
+  auto param_ref2 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"new_param"),
     dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f),
     utils::Utf8String::from_utf8_encoded_string ("New Parameter"));
   auto * param2 = param_ref2.get_object_as<dsp::ProcessorParameter> ();

@@ -83,7 +83,7 @@ on_header_bind (
         Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
       std::visit (
         [&] (auto &&track) {
-          if constexpr (std::derived_from<base_type<decltype (track)>, Track>)
+          if constexpr (std::derived_from<utils::base_type<decltype (track)>, Track>)
             {
               switch (track->type_)
                 {

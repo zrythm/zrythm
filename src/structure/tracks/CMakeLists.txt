@@ -74,7 +74,6 @@ target_sources(zrythm_structure_tracks_lib
       track_lane_list.h
       track_processor.h
       track_routing.h
-      track_span.h
       tracklist.h
 )
 set_target_properties(zrythm_structure_tracks_lib PROPERTIES

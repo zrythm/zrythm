@@ -8,11 +8,13 @@
 #include "structure/arrangement/arranger_object.h"
 #include "utils/midi.h"
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::structure::arrangement
 {
 
 template <typename T>
-concept RangeOfMidiNotePointers = RangeOf<T, MidiNote *>;
+concept RangeOfMidiNotePointers = utils::RangeOf<T, MidiNote *>;
 
 /**
  * A MIDI note inside a Region shown in the piano roll.
@@ -143,18 +145,8 @@ private:
 
   static constexpr auto kVelocityKey = "velocity"sv;
   static constexpr auto kPitchKey = "pitch"sv;
-  friend void           to_json (nlohmann::json &j, const MidiNote &note)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (note));
-    j[kVelocityKey] = note.velocity_;
-    j[kPitchKey] = note.pitch_;
-  }
-  friend void from_json (const nlohmann::json &j, MidiNote &note)
-  {
-    from_json (j, static_cast<ArrangerObject &> (note));
-    j.at (kVelocityKey).get_to (note.velocity_);
-    j.at (kPitchKey).get_to (note.pitch_);
-  }
+  friend void           to_json (nlohmann::json &j, const MidiNote &note);
+  friend void           from_json (const nlohmann::json &j, MidiNote &note);
 
 private:
   /** Velocity. */

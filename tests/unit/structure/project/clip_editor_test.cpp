@@ -3,6 +3,7 @@
 
 #include "structure/arrangement/midi_region.h"
 #include "structure/project/clip_editor.h"
+#include "utils/object_registry.h"
 
 #include "helpers/scoped_qcoreapplication.h"
 
@@ -21,31 +22,19 @@ class ClipEditorTest
 protected:
   void SetUp () override
   {
-    // Create registries needed by ClipEditor
-    object_registry_ = std::make_unique<ArrangerObjectRegistry> ();
-    track_registry_ = std::make_unique<TrackRegistry> ();
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    // Create a simple track resolver
-    track_resolver_ = [this] (const TrackUuid &uuid) -> TrackPtrVariant {
-      return track_registry_->find_by_id_or_throw (uuid);
-    };
-
-    // Create ClipEditor
-    clip_editor_ = std::make_unique<ClipEditor> (
-      *object_registry_, track_resolver_, nullptr);
+    clip_editor_ = std::make_unique<ClipEditor> (*registry_, nullptr);
   }
 
   void TearDown () override
   {
     clip_editor_.reset ();
-    track_registry_.reset ();
-    object_registry_.reset ();
+    registry_.reset ();
   }
 
-  std::unique_ptr<ArrangerObjectRegistry> object_registry_;
-  std::unique_ptr<TrackRegistry>          track_registry_;
-  TrackResolver                           track_resolver_;
-  std::unique_ptr<ClipEditor>             clip_editor_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<ClipEditor>            clip_editor_;
 };
 
 // ============================================================================
@@ -138,8 +127,7 @@ TEST_F (ClipEditorTest, JsonSerializationRoundTripNoRegion)
 {
   nlohmann::json j = *clip_editor_;
 
-  auto deserialized_editor =
-    std::make_unique<ClipEditor> (*object_registry_, track_resolver_, nullptr);
+  auto deserialized_editor = std::make_unique<ClipEditor> (*registry_, nullptr);
   j.get_to (*deserialized_editor);
 
   // Should still have no region
@@ -152,8 +140,7 @@ TEST_F (ClipEditorTest, JsonSerializationRoundTripNoRegion)
 
 TEST_F (ClipEditorTest, InitFromNoRegion)
 {
-  auto cloned_editor =
-    std::make_unique<ClipEditor> (*object_registry_, track_resolver_, nullptr);
+  auto cloned_editor = std::make_unique<ClipEditor> (*registry_, nullptr);
 
   init_from (*cloned_editor, *clip_editor_, utils::ObjectCloneType::Snapshot);
 
@@ -183,16 +170,5 @@ TEST_F (ClipEditorTest, UnsetRegionEmitsSignal)
 
   // Should not emit when there was no region
   EXPECT_FALSE (signal_emitted);
-}
-
-// ============================================================================
-// Registry Reference Tests
-// ============================================================================
-
-TEST_F (ClipEditorTest, TrackResolverThrowsForNonexistentUuid)
-{
-  // Verify the track resolver throws for non-existent UUIDs
-  TrackUuid fake_uuid (QUuid::createUuid ());
-  EXPECT_THROW (track_resolver_ (fake_uuid), std::exception);
 }
 }

@@ -36,9 +36,9 @@ public:
   using SampleRateGetter = std::function<units::sample_rate_t ()>;
 
   AudioPool (
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    ProjectPoolPathGetter         path_getter,
-    SampleRateGetter              sr_getter);
+    utils::IObjectRegistry &registry,
+    ProjectPoolPathGetter   path_getter,
+    SampleRateGetter        sr_getter);
 
 public:
   /**
@@ -109,12 +109,8 @@ public:
    */
   void write_to_disk (bool is_backup);
 
-  auto get_clip_ptrs () const
-  {
-    return std::views::transform (
-      clip_registry_.get_hash_map () | std::views::values,
-      [] (const auto &clip) { return std::get<dsp::FileAudioSource *> (clip); });
-  }
+  void
+  for_each_clip (std::function<void (dsp::FileAudioSource &)> visitor) const;
 
 private:
   friend void init_from (
@@ -122,9 +118,8 @@ private:
     const AudioPool       &other,
     utils::ObjectCloneType clone_type);
 
-  static constexpr auto kLastKnownFileHashesKey = "fileHashes"sv;
-  friend void           to_json (nlohmann::json &j, const AudioPool &pool);
-  friend void           from_json (const nlohmann::json &j, AudioPool &pool);
+  friend void to_json (nlohmann::json &j, const AudioPool &pool);
+  friend void from_json (const nlohmann::json &j, AudioPool &pool);
 
 private:
   SampleRateGetter      sample_rate_getter_;
@@ -133,7 +128,7 @@ private:
   /**
    * Audio clips.
    */
-  FileAudioSourceRegistry &clip_registry_;
+  utils::IObjectRegistry &registry_;
 
   /** File hashes, used for checking if a clip is already written to the pool so
    * we can save time by skipping overwriting it. */
@@ -151,12 +146,11 @@ struct fmt::formatter<zrythm::dsp::AudioPool> : fmt::formatter<std::string_view>
   {
     std::stringstream ss;
     ss << "\nAudio Pool:\n";
-    for (const auto &clip : pool.get_clip_ptrs ())
-      {
-        auto pool_path = pool.get_clip_path (clip->get_uuid (), false);
-        ss << fmt::format (
-          "[Clip {}] {}: {}\n", clip->get_uuid (), clip->get_name (), pool_path);
-      }
+    pool.for_each_clip ([&] (const auto &clip) {
+      auto pool_path = pool.get_clip_path (clip.get_uuid (), false);
+      ss << fmt::format (
+        "[Clip {}] {}: {}\n", clip.get_uuid (), clip.get_name (), pool_path);
+    });
 
     return fmt::formatter<std::string_view>::format (
       fmt::format ("{}", ss.str ()), ctx);

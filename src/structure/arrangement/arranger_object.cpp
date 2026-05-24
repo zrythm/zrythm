@@ -11,7 +11,8 @@ ArrangerObject::ArrangerObject (
   const dsp::TempoMap   &tempo_map,
   ArrangerObjectFeatures features,
   QObject *              parent) noexcept
-    : QObject (parent), type_ (type), tempo_map_ (tempo_map),
+    : utils::UuidIdentifiableObject<ArrangerObject> (parent), type_ (type),
+      tempo_map_ (tempo_map),
       time_conversion_funcs_ (
         dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_)),
       position_ (*time_conversion_funcs_),

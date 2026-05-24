@@ -184,12 +184,12 @@ protected:
     process_events_until_true ([&] () { return instantiation_finished; });
     EXPECT_TRUE (instantiation_finished);
 
-    auto &plugin_registry = project->get_plugin_registry ();
-    EXPECT_EQ (plugin_registry.get_hash_map ().size (), 1);
+    auto &plugin_registry = project->get_registry ();
+    EXPECT_EQ (plugin_registry.count_matching<plugins::Plugin> (), 1);
 
-    auto * plugin = std::visit (
-      [] (auto * pl) -> plugins::Plugin * { return pl; },
-      plugin_registry.get_hash_map ().begin ()->second);
+    plugins::Plugin * plugin = nullptr;
+    plugin_registry.for_each_matching<plugins::Plugin> (
+      [&] (plugins::Plugin &pl) { plugin = &pl; });
     EXPECT_NE (plugin, nullptr);
     if (plugin == nullptr)
       return nullptr;
@@ -325,12 +325,12 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
   process_events_until_true ([&] () { return instantiation_finished; });
   ASSERT_TRUE (instantiation_finished);
 
-  auto &plugin_registry2 = project2->get_plugin_registry ();
-  ASSERT_EQ (plugin_registry2.get_hash_map ().size (), 1);
+  auto &plugin_registry2 = project2->get_registry ();
+  ASSERT_EQ (plugin_registry2.count_matching<plugins::Plugin> (), 1);
 
-  auto * plugin2 = std::visit (
-    [] (auto * pl) -> plugins::Plugin * { return pl; },
-    plugin_registry2.get_hash_map ().begin ()->second);
+  plugins::Plugin * plugin2 = nullptr;
+  plugin_registry2.for_each_matching<plugins::Plugin> (
+    [&] (plugins::Plugin &pl) { plugin2 = &pl; });
   ASSERT_NE (plugin2, nullptr);
 
   plugin2->load_state (saved_state);

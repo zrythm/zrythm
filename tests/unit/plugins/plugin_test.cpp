@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <QSignalSpy>
 #include <QTest>
@@ -15,8 +17,8 @@ namespace zrythm::plugins
 class TestPlugin : public Plugin
 {
 public:
-  TestPlugin (ProcessorBaseDependencies dependencies, QObject * parent = nullptr)
-      : Plugin (dependencies, parent)
+  TestPlugin (utils::IObjectRegistry &registry, QObject * parent = nullptr)
+      : Plugin (registry, parent)
   {
     auto bypass_ref = generate_default_bypass_param ();
     add_parameter (bypass_ref);
@@ -68,13 +70,9 @@ class PluginTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<dsp::PortRegistry> ();
-    param_registry_ =
-      std::make_unique<dsp::ProcessorParameterRegistry> (*port_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    plugin_ = std::make_unique<
-      TestPlugin> (dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+    plugin_ = std::make_unique<TestPlugin> (*registry_);
 
     // Set up mock transport
     mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
@@ -89,8 +87,7 @@ protected:
       }
   }
 
-  std::unique_ptr<dsp::PortRegistry>               port_registry_;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
   units::sample_rate_t        sample_rate_{ units::sample_rate (48000) };
   units::sample_u32_t         max_block_length_{ units::samples (1024) };
   std::unique_ptr<TestPlugin> plugin_;
@@ -334,9 +331,7 @@ TEST_F (PluginTest, JsonSerializationRoundtrip)
   nlohmann::json j = *plugin_;
 
   // Create new plugin from JSON
-  TestPlugin deserialized (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = *port_registry_, .param_registry_ = *param_registry_ });
+  TestPlugin deserialized (*registry_);
   from_json (j, deserialized);
 
   // Verify state
@@ -359,10 +354,12 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   plugin_->set_configuration (config);
 
   // Create ports for passthrough
-  auto audio_in = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio In", dsp::PortFlow::Input, dsp::AudioPort::BusLayout::Mono, 1);
-  auto audio_out = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Mono, 1);
+  auto audio_in = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Audio In", dsp::PortFlow::Input,
+    dsp::AudioPort::BusLayout::Mono, 1);
+  auto audio_out = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Audio Out", dsp::PortFlow::Output,
+    dsp::AudioPort::BusLayout::Mono, 1);
 
   plugin_->add_input_port (audio_in);
   plugin_->add_output_port (audio_out);
@@ -451,8 +448,8 @@ TEST_F (PluginTest, ConfigurationChangedSignalsGenerationNeededForFreshPlugin)
  */
 TEST_F (PluginTest, ConfigurationChangedSignalsNoGenerationWithExistingInputPorts)
 {
-  auto midi_in = port_registry_->create_object<dsp::MidiPort> (
-    u8"MIDI In", dsp::PortFlow::Input);
+  auto midi_in = utils::create_object<dsp::MidiPort> (
+    *registry_, u8"MIDI In", dsp::PortFlow::Input);
   plugin_->add_input_port (midi_in);
 
   auto descriptor = std::make_unique<PluginDescriptor> ();
@@ -480,8 +477,9 @@ TEST_F (
   PluginTest,
   ConfigurationChangedSignalsNoGenerationWithExistingOutputPorts)
 {
-  auto audio_out = port_registry_->create_object<dsp::AudioPort> (
-    u8"Audio Out", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo, 2);
+  auto audio_out = utils::create_object<dsp::AudioPort> (
+    *registry_, u8"Audio Out", dsp::PortFlow::Output,
+    dsp::AudioPort::BusLayout::Stereo, 2);
   plugin_->add_output_port (audio_out);
 
   auto descriptor = std::make_unique<PluginDescriptor> ();

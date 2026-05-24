@@ -3,6 +3,7 @@
 
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "utils/object_registry.h"
 
 #include "./arranger_object_owner_test.h"
 
@@ -15,19 +16,17 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    owner = std::make_unique<MockArrangerObjectOwner> (
-      registry, file_audio_source_registry);
+    owner = std::make_unique<MockArrangerObjectOwner> (registry);
   }
 
   ArrangerObjectUuidReference create_midi_note ()
   {
     // Create MidiNote using registry
-    return registry.create_object<MidiNote> (*tempo_map, owner.get ());
+    return utils::create_object<MidiNote> (registry, *tempo_map, owner.get ());
   }
 
   std::unique_ptr<dsp::TempoMap>           tempo_map;
-  ArrangerObjectRegistry                   registry;
-  dsp::FileAudioSourceRegistry             file_audio_source_registry;
+  utils::ObjectRegistry                    registry;
   std::unique_ptr<MockArrangerObjectOwner> owner;
 };
 
@@ -199,15 +198,14 @@ TEST_F (ArrangerObjectOwnerTest, Serialization)
   to_json (j, static_cast<const ArrangerObjectOwner<MidiNote> &> (*owner));
 
   // Create new owner
-  auto new_owner = std::make_unique<MockArrangerObjectOwner> (
-    registry, file_audio_source_registry);
+  auto new_owner = std::make_unique<MockArrangerObjectOwner> (registry);
   from_json (j, static_cast<ArrangerObjectOwner<MidiNote> &> (*new_owner));
 
   // Verify deserialization (use MidiNote base class explicitly)
   EXPECT_EQ (
     new_owner->ArrangerObjectOwner<MidiNote>::get_children_vector ().size (), 1);
   EXPECT_EQ (
-    new_owner->ArrangerObjectOwner<MidiNote>::get_children_vector ()[0].id (),
+    new_owner->ArrangerObjectOwner<MidiNote>::get_children_vector ().front ().id (),
     obj_ref.id ());
 }
 
@@ -217,8 +215,7 @@ TEST_F (ArrangerObjectOwnerTest, ObjectCloning)
   owner->ArrangerObjectOwner<MidiNote>::add_object (obj_ref);
 
   // Clone owner with new identities (cast to MidiNote base to avoid ambiguity)
-  auto cloned_owner = std::make_unique<MockArrangerObjectOwner> (
-    registry, file_audio_source_registry);
+  auto cloned_owner = std::make_unique<MockArrangerObjectOwner> (registry);
   init_from (
     static_cast<ArrangerObjectOwner<MidiNote> &> (*cloned_owner),
     static_cast<const ArrangerObjectOwner<MidiNote> &> (*owner),
@@ -278,8 +275,7 @@ protected:
     factory = std::make_unique<ArrangerObjectFactory> (
       ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map,
-        .object_registry_ = registry,
-        .file_audio_source_registry_ = file_audio_source_registry,
+        .registry_ = registry,
         .musical_mode_getter_ = [] () { return true; },
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
@@ -307,8 +303,7 @@ protected:
   }
 
   std::unique_ptr<dsp::TempoMap>               tempo_map;
-  ArrangerObjectRegistry                       registry;
-  dsp::FileAudioSourceRegistry                 file_audio_source_registry;
+  utils::ObjectRegistry                        registry;
   std::unique_ptr<ArrangerObjectFactory>       factory;
   std::unique_ptr<ArrangerObjectUuidReference> region_ref;
 };

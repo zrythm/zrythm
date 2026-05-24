@@ -8,15 +8,11 @@
 
 namespace zrythm::structure::tracks
 {
-TrackLaneList::TrackLaneList (
-  structure::arrangement::ArrangerObjectRegistry &obj_registry,
-  dsp::FileAudioSourceRegistry                   &file_audio_source_registry,
-  QObject *                                       parent)
+TrackLaneList::TrackLaneList (utils::IObjectRegistry &registry, QObject * parent)
     : QAbstractListModel (parent),
       dependencies_ (
         TrackLane::TrackLaneDependencies{
-          .obj_registry_ = obj_registry,
-          .file_audio_source_registry_ = file_audio_source_registry,
+          .registry_ = registry,
           .soloed_lanes_exist_func_ = [this] () {
             return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
           } })

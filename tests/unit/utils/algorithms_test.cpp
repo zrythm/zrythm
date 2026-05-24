@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/algorithms.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 TEST (AlgorithmsTest, NearbyBinarySearch)
 {

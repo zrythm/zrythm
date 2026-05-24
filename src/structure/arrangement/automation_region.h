@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -27,10 +27,9 @@ class AutomationRegion final
 
 public:
   AutomationRegion (
-    const dsp::TempoMap          &tempo_map,
-    ArrangerObjectRegistry       &object_registry,
-    dsp::FileAudioSourceRegistry &file_audio_source_registry,
-    QObject *                     parent = nullptr);
+    const dsp::TempoMap    &tempo_map,
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   // ========================================================================
   // QML Interface
@@ -75,22 +74,19 @@ public:
     return "automationPoints";
   }
 
+  ArrangerObjectListModel * get_child_list_model () const override
+  {
+    return ArrangerObjectOwner<AutomationPoint>::get_model ();
+  }
+
 private:
   friend void init_from (
     AutomationRegion       &obj,
     const AutomationRegion &other,
     utils::ObjectCloneType  clone_type);
 
-  friend void to_json (nlohmann::json &j, const AutomationRegion &region)
-  {
-    to_json (j, static_cast<const ArrangerObject &> (region));
-    to_json (j, static_cast<const ArrangerObjectOwner &> (region));
-  }
-  friend void from_json (const nlohmann::json &j, AutomationRegion &region)
-  {
-    from_json (j, static_cast<ArrangerObject &> (region));
-    from_json (j, static_cast<ArrangerObjectOwner &> (region));
-  }
+  friend void to_json (nlohmann::json &j, const AutomationRegion &region);
+  friend void from_json (const nlohmann::json &j, AutomationRegion &region);
 
 private:
   BOOST_DESCRIBE_CLASS (

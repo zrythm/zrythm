@@ -6,6 +6,8 @@
 #include <utility>
 
 #include "plugins/plugin_all.h"
+#include "utils/optional_ref.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::plugins
 {
@@ -41,8 +43,7 @@ public:
 
   struct CommonFactoryDependencies
   {
-    plugins::PluginRegistry                      &plugin_registry_;
-    dsp::ProcessorBase::ProcessorBaseDependencies processor_base_dependencies_;
+    utils::IObjectRegistry &registry;
     plugins::JucePlugin::CreatePluginInstanceAsyncFunc
                                            create_plugin_instance_async_func_;
     std::function<units::sample_rate_t ()> sample_rate_provider_;
@@ -88,20 +89,20 @@ private:
       auto obj_ref = [&] () {
         if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
           {
-            return dependencies_.plugin_registry_.create_object<PluginT> (
-              dependencies_.processor_base_dependencies_,
+            return utils::create_object<PluginT> (
+              dependencies_.registry, dependencies_.registry,
               dependencies_.top_level_window_provider_);
           }
         else if constexpr (
           std::derived_from<PluginT, plugins::InternalPluginBase>)
           {
-            return dependencies_.plugin_registry_.create_object<PluginT> (
-              dependencies_.processor_base_dependencies_);
+            return utils::create_object<PluginT> (
+              dependencies_.registry, dependencies_.registry);
           }
         else
           {
-            return dependencies_.plugin_registry_.create_object<PluginT> (
-              dependencies_.processor_base_dependencies_,
+            return utils::create_object<PluginT> (
+              dependencies_.registry, dependencies_.registry,
               dependencies_.create_plugin_instance_async_func_,
               dependencies_.sample_rate_provider_,
               dependencies_.buffer_size_provider_,
@@ -114,18 +115,15 @@ private:
           // set instantiation finished handler and apply configuration, which
           // will either fire the instantiation finished handler immediately or
           // later (depending on the plugin format)
-          std::visit (
-            [&] (auto &&pl) {
-              const auto instantiation_finish_opts =
-                instantiation_finish_options_.value ();
-              QObject::connect (
-                pl, &zrythm::plugins::Plugin::instantiationFinished,
-                instantiation_finish_opts.handler_context_,
-                [obj_ref, instantiation_finish_opts] () {
-                  instantiation_finish_opts.handler_ (obj_ref);
-                });
-            },
-            obj_ref.get_object ());
+          const auto instantiation_finish_opts =
+            instantiation_finish_options_.value ();
+          auto * plugin = obj_ref.get ();
+          QObject::connect (
+            plugin, &zrythm::plugins::Plugin::instantiationFinished,
+            instantiation_finish_opts.handler_context_,
+            [obj_ref, instantiation_finish_opts] () {
+              instantiation_finish_opts.handler_ (obj_ref);
+            });
         }
 
       if (setting_.has_value ())
@@ -151,6 +149,30 @@ private:
   {
     auto builder = Builder<PluginT> (dependencies_);
     return builder;
+  }
+
+public:
+  template <typename PluginT>
+  std::unique_ptr<PluginT> build_for_deserialization () const
+  {
+    if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
+      {
+        return std::make_unique<PluginT> (
+          dependencies_.registry, dependencies_.top_level_window_provider_);
+      }
+    else if constexpr (std::derived_from<PluginT, plugins::InternalPluginBase>)
+      {
+        return std::make_unique<PluginT> (dependencies_.registry);
+      }
+    else
+      {
+        return std::make_unique<PluginT> (
+          dependencies_.registry,
+          dependencies_.create_plugin_instance_async_func_,
+          dependencies_.sample_rate_provider_,
+          dependencies_.buffer_size_provider_,
+          dependencies_.top_level_window_provider_);
+      }
   }
 
 public:

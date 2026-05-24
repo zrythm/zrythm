@@ -6,6 +6,8 @@
 #include "dsp/port_connection.h"
 #include "utils/icloneable.h"
 
+#include <nlohmann/json_fwd.hpp>
+
 namespace zrythm::dsp
 {
 
@@ -213,21 +215,8 @@ public:
   auto &get_connections () const { return connections_; }
 
 private:
-  static constexpr auto kConnectionsKey = "connections"sv;
-  friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm)
-  {
-    j[kConnectionsKey] = pcm.connections_;
-  }
-  friend void from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
-  {
-    for (const auto &conn_json : j.at (kConnectionsKey))
-      {
-        auto * conn = new PortConnection (&pcm);
-        from_json (conn_json, *conn);
-        pcm.connections_.push_back (conn);
-      }
-    pcm.regenerate_hashtables ();
-  }
+  friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm);
+  friend void from_json (const nlohmann::json &j, PortConnectionsManager &pcm);
 
   void add_or_replace_connection (
     ConnectionHashTable  &ht,

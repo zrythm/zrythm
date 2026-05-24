@@ -8,6 +8,8 @@
 #include "plugins/juce_plugin.h"
 #include "utils/float_ranges.h"
 #include "utils/io_utils.h"
+#include "utils/logger.h"
+#include "utils/registry_utils.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
@@ -18,13 +20,13 @@ namespace zrythm::plugins
 {
 
 JucePlugin::JucePlugin (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
+  utils::IObjectRegistry                &registry,
   CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
   std::function<units::sample_rate_t ()> sample_rate_provider,
   std::function<units::sample_u32_t ()>  buffer_size_provider,
   PluginHostWindowFactory                top_level_window_provider,
   QObject *                              parent)
-    : Plugin (dependencies, parent),
+    : Plugin (registry, parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
       sample_rate_provider_ (std::move (sample_rate_provider)),
@@ -247,8 +249,8 @@ JucePlugin::create_ports_from_juce_plugin ()
 
           auto name = bus->getName ();
 
-          auto port = dependencies ().port_registry_.create_object<dsp::AudioPort> (
-            utils::Utf8String::from_juce_string (name),
+          auto port = utils::create_object<dsp::AudioPort> (
+            registry (), utils::Utf8String::from_juce_string (name),
             isInput ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout, nCh,
             purpose);
 
@@ -266,18 +268,16 @@ JucePlugin::create_ports_from_juce_plugin ()
   // Create MIDI input port if plugin accepts MIDI
   if (processor.acceptsMidi ())
     {
-      auto port_ref =
-        dependencies ().port_registry_.create_object<dsp::MidiPort> (
-          u8"midi_in", dsp::PortFlow::Input);
+      auto port_ref = utils::create_object<dsp::MidiPort> (
+        registry (), u8"midi_in", dsp::PortFlow::Input);
       add_input_port (port_ref);
     }
 
   // Create MIDI output port if plugin produces MIDI
   if (processor.producesMidi ())
     {
-      auto port_ref =
-        dependencies ().port_registry_.create_object<dsp::MidiPort> (
-          u8"midi_out", dsp::PortFlow::Output);
+      auto port_ref = utils::create_object<dsp::MidiPort> (
+        registry (), u8"midi_out", dsp::PortFlow::Output);
       add_output_port (port_ref);
     }
 }
@@ -308,7 +308,7 @@ JucePlugin::create_parameters_from_juce_plugin ()
       size_t                    zrythm_param_index = 0;
       for (const auto &param_ref : get_parameters ())
         {
-          auto * p = param_ref.get_object_as<dsp::ProcessorParameter> ();
+          auto * p = param_ref.get ();
           if (p->get_unique_id () == unique_id)
             {
               zrythm_param = p;
@@ -338,13 +338,11 @@ JucePlugin::create_parameters_from_juce_plugin ()
               };
             }
 
-          auto zrythm_param_ref =
-            dependencies ().param_registry_.create_object<dsp::ProcessorParameter> (
-              dependencies ().port_registry_, unique_id, range,
-              utils::Utf8String::from_juce_string (param->getName (100)));
+          auto zrythm_param_ref = utils::create_object<dsp::ProcessorParameter> (
+            registry (), registry (), unique_id, range,
+            utils::Utf8String::from_juce_string (param->getName (100)));
           add_parameter (zrythm_param_ref);
-          zrythm_param =
-            zrythm_param_ref.get_object_as<dsp::ProcessorParameter> ();
+          zrythm_param = zrythm_param_ref.get ();
           zrythm_param->set_automatable (param->isAutomatable ());
           zrythm_param_index = get_parameters ().size () - 1;
         }

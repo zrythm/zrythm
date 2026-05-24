@@ -10,8 +10,6 @@
 
 #include <QFile>
 
-#include "tracks/track_all.h"
-#include <boost/unordered/unordered_flat_map.hpp>
 #include <juce_audio_formats/juce_audio_formats.h>
 
 using namespace Qt::StringLiterals;
@@ -24,9 +22,7 @@ ControlRoom::ControlRoom (
     : QObject (parent),
       monitor_fader_ (
         utils::make_qobject_unique<dsp::Fader> (
-          dsp::ProcessorBase::ProcessorBaseDependencies{
-            .port_registry_ = port_registry_,
-            .param_registry_ = param_registry_ },
+          registry_,
           dsp::PortType::Audio,
           true,
           false,
@@ -62,29 +58,28 @@ ControlRoom::ControlRoom (
     return buffer;
   };
   metronome_ = utils::make_qobject_unique<dsp::Metronome> (
-    dsp::ProcessorBase::ProcessorBaseDependencies{
-      .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
+    registry_,
     load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_emphasis.wav"_s)),
     load_metronome_sample (QFile (u":/qt/qml/Zrythm/wav/square_normal.wav"_s)),
     true, 1.0f, this);
 
   /* init listen/mute/dim faders */
   mute_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    port_registry_,
+    registry_,
     dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"mute_volume") },
     dsp::ParameterRange{
       dsp::ParameterRange::Type::GainAmplitude, 0.f, 0.5f, 0.f, 0.f },
     utils::Utf8String (u8"Mute"), this);
 
   listen_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    port_registry_,
+    registry_,
     dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"listen_volume") },
     dsp::ParameterRange{
       dsp::ParameterRange::Type::GainAmplitude, 0.5f, 2.0f, 0.f, 1.f },
     utils::Utf8String (u8"Listen"), this);
 
   dim_volume_ = utils::make_qobject_unique<dsp::ProcessorParameter> (
-    port_registry_,
+    registry_,
     dsp::ProcessorParameter::UniqueId{ utils::Utf8String (u8"dim_volume") },
     dsp::ParameterRange{
       dsp::ParameterRange::Type::GainAmplitude, 0.0f, 0.5f, 0.f, 0.1f },
@@ -100,10 +95,9 @@ ControlRoom::ControlRoom (
       const float dim_amp = dim_volume_->baseValue ();
 
       /* if have listened tracks */
-      const auto have_listened = std::ranges::any_of (
-        rt_tracks_provider_ (), [] (const auto &track_var) {
-          const auto * track =
-            structure::tracks::from_variant (track_var.second);
+      const auto rt_tracks = rt_tracks_provider_ ();
+      const auto have_listened =
+        std::ranges::any_of (rt_tracks, [] (const auto * track) {
           const auto * ch = track->channel ();
           if (ch == nullptr)
             {
@@ -125,35 +119,29 @@ ControlRoom::ControlRoom (
           /* TODO add "listen" buffer on fader struct and add listened
            * tracks to it during processing instead of looping here */
           const float listen_amp = listen_volume_->baseValue ();
-          for (const auto &cur_t : rt_tracks_provider_ ())
+          for (const auto * t : rt_tracks)
             {
-              std::visit (
-                [&] (auto &&t) {
-                  if (t->channel ())
+              if (t->channel ())
+                {
+                  if (
+                    t->output_signal_type () == dsp::PortType::Audio
+                    && t->channel ()->fader ()->currently_listened_rt ())
                     {
-                      if (
-                        t->output_signal_type () == dsp::PortType::Audio
-                        && t->channel ()->fader ()->currently_listened_rt ())
-                        {
-                          auto * f = t->channel ()->fader ();
-                          utils::float_ranges::product (
-                            stereo_bufs.first.subspan (sub_offset, sub_nframes),
-                            { f->get_stereo_out_port ().buffers ()->getReadPointer (
-                                0,
-                                time_nfo.buffer_offset_.in<int> (units::samples)),
-                              sub_nframes },
-                            listen_amp);
-                          utils::float_ranges::product (
-                            stereo_bufs.second.subspan (sub_offset, sub_nframes),
-                            { f->get_stereo_out_port ().buffers ()->getReadPointer (
-                                1,
-                                time_nfo.buffer_offset_.in<int> (units::samples)),
-                              sub_nframes },
-                            listen_amp);
-                        }
+                      auto * f = t->channel ()->fader ();
+                      utils::float_ranges::product (
+                        stereo_bufs.first.subspan (sub_offset, sub_nframes),
+                        { f->get_stereo_out_port ().buffers ()->getReadPointer (
+                            0, time_nfo.buffer_offset_.in<int> (units::samples)),
+                          sub_nframes },
+                        listen_amp);
+                      utils::float_ranges::product (
+                        stereo_bufs.second.subspan (sub_offset, sub_nframes),
+                        { f->get_stereo_out_port ().buffers ()->getReadPointer (
+                            1, time_nfo.buffer_offset_.in<int> (units::samples)),
+                          sub_nframes },
+                        listen_amp);
                     }
-                },
-                cur_t.second);
+                }
             }
         } /* endif have listened tracks */
 

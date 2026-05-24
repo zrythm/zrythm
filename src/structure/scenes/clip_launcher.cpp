@@ -8,14 +8,13 @@
 namespace zrythm::structure::scenes
 {
 ClipLauncher::ClipLauncher (
-  arrangement::ArrangerObjectRegistry &object_registry,
-  const tracks::TrackCollection       &track_collection,
-  QObject *                            parent)
+  utils::IObjectRegistry        &registry,
+  const tracks::TrackCollection &track_collection,
+  QObject *                      parent)
     : QObject (parent),
       scene_list_ (
-        utils::make_qobject_unique<
-          SceneList> (object_registry, track_collection, this)),
-      object_registry_ (object_registry), track_collection_ (track_collection)
+        utils::make_qobject_unique<SceneList> (registry, track_collection, this)),
+      registry_ (registry), track_collection_ (track_collection)
 {
 }
 
@@ -23,7 +22,7 @@ Scene *
 ClipLauncher::addScene ()
 {
   scene_list_->insert_scene (
-    utils::make_qobject_unique<Scene> (object_registry_, track_collection_),
+    utils::make_qobject_unique<Scene> (registry_, track_collection_),
     scene_list_->rowCount ());
   return scene_list_->scenes ().back ().get ();
 }

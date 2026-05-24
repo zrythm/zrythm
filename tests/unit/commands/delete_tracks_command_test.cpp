@@ -3,10 +3,11 @@
 
 #include "commands/delete_tracks_command.h"
 #include "plugins/internal_plugin_base.h"
-#include "plugins/plugin_all.h"
 #include "structure/tracks/folder_track.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -20,34 +21,20 @@ protected:
   void SetUp () override
   {
     collection_ =
-      std::make_unique<structure::tracks::TrackCollection> (track_registry_);
+      std::make_unique<structure::tracks::TrackCollection> (registry_);
   }
 
-  dsp::TempoMap                   tempo_map_{ units::sample_rate (44100.0) };
-  dsp::TempoMapWrapper            tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry    file_audio_source_registry_;
-  plugins::PluginRegistry         plugin_registry_;
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  structure::arrangement::ArrangerObjectRegistry obj_registry_;
-  dsp::graph_test::MockTransport                 transport_;
+  dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
+  dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
+  dsp::graph_test::MockTransport transport_;
   structure::tracks::SoloedTracksExistGetter soloed_tracks_exist_getter_{ [] {
     return false;
   } };
 
-  structure::tracks::TrackRegistry track_registry_;
+  utils::ObjectRegistry registry_;
 
   structure::tracks::FinalTrackDependencies dependencies_{
-    tempo_map_wrapper_,
-    file_audio_source_registry_,
-    plugin_registry_,
-    port_registry_,
-    param_registry_,
-    obj_registry_,
-    track_registry_,
-    transport_,
-    soloed_tracks_exist_getter_,
-    {},
+    tempo_map_wrapper_, registry_, transport_, soloed_tracks_exist_getter_, {},
   };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;
 
@@ -55,10 +42,8 @@ protected:
   create_and_append_plugin_to_channel (structure::tracks::Track &track)
   {
     auto * channel = track.channel ();
-    auto   ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    auto   ref = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
     channel->inserts ()->append_plugin (ref);
     return ref;
   }
@@ -66,8 +51,8 @@ protected:
 
 TEST_F (DeleteTracksCommandTest, DeleteSingleTrack)
 {
-  auto track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
   collection_->add_track (track_ref);
   ASSERT_EQ (collection_->track_count (), 1);
 
@@ -85,12 +70,12 @@ TEST_F (DeleteTracksCommandTest, DeleteSingleTrack)
 
 TEST_F (DeleteTracksCommandTest, DeleteMultipleTracks)
 {
-  auto track1 = track_registry_.create_object<structure::tracks::AudioTrack> (
-    dependencies_);
-  auto track2 =
-    track_registry_.create_object<structure::tracks::MidiTrack> (dependencies_);
-  auto track3 = track_registry_.create_object<structure::tracks::AudioTrack> (
-    dependencies_);
+  auto track1 = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto track2 = utils::create_object<structure::tracks::MidiTrack> (
+    registry_, dependencies_);
+  auto track3 = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
 
   collection_->add_track (track1);
   collection_->add_track (track2);
@@ -115,12 +100,12 @@ TEST_F (DeleteTracksCommandTest, DeleteMultipleTracks)
 
 TEST_F (DeleteTracksCommandTest, RestoresOriginalPositions)
 {
-  auto track1 = track_registry_.create_object<structure::tracks::AudioTrack> (
-    dependencies_);
-  auto track2 =
-    track_registry_.create_object<structure::tracks::MidiTrack> (dependencies_);
-  auto track3 = track_registry_.create_object<structure::tracks::AudioTrack> (
-    dependencies_);
+  auto track1 = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto track2 = utils::create_object<structure::tracks::MidiTrack> (
+    registry_, dependencies_);
+  auto track3 = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
 
   collection_->add_track (track1);
   collection_->add_track (track2);
@@ -142,8 +127,8 @@ TEST_F (DeleteTracksCommandTest, RestoresOriginalPositions)
 
 TEST_F (DeleteTracksCommandTest, MultipleUndoRedoCycles)
 {
-  auto track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
   collection_->add_track (track_ref);
 
   DeleteTracksCommand cmd (*collection_, { track_ref });
@@ -161,18 +146,18 @@ TEST_F (DeleteTracksCommandTest, MultipleUndoRedoCycles)
 
 TEST_F (DeleteTracksCommandTest, CommandText)
 {
-  auto track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
   DeleteTracksCommand cmd (*collection_, { track_ref });
   EXPECT_EQ (cmd.text (), QString ("Delete Track"));
 }
 
 TEST_F (DeleteTracksCommandTest, CommandTextPlural)
 {
-  auto track1 = track_registry_.create_object<structure::tracks::AudioTrack> (
-    dependencies_);
-  auto track2 =
-    track_registry_.create_object<structure::tracks::MidiTrack> (dependencies_);
+  auto track1 = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto track2 = utils::create_object<structure::tracks::MidiTrack> (
+    registry_, dependencies_);
   collection_->add_track (track1);
   collection_->add_track (track2);
 
@@ -183,14 +168,14 @@ TEST_F (DeleteTracksCommandTest, CommandTextPlural)
 TEST_F (DeleteTracksCommandTest, DeleteFolderWithChildren)
 {
   // Set up: folder -> [audio_child, midi_child]
-  auto folder = track_registry_.create_object<structure::tracks::FolderTrack> (
-    dependencies_);
-  auto audio_child =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
-  auto midi_child =
-    track_registry_.create_object<structure::tracks::MidiTrack> (dependencies_);
-  auto unrelated =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto folder = utils::create_object<structure::tracks::FolderTrack> (
+    registry_, dependencies_);
+  auto audio_child = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto midi_child = utils::create_object<structure::tracks::MidiTrack> (
+    registry_, dependencies_);
+  auto unrelated = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
 
   collection_->add_track (folder);
   collection_->add_track (audio_child);
@@ -209,7 +194,7 @@ TEST_F (DeleteTracksCommandTest, DeleteFolderWithChildren)
   std::vector<structure::tracks::TrackUuidReference> expanded_refs;
   expanded_refs.push_back (folder);
   for (const auto &desc_id : descendants)
-    expanded_refs.emplace_back (desc_id, track_registry_);
+    expanded_refs.emplace_back (desc_id, registry_);
 
   DeleteTracksCommand cmd (*collection_, std::move (expanded_refs));
   cmd.redo ();
@@ -247,14 +232,14 @@ TEST_F (DeleteTracksCommandTest, DeleteFolderWithChildren)
 TEST_F (DeleteTracksCommandTest, DeleteNestedFolders)
 {
   // Set up: outer_folder -> inner_folder -> [audio_child], plus unrelated
-  auto outer_folder = track_registry_.create_object<
-    structure::tracks::FolderTrack> (dependencies_);
-  auto inner_folder = track_registry_.create_object<
-    structure::tracks::FolderTrack> (dependencies_);
-  auto audio_child =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
-  auto unrelated =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
+  auto outer_folder = utils::create_object<structure::tracks::FolderTrack> (
+    registry_, dependencies_);
+  auto inner_folder = utils::create_object<structure::tracks::FolderTrack> (
+    registry_, dependencies_);
+  auto audio_child = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto unrelated = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
 
   collection_->add_track (outer_folder);
   collection_->add_track (inner_folder);
@@ -271,7 +256,7 @@ TEST_F (DeleteTracksCommandTest, DeleteNestedFolders)
   expanded_refs.push_back (outer_folder);
   for (
     const auto &desc_id : collection_->get_all_descendants (outer_folder.id ()))
-    expanded_refs.emplace_back (desc_id, track_registry_);
+    expanded_refs.emplace_back (desc_id, registry_);
 
   ASSERT_EQ (expanded_refs.size (), 3u);
 
@@ -324,11 +309,11 @@ TEST_F (DeleteTracksCommandTest, DeleteEmptyRefsIsNoop)
 
 TEST_F (DeleteTracksCommandTest, RedoClosesPluginWindows)
 {
-  auto track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
-  auto * track = structure::tracks::from_variant (track_ref.get_object ());
+  auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto * track = track_ref.get ();
   auto   plugin_ref = create_and_append_plugin_to_channel (*track);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get ();
   plugin->setUiVisible (true);
   ASSERT_TRUE (plugin->uiVisible ());
 
@@ -342,11 +327,11 @@ TEST_F (DeleteTracksCommandTest, RedoClosesPluginWindows)
 
 TEST_F (DeleteTracksCommandTest, RedoAfterReopenClosesPluginWindows)
 {
-  auto track_ref =
-    track_registry_.create_object<structure::tracks::AudioTrack> (dependencies_);
-  auto * track = structure::tracks::from_variant (track_ref.get_object ());
+  auto track_ref = utils::create_object<structure::tracks::AudioTrack> (
+    registry_, dependencies_);
+  auto * track = track_ref.get ();
   auto   plugin_ref = create_and_append_plugin_to_channel (*track);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_ref.get_object ());
+  auto * plugin = plugin_ref.get ();
   plugin->setUiVisible (true);
 
   collection_->add_track (track_ref);

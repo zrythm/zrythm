@@ -4,6 +4,8 @@
 #include "structure/project/project.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_settings_backend.h"
@@ -43,16 +45,10 @@ protected:
     app_settings =
       std::make_unique<utils::AppSettings> (std::move (mock_backend));
 
-    // Create port registry and monitor fader
-    port_registry = std::make_unique<dsp::PortRegistry> (nullptr);
-    param_registry = std::make_unique<dsp::ProcessorParameterRegistry> (
-      *port_registry, nullptr);
+    // Create registry and monitor fader
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     monitor_fader = utils::make_qobject_unique<dsp::Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry,
-        .param_registry_ = *param_registry,
-      },
-      dsp::PortType::Audio,
+      *registry_, dsp::PortType::Audio,
       true,  // hard_limit_output
       false, // make_params_automatable
       [] () -> utils::Utf8String { return u8"Test Control Room"; },
@@ -62,19 +58,14 @@ protected:
     juce::AudioSampleBuffer emphasis_sample (2, 512);
     juce::AudioSampleBuffer normal_sample (2, 512);
     metronome = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry,
-        .param_registry_ = *param_registry,
-      },
-      emphasis_sample, normal_sample, true, 1.0f, nullptr);
+      *registry_, emphasis_sample, normal_sample, true, 1.0f, nullptr);
   }
 
   void TearDown () override
   {
     metronome.reset ();
     monitor_fader.reset ();
-    param_registry.reset ();
-    port_registry.reset ();
+    registry_.reset ();
     app_settings.reset ();
     plugin_format_manager.reset ();
     hw_interface.reset ();
@@ -110,16 +101,15 @@ protected:
     return project;
   }
 
-  std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
-  std::filesystem::path                            project_dir;
-  std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
-  std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
-  test_helpers::MockSettingsBackend *              mock_backend_ptr{};
-  std::unique_ptr<utils::AppSettings>              app_settings;
-  std::unique_ptr<dsp::PortRegistry>               port_registry;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry;
-  utils::QObjectUniquePtr<dsp::Fader>              monitor_fader;
-  utils::QObjectUniquePtr<dsp::Metronome>          metronome;
+  std::unique_ptr<QTemporaryDir>                  temp_dir_obj;
+  std::filesystem::path                           project_dir;
+  std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface;
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager;
+  test_helpers::MockSettingsBackend *             mock_backend_ptr{};
+  std::unique_ptr<utils::AppSettings>             app_settings;
+  std::unique_ptr<utils::ObjectRegistry>          registry_;
+  utils::QObjectUniquePtr<dsp::Fader>             monitor_fader;
+  utils::QObjectUniquePtr<dsp::Metronome>         metronome;
 };
 
 // ============================================================================
@@ -131,13 +121,7 @@ TEST_F (ProjectTest, GetRegistries)
   auto project = create_minimal_project ();
   ASSERT_NE (project, nullptr);
 
-  // Test that all registries are accessible and non-null
-  EXPECT_NE (&project->get_file_audio_source_registry (), nullptr);
-  EXPECT_NE (&project->get_track_registry (), nullptr);
-  EXPECT_NE (&project->get_plugin_registry (), nullptr);
-  EXPECT_NE (&project->get_port_registry (), nullptr);
-  EXPECT_NE (&project->get_param_registry (), nullptr);
-  EXPECT_NE (&project->get_arranger_object_registry (), nullptr);
+  EXPECT_NE (&project->get_registry (), nullptr);
 }
 
 // ============================================================================
@@ -151,8 +135,7 @@ TEST_F (ProjectTest, FindPortByIdNotFound)
 
   // Try to find a port with a random UUID - should return nullopt
   dsp::Port::Uuid random_uuid (QUuid::createUuid ());
-  auto            result = project->find_port_by_id (random_uuid);
-  EXPECT_FALSE (result.has_value ());
+  EXPECT_FALSE (utils::contains (project->get_registry (), random_uuid));
 }
 
 TEST_F (ProjectTest, FindParamByIdNotFound)
@@ -162,8 +145,7 @@ TEST_F (ProjectTest, FindParamByIdNotFound)
 
   // Try to find a param with a random UUID - should return nullptr
   dsp::ProcessorParameter::Uuid random_uuid (QUuid::createUuid ());
-  auto result = project->find_param_by_id (random_uuid);
-  EXPECT_EQ (result, nullptr);
+  EXPECT_FALSE (utils::contains (project->get_registry (), random_uuid));
 }
 
 TEST_F (ProjectTest, FindPluginByIdNotFound)
@@ -173,8 +155,7 @@ TEST_F (ProjectTest, FindPluginByIdNotFound)
 
   // Try to find a plugin with a random UUID - should return nullopt
   plugins::Plugin::Uuid random_uuid (QUuid::createUuid ());
-  auto                  result = project->find_plugin_by_id (random_uuid);
-  EXPECT_FALSE (result.has_value ());
+  EXPECT_FALSE (utils::contains (project->get_registry (), random_uuid));
 }
 
 TEST_F (ProjectTest, FindTrackByIdNotFound)
@@ -184,8 +165,7 @@ TEST_F (ProjectTest, FindTrackByIdNotFound)
 
   // Try to find a track with a random UUID - should return nullopt
   structure::tracks::Track::Uuid random_uuid (QUuid::createUuid ());
-  auto result = project->find_track_by_id (random_uuid);
-  EXPECT_FALSE (result.has_value ());
+  EXPECT_FALSE (utils::contains (project->get_registry (), random_uuid));
 }
 
 TEST_F (ProjectTest, FindArrangerObjectByIdNotFound)
@@ -196,8 +176,7 @@ TEST_F (ProjectTest, FindArrangerObjectByIdNotFound)
   // Try to find an arranger object with a random UUID - should return nullopt
   structure::arrangement::ArrangerObject::Uuid random_uuid (
     QUuid::createUuid ());
-  auto result = project->find_arranger_object_by_id (random_uuid);
-  EXPECT_FALSE (result.has_value ());
+  EXPECT_FALSE (utils::contains (project->get_registry (), random_uuid));
 }
 
 // ============================================================================
@@ -221,10 +200,9 @@ TEST_F (ProjectTest, AddDefaultTracks)
   EXPECT_NE (singleton_tracks->masterTrack (), nullptr);
   EXPECT_NE (singleton_tracks->modulatorTrack (), nullptr);
 
-  // Verify the tracks can be found via their registries
+  // Verify the tracks can be found via the registry
   auto chord_track_uuid = singleton_tracks->chordTrack ()->get_uuid ();
-  auto chord_track_result = project->find_track_by_id (chord_track_uuid);
-  EXPECT_TRUE (chord_track_result.has_value ());
+  EXPECT_TRUE (utils::contains (project->get_registry (), chord_track_uuid));
 }
 
 // ============================================================================

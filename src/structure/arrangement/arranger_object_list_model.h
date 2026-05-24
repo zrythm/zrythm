@@ -46,7 +46,7 @@ struct sorted_index
 inline double
 get_ticks_from_arranger_object_uuid_ref (const ArrangerObjectUuidReference &ref)
 {
-  return ref.get_object_base ()->position ()->ticks ();
+  return ref.get ()->position ()->ticks ();
 }
 
 // Multi-index container for both quick iteration and quick lookups

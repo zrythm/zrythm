@@ -9,12 +9,13 @@
 
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
-#include "dsp/port_span.h"
 #include "dsp/processor_base.h"
 #include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/qt.h"
+#include "utils/registry_utils.h"
+#include "utils/variant_helpers.h"
 
 #include <QTimer>
 
@@ -39,10 +40,7 @@ namespace zrythm::plugins
  * `state_to_apply_`), then applied after the plugin instance is fully
  * initialized. No filesystem paths or state directories are involved.
  */
-class Plugin
-    : public QObject,
-      public dsp::ProcessorBase,
-      public utils::UuidIdentifiableObject<Plugin>
+class Plugin : public utils::UuidIdentifiableObject<Plugin>, public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -125,16 +123,8 @@ public:
     PluginConfiguration * configuration,
     bool                  generateNewPluginPortsAndParams);
 
-  dsp::ProcessorParameter * bypassParameter () const
-  {
-    return std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (bypass_id_.value ()));
-  }
-  dsp::ProcessorParameter * gainParameter () const
-  {
-    return std::get<dsp::ProcessorParameter *> (
-      dependencies ().param_registry_.find_by_id_or_throw (gain_id_.value ()));
-  }
+  dsp::ProcessorParameter * bypassParameter () const;
+  dsp::ProcessorParameter * gainParameter () const;
 
   bool uiVisible () const { return visible_; }
   void setUiVisible (bool visible)
@@ -300,7 +290,7 @@ protected:
    *
    * @throw ZrythmException If the plugin could not be created.
    */
-  Plugin (ProcessorBaseDependencies dependencies, QObject * parent);
+  Plugin (utils::IObjectRegistry &registry, QObject * parent);
 
   /**
    * @brief To be called by implementations to generate the default bypass
@@ -442,12 +432,9 @@ class ClapPlugin;
 class InternalPluginBase;
 
 using PluginVariant = std::variant<JucePlugin, ClapPlugin, InternalPluginBase>;
-using PluginPtrVariant = to_pointer_variant<PluginVariant>;
+using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
-// TODO: consider having a ProcessorRegistry instead for all
-// ProcessorBase-derived classes
-using PluginRegistry = utils::OwningObjectRegistry<PluginPtrVariant, Plugin>;
-using PluginUuidReference = utils::UuidReference<PluginRegistry>;
+using PluginUuidReference = utils::TypedUuidReference<Plugin>;
 
 using PluginHostWindowFactory =
   std::function<std::unique_ptr<plugins::IPluginHostWindow> (Plugin &)>;
@@ -455,6 +442,3 @@ using PluginHostWindowFactory =
 } // namespace zrythm::plugins
 
 DEFINE_UUID_HASH_SPECIALIZATION (zrythm::plugins::Plugin::Uuid)
-
-void
-from_json (const nlohmann::json &j, zrythm::plugins::PluginRegistry &registry);

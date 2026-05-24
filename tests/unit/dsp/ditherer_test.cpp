@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/ditherer.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 TEST (DithererTest, Reset)
 {

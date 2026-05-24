@@ -14,6 +14,7 @@
 #include "dsp/midi_port.h"
 #include "dsp/transport.h"
 #include "utils/concurrency.h"
+#include "utils/object_registry.h"
 
 namespace zrythm::dsp
 {
@@ -226,8 +227,7 @@ private:
   void activate_impl (bool activate);
 
 private:
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
+  utils::ObjectRegistry local_registry_;
 
   dsp::Transport &transport_;
 

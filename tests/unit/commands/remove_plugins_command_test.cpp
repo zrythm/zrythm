@@ -3,10 +3,11 @@
 
 #include "commands/remove_plugins_command.h"
 #include "dsp/parameter.h"
-#include "dsp/processor_base.h"
-#include "plugins/plugin.h"
+#include "plugins/internal_plugin_base.h"
 #include "plugins/plugin_group.h"
 #include "structure/tracks/automation_tracklist.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include <gtest/gtest.h>
 
@@ -19,9 +20,7 @@ protected:
   void SetUp () override
   {
     group_ = std::make_unique<plugins::PluginGroup> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      plugin_registry_, plugins::PluginGroup::DeviceGroupType::Audio,
+      registry_, plugins::PluginGroup::DeviceGroupType::Audio,
       plugins::PluginGroup::ProcessingTypeHint::Parallel);
 
     atl_ = std::make_unique<structure::tracks::AutomationTracklist> (atl_deps_);
@@ -36,10 +35,8 @@ protected:
   plugins::PluginUuidReference
   create_and_append_plugin (plugins::PluginGroup &grp)
   {
-    auto ref = plugin_registry_.create_object<plugins::InternalPluginBase> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = port_registry_, .param_registry_ = param_registry_ },
-      nullptr);
+    auto ref = utils::create_object<plugins::InternalPluginBase> (
+      registry_, registry_, nullptr);
     grp.append_plugin (ref);
     return ref;
   }
@@ -49,22 +46,15 @@ protected:
     return grp.element_at_idx (idx).value<plugins::Plugin *> ()->get_uuid ();
   }
 
-  dsp::PortRegistry               port_registry_;
-  dsp::ProcessorParameterRegistry param_registry_{ port_registry_ };
-  plugins::PluginRegistry         plugin_registry_;
+  utils::ObjectRegistry registry_;
 
   std::unique_ptr<plugins::PluginGroup> group_;
 
-  dsp::TempoMap                tempo_map_{ units::sample_rate (44100) };
-  dsp::TempoMapWrapper         tempo_map_wrapper_{ tempo_map_ };
-  dsp::FileAudioSourceRegistry file_audio_source_registry_;
-  structure::arrangement::ArrangerObjectRegistry         object_registry_;
+  dsp::TempoMap        tempo_map_{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper_{ tempo_map_ };
   structure::tracks::AutomationTrackHolder::Dependencies atl_deps_{
     .tempo_map_ = tempo_map_wrapper_,
-    .file_audio_source_registry_ = file_audio_source_registry_,
-    .port_registry_ = port_registry_,
-    .param_registry_ = param_registry_,
-    .object_registry_ = object_registry_
+    .registry_ = registry_,
   };
 
   std::unique_ptr<structure::tracks::AutomationTracklist> atl_;
@@ -293,17 +283,16 @@ TEST_F (RemovePluginsCommandTest, NullAutomationTracklist)
 TEST_F (RemovePluginsCommandTest, RemovePluginWithAutomationTrack)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
-  auto param_ref = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"test_param"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Test Param");
   plugin->add_parameter (param_ref);
 
   auto at = utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-    tempo_map_wrapper_, file_audio_source_registry_, object_registry_,
-    param_ref);
+    tempo_map_wrapper_, registry_, param_ref);
   atl_->add_automation_track (std::move (at));
   ASSERT_EQ (atl_->rowCount (), 1);
 
@@ -331,25 +320,25 @@ TEST_F (RemovePluginsCommandTest, RemovePluginWithAutomationTrack)
 TEST_F (RemovePluginsCommandTest, RemovePluginWithMultipleAutomationTracks)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
-  auto param0 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param0 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 0");
-  auto param1 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param1 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 1");
   plugin->add_parameter (param0);
   plugin->add_parameter (param1);
 
   atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param0));
+      tempo_map_wrapper_, registry_, param0));
   atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param1));
+      tempo_map_wrapper_, registry_, param1));
   ASSERT_EQ (atl_->rowCount (), 2);
 
   RemovePluginsCommand cmd (
@@ -374,25 +363,25 @@ TEST_F (
   RemovePluginWithAutomationMultipleUndoRedoCycles)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
-  auto param0 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param0 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_0"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 0");
-  auto param1 = param_registry_.create_object<dsp::ProcessorParameter> (
-    port_registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
-    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f),
+  auto param1 = utils::create_object<dsp::ProcessorParameter> (
+    registry_, registry_, dsp::ProcessorParameter::UniqueId (u8"param_1"),
+    dsp::ParameterRange (dsp::ParameterRange::Type::Linear, 0.0f, 1.0f, 0.f, 0.f),
     u8"Param 1");
   plugin->add_parameter (param0);
   plugin->add_parameter (param1);
 
   atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param0));
+      tempo_map_wrapper_, registry_, param0));
   atl_->add_automation_track (
     utils::make_qobject_unique<structure::tracks::AutomationTrack> (
-      tempo_map_wrapper_, file_audio_source_registry_, object_registry_, param1));
+      tempo_map_wrapper_, registry_, param1));
   ASSERT_EQ (atl_->rowCount (), 2);
 
   RemovePluginsCommand cmd (
@@ -425,7 +414,7 @@ TEST_F (
 TEST_F (RemovePluginsCommandTest, RedoClosesPluginWindow)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
   plugin->setUiVisible (true);
   ASSERT_TRUE (plugin->uiVisible ());
 
@@ -444,7 +433,7 @@ TEST_F (RemovePluginsCommandTest, RedoClosesPluginWindow)
 TEST_F (RemovePluginsCommandTest, RedoAfterReopenClosesPluginWindow)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
 
   RemovePluginsCommand cmd (
     {
@@ -470,7 +459,7 @@ TEST_F (RemovePluginsCommandTest, RedoAfterReopenClosesPluginWindow)
 TEST_F (RemovePluginsCommandTest, RedoSkipsAlreadyClosedWindows)
 {
   auto   ref = create_and_append_plugin (*group_);
-  auto * plugin = plugins::plugin_ptr_variant_to_base (ref.get_object ());
+  auto * plugin = ref.get ();
   ASSERT_FALSE (plugin->uiVisible ());
 
   RemovePluginsCommand cmd (

@@ -106,8 +106,6 @@ target_sources(zrythm_gui_lib
   PRIVATE
     audio_function.h
     audio_function.cpp
-    arranger_object_span.h
-    arranger_object_span.cpp
     automation_function.h
     automation_function.cpp
     midi_function.h

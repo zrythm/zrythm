@@ -14,8 +14,8 @@ class MidiPassthroughProcessor : public ProcessorBase
 {
 public:
   MidiPassthroughProcessor (
-    ProcessorBase::ProcessorBaseDependencies dependencies,
-    size_t                                   num_ports = 1);
+    utils::IObjectRegistry &registry,
+    size_t                  num_ports = 1);
 
   ~MidiPassthroughProcessor () override;
 
@@ -36,9 +36,9 @@ class AudioPassthroughProcessor : public ProcessorBase
 {
 public:
   AudioPassthroughProcessor (
-    ProcessorBase::ProcessorBaseDependencies dependencies,
-    AudioPort::BusLayout                     bus_layout,
-    size_t                                   num_channels);
+    utils::IObjectRegistry &registry,
+    AudioPort::BusLayout    bus_layout,
+    size_t                  num_channels);
 
   ~AudioPassthroughProcessor () override;
 
@@ -55,8 +55,7 @@ public:
 class StereoPassthroughProcessor : public AudioPassthroughProcessor
 {
 public:
-  StereoPassthroughProcessor (
-    ProcessorBase::ProcessorBaseDependencies dependencies);
+  StereoPassthroughProcessor (utils::IObjectRegistry &registry);
 
   ~StereoPassthroughProcessor () override;
 };

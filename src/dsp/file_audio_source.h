@@ -7,7 +7,9 @@
 #include "utils/audio_file.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
+#include "utils/typed_uuid_reference.h"
 #include "utils/units.h"
+#include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
 
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -21,8 +23,7 @@ namespace zrythm::dsp
  * These should be loaded in the project's sample rate.
  */
 class FileAudioSource final
-    : public QObject,
-      public utils::UuidIdentifiableObject<FileAudioSource>
+    : public utils::UuidIdentifiableObject<FileAudioSource>
 {
   Q_OBJECT
 
@@ -33,7 +34,7 @@ public:
   using bpm_t = float;
 
 public:
-  FileAudioSource (QObject * parent = nullptr) : QObject (parent) { }
+  FileAudioSource (QObject * parent = nullptr);
 
   /**
    * Creates an audio clip from a file.
@@ -182,8 +183,6 @@ private:
 
   void convert_mono_to_stereo ();
 
-  static constexpr auto kNameKey = "name"sv;
-  static constexpr auto kBpmKey = "bpm"sv;
   friend void to_json (nlohmann::json &j, const FileAudioSource &clip);
   friend void from_json (const nlohmann::json &j, FileAudioSource &clip);
 
@@ -283,10 +282,7 @@ private:
 };
 
 using FileAudioSourcePtrVariant = std::variant<FileAudioSource *>;
-using FileAudioSourceRegistry =
-  utils::OwningObjectRegistry<FileAudioSourcePtrVariant, FileAudioSource>;
-using FileAudioSourceUuidReference =
-  utils::UuidReference<FileAudioSourceRegistry>;
+using FileAudioSourceUuidReference = utils::TypedUuidReference<FileAudioSource>;
 
 } // namespace zrythm::dsp
 

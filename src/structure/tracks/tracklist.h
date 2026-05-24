@@ -8,7 +8,6 @@
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_collection.h"
 #include "structure/tracks/track_routing.h"
-#include "structure/tracks/track_span.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -42,7 +41,9 @@ public:
   using ArrangerObject = arrangement::ArrangerObject;
 
 public:
-  explicit Tracklist (TrackRegistry &track_registry, QObject * parent = nullptr);
+  explicit Tracklist (
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
   Q_DISABLE_COPY_MOVE (Tracklist)
   ~Tracklist () override;
 
@@ -97,15 +98,11 @@ public:
     const Tracklist       &other,
     utils::ObjectCloneType clone_type);
 
-  std::optional<TrackPtrVariant> get_track (const TrackUuid &id) const
+  Track * get_track (const TrackUuid &id) const
   {
-    auto span = collection ()->get_track_span ();
-    auto it = std::ranges::find (span, id, TrackSpan::uuid_projection);
-    if (it == span.end ()) [[unlikely]]
-      {
-        return std::nullopt;
-      }
-    return std::make_optional (*it);
+    const auto &tracks = collection ()->tracks ();
+    auto        it = std::ranges::find (tracks, id, &TrackUuidReference::id);
+    return it != tracks.end () ? it->get () : nullptr;
   }
 
   /**
@@ -197,11 +194,11 @@ private:
   friend void           from_json (const nlohmann::json &j, Tracklist &t);
 
 private:
-  auto &get_track_registry () const { return track_registry_; }
-  auto &get_track_registry () { return track_registry_; }
+  auto &get_registry () const { return registry_; }
+  auto &get_registry () { return registry_; }
 
 private:
-  TrackRegistry &track_registry_;
+  utils::IObjectRegistry &registry_;
 
   /**
    * All tracks that exist.

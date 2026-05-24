@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_group.h"
+#include "utils/logger.h"
 #include "utils/serialization.h"
 
 namespace zrythm::plugins
@@ -19,17 +20,16 @@ struct PluginGroup::DeviceGroupImpl
 };
 
 PluginGroup::PluginGroup (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  plugins::PluginRegistry                      &plugin_registry,
-  DeviceGroupType                               type,
-  ProcessingTypeHint                            processing_type,
-  QObject *                                     parent)
-    : QAbstractListModel (parent), dependencies_ (dependencies),
-      plugin_registry_ (plugin_registry), processing_type_ (processing_type),
-      type_ (type), pimpl_ (std::make_unique<DeviceGroupImpl> (*this))
+  utils::IObjectRegistry &registry,
+  DeviceGroupType         type,
+  ProcessingTypeHint      processing_type,
+  QObject *               parent)
+    : QAbstractListModel (parent), registry_ (registry),
+      processing_type_ (processing_type), type_ (type),
+      pimpl_ (std::make_unique<DeviceGroupImpl> (*this))
 {
   fader_ = utils::make_qobject_unique<dsp::Fader> (
-    dependencies,
+    registry,
     type == DeviceGroupType::MIDI ? dsp::PortType::Midi : dsp::PortType::Audio,
     false, false, [] () { return u8"Device Group"; },
     [] (bool fader_solo_status) { return false; }, this);
@@ -118,7 +118,7 @@ PluginGroup::remove_plugin (const plugins::Plugin::Uuid &plugin_id)
   const auto index = std::ranges::distance (pimpl_->devices_.begin (), it);
   auto       ret = std::get<1> (*it);
 
-  auto * plugin = ret.get_object_base ();
+  auto * plugin = ret.get ();
   if (plugin->uiVisible ())
     {
       plugin->setUiVisible (false);
@@ -138,24 +138,23 @@ PluginGroup::element_at_idx (size_t idx) const
 }
 
 void
-PluginGroup::get_plugins (std::vector<plugins::PluginPtrVariant> &plugins) const
+PluginGroup::get_plugins (
+  std::vector<plugins::PluginUuidReference> &plugins,
+  bool                                       recursive) const
 {
   for (const auto &var : pimpl_->devices_)
     {
-      std::visit (
-        [&] (const auto &p) {
-          using Type = base_type<decltype (p)>;
-          if constexpr (
-            std::is_same_v<Type, utils::QObjectUniquePtr<PluginGroup>>)
+      if (var.index () == 0)
+        {
+          if (recursive)
             {
-              p->get_plugins (plugins);
+              std::get<0> (var)->get_plugins (plugins, recursive);
             }
-          else
-            {
-              plugins.push_back (p.get_object ());
-            }
-        },
-        var);
+        }
+      else
+        {
+          plugins.push_back (std::get<1> (var));
+        }
     }
 }
 
@@ -186,15 +185,14 @@ from_json (const nlohmann::json &j, PluginGroup &l)
       if (device_group_json.is_string ())
         {
           plugins::PluginUuidReference plugin_id{
-            device_group_json.get<plugins::Plugin::Uuid> (), l.plugin_registry_
+            device_group_json.get<plugins::Plugin::Uuid> (), l.registry_
           };
           l.pimpl_->devices_.emplace_back (std::move (plugin_id));
         }
       else
         {
           auto group = utils::make_qobject_unique<PluginGroup> (
-            l.dependencies_, l.plugin_registry_,
-            PluginGroup::DeviceGroupType::Audio,
+            l.registry_, PluginGroup::DeviceGroupType::Audio,
             PluginGroup::ProcessingTypeHint::Parallel);
           device_group_json.get_to (*group);
           l.pimpl_->devices_.emplace_back (std::move (group));

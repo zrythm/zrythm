@@ -3,6 +3,7 @@
 
 #include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_function.h"
+#include "structure/arrangement/midi_note.h"
 #include "structure/project/project.h"
 #include "utils/enum_utils.h"
 #include "utils/rt_thread_id.h"
@@ -52,11 +53,19 @@ MidiFunction::string_id_to_type (const char * id) -> Type
 }
 
 void
-MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
+MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
 {
   z_debug ("applying {}...", MidiFunctionType_to_string (type));
 
-  const auto &sel = sel_var;
+  auto get_first_and_last_pos = [&] () -> std::pair<double, double> {
+    auto ticks =
+      sel | std::views::transform ([] (auto * mn) {
+        return mn->position ()->ticks ();
+      });
+    auto [min_it, max_it] = std::ranges::minmax_element (ticks);
+    return { *min_it, *max_it };
+  };
+
   switch (type)
     {
     case Type::Crescendo:
@@ -65,19 +74,18 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
         curve_opts.algo_ = opts.curve_algo_;
         curve_opts.curviness_ = opts.curviness_;
         int vel_interval = std::abs (opts.end_vel_ - opts.start_vel_);
-        auto [first_note_var, first_pos] = sel.get_first_object_and_pos ();
-        auto [last_note_var, last_pos] = sel.get_last_object_and_pos (false);
-        auto first_note = std::get<MidiNote *> (first_note_var);
-        auto last_note = std::get<MidiNote *> (last_note_var);
+        auto [first_pos, last_pos] = get_first_and_last_pos ();
 
-        if (first_note == last_note)
+        if (sel.size () == 1)
           {
-            first_note->setVelocity (opts.start_vel_);
+            sel[0]->setVelocity (opts.start_vel_);
             break;
           }
 
         double total_ticks = last_pos - first_pos;
-        for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
+        if (total_ticks == 0.0)
+          break;
+        for (auto * mn : sel)
           {
             double mn_ticks_from_start = mn->position ()->ticks () - first_pos;
             double vel_multiplier = curve_opts.get_normalized_y (
@@ -96,7 +104,7 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
         break;
 #if 0
             std::vector<MidiNote *> new_midi_notes;
-            for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
+            for (auto * mn : sel)
               {
                 double len = mn->get_length_in_ticks ();
                 auto   new_mn = mn->clone_raw_ptr ();
@@ -138,12 +146,12 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
       break;
     case Type::FlipVertical:
       {
-        auto [lowest_note, highest_note] = sel.get_first_and_last_note ();
-        z_return_if_fail (highest_note && lowest_note);
-        int highest_pitch = highest_note->pitch ();
-        int lowest_pitch = lowest_note->pitch ();
+        auto pitches = sel | std::views::transform (&MidiNote::pitch);
+        auto [min_it, max_it] = std::ranges::minmax_element (pitches);
+        int highest_pitch = *max_it;
+        int lowest_pitch = *min_it;
         int diff = highest_pitch - lowest_pitch;
-        for (auto * mn : sel.template get_elements_by_type<MidiNote> ())
+        for (auto * mn : sel)
           {
             uint8_t new_val = diff - (mn->pitch () - lowest_pitch);
             new_val += lowest_pitch;
@@ -154,19 +162,16 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
     case Type::FlipHorizontal:
       {
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (
-          copies, {}, ArrangerObjectSpan::position_ticks_projection);
+        std::ranges::sort (copies, {}, [] (auto * mn) {
+          return mn->position ()->ticks ();
+        });
         std::vector<double> poses;
-        for (
-          auto * mn :
-          ArrangerObjectSpan{ copies }.template get_elements_by_type<MidiNote> ())
+        for (auto * mn : copies)
           {
             poses.push_back (mn->position ()->ticks ());
           }
         int i = 0;
-        for (
-          auto * mn :
-          ArrangerObjectSpan{ copies }.template get_elements_by_type<MidiNote> ())
+        for (auto * mn : copies)
           {
             double ticks = mn->bounds ()->length ()->ticks ();
             mn->position ()->setTicks (poses[(copies.size () - i) - 1]);
@@ -178,12 +183,13 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
     case Type::Legato:
       {
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (
-          copies, {}, ArrangerObjectSpan::position_ticks_projection);
+        std::ranges::sort (copies, {}, [] (auto * mn) {
+          return mn->position ()->ticks ();
+        });
         for (auto it = copies.begin (); it < (copies.end () - 1); ++it)
           {
-            auto mn = std::get<MidiNote *> (*it);
-            auto next_mn = std::get<MidiNote *> (*(it + 1));
+            auto * mn = *it;
+            auto * next_mn = *(it + 1);
             /* 48 to make sure the note has a length */
             mn->bounds ()->length ()->setTicks (
               std::max (
@@ -196,13 +202,14 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
       {
         /* do the same as legato but leave some space between the notes */
         auto copies = sel | std::ranges::to<std::vector> ();
-        std::ranges::sort (
-          copies, {}, ArrangerObjectSpan::position_ticks_projection);
+        std::ranges::sort (copies, {}, [] (auto * mn) {
+          return mn->position ()->ticks ();
+        });
 
         for (auto it = copies.begin (); it < (copies.end () - 1); ++it)
           {
-            auto mn = std::get<MidiNote *> (*it);
-            auto next_mn = std::get<MidiNote *> (*(it + 1));
+            auto * mn = *it;
+            auto * next_mn = *(it + 1);
             mn->bounds ()->length ()->setTicks (
               std::max (
                 48.0,
@@ -213,9 +220,8 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
       break;
     case Type::Staccato:
       {
-        for (auto it = sel.begin (); it < (sel.end () - 1); ++it)
+        for (auto * mn : sel)
           {
-            auto mn = std::get<MidiNote *> (*it);
             mn->bounds ()->length ()->setTicks (48.0);
           }
       }
@@ -229,19 +235,16 @@ MidiFunction::apply (ArrangerObjectSpan sel_var, Type type, Options opts)
         auto copies = sel | std::ranges::to<std::vector> ();
         if (opts.ascending_)
           {
-            std::ranges::sort (
-              copies, {}, ArrangerObjectSpan::midi_note_pitch_projection);
+            std::ranges::sort (copies, {}, &MidiNote::pitch);
           }
         else
           {
-            std::ranges::sort (
-              copies, std::ranges::greater{},
-              ArrangerObjectSpan::midi_note_pitch_projection);
+            std::ranges::sort (copies, std::ranges::greater{}, &MidiNote::pitch);
           }
-        const auto * first_mn = std::get<MidiNote *> (copies.front ());
+        auto * first_mn = copies.front ();
         for (auto it = copies.begin (); it != copies.end (); ++it)
           {
-            auto * mn = std::get<MidiNote *> (*it);
+            auto * mn = *it;
             double ms_multiplier = curve_opts.get_normalized_y (
               (double) std::distance (copies.begin (), it)
                 / (double) copies.size (),

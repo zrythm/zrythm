@@ -22,7 +22,7 @@ MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
     {
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
           original_positions_.push_back (
             units::ticks (obj->position ()->ticks ()));
           if constexpr (
@@ -47,7 +47,8 @@ MoveArrangerObjectsCommand::MoveArrangerObjectsCommand (
               original_vertical_positions_.push_back (0);
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
     }
 }
 
@@ -98,7 +99,7 @@ MoveArrangerObjectsCommand::undo ()
     {
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
           obj->position ()->setTicks (original_pos.in (units::ticks));
           if (vertical_delta_ != 0)
             {
@@ -122,7 +123,8 @@ MoveArrangerObjectsCommand::undo ()
                 }
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
     }
 }
 
@@ -135,7 +137,7 @@ MoveArrangerObjectsCommand::redo ()
     {
       std::visit (
         [&] (auto &&obj) {
-          using ObjectT = base_type<decltype (obj)>;
+          using ObjectT = utils::base_type<decltype (obj)>;
           obj->position ()->setTicks (
             (original_pos + tick_delta_).in (units::ticks));
           if (vertical_delta_ != 0)
@@ -164,7 +166,8 @@ MoveArrangerObjectsCommand::redo ()
                 }
             }
         },
-        obj_ref.get_object ());
+        convert_to_variant_qobj<
+          structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
     }
   last_redo_timestamp_ = std::chrono::steady_clock::now ();
 }

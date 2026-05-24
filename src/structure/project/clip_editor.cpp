@@ -3,16 +3,13 @@
 
 #include "structure/project/clip_editor.h"
 #include "structure/tracks/track_all.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::structure::project
 {
 
-ClipEditor::ClipEditor (
-  ArrangerObjectRegistry &reg,
-  TrackResolver           track_resolver,
-  QObject *               parent)
+ClipEditor::ClipEditor (utils::IObjectRegistry &reg, QObject * parent)
     : QObject (parent), object_registry_ (reg),
-      track_resolver_ (std::move (track_resolver)),
       piano_roll_ (
         utils::make_qobject_unique<structure::arrangement::PianoRoll> (this)),
       audio_clip_editor_ (
@@ -36,7 +33,7 @@ ClipEditor::region () const
 {
   if (has_region ())
     {
-      return QVariant::fromStdVariant (get_region_and_track ()->first);
+      return QVariant::fromValue (get_region_and_track ()->first);
     }
 
   return {};
@@ -46,7 +43,7 @@ ClipEditor::track () const
 {
   if (has_region ())
     {
-      return QVariant::fromStdVariant (get_region_and_track ()->second);
+      return QVariant::fromValue (get_region_and_track ()->second);
     }
 
   return {};
@@ -62,6 +59,16 @@ ClipEditor::setRegion (QVariant region, QVariant track)
 }
 
 void
+ClipEditor::set_region (ArrangerObject::Uuid region_id, TrackUuid track_id)
+{
+  if (region_id_.has_value () && region_id_.value ().first == region_id)
+    return;
+
+  region_id_ = { region_id, track_id };
+  Q_EMIT regionChanged (QVariant::fromValue (get_region_and_track ()->first));
+}
+
+void
 ClipEditor::unsetRegion ()
 {
   if (!region_id_)
@@ -73,20 +80,13 @@ ClipEditor::unsetRegion ()
 
 auto
 ClipEditor::get_region_and_track () const
-  -> std::optional<std::pair<ArrangerObjectPtrVariant, TrackPtrVariant>>
+  -> std::optional<std::pair<ArrangerObject *, Track *>>
 {
-  auto region_var = std::visit (
-    [&] (auto &&obj) -> ArrangerObjectPtrVariant {
-      if constexpr (
-        structure::arrangement::RegionObject<base_type<decltype (obj)>>)
-        {
-          return obj;
-        }
-      throw std::bad_variant_access ();
-    },
-    object_registry_.find_by_id_or_throw (region_id_->first));
-  auto track_var = track_resolver_ (region_id_->second);
-  return std::make_pair (region_var, track_var);
+  auto &region_obj =
+    utils::get_typed<ArrangerObject> (object_registry_, region_id_->first);
+  auto &track_obj =
+    utils::get_typed<Track> (object_registry_, region_id_->second);
+  return std::make_pair (&region_obj, &track_obj);
 }
 
 void

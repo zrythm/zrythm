@@ -9,9 +9,9 @@ namespace zrythm::structure::tracks
 {
 
 TrackCollection::TrackCollection (
-  TrackRegistry &track_registry,
-  QObject *      parent) noexcept
-    : QAbstractListModel (parent), track_registry_ (track_registry)
+  utils::IObjectRegistry &registry,
+  QObject *               parent) noexcept
+    : QAbstractListModel (parent), registry_ (registry)
 {
   // connect signals to track muted/soloed/listened counts
   QObject::connect (
@@ -20,7 +20,7 @@ TrackCollection::TrackCollection (
       for (int i = first; i <= last; ++i)
         {
           const auto &track_ref = tracks ().at (i);
-          auto *      track = track_ref.get_object_base ();
+          auto *      track = track_ref.get ();
           if (auto * channel = track->channel ())
             {
               QObject::connect (
@@ -67,7 +67,7 @@ TrackCollection::TrackCollection (
       for (int i = first; i <= last; ++i)
         {
           const auto &track_ref = tracks ().at (i);
-          auto *      track = track_ref.get_object_base ();
+          auto *      track = track_ref.get ();
           if (auto * channel = track->channel ())
             {
               QObject::disconnect (
@@ -128,17 +128,17 @@ TrackCollection::data (const QModelIndex &index, int role) const
   if (!index.isValid ())
     return {};
 
-  auto track_ref = tracks_.at (index.row ());
-  auto track_var = track_ref.get_object ();
+  auto   track_ref = tracks_.at (index.row ());
+  auto * track_ptr = track_ref.get ();
 
   switch (role)
     {
     case TrackPtrRole:
-      return QVariant::fromStdVariant (track_var);
+      return QVariant::fromValue (track_ptr);
     case TrackNameRole:
-      return track_ref.get_object_base ()->name ();
+      return track_ptr->name ();
     case TrackFoldableRole:
-      return Track::type_is_foldable (track_ref.get_object_base ()->type ());
+      return Track::type_is_foldable (track_ref.get ()->type ());
     case TrackExpandedRole:
       return expanded_tracks_.contains (track_ref.id ());
     case TrackDepthRole:
@@ -166,29 +166,52 @@ TrackCollection::setTrackExpanded (const Track * track, bool expanded)
 int
 TrackCollection::numSoloedTracks () const
 {
-  return static_cast<int> (get_track_span ().get_num_soloed_tracks ());
+  return static_cast<int> (std::ranges::count_if (
+    tracks_ | std::views::transform (&TrackUuidReference::get)
+      | std::views::transform (&Track::channel) | utils::views::filter_null
+      | std::views::transform (&Channel::fader),
+    [] (const auto &f) {
+      const auto * solo = f->solo ();
+      return solo->range ().isToggled (solo->baseValue ());
+    }));
 }
+
 int
 TrackCollection::numMutedTracks () const
 {
-  return static_cast<int> (get_track_span ().get_num_muted_tracks ());
+  return static_cast<int> (std::ranges::count_if (
+    tracks_ | std::views::transform (&TrackUuidReference::get)
+      | std::views::transform (&Track::channel) | utils::views::filter_null
+      | std::views::transform (&Channel::fader),
+    [] (const auto &f) {
+      const auto * mute = f->mute ();
+      return mute->range ().isToggled (mute->baseValue ());
+    }));
 }
+
 int
 TrackCollection::numListenedTracks () const
 {
-  return static_cast<int> (get_track_span ().get_num_listened_tracks ());
+  return static_cast<int> (std::ranges::count_if (
+    tracks_ | std::views::transform (&TrackUuidReference::get)
+      | std::views::transform (&Track::channel) | utils::views::filter_null
+      | std::views::transform (&Channel::fader),
+    [] (const auto &f) {
+      const auto * listen = f->listen ();
+      return listen->range ().isToggled (listen->baseValue ());
+    }));
 }
 
 // ========================================================================
 // Track Management
 // ========================================================================
 
-TrackPtrVariant
+Track *
 TrackCollection::get_track_at_index (size_t index) const
 {
   if (index >= tracks_.size ())
     throw std::out_of_range ("Track index out of range");
-  return get_track_span ().at (index);
+  return tracks_.at (index).get ();
 }
 
 TrackUuidReference
@@ -219,7 +242,7 @@ TrackCollection::insert_track (const TrackUuidReference &track_id, int pos)
   tracks_.emplace_back (track_id);
 
   // Check if this track is foldable and initialize its expanded state
-  auto * track = tracks::from_variant (track_id.get_object ());
+  auto * track = track_id.get ();
   if (Track::type_is_foldable (track->type ()))
     {
       expanded_tracks_.insert (track->get_uuid ());
@@ -245,12 +268,12 @@ TrackCollection::remove_track (const Track::Uuid &track_id)
 
   const auto track_index = std::distance (tracks_.begin (), track_it);
 
-  auto *                                 track = track_it->get_object_base ();
-  std::vector<plugins::PluginPtrVariant> plugins;
+  auto *                                    track = track_it->get ();
+  std::vector<plugins::PluginUuidReference> plugins;
   track->collect_plugins (plugins);
-  for (const auto &plugin_var : plugins)
+  for (const auto &plugin_ref : plugins)
     {
-      auto * plugin = plugins::plugin_ptr_variant_to_base (plugin_var);
+      auto * plugin = plugin_ref.get ();
       if (plugin->uiVisible ())
         {
           plugin->setUiVisible (false);
@@ -468,8 +491,8 @@ TrackCollection::remove_folder_parent (
 bool
 TrackCollection::is_track_foldable (const Track::Uuid &track_id) const
 {
-  auto track_var = get_track_at_index (get_track_index (track_id));
-  return Track::type_is_foldable (tracks::from_variant (track_var)->type ());
+  auto * track = get_track_at_index (get_track_index (track_id));
+  return Track::type_is_foldable (track->type ());
 }
 
 bool
@@ -577,7 +600,7 @@ from_json (const nlohmann::json &j, TrackCollection &collection)
 {
   for (const auto &child_j : j.at (TrackCollection::kTracksKey))
     {
-      TrackUuidReference ref{ collection.track_registry_ };
+      TrackUuidReference ref{ collection.registry_ };
       from_json (child_j, ref);
       collection.add_track (ref);
     }

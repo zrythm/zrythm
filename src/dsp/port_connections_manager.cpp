@@ -8,8 +8,10 @@
 #include "dsp/port_connections_manager.h"
 #include "utils/format.h"
 #include "utils/format_boost.h"
+#include "utils/logger.h"
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
@@ -347,6 +349,28 @@ PortConnectionsManager::print () const
       str += fmt::format ("[{}] {}\n", i, *connections_[i]);
     }
   z_info ("{}", str.c_str ());
+}
+
+static constexpr auto kConnectionsKey = "connections"sv;
+
+void
+to_json (nlohmann::json &j, const PortConnectionsManager &pcm)
+{
+  j[kConnectionsKey] = pcm.connections_;
+}
+
+void
+from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
+{
+  qDeleteAll (pcm.connections_);
+  pcm.connections_.clear ();
+  for (const auto &conn_json : j.at (kConnectionsKey))
+    {
+      auto * conn = new PortConnection (&pcm);
+      from_json (conn_json, *conn);
+      pcm.connections_.push_back (conn);
+    }
+  pcm.regenerate_hashtables ();
 }
 
 } // namespace zrythm::dsp

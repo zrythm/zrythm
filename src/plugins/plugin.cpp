@@ -2,18 +2,17 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin.h"
-#include "utils/concurrency.h"
 #include "utils/enum_utils.h"
+#include "utils/logger.h"
 
 #include <QTimer>
 
 namespace zrythm::plugins
 {
 
-Plugin::Plugin (
-  dsp::ProcessorBase::ProcessorBaseDependencies dependencies,
-  QObject *                                     parent)
-    : QObject (parent), zrythm::dsp::ProcessorBase (dependencies, u8"Plugin"),
+Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
+    : utils::UuidIdentifiableObject<Plugin> (parent),
+      zrythm::dsp::ProcessorBase (registry, u8"Plugin"),
       param_flush_timer_ (utils::make_qobject_unique<QTimer> (this))
 {
   QObject::connect (
@@ -28,16 +27,29 @@ Plugin::Plugin (
     });
 }
 
+dsp::ProcessorParameter *
+Plugin::bypassParameter () const
+{
+  return &utils::get_typed<dsp::ProcessorParameter> (
+    registry (), bypass_id_.value ());
+}
+
+dsp::ProcessorParameter *
+Plugin::gainParameter () const
+{
+  return &utils::get_typed<dsp::ProcessorParameter> (
+    registry (), gain_id_.value ());
+}
+
 dsp::ProcessorParameterUuidReference
 Plugin::generate_default_bypass_param () const
 {
-  auto bypass_id =
-    dependencies ().param_registry_.create_object<dsp::ProcessorParameter> (
-      dependencies ().port_registry_,
-      dsp::ProcessorParameter::UniqueId (u8"/zrythm-bypass"),
-      dsp::ParameterRange{ dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f },
-      utils::Utf8String::from_qstring (QObject::tr ("Bypass")));
-  bypass_id.get_object_as<dsp::ProcessorParameter> ()->set_description (
+  auto bypass_id = utils::create_object<dsp::ProcessorParameter> (
+    registry (), registry (),
+    dsp::ProcessorParameter::UniqueId (u8"/zrythm-bypass"),
+    dsp::ParameterRange{ dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f },
+    utils::Utf8String::from_qstring (QObject::tr ("Bypass")));
+  bypass_id.get ()->set_description (
     utils::Utf8String::from_qstring (
       QObject::tr ("Enables or disables the plugin")));
   return bypass_id;
@@ -46,13 +58,12 @@ Plugin::generate_default_bypass_param () const
 dsp::ProcessorParameterUuidReference
 Plugin::generate_default_gain_param () const
 {
-  auto gain_id =
-    dependencies ().param_registry_.create_object<dsp::ProcessorParameter> (
-      dependencies ().port_registry_,
-      dsp::ProcessorParameter::UniqueId (u8"/zrythm-gain"),
-      dsp::ParameterRange{
-        dsp::ParameterRange::Type::GainAmplitude, 0.f, 8.f, 0.f, 1.f },
-      utils::Utf8String::from_qstring (QObject::tr ("Gain")));
+  auto gain_id = utils::create_object<dsp::ProcessorParameter> (
+    registry (), registry (),
+    dsp::ProcessorParameter::UniqueId (u8"/zrythm-gain"),
+    dsp::ParameterRange{
+      dsp::ParameterRange::Type::GainAmplitude, 0.f, 8.f, 0.f, 1.f },
+    utils::Utf8String::from_qstring (QObject::tr ("Gain")));
   return gain_id;
 }
 
@@ -142,32 +153,24 @@ Plugin::init_param_caches ()
   cv_in_ports_.clear ();
   audio_out_ports_.clear ();
 
-  for (const auto &port_var : get_input_ports ())
+  for (const auto &port_ref : get_input_ports ())
     {
-      std::visit (
-        [&] (auto &&port) {
-          using PortT = base_type<decltype (port)>;
-          if constexpr (std::is_same_v<PortT, dsp::AudioPort>)
-            audio_in_ports_.push_back (port);
-          else if constexpr (std::is_same_v<PortT, dsp::CVPort>)
-            cv_in_ports_.push_back (port);
-          else if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
-            midi_in_port_ = port;
-        },
-        port_var.get_object ());
+      auto * port = port_ref.get ();
+      if (auto * audio = qobject_cast<dsp::AudioPort *> (port))
+        audio_in_ports_.push_back (audio);
+      else if (auto * cv = qobject_cast<dsp::CVPort *> (port))
+        cv_in_ports_.push_back (cv);
+      else if (auto * midi = qobject_cast<dsp::MidiPort *> (port))
+        midi_in_port_ = midi;
     }
 
-  for (const auto &port_var : get_output_ports ())
+  for (const auto &port_ref : get_output_ports ())
     {
-      std::visit (
-        [&] (auto &&port) {
-          using PortT = base_type<decltype (port)>;
-          if constexpr (std::is_same_v<PortT, dsp::AudioPort>)
-            audio_out_ports_.push_back (port);
-          else if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
-            midi_out_port_ = port;
-        },
-        port_var.get_object ());
+      auto * port = port_ref.get ();
+      if (auto * audio = qobject_cast<dsp::AudioPort *> (port))
+        audio_out_ports_.push_back (audio);
+      else if (auto * midi = qobject_cast<dsp::MidiPort *> (port))
+        midi_out_port_ = midi;
     }
 
   bypass_param_rt_ = bypassParameter ();
@@ -197,7 +200,7 @@ Plugin::flush_plugin_values ()
       if (val >= 0.f)
         {
           const auto &param_ref = get_parameters ()[i];
-          auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+          auto *      param = param_ref.get ();
           param->setBaseValue (val);
         }
     }
@@ -237,7 +240,7 @@ from_json (const nlohmann::json &j, Plugin &p)
   p.bypass_id_.reset ();
   for (const auto &param_ref : p.get_parameters ())
     {
-      const auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+      const auto * param = param_ref.get ();
       if (
         param->get_unique_id ()
         == dsp::ProcessorParameter::UniqueId (u8"/zrythm-gain"))

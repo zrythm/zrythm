@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/compression.h"
-#include "utils/gtest_wrapper.h"
+
+#include <gtest/gtest.h>
 
 TEST (CompressionTest, CompressDecompress)
 {

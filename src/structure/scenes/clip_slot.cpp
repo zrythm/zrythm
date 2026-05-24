@@ -7,10 +7,8 @@
 
 namespace zrythm::structure::scenes
 {
-ClipSlot::ClipSlot (
-  arrangement::ArrangerObjectRegistry &object_registry,
-  QObject *                            parent)
-    : QObject (parent), object_registry_ (object_registry)
+ClipSlot::ClipSlot (utils::IObjectRegistry &registry, QObject * parent)
+    : QObject (parent), registry_ (registry)
 {
 }
 
@@ -24,9 +22,8 @@ ClipSlot::setRegion (arrangement::ArrangerObject * region)
       return;
     }
 
-  region_ref_ = arrangement::ArrangerObjectUuidReference{
-    region->get_uuid (), object_registry_
-  };
+  region_ref_ =
+    arrangement::ArrangerObjectUuidReference{ region->get_uuid (), registry_ };
   Q_EMIT regionChanged (region);
 }
 
@@ -42,17 +39,17 @@ ClipSlot::setState (ClipState state)
 }
 
 ClipSlotList::ClipSlotList (
-  arrangement::ArrangerObjectRegistry &object_registry,
-  const tracks::TrackCollection       &track_collection,
-  QObject *                            parent)
-    : QAbstractListModel (parent), object_registry_ (object_registry),
+  utils::IObjectRegistry        &registry,
+  const tracks::TrackCollection &track_collection,
+  QObject *                      parent)
+    : QAbstractListModel (parent), registry_ (registry),
       track_collection_ (track_collection)
 {
   // Initialize clip slots to match existing tracks
   for (size_t i = 0; i < track_collection.track_count (); ++i)
     {
       clip_slots_.emplace_back (
-        utils::make_qobject_unique<ClipSlot> (object_registry_, this));
+        utils::make_qobject_unique<ClipSlot> (registry_, this));
     }
 
   // Connect to track collection changes to keep clip slots synced
@@ -65,7 +62,7 @@ ClipSlotList::ClipSlotList (
         {
           clip_slots_.insert (
             clip_slots_.begin () + i,
-            utils::make_qobject_unique<ClipSlot> (object_registry_, this));
+            utils::make_qobject_unique<ClipSlot> (registry_, this));
         }
       endInsertRows ();
     });
@@ -136,7 +133,7 @@ from_json (const nlohmann::json &j, ClipSlot &slot)
     {
       arrangement::ArrangerObject::Uuid region_id;
       j.at (ClipSlot::kRegionIdKey).get_to (region_id);
-      slot.region_ref_.emplace (region_id, slot.object_registry_);
+      slot.region_ref_.emplace (region_id, slot.registry_);
     }
 }
 

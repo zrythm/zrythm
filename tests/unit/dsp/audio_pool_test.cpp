@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <filesystem>
@@ -6,6 +6,8 @@
 #include "dsp/audio_pool.h"
 #include "dsp/file_audio_source.h"
 #include "utils/io_utils.h"
+#include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 #include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>
@@ -23,8 +25,8 @@ protected:
       utils::Utf8String::from_qstring (temp_dir_obj->path ()).to_path ();
 
     // Create sample audio clip
-    clip_id_ref = registry.create_object<FileAudioSource> (
-      utils::audio::AudioBuffer (2, 100),
+    clip_id_ref = utils::create_object<FileAudioSource> (
+      registry, utils::audio::AudioBuffer (2, 100),
       FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
       120.0, u8"test_clip", nullptr);
     clip_id = clip_id_ref->id ();
@@ -44,7 +46,7 @@ protected:
 
   std::unique_ptr<QTemporaryDir>              temp_dir_obj;
   std::filesystem::path                       temp_dir;
-  FileAudioSourceRegistry                     registry;
+  utils::ObjectRegistry                       registry;
   std::optional<FileAudioSourceUuidReference> clip_id_ref;
   FileAudioSource::Uuid                       clip_id;
   AudioPool::ProjectPoolPathGetter            path_getter;
@@ -62,8 +64,7 @@ TEST_F (AudioPoolTest, Construction)
 TEST_F (AudioPoolTest, LoadExistingClips)
 {
   // Write clip to disk first
-  auto * clip =
-    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  auto * clip = &utils::get_typed<FileAudioSource> (registry, clip_id);
   ASSERT_NO_THROW (audio_pool->write_clip (clip, false, false));
 
   // Create a new pool to simulate loading
@@ -73,7 +74,9 @@ TEST_F (AudioPoolTest, LoadExistingClips)
   EXPECT_NO_THROW (new_pool.init_loaded ());
 
   // Verify clip was loaded
-  EXPECT_EQ (new_pool.get_clip_ptrs ().size (), 1);
+  size_t clip_count = 0;
+  new_pool.for_each_clip ([&] (dsp::FileAudioSource &) { ++clip_count; });
+  EXPECT_EQ (clip_count, 1);
 }
 
 // Test clip duplication
@@ -84,7 +87,7 @@ TEST_F (AudioPoolTest, DuplicateClip)
   EXPECT_NE (new_clip_id.id (), clip_id);
 
   // Verify clip exists in registry
-  EXPECT_TRUE (registry.contains (new_clip_id.id ()));
+  EXPECT_TRUE (registry.contains (type_safe::get (new_clip_id.id ())));
 }
 
 // Test clip path retrieval
@@ -98,8 +101,7 @@ TEST_F (AudioPoolTest, GetClipPath)
 // Test clip writing
 TEST_F (AudioPoolTest, WriteClip)
 {
-  auto * clip =
-    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  auto * clip = &utils::get_typed<FileAudioSource> (registry, clip_id);
   ASSERT_NO_THROW (audio_pool->write_clip (clip, false, false));
 
   // Verify file was created
@@ -111,15 +113,15 @@ TEST_F (AudioPoolTest, WriteClip)
 TEST_F (AudioPoolTest, RemoveUnused)
 {
   // Create a clip that won't be used
-  std::optional<FileAudioSourceUuidReference> unused_clip =
-    registry.create_object<FileAudioSource> (
-      utils::audio::AudioBuffer (2, 50), FileAudioSource::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.0, u8"unused_clip", nullptr);
+  std::optional<FileAudioSourceUuidReference> unused_clip = utils::create_object<
+    FileAudioSource> (
+    registry, utils::audio::AudioBuffer (2, 50),
+    FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
+    u8"unused_clip", nullptr);
   auto unused_path = audio_pool->get_clip_path (unused_clip->id (), false);
 
   // Write both clips
-  auto * clip =
-    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  auto * clip = &utils::get_typed<FileAudioSource> (registry, clip_id);
   audio_pool->write_clip (clip, false, false);
   audio_pool->write_clip (
     unused_clip->get_object_as<dsp::FileAudioSource> (), false, false);
@@ -140,8 +142,7 @@ TEST_F (AudioPoolTest, RemoveUnused)
 TEST_F (AudioPoolTest, ReloadClipFrameBufs)
 {
   // Write the clip
-  auto * clip =
-    std::get<FileAudioSource *> (registry.find_by_id_or_throw (clip_id));
+  auto * clip = &utils::get_typed<FileAudioSource> (registry, clip_id);
   audio_pool->write_clip (clip, false, false);
 
   // Initially clear frames
@@ -160,8 +161,8 @@ TEST_F (AudioPoolTest, WriteToDisk)
   std::vector<FileAudioSourceUuidReference> clip_ids;
   for (int i = 0; i < 3; i++)
     {
-      auto clip = registry.create_object<FileAudioSource> (
-        utils::audio::AudioBuffer (2, 100 + i * 10),
+      auto clip = utils::create_object<FileAudioSource> (
+        registry, utils::audio::AudioBuffer (2, 100 + i * 10),
         FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
         120.0,
         utils::Utf8String::from_utf8_encoded_string (fmt::format ("clip_{}", i)),

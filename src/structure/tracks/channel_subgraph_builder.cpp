@@ -26,13 +26,11 @@ ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
   }
 
   // plugins
-  std::vector<plugins::PluginPtrVariant> plugins;
+  std::vector<plugins::PluginUuidReference> plugins;
   ch.get_plugins (plugins);
-  for (
-    auto * pl :
-    plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base))
+  for (const auto &pl_ref : plugins)
     {
-      dsp::ProcessorGraphBuilder::add_nodes (graph, *pl);
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *pl_ref.get ());
     }
 
   // sends
@@ -53,8 +51,7 @@ ChannelSubgraphBuilder::add_connections (
   const dsp::PortUuidReference track_processor_output)
 {
   if (
-    graph.get_nodes ().find_node_for_processable (
-      *track_processor_output.get_object_base ())
+    graph.get_nodes ().find_node_for_processable (*track_processor_output.get ())
     == nullptr)
     {
       throw std::invalid_argument (
@@ -71,8 +68,7 @@ ChannelSubgraphBuilder::add_connections (
   auto *                                fader = ch.fader ();
   std::optional<dsp::PortUuidReference> processor_midi_out_ref;
   std::optional<dsp::PortUuidReference> processor_audio_out_ref;
-  const auto track_proc_out_var = track_processor_output.get_object ();
-  if (std::holds_alternative<dsp::AudioPort *> (track_proc_out_var))
+  if (qobject_cast<dsp::AudioPort *> (track_processor_output.get ()) != nullptr)
     {
       processor_audio_out_ref = track_processor_output;
     }
@@ -83,12 +79,12 @@ ChannelSubgraphBuilder::add_connections (
   const auto channel_output_type =
     ch.fader ()->is_midi () ? dsp::PortType::Midi : dsp::PortType::Audio;
 
-  std::vector<zrythm::plugins::PluginPtrVariant> plugins;
+  std::vector<plugins::PluginUuidReference> plugins;
   ch.get_plugins (plugins);
   plugins::Plugin * last_plugin = nullptr;
   for (
     auto * const pl :
-    plugins | std::views::transform (&plugins::plugin_ptr_variant_to_base))
+    plugins | std::views::transform (&plugins::PluginUuidReference::get))
     {
       dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
       if (last_plugin == nullptr)
@@ -105,8 +101,7 @@ ChannelSubgraphBuilder::add_connections (
           if (!connection_made)
             {
               graph.get_nodes ()
-                .find_node_for_processable (
-                  *track_processor_output.get_object_base ())
+                .find_node_for_processable (*track_processor_output.get ())
                 ->connect_to (
                   *graph.get_nodes ().find_node_for_processable (*pl));
             }
@@ -116,13 +111,15 @@ ChannelSubgraphBuilder::add_connections (
           // connect last plugin to this plugin
           const auto connect_plugins =
             [&] (plugins::Plugin &src, plugins::Plugin &dest) {
-              // Get audio ports
+              using utils::views::qobject_cast_and_filter;
               auto src_audio_outs =
-                dsp::PortSpan{ src.get_output_ports () }
-                  .get_elements_by_type<dsp::AudioPort> ();
+                src.get_output_ports ()
+                | std::views::transform (&dsp::PortUuidReference::get)
+                | qobject_cast_and_filter<dsp::AudioPort>;
               auto dest_audio_ins =
-                dsp::PortSpan{ dest.get_input_ports () }
-                  .get_elements_by_type<dsp::AudioPort> ();
+                dest.get_input_ports ()
+                | std::views::transform (&dsp::PortUuidReference::get)
+                | qobject_cast_and_filter<dsp::AudioPort>;
 
               const size_t num_src_outs = std::ranges::distance (src_audio_outs);
               const size_t num_dest_ins = std::ranges::distance (dest_audio_ins);
@@ -164,11 +161,13 @@ ChannelSubgraphBuilder::add_connections (
 
               // Handle MIDI connections
               auto src_midi_outs =
-                dsp::PortSpan{ src.get_output_ports () }
-                  .get_elements_by_type<dsp::MidiPort> ();
+                src.get_output_ports ()
+                | std::views::transform (&dsp::PortUuidReference::get)
+                | qobject_cast_and_filter<dsp::MidiPort>;
               auto dest_midi_ins =
-                dsp::PortSpan{ dest.get_input_ports () }
-                  .get_elements_by_type<dsp::MidiPort> ();
+                dest.get_input_ports ()
+                | std::views::transform (&dsp::PortUuidReference::get)
+                | qobject_cast_and_filter<dsp::MidiPort>;
 
               if (!src_midi_outs.empty () && !dest_midi_ins.empty ())
                 {
@@ -212,46 +211,37 @@ ChannelSubgraphBuilder::add_connections (
   else // else if there is at least 1 plugin
     {
       // connect plugin outputs to channel prefader
-      auto * last_pl = plugins::plugin_ptr_variant_to_base (plugins.back ());
+      auto * last_pl = plugins.back ().get ();
       if (channel_output_type == dsp::PortType::Audio)
         {
+          using utils::views::qobject_cast_and_filter;
           auto prefader_audio_ins =
-            dsp::PortSpan{ ch.get_audio_pre_fader ().get_input_ports () }
-              .get_elements_by_type<dsp::AudioPort> ();
+            ch.get_audio_pre_fader ().get_input_ports ()
+            | std::views::transform (&dsp::PortUuidReference::get)
+            | qobject_cast_and_filter<dsp::AudioPort>;
           auto pl_audio_outs =
-            dsp::PortSpan{ last_pl->get_output_ports () }
-              .get_elements_by_type<dsp::AudioPort> ();
+            last_pl->get_output_ports ()
+            | std::views::transform (&dsp::PortUuidReference::get)
+            | qobject_cast_and_filter<dsp::AudioPort>;
 
-          bool connections_made{};
           for (
             const auto &[pl_audio_out, prefader_audio_in] :
             std::views::zip (pl_audio_outs, prefader_audio_ins))
             {
               connect_ports (*pl_audio_out, *prefader_audio_in);
-              connections_made = true;
-            }
-
-          // if no compatible ports were connected, connect the plugin
-          // outputs directly to the prefader processor
-          if (!connections_made)
-            {
-              for (const auto &pl_audio_out : pl_audio_outs)
-                {
-                  graph.get_nodes ()
-                    .find_node_for_processable (ch.get_midi_pre_fader ())
-                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
-                      *pl_audio_out));
-                }
             }
         }
       else if (channel_output_type == dsp::PortType::Midi)
         {
+          using utils::views::qobject_cast_and_filter;
           auto prefader_midi_ins =
-            dsp::PortSpan{ ch.get_midi_pre_fader ().get_input_ports () }
-              .get_elements_by_type<dsp::MidiPort> ();
+            ch.get_midi_pre_fader ().get_input_ports ()
+            | std::views::transform (&dsp::PortUuidReference::get)
+            | qobject_cast_and_filter<dsp::MidiPort>;
           auto pl_midi_outs =
-            dsp::PortSpan{ last_pl->get_output_ports () }
-              .get_elements_by_type<dsp::MidiPort> ();
+            last_pl->get_output_ports ()
+            | std::views::transform (&dsp::PortUuidReference::get)
+            | qobject_cast_and_filter<dsp::MidiPort>;
 
           bool connections_made{};
           for (

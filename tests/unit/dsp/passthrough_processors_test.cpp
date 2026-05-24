@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/passthrough_processors.h"
+#include "utils/object_registry.h"
 
 #include <QObject>
 
@@ -18,11 +19,7 @@ class PassthroughProcessorsTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    port_registry_ = std::make_unique<PortRegistry> ();
-    param_registry_ =
-      std::make_unique<ProcessorParameterRegistry> (*port_registry_);
-    dependencies_ = std::make_unique<ProcessorBase::ProcessorBaseDependencies> (
-      *port_registry_, *param_registry_);
+    registry_ = std::make_unique<utils::ObjectRegistry> ();
     sample_rate_ = units::sample_rate (48000);
     max_block_length_ = units::samples (1024);
 
@@ -40,20 +37,18 @@ protected:
       audio_proc_->release_resources ();
   }
 
-  std::unique_ptr<PortRegistry>                             port_registry_;
-  std::unique_ptr<ProcessorParameterRegistry>               param_registry_;
-  std::unique_ptr<ProcessorBase::ProcessorBaseDependencies> dependencies_;
-  units::sample_rate_t                                      sample_rate_;
-  units::sample_u32_t                                       max_block_length_;
-  std::unique_ptr<MidiPassthroughProcessor>                 midi_proc_;
-  std::unique_ptr<StereoPassthroughProcessor>               audio_proc_;
-  std::unique_ptr<graph_test::MockTransport>                mock_transport_;
-  std::unique_ptr<dsp::TempoMap>                            tempo_map_;
+  std::unique_ptr<utils::ObjectRegistry>      registry_;
+  units::sample_rate_t                        sample_rate_;
+  units::sample_u32_t                         max_block_length_;
+  std::unique_ptr<MidiPassthroughProcessor>   midi_proc_;
+  std::unique_ptr<StereoPassthroughProcessor> audio_proc_;
+  std::unique_ptr<graph_test::MockTransport>  mock_transport_;
+  std::unique_ptr<dsp::TempoMap>              tempo_map_;
 };
 
 TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
 {
-  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
+  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*registry_);
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors
@@ -78,7 +73,7 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
 
 TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
 {
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors
@@ -110,8 +105,8 @@ TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
 TEST_F (PassthroughProcessorsTest, ResourceManagement)
 {
   // Test prepare/release cycle
-  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*registry_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
 
   // Prepare resources
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
@@ -137,11 +132,11 @@ TEST_F (PassthroughProcessorsTest, JsonSerializationRoundtrip)
 {
   // MIDI processor
   {
-    MidiPassthroughProcessor orig (*dependencies_);
+    MidiPassthroughProcessor orig (*registry_);
     orig.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
     nlohmann::json           j = orig;
-    MidiPassthroughProcessor deserialized (*dependencies_);
+    MidiPassthroughProcessor deserialized (*registry_);
     from_json (j, deserialized);
 
     // Reinitialize after deserialization
@@ -159,11 +154,11 @@ TEST_F (PassthroughProcessorsTest, JsonSerializationRoundtrip)
 
   // Audio processor
   {
-    StereoPassthroughProcessor orig (*dependencies_);
+    StereoPassthroughProcessor orig (*registry_);
     orig.prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
     nlohmann::json             j = orig;
-    StereoPassthroughProcessor deserialized (*dependencies_);
+    StereoPassthroughProcessor deserialized (*registry_);
     from_json (j, deserialized);
 
     // Reinitialize after deserialization
@@ -182,8 +177,8 @@ TEST_F (PassthroughProcessorsTest, JsonSerializationRoundtrip)
 
 TEST_F (PassthroughProcessorsTest, PortInitialization)
 {
-  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*registry_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
 
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
@@ -208,8 +203,8 @@ TEST_F (PassthroughProcessorsTest, PortInitialization)
 
 TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
 {
-  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*dependencies_);
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  midi_proc_ = std::make_unique<MidiPassthroughProcessor> (*registry_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
 
   midi_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
@@ -225,7 +220,7 @@ TEST_F (PassthroughProcessorsTest, ZeroFramesProcessing)
 TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
 {
   const int large_size = 8192;
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
   audio_proc_->prepare_for_processing (
     nullptr, sample_rate_, units::samples (large_size));
 
@@ -254,7 +249,7 @@ TEST_F (PassthroughProcessorsTest, LargeBufferHandling)
 
 TEST_F (PassthroughProcessorsTest, MultipleProcessingCallsStereo)
 {
-  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*dependencies_);
+  audio_proc_ = std::make_unique<StereoPassthroughProcessor> (*registry_);
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Get ports through public accessors

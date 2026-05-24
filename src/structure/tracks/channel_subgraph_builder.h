@@ -5,6 +5,7 @@
 
 #include "dsp/graph.h"
 #include "structure/tracks/channel.h"
+#include "utils/views.h"
 
 namespace zrythm::structure::tracks
 {
@@ -64,43 +65,29 @@ public:
    * @return Whether any connections were made.
    */
   static bool connect_like_ports (
-    dsp::graph::Graph                          &graph,
-    const RangeOf<dsp::PortUuidReference> auto &src_refs,
-    const RangeOf<dsp::PortUuidReference> auto &dest_refs)
+    dsp::graph::Graph                                 &graph,
+    const utils::RangeOf<dsp::PortUuidReference> auto &src_refs,
+    const utils::RangeOf<dsp::PortUuidReference> auto &dest_refs)
   {
-    using ObjectView = utils::UuidIdentifiableObjectView<dsp::PortRegistry>;
-    const auto object_getter = [] (auto &&port_ref) {
-      return port_ref.get_object ();
-    };
+    const auto object_getter = [] (auto &&port_ref) { return port_ref.get (); };
     const auto src_output_ports =
       src_refs | std::views::transform (object_getter);
     const auto dest_input_ports =
       dest_refs | std::views::transform (object_getter);
 
+    using utils::views::qobject_cast_and_filter;
     auto src_midi_out_ports =
-      src_output_ports
-      | std::views::filter (ObjectView::type_projection<dsp::MidiPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::MidiPort>);
+      src_output_ports | qobject_cast_and_filter<dsp::MidiPort>;
     auto dest_midi_in_ports =
-      dest_input_ports
-      | std::views::filter (ObjectView::type_projection<dsp::MidiPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::MidiPort>);
+      dest_input_ports | qobject_cast_and_filter<dsp::MidiPort>;
     auto src_audio_out_ports =
-      src_output_ports
-      | std::views::filter (ObjectView::type_projection<dsp::AudioPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::AudioPort>);
+      src_output_ports | qobject_cast_and_filter<dsp::AudioPort>;
     auto dest_audio_in_ports =
-      dest_input_ports
-      | std::views::filter (ObjectView::type_projection<dsp::AudioPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::AudioPort>);
+      dest_input_ports | qobject_cast_and_filter<dsp::AudioPort>;
     auto src_cv_out_ports =
-      src_output_ports
-      | std::views::filter (ObjectView::type_projection<dsp::CVPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::CVPort>);
+      src_output_ports | qobject_cast_and_filter<dsp::CVPort>;
     auto dest_cv_in_ports =
-      dest_input_ports
-      | std::views::filter (ObjectView::type_projection<dsp::CVPort>)
-      | std::views::transform (ObjectView::type_transformation<dsp::CVPort>);
+      dest_input_ports | qobject_cast_and_filter<dsp::CVPort>;
 
     bool       connections_made{};
     const auto make_conns = [&connections_made, &graph] (const auto &ports) {

@@ -98,7 +98,7 @@
         "tempoMap",
         "transport",
         "tracklist",
-        "registries"
+        "registry"
       ],
       "properties": {
         "tempoMap": {
@@ -191,7 +191,7 @@
           "properties": {
             "tracks": {
               "type": "array",
-              "description": "UUID references to tracks in trackRegistry (ordered)",
+              "description": "UUID references to tracks in registry.tracks (ordered)",
               "items": {
                 "$ref": "#/definitions/uuid"
               }
@@ -257,7 +257,7 @@
                 "items": [
                   {
                     "$ref": "#/definitions/uuid",
-                    "description": "File audio source ID from fileAudioSourceRegistry"
+                    "description": "File audio source ID from registry.fileAudioSources"
                   },
                   {
                     "type": "integer",
@@ -304,11 +304,11 @@
           "properties": {
             "tempoObjects": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to tempoObject objects in arrangerObjectRegistry"
+              "description": "UUID references to tempoObject objects in registry.arrangerObjects"
             },
             "timeSignatureObjects": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to timeSignatureObject objects in arrangerObjectRegistry"
+              "description": "UUID references to timeSignatureObject objects in registry.arrangerObjects"
             }
           }
         },
@@ -325,54 +325,54 @@
             }
           }
         },
-        "registries": {
+        "registry": {
           "type": "object",
           "description": "All UUID-indexed objects (deserialized first, then referenced)",
           "required": [
-            "portRegistry",
-            "paramRegistry",
-            "pluginRegistry",
-            "trackRegistry",
-            "arrangerObjectRegistry",
-            "fileAudioSourceRegistry"
+            "ports",
+            "parameters",
+            "plugins",
+            "tracks",
+            "arrangerObjects",
+            "fileAudioSources"
           ],
           "properties": {
-            "portRegistry": {
+            "ports": {
               "type": "array",
               "description": "All audio/MIDI ports",
               "items": {
                 "$ref": "#/definitions/knownPort"
               }
             },
-            "paramRegistry": {
+            "parameters": {
               "type": "array",
               "description": "All processor parameters",
               "items": {
                 "$ref": "#/definitions/parameter"
               }
             },
-            "pluginRegistry": {
+            "plugins": {
               "type": "array",
               "description": "All plugin instances",
               "items": {
                 "$ref": "#/definitions/plugin"
               }
             },
-            "trackRegistry": {
+            "tracks": {
               "type": "array",
               "description": "All tracks with full data",
               "items": {
                 "$ref": "#/definitions/knownTrack"
               }
             },
-            "arrangerObjectRegistry": {
+            "arrangerObjects": {
               "type": "array",
               "description": "All arranger objects (regions, notes, automation, markers, etc.)",
               "items": {
                 "$ref": "#/definitions/knownArrangerObject"
               }
             },
-            "fileAudioSourceRegistry": {
+            "fileAudioSources": {
               "type": "array",
               "description": "All audio file references",
               "items": {
@@ -774,21 +774,21 @@
         },
         "inputPorts": {
           "type": "array",
-          "description": "UUID references to input ports in portRegistry",
+          "description": "UUID references to input ports in registry.ports",
           "items": {
             "$ref": "#/definitions/uuid"
           }
         },
         "outputPorts": {
           "type": "array",
-          "description": "UUID references to output ports in portRegistry",
+          "description": "UUID references to output ports in registry.ports",
           "items": {
             "$ref": "#/definitions/uuid"
           }
         },
         "parameters": {
           "type": "array",
-          "description": "UUID references to processor parameters in paramRegistry",
+          "description": "UUID references to processor parameters in registry.parameters",
           "items": {
             "$ref": "#/definitions/uuid"
           }
@@ -987,11 +987,11 @@
                       },
                       "parameter": {
                         "$ref": "#/definitions/uuid",
-                        "description": "UUID reference to parameter in paramRegistry"
+                        "description": "UUID reference to parameter in registry.parameters"
                       },
                       "regions": {
                         "$ref": "#/definitions/uuidArray",
-                        "description": "UUID references to AutomationRegion objects in arrangerObjectRegistry"
+                        "description": "UUID references to AutomationRegion objects in registry.arrangerObjects"
                       },
                       "createdByUser": {
                         "type": "boolean",
@@ -1177,11 +1177,11 @@
             },
             "regions": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to ChordRegion objects in arrangerObjectRegistry"
+              "description": "UUID references to ChordRegion objects in registry.arrangerObjects"
             },
             "scales": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to ScaleObject objects in arrangerObjectRegistry"
+              "description": "UUID references to ScaleObject objects in registry.arrangerObjects"
             }
           }
         }
@@ -1200,7 +1200,7 @@
             },
             "markers": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to Marker objects in arrangerObjectRegistry"
+              "description": "UUID references to Marker objects in registry.arrangerObjects"
             }
           }
         }
@@ -1403,7 +1403,7 @@
             },
             "midiNotes": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to midiNote objects in arrangerObjectRegistry"
+              "description": "UUID references to midiNote objects in registry.arrangerObjects"
             }
           }
         }
@@ -1422,7 +1422,7 @@
             },
             "audioSources": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to audioSourceObject objects in arrangerObjectRegistry"
+              "description": "UUID references to audioSourceObject objects in registry.arrangerObjects"
             },
             "gain": {
               "type": "number",
@@ -1471,7 +1471,7 @@
             },
             "fileAudioSource": {
               "$ref": "#/definitions/uuid",
-              "description": "UUID reference in fileAudioSourceRegistry"
+              "description": "UUID reference in registry.fileAudioSources"
             }
           },
           "required": [
@@ -1493,7 +1493,7 @@
             },
             "automationPoints": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to automationPoint objects in arrangerObjectRegistry"
+              "description": "UUID references to automationPoint objects in registry.arrangerObjects"
             }
           }
         }
@@ -1540,7 +1540,7 @@
             },
             "chordObjects": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to chordObject objects in arrangerObjectRegistry"
+              "description": "UUID references to chordObject objects in registry.arrangerObjects"
             }
           }
         }
@@ -1781,7 +1781,7 @@
       "properties": {
         "regionId": {
           "$ref": "#/definitions/uuid",
-          "description": "UUID reference to a region in arrangerObjectRegistry (MidiRegion, AudioRegion, etc.)"
+          "description": "UUID reference to a region in registry.arrangerObjects (MidiRegion, AudioRegion, etc.)"
         }
       }
     },

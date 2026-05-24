@@ -15,6 +15,7 @@
 #include "undo/undo_stack.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
+#include "utils/object_registry.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_settings_backend.h"
@@ -67,14 +68,14 @@ create_minimal_valid_project_json ()
   pd["tracklist"]["pinnedTracksCutoff"] = 0;
   pd["tracklist"]["trackRoutes"] = nlohmann::json::array ();
 
-  // registries (required)
-  pd["registries"] = nlohmann::json::object ();
-  pd["registries"]["portRegistry"] = nlohmann::json::array ();
-  pd["registries"]["paramRegistry"] = nlohmann::json::array ();
-  pd["registries"]["pluginRegistry"] = nlohmann::json::array ();
-  pd["registries"]["trackRegistry"] = nlohmann::json::array ();
-  pd["registries"]["arrangerObjectRegistry"] = nlohmann::json::array ();
-  pd["registries"]["fileAudioSourceRegistry"] = nlohmann::json::array ();
+  // registry (required)
+  pd["registry"] = nlohmann::json::object ();
+  pd["registry"]["ports"] = nlohmann::json::array ();
+  pd["registry"]["parameters"] = nlohmann::json::array ();
+  pd["registry"]["plugins"] = nlohmann::json::array ();
+  pd["registry"]["tracks"] = nlohmann::json::array ();
+  pd["registry"]["arrangerObjects"] = nlohmann::json::array ();
+  pd["registry"]["fileAudioSources"] = nlohmann::json::array ();
 
   return j;
 }
@@ -171,16 +172,9 @@ protected:
     app_settings =
       std::make_unique<utils::AppSettings> (std::move (mock_backend));
 
-    // Create port registry and monitor fader
-    port_registry = std::make_unique<dsp::PortRegistry> (nullptr);
-    param_registry = std::make_unique<dsp::ProcessorParameterRegistry> (
-      *port_registry, nullptr);
+    // Create registry, monitor fader and metronome
     monitor_fader = utils::make_qobject_unique<dsp::Fader> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry,
-        .param_registry_ = *param_registry,
-      },
-      dsp::PortType::Audio,
+      registry_, dsp::PortType::Audio,
       true,  // hard_limit_output
       false, // make_params_automatable
       [] () -> utils::Utf8String { return u8"Test Control Room"; },
@@ -190,11 +184,7 @@ protected:
     juce::AudioSampleBuffer emphasis_sample (2, 512);
     juce::AudioSampleBuffer normal_sample (2, 512);
     metronome = utils::make_qobject_unique<dsp::Metronome> (
-      dsp::ProcessorBase::ProcessorBaseDependencies{
-        .port_registry_ = *port_registry,
-        .param_registry_ = *param_registry,
-      },
-      emphasis_sample, normal_sample, true, 1.0f, nullptr);
+      registry_, emphasis_sample, normal_sample, true, 1.0f, nullptr);
   }
 
   void TearDown () override
@@ -203,8 +193,6 @@ protected:
     ui_state.reset ();
     metronome.reset ();
     monitor_fader.reset ();
-    param_registry.reset ();
-    port_registry.reset ();
     app_settings.reset ();
     plugin_format_manager.reset ();
     hw_interface.reset ();
@@ -275,16 +263,15 @@ protected:
   static constexpr utils::Version TEST_APP_VERSION{ 2, 0, {} };
   static constexpr utils::Version TEST_APP_VERSION_WITH_PATCH{ 2, 0, 1 };
 
-  std::unique_ptr<QTemporaryDir>                   temp_dir_obj;
-  std::filesystem::path                            project_dir;
-  std::unique_ptr<dsp::IHardwareAudioInterface>    hw_interface;
-  std::shared_ptr<juce::AudioPluginFormatManager>  plugin_format_manager;
-  test_helpers::MockSettingsBackend *              mock_backend_ptr{};
-  std::unique_ptr<utils::AppSettings>              app_settings;
-  std::unique_ptr<dsp::PortRegistry>               port_registry;
-  std::unique_ptr<dsp::ProcessorParameterRegistry> param_registry;
-  utils::QObjectUniquePtr<dsp::Fader>              monitor_fader;
-  utils::QObjectUniquePtr<dsp::Metronome>          metronome;
+  std::unique_ptr<QTemporaryDir>                  temp_dir_obj;
+  std::filesystem::path                           project_dir;
+  std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface;
+  std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager;
+  test_helpers::MockSettingsBackend *             mock_backend_ptr{};
+  std::unique_ptr<utils::AppSettings>             app_settings;
+  utils::ObjectRegistry                           registry_;
+  utils::QObjectUniquePtr<dsp::Fader>             monitor_fader;
+  utils::QObjectUniquePtr<dsp::Metronome>         metronome;
   utils::QObjectUniquePtr<structure::project::ProjectUiState> ui_state;
   utils::QObjectUniquePtr<undo::UndoStack>                    undo_stack;
 };

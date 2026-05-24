@@ -4,6 +4,7 @@
 #include "structure/project/project_ui_state.h"
 #include "utils/app_settings.h"
 #include "utils/logger.h"
+#include "utils/registry_utils.h"
 
 namespace zrythm::structure::project
 {
@@ -14,14 +15,11 @@ ProjectUiState::ProjectUiState (
     : project_ (project), app_settings_ (app_settings),
       tool_ (new structure::project::ArrangerTool (this)),
       clip_editor_ (
-        utils::make_qobject_unique<structure::project::ClipEditor> (
-          project.get_arranger_object_registry (),
-          [&project] (const auto &id) {
-            return project.get_track_registry ().find_by_id_or_throw (id);
-          },
-          this)),
+        utils::make_qobject_unique<
+          structure::project::ClipEditor> (project.get_registry (), this)),
       timeline_ (
-        utils::make_qobject_unique<structure::arrangement::Timeline> (this)),
+        utils::make_qobject_unique<
+          structure::arrangement::Timeline> (project.get_registry (), this)),
       snap_grid_timeline_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           project.tempo_map (),
@@ -125,7 +123,7 @@ to_json (nlohmann::json &j, const ProjectUiState &p)
   nlohmann::json selections_json = nlohmann::json::array ();
   for (const auto &[uuid, sel] : p.audio_input_selections_)
     {
-      if (p.project_.get_track_registry ().contains (uuid))
+      if (utils::contains (p.project_.get_registry (), uuid))
         {
           selections_json.push_back (nlohmann::json::array ({ uuid, *sel }));
         }

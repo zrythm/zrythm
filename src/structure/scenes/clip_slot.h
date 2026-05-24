@@ -34,15 +34,13 @@ public:
   };
   Q_ENUM (ClipState)
 
-  ClipSlot (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    QObject *                            parent = nullptr);
+  ClipSlot (utils::IObjectRegistry &registry, QObject * parent = nullptr);
 
   arrangement::ArrangerObject * region () const
   {
     if (region_ref_.has_value ())
       {
-        return region_ref_->get_object_base ();
+        return region_ref_->get ();
       }
     return nullptr;
   }
@@ -72,7 +70,7 @@ private:
 
 private:
   std::optional<arrangement::ArrangerObjectUuidReference> region_ref_;
-  arrangement::ArrangerObjectRegistry                    &object_registry_;
+  utils::IObjectRegistry                                 &registry_;
   std::atomic<ClipState> state_{ ClipState::Stopped };
 };
 
@@ -84,9 +82,9 @@ class ClipSlotList : public QAbstractListModel
 
 public:
   ClipSlotList (
-    arrangement::ArrangerObjectRegistry &object_registry,
-    const tracks::TrackCollection       &track_collection,
-    QObject *                            parent = nullptr);
+    utils::IObjectRegistry        &registry,
+    const tracks::TrackCollection &track_collection,
+    QObject *                      parent = nullptr);
   Q_DISABLE_COPY_MOVE (ClipSlotList)
 
   enum ClipSlotListRoles
@@ -145,7 +143,7 @@ private:
   // These must be in the order of tracks in the tracklist.
   std::vector<utils::QObjectUniquePtr<ClipSlot>> clip_slots_;
 
-  arrangement::ArrangerObjectRegistry &object_registry_;
-  const tracks::TrackCollection       &track_collection_;
+  utils::IObjectRegistry        &registry_;
+  const tracks::TrackCollection &track_collection_;
 };
 }

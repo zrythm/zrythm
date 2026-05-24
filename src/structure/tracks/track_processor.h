@@ -141,7 +141,7 @@ public:
     TrackNameProvider                      track_name_provider,
     EnabledProvider                        enabled_provider,
     Capabilities                           capabilities,
-    ProcessorBaseDependencies              dependencies,
+    utils::IObjectRegistry                &registry,
     std::optional<FillEventsCallback>      fill_events_cb = std::nullopt,
     std::optional<TransformMidiInputsFunc> transform_midi_inputs_func =
       std::nullopt,
