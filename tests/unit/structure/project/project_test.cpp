@@ -95,8 +95,8 @@ protected:
       [] (
         const structure::tracks::Track::Uuid &, units::sample_t,
         const dsp::ITransport &, const dsp::MidiEventVector *,
-        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
-      });
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
+        units::sample_u32_t) { });
 
     return project;
   }
@@ -393,8 +393,8 @@ TEST_F (ProjectTest, InstallRecordingCallbackThrowsOnDoubleInstall)
       [] (
         const structure::tracks::Track::Uuid &, units::sample_t,
         const dsp::ITransport &, const dsp::MidiEventVector *,
-        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
-      }),
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
+        units::sample_u32_t) { }),
     std::runtime_error);
 }
 }

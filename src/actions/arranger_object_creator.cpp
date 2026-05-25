@@ -66,7 +66,7 @@ ArrangerObjectCreator::addMarker (
 {
   auto marker_ref =
     arranger_object_factory_.get_builder<structure::arrangement::Marker> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .with_name (name)
       .with_marker_type (markerType)
       .build_in_registry ();
@@ -85,7 +85,7 @@ ArrangerObjectCreator::addTempoObject (
 {
   auto tempo_object_ref =
     arranger_object_factory_.get_builder<structure::arrangement::TempoObject> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   undo_stack_.push (
     new commands::AddTempoMapAffectingArrangerObjectCommand<
@@ -104,7 +104,7 @@ ArrangerObjectCreator::addTimeSignatureObject (
   auto time_signature_object_ref =
     arranger_object_factory_
       .get_builder<structure::arrangement::TimeSignatureObject> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   undo_stack_.push (
     new commands::AddTempoMapAffectingArrangerObjectCommand<
@@ -122,7 +122,7 @@ ArrangerObjectCreator::addEmptyMidiRegion (
 {
   auto mr_ref =
     arranger_object_factory_.get_builder<structure::arrangement::MidiRegion> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   add_laned_object (*track, *lane, mr_ref);
   return mr_ref.get_object_as<structure::arrangement::MidiRegion> ();
@@ -135,7 +135,7 @@ ArrangerObjectCreator::addEmptyChordRegion (
 {
   auto cr_ref =
     arranger_object_factory_.get_builder<structure::arrangement::ChordRegion> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   auto * chord_region =
     cr_ref.get_object_as<structure::arrangement::ChordRegion> ();
@@ -156,7 +156,7 @@ ArrangerObjectCreator::addEmptyAutomationRegion (
   auto ar_ref =
     arranger_object_factory_
       .get_builder<structure::arrangement::AutomationRegion> ()
-      .with_start_ticks (startTicks)
+      .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   auto * ar = ar_ref.get_object_as<structure::arrangement::AutomationRegion> ();
   ar->name ()->setName (track->generate_name_for_region (*ar, automationTrack));
@@ -193,8 +193,8 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
               .get_builder<structure::arrangement::MidiNote> ()
               .with_pitch (static_cast<int> (i) + 36)
               .with_velocity (structure::arrangement::MidiNote::DEFAULT_VELOCITY)
-              .with_start_ticks (0)
-              .with_end_ticks (mn_len_ticks)
+              .with_start_ticks (units::ticks (0))
+              .with_end_ticks (units::ticks (mn_len_ticks))
               .build_in_registry ();
           mr->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
             mn);
@@ -236,7 +236,7 @@ ArrangerObjectCreator::addMidiNote (
   int                                  pitch)
 {
   return add_editor_object<structure::arrangement::MidiNote> (
-    *region, startTicks, pitch);
+    *region, units::ticks (startTicks), pitch);
 }
 
 structure::arrangement::AutomationPoint *
@@ -246,7 +246,7 @@ ArrangerObjectCreator::addAutomationPoint (
   double                                     value)
 {
   return add_editor_object<structure::arrangement::AutomationPoint> (
-    *region, startTicks, value);
+    *region, units::ticks (startTicks), value);
 }
 
 structure::arrangement::ChordObject *
@@ -256,7 +256,7 @@ ArrangerObjectCreator::addChordObject (
   const int                             chordIndex)
 {
   return add_editor_object<structure::arrangement::ChordObject> (
-    *region, startTicks, chordIndex);
+    *region, units::ticks (startTicks), chordIndex);
 }
 
 structure::arrangement::MidiRegion *
@@ -266,7 +266,7 @@ ArrangerObjectCreator::addEmptyMidiRegionToClip (
 {
   auto mr_ref =
     arranger_object_factory_.get_builder<structure::arrangement::MidiRegion> ()
-      .with_start_ticks (0)
+      .with_start_ticks (units::ticks (0))
       .build_in_registry ();
   clipSlot->setRegion (
     mr_ref.get_object_as<structure::arrangement::MidiRegion> ());
@@ -278,7 +278,7 @@ ArrangerObjectCreator::add_audio_region_with_clip (
   structure::tracks::Track         &track,
   structure::tracks::TrackLane     &lane,
   dsp::FileAudioSourceUuidReference clip_id,
-  double                            start_ticks)
+  units::precise_tick_t             start_ticks)
 {
   auto obj_ref = arranger_object_factory_.create_audio_region_with_clip (
     std::move (clip_id), start_ticks);
@@ -290,7 +290,7 @@ structure::arrangement::ScaleObject *
 ArrangerObjectCreator::add_scale_object (
   structure::tracks::ChordTrack             &chord_track,
   utils::QObjectUniquePtr<dsp::MusicalScale> scale,
-  double                                     start_ticks)
+  units::precise_tick_t                      start_ticks)
 {
   auto obj_ref =
     arranger_object_factory_.get_builder<structure::arrangement::ScaleObject> ()
@@ -309,7 +309,7 @@ ArrangerObjectCreator::add_audio_region_for_recording (
   structure::tracks::TrackLane    &lane,
   const utils::audio::AudioBuffer &initial_frames,
   const utils::Utf8String         &clip_name,
-  double                           start_ticks)
+  units::precise_tick_t            start_ticks)
 {
   auto region_ref =
     arranger_object_factory_.create_audio_region_from_audio_buffer (
@@ -317,6 +317,45 @@ ArrangerObjectCreator::add_audio_region_for_recording (
       start_ticks);
   add_laned_object (track, lane, region_ref);
   return region_ref;
+}
+
+structure::arrangement::ArrangerObjectUuidReference
+ArrangerObjectCreator::add_midi_region_for_recording (
+  structure::tracks::Track     &track,
+  structure::tracks::TrackLane &lane,
+  units::precise_tick_t         start_ticks)
+{
+  auto region_ref =
+    arranger_object_factory_.get_builder<structure::arrangement::MidiRegion> ()
+      .with_start_ticks (start_ticks)
+      .build_in_registry ();
+  add_laned_object (track, lane, region_ref);
+  return region_ref;
+}
+
+structure::arrangement::MidiControlEvent *
+ArrangerObjectCreator::add_midi_control_event (
+  structure::arrangement::MidiRegion                 &region,
+  units::precise_tick_t                               startTicks,
+  structure::arrangement::MidiControlEvent::EventType type,
+  int                                                 channel,
+  int                                                 controller,
+  int                                                 value)
+{
+  auto obj_ref =
+    arranger_object_factory_
+      .get_builder<structure::arrangement::MidiControlEvent> ()
+      .with_start_ticks (startTicks)
+      .build_in_registry ();
+  auto * ev = obj_ref.get_object_as<structure::arrangement::MidiControlEvent> ();
+  ev->setControlType (type);
+  ev->setChannel (channel);
+  ev->setController (controller);
+  ev->setValue (value);
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<
+      structure::arrangement::MidiControlEvent> (region, obj_ref));
+  return ev;
 }
 
 structure::arrangement::AudioRegion *
@@ -327,7 +366,7 @@ ArrangerObjectCreator::addAudioRegionFromFile (
   double                         startTicks)
 {
   auto ar_ref = arranger_object_factory_.create_audio_region_from_file (
-    absPath, startTicks);
+    absPath, units::ticks (startTicks));
   add_laned_object (*track, *lane, ar_ref);
   return ar_ref.get_object_as<structure::arrangement::AudioRegion> ();
 }
@@ -338,8 +377,8 @@ ArrangerObjectCreator::addAudioRegionToClipSlotFromFile (
   structure::scenes::ClipSlot * clipSlot,
   const QString                &absPath)
 {
-  auto ar_ref =
-    arranger_object_factory_.create_audio_region_from_file (absPath, 0.0);
+  auto ar_ref = arranger_object_factory_.create_audio_region_from_file (
+    absPath, units::ticks (0.0));
   add_object_to_clip_slot (*track, *clipSlot, ar_ref);
   return ar_ref.get_object_as<structure::arrangement::AudioRegion> ();
 }

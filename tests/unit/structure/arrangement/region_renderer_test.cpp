@@ -299,6 +299,21 @@ TEST_F (RegionRendererTest, SerializeMidiWithoutRegionStart)
     note_off_event->message.getTimeStamp (), 150); // Note position + length
 }
 
+TEST_F (RegionRendererTest, MidiNoteChannelRendered)
+{
+  add_midi_note (60, 90, 50, 30);
+  midi_region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0]
+    ->setMidiChannel (4);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events);
+
+  ASSERT_GE (events.getNumEvents (), 2);
+  EXPECT_EQ (events.getEventPointer (0)->message.getChannel (), 5)
+    << "MIDI channel should be stored value + 1";
+  EXPECT_EQ (events.getEventPointer (1)->message.getChannel (), 5);
+}
+
 // ========== Audio Region Tests ==========
 
 TEST_F (RegionRendererTest, SerializeAudioRegionSimple)

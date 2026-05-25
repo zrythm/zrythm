@@ -73,8 +73,8 @@ protected:
         units::sample_t,
         const dsp::ITransport &,
         const dsp::MidiEventVector *,
-        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
-      })
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
+        units::sample_u32_t) { })
   {
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;

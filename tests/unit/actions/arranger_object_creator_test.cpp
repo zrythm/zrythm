@@ -202,4 +202,165 @@ TEST_F (ArrangerObjectCreatorTest, UndoStackIntegration)
   }));
 }
 
+TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecording)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  ASSERT_NE (midi_track, nullptr);
+  midi_track->setName (u8"MIDI Track");
+  track_collection_->add_track (track_ref);
+
+  auto * lanes = midi_track->lanes ();
+  ASSERT_NE (lanes, nullptr);
+  lanes->create_missing_lanes (0);
+  auto * lane = lanes->at (0);
+  ASSERT_NE (lane, nullptr);
+
+  const double start_ticks = 480.0;
+  auto         region_ref = creator->add_midi_region_for_recording (
+    *midi_track, *lane, units::ticks (start_ticks));
+
+  auto * region =
+    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  ASSERT_NE (region, nullptr);
+  EXPECT_DOUBLE_EQ (region->position ()->ticks (), start_ticks);
+
+  auto midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiRegion>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (midi_regions, [&] (auto * r) {
+    return r == region;
+  }));
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecordingUndoRedo)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  track_collection_->add_track (track_ref);
+
+  auto * lanes = midi_track->lanes ();
+  lanes->create_missing_lanes (0);
+  auto * lane = lanes->at (0);
+
+  const int initial_count = undo_stack_->count ();
+  auto      region_ref = creator->add_midi_region_for_recording (
+    *midi_track, *lane, units::ticks (100.0));
+  EXPECT_GT (undo_stack_->count (), initial_count);
+
+  auto * region =
+    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+
+  undo_stack_->undo ();
+  auto midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiRegion>::get_children_view ();
+  EXPECT_FALSE (std::ranges::any_of (midi_regions, [&] (auto * r) {
+    return r == region;
+  }));
+
+  undo_stack_->redo ();
+  midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiRegion>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (midi_regions, [&] (auto * r) {
+    return r == region;
+  }));
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddMidiControlEvent)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  track_collection_->add_track (track_ref);
+
+  auto * lanes = midi_track->lanes ();
+  lanes->create_missing_lanes (0);
+  auto * lane = lanes->at (0);
+
+  auto region_ref = creator->add_midi_region_for_recording (
+    *midi_track, *lane, units::ticks (0.0));
+  auto * region =
+    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  ASSERT_NE (region, nullptr);
+
+  using EventType = structure::arrangement::MidiControlEvent::EventType;
+  auto * ev = creator->add_midi_control_event (
+    *region, units::ticks (200.0), EventType::ControlChange, 0, 1, 64);
+  ASSERT_NE (ev, nullptr);
+  EXPECT_EQ (ev->controlType (), EventType::ControlChange);
+  EXPECT_EQ (ev->channel (), 0);
+  EXPECT_EQ (ev->controller (), 1);
+  EXPECT_EQ (ev->value (), 64);
+  EXPECT_DOUBLE_EQ (ev->position ()->ticks (), 200.0);
+
+  auto control_events = region->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiControlEvent>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (control_events, [&] (auto * e) {
+    return e == ev;
+  }));
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddMidiControlEventPitchBend)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  track_collection_->add_track (track_ref);
+
+  auto * lanes = midi_track->lanes ();
+  lanes->create_missing_lanes (0);
+  auto * lane = lanes->at (0);
+
+  auto region_ref = creator->add_midi_region_for_recording (
+    *midi_track, *lane, units::ticks (0.0));
+  auto * region =
+    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+
+  using EventType = structure::arrangement::MidiControlEvent::EventType;
+  auto * ev = creator->add_midi_control_event (
+    *region, units::ticks (500.0), EventType::PitchBend, 2, 0, 8192);
+  ASSERT_NE (ev, nullptr);
+  EXPECT_EQ (ev->controlType (), EventType::PitchBend);
+  EXPECT_EQ (ev->channel (), 2);
+  EXPECT_EQ (ev->value (), 8192);
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddMidiControlEventUndoRedo)
+{
+  auto track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track = track_ref.get_object_as<structure::tracks::MidiTrack> ();
+  track_collection_->add_track (track_ref);
+
+  auto * lanes = midi_track->lanes ();
+  lanes->create_missing_lanes (0);
+  auto * lane = lanes->at (0);
+
+  auto region_ref = creator->add_midi_region_for_recording (
+    *midi_track, *lane, units::ticks (0.0));
+  auto * region =
+    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+
+  using EventType = structure::arrangement::MidiControlEvent::EventType;
+  const int initial_count = undo_stack_->count ();
+  creator->add_midi_control_event (
+    *region, units::ticks (100.0), EventType::ControlChange, 0, 7, 127);
+  EXPECT_GT (undo_stack_->count (), initial_count);
+
+  auto control_events = region->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiControlEvent>::get_children_view ();
+  EXPECT_FALSE (control_events.empty ());
+
+  undo_stack_->undo ();
+  control_events = region->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiControlEvent>::get_children_view ();
+  EXPECT_TRUE (control_events.empty ());
+
+  undo_stack_->redo ();
+  control_events = region->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiControlEvent>::get_children_view ();
+  EXPECT_FALSE (control_events.empty ());
+}
+
 } // namespace zrythm::actions

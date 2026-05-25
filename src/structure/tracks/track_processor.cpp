@@ -645,7 +645,7 @@ TrackProcessor::Impl::handle_recording (
           recording_cb (
             range.first, transport,
             &processing_caches.midi_in_rt_->midi_events_.active_events_,
-            std::nullopt);
+            std::nullopt, range.second);
         }
       else if (is_audio)
         {
@@ -669,8 +669,8 @@ TrackProcessor::Impl::handle_recording (
           recording_cb (
             range.first, transport, nullptr,
             std::make_pair (
-              std::span (l, recording_nframes),
-              std::span (r, recording_nframes)));
+              std::span (l, recording_nframes), std::span (r, recording_nframes)),
+            range.second);
         }
     }
 }

@@ -18,16 +18,19 @@ struct RecordingMidiPacket
 
   units::sample_t             timeline_position;
   bool                        transport_recording{};
+  units::sample_u32_t         nframes;
   std::vector<dsp::MidiEvent> midi_events;
 
   static void write_to_slot (
     RecordingMidiPacket        &slot,
     units::sample_t             timeline_position,
     bool                        transport_recording,
-    const dsp::MidiEventVector &events) noexcept [[clang::nonblocking]]
+    const dsp::MidiEventVector &events,
+    units::sample_u32_t         nframes) noexcept [[clang::nonblocking]]
   {
     slot.timeline_position = timeline_position;
     slot.transport_recording = transport_recording;
+    slot.nframes = nframes;
     auto count = std::min (events.size (), slot.midi_events.capacity ());
     slot.midi_events.resize (count);
     size_t i = 0;
@@ -45,11 +48,12 @@ struct RecordingMidiPacket
   {
     slot.timeline_position = source.timeline_position;
     slot.transport_recording = source.transport_recording;
+    slot.nframes = source.nframes;
     slot.midi_events = source.midi_events;
   }
 
   static void
-  resize (RecordingMidiPacket &slot, units::sample_u32_t /*block_length*/) noexcept
+  resize (RecordingMidiPacket &slot, units::sample_u32_t /*block_length*/)
   {
     slot.midi_events.reserve (kMaxEventsPerBlock);
   }

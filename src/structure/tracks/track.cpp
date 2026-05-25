@@ -159,10 +159,11 @@ Track::make_track_processor (
         [this, cb] (
           units::sample_t timeline_position, const dsp::ITransport &transport_ref,
           const dsp::MidiEventVector *                       midi_events,
-          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+          units::sample_u32_t                                nframes) {
           cb (
             get_uuid (), timeline_position, transport_ref, midi_events,
-            std::move (stereo_ports));
+            std::move (stereo_ports), nframes);
         };
     }
 

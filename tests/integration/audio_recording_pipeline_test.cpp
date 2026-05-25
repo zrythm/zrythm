@@ -51,16 +51,23 @@ protected:
         units::sample_t timeline_position, const dsp::ITransport &transport,
         const dsp::MidiEventVector * midi_events,
         std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
-          stereo_ports) {
-        auto * session = coordinator_->session_for_track (track_id);
-        if (session == nullptr)
-          return;
-        if (stereo_ports.has_value ())
-          {
-            session->write (
-              timeline_position, transport.recording_enabled (),
-              stereo_ports->first, stereo_ports->second);
-          }
+          stereo_ports,
+        units::sample_u32_t) {
+        auto session = coordinator_->session_for_track (track_id);
+        std::visit (
+          utils::overload{
+            [] (std::monostate) { },
+            [&] (controllers::AudioRecordingSession * s) {
+              if (stereo_ports.has_value ())
+                {
+                  s->write (
+                    timeline_position, transport.recording_enabled (),
+                    stereo_ports->first, stereo_ports->second);
+                }
+            },
+            [] (controllers::MidiRecordingSession *) { },
+          },
+          session);
       });
 
     project_->add_default_tracks ();
@@ -180,17 +187,33 @@ protected:
 
     materializer_ = std::make_unique<controllers::RecordingMaterializer> (
       *coordinator_, *undo_stack_,
-      [this] (
-        structure::tracks::TrackUuid track_id, units::sample_t start_position,
-        const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
-        -> controllers::RecordingMaterializer::RegionCreationResult {
-        auto region_ref_opt =
-          create_recording_region (track_id, start_position, initial_frames);
-        if (!region_ref_opt.has_value ())
+      controllers::RecordingMaterializer::ArrangerObjectCreators{
+        .audio_region =
+          [this] (
+            structure::tracks::TrackUuid track_id, units::sample_t start_position,
+            const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
+          -> controllers::RecordingMaterializer::RegionCreationResult {
+          auto region_ref_opt =
+            create_recording_region (track_id, start_position, initial_frames);
+          if (!region_ref_opt.has_value ())
+            return std::nullopt;
+          return controllers::RecordingMaterializer::CreatedRegion{
+            std::move (*region_ref_opt), lane_index
+          };
+        },
+        .midi_region = [] (structure::tracks::TrackUuid, units::sample_t, size_t)
+          -> controllers::RecordingMaterializer::RegionCreationResult {
           return std::nullopt;
-        return controllers::RecordingMaterializer::CreatedRegion{
-          std::move (*region_ref_opt), lane_index
-        };
+        },
+        .midi_note =
+          [] (
+            structure::arrangement::MidiRegion &, units::sample_t,
+            units::sample_t, int, int, int) { },
+        .midi_control_event =
+          [] (
+            structure::arrangement::MidiRegion &, units::sample_t,
+            structure::arrangement::MidiControlEvent::EventType, int, int, int) {
+          },
       },
       [] () { return controllers::recording::RecordingMode::Takes; });
   }
@@ -272,14 +295,18 @@ TEST_F (AudioRecordingPipelineTest, ArmTrackWritesToSession)
   set_audio_input_selection (*track, u"Test Device"_s, 0, true);
   set_provider ();
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles ();
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  auto packets = collect_recorded_packets (session);
+  auto packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session));
 
   stop_engine ();
 
@@ -295,14 +322,18 @@ TEST_F (AudioRecordingPipelineTest, DisarmStopsWriting)
   set_audio_input_selection (*track, u"Test Device"_s, 0, true);
   set_provider ();
 
-  coordinator_->arm_track (track->get_uuid (), units::samples (256u));
+  coordinator_->arm_track (
+    track->get_uuid (), units::samples (256u),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles ();
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  auto packets_before = collect_recorded_packets (session);
+  auto packets_before = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session));
   EXPECT_FALSE (packets_before.empty ())
     << "Session should have recorded audio data before disarming";
 
@@ -321,14 +352,18 @@ TEST_F (AudioRecordingPipelineTest, AudioInputThroughRecordingPipeline)
   set_audio_input_selection (*track, u"Test Device"_s, 0, true);
   set_provider ();
 
-  coordinator_->arm_track (track->get_uuid (), units::samples (256u));
+  coordinator_->arm_track (
+    track->get_uuid (), units::samples (256u),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles ();
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  auto packets = collect_recorded_packets (session);
+  auto packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session));
 
   stop_engine ();
 
@@ -359,19 +394,23 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthIncreaseDuringRecording)
   set_audio_input_selection (*track, u"Test Device"_s, 0, true);
   set_provider ();
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles ();
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
-  auto pre_packets = collect_recorded_packets (session);
+  auto pre_packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session));
   ASSERT_FALSE (pre_packets.empty ());
 
   dsp::AudioDeviceInfo new_device_info{
@@ -393,14 +432,17 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthIncreaseDuringRecording)
     return mock_hw_->process_call_count () >= count_before_change + 5;
   });
 
-  auto * session_after = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session_after, nullptr) << "Session should survive a device change";
+  auto session_after = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session_after))
+    << "Session should survive a device change";
   EXPECT_EQ (
-    session_after->state (),
+    std::get<controllers::AudioRecordingSession *> (session_after)->state (),
     controllers::AudioRecordingSession::State::Capturing)
     << "Session should remain in Capturing state after device change";
 
-  auto post_packets = collect_recorded_packets (session_after);
+  auto post_packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session_after));
   EXPECT_FALSE (post_packets.empty ())
     << "Session should continue recording after device change";
 
@@ -421,19 +463,23 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthShrinkDuringRecording)
   set_audio_input_selection (*track, u"Test Device"_s, 0, true);
   set_provider ();
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles ();
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
-  auto pre_packets = collect_recorded_packets (session);
+  auto pre_packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session));
   ASSERT_FALSE (pre_packets.empty ());
 
   dsp::AudioDeviceInfo new_device_info{
@@ -455,14 +501,16 @@ TEST_F (AudioRecordingPipelineTest, BlockLengthShrinkDuringRecording)
     return mock_hw_->process_call_count () >= count_before_change + 5;
   });
 
-  auto * session_after = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session_after, nullptr);
+  auto session_after = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session_after));
   EXPECT_EQ (
-    session_after->state (),
+    std::get<controllers::AudioRecordingSession *> (session_after)->state (),
     controllers::AudioRecordingSession::State::Capturing)
     << "Session should remain in Capturing state after block length shrink";
 
-  auto post_packets = collect_recorded_packets (session_after);
+  auto post_packets = collect_recorded_packets (
+    std::get<controllers::AudioRecordingSession *> (session_after));
   EXPECT_FALSE (post_packets.empty ())
     << "Session should continue recording after block length shrink";
 
@@ -491,15 +539,18 @@ TEST_F (AudioRecordingPipelineTest, MaterializerCreatesRegionFromEngineAudio)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -533,15 +584,18 @@ TEST_F (AudioRecordingPipelineTest, UndoMacroWrapsRecording)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -575,15 +629,18 @@ TEST_F (AudioRecordingPipelineTest, ContinuousRecordingExpandsSingleRegion)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (6);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -625,22 +682,28 @@ TEST_F (AudioRecordingPipelineTest, MultiTrackRecordingCreatesRegionsForAll)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track_a->get_uuid (), block_length ());
-  coordinator_->arm_track (track_b->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track_a->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
+  coordinator_->arm_track (
+    track_b->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session_a = coordinator_->session_for_track (track_a->get_uuid ());
-  ASSERT_NE (session_a, nullptr);
-  auto * session_b = coordinator_->session_for_track (track_b->get_uuid ());
-  ASSERT_NE (session_b, nullptr);
+  auto session_a = coordinator_->session_for_track (track_a->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session_a));
+  auto session_b = coordinator_->session_for_track (track_b->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session_b));
 
   process_events_until_true ([session_a] () {
-    return session_a->state ()
+    return std::get<controllers::AudioRecordingSession *> (session_a)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
   process_events_until_true ([session_b] () {
-    return session_b->state ()
+    return std::get<controllers::AudioRecordingSession *> (session_b)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -670,15 +733,18 @@ TEST_F (AudioRecordingPipelineTest, TransportRecordToggleFinalizesMacro)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -712,15 +778,18 @@ TEST_F (AudioRecordingPipelineTest, TransportStopStartResumesRecording)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -739,12 +808,13 @@ TEST_F (AudioRecordingPipelineTest, TransportStopStartResumesRecording)
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session_after = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session_after, nullptr)
+  auto session_after = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session_after))
     << "Session should be reused after transport restart";
 
   process_events_until_true ([session_after] () {
-    return session_after->state ()
+    return std::get<controllers::AudioRecordingSession *> (session_after)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -769,15 +839,18 @@ TEST_F (AudioRecordingPipelineTest, RecordedAudioDataIntegrity)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 
@@ -825,15 +898,18 @@ TEST_F (AudioRecordingPipelineTest, UndoMacroCountAndRedoAfterUndo)
 
   project_->getTransport ()->setRecordEnabled (true);
 
-  coordinator_->arm_track (track->get_uuid (), block_length ());
+  coordinator_->arm_track (
+    track->get_uuid (), block_length (),
+    controllers::RecordingCoordinator::SessionType::Audio);
 
   start_engine_and_wait_for_cycles (4);
 
-  auto * session = coordinator_->session_for_track (track->get_uuid ());
-  ASSERT_NE (session, nullptr);
+  auto session = coordinator_->session_for_track (track->get_uuid ());
+  ASSERT_TRUE (
+    std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
   process_events_until_true ([session] () {
-    return session->state ()
+    return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
   });
 

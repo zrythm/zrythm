@@ -21,7 +21,7 @@ template <typename T>
 concept RecordingPacket =
   requires (T &slot, const T &source, units::sample_u32_t block_length) {
     { T::copy_from (slot, source) };
-    { T::resize (slot, block_length) } noexcept;
+    { T::resize (slot, block_length) };
   };
 
 /**
@@ -57,6 +57,8 @@ public:
 
   static constexpr size_t kFifoCapacity = 1024;
 
+  using PacketType = Packet;
+
   /**
    * @brief Prepares internal buffers for processing at the given block length.
    *
@@ -87,7 +89,8 @@ public:
   void write (
     units::sample_t             timeline_position,
     bool                        transport_recording,
-    const dsp::MidiEventVector &midi_events) noexcept [[clang::nonblocking]]
+    const dsp::MidiEventVector &midi_events,
+    units::sample_u32_t         nframes) noexcept [[clang::nonblocking]]
     requires std::same_as<Packet, RecordingMidiPacket>;
 
   /**

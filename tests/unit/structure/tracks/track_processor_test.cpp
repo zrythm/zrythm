@@ -729,7 +729,8 @@ TEST_F (TrackProcessorTest, RecordingCallback)
      &recorded_midi_events, &recorded_stereo_ports] (
       units::sample_t              timeline_position, const dsp::ITransport &,
       const dsp::MidiEventVector * midi_events,
-      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+      units::sample_u32_t                                nframes) {
       recording_called = true;
       recorded_timeline_position = timeline_position;
       if (stereo_ports.has_value ())
@@ -810,7 +811,8 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
      &recorded_midi_events, &recorded_stereo_ports] (
       units::sample_t              timeline_position, const dsp::ITransport &,
       const dsp::MidiEventVector * midi_events,
-      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+      units::sample_u32_t                                nframes) {
       recording_called = true;
       recorded_timeline_position = timeline_position;
       if (stereo_ports.has_value ())
@@ -1334,7 +1336,8 @@ TEST_F (TrackProcessorTest, RecordingCallbackSimpleRange)
     [&recording_calls] (
       units::sample_t timeline_position, const dsp::ITransport &,
       const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+      units::sample_u32_t                                nframes) {
       recording_calls.push_back (
         {
           timeline_position,
@@ -1380,9 +1383,8 @@ TEST_F (TrackProcessorTest, RecordingCallbackSkippedDuringPreroll)
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called] (
       units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair>) {
-      recording_called = true;
-    };
+      std::optional<TrackProcessor::ConstStereoPortPair>,
+      units::sample_u32_t nframes) { recording_called = true; };
 
   TrackProcessor processor (
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Recording Preroll"; },
@@ -1431,7 +1433,8 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectAudioSpanToCallback)
     [&] (
       units::sample_t timeline_position, const dsp::ITransport &transport,
       const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+      units::sample_u32_t                                nframes) {
       if (stereo_ports.has_value ())
         {
           auto &sp = *stereo_ports;
@@ -1553,7 +1556,8 @@ TEST_F (TrackProcessorTest, RecordingCallbackNotFiredWhenTransportPaused)
   TrackProcessor::RecordingCallbackRT capture_cb =
     [&] (
       units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair>) { ++callback_count; };
+      std::optional<TrackProcessor::ConstStereoPortPair>,
+      units::sample_u32_t nframes) { ++callback_count; };
 
   TrackProcessor processor (
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
@@ -1603,7 +1607,8 @@ TEST_F (TrackProcessorTest, RecordingAcrossLoopBoundaryViaGraphNode)
     [&calls] (
       units::sample_t timeline_position, const dsp::ITransport &,
       const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+      std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+      units::sample_u32_t                                nframes) {
       if (stereo_ports.has_value ())
         {
           auto &sp = *stereo_ports;
@@ -1772,9 +1777,8 @@ TEST_F (TrackProcessorTest, DisarmedTrackSkipsRecording)
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called] (
       units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
-      std::optional<TrackProcessor::ConstStereoPortPair>) {
-      recording_called = true;
-    };
+      std::optional<TrackProcessor::ConstStereoPortPair>,
+      units::sample_u32_t nframes) { recording_called = true; };
 
   TrackProcessor processor (
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Disarmed Track"; },

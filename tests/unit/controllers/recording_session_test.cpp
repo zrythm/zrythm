@@ -341,7 +341,7 @@ TEST_F (MidiRecordingSessionTest, WriteTransitionsToCapturing)
 {
   dsp::MidiEventVector events;
   events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
-  session_->write (units::samples (0), true, events);
+  session_->write (units::samples (0), true, events, units::samples (256u));
   EXPECT_EQ (session_->state (), MidiRecordingSession::State::Capturing);
 }
 
@@ -349,11 +349,12 @@ TEST_F (MidiRecordingSessionTest, DrainPendingReadsWrittenData)
 {
   dsp::MidiEventVector events;
   events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
-  session_->write (units::samples (0), true, events);
+  session_->write (units::samples (0), true, events, units::samples (256u));
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1);
   EXPECT_EQ (packets[0].timeline_position, units::samples (0));
+  EXPECT_EQ (packets[0].nframes, units::samples (256u));
   ASSERT_EQ (packets[0].midi_events.size (), 1);
 }
 
@@ -363,7 +364,7 @@ TEST_F (MidiRecordingSessionTest, DrainPendingContainsCorrectMidiData)
   events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
   events.push_back (dsp::MidiEvent (0xB0, 74, 64, units::samples (10)));
 
-  session_->write (units::samples (100), true, events);
+  session_->write (units::samples (100), true, events, units::samples (256u));
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1);
@@ -375,10 +376,10 @@ TEST_F (MidiRecordingSessionTest, DrainPendingContainsCorrectMidiData)
 TEST_F (MidiRecordingSessionTest, FinalizeRejectsFurtherWrites)
 {
   dsp::MidiEventVector events;
-  session_->write (units::samples (0), true, events);
+  session_->write (units::samples (0), true, events, units::samples (256u));
   session_->finalize ();
 
-  session_->write (units::samples (256), true, events);
+  session_->write (units::samples (256), true, events, units::samples (256u));
 
   auto packets = session_->drain_pending ();
   EXPECT_EQ (packets.size (), 1);
@@ -387,8 +388,8 @@ TEST_F (MidiRecordingSessionTest, FinalizeRejectsFurtherWrites)
 TEST_F (MidiRecordingSessionTest, ResetClearsStateAndCounters)
 {
   dsp::MidiEventVector events;
-  session_->write (units::samples (0), true, events);
-  session_->write (units::samples (128), true, events);
+  session_->write (units::samples (0), true, events, units::samples (256u));
+  session_->write (units::samples (128), true, events, units::samples (256u));
   EXPECT_EQ (session_->state (), MidiRecordingSession::State::Capturing);
 
   session_->reset ();

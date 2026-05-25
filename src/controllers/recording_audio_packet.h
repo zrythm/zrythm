@@ -50,7 +50,7 @@ struct RecordingAudioPacket
   }
 
   static void
-  resize (RecordingAudioPacket &slot, units::sample_u32_t block_length) noexcept
+  resize (RecordingAudioPacket &slot, units::sample_u32_t block_length)
   {
     const auto new_size = block_length.in (units::samples);
     slot.l_frames.resize (new_size);

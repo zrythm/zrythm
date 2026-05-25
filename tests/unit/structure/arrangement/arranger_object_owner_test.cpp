@@ -286,8 +286,8 @@ protected:
     // Create region
     region_ref = std::make_unique<ArrangerObjectUuidReference> (
       factory->template get_builder<RegionT> ()
-        .with_start_ticks (0.0)
-        .with_end_ticks (1920.0)
+        .with_start_ticks (units::ticks (0.0))
+        .with_end_ticks (units::ticks (1920.0))
         .build_in_registry ());
   }
 
@@ -296,7 +296,7 @@ protected:
   {
     auto child_ref =
       factory->template get_builder<ChildT> ()
-        .with_start_ticks (start_ticks)
+        .with_start_ticks (units::ticks (start_ticks))
         .build_in_registry ();
     region_ref->get_object_as<RegionT> ()
       ->ArrangerObjectOwner<ChildT>::add_object (child_ref);

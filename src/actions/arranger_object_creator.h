@@ -85,12 +85,12 @@ public:
     structure::tracks::Track         &track,
     structure::tracks::TrackLane     &lane,
     dsp::FileAudioSourceUuidReference clip_id,
-    double                            start_ticks);
+    units::precise_tick_t             start_ticks);
 
   structure::arrangement::ScaleObject * add_scale_object (
     structure::tracks::ChordTrack             &chord_track,
     utils::QObjectUniquePtr<dsp::MusicalScale> scale,
-    double                                     start_ticks);
+    units::precise_tick_t                      start_ticks);
 
   structure::arrangement::ArrangerObjectUuidReference
   add_audio_region_for_recording (
@@ -98,7 +98,21 @@ public:
     structure::tracks::TrackLane    &lane,
     const utils::audio::AudioBuffer &initial_frames,
     const utils::Utf8String         &clip_name,
-    double                           start_ticks);
+    units::precise_tick_t            start_ticks);
+
+  structure::arrangement::ArrangerObjectUuidReference
+  add_midi_region_for_recording (
+    structure::tracks::Track     &track,
+    structure::tracks::TrackLane &lane,
+    units::precise_tick_t         start_ticks);
+
+  structure::arrangement::MidiControlEvent * add_midi_control_event (
+    structure::arrangement::MidiRegion                 &region,
+    units::precise_tick_t                               startTicks,
+    structure::arrangement::MidiControlEvent::EventType type,
+    int                                                 channel,
+    int                                                 controller,
+    int                                                 value);
 
   Q_INVOKABLE structure::arrangement::AudioRegion * addAudioRegionFromFile (
     structure::tracks::Track *     track,
@@ -183,7 +197,7 @@ private:
   template <structure::arrangement::EditorObject ChildT>
   auto add_editor_object (
     structure::arrangement::RegionObject auto &region,
-    double                                     startTicks,
+    units::precise_tick_t                      startTicks,
     std::variant<int, double>                  value) -> ChildT *
   {
     auto obj_ref =

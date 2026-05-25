@@ -1426,6 +1426,12 @@
               "minimum": 0,
               "maximum": 127,
               "description": "MIDI note velocity (0-127)"
+            },
+            "midiChannel": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 15,
+              "description": "MIDI channel (0-15)"
             }
           },
           "required": [

@@ -33,9 +33,14 @@ template <RecordingPacket Packet> struct RecordingSession<Packet>::Impl
       }
   }
 
+  /** Pre-allocated packet slots written by RT thread (lock-free ring). */
   std::vector<Packet> slots;
-  IndexFifo           index_buffer;
-  size_t              next_write_slot = 0;
+  /** SPSC FIFO passing written slot indices from RT to non-RT thread. */
+  IndexFifo index_buffer;
+  /** Monotonically increasing slot index (wraps via modulo). Atomic for
+      thread-safe access if the RT thread is interleaved with reset(). */
+  std::atomic<size_t> next_write_slot{ 0 };
+  /** Current max block length; slots are resized if this grows. */
   units::sample_u32_t max_block_length;
 };
 
@@ -81,15 +86,17 @@ RecordingSession<Packet>::write (
     return;
 
   assert (l_data.size () == r_data.size ());
-  const size_t slot_idx = impl_->next_write_slot % impl_->slots.size ();
-  auto        &slot = impl_->slots[slot_idx];
+  const size_t slot_idx =
+    impl_->next_write_slot.load (std::memory_order_relaxed)
+    % impl_->slots.size ();
+  auto &slot = impl_->slots[slot_idx];
   Packet::write_to_slot (
     slot, timeline_position, transport_recording, l_data, r_data);
 
   auto push_idx = slot_idx;
   if (impl_->index_buffer.push (std::move (push_idx)))
     {
-      ++impl_->next_write_slot;
+      impl_->next_write_slot.fetch_add (1, std::memory_order_relaxed);
     }
   else
     {
@@ -102,7 +109,8 @@ void
 RecordingSession<Packet>::write (
   units::sample_t             timeline_position,
   bool                        transport_recording,
-  const dsp::MidiEventVector &midi_events) noexcept
+  const dsp::MidiEventVector &midi_events,
+  units::sample_u32_t         nframes_arg) noexcept
   requires std::same_as<Packet, RecordingMidiPacket>
 {
   State expected = State::Armed;
@@ -112,15 +120,17 @@ RecordingSession<Packet>::write (
   if (state_.load (std::memory_order_acquire) == State::Finalizing)
     return;
 
-  const size_t slot_idx = impl_->next_write_slot % impl_->slots.size ();
-  auto        &slot = impl_->slots[slot_idx];
+  const size_t slot_idx =
+    impl_->next_write_slot.load (std::memory_order_relaxed)
+    % impl_->slots.size ();
+  auto &slot = impl_->slots[slot_idx];
   Packet::write_to_slot (
-    slot, timeline_position, transport_recording, midi_events);
+    slot, timeline_position, transport_recording, midi_events, nframes_arg);
 
   auto push_idx = slot_idx;
   if (impl_->index_buffer.push (std::move (push_idx)))
     {
-      ++impl_->next_write_slot;
+      impl_->next_write_slot.fetch_add (1, std::memory_order_relaxed);
     }
   else
     {
@@ -158,9 +168,9 @@ template <RecordingPacket Packet>
 void
 RecordingSession<Packet>::reset ()
 {
-  state_.store (State::Armed, std::memory_order_release);
+  impl_->next_write_slot.store (0, std::memory_order_release);
   dropped_packets_.store (0, std::memory_order_relaxed);
-  impl_->next_write_slot = 0;
+  state_.store (State::Armed, std::memory_order_release);
 
   size_t dummy{};
   while (impl_->index_buffer.pop (dummy))

@@ -62,14 +62,14 @@ public:
     }
 
   public:
-    Builder &with_start_ticks (double start_ticks)
+    Builder &with_start_ticks (units::precise_tick_t start_ticks)
     {
       start_ticks_ = start_ticks;
 
       return *this;
     }
 
-    Builder &with_end_ticks (double end_ticks)
+    Builder &with_end_ticks (units::precise_tick_t end_ticks)
       requires (BoundedObject<ObjT>)
     {
       end_ticks_ = end_ticks;
@@ -94,6 +94,14 @@ public:
       requires (std::is_same_v<ObjT, MidiNote>)
     {
       velocity_ = vel;
+      return *this;
+    }
+
+    Builder &with_midi_channel (const int channel)
+      requires (
+        std::is_same_v<ObjT, MidiNote> || std::is_same_v<ObjT, MidiControlEvent>)
+    {
+      midi_channel_ = channel;
       return *this;
     }
 
@@ -205,7 +213,7 @@ public:
                   get_object_bounds (*obj)->length ()->setTicks (len_ticks);
                 }
             }
-          obj->position ()->setTicks (*start_ticks_);
+          obj->position ()->setTicks ((*start_ticks_).in (units::ticks));
         }
 
       if (clip_id_)
@@ -228,7 +236,7 @@ public:
           if constexpr (BoundedObject<ObjT>)
             {
               get_object_bounds (*obj)->length ()->setTicks (
-                *end_ticks_ - obj->position ()->ticks ());
+                (*end_ticks_).in (units::ticks) -obj->position ()->ticks ());
             }
         }
 
@@ -260,6 +268,18 @@ public:
           if constexpr (std::is_same_v<ObjT, MidiNote>)
             {
               obj->setVelocity (*velocity_);
+            }
+        }
+
+      if (midi_channel_)
+        {
+          if constexpr (std::is_same_v<ObjT, MidiNote>)
+            {
+              obj->setMidiChannel (*midi_channel_);
+            }
+          else if constexpr (std::is_same_v<ObjT, MidiControlEvent>)
+            {
+              obj->setChannel (*midi_channel_);
             }
         }
 
@@ -299,14 +319,15 @@ public:
   private:
     Dependencies                                     dependencies_;
     std::optional<dsp::FileAudioSourceUuidReference> clip_id_;
-    std::optional<double>                            start_ticks_;
-    std::optional<double>                            end_ticks_;
+    std::optional<units::precise_tick_t>             start_ticks_;
+    std::optional<units::precise_tick_t>             end_ticks_;
     std::optional<QString>                           name_;
     std::optional<int>                               pitch_;
     std::optional<double>                            automatable_value_;
     std::optional<int>                               chord_descriptor_index_;
     utils::QObjectUniquePtr<dsp::MusicalScale>       scale_;
     std::optional<int>                               velocity_;
+    std::optional<int>                               midi_channel_;
     std::optional<Marker::MarkerType>                marker_type_;
   };
 
@@ -321,7 +342,7 @@ public:
    */
   auto create_audio_region_with_clip (
     dsp::FileAudioSourceUuidReference clip_id,
-    double                            startTicks) const
+    units::precise_tick_t             startTicks) const
   {
     auto obj =
       get_builder<structure::arrangement::AudioRegion> ()
@@ -331,7 +352,9 @@ public:
     return obj;
   }
 
-  auto create_audio_region_from_file (const QString &absPath, double startTicks)
+  auto create_audio_region_from_file (
+    const QString        &absPath,
+    units::precise_tick_t startTicks)
   {
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, utils::Utf8String::from_qstring (absPath),
@@ -349,7 +372,7 @@ public:
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     const utils::Utf8String         &clip_name,
-    double                           start_ticks) const
+    units::precise_tick_t            start_ticks) const
   {
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, buf, bit_depth, sample_rate_provider_ (),
@@ -365,7 +388,9 @@ public:
    * ID.
    */
   template <structure::arrangement::EditorObject ChildT>
-  auto create_editor_object (double startTicks, std::variant<int, double> value)
+  auto create_editor_object (
+    units::precise_tick_t     startTicks,
+    std::variant<int, double> value)
   {
     auto builder =
       std::move (get_builder<ChildT> ().with_start_ticks (startTicks));

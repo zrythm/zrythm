@@ -33,7 +33,8 @@ using TrackRecordingCallback = std::function<void (
   units::sample_t,
   const dsp::ITransport &,
   const dsp::MidiEventVector *,
-  std::optional<TrackProcessor::ConstStereoPortPair>)>;
+  std::optional<TrackProcessor::ConstStereoPortPair>,
+  units::sample_u32_t)>;
 
 struct BaseTrackDependencies
 {

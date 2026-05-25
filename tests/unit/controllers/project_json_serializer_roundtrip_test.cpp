@@ -493,8 +493,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
 
     auto region_ref =
       factory.get_builder<structure::arrangement::MidiRegion> ()
-        .with_start_ticks (0)
-        .with_end_ticks (960)
+        .with_start_ticks (units::ticks (0))
+        .with_end_ticks (units::ticks (960))
         .with_name (u8"MIDI Region")
         .build_in_registry ();
     auto * region =
@@ -504,7 +504,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_MidiRegionWithNote_Validates)
 
     auto note_ref =
       factory.get_builder<structure::arrangement::MidiNote> ()
-        .with_start_ticks (0)
+        .with_start_ticks (units::ticks (0))
         .with_pitch (60)
         .with_velocity (100)
         .build_in_registry ();
@@ -575,8 +575,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
       file_registry, dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), 120, u8"test_audio.wav");
 
-    auto region_ref =
-      factory.create_audio_region_with_clip (audio_source_ref, 0);
+    auto region_ref = factory.create_audio_region_with_clip (
+      audio_source_ref, units::ticks (0));
     auto * region =
       region_ref.get_object_as<structure::arrangement::AudioRegion> ();
     region->name ()->setName (u8"Audio Region");
@@ -641,8 +641,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_AutomationRegionWithPoint_Validates)
     auto &factory = *original_project->arrangerObjectFactory ();
     auto  region_ref =
       factory.get_builder<structure::arrangement::AutomationRegion> ()
-        .with_start_ticks (0)
-        .with_end_ticks (960)
+        .with_start_ticks (units::ticks (0))
+        .with_end_ticks (units::ticks (960))
         .with_name (u8"Automation Region")
         .build_in_registry ();
     auto * region =
@@ -652,7 +652,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AutomationRegionWithPoint_Validates)
 
     auto point_ref =
       factory.get_builder<structure::arrangement::AutomationPoint> ()
-        .with_start_ticks (0)
+        .with_start_ticks (units::ticks (0))
         .with_automatable_value (0.75)
         .build_in_registry ();
     region->add_object (point_ref);
@@ -719,8 +719,8 @@ TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
     auto &factory = *original_project->arrangerObjectFactory ();
     auto  region_ref =
       factory.get_builder<structure::arrangement::ChordRegion> ()
-        .with_start_ticks (0)
-        .with_end_ticks (960)
+        .with_start_ticks (units::ticks (0))
+        .with_end_ticks (units::ticks (960))
         .with_name (u8"Chord Region")
         .build_in_registry ();
     auto * region =
@@ -730,7 +730,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
 
     auto chord_ref =
       factory.get_builder<structure::arrangement::ChordObject> ()
-        .with_start_ticks (0)
+        .with_start_ticks (units::ticks (0))
         .with_chord_descriptor (0)
         .build_in_registry ();
     region->add_object (chord_ref);

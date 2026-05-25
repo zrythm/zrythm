@@ -62,7 +62,8 @@ public:
     units::sample_t                    timeline_position,
     const dsp::ITransport             &transport,
     const dsp::MidiEventVector *       midi_events,
-    std::optional<ConstStereoPortPair> stereo_ports)>;
+    std::optional<ConstStereoPortPair> stereo_ports,
+    units::sample_u32_t                nframes)>;
 
   /**
    * @brief Custom logic to use when appending the MIDI input events to the
@@ -152,7 +153,8 @@ public:
         units::sample_t,
         const dsp::ITransport &,
         const dsp::MidiEventVector *,
-        std::optional<ConstStereoPortPair>) { },
+        std::optional<ConstStereoPortPair>,
+        units::sample_u32_t) { },
     QObject * parent = nullptr);
   ~TrackProcessor () override;
 

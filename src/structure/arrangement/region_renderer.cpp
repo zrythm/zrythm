@@ -69,13 +69,14 @@ RegionRenderer::handle_midi_region_range (
         absolute_end, absolute_start + (note_virtual_end - virtual_range.first));
 
       // Add note on and note off events
+      const auto ch = note->midiChannel () + 1;
       events.addEvent (
         juce::MidiMessage::noteOn (
-          1, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
+          ch, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
         note_absolute_start.in (units::ticks));
       events.addEvent (
         juce::MidiMessage::noteOff (
-          1, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
+          ch, note->pitch (), static_cast<std::uint8_t> (note->velocity ())),
         note_absolute_end.in (units::ticks));
     }
 

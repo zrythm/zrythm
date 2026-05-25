@@ -3,26 +3,32 @@
 
 #include "controllers/recording_materializer.h"
 #include "dsp/file_audio_source.h"
+#include "dsp/midi_event.h"
 #include "structure/arrangement/audio_source_object.h"
+#include "structure/arrangement/midi_control_event.h"
 #include "utils/audio.h"
 #include "utils/logger.h"
+#include "utils/midi.h"
 
 namespace zrythm::controllers
 {
 
 RecordingMaterializer::RecordingMaterializer (
-  RecordingCoordinator &recording_coordinator,
-  undo::UndoStack      &undo_stack,
-  RegionCreator         region_creator,
-  RecordingModeProvider recording_mode_provider,
-  QObject *             parent)
+  RecordingCoordinator  &recording_coordinator,
+  undo::UndoStack       &undo_stack,
+  ArrangerObjectCreators creators,
+  RecordingModeProvider  recording_mode_provider,
+  QObject *              parent)
     : QObject (parent), recording_coordinator_ (recording_coordinator),
-      undo_stack_ (&undo_stack), region_creator_ (std::move (region_creator)),
+      undo_stack_ (&undo_stack), creators_ (std::move (creators)),
       recording_mode_provider_ (std::move (recording_mode_provider))
 {
   QObject::connect (
     &recording_coordinator_, &RecordingCoordinator::audioDataReady, this,
     &RecordingMaterializer::on_audio_data_ready);
+  QObject::connect (
+    &recording_coordinator_, &RecordingCoordinator::midiDataReady, this,
+    &RecordingMaterializer::on_midi_data_ready);
   QObject::connect (
     &recording_coordinator_, &RecordingCoordinator::recordingSessionEnded, this,
     &RecordingMaterializer::finalize_recording_macro);
@@ -58,35 +64,9 @@ RecordingMaterializer::on_audio_data_ready (
         !state.last_end_position.has_value ()
         || packet.timeline_position != *state.last_end_position;
 
-      if (discontinuous && state.current_region.has_value ())
+      if (discontinuous)
         {
-          const auto mode = recording_mode_provider_ ();
-
-          switch (mode)
-            {
-            case RecordingMode::TakesMuted:
-              {
-                auto * prev_region = state.current_region->get_object_as<
-                  structure::arrangement::AudioRegion> ();
-                if (prev_region != nullptr)
-                  {
-                    prev_region->mute ()->setMuted (true);
-                  }
-              }
-              [[fallthrough]];
-            case RecordingMode::Takes:
-              state.current_lane_index++;
-              break;
-            case RecordingMode::OverwriteEvents:
-            case RecordingMode::MergeEvents:
-              z_warning (
-                "Recording mode {} is not yet implemented, falling back to Takes behavior",
-                mode);
-              state.current_lane_index++;
-              break;
-            }
-
-          state.current_region.reset ();
+          handle_discontinuity (state);
         }
 
       scratch_buf_.setSize (2, num_frames, false, false, true);
@@ -137,14 +117,9 @@ RecordingMaterializer::get_or_create_region (
   units::sample_t                  start_position,
   const utils::audio::AudioBuffer &initial_frames)
 {
-  if (!recording_macro_active_)
-    {
-      assert (!undo_stack_.isNull ());
-      undo_stack_->beginMacro (QObject::tr ("Record"));
-      recording_macro_active_ = true;
-    }
+  ensure_recording_macro ();
 
-  auto result = region_creator_ (
+  auto result = creators_.audio_region (
     track_id, start_position, initial_frames, state.current_lane_index);
   if (!result.has_value ())
     return std::nullopt;
@@ -169,6 +144,11 @@ RecordingMaterializer::finalize_recording_macro ()
   if (!recording_macro_active_)
     return;
 
+  for (auto &[track_id, state] : track_states_)
+    {
+      force_complete_pending_notes (state);
+    }
+
   if (!undo_stack_.isNull ())
     {
       undo_stack_->endMacro ();
@@ -177,4 +157,272 @@ RecordingMaterializer::finalize_recording_macro ()
   track_states_.clear ();
 }
 
+void
+RecordingMaterializer::ensure_recording_macro ()
+{
+  if (!recording_macro_active_)
+    {
+      assert (!undo_stack_.isNull ());
+      undo_stack_->beginMacro (QObject::tr ("Record"));
+      recording_macro_active_ = true;
+    }
+}
+
+// ============================================================================
+
+void
+RecordingMaterializer::handle_discontinuity (TrackRecordingState &state)
+{
+  force_complete_pending_notes (state);
+  state.unended_notes.clear ();
+
+  if (!state.current_region.has_value ())
+    return;
+
+  const auto mode = recording_mode_provider_ ();
+  switch (mode)
+    {
+    case RecordingMode::TakesMuted:
+      {
+        auto * prev_obj = state.current_region->get ();
+        if (prev_obj != nullptr)
+          {
+            prev_obj->mute ()->setMuted (true);
+          }
+      }
+      [[fallthrough]];
+    case RecordingMode::Takes:
+      state.current_lane_index++;
+      break;
+    case RecordingMode::OverwriteEvents:
+    case RecordingMode::MergeEvents:
+      z_warning (
+        "Recording mode {} is not yet implemented, falling back to Takes behavior",
+        mode);
+      state.current_lane_index++;
+      break;
+    }
+  state.current_region.reset ();
+}
+
+bool
+RecordingMaterializer::ensure_midi_region (
+  TrackRecordingState         &state,
+  structure::tracks::TrackUuid track_id,
+  units::sample_t              start_position)
+{
+  if (state.current_region.has_value ())
+    return true;
+
+  ensure_recording_macro ();
+
+  auto result =
+    creators_.midi_region (track_id, start_position, state.current_lane_index);
+  if (!result.has_value ())
+    return false;
+  state.current_lane_index = result->actual_lane_index;
+  state.current_region = std::move (result->region);
+  return true;
+}
+
+void
+RecordingMaterializer::force_complete_pending_notes (TrackRecordingState &state)
+{
+  if (
+    state.unended_notes.empty () || !state.current_region.has_value ()
+    || !state.last_end_position.has_value ())
+    return;
+
+  auto * region =
+    state.current_region->get_object_as<structure::arrangement::MidiRegion> ();
+  if (region == nullptr)
+    return;
+
+  const auto region_start = units::samples (region->position ()->samples ());
+
+  for (const auto &[key, pending_deque] : state.unended_notes)
+    {
+      const auto pitch = static_cast<uint8_t> (key & 0xFF);
+      for (const auto &pending : pending_deque)
+        {
+          creators_.midi_note (
+            *region, pending.start_position - region_start,
+            *state.last_end_position - region_start, pitch, pending.velocity,
+            pending.channel);
+        }
+    }
+}
+
+void
+RecordingMaterializer::on_midi_data_ready (
+  structure::tracks::TrackUuid            track_id,
+  const std::vector<RecordingMidiPacket> &packets)
+{
+  for (const auto &packet : packets)
+    {
+      if (!packet.transport_recording)
+        continue;
+
+      auto &state = track_states_[track_id];
+
+      if (
+        !state.last_end_position.has_value ()
+        || packet.timeline_position != *state.last_end_position)
+        {
+          handle_discontinuity (state);
+        }
+
+      const auto get_midi_region_and_offset = [&] (units::sample_t pos)
+        -> std::optional<
+          std::pair<structure::arrangement::MidiRegion *, units::sample_t>> {
+        if (!ensure_midi_region (state, track_id, pos))
+          return std::nullopt;
+        auto * region = state.current_region->get_object_as<
+          structure::arrangement::MidiRegion> ();
+        if (region == nullptr)
+          return std::nullopt;
+        const auto region_start =
+          units::samples (region->position ()->samples ());
+        return std::pair{ region, region_start };
+      };
+
+      for (const auto &ev : packet.midi_events)
+        {
+          const auto status = ev.raw_buffer_[0];
+          const auto type = static_cast<uint8_t> (status & 0xF0);
+          const auto channel = static_cast<uint8_t> (status & 0x0F);
+          const auto d1 = static_cast<uint8_t> (ev.raw_buffer_[1] & 0x7F);
+          const auto d2 = static_cast<uint8_t> (ev.raw_buffer_[2] & 0x7F);
+
+          const auto event_sample_pos =
+            packet.timeline_position
+            + units::samples (
+              static_cast<int64_t> (ev.time_.in (units::samples)));
+
+          if (type == utils::midi::MIDI_CH1_NOTE_ON && d2 > 0)
+            {
+              if (!ensure_midi_region (state, track_id, event_sample_pos))
+                {
+                  z_warning (
+                    "Failed to create MIDI region for note-on (pitch={}, "
+                    "ch={}) at position {} — dropping note",
+                    d1, channel, event_sample_pos);
+                  continue;
+                }
+              const auto key = static_cast<uint16_t> (
+                (static_cast<uint16_t> (channel) << 8) | d1);
+              state.unended_notes[key].push_back (
+                { event_sample_pos, d2, channel });
+            }
+          else if (
+            type == utils::midi::MIDI_CH1_NOTE_OFF
+            || (type == utils::midi::MIDI_CH1_NOTE_ON && d2 == 0))
+            {
+              const auto key = static_cast<uint16_t> (
+                (static_cast<uint16_t> (channel) << 8) | d1);
+              auto note_it = state.unended_notes.find (key);
+              if (
+                note_it != state.unended_notes.end ()
+                && !note_it->second.empty ())
+                {
+                  if (!state.current_region.has_value ())
+                    {
+                      z_warning (
+                        "Note-off (pitch={}, ch={}) at position {} has no "
+                        "active region — stale note dropped",
+                        d1, channel, event_sample_pos);
+                      note_it->second.pop_front ();
+                      if (note_it->second.empty ())
+                        state.unended_notes.erase (note_it);
+                      continue;
+                    }
+
+                  auto * region = state.current_region->get_object_as<
+                    structure::arrangement::MidiRegion> ();
+                  if (region != nullptr)
+                    {
+                      const auto &pending = note_it->second.front ();
+                      const auto  region_start =
+                        units::samples (region->position ()->samples ());
+                      creators_.midi_note (
+                        *region, pending.start_position - region_start,
+                        event_sample_pos - region_start, d1, pending.velocity,
+                        pending.channel);
+                    }
+
+                  note_it->second.pop_front ();
+                  if (note_it->second.empty ())
+                    state.unended_notes.erase (note_it);
+                }
+            }
+          else if (type == utils::midi::MIDI_CH1_CTRL_CHANGE)
+            {
+              auto r = get_midi_region_and_offset (event_sample_pos);
+              if (r.has_value ())
+                {
+                  auto [region, region_start] = *r;
+                  creators_.midi_control_event (
+                    *region, event_sample_pos - region_start,
+                    structure::arrangement::MidiControlEvent::EventType::
+                      ControlChange,
+                    channel, d1, d2);
+                }
+            }
+          else if (type == utils::midi::MIDI_CH1_PITCH_WHEEL_RANGE)
+            {
+              auto r = get_midi_region_and_offset (event_sample_pos);
+              if (r.has_value ())
+                {
+                  auto [region, region_start] = *r;
+                  const auto pb_value = (d2 << 7) | d1;
+                  creators_.midi_control_event (
+                    *region, event_sample_pos - region_start,
+                    structure::arrangement::MidiControlEvent::EventType::PitchBend,
+                    channel, 0, pb_value);
+                }
+            }
+          else if (type == utils::midi::MIDI_CH1_CHAN_AFTERTOUCH)
+            {
+              auto r = get_midi_region_and_offset (event_sample_pos);
+              if (r.has_value ())
+                {
+                  auto [region, region_start] = *r;
+                  creators_.midi_control_event (
+                    *region, event_sample_pos - region_start,
+                    structure::arrangement::MidiControlEvent::EventType::
+                      ChannelPressure,
+                    channel, 0, d1);
+                }
+            }
+          else if (type == utils::midi::MIDI_CH1_POLY_AFTERTOUCH)
+            {
+              auto r = get_midi_region_and_offset (event_sample_pos);
+              if (r.has_value ())
+                {
+                  auto [region, region_start] = *r;
+                  creators_.midi_control_event (
+                    *region, event_sample_pos - region_start,
+                    structure::arrangement::MidiControlEvent::EventType::
+                      PolyKeyPressure,
+                    channel, d1, d2);
+                }
+            }
+          else if (type == utils::midi::MIDI_CH1_PROG_CHANGE)
+            {
+              auto r = get_midi_region_and_offset (event_sample_pos);
+              if (r.has_value ())
+                {
+                  auto [region, region_start] = *r;
+                  creators_.midi_control_event (
+                    *region, event_sample_pos - region_start,
+                    structure::arrangement::MidiControlEvent::EventType::
+                      ProgramChange,
+                    channel, 0, d1);
+                }
+            }
+        }
+
+      state.last_end_position = packet.timeline_position + packet.nframes;
+    }
+}
 }
