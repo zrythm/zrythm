@@ -58,9 +58,17 @@ to_json (nlohmann::json &j, const AudioInputSelection &sel)
 void
 from_json (const nlohmann::json &j, AudioInputSelection &sel)
 {
-  j.at (AudioInputSelection::kDeviceNameKey).get_to (sel.device_name_);
-  j.at (AudioInputSelection::kFirstChannelKey).get_to (sel.first_channel_);
-  j.at (AudioInputSelection::kStereoKey).get_to (sel.stereo_);
+  utils::Utf8String device_name;
+  j.at (AudioInputSelection::kDeviceNameKey).get_to (device_name);
+  sel.setDeviceName (device_name.to_qstring ());
+
+  uint8_t ch = 0;
+  j.at (AudioInputSelection::kFirstChannelKey).get_to (ch);
+  sel.setFirstChannel (static_cast<int> (ch));
+
+  bool stereo = false;
+  j.at (AudioInputSelection::kStereoKey).get_to (stereo);
+  sel.setStereo (stereo);
 }
 
 bool

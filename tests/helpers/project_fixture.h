@@ -8,6 +8,7 @@
 #include "utils/io_utils.h"
 
 #include "helpers/mock_hardware_audio_interface_threaded.h"
+#include "helpers/mock_hardware_midi_interface.h"
 #include "helpers/mock_settings_backend.h"
 #include "helpers/scoped_juce_qapplication.h"
 
@@ -72,9 +73,9 @@ protected:
         const structure::tracks::Track::Uuid &,
         units::sample_t,
         const dsp::ITransport &,
-        const dsp::MidiEventVector *,
-        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>) {
-      })
+        std::optional<std::span<const dsp::MidiEvent>>,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
+        units::sample_u32_t) { })
   {
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;
@@ -88,8 +89,8 @@ protected:
       [] (Plugin &) -> std::unique_ptr<IPluginHostWindow> { return nullptr; };
 
     auto project = std::make_unique<Project> (
-      *app_settings_, path_provider, *hw_interface_, plugin_format_manager_,
-      window_factory, *metronome_, *monitor_fader_);
+      *app_settings_, path_provider, *hw_interface_, midi_interface_,
+      plugin_format_manager_, window_factory, *metronome_, *monitor_fader_);
     project->install_recording_callback (std::move (recording_callback));
     return project;
   }
@@ -97,6 +98,7 @@ protected:
   std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;
   std::filesystem::path                           project_dir_;
   std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface_;
+  test_helpers::MockHardwareMidiInterface         midi_interface_;
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
   MockSettingsBackend *                           mock_backend_ptr_{};
   std::unique_ptr<utils::AppSettings>             app_settings_;

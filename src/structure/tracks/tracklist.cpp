@@ -129,6 +129,11 @@ Tracklist::getTrackForTimelineObject (
           }
         break;
       }
+    case arrangement::ArrangerObject::Type::MidiControlEvent:
+      {
+        // MIDI control events are contained within MIDI regions
+        break;
+      }
     case arrangement::ArrangerObject::Type::MidiNote:
       {
         // Midi notes are contained within MIDI regions, so we need to find

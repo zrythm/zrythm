@@ -88,8 +88,8 @@ TEST_F (ArrangerObjectFactoryTest, BuilderPatternConfiguration)
 
   auto midi_note_ref =
     factory->get_builder<MidiNote> ()
-      .with_start_ticks (start_ticks)
-      .with_end_ticks (end_ticks)
+      .with_start_ticks (units::ticks (start_ticks))
+      .with_end_ticks (units::ticks (end_ticks))
       .with_pitch (test_pitch)
       .with_velocity (test_velocity)
       .build_in_registry ();
@@ -107,7 +107,7 @@ TEST_F (ArrangerObjectFactoryTest, BuilderPatternConfiguration)
 
   auto marker_ref =
     factory->get_builder<Marker> ()
-      .with_start_ticks (marker_start_ticks)
+      .with_start_ticks (units::ticks (marker_start_ticks))
       .with_name (marker_name)
       .with_marker_type (marker_type)
       .build_in_registry ();
@@ -123,7 +123,7 @@ TEST_F (ArrangerObjectFactoryTest, BuilderPatternConfiguration)
 
   auto automation_point_ref =
     factory->get_builder<AutomationPoint> ()
-      .with_start_ticks (automation_start_ticks)
+      .with_start_ticks (units::ticks (automation_start_ticks))
       .with_automatable_value (automation_value)
       .build_in_registry ();
 
@@ -144,7 +144,7 @@ TEST_F (ArrangerObjectFactoryTest, ObjectRegistration)
     {
       auto ref =
         factory->get_builder<MidiNote> ()
-          .with_start_ticks (i * 100.0)
+          .with_start_ticks (units::ticks (i * 100.0))
           .with_pitch (60 + i)
           .build_in_registry ();
       object_refs.push_back (ref);
@@ -171,8 +171,8 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
     units::sample_rate (44100), 120.0, u8"TestSource");
 
   const double start_ticks = 100.0;
-  auto         audio_region_ref =
-    factory->create_audio_region_with_clip (source_ref, start_ticks);
+  auto         audio_region_ref = factory->create_audio_region_with_clip (
+    source_ref, units::ticks (start_ticks));
 
   auto * audio_region = audio_region_ref.get_object_as<AudioRegion> ();
   EXPECT_NE (audio_region, nullptr);
@@ -184,8 +184,8 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   const double editor_start_ticks = 150.0;
   const int    editor_pitch = 64;
 
-  auto midi_note_ref = factory->create_editor_object<MidiRegion> (
-    editor_start_ticks, editor_pitch);
+  auto midi_note_ref = factory->create_editor_object<MidiNote> (
+    units::ticks (editor_start_ticks), editor_pitch);
 
   auto * midi_note = midi_note_ref.get_object_as<MidiNote> ();
   EXPECT_NE (midi_note, nullptr);
@@ -197,8 +197,8 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   const double automation_start_ticks = 200.0;
   const double automation_value = 0.5;
 
-  auto automation_point_ref = factory->create_editor_object<AutomationRegion> (
-    automation_start_ticks, automation_value);
+  auto automation_point_ref = factory->create_editor_object<AutomationPoint> (
+    units::ticks (automation_start_ticks), automation_value);
 
   auto * automation_point =
     automation_point_ref.get_object_as<AutomationPoint> ();
@@ -235,8 +235,8 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
   // Test cloning MidiNote
   auto original_midi_note_ref =
     factory->get_builder<MidiNote> ()
-      .with_start_ticks (100.0)
-      .with_end_ticks (500.0)
+      .with_start_ticks (units::ticks (100.0))
+      .with_end_ticks (units::ticks (500.0))
       .with_pitch (60)
       .with_velocity (80)
       .build_in_registry ();
@@ -267,7 +267,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
   // Test cloning Marker
   auto original_marker_ref =
     factory->get_builder<Marker> ()
-      .with_start_ticks (200.0)
+      .with_start_ticks (units::ticks (200.0))
       .with_name ("Test Marker")
       .with_marker_type (Marker::MarkerType::Custom)
       .build_in_registry ();
@@ -294,7 +294,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentity)
   // Test cloning AutomationPoint
   auto original_automation_point_ref =
     factory->get_builder<AutomationPoint> ()
-      .with_start_ticks (300.0)
+      .with_start_ticks (units::ticks (300.0))
       .with_automatable_value (0.75)
       .build_in_registry ();
 
@@ -333,7 +333,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioRegion)
 
   // Create audio region
   auto original_audio_region_ref =
-    factory->create_audio_region_with_clip (source_ref, 1000.0);
+    factory->create_audio_region_with_clip (source_ref, units::ticks (1000.0));
   auto * original_audio_region =
     original_audio_region_ref.get_object_as<AudioRegion> ();
   EXPECT_NE (original_audio_region, nullptr);
@@ -363,8 +363,8 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityMidiRegion)
 {
   auto original_midi_region_ref =
     factory->get_builder<MidiRegion> ()
-      .with_start_ticks (500.0)
-      .with_end_ticks (1500.0)
+      .with_start_ticks (units::ticks (500.0))
+      .with_end_ticks (units::ticks (1500.0))
       .build_in_registry ();
 
   auto * original_midi_region =

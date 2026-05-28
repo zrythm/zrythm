@@ -112,6 +112,45 @@ ProjectUiState::audioInputSelectionForTrack (
   return get_or_create_audio_input_selection (track->get_uuid ());
 }
 
+dsp::MidiInputSelection *
+ProjectUiState::get_or_create_midi_input_selection (
+  const structure::tracks::Track::Uuid &uuid)
+{
+  auto it = midi_input_selections_.find (uuid);
+  if (it != midi_input_selections_.end ())
+    return it->second.get ();
+
+  auto   sel = utils::make_qobject_unique<dsp::MidiInputSelection> (this);
+  auto * raw = sel.get ();
+
+  QObject::connect (
+    raw, &dsp::MidiInputSelection::deviceIdentifierChanged, this,
+    &ProjectUiState::midiInputDeviceChanged);
+
+  midi_input_selections_.emplace (uuid, std::move (sel));
+  return raw;
+}
+
+dsp::MidiInputSelection *
+ProjectUiState::find_midi_input_selection (
+  const structure::tracks::Track::Uuid &uuid) const
+{
+  auto it = midi_input_selections_.find (uuid);
+  if (it != midi_input_selections_.end ())
+    return it->second.get ();
+  return nullptr;
+}
+
+dsp::MidiInputSelection *
+ProjectUiState::midiInputSelectionForTrack (
+  const structure::tracks::Track * track)
+{
+  if (track == nullptr)
+    return nullptr;
+
+  return get_or_create_midi_input_selection (track->get_uuid ());
+}
+
 void
 to_json (nlohmann::json &j, const ProjectUiState &p)
 {
@@ -136,6 +175,24 @@ to_json (nlohmann::json &j, const ProjectUiState &p)
     {
       j[ProjectUiState::kAudioInputSelectionsKey] = selections_json;
     }
+
+  nlohmann::json midi_selections_json = nlohmann::json::array ();
+  for (const auto &[uuid, sel] : p.midi_input_selections_)
+    {
+      if (utils::contains (p.project_.get_registry (), uuid))
+        {
+          midi_selections_json.push_back (
+            nlohmann::json::array ({ uuid, *sel }));
+        }
+      else
+        {
+          z_debug ("pruning midi input selection for removed track {}", uuid);
+        }
+    }
+  if (!midi_selections_json.empty ())
+    {
+      j[ProjectUiState::kMidiInputSelectionsKey] = midi_selections_json;
+    }
 }
 
 void
@@ -159,6 +216,22 @@ from_json (const nlohmann::json &j, ProjectUiState &p)
           structure::tracks::Track::Uuid uuid;
           entry[0].get_to (uuid);
           auto * sel = p.get_or_create_audio_input_selection (uuid);
+          from_json (entry[1], *sel);
+        }
+    }
+  if (j.contains (ProjectUiState::kMidiInputSelectionsKey))
+    {
+      p.midi_input_selections_.clear ();
+      for (const auto &entry : j.at (ProjectUiState::kMidiInputSelectionsKey))
+        {
+          if (!entry.is_array () || entry.size () < 2)
+            {
+              z_warning ("Skipping malformed MIDI input selection entry");
+              continue;
+            }
+          structure::tracks::Track::Uuid uuid;
+          entry[0].get_to (uuid);
+          auto * sel = p.get_or_create_midi_input_selection (uuid);
           from_json (entry[1], *sel);
         }
     }

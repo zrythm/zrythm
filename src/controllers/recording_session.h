@@ -4,10 +4,12 @@
 #pragma once
 
 #include <atomic>
+#include <concepts>
 #include <memory>
-#include <span>
 #include <vector>
 
+#include "controllers/recording_audio_packet.h"
+#include "controllers/recording_midi_packet.h"
 #include "utils/units.h"
 
 #include <QtClassHelperMacros>
@@ -15,32 +17,30 @@
 namespace zrythm::controllers
 {
 
-/**
- * @brief A single packet of recorded audio data transferred from RT to non-RT.
- */
-struct RecordingAudioPacket
-{
-  units::sample_t     timeline_position;
-  bool                transport_recording{};
-  units::sample_u32_t nframes;
-  std::vector<float>  l_frames;
-  std::vector<float>  r_frames;
-};
+template <typename T>
+concept RecordingPacket =
+  requires (T &slot, const T &source, units::sample_u32_t block_length) {
+    { T::copy_from (slot, source) };
+    { T::resize (slot, block_length) };
+  };
 
 /**
  * @brief Per-track recording state with a lock-free SPSC queue.
  *
- * The RT thread writes audio into pre-allocated slots and pushes slot indices
+ * The RT thread writes packets into pre-allocated slots and pushes slot indices
  * onto a farbot SPSC fifo. The non-RT timer drains pending indices and reads
- * the corresponding slot data into RecordingAudioPacket objects.
+ * the corresponding slot data into Packet objects.
+ *
+ * @tparam Packet The packet type (RecordingAudioPacket or RecordingMidiPacket).
+ * Must provide static copy_from(slot, source) and resize(slot, block_length).
  *
  * Thread contracts:
- * - write_samples(): audio thread only (single producer)
+ * - write(): audio thread only (single producer)
  * - drain_pending(): timer thread only (single consumer)
  * - finalize(): any thread (atomic flag — safe during active writes)
  * - reset(): any thread (must not overlap with write/drain)
  */
-class AudioRecordingSession
+template <RecordingPacket Packet> class RecordingSession
 {
 public:
   enum class State : uint8_t
@@ -50,20 +50,20 @@ public:
     Finalizing,
   };
 
-  explicit AudioRecordingSession (units::sample_u32_t max_block_length);
-  ~AudioRecordingSession ();
+  explicit RecordingSession (units::sample_u32_t max_block_length);
+  ~RecordingSession ();
 
-  Q_DISABLE_COPY_MOVE (AudioRecordingSession)
+  Q_DISABLE_COPY_MOVE (RecordingSession)
 
   static constexpr size_t kFifoCapacity = 1024;
+
+  using PacketType = Packet;
 
   /**
    * @brief Prepares internal buffers for processing at the given block length.
    *
-   * Buffers are only grown, never shrunk, so a decrease in block length is
-   * safe (existing large buffers are kept). Must be called before audio
-   * processing starts (not concurrently with write_samples() or
-   * drain_pending()).
+   * Must be called before audio processing starts (not concurrently with
+   * write() or drain_pending()).
    */
   void prepare_for_processing (units::sample_u32_t block_length);
 
@@ -72,25 +72,34 @@ public:
    *
    * Called from the audio thread. No allocations — copies data into
    * pre-allocated slot memory and pushes the slot index onto the SPSC fifo.
-   * If the fifo is full, the slot is overwritten with the latest data but
-   * the index is not queued and the dropped counter is incremented. The
-   * next call reuses the same slot, so once the consumer drains enough
-   * entries the most recent audio is always captured.
    */
-  void write_samples (
+  void write (
     units::sample_t        timeline_position,
     bool                   transport_recording,
     std::span<const float> l_data,
-    std::span<const float> r_data) noexcept [[clang::nonblocking]];
+    std::span<const float> r_data) noexcept [[clang::nonblocking]]
+    requires std::same_as<Packet, RecordingAudioPacket>;
+
+  /**
+   * @brief RT-safe: writes MIDI events into the ring buffer.
+   *
+   * Called from the audio thread. No allocations — copies events into
+   * pre-allocated slot memory and pushes the slot index onto the SPSC fifo.
+   */
+  void write (
+    units::sample_t                 timeline_position,
+    bool                            transport_recording,
+    std::span<const dsp::MidiEvent> midi_events,
+    units::sample_u32_t             nframes) noexcept [[clang::nonblocking]]
+    requires std::same_as<Packet, RecordingMidiPacket>;
 
   /**
    * @brief Non-RT: drains all pending packets from the ring buffer.
    *
    * Called from the timer thread. Reads slot indices from the SPSC fifo
-   * and copies the slot data into RecordingAudioPacket objects.
+   * and copies the slot data into Packet objects.
    */
-  [[nodiscard]] std::vector<RecordingAudioPacket>
-  drain_pending () [[clang::blocking]];
+  [[nodiscard]] std::vector<Packet> drain_pending () [[clang::blocking]];
 
   [[nodiscard]] auto state () const
   {
@@ -99,24 +108,14 @@ public:
 
   /**
    * @brief Transitions to Finalizing state, rejecting further writes.
-   *
-   * Safe to call while write_samples() is in progress on another thread —
-   * this only sets an atomic flag. Any in-flight writes will complete
-   * normally; subsequent audio callbacks will see Finalizing and skip.
    */
-  void finalize () noexcept;
+  void finalize () noexcept [[clang::nonblocking]];
 
   /**
    * @brief Resets the session to Armed state for reuse.
-   *
-   * Must only be called when neither write_samples() nor drain_pending()
-   * are active. Clears all buffered data, recorded regions, and counters.
    */
   void reset ();
 
-  /**
-   * @brief Returns the number of packets dropped due to fifo overflow.
-   */
   [[nodiscard]] uint64_t dropped_packets () const
   {
     return dropped_packets_.load (std::memory_order_relaxed);
@@ -129,5 +128,8 @@ private:
   std::atomic<State>    state_{ State::Armed };
   std::atomic<uint64_t> dropped_packets_{ 0 };
 };
+
+using AudioRecordingSession = RecordingSession<RecordingAudioPacket>;
+using MidiRecordingSession = RecordingSession<RecordingMidiPacket>;
 
 }

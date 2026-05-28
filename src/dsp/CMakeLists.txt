@@ -32,7 +32,10 @@ target_sources(zrythm_dsp_lib
     juce_hardware_audio_interface.cpp
     kmeter_dsp.cpp
     metronome.cpp
+    midi_device_buffer.cpp
     midi_event.cpp
+    midi_input_processor.cpp
+    midi_input_selection.cpp
     midi_panic_processor.cpp
     midi_port.cpp
     note_type.cpp
@@ -86,11 +89,15 @@ target_sources(zrythm_dsp_lib
       graph_scheduler.h
       graph_thread.h
       hardware_audio_interface.h
+      hardware_midi_interface.h
       itransport.h
       juce_hardware_audio_interface.h
       kmeter_dsp.h
       metronome.h
+      midi_device_buffer.h
       midi_event.h
+      midi_input_processor.h
+      midi_input_selection.h
       midi_panic_processor.h
       midi_port.h
       modulator_macro_processor.h

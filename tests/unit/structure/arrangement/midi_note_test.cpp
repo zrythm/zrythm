@@ -34,8 +34,9 @@ TEST_F (MidiNoteTest, InitialState)
 {
   EXPECT_EQ (note->type (), ArrangerObject::Type::MidiNote);
   EXPECT_EQ (note->position ()->samples (), 0);
-  EXPECT_EQ (note->pitch (), 60);    // Default pitch is C4
-  EXPECT_EQ (note->velocity (), 90); // Default velocity
+  EXPECT_EQ (note->pitch (), 60);      // Default pitch is C4
+  EXPECT_EQ (note->velocity (), 90);   // Default velocity
+  EXPECT_EQ (note->midiChannel (), 0); // Default channel
   EXPECT_NE (note->bounds (), nullptr);
   EXPECT_NE (note->mute (), nullptr);
 }
@@ -114,6 +115,26 @@ TEST_F (MidiNoteTest, VelocityProperty)
   // No signal when same value
   EXPECT_CALL (mockVelocityChanged, Call (80)).Times (0);
   note->setVelocity (80);
+}
+
+TEST_F (MidiNoteTest, MidiChannelProperty)
+{
+  QSignalSpy spy (note.get (), &MidiNote::midiChannelChanged);
+  note->setMidiChannel (5);
+  EXPECT_EQ (note->midiChannel (), 5);
+  EXPECT_EQ (spy.count (), 1);
+
+  note->setMidiChannel (15);
+  EXPECT_EQ (note->midiChannel (), 15);
+
+  note->setMidiChannel (20);
+  EXPECT_EQ (note->midiChannel (), 15) << "Channel should clamp to 15";
+
+  note->setMidiChannel (-1);
+  EXPECT_EQ (note->midiChannel (), 0) << "Channel should clamp to 0";
+  note->setMidiChannel (5);
+  note->setMidiChannel (5);
+  EXPECT_EQ (spy.count (), 4) << "Setting same value should not emit signal";
 }
 
 // Test pitchAsRichText method
@@ -292,6 +313,7 @@ TEST_F (MidiNoteTest, Serialization)
   note->position ()->setSamples (2000);
   note->setPitch (72);
   note->setVelocity (110);
+  note->setMidiChannel (3);
   note->bounds ()->length ()->setSamples (1000);
 
   // Serialize
@@ -306,6 +328,7 @@ TEST_F (MidiNoteTest, Serialization)
   EXPECT_EQ (new_note->position ()->samples (), 2000);
   EXPECT_EQ (new_note->pitch (), 72);
   EXPECT_EQ (new_note->velocity (), 110);
+  EXPECT_EQ (new_note->midiChannel (), 3);
   EXPECT_EQ (new_note->bounds ()->length ()->samples (), 1000);
 }
 
@@ -316,6 +339,7 @@ TEST_F (MidiNoteTest, Copying)
   note->position ()->setSamples (3000);
   note->setPitch (65);
   note->setVelocity (95);
+  note->setMidiChannel (10);
   note->bounds ()->length ()->setSamples (1500);
 
   // Create target
@@ -328,6 +352,7 @@ TEST_F (MidiNoteTest, Copying)
   EXPECT_EQ (target->position ()->samples (), 3000);
   EXPECT_EQ (target->pitch (), 65);
   EXPECT_EQ (target->velocity (), 95);
+  EXPECT_EQ (target->midiChannel (), 10);
   EXPECT_EQ (target->bounds ()->length ()->samples (), 1500);
 }
 

@@ -6,6 +6,7 @@
 #include "utils/format_qt.h"
 
 #include "dsp/engine.h"
+#include "dsp/hardware_midi_interface.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
@@ -25,6 +26,7 @@ Project::Project (
   utils::AppSettings           &app_settings,
   ProjectDirectoryPathProvider  project_directory_path_provider,
   dsp::IHardwareAudioInterface &hw_interface,
+  dsp::IHardwareMidiInterface  &midi_interface,
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Metronome                                 &metronome,
@@ -56,6 +58,7 @@ Project::Project (
         utils::make_qobject_unique<dsp::AudioEngine> (
           *transport_,
           hw_interface,
+          midi_interface,
           graph_dispatcher_,
           tempo_map_,
           this)),
@@ -309,7 +312,7 @@ Project::add_default_tracks ()
   /* add a scale */
   auto scale_ref =
     arranger_object_factory_->get_builder<structure::arrangement::ScaleObject> ()
-      .with_start_ticks (0)
+      .with_start_ticks (units::ticks (0))
       .with_scale (
         utils::make_qobject_unique<dsp::MusicalScale> (
           dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A))
@@ -332,7 +335,7 @@ Project::add_default_tracks ()
         auto marker_name = fmt::format ("[{}]", QObject::tr ("start"));
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
-            .with_start_ticks (0)
+            .with_start_ticks (units::ticks (0))
             .with_name (
               utils::Utf8String::from_utf8_encoded_string (marker_name)
                 .to_qstring ())
@@ -347,7 +350,7 @@ Project::add_default_tracks ()
           { .bar = 129, .beat = 1, .sixteenth = 1, .tick = 0 });
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
-            .with_start_ticks (pos.in (units::ticks))
+            .with_start_ticks (pos)
             .with_name (
               utils::Utf8String::from_utf8_encoded_string (marker_name)
                 .to_qstring ())

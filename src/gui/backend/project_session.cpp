@@ -8,6 +8,7 @@
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
+#include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
@@ -86,10 +87,25 @@ ProjectSession::ProjectSession (
       return ui_state_->find_audio_input_selection (uuid);
     });
 
+  project_->set_midi_input_selection_provider (
+    [this] (
+      const structure::tracks::Track::Uuid &uuid) -> dsp::MidiInputSelection * {
+      return ui_state_->find_midi_input_selection (uuid);
+    });
+
+  auto recalc_graph = [this] {
+    project_->engine ()->graph_dispatcher ().recalc_graph (false);
+  };
   QObject::connect (
     ui_state_.get (),
     &structure::project::ProjectUiState::audioInputSelectionChanged, this,
-    [this] { project_->engine ()->graph_dispatcher ().recalc_graph (false); });
+    recalc_graph);
+  QObject::connect (
+    ui_state_.get (),
+    &structure::project::ProjectUiState::midiInputDeviceChanged, this,
+    recalc_graph);
+
+  wire_midi_input_selections_to_tracks ();
 
   recording_coordinator_ =
     utils::make_qobject_unique<controllers::RecordingCoordinator> (this);
@@ -103,19 +119,37 @@ ProjectSession::ProjectSession (
     [coordinator] (
       const structure::tracks::Track::Uuid &track_id,
       units::sample_t timeline_position, const dsp::ITransport &transport,
-      const dsp::MidiEventVector * midi_events,
+      std::optional<std::span<const dsp::MidiEvent>> midi_events,
       std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
-        stereo_ports) {
-      auto * session = coordinator->session_for_track (track_id);
-      if (session == nullptr)
-        return;
-
-      if (stereo_ports.has_value ())
-        {
-          session->write_samples (
-            timeline_position, transport.recording_enabled (),
-            stereo_ports->first, stereo_ports->second);
-        }
+                          stereo_ports,
+      units::sample_u32_t nframes) {
+      auto session = coordinator->session_for_track (track_id);
+      std::visit (
+        utils::overload{
+          [] (std::monostate) { },
+          [&] (controllers::AudioRecordingSession * s) {
+            if (stereo_ports.has_value ())
+              {
+                assert (
+                  stereo_ports->first.size ()
+                    == nframes.in<size_t> (units::samples)
+                  && stereo_ports->second.size ()
+                       == nframes.in<size_t> (units::samples));
+                s->write (
+                  timeline_position, transport.recording_enabled (),
+                  stereo_ports->first, stereo_ports->second);
+              }
+          },
+          [&] (controllers::MidiRecordingSession * s) {
+            if (midi_events.has_value ())
+              {
+                s->write (
+                  timeline_position, transport.recording_enabled (),
+                  *midi_events, nframes);
+              }
+          },
+        },
+        session);
     });
 
   auto * collection = project_->tracklist ()->collection ();
@@ -130,12 +164,17 @@ ProjectSession::ProjectSession (
       if (armed)
         {
           static constexpr auto kDefaultMaxBlockLength = units::samples (8192u);
-          auto block_length = project_->engine ()->block_length ();
+          auto       block_length = project_->engine ()->block_length ();
+          const auto session_type =
+            (track->input_signal_type () == dsp::PortType::Midi)
+              ? controllers::RecordingCoordinator::SessionType::Midi
+              : controllers::RecordingCoordinator::SessionType::Audio;
           coordinator_ptr->arm_track (
             track->get_uuid (),
             block_length > units::samples (0u)
               ? block_length
-              : kDefaultMaxBlockLength);
+              : kDefaultMaxBlockLength,
+            session_type);
         }
       else
         {
@@ -162,41 +201,109 @@ ProjectSession::ProjectSession (
       coordinator->prepare_for_processing (units::samples (block_length));
     });
 
+  auto get_lane_info =
+    [project_ptr = QPointer<structure::project::Project> (project_.get ())] (
+      structure::tracks::TrackUuid track_id, units::sample_t start_position,
+      size_t lane_index)
+    -> std::optional<
+      std::tuple<structure::tracks::Track *, size_t, units::precise_tick_t>> {
+    if (project_ptr.isNull ())
+      return std::nullopt;
+    auto * track = project_ptr->tracklist ()->get_track (track_id);
+    if (track == nullptr)
+      return std::nullopt;
+    assert (!track->lanes ()->lanes ().empty ());
+    const auto actual_lane_idx =
+      std::max (lane_index, track->lanes ()->lanes ().size () - 1);
+    track->lanes ()->create_missing_lanes (actual_lane_idx);
+    const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
+      units::precise_sample_t (start_position));
+    return std::tuple{ track, actual_lane_idx, start_ticks };
+  };
+
   recording_materializer_ = utils::make_qobject_unique<
     controllers::RecordingMaterializer> (
     *recording_coordinator_, *undo_stack_,
-    [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
-       arranger_object_creator_.get ()),
-     project_ptr = QPointer<structure::project::Project> (project_.get ())] (
-      structure::tracks::TrackUuid track_id, units::sample_t start_position,
-      const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
-      -> controllers::RecordingMaterializer::RegionCreationResult {
-      if (creator_ptr.isNull () || project_ptr.isNull ())
-        return std::nullopt;
-
-      auto * track = project_ptr->tracklist ()->get_track (track_id);
-      if (track == nullptr)
-        return std::nullopt;
-
-      assert (!track->lanes ()->lanes ().empty ());
-
-      const auto actual_lane_idx =
-        std::max (lane_index, track->lanes ()->lanes ().size () - 1);
-      track->lanes ()->create_missing_lanes (actual_lane_idx);
-      auto * lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
-
-      const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
-        units::precise_sample_t (start_position));
-
-      const auto clip_name = utils::Utf8String::from_qstring (
-        QObject::tr ("Recording %1").arg (track->name ()));
-
-      auto region_ref = creator_ptr->add_audio_region_for_recording (
-        *track, *lane, initial_frames, clip_name, start_ticks.in (units::ticks));
-
-      return controllers::RecordingMaterializer::CreatedRegion{
-        std::move (region_ref), actual_lane_idx
-      };
+    controllers::RecordingMaterializer::ArrangerObjectCreators{
+      .audio_region =
+        [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
+           arranger_object_creator_.get ()),
+         get_lane_info] (
+          structure::tracks::TrackUuid track_id, units::sample_t start_position,
+          const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
+        -> controllers::RecordingMaterializer::RegionCreationResult {
+        if (creator_ptr.isNull ())
+          return std::nullopt;
+        auto info = get_lane_info (track_id, start_position, lane_index);
+        if (!info.has_value ())
+          return std::nullopt;
+        auto [track, actual_lane_idx, start_ticks] = *info;
+        auto *     lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
+        const auto clip_name = utils::Utf8String::from_qstring (
+          QObject::tr ("Recording %1").arg (track->name ()));
+        auto region_ref = creator_ptr->add_audio_region_for_recording (
+          *track, *lane, initial_frames, clip_name, start_ticks);
+        return controllers::RecordingMaterializer::CreatedRegion{
+          std::move (region_ref), actual_lane_idx
+        };
+      },
+      .midi_region =
+        [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
+           arranger_object_creator_.get ()),
+         get_lane_info] (
+          structure::tracks::TrackUuid track_id, units::sample_t start_position,
+          size_t lane_index)
+        -> controllers::RecordingMaterializer::RegionCreationResult {
+        if (creator_ptr.isNull ())
+          return std::nullopt;
+        auto info = get_lane_info (track_id, start_position, lane_index);
+        if (!info.has_value ())
+          return std::nullopt;
+        auto [track, actual_lane_idx, start_ticks] = *info;
+        auto * lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
+        auto   region_ref = creator_ptr->add_midi_region_for_recording (
+          *track, *lane, start_ticks);
+        return controllers::RecordingMaterializer::CreatedRegion{
+          std::move (region_ref), actual_lane_idx
+        };
+      },
+      .midi_note =
+        [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
+           arranger_object_creator_.get ()),
+         project_ptr = QPointer<structure::project::Project> (project_.get ())] (
+          structure::arrangement::MidiRegion &region,
+          units::sample_t start_position, units::sample_t end_position,
+          int pitch, int velocity, int channel) {
+          if (creator_ptr.isNull () || project_ptr.isNull ())
+            return;
+          const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
+            units::precise_sample_t (start_position));
+          const auto end_ticks = project_ptr->tempo_map ().samples_to_tick (
+            units::precise_sample_t (end_position));
+          auto * note = creator_ptr->addMidiNote (
+            &region, start_ticks.in (units::ticks), pitch);
+          if (note != nullptr)
+            {
+              note->setVelocity (velocity);
+              note->setMidiChannel (channel);
+              note->bounds ()->length ()->setTicks (
+                end_ticks.in (units::ticks) -start_ticks.in (units::ticks));
+            }
+        },
+      .midi_control_event =
+        [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
+           arranger_object_creator_.get ()),
+         project_ptr = QPointer<structure::project::Project> (project_.get ())] (
+          structure::arrangement::MidiRegion &region, units::sample_t position,
+          structure::arrangement::MidiControlEvent::EventType type, int channel,
+          int controller, int value) {
+          if (creator_ptr.isNull () || project_ptr.isNull ())
+            return;
+          const auto ticks = project_ptr->tempo_map ().samples_to_tick (
+            units::precise_sample_t (position));
+          creator_ptr->add_midi_control_event (
+            region, ticks, type, channel, controller, value);
+        },
     },
     [&settings = app_settings_] () {
       using controllers::recording::RecordingMode;
@@ -452,6 +559,38 @@ ProjectSession::saveAs (const QString &path)
   QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
 
   return wrapper;
+}
+
+void
+ProjectSession::wire_midi_input_selections_to_tracks ()
+{
+  auto wire_track = [this] (structure::tracks::Track * track) {
+    if (track == nullptr || track->input_signal_type () != dsp::PortType::Midi)
+      return;
+    auto * processor = track->get_track_processor ();
+    if (processor == nullptr)
+      return;
+    auto * selection = ui_state_->find_midi_input_selection (track->get_uuid ());
+    if (selection == nullptr)
+      return;
+    processor->set_hw_midi_channel (selection->midiChannel ());
+    QObject::connect (
+      selection, &dsp::MidiInputSelection::midiChannelChanged, processor,
+      [processor, selection] () {
+        processor->set_hw_midi_channel (selection->midiChannel ());
+      });
+  };
+
+  auto * collection = project_->tracklist ()->collection ();
+  for (size_t i = 0; i < collection->track_count (); ++i)
+    wire_track (collection->get_track_at_index (i));
+
+  QObject::connect (
+    collection, &structure::tracks::TrackCollection::rowsInserted, this,
+    [collection, wire_track] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        wire_track (collection->get_track_at_index (i));
+    });
 }
 
 } // namespace zrythm::gui

@@ -144,8 +144,6 @@ Track::make_track_processor (
   auto caps = TrackProcessor::Capabilities{};
   if (has_piano_roll () || is_chord ())
     caps |= TrackProcessor::Capabilities::PianoRoll;
-  if (has_piano_roll ())
-    caps |= TrackProcessor::Capabilities::MidiCC;
   if (is_audio ())
     caps |= TrackProcessor::Capabilities::AudioTrack;
   if (ENUM_BITSET_TEST (features_, TrackFeatures::Recording))
@@ -158,11 +156,12 @@ Track::make_track_processor (
       internal_recording_cb =
         [this, cb] (
           units::sample_t timeline_position, const dsp::ITransport &transport_ref,
-          const dsp::MidiEventVector *                       midi_events,
-          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports) {
+          std::optional<std::span<const dsp::MidiEvent>>     midi_events,
+          std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
+          units::sample_u32_t                                nframes) {
           cb (
             get_uuid (), timeline_position, transport_ref, midi_events,
-            std::move (stereo_ports));
+            std::move (stereo_ports), nframes);
         };
     }
 

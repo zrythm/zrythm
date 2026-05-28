@@ -83,7 +83,8 @@ JuceHardwareAudioInterface::remove_audio_callback (IAudioCallback * callback)
   assert (callback != nullptr);
 
   auto it = callback_adapters_.find (callback);
-  assert (it != callback_adapters_.end ());
+  if (it == callback_adapters_.end ())
+    return;
 
   device_manager_->removeAudioCallback (it->second.get ());
   callback_adapters_.erase (it);

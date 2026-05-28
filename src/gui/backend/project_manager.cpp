@@ -177,7 +177,7 @@ ProjectManager::create_default (
         auto   prj = utils::make_qobject_unique<structure::project::Project> (
           app_settings_,
           [project_dir_path] (bool for_backup) { return project_dir_path; },
-          zapp->hw_audio_interface (),
+          zapp->hw_audio_interface (), *zapp->deviceManager (),
           zapp->pluginManager ()->get_format_manager (),
           [this] (plugins::Plugin &plugin) {
             return create_window_for_plugin (plugin);
@@ -354,7 +354,7 @@ ProjectManager::loadProject (const QString &filepath)
               auto prj = utils::make_qobject_unique<structure::project::Project> (
                 app_settings_,
                 [project_dir] (bool /*for_backup*/) { return project_dir; },
-                zapp->hw_audio_interface (),
+                zapp->hw_audio_interface (), *zapp->deviceManager (),
                 zapp->pluginManager ()->get_format_manager (),
                 [this] (plugins::Plugin &plugin) {
                   return create_window_for_plugin (plugin);

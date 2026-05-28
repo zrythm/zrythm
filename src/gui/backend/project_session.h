@@ -130,6 +130,14 @@ Q_SIGNALS:
   void projectDirectoryChanged (const QString &directory);
 
 private:
+  /**
+   * @brief Wires MIDI input selection channel changes to track processors.
+   *
+   * Iterates existing tracks and connects to TrackCollection::rowsInserted
+   * to handle tracks added later.
+   */
+  void wire_midi_input_selections_to_tracks ();
+
   utils::AppSettings &app_settings_;
 
   // Project title and directory

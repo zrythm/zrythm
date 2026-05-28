@@ -25,6 +25,9 @@ class MidiNote : public ArrangerObject
   Q_PROPERTY (int pitch READ pitch WRITE setPitch NOTIFY pitchChanged)
   Q_PROPERTY (
     int velocity READ velocity WRITE setVelocity NOTIFY velocityChanged)
+  Q_PROPERTY (
+    int midiChannel READ midiChannel WRITE setMidiChannel NOTIFY
+      midiChannelChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -81,6 +84,19 @@ public:
       }
   }
   Q_SIGNAL void velocityChanged (int ivelocity);
+
+  int  midiChannel () const { return static_cast<int> (midi_channel_); }
+  void setMidiChannel (int ichannel)
+  {
+    ichannel = std::clamp (ichannel, 0, 15);
+    const auto channel = static_cast<uint8_t> (ichannel);
+    if (midi_channel_ != channel)
+      {
+        midi_channel_ = channel;
+        Q_EMIT midiChannelChanged (ichannel);
+      }
+  }
+  Q_SIGNAL void midiChannelChanged (int ichannel);
 
   // ========================================================================
 
@@ -145,6 +161,7 @@ private:
 
   static constexpr auto kVelocityKey = "velocity"sv;
   static constexpr auto kPitchKey = "pitch"sv;
+  static constexpr auto kChannelKey = "midiChannel"sv;
   friend void           to_json (nlohmann::json &j, const MidiNote &note);
   friend void           from_json (const nlohmann::json &j, MidiNote &note);
 
@@ -155,7 +172,15 @@ private:
   /** The note/pitch, (0-127). */
   std::uint8_t pitch_{ 60 };
 
-  BOOST_DESCRIBE_CLASS (MidiNote, (ArrangerObject), (), (), (velocity_, pitch_))
+  /** MIDI channel (0-15). */
+  std::uint8_t midi_channel_{ 0 };
+
+  BOOST_DESCRIBE_CLASS (
+    MidiNote,
+    (ArrangerObject),
+    (),
+    (),
+    (velocity_, pitch_, midi_channel_))
 };
 
 }

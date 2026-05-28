@@ -63,7 +63,7 @@ ColumnLayout {
 
       property Track track: null
 
-      Layout.fillHeight: false
+      Layout.fillHeight: true
       Layout.fillWidth: true
       active: track !== null
       visible: tabBar.currentIndex === 0 && active
@@ -101,7 +101,7 @@ ColumnLayout {
     Loader {
       id: pluginInspectorLoader
 
-      Layout.fillHeight: false
+      Layout.fillHeight: true
       Layout.fillWidth: true
       active: root.selectedPlugin !== null
       visible: tabBar.currentIndex === 1 && active

@@ -7,9 +7,10 @@
 #include <chrono>
 #include <memory>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
-#include "controllers/audio_recording_session.h"
+#include "controllers/recording_session.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <QObject>
@@ -20,8 +21,9 @@ namespace zrythm::controllers
 /**
  * @brief Orchestrates the recording lifecycle across all armed tracks.
  *
- * Owns per-track AudioRecordingSession objects and runs a periodic timer that
- * drains recorded audio from each session's ring buffer for region creation.
+ * Owns per-track recording sessions (audio or MIDI) and runs a periodic timer
+ * that drains recorded data from each session's ring buffer for region
+ * creation.
  *
  * @section thread_safety Thread Safety
  *
@@ -54,14 +56,25 @@ public:
 
   Q_DISABLE_COPY_MOVE (RecordingCoordinator)
 
+  enum class SessionType : std::uint8_t
+  {
+    Audio,
+    Midi,
+  };
+
+  using SessionHandle =
+    std::variant<std::monostate, AudioRecordingSession *, MidiRecordingSession *>;
+
   /**
-   * @brief Arms a track for recording. Creates an AudioRecordingSession.
+   * @brief Arms a track for recording.
    *
-   * Must be called from the non-RT thread.
+   * Creates a session of the given type. A track can only have one session
+   * at a time. Must be called from the non-RT thread.
    */
   void arm_track (
     structure::tracks::TrackUuid track_id,
-    units::sample_u32_t          max_block_length) [[clang::blocking]];
+    units::sample_u32_t          max_block_length,
+    SessionType                  type) [[clang::blocking]];
 
   /**
    * @brief Disarms a track. Moves session to pending deletion.
@@ -105,9 +118,9 @@ public:
    * @brief Gets the session for a track (for RT callback access).
    *
    * Safe to call from multiple RT threads concurrently.
-   * Returns nullptr if no session exists.
+   * Returns std::monostate if no session exists.
    */
-  [[nodiscard]] AudioRecordingSession *
+  [[nodiscard]] SessionHandle
   session_for_track (structure::tracks::TrackUuid track_id) const noexcept
     [[clang::nonblocking]];
 
@@ -134,6 +147,16 @@ Q_SIGNALS:
     std::vector<RecordingAudioPacket> packets);
 
   /**
+   * @brief Emitted when recorded MIDI data has been drained from a session.
+   *
+   * Connected consumers (e.g. RecordingMaterializer) use this to create
+   * MidiRegion objects from the recorded MIDI packets.
+   */
+  void midiDataReady (
+    structure::tracks::TrackUuid     track_id,
+    std::vector<RecordingMidiPacket> packets);
+
+  /**
    * @brief Emitted when a recording take has been finalized.
    *
    * Fires from finalizeAllSessions() after all pending audio data is drained
@@ -145,26 +168,35 @@ Q_SIGNALS:
   void recordingSessionEnded ();
 
 private:
-  using Snapshot =
-    std::unordered_map<structure::tracks::TrackUuid, AudioRecordingSession *>;
+  struct RtSnapshot
+  {
+    std::unordered_map<structure::tracks::TrackUuid, AudioRecordingSession *>
+      audio;
+    std::unordered_map<structure::tracks::TrackUuid, MidiRecordingSession *> midi;
+  };
 
-  using DrainResult = std::vector<
+  using AudioDrainResult = std::vector<
     std::pair<structure::tracks::TrackUuid, std::vector<RecordingAudioPacket>>>;
+
+  using MidiDrainResult = std::vector<
+    std::pair<structure::tracks::TrackUuid, std::vector<RecordingMidiPacket>>>;
 
   void publish_snapshot ();
 
-  bool drain_pending_deletion (DrainResult &ready);
+  bool drain_pending_deletion (
+    AudioDrainResult &audio_ready,
+    MidiDrainResult  &midi_ready);
 
   // TODO: Replace this raw atomic pointer with a proper multi-reader
   // realtime-safe container.  The current approach works but is ugly:
-  // publish_snapshot() heap-allocates a new Snapshot, atomically swaps the
-  // pointer, and defers the old Snapshot's deletion to
+  // publish_snapshot() heap-allocates a new RtSnapshot, atomically swaps the
+  // pointer, and defers the old RtSnapshot's deletion to
   // pending_snapshot_deletion_.  Those deferred snapshots are freed in
   // process_pending(), which runs at least kDrainInterval (100 ms) after
   // the last publish — long after any RT thread has finished reading the
   // old snapshot.  The initial snapshot (created in the constructor) and
   // any remaining pending snapshots are freed in the destructor.
-  std::atomic<Snapshot *> rt_snapshot_{ nullptr };
+  std::atomic<RtSnapshot *> rt_snapshot_{ nullptr };
 
   // Two-phase deferred deletion for retired snapshots:
   //   1. publish_snapshot() pushes the old snapshot into
@@ -174,8 +206,8 @@ private:
   //      signals.  Each retired snapshot therefore survives at least two
   //      drain intervals (~200 ms), guaranteeing every RT reader has moved
   //      on to a newer snapshot before the old one is freed.
-  std::vector<std::unique_ptr<Snapshot>> pending_snapshot_deletion_;
-  std::vector<std::unique_ptr<Snapshot>> old_snapshots_;
+  std::vector<std::unique_ptr<RtSnapshot>> pending_snapshot_deletion_;
+  std::vector<std::unique_ptr<RtSnapshot>> old_snapshots_;
 
   struct Impl;
   std::unique_ptr<Impl> impl_;

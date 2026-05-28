@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_integration_tests
-  audio_recording_pipeline_test.cpp
   bundled_plugins_scan_test.cpp
   plugin_integration_test.cpp
   project_serialization_roundtrip_test.cpp
+  recording_pipeline_test.cpp
 )
 
 set_target_properties(zrythm_integration_tests PROPERTIES

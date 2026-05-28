@@ -348,11 +348,11 @@ MidiEventVector::add_note_off (
   midi_byte_t         note_pitch,
   units::sample_u32_t time)
 {
-  z_return_if_fail (channel > 0);
+  assert (channel >= 1 && channel <= 16);
   MidiEvent ev (
     (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_OFF | (channel - 1)), note_pitch,
     90, time);
-  z_return_if_fail (utils::midi::midi_is_note_off (ev.raw_buffer_));
+  assert (utils::midi::midi_is_note_off (ev.raw_buffer_));
   push_back (ev);
 }
 
@@ -391,6 +391,7 @@ MidiEventVector::add_control_change (
   uint8_t             control,
   units::sample_u32_t time)
 {
+  assert (channel >= 1 && channel <= 16);
   add_simple (
     (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (channel - 1)),
     controller, control, time);
@@ -402,7 +403,7 @@ MidiEventVector::add_pitchbend (
   uint32_t            pitchbend,
   units::sample_u32_t time)
 {
-  z_return_if_fail (pitchbend < 0x4000 && channel > 0);
+  assert (channel >= 1 && channel <= 16 && pitchbend < 0x4000);
 
   MidiEvent ev;
   ev.time_ = time;
@@ -421,7 +422,7 @@ MidiEventVector::add_channel_pressure (
   midi_byte_t         value,
   units::sample_u32_t time)
 {
-  z_return_if_fail (channel > 0);
+  assert (channel >= 1 && channel <= 16);
 
   MidiEvent ev;
   ev.time_ = time;
@@ -491,7 +492,7 @@ MidiEventVector::add_note_on (
   uint8_t             velocity,
   units::sample_u32_t time)
 {
-  z_return_if_fail (channel > 0);
+  assert (channel >= 1 && channel <= 16);
 #if 0
   z_info (fmt::format (
     "ch {}, pitch {}, vel {}, time {}", channel, note_pitch, velocity, time));
@@ -500,7 +501,7 @@ MidiEventVector::add_note_on (
   MidiEvent ev (
     (midi_byte_t) (utils::midi::MIDI_CH1_NOTE_ON | (channel - 1)), note_pitch,
     velocity, time);
-  z_return_if_fail (utils::midi::midi_is_note_on (ev.raw_buffer_));
+  assert (utils::midi::midi_is_note_on (ev.raw_buffer_));
 
   push_back (ev);
 }

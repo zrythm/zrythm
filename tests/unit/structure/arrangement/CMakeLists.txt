@@ -20,6 +20,7 @@ add_executable(zrythm_structure_arrangement_unit_tests
   fadeable_object_test.cpp
   loopable_object_test.cpp
   marker_test.cpp
+  midi_control_event_test.cpp
   midi_note_test.cpp
   midi_region_test.cpp
   piano_roll_test.cpp

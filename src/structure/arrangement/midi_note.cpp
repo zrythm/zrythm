@@ -20,6 +20,9 @@ MidiNote::MidiNote (const dsp::TempoMap &tempo_map, QObject * parent)
     this, &MidiNote::pitchChanged, this, &ArrangerObject::propertiesChanged);
   QObject::connect (
     this, &MidiNote::velocityChanged, this, &ArrangerObject::propertiesChanged);
+  QObject::connect (
+    this, &MidiNote::midiChannelChanged, this,
+    &ArrangerObject::propertiesChanged);
 }
 
 #if 0
@@ -150,6 +153,7 @@ init_from (MidiNote &obj, const MidiNote &other, utils::ObjectCloneType clone_ty
 {
   obj.pitch_ = other.pitch_;
   obj.setVelocity (other.velocity ());
+  obj.setMidiChannel (other.midiChannel ());
   init_from (
     static_cast<ArrangerObject &> (obj),
     static_cast<const ArrangerObject &> (other), clone_type);
@@ -163,6 +167,7 @@ to_json (nlohmann::json &j, const MidiNote &note)
   to_json (j, static_cast<const ArrangerObject &> (note));
   j[MidiNote::kVelocityKey] = note.velocity_;
   j[MidiNote::kPitchKey] = note.pitch_;
+  j[MidiNote::kChannelKey] = note.midi_channel_;
 }
 
 void
@@ -171,5 +176,9 @@ from_json (const nlohmann::json &j, MidiNote &note)
   from_json (j, static_cast<ArrangerObject &> (note));
   j.at (MidiNote::kVelocityKey).get_to (note.velocity_);
   j.at (MidiNote::kPitchKey).get_to (note.pitch_);
+  if (j.contains (MidiNote::kChannelKey))
+    {
+      j.at (MidiNote::kChannelKey).get_to (note.midi_channel_);
+    }
 }
 }

@@ -73,7 +73,8 @@ protected:
         midi_note->bounds ()->length ()->setTicks (50.0); // Note duration
 
         // Add the note to the region
-        region->add_object (note_ref);
+        region->ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::add_object (note_ref);
       }
 
     // Keep a reference to the region
@@ -800,7 +801,8 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMutedNote)
   auto region = create_simple_region ();
 
   // Mute the note in our region
-  auto note_view = region->get_children_view ();
+  auto note_view = region->ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_view ();
   if (!note_view.empty ())
     {
       note_view[0]->mute ()->setMuted (true);

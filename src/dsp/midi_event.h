@@ -194,16 +194,22 @@ public:
     remove_if ([&event] (const MidiEvent &e) { return e == event; });
   }
 
-  void foreach_event (std::function<void (const MidiEvent &)> func) const
+  template <typename Func> void foreach_event (Func &&func) const
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
-    std::ranges::for_each (events_, func);
+    std::ranges::for_each (events_, std::forward<Func> (func));
   }
 
   size_t capacity () const
   {
     const std::lock_guard<crill::spin_mutex> lock (lock_);
     return events_.capacity ();
+  }
+
+  void reserve (size_t new_capacity)
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    events_.reserve (new_capacity);
   }
 
   void print () const;

@@ -36,6 +36,8 @@ public:
   using StereoPortPair = std::pair<std::span<float>, std::span<float>>;
   using ConstStereoPortPair =
     std::pair<std::span<const float>, std::span<const float>>;
+  static constexpr auto midi_in_symbol =
+    std::string_view ("track_processor_midi_in");
 
   /**
    * @brief Function called during processing to fill events.
@@ -59,10 +61,11 @@ public:
    * @param stereo_ports Audio data that should be recorded, if any.
    */
   using RecordingCallbackRT = std::function<void (
-    units::sample_t                    timeline_position,
-    const dsp::ITransport             &transport,
-    const dsp::MidiEventVector *       midi_events,
-    std::optional<ConstStereoPortPair> stereo_ports)>;
+    units::sample_t                                timeline_position,
+    const dsp::ITransport                         &transport,
+    std::optional<std::span<const dsp::MidiEvent>> midi_events,
+    std::optional<ConstStereoPortPair>             stereo_ports,
+    units::sample_u32_t                            nframes)>;
 
   /**
    * @brief Custom logic to use when appending the MIDI input events to the
@@ -97,9 +100,8 @@ public:
   enum class Capabilities : uint8_t
   {
     PianoRoll = 1 << 0,
-    MidiCC = 1 << 1,
-    AudioTrack = 1 << 2,
-    Recording = 1 << 3,
+    AudioTrack = 1 << 1,
+    Recording = 1 << 2,
   };
 
   enum class MonitorMode : uint8_t
@@ -151,8 +153,9 @@ public:
       [] (
         units::sample_t,
         const dsp::ITransport &,
-        const dsp::MidiEventVector *,
-        std::optional<ConstStereoPortPair>) { },
+        std::optional<std::span<const dsp::MidiEvent>>,
+        std::optional<ConstStereoPortPair>,
+        units::sample_u32_t) { },
     QObject * parent = nullptr);
   ~TrackProcessor () override;
 
@@ -215,15 +218,6 @@ public:
   void set_recording_armed (bool armed);
 
   /**
-   * @brief
-   *
-   * @param channel Channel (0-15)
-   * @param control_no Control (0-127)
-   */
-  dsp::ProcessorParameter &
-  get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no);
-
-  /**
    * MIDI in Port.
    *
    * This port is for receiving MIDI signals from an external MIDI source.
@@ -252,15 +246,34 @@ public:
    *
    * This bypasses any MIDI transformations by @ref transform_midi_inputs_func_.
    */
-  dsp::MidiPort &get_piano_roll_port () const
-  {
-    return *get_input_ports ().at (1).get_object_as<dsp::MidiPort> ();
-  }
+  dsp::MidiPort &get_piano_roll_port () const;
+
+  /**
+   * @brief Hardware MIDI input port.
+   *
+   * Receives MIDI events from MidiInputProcessor in the DSP graph.
+   * Channel filtering is applied during processing based on the
+   * hw_midi_channel_ setting.
+   */
+  dsp::MidiPort &get_hw_midi_in_port () const;
 
   arrangement::AudioTimelineDataProvider &timeline_audio_data_provider ();
   arrangement::MidiTimelineDataProvider  &timeline_midi_data_provider ();
 
   ClipPlaybackDataProvider &clip_playback_data_provider ();
+
+  /**
+   * @brief Sets the hardware MIDI input channel filter for this processor.
+   *
+   * Called from the main thread when the user changes the MIDI input channel
+   * for this track. The value is stored in a realtime-safe container and
+   * read during audio processing to filter incoming hardware MIDI events.
+   *
+   * 0 = omni (all channels pass), 1-16 = specific channel.
+   *
+   * @see MidiInputSelection::midiChannel()
+   */
+  void set_hw_midi_channel (int channel);
 
   /**
    * @brief Used to enable or disable MIDI event providers.
@@ -328,21 +341,9 @@ private:
     utils::ObjectCloneType clone_type);
 
   /**
-   * Adds events to midi out based on any changes in MIDI CC control ports.
-   */
-  [[gnu::hot]] void add_events_from_midi_cc_control_ports (
-    dsp::MidiEventVector &events,
-    units::sample_u32_t   local_offset);
-
-  /**
    * @brief Set the cached IDs for various parameters for quick access.
    */
   void set_param_id_caches ();
-
-// TODO
-#if 0
-  void set_midi_mappings ();
-#endif
 
 private:
   const bool         is_midi_;

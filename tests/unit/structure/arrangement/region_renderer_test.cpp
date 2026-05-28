@@ -64,7 +64,7 @@ protected:
     note->bounds ()->length ()->setTicks (length_ticks);
 
     // Add to region
-    midi_region->add_object (note_ref);
+    midi_region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
   }
 
   void setup_audio_region ()
@@ -231,7 +231,9 @@ TEST_F (RegionRendererTest, MutedMidiNoteNotSerialized)
 {
   // Add a note and mute it
   add_midi_note (60, 90, 100, 50);
-  midi_region->get_children_view ()[0]->mute ()->setMuted (true);
+  midi_region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0]
+    ->mute ()
+    ->setMuted (true);
 
   juce::MidiMessageSequence events;
   RegionRenderer::serialize_to_sequence (*midi_region, events);
@@ -295,6 +297,21 @@ TEST_F (RegionRendererTest, SerializeMidiWithoutRegionStart)
   auto note_off_event = events.getEventPointer (1);
   EXPECT_EQ (
     note_off_event->message.getTimeStamp (), 150); // Note position + length
+}
+
+TEST_F (RegionRendererTest, MidiNoteChannelRendered)
+{
+  add_midi_note (60, 90, 50, 30);
+  midi_region->ArrangerObjectOwner<MidiNote>::get_children_view ()[0]
+    ->setMidiChannel (4);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events);
+
+  ASSERT_GE (events.getNumEvents (), 2);
+  EXPECT_EQ (events.getEventPointer (0)->message.getChannel (), 5)
+    << "MIDI channel should be stored value + 1";
+  EXPECT_EQ (events.getEventPointer (1)->message.getChannel (), 5);
 }
 
 // ========== Audio Region Tests ==========
@@ -1665,6 +1682,121 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopStartMidCurve)
     // at 175 ticks
     EXPECT_FLOAT_EQ (values[second_point_in_second_loop], 1.0f);
   }
+}
+
+// ========== MIDI Control Event Rendering Tests ==========
+
+TEST_F (RegionRendererTest, SerializeMidiControlChange)
+{
+  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
+  ev->setControlType (MidiControlEvent::EventType::ControlChange);
+  ev->setChannel (2);
+  ev->setController (74);
+  ev->setValue (100);
+  ev->position ()->setTicks (120);
+  midi_region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
+
+  add_midi_note (60, 90, 100, 50);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events, std::nullopt);
+  events.addTimeToMessages (midi_region->position ()->ticks ());
+
+  // Note on, CC, note off = 3 events
+  EXPECT_EQ (events.getNumEvents (), 3);
+
+  auto cc_event = events.getEventPointer (1);
+  EXPECT_TRUE (cc_event->message.isController ());
+  EXPECT_EQ (cc_event->message.getControllerNumber (), 74);
+  EXPECT_EQ (cc_event->message.getControllerValue (), 100);
+}
+
+TEST_F (RegionRendererTest, SerializeMidiPitchBend)
+{
+  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
+  ev->setControlType (MidiControlEvent::EventType::PitchBend);
+  ev->setChannel (0);
+  ev->setValue (8192);
+  ev->position ()->setTicks (110);
+  midi_region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events, std::nullopt);
+  events.addTimeToMessages (midi_region->position ()->ticks ());
+
+  EXPECT_EQ (events.getNumEvents (), 1);
+
+  auto pb_event = events.getEventPointer (0);
+  EXPECT_TRUE (pb_event->message.isPitchWheel ());
+  EXPECT_EQ (pb_event->message.getPitchWheelValue (), 8192);
+}
+
+TEST_F (RegionRendererTest, SerializeMidiChannelPressure)
+{
+  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
+  ev->setControlType (MidiControlEvent::EventType::ChannelPressure);
+  ev->setChannel (3);
+  ev->setValue (64);
+  ev->position ()->setTicks (130);
+  midi_region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events, std::nullopt);
+  events.addTimeToMessages (midi_region->position ()->ticks ());
+
+  EXPECT_EQ (events.getNumEvents (), 1);
+
+  auto cp_event = events.getEventPointer (0);
+  EXPECT_TRUE (cp_event->message.isChannelPressure ());
+  EXPECT_EQ (cp_event->message.getChannelPressureValue (), 64);
+}
+
+TEST_F (RegionRendererTest, SerializeMidiProgramChange)
+{
+  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
+  ev->setControlType (MidiControlEvent::EventType::ProgramChange);
+  ev->setChannel (0);
+  ev->setValue (42);
+  ev->position ()->setTicks (100);
+  midi_region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events, std::nullopt);
+  events.addTimeToMessages (midi_region->position ()->ticks ());
+
+  EXPECT_EQ (events.getNumEvents (), 1);
+
+  auto pc_event = events.getEventPointer (0);
+  EXPECT_TRUE (pc_event->message.isProgramChange ());
+  EXPECT_EQ (pc_event->message.getProgramChangeNumber (), 42);
+}
+
+TEST_F (RegionRendererTest, SerializeMidiNotesAndControlEventsTogether)
+{
+  add_midi_note (60, 90, 100, 50);
+
+  auto   cc_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto * cc = cc_ref.get_object_as<MidiControlEvent> ();
+  cc->setControlType (MidiControlEvent::EventType::ControlChange);
+  cc->setChannel (0);
+  cc->setController (1);
+  cc->setValue (127);
+  cc->position ()->setTicks (105);
+  midi_region->ArrangerObjectOwner<MidiControlEvent>::add_object (cc_ref);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*midi_region, events, std::nullopt);
+  events.addTimeToMessages (midi_region->position ()->ticks ());
+
+  // Note on, CC, note off = 3 events
+  EXPECT_EQ (events.getNumEvents (), 3);
+  EXPECT_TRUE (events.getEventPointer (0)->message.isNoteOn ());
+  EXPECT_TRUE (events.getEventPointer (1)->message.isController ());
+  EXPECT_TRUE (events.getEventPointer (2)->message.isNoteOff ());
 }
 
 } // namespace zrythm::structure::arrangement
