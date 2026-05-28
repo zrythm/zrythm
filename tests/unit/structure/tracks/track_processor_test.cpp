@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <array>
+
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
@@ -1035,6 +1037,7 @@ TEST_F (TrackProcessorTest, HwMidiInputFilteredEventsReachRecordingCallback)
 {
   int                         channel = 2;
   std::vector<dsp::MidiEvent> recorded_events;
+  recorded_events.reserve (16);
 
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recorded_events] (
@@ -1935,11 +1938,13 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectMidiEventsToCallback)
 
   struct CapturedMidi
   {
-    units::sample_t             timeline_position;
-    std::vector<dsp::MidiEvent> events;
-    units::sample_u32_t         nframes;
+    units::sample_t                timeline_position;
+    std::array<dsp::MidiEvent, 16> events;
+    size_t                         event_count = 0;
+    units::sample_u32_t            nframes;
   };
   std::vector<CapturedMidi> calls;
+  calls.reserve (4);
 
   TrackProcessor::RecordingCallbackRT capture_cb =
     [&] (
@@ -1949,12 +1954,10 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectMidiEventsToCallback)
       units::sample_u32_t nframes) {
       if (midi_events.has_value ())
         {
-          calls.push_back (
-            {
-              timeline_position,
-              { midi_events->begin (), midi_events->end () },
-              nframes
-          });
+          CapturedMidi cm{ timeline_position, {}, 0, nframes };
+          for (const auto &ev : *midi_events)
+            cm.events[cm.event_count++] = ev;
+          calls.push_back (std::move (cm));
         }
     };
 
@@ -2005,7 +2008,7 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectMidiEventsToCallback)
   EXPECT_EQ (call.timeline_position, punch_start);
   EXPECT_EQ (call.nframes, units::samples (256u));
 
-  ASSERT_EQ (call.events.size (), 2u)
+  ASSERT_EQ (call.event_count, 2u)
     << "Only events within punch range [128,384) should be recorded";
 
   EXPECT_EQ (call.events[0].time_, units::samples (72u))

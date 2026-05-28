@@ -23,6 +23,13 @@ protected:
     return positions;
   }
 
+  static juce::MidiBuffer make_preallocated_buffer (int max_events)
+  {
+    juce::MidiBuffer buf;
+    buf.ensureSize (static_cast<size_t> (max_events * 8));
+    return buf;
+  }
+
   MidiDeviceBuffer      buffer_;
   units::sample_rate_t  sample_rate_{ units::sample_rate (48000) };
   static constexpr auto nframes_ = units::samples (256u);
@@ -34,7 +41,7 @@ TEST_F (MidiDeviceBufferTest, PushAndDrainSingleEvent)
   msg.setTimeStamp (1.0);
   buffer_.push (msg);
 
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (1);
   buffer_.drain (output, sample_rate_, nframes_);
 
   EXPECT_EQ (output.getNumEvents (), 1);
@@ -51,7 +58,7 @@ TEST_F (MidiDeviceBufferTest, PushAndDrainMultipleEvents)
       buffer_.push (msg);
     }
 
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (num_events);
   buffer_.drain (output, sample_rate_, nframes_);
 
   EXPECT_EQ (output.getNumEvents (), num_events);
@@ -73,7 +80,7 @@ TEST_F (MidiDeviceBufferTest, TimestampsRelativeToFirstEvent)
   msg3.setTimeStamp (1.0 + 200.0 / sr);
   buffer_.push (msg3);
 
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (3);
   buffer_.drain (output, sample_rate_, nframes_);
 
   ASSERT_EQ (output.getNumEvents (), 3);
@@ -92,7 +99,7 @@ TEST_F (MidiDeviceBufferTest, TimestampsClampedToBlockRange)
   msg2.setTimeStamp (1.0 + 1000.0 / sr);
   buffer_.push (msg2);
 
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (2);
   buffer_.drain (output, sample_rate_, nframes_);
 
   ASSERT_EQ (output.getNumEvents (), 2);
@@ -107,7 +114,7 @@ TEST_F (MidiDeviceBufferTest, ClearDiscardsAllEvents)
 
   buffer_.clear ();
 
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (1);
   buffer_.drain (output, sample_rate_, nframes_);
 
   EXPECT_EQ (output.getNumEvents (), 0);
@@ -115,7 +122,7 @@ TEST_F (MidiDeviceBufferTest, ClearDiscardsAllEvents)
 
 TEST_F (MidiDeviceBufferTest, DrainOnEmptyBufferIsNoOp)
 {
-  juce::MidiBuffer output;
+  auto output = make_preallocated_buffer (1);
   buffer_.drain (output, sample_rate_, nframes_);
 
   EXPECT_EQ (output.getNumEvents (), 0);
@@ -127,11 +134,11 @@ TEST_F (MidiDeviceBufferTest, SecondDrainReturnsNoEvents)
   msg.setTimeStamp (1.0);
   buffer_.push (msg);
 
-  juce::MidiBuffer output1;
+  auto output1 = make_preallocated_buffer (1);
   buffer_.drain (output1, sample_rate_, nframes_);
   EXPECT_EQ (output1.getNumEvents (), 1);
 
-  juce::MidiBuffer output2;
+  auto output2 = make_preallocated_buffer (1);
   buffer_.drain (output2, sample_rate_, nframes_);
   EXPECT_EQ (output2.getNumEvents (), 0);
 }
@@ -156,7 +163,7 @@ TEST_F (MidiDeviceBufferTest, ConcurrentPushAndDrainPreservesAllEvents)
   bool all_batches_monotonic = true;
   while (!done.load (std::memory_order_acquire))
     {
-      juce::MidiBuffer output;
+      auto output = make_preallocated_buffer (num_events);
       buffer_.drain (output, sample_rate_, nframes_);
       total_drained += output.getNumEvents ();
       int prev_pos = -1;
@@ -168,7 +175,7 @@ TEST_F (MidiDeviceBufferTest, ConcurrentPushAndDrainPreservesAllEvents)
         }
     }
 
-  juce::MidiBuffer final_output;
+  auto final_output = make_preallocated_buffer (num_events);
   buffer_.drain (final_output, sample_rate_, nframes_);
   total_drained += final_output.getNumEvents ();
   int prev_pos = -1;
@@ -192,7 +199,8 @@ TEST_F (MidiDeviceBufferTest, PushBeyondCapacityDropsExcessEvents)
       buffer_.push (msg);
     }
 
-  juce::MidiBuffer output;
+  auto output =
+    make_preallocated_buffer (static_cast<int> (MidiDeviceBuffer::kCapacity));
   buffer_.drain (output, sample_rate_, nframes_);
 
   EXPECT_EQ (
