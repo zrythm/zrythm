@@ -84,6 +84,39 @@
             ],
             "additionalItems": false
           }
+        },
+        "midiInputSelections": {
+          "type": "array",
+          "description": "MIDI hardware input selections per track (pruned to live tracks on save)",
+          "items": {
+            "type": "array",
+            "items": [
+              {
+                "$ref": "#/definitions/uuid",
+                "description": "Track UUID"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "deviceIdentifier": {
+                    "type": "string",
+                    "description": "MIDI device identifier (empty = no input)"
+                  },
+                  "midiChannel": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 16,
+                    "description": "MIDI channel (0 = all channels, 1-16 = specific channel)"
+                  }
+                },
+                "required": [
+                  "deviceIdentifier",
+                  "midiChannel"
+                ]
+              }
+            ],
+            "additionalItems": false
+          }
         }
       }
     },

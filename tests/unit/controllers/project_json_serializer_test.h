@@ -18,6 +18,7 @@
 #include "utils/object_registry.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
+#include "helpers/mock_hardware_midi_interface.h"
 #include "helpers/mock_settings_backend.h"
 #include "helpers/project_json_comparators.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -215,13 +216,13 @@ protected:
     };
 
     auto project = std::make_unique<structure::project::Project> (
-      *app_settings, path_provider, *hw_interface, plugin_format_manager,
-      window_factory, *metronome, *monitor_fader);
+      *app_settings, path_provider, *hw_interface, midi_interface_,
+      plugin_format_manager, window_factory, *metronome, *monitor_fader);
 
     project->install_recording_callback (
       [] (
         const structure::tracks::Track::Uuid &, units::sample_t,
-        const dsp::ITransport &, const dsp::MidiEventVector *,
+        const dsp::ITransport &, std::optional<std::span<const dsp::MidiEvent>>,
         std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
         units::sample_u32_t) { });
 
@@ -266,6 +267,7 @@ protected:
   std::unique_ptr<QTemporaryDir>                  temp_dir_obj;
   std::filesystem::path                           project_dir;
   std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface;
+  test_helpers::MockHardwareMidiInterface         midi_interface_;
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager;
   test_helpers::MockSettingsBackend *             mock_backend_ptr{};
   std::unique_ptr<utils::AppSettings>             app_settings;

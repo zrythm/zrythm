@@ -10,8 +10,6 @@
 #include "structure/tracks/clip_playback_data_provider.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/float_ranges.h"
-#include "utils/midi.h"
-#include "utils/mpmc_queue.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 #include "utils/views.h"
@@ -19,21 +17,17 @@
 #include <boost/container/static_vector.hpp>
 #include <farbot/RealtimeObject.hpp>
 #include <fmt/format.h>
-#include <scn/scan.h>
 
 namespace zrythm::structure::tracks
 {
 
-static constexpr auto midi_cc_id_format_str = "midi_controller_ch{}_{}"sv;
-static constexpr auto pitch_bend_id_format_str = "ch{}_pitch_bend"sv;
-static constexpr auto poly_key_pressure_id_format_str =
-  "ch{}_poly_key_pressure"sv;
-static constexpr auto channel_pressure_id_format_str = "ch{}_channel_pressure"sv;
 static constexpr auto mono_param_id = "track_processor_mono_toggle"sv;
 static constexpr auto input_gain_param_id = "track_processor_input_gain"sv;
 static constexpr auto output_gain_param_id = "track_processor_output_gain"sv;
 static constexpr auto monitor_audio_param_id = "track_processor_monitor_audio"sv;
 static constexpr auto recording_param_id = "track_processor_record"sv;
+static constexpr auto hw_midi_in_symbol = "track_processor_hw_midi_in"sv;
+static constexpr auto piano_roll_symbol = "track_processor_piano_roll"sv;
 
 struct TrackProcessor::Impl
 {
@@ -65,55 +59,6 @@ struct TrackProcessor::Impl
 
   std::optional<dsp::ProcessorParameter::Uuid> recording_id_;
 
-#if 0
-  /** Mappings to each CC port. */
-  std::unique_ptr<engine::session::MidiMappings> cc_mappings_;
-#endif
-
-  /**
-   * @brief Runtime caches of MIDI CC and automation controls.
-   */
-  struct MidiCcCaches
-  {
-    /** MIDI CC control ports, 16 channels x 128 controls. */
-    std::array<dsp::ProcessorParameter::Uuid, static_cast<size_t> (16) * 128>
-      midi_cc_ids_;
-
-    using SixteenPortUuidArray = std::array<dsp::ProcessorParameter::Uuid, 16>;
-
-    /** Pitch bend x 16 channels. */
-    SixteenPortUuidArray pitch_bend_ids_;
-
-    /**
-     * Polyphonic key pressure (aftertouch).
-     *
-     * This message is most often sent by pressing down on the key after it
-     * "bottoms out".
-     *
-     * FIXME this is completely wrong. It's supposed to be per-key, so 128 x
-     * 16 ports.
-     */
-    SixteenPortUuidArray poly_key_pressure_ids_;
-
-    /**
-     * Channel pressure (aftertouch).
-     *
-     * This message is different from polyphonic after-touch - sends the
-     * single greatest pressure value (of all the current depressed keys).
-     */
-    SixteenPortUuidArray channel_pressure_ids_;
-
-    /**
-     * A queue of MIDI CC ports whose values have been recently updated.
-     *
-     * This is used during processing to avoid checking every single MIDI CC
-     * port for changes.
-     */
-    MPMCQueue<dsp::ProcessorParameter *> updated_midi_automatable_ports_;
-  };
-
-  std::unique_ptr<MidiCcCaches> midi_cc_caches_;
-
   // Processing caches
   struct ProcessingCaches
   {
@@ -122,6 +67,7 @@ struct TrackProcessor::Impl
     dsp::MidiPort *               midi_in_rt_{};
     dsp::MidiPort *               midi_out_rt_{};
     dsp::MidiPort *               piano_roll_rt_{};
+    dsp::MidiPort *               hw_midi_in_rt_{};
     dsp::ProcessorParameter *     mono_param_{};
     dsp::ProcessorParameter *     input_gain_{};
     dsp::ProcessorParameter *     output_gain_{};
@@ -155,16 +101,40 @@ struct TrackProcessor::Impl
   std::atomic<ActiveMidiEventProviders> active_midi_event_providers_;
   std::atomic<ActiveAudioProviders>     active_audio_providers_;
 
+  /**
+   * @brief Hardware MIDI input channel filter (0 = omni, 1-16 = specific).
+   *
+   * Written from the main thread via @ref set_hw_midi_channel,
+   * read from the audio thread during processing to filter incoming
+   * hardware MIDI events.
+   */
+  farbot::RealtimeObject<int, farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    hw_midi_channel_{ 0 };
+
+  /**
+   * @brief Temporary buffer for preparing MIDI events before passing to the
+   * recording callback.
+   *
+   * Events are copied from @ref active_events_, shifted to be relative to the
+   * recording range start, and filtered to exclude events outside the range.
+   * Reused each cycle to avoid allocation in the audio thread.
+   */
+  std::vector<dsp::MidiEvent> recording_events_buf_;
+
   static_assert (decltype (active_midi_event_providers_)::is_always_lock_free);
 
   /**
-   * Splits the cycle and handles recording for each slot.
+   * @brief Splits the cycle and handles recording for each slot.
+   *
+   * @param midi_recording_buf Temporary buffer used to prepare MIDI events
+   *   for the recording callback. Reused each cycle to avoid allocation.
    */
   static void handle_recording (
-    const dsp::graph::ProcessBlockInfo &time_nfo,
-    const dsp::ITransport              &transport,
-    const ProcessingCaches             &processing_caches,
-    const RecordingCallbackRT          &recording_cb) noexcept;
+    const dsp::graph::ProcessBlockInfo        &time_nfo,
+    const dsp::ITransport                     &transport,
+    const ProcessingCaches                    &processing_caches,
+    std::vector<dsp::MidiEvent>               &midi_recording_buf,
+    const TrackProcessor::RecordingCallbackRT &recording_cb) noexcept;
 };
 
 TrackProcessor::~TrackProcessor () = default;
@@ -221,7 +191,8 @@ TrackProcessor::TrackProcessor (
             registry (), u8"TP MIDI in", dsp::PortFlow::Input));
         auto * midi_in = &get_midi_in_port ();
         midi_in->set_full_designation_provider (this);
-        midi_in->set_symbol (u8"track_processor_midi_in");
+        midi_in->set_symbol (
+          utils::Utf8String::from_utf8_encoded_string (midi_in_symbol));
 
         add_output_port (
           utils::create_object<dsp::MidiPort> (
@@ -234,72 +205,25 @@ TrackProcessor::TrackProcessor (
       /* set up piano roll port */
       if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
         {
-          add_input_port (
-            utils::create_object<dsp::MidiPort> (
-              registry (), u8"TP Piano Roll", dsp::PortFlow::Input));
-          auto &piano_roll = get_piano_roll_port ();
-          piano_roll.set_full_designation_provider (this);
-          piano_roll.set_symbol (u8"track_processor_piano_roll");
+          auto piano_roll_ref = utils::create_object<dsp::MidiPort> (
+            registry (), u8"TP Piano Roll", dsp::PortFlow::Input);
+          add_input_port (piano_roll_ref);
+          auto * piano_roll = piano_roll_ref.get_object_as<dsp::MidiPort> ();
+          piano_roll->set_full_designation_provider (this);
+          piano_roll->set_symbol (u8"track_processor_piano_roll");
         }
 
-      if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
-        {
-          for (const auto i : std::views::iota (0, 16))
-            {
-              /* starting from 1 */
-              int channel = i + 1;
-
-              for (const auto j : std::views::iota (0, 128))
-                {
-                  add_parameter (
-                    utils::create_object<dsp::ProcessorParameter> (
-                      registry (), registry (),
-                      dsp::ProcessorParameter::UniqueId (
-                        utils::Utf8String::from_utf8_encoded_string (
-                          fmt::format (midi_cc_id_format_str, channel, j + 1))),
-                      dsp::ParameterRange (
-                        dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                      utils::Utf8String::from_utf8_encoded_string (
-                        fmt::format (
-                          "Ch{} {}", channel,
-                          utils::midi::midi_get_controller_name (j)))));
-                }
-
-              add_parameter (
-                utils::create_object<dsp::ProcessorParameter> (
-                  registry (), registry (),
-                  dsp::ProcessorParameter::UniqueId (
-                    utils::Utf8String::from_utf8_encoded_string (
-                      fmt::format (pitch_bend_id_format_str, i + 1))),
-                  dsp::ParameterRange (
-                    dsp::ParameterRange::Type::Integer, -8192.f, 8191.f, 0.f,
-                    0.f),
-                  utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format ("Ch{} Pitch bend", i + 1))));
-
-              add_parameter (
-                utils::create_object<dsp::ProcessorParameter> (
-                  registry (), registry (),
-                  dsp::ProcessorParameter::UniqueId (
-                    utils::Utf8String::from_utf8_encoded_string (
-                      fmt::format (poly_key_pressure_id_format_str, i + 1))),
-                  dsp::ParameterRange (
-                    dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                  utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format ("Ch{} Poly key pressure", i + 1))));
-
-              add_parameter (
-                utils::create_object<dsp::ProcessorParameter> (
-                  registry (), registry (),
-                  dsp::ProcessorParameter::UniqueId (
-                    utils::Utf8String::from_utf8_encoded_string (
-                      fmt::format (channel_pressure_id_format_str, i + 1))),
-                  dsp::ParameterRange (
-                    dsp::ParameterRange::Type::Integer, 0.f, 127.f, 0.f, 0.f),
-                  utils::Utf8String::from_utf8_encoded_string (
-                    fmt::format ("Ch{} Channel pressure", i + 1))));
-            }
-        } // endif has MIDI CC
+      /* hardware MIDI input port - receives events from MidiInputProcessor
+       * in the DSP graph. Channel filtering is applied during processing
+       * based on the hw_midi_channel_ setting. */
+      {
+        auto hw_in = utils::create_object<dsp::MidiPort> (
+          registry (), u8"TP HW MIDI in", dsp::PortFlow::Input);
+        add_input_port (hw_in);
+        hw_in.get ()->set_full_designation_provider (this);
+        hw_in.get ()->set_symbol (
+          utils::Utf8String::from_utf8_encoded_string (hw_midi_in_symbol));
+      }
     }
   else if (is_audio ())
     {
@@ -384,9 +308,8 @@ TrackProcessor::TrackProcessor (
       get_parameters ().back ().get ()->set_automatable (false);
     }
 
-  // generate MIDI CC caches and set up mappings
+  // generate caches
   set_param_id_caches ();
-  // set_midi_mappings ();
 }
 
 utils::Utf8String
@@ -486,6 +409,15 @@ TrackProcessor::set_custom_midi_event_provider (
   *custom_event_provider = process_func;
 }
 
+void
+TrackProcessor::set_hw_midi_channel (int channel)
+{
+  decltype (impl_->hw_midi_channel_)::ScopedAccess<
+    farbot::ThreadType::nonRealtime>
+    access{ impl_->hw_midi_channel_ };
+  *access = channel;
+}
+
 // ============================================================================
 // Getters
 // ============================================================================
@@ -526,15 +458,6 @@ TrackProcessor::get_recording_param () const
     registry (), *impl_->recording_id_);
 }
 
-dsp::ProcessorParameter &
-TrackProcessor::get_midi_cc_param (midi_byte_t channel, midi_byte_t control_no)
-{
-  assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
-  return utils::get_typed<dsp::ProcessorParameter> (
-    registry (),
-    impl_->midi_cc_caches_->midi_cc_ids_.at ((channel * 128) + control_no));
-}
-
 arrangement::AudioTimelineDataProvider &
 TrackProcessor::timeline_audio_data_provider ()
 {
@@ -562,6 +485,7 @@ TrackProcessor::Impl::handle_recording (
   const dsp::graph::ProcessBlockInfo        &time_nfo,
   const dsp::ITransport                     &transport,
   const ProcessingCaches                    &processing_caches,
+  std::vector<dsp::MidiEvent>               &midi_recording_buf,
   const TrackProcessor::RecordingCallbackRT &recording_cb) noexcept
 {
   const auto start = time_nfo.transport_position_;
@@ -638,14 +562,31 @@ TrackProcessor::Impl::handle_recording (
             continue;
         }
 
-      const auto is_midi = processing_caches.midi_in_rt_ != nullptr;
+      const auto is_midi = processing_caches.hw_midi_in_rt_ != nullptr;
       const auto is_audio = !processing_caches.audio_ins_rt_.empty ();
       if (is_midi)
         {
+          midi_recording_buf.clear ();
+          const auto time_shift = range.first - start;
+          processing_caches.hw_midi_in_rt_->midi_events_.active_events_
+            .foreach_event ([&] (const dsp::MidiEvent &ev) {
+              const auto adjusted_time = ev.time_ - time_shift;
+              if (
+                adjusted_time >= units::samples (0)
+                && adjusted_time < range.second)
+                {
+                  if (
+                    midi_recording_buf.size ()
+                    < static_cast<size_t> (dsp::MAX_MIDI_EVENTS))
+                    {
+                      midi_recording_buf.push_back (ev);
+                      midi_recording_buf.back ().time_ = adjusted_time;
+                    }
+                }
+            });
           recording_cb (
-            range.first, transport,
-            &processing_caches.midi_in_rt_->midi_events_.active_events_,
-            std::nullopt, range.second);
+            range.first, transport, midi_recording_buf, std::nullopt,
+            range.second);
         }
       else if (is_audio)
         {
@@ -667,7 +608,7 @@ TrackProcessor::Impl::handle_recording (
               ? l
               : out_buf->getWritePointer (1) + offset;
           recording_cb (
-            range.first, transport, nullptr,
+            range.first, transport, std::nullopt,
             std::make_pair (
               std::span (l, recording_nframes), std::span (r, recording_nframes)),
             range.second);
@@ -680,113 +621,8 @@ TrackProcessor::Impl::handle_recording (
 // ============================================================================
 
 void
-TrackProcessor::add_events_from_midi_cc_control_ports (
-  dsp::MidiEventVector     &events,
-  const units::sample_u32_t local_offset)
-{
-  assert (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC));
-
-  using AddEventCallback = std::function<void (
-    const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-    size_t index_in_vector, units::sample_u32_t time)>;
-
-  // returns if an event was added
-  const auto add_event_for_cc_if_in_range =
-    [&events, local_offset] [[nodiscard]] (
-      const utils::RangeOf<dsp::ProcessorParameter::Uuid> auto &range,
-      const dsp::ProcessorParameter &cc, const AddEventCallback &add_event_cb)
-    -> bool {
-    auto it = std::ranges::find (range, cc.get_uuid ());
-    if (it != range.end ())
-      {
-        add_event_cb (
-          cc, events, std::ranges::distance (range.begin (), it), local_offset);
-        return true;
-      }
-    return false;
-  };
-
-  dsp::ProcessorParameter * popped_cc{};
-  while (impl_->midi_cc_caches_->updated_midi_automatable_ports_.pop_front (
-    popped_cc))
-    {
-      if (
-        add_event_for_cc_if_in_range (
-          impl_->midi_cc_caches_->pitch_bend_ids_, *popped_cc,
-          [] (
-            const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, units::sample_u32_t time) {
-            vec_to_fill.add_pitchbend (
-              index_in_vector + 1,
-              utils::math::round_to_signed_32 (
-                cc.range ().convertFrom0To1 (cc.currentValue ()))
-                + 0x2000,
-              time);
-          }))
-        continue;
-
-      if (
-        add_event_for_cc_if_in_range (
-          impl_->midi_cc_caches_->poly_key_pressure_ids_, *popped_cc,
-          [] (
-            const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, units::sample_u32_t time) {
-            // TODO
-          }))
-        continue;
-
-      if (
-        add_event_for_cc_if_in_range (
-          impl_->midi_cc_caches_->channel_pressure_ids_, *popped_cc,
-          [] (
-            const dsp::ProcessorParameter &cc, dsp::MidiEventVector &vec_to_fill,
-            const size_t index_in_vector, units::sample_u32_t time) {
-            vec_to_fill.add_channel_pressure (
-              index_in_vector + 1,
-              (midi_byte_t) utils::math::round_to_signed_32 (
-                cc.currentValue () * 127.f),
-              time);
-          }))
-        continue;
-
-      bool event_added{};
-      for (const auto i : std::views::iota (0, 16))
-        {
-          /* starting from 1 */
-          const midi_byte_t channel = i + 1;
-
-          auto begin_it =
-            std::next (impl_->midi_cc_caches_->midi_cc_ids_.begin (), i * 128);
-          event_added = add_event_for_cc_if_in_range (
-            std::ranges::subrange (begin_it, std::next (begin_it, 128)),
-            *popped_cc,
-            [channel] (
-              const dsp::ProcessorParameter &cc,
-              dsp::MidiEventVector &vec_to_fill, const size_t index_in_vector,
-              units::sample_u32_t time) {
-              vec_to_fill.add_control_change (
-                channel, index_in_vector,
-                (midi_byte_t) utils::math::round_to_signed_32 (
-                  cc.currentValue () * 127.f),
-                time);
-            });
-
-          if (event_added)
-            break;
-        }
-      if (event_added)
-        continue;
-    }
-}
-
-void
 TrackProcessor::set_param_id_caches ()
 {
-  if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
-    {
-      impl_->midi_cc_caches_ = std::make_unique<Impl::MidiCcCaches> ();
-    }
-
   for (const auto &param_ref : get_parameters ())
     {
       const auto * param = param_ref.get ();
@@ -813,86 +649,8 @@ TrackProcessor::set_param_id_caches ()
         {
           impl_->recording_id_ = param_ref.id ();
         }
-      else if (
-        auto midi_cc_scan_result =
-          scn::scan<midi_byte_t, midi_byte_t> (id_str, midi_cc_id_format_str))
-        {
-          auto [midi_channel, cc_no] = midi_cc_scan_result->values ();
-          --midi_channel;
-          --cc_no;
-          impl_->midi_cc_caches_->midi_cc_ids_[(midi_channel * 128) + cc_no] =
-            param_ref.id ();
-        }
-      else if (
-        auto pitch_bend_scan_result =
-          scn::scan<midi_byte_t> (id_str, pitch_bend_id_format_str))
-        {
-          auto midi_channel = pitch_bend_scan_result->value ();
-          --midi_channel;
-          impl_->midi_cc_caches_->pitch_bend_ids_[midi_channel] =
-            param_ref.id ();
-        }
-      else if (
-        auto poly_key_pressure_scan_result =
-          scn::scan<midi_byte_t> (id_str, poly_key_pressure_id_format_str))
-        {
-          auto midi_channel = poly_key_pressure_scan_result->value ();
-          --midi_channel;
-          impl_->midi_cc_caches_->poly_key_pressure_ids_[midi_channel] =
-            param_ref.id ();
-        }
-      else if (
-        auto channel_pressure_scan_result =
-          scn::scan<midi_byte_t> (id_str, channel_pressure_id_format_str))
-        {
-          auto midi_channel = channel_pressure_scan_result->value ();
-          --midi_channel;
-          impl_->midi_cc_caches_->channel_pressure_ids_[midi_channel] =
-            param_ref.id ();
-        }
     }
 }
-
-// TODO
-#if 0
-void
-TrackProcessor::set_midi_mappings ()
-{
-  if (!ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
-    return;
-
-  impl_->cc_mappings_ = std::make_unique<engine::session::MidiMappings> (
-    registry ());
-
-  for (const auto i : std::views::iota (0, 16))
-    {
-      for (const auto j : std::views::iota (0, 128))
-        {
-          auto   cc_port_id = impl_->midi_cc_caches_->midi_cc_ids_[(i * 128) + j];
-          auto * cc_port = utils::get_typed<dsp::ProcessorParameter> (
-            registry (), cc_port_id);
-
-          /* set caches */
-          // cc_port->midi_channel_ = i + 1;
-          // cc_port->midi_cc_no_ = j;
-
-          /* set model bytes for CC:
-           * [0] = ctrl change + channel
-           * [1] = controller
-           * [2] (unused) = control */
-          std::array<midi_byte_t, 3> buf{};
-          buf[0] =
-            (midi_byte_t) (utils::midi::MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
-          buf[1] = (midi_byte_t) j;
-          buf[2] = 0;
-
-          /* bind */
-          impl_->cc_mappings_->bind_track (
-            buf, { cc_port->get_uuid (), registry () }, false);
-        } /* endforeach 0..127 */
-    } /* endforeach 0..15 */
-}
-#endif
 
 void
 TrackProcessor::fill_midi_events (
@@ -1011,15 +769,6 @@ TrackProcessor::custom_process_block (
         time_nfo.nframes_);
     }
 
-  if (ENUM_BITSET_TEST (capabilities_, Capabilities::MidiCC))
-    {
-      // append midi events from modwheel and pitchbend control ports to
-      // MIDI out
-      add_events_from_midi_cc_control_ports (
-        impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_,
-        time_nfo.buffer_offset_);
-    }
-
   /* add inputs to outputs */
   if (is_audio ())
     {
@@ -1088,21 +837,37 @@ TrackProcessor::custom_process_block (
             impl_->processing_caches_->midi_in_rt_->midi_events_.active_events_);
         }
 
-        /* process midi bindings */
-        // TODO
-#if 0
-      if (impl_->cc_mappings_ && transport.recording_enabled ())
-        {
-          impl_->cc_mappings_->apply_from_cc_events (
-            impl_->processing_caches_->midi_in_rt_->midi_events_.active_events_);
-        }
-#endif
-
       // append data from MIDI input -> MIDI output
       impl_->append_midi_inputs_to_outputs_func_ (
         impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_,
         impl_->processing_caches_->midi_in_rt_->midi_events_.active_events_,
         time_nfo);
+
+      /* filter hw_midi_in by channel, then append to midi_out for
+       * playback and leave filtered events in hw_midi_in for recording */
+      {
+        int ch;
+        {
+          decltype (impl_->hw_midi_channel_)::ScopedAccess<
+            farbot::ThreadType::realtime>
+            channel_access{ impl_->hw_midi_channel_ };
+          ch = *channel_access;
+        }
+        auto &hw_events =
+          impl_->processing_caches_->hw_midi_in_rt_->midi_events_.active_events_;
+        if (ch > 0 && ch <= 16)
+          {
+            const midi_byte_t pass_ch = static_cast<midi_byte_t> (ch - 1);
+            hw_events.remove_if ([pass_ch] (const dsp::MidiEvent &ev) {
+              const auto status = ev.raw_buffer_[0];
+              if (status >= utils::midi::MIDI_SYSTEM_MESSAGE)
+                return false;
+              return (status & utils::midi::MIDI_CHANNEL_MASK) != pass_ch;
+            });
+          }
+        impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_
+          .append (hw_events, time_nfo.buffer_offset_, time_nfo.nframes_);
+      }
     }
 
   if (
@@ -1113,7 +878,7 @@ TrackProcessor::custom_process_block (
     {
       Impl::handle_recording (
         time_nfo, transport, *impl_->processing_caches_,
-        impl_->handle_recording_cb_);
+        impl_->recording_events_buf_, impl_->handle_recording_cb_);
     }
 
   /* apply output gain */
@@ -1157,6 +922,11 @@ TrackProcessor::custom_prepare_for_processing (
       impl_->processing_caches_->piano_roll_rt_ = &get_piano_roll_port ();
     }
 
+  if (is_midi ())
+    {
+      impl_->processing_caches_->hw_midi_in_rt_ = &get_hw_midi_in_port ();
+    }
+
   if (impl_->mono_id_.has_value ())
     {
       impl_->processing_caches_->mono_param_ = &get_mono_param ();
@@ -1177,6 +947,11 @@ TrackProcessor::custom_prepare_for_processing (
     {
       impl_->processing_caches_->recording_param_ = &get_recording_param ();
     }
+
+  if (is_midi ())
+    {
+      impl_->recording_events_buf_.reserve (dsp::MAX_MIDI_EVENTS);
+    }
 }
 
 void
@@ -1193,13 +968,43 @@ to_json (nlohmann::json &j, const TrackProcessor &tp)
   to_json (j, static_cast<const dsp::ProcessorBase &> (tp));
 }
 
+dsp::MidiPort &
+TrackProcessor::get_hw_midi_in_port () const
+{
+  assert (is_midi ());
+  auto ports =
+    get_input_ports () | std::views::transform ([] (const auto &ref) {
+      return ref.template get_object_as<dsp::MidiPort> ();
+    })
+    | utils::views::filter_null;
+  auto it = std::ranges::find_if (ports, [] (auto * p) {
+    return p->get_symbol () == hw_midi_in_symbol;
+  });
+  assert (it != ports.end ());
+  return **it;
+}
+
+dsp::MidiPort &
+TrackProcessor::get_piano_roll_port () const
+{
+  assert (is_midi ());
+  auto ports =
+    get_input_ports () | std::views::transform ([] (const auto &ref) {
+      return ref.template get_object_as<dsp::MidiPort> ();
+    })
+    | utils::views::filter_null;
+  auto it = std::ranges::find_if (ports, [] (auto * p) {
+    return p->get_symbol () == piano_roll_symbol;
+  });
+  assert (it != ports.end ());
+  return **it;
+}
+
 void
 from_json (const nlohmann::json &j, TrackProcessor &tp)
 {
   from_json (j, static_cast<dsp::ProcessorBase &> (tp));
 
-  // generate MIDI CC caches and set up mappings
   tp.set_param_id_caches ();
-  // tp.set_midi_mappings ();
 }
 }

@@ -6,6 +6,7 @@
 #include "utils/format_qt.h"
 
 #include "dsp/engine.h"
+#include "dsp/hardware_midi_interface.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/transport.h"
@@ -25,6 +26,7 @@ Project::Project (
   utils::AppSettings           &app_settings,
   ProjectDirectoryPathProvider  project_directory_path_provider,
   dsp::IHardwareAudioInterface &hw_interface,
+  dsp::IHardwareMidiInterface  &midi_interface,
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Metronome                                 &metronome,
@@ -56,6 +58,7 @@ Project::Project (
         utils::make_qobject_unique<dsp::AudioEngine> (
           *transport_,
           hw_interface,
+          midi_interface,
           graph_dispatcher_,
           tempo_map_,
           this)),

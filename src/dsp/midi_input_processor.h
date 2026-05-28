@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "dsp/processor_base.h"
 #include "utils/units.h"
 
@@ -11,24 +13,30 @@
 namespace zrythm::dsp
 {
 
+class MidiDeviceBuffer;
+
 /**
  * @brief Bridges hardware MIDI input into the DSP graph as a MidiPort output.
  *
- * During processing, copies MIDI events from a provider callback into the
- * output MidiPort's queued events buffer. The port's process_block will
- * dequeue them to active events for downstream consumers.
+ * During processing, drains events from a MidiDeviceBuffer into the
+ * output MidiPort's queued events buffer.
  */
 class MidiInputProcessor final : public QObject, public ProcessorBase
 {
   Q_OBJECT
 
 public:
-  using MidiEventProvider = std::function<const juce::MidiBuffer &()>;
-
   MidiInputProcessor (
-    MidiEventProvider       provider,
-    utils::IObjectRegistry &registry,
-    QObject *               parent = nullptr);
+    std::shared_ptr<dsp::MidiDeviceBuffer> buffer,
+    utils::IObjectRegistry                &registry,
+    QObject *                              parent = nullptr);
+
+  ~MidiInputProcessor () override;
+
+  void custom_prepare_for_processing (
+    const dsp::graph::GraphNode * node,
+    units::sample_rate_t          sample_rate,
+    units::sample_u32_t           max_block_length) override;
 
   void custom_process_block (
     dsp::graph::ProcessBlockInfo time_nfo,
@@ -37,8 +45,11 @@ public:
 
   dsp::MidiPort &get_output_port () const noexcept;
 
+  void set_block_start_time (units::precise_second_t time);
+
 private:
-  MidiEventProvider provider_;
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }

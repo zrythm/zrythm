@@ -44,6 +44,13 @@ public:
   void recalc_graph (bool soft);
 
   /**
+   * Releases resources held by the current graph nodes and clears the graph.
+   * Unlike recalc_graph(), does not rebuild — safe to call during shutdown
+   * when external state (providers, selections) may already be destroyed.
+   */
+  void clear_graph ();
+
+  /**
    * Starts a new cycle.
    *
    * @param realtime_context Whether this is called in a realtime context.

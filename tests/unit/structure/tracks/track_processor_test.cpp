@@ -154,32 +154,12 @@ TEST_F (TrackProcessorTest, MidiTrackInitialState)
   EXPECT_EQ (processor.get_node_name (), u8"Test MIDI Track Processor");
 
   // Check MIDI ports
-  EXPECT_EQ (processor.get_input_ports ().size (), 2);  // MIDI in + Piano roll
+  EXPECT_EQ (processor.get_input_ports ().size (), 3); // MIDI in + Piano roll +
+                                                       // HW MIDI in
   EXPECT_EQ (processor.get_output_ports ().size (), 1); // MIDI out
 
   // Check no audio-specific parameters
   EXPECT_EQ (processor.get_parameters ().size (), 0);
-}
-
-TEST_F (TrackProcessorTest, MidiTrackWithCCInitialState)
-{
-  TrackProcessor processor (
-    *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Test MIDI Track with CC"; }, [] { return true; },
-    TrackProcessor::Capabilities::PianoRoll
-      | TrackProcessor::Capabilities::MidiCC,
-    *registry_);
-
-  EXPECT_FALSE (processor.is_audio ());
-  EXPECT_TRUE (processor.is_midi ());
-
-  // Check MIDI ports
-  EXPECT_EQ (processor.get_input_ports ().size (), 2);  // MIDI in + Piano roll
-  EXPECT_EQ (processor.get_output_ports ().size (), 1); // MIDI out
-
-  // Check MIDI CC parameters (16 channels * 128 CCs + 16 pitch bend + 16 poly
-  // pressure + 16 channel pressure)
-  EXPECT_EQ (processor.get_parameters ().size (), (16 * 128) + 16 + 16 + 16);
 }
 
 TEST_F (TrackProcessorTest, DisabledTrackProcessing)
@@ -586,49 +566,20 @@ TEST_F (TrackProcessorTest, JsonSerialization)
 
 TEST_F (TrackProcessorTest, JsonSerializationMidiTrack)
 {
-  // Create a MIDI track processor with CC support
   TrackProcessor midi_processor (
     *tempo_map_, dsp::PortType::Midi, [] { return u8"Test MIDI Track"; },
-    [] { return true; },
-    TrackProcessor::Capabilities::PianoRoll
-      | TrackProcessor::Capabilities::MidiCC,
-    *registry_);
+    [] { return true; }, TrackProcessor::Capabilities::PianoRoll, *registry_);
 
-  // Set some MIDI CC parameter values
-  midi_processor.get_midi_cc_param (0, 1).setBaseValue (
-    0.75f); // CC 1 on channel 1
-  midi_processor.get_midi_cc_param (1, 64).setBaseValue (
-    0.5f); // CC 64 (sustain) on channel 2
-  midi_processor.get_midi_cc_param (15, 7).setBaseValue (
-    0.9f); // CC 7 (volume) on channel 16
-
-  // Serialize to JSON
   nlohmann::json j;
   to_json (j, midi_processor);
 
-  // Deserialize back to a new processor
   TrackProcessor deserialized_processor (
-    *tempo_map_, dsp::PortType::Midi,
-    [] { return u8"Deserialized MIDI Track"; }, [] { return true; },
-    TrackProcessor::Capabilities::PianoRoll
-      | TrackProcessor::Capabilities::MidiCC,
-    *registry_);
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"Deserialized MIDI Track"; },
+    [] { return true; }, TrackProcessor::Capabilities::PianoRoll, *registry_);
   from_json (j, deserialized_processor);
 
-  // Verify deserialized processor has same state
   EXPECT_EQ (deserialized_processor.is_audio (), midi_processor.is_audio ());
   EXPECT_EQ (deserialized_processor.is_midi (), midi_processor.is_midi ());
-
-  // Verify MIDI CC parameter values are preserved
-  EXPECT_NEAR (
-    deserialized_processor.get_midi_cc_param (0, 1).baseValue (), 0.75f,
-    AUDIO_BUFFER_DIFF_TOLERANCE);
-  EXPECT_NEAR (
-    deserialized_processor.get_midi_cc_param (1, 64).baseValue (), 0.5f,
-    AUDIO_BUFFER_DIFF_TOLERANCE);
-  EXPECT_NEAR (
-    deserialized_processor.get_midi_cc_param (15, 7).baseValue (), 0.9f,
-    AUDIO_BUFFER_DIFF_TOLERANCE);
 }
 
 TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
@@ -718,17 +669,17 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
 
 TEST_F (TrackProcessorTest, RecordingCallback)
 {
-  bool                         recording_called = false;
-  units::sample_t              recorded_timeline_position;
-  int64_t                      recorded_nframes = 0;
-  const dsp::MidiEventVector * recorded_midi_events = nullptr;
+  bool                                               recording_called = false;
+  units::sample_t                                    recorded_timeline_position;
+  int64_t                                            recorded_nframes = 0;
+  std::optional<std::span<const dsp::MidiEvent>>     recorded_midi_events;
   std::optional<TrackProcessor::ConstStereoPortPair> recorded_stereo_ports;
 
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called, &recorded_timeline_position, &recorded_nframes,
      &recorded_midi_events, &recorded_stereo_ports] (
-      units::sample_t              timeline_position, const dsp::ITransport &,
-      const dsp::MidiEventVector * midi_events,
+      units::sample_t timeline_position, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>     midi_events,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
       units::sample_u32_t                                nframes) {
       recording_called = true;
@@ -800,17 +751,17 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithPianoRoll)
 
 TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
 {
-  bool                         recording_called = false;
-  units::sample_t              recorded_timeline_position;
-  uint64_t                     recorded_nframes = 0;
-  const dsp::MidiEventVector * recorded_midi_events = nullptr;
+  bool                                               recording_called = false;
+  units::sample_t                                    recorded_timeline_position;
+  uint64_t                                           recorded_nframes = 0;
+  std::optional<std::span<const dsp::MidiEvent>>     recorded_midi_events;
   std::optional<TrackProcessor::ConstStereoPortPair> recorded_stereo_ports;
 
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called, &recorded_timeline_position, &recorded_nframes,
      &recorded_midi_events, &recorded_stereo_ports] (
-      units::sample_t              timeline_position, const dsp::ITransport &,
-      const dsp::MidiEventVector * midi_events,
+      units::sample_t timeline_position, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>     midi_events,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
       units::sample_u32_t                                nframes) {
       recording_called = true;
@@ -853,31 +804,11 @@ TEST_F (TrackProcessorTest, AudioTrackProcessingWithRecording)
   EXPECT_TRUE (recording_called);
   EXPECT_EQ (recorded_timeline_position, units::samples (88200));
   EXPECT_EQ (recorded_nframes, 512);
-  EXPECT_EQ (recorded_midi_events, nullptr); // No MIDI events for audio track
+  EXPECT_FALSE (
+    recorded_midi_events.has_value ()); // No MIDI events for audio track
   EXPECT_TRUE (recorded_stereo_ports.has_value ());
   EXPECT_EQ (recorded_stereo_ports->first.size (), 512);
   EXPECT_EQ (recorded_stereo_ports->second.size (), 512);
-}
-
-TEST_F (TrackProcessorTest, MidiTrackProcessingWithCCParameters)
-{
-  TrackProcessor processor (
-    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI CC Track"; },
-    [] { return true; },
-    TrackProcessor::Capabilities::PianoRoll
-      | TrackProcessor::Capabilities::MidiCC,
-    *registry_);
-
-  // Test CC parameter access
-  auto &cc_param =
-    processor.get_midi_cc_param (0, 64); // Channel 1, CC 64 (sustain)
-
-  // Set CC value
-  cc_param.setBaseValue (cc_param.range ().convertTo0To1 (127.0f));
-  EXPECT_FLOAT_EQ (
-    cc_param.range ().convertFrom0To1 (cc_param.baseValue ()), 127.0f);
-
-  // TODO: test actual processing
 }
 
 TEST_F (TrackProcessorTest, AudioTrackProcessingHasZeroLatency)
@@ -963,6 +894,197 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithMultipleEvents)
   // Verify events were processed
   auto &midi_out = processor.get_midi_out_port ();
   EXPECT_GE (midi_out.midi_events_.queued_events_.size (), 3);
+}
+
+// ============================================================================
+// Hardware MIDI input channel filtering
+// ============================================================================
+
+class TrackProcessorHwMidiChannelFilterTest
+    : public TrackProcessorTest,
+      public ::testing::WithParamInterface<int>
+{
+};
+
+TEST_P (TrackProcessorHwMidiChannelFilterTest, FiltersHwMidiInputOnly)
+{
+  const int selected_channel = GetParam ();
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"HW MIDI Filter"; },
+    [] { return true; }, TrackProcessor::Capabilities::PianoRoll, *registry_,
+    std::nullopt, std::nullopt, std::nullopt,
+    [] (
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>,
+      std::optional<TrackProcessor::ConstStereoPortPair>, units::sample_u32_t) {
+    });
+
+  processor.set_hw_midi_channel (selected_channel);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto &midi_in = processor.get_midi_in_port ();
+  midi_in.midi_events_.active_events_.add_note_on (
+    1, 40, 50, units::samples (0u));
+  midi_in.midi_events_.active_events_.add_note_on (
+    5, 41, 50, units::samples (10u));
+
+  auto &hw_in = processor.get_hw_midi_in_port ();
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    3, 64, 90, units::samples (10u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    5, 67, 80, units::samples (20u));
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  auto       &midi_out = processor.get_midi_out_port ();
+  const auto &events = midi_out.midi_events_.queued_events_;
+
+  if (selected_channel == 0)
+    {
+      EXPECT_EQ (events.size (), 5)
+        << "Omni: all events from both ports should pass";
+    }
+  else if (
+    selected_channel == 1 || selected_channel == 3 || selected_channel == 5)
+    {
+      EXPECT_EQ (events.size (), 3)
+        << "Channel " << selected_channel
+        << ": 2 midi_in (unfiltered) + 1 hw_midi_in (channel "
+        << selected_channel << " only)";
+      const midi_byte_t expected_pitch =
+        selected_channel == 1 ? 60 : (selected_channel == 3 ? 64 : 67);
+      bool found_hw_filtered = false;
+      for (const auto &ev : events)
+        {
+          if (ev.raw_buffer_[1] == expected_pitch)
+            found_hw_filtered = true;
+        }
+      EXPECT_TRUE (found_hw_filtered)
+        << "Channel " << selected_channel
+        << " event from hw_midi_in should be present";
+    }
+  else
+    {
+      EXPECT_EQ (events.size (), 2)
+        << "Channel " << selected_channel
+        << ": no hw_midi_in events on this channel, only 2 midi_in";
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  ChannelFilter,
+  TrackProcessorHwMidiChannelFilterTest,
+  ::testing::Values (0, 1, 3, 16));
+
+TEST_F (TrackProcessorTest, HwMidiChannelFilterPassesSystemMessages)
+{
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"SysMsg Filter"; },
+    [] { return true; }, TrackProcessor::Capabilities::PianoRoll, *registry_,
+    std::nullopt, std::nullopt, std::nullopt,
+    [] (
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>,
+      std::optional<TrackProcessor::ConstStereoPortPair>, units::sample_u32_t) {
+    });
+
+  processor.set_hw_midi_channel (2);
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  auto &hw_in = processor.get_hw_midi_in_port ();
+  hw_in.midi_events_.active_events_.add_note_on (
+    2, 60, 100, units::samples (0u));
+  dsp::MidiEvent clock_ev (
+    utils::midi::MIDI_CLOCK_BEAT, 0, 0, units::samples (10u));
+  clock_ev.raw_buffer_sz_ = 1;
+  hw_in.midi_events_.active_events_.push_back (clock_ev);
+  dsp::MidiEvent start_ev (
+    utils::midi::MIDI_CLOCK_START, 0, 0, units::samples (20u));
+  start_ev.raw_buffer_sz_ = 1;
+  hw_in.midi_events_.active_events_.push_back (start_ev);
+  hw_in.midi_events_.active_events_.add_note_on (
+    5, 64, 90, units::samples (30u));
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  auto       &midi_out = processor.get_midi_out_port ();
+  const auto &events = midi_out.midi_events_.queued_events_;
+
+  EXPECT_EQ (events.size (), 3)
+    << "Channel 2 note-on + 2 system messages should pass, channel 5 filtered";
+  int sys_msg_count = 0;
+  for (const auto &ev : events)
+    {
+      if (ev.raw_buffer_[0] >= utils::midi::MIDI_SYSTEM_MESSAGE)
+        ++sys_msg_count;
+    }
+  EXPECT_EQ (sys_msg_count, 2)
+    << "MIDI clock and start should pass through channel filter";
+}
+
+TEST_F (TrackProcessorTest, HwMidiInputFilteredEventsReachRecordingCallback)
+{
+  int                         channel = 2;
+  std::vector<dsp::MidiEvent> recorded_events;
+
+  TrackProcessor::RecordingCallbackRT recording_cb =
+    [&recorded_events] (
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>> midi_events,
+      std::optional<TrackProcessor::ConstStereoPortPair>, units::sample_u32_t) {
+      if (midi_events.has_value ())
+        {
+          for (const auto &ev : *midi_events)
+            recorded_events.push_back (ev);
+        }
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"HW MIDI Rec"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::PianoRoll
+      | TrackProcessor::Capabilities::Recording,
+    *registry_, std::nullopt, std::nullopt, std::nullopt, recording_cb);
+
+  processor.set_hw_midi_channel (channel);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+
+  processor.prepare_for_processing (nullptr, sample_rate_, block_length_);
+  processor.set_recording_armed (true);
+
+  auto &hw_in = processor.get_hw_midi_in_port ();
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (0u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    2, 64, 90, units::samples (10u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    5, 67, 80, units::samples (20u));
+
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (false));
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  ASSERT_EQ (recorded_events.size (), 1u)
+    << "Only channel 2 event should reach recording callback";
+  EXPECT_EQ (recorded_events[0].raw_buffer_[1], 64);
 }
 
 TEST_F (TrackProcessorTest, AudioTrackParameterRangeValidation)
@@ -1335,7 +1457,7 @@ TEST_F (TrackProcessorTest, RecordingCallbackSimpleRange)
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_calls] (
       units::sample_t timeline_position, const dsp::ITransport &,
-      const dsp::MidiEventVector *,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
       units::sample_u32_t                                nframes) {
       recording_calls.push_back (
@@ -1382,7 +1504,8 @@ TEST_F (TrackProcessorTest, RecordingCallbackSkippedDuringPreroll)
 
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called] (
-      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair>,
       units::sample_u32_t nframes) { recording_called = true; };
 
@@ -1432,7 +1555,7 @@ TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectAudioSpanToCallback)
   TrackProcessor::RecordingCallbackRT capture_cb =
     [&] (
       units::sample_t timeline_position, const dsp::ITransport &transport,
-      const dsp::MidiEventVector *,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
       units::sample_u32_t                                nframes) {
       if (stereo_ports.has_value ())
@@ -1555,7 +1678,8 @@ TEST_F (TrackProcessorTest, RecordingCallbackNotFiredWhenTransportPaused)
   int                                 callback_count = 0;
   TrackProcessor::RecordingCallbackRT capture_cb =
     [&] (
-      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair>,
       units::sample_u32_t nframes) { ++callback_count; };
 
@@ -1606,7 +1730,7 @@ TEST_F (TrackProcessorTest, RecordingAcrossLoopBoundaryViaGraphNode)
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&calls] (
       units::sample_t timeline_position, const dsp::ITransport &,
-      const dsp::MidiEventVector *,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
       units::sample_u32_t                                nframes) {
       if (stereo_ports.has_value ())
@@ -1776,7 +1900,8 @@ TEST_F (TrackProcessorTest, DisarmedTrackSkipsRecording)
 
   TrackProcessor::RecordingCallbackRT recording_cb =
     [&recording_called] (
-      units::sample_t, const dsp::ITransport &, const dsp::MidiEventVector *,
+      units::sample_t, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>>,
       std::optional<TrackProcessor::ConstStereoPortPair>,
       units::sample_u32_t nframes) { recording_called = true; };
 
@@ -1800,6 +1925,96 @@ TEST_F (TrackProcessorTest, DisarmedTrackSkipsRecording)
 
   EXPECT_FALSE (recording_called)
     << "Recording callback should not fire for disarmed track";
+}
+
+TEST_F (TrackProcessorTest, PunchRecordingPassesCorrectMidiEventsToCallback)
+{
+  constexpr auto max_block_length = units::samples (512u);
+  const auto     punch_start = units::samples (128);
+  const auto     punch_end = units::samples (384);
+
+  struct CapturedMidi
+  {
+    units::sample_t             timeline_position;
+    std::vector<dsp::MidiEvent> events;
+    units::sample_u32_t         nframes;
+  };
+  std::vector<CapturedMidi> calls;
+
+  TrackProcessor::RecordingCallbackRT capture_cb =
+    [&] (
+      units::sample_t timeline_position, const dsp::ITransport &,
+      std::optional<std::span<const dsp::MidiEvent>> midi_events,
+      std::optional<TrackProcessor::ConstStereoPortPair>,
+      units::sample_u32_t nframes) {
+      if (midi_events.has_value ())
+        {
+          calls.push_back (
+            {
+              timeline_position,
+              { midi_events->begin (), midi_events->end () },
+              nframes
+          });
+        }
+    };
+
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Midi, [] { return u8"MIDI Punch Rec"; },
+    [] { return true; },
+    TrackProcessor::Capabilities::PianoRoll
+      | TrackProcessor::Capabilities::Recording,
+    *registry_, std::nullopt, std::nullopt, std::nullopt, capture_cb);
+
+  processor.prepare_for_processing (nullptr, sample_rate_, max_block_length);
+  processor.set_recording_armed (true);
+
+  auto &hw_in = processor.get_hw_midi_in_port ();
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 60, 100, units::samples (50u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 62, 90, units::samples (200u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 64, 80, units::samples (350u));
+  hw_in.midi_events_.active_events_.add_note_on (
+    1, 65, 70, units::samples (400u));
+
+  ON_CALL (*transport_, punch_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*transport_, get_punch_range_positions ())
+    .WillByDefault (::testing::Return (std::make_pair (punch_start, punch_end)));
+  ON_CALL (*transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, metronome_countin_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (0)));
+  ON_CALL (*transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), max_block_length);
+
+  processor.process_block (time_nfo, *transport_, *tempo_map_);
+
+  ASSERT_EQ (calls.size (), 1u)
+    << "Expected exactly 1 recording callback (for the punch range)";
+
+  const auto &call = calls[0];
+  EXPECT_EQ (call.timeline_position, punch_start);
+  EXPECT_EQ (call.nframes, units::samples (256u));
+
+  ASSERT_EQ (call.events.size (), 2u)
+    << "Only events within punch range [128,384) should be recorded";
+
+  EXPECT_EQ (call.events[0].time_, units::samples (72u))
+    << "Event at block offset 200 should be shifted to 200 - 128 = 72";
+  EXPECT_EQ (call.events[0].raw_buffer_[1], 62);
+
+  EXPECT_EQ (call.events[1].time_, units::samples (222u))
+    << "Event at block offset 350 should be shifted to 350 - 128 = 222";
+  EXPECT_EQ (call.events[1].raw_buffer_[1], 64);
 }
 
 } // namespace zrythm::structure::tracks

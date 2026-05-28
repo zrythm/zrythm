@@ -624,7 +624,7 @@ JucePlugin::show_editor ()
   if (juce_plugin_->hasEditor ())
     {
       editor_ = std::unique_ptr<juce::AudioProcessorEditor> (
-        juce_plugin_->createEditorIfNeeded ());
+        juce_plugin_->createEditorAndMakeActive ());
     }
   else
     {

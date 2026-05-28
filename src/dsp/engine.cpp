@@ -30,6 +30,7 @@
 #include <cassert>
 
 #include "dsp/engine.h"
+#include "dsp/midi_device_buffer.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 
@@ -69,11 +70,13 @@ AudioEngine::device_name () const
 AudioEngine::AudioEngine (
   dsp::Transport          &transport,
   IHardwareAudioInterface &hw_interface,
+  IHardwareMidiInterface  &midi_interface,
   dsp::DspGraphDispatcher &graph_dispatcher,
   const dsp::TempoMap     &tempo_map,
   QObject *                parent)
     : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
       graph_dispatcher_ (graph_dispatcher), hw_interface_ (hw_interface),
+      midi_interface_ (midi_interface),
       monitor_out_ (
         u8"Monitor Out",
         dsp::PortFlow::Output,
@@ -91,6 +94,9 @@ AudioEngine::AudioEngine (
             units::sample_u32_t            numSamples) {
             current_hw_input_ = inputChannels;
 
+            block_start_time_ = au::milli (units::seconds) (
+              juce::Time::getMillisecondCounterHiRes ());
+
             juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
               load_measurer_
             };
@@ -100,7 +106,6 @@ AudioEngine::AudioEngine (
 
             const auto process_status = this->process (guard, numSamples);
             current_hw_input_ = {};
-            current_midi_events_.clear ();
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
                 // Note: the monitor output ports below require the processing
@@ -124,35 +129,35 @@ AudioEngine::AudioEngine (
           [this] () {
             const auto info = hw_interface_.get_device_info ();
             cached_device_info_ = info;
-            // Keep old processor alive because the graph recalc needs to call
-            // release_resources on it
-            auto old_audio_processor = std::move (audio_input_processor_);
-            auto old_midi_processor = std::move (midi_input_processor_);
-
             audio_input_processor_ = utils::make_qobject_unique<
               AudioInputProcessor> (
               [this] () -> std::span<const float * const> {
                 return current_hw_input_;
               },
               info.input_channel_count, local_registry_, this);
-            midi_input_processor_ = utils::make_qobject_unique<
-              MidiInputProcessor> (
-              [this] () -> const juce::MidiBuffer & {
-                return current_midi_events_;
-              },
-              local_registry_, this);
+            midi_interface_.set_device_change_callback ([this] () {
+              execute_function_with_paused_processing_synchronously (
+                [this] {
+                  update_midi_processors (midi_interface_.device_buffers ());
+                },
+                true);
+            });
+            update_midi_processors (midi_interface_.device_buffers ());
             graph_dispatcher_.recalc_graph (false);
             monitor_out_.prepare_for_processing (
               nullptr, info.sample_rate, info.block_length);
             Q_EMIT sampleRateChanged (info.sample_rate.in (units::sample_rate));
             Q_EMIT blockLengthChanged (
               info.block_length.in<int> (units::samples));
-            callback_running_ = true;
+            audio_callback_active_ = true;
           },
           [this] () {
+            midi_interface_.set_device_change_callback (std::nullopt);
+            graph_dispatcher_.clear_graph ();
+            midi_input_processors_.clear ();
             cached_device_info_.reset ();
             monitor_out_.release_resources ();
-            callback_running_ = false;
+            audio_callback_active_ = false;
           }))
 {
   midi_in_->set_symbol (u8"midi_in");
@@ -228,7 +233,7 @@ AudioEngine::
 
   // control_room_->monitor_fader_->abort_fade_out ();
 
-  if (callback_running_)
+  if (audio_callback_active_)
     {
       /* run 1 more time to flush panic messages */
       auto                         lock = get_processing_lock ();
@@ -291,6 +296,28 @@ void
 AudioEngine::deactivate ()
 {
   activate_impl (false);
+}
+
+void
+AudioEngine::update_midi_processors (
+  const IHardwareMidiInterface::BufferMap &active_buffers)
+{
+  // Remove processors for devices no longer active
+  std::erase_if (midi_input_processors_, [&active_buffers] (const auto &entry) {
+    return !active_buffers.contains (entry.first);
+  });
+
+  // Create processors for new devices
+  for (const auto &[ident, buffer] : active_buffers)
+    {
+      if (!midi_input_processors_.contains (ident))
+        {
+          midi_input_processors_.emplace (
+            ident,
+            utils::make_qobject_unique<MidiInputProcessor> (
+              buffer, local_registry_, this));
+        }
+    }
 }
 
 void
@@ -384,6 +411,11 @@ AudioEngine::process (
     {
       // z_info ("skipping processing...");
       return ProcessReturnStatus::ProcessSkipped;
+    }
+
+  for (const auto &mip : midi_input_processors_ | std::views::values)
+    {
+      mip->set_block_start_time (block_start_time_);
     }
 
   // We create a temporary ITransport snapshot and inject it here (graph

@@ -91,7 +91,6 @@ ColumnLayout {
       ScrollView {
         Layout.fillWidth: true
         Layout.preferredHeight: Math.min(notesTextArea.implicitHeight + 16, 100)
-        clip: true
 
         TextArea {
           id: notesTextArea
@@ -266,6 +265,135 @@ ColumnLayout {
 
             enabled: monitorSelector.monitorParam !== null
             target: monitorSelector.monitorParam
+          }
+        }
+      }
+    }
+  }
+
+  Loader {
+    Layout.fillWidth: true
+    active: root.track.type === Track.Instrument || root.track.type === Track.Midi
+    visible: active
+
+    sourceComponent: ExpanderBox {
+      icon.source: ResourceManager.getIconUrl("gnome-icon-library", "input-keyboard-symbolic.svg")
+      title: qsTr("MIDI Input")
+
+      frameContentItem: ColumnLayout {
+        spacing: 4
+
+        Label {
+          Layout.fillWidth: true
+          text: qsTr("Device")
+        }
+
+        ComboBox {
+          id: midiDeviceSelector
+
+          property MidiInputSelection midiSel: root.session.uiState.midiInputSelectionForTrack(root.track)
+
+          function updateCurrentIndex(): void {
+            if (!midiSel || midiSel.deviceIdentifier === "") {
+              currentIndex = 0;
+              return;
+            }
+            for (let i = 1; i < count; ++i) {
+              const info = model[i].midiInfo;
+              if (info && info.identifier === midiSel.deviceIdentifier) {
+                currentIndex = i;
+                return;
+              }
+            }
+            currentIndex = 0;
+          }
+
+          Layout.fillWidth: true
+          model: {
+            const devices = [
+              {
+                "display": qsTr("None"),
+                "midiInfo": null
+              }
+            ];
+            if (root.deviceManager) {
+              for (const info of root.deviceManager.availableMidiInputs)
+                devices.push({
+                  "display": info.deviceName,
+                  "midiInfo": info
+                });
+            }
+            return devices;
+          }
+          textRole: "display"
+
+          Component.onCompleted: updateCurrentIndex()
+          onActivated: function (index: int): void {
+            if (index === 0) {
+              midiDeviceSelector.midiSel.deviceIdentifier = "";
+              return;
+            }
+            const info = model[index].midiInfo;
+            midiDeviceSelector.midiSel.deviceIdentifier = info.identifier;
+          }
+          onMidiSelChanged: updateCurrentIndex()
+          onModelChanged: updateCurrentIndex()
+
+          Connections {
+            function onDeviceIdentifierChanged() {
+              midiDeviceSelector.updateCurrentIndex();
+            }
+
+            target: midiDeviceSelector.midiSel
+          }
+
+          Connections {
+            function onAvailableMidiInputsChanged() {
+              midiDeviceSelector.updateCurrentIndex();
+            }
+
+            target: root.deviceManager
+          }
+        }
+
+        Label {
+          Layout.fillWidth: true
+          text: qsTr("Channel")
+        }
+
+        ComboBox {
+          id: midiChannelSelector
+
+          property MidiInputSelection midiSel: root.session.uiState.midiInputSelectionForTrack(root.track)
+
+          Layout.fillWidth: true
+          model: {
+            const channels = [qsTr("All")];
+            for (let i = 1; i <= 16; ++i)
+              channels.push(qsTr("Channel %1").arg(i));
+            return channels;
+          }
+
+          Component.onCompleted: {
+            if (midiSel)
+              currentIndex = midiSel.midiChannel;
+          }
+          onActivated: function (index: int): void {
+            if (midiSel)
+              midiSel.midiChannel = index;
+          }
+          onMidiSelChanged: {
+            if (midiSel)
+              currentIndex = midiSel.midiChannel;
+          }
+
+          Connections {
+            function onMidiChannelChanged() {
+              if (midiChannelSelector.midiSel)
+                midiChannelSelector.currentIndex = midiChannelSelector.midiSel.midiChannel;
+            }
+
+            target: midiChannelSelector.midiSel
           }
         }
       }

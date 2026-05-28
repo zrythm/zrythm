@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "dsp/audio_input_selection.h"
+#include "dsp/midi_input_selection.h"
 #include "dsp/snap_grid.h"
 #include "structure/arrangement/timeline.h"
 #include "structure/project/arranger_tool.h"
@@ -70,16 +71,27 @@ public:
   Q_INVOKABLE dsp::AudioInputSelection *
   audioInputSelectionForTrack (const structure::tracks::Track * track);
 
+  Q_INVOKABLE dsp::MidiInputSelection *
+  midiInputSelectionForTrack (const structure::tracks::Track * track);
+
   dsp::AudioInputSelection *
   find_audio_input_selection (const structure::tracks::Track::Uuid &uuid) const;
 
+  dsp::MidiInputSelection *
+  find_midi_input_selection (const structure::tracks::Track::Uuid &uuid) const;
+
   static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
+  static constexpr auto kMidiInputSelectionsKey = "midiInputSelections"sv;
 
 Q_SIGNALS:
   void audioInputSelectionChanged ();
+  void midiInputDeviceChanged ();
 
 private:
   dsp::AudioInputSelection * get_or_create_audio_input_selection (
+    const structure::tracks::Track::Uuid &uuid);
+
+  dsp::MidiInputSelection * get_or_create_midi_input_selection (
     const structure::tracks::Track::Uuid &uuid);
 
 private:
@@ -113,6 +125,13 @@ private:
     structure::tracks::Track::Uuid,
     utils::QObjectUniquePtr<dsp::AudioInputSelection>>
     audio_input_selections_;
+
+  /** Map of track UUID to MIDI input selection (lazy-created, pruned on save).
+   */
+  std::map<
+    structure::tracks::Track::Uuid,
+    utils::QObjectUniquePtr<dsp::MidiInputSelection>>
+    midi_input_selections_;
 };
 
 } // namespace zrythm::structure::project

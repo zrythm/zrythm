@@ -40,32 +40,30 @@ process_track_connections (
     }
   else
     {
-      for (const auto &tp_in_port_ref : track_processor->get_input_ports ())
+      for (
+        const auto &tp_in_port :
+        track_processor->get_input_ports ()
+          | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get))
         {
-          auto tp_in_port_var = convert_to_variant_qobj<dsp::PortPtrVariant> (
-            tp_in_port_ref.get ());
-          std::visit (
-            [&] (auto &&tp_in_port) {
-              using PortT = utils::base_type<decltype (tp_in_port)>;
-              // MIDI ports go via MIDI panic
-              if constexpr (std::is_same_v<PortT, dsp::MidiPort>)
-                {
-                  graph.get_nodes ()
-                    .find_node_for_processable (
-                      *midi_panic_processor.get_output_ports ()
-                         .front ()
-                         .get_object_as<dsp::MidiPort> ())
-                    ->connect_to (*graph.get_nodes ().find_node_for_processable (
-                      *tp_in_port));
-                }
-              // other ports go directly via initial processor
-              else
-                {
-                  initial_processor_node->connect_to (
-                    *graph.get_nodes ().find_node_for_processable (*tp_in_port));
-                }
-            },
-            tp_in_port_var);
+          // MIDI input port goes via MIDI panic
+          if (
+            tp_in_port->get_symbol ().view ()
+            == tracks::TrackProcessor::midi_in_symbol)
+            {
+              graph.get_nodes ()
+                .find_node_for_processable (
+                  *midi_panic_processor.get_output_ports ()
+                     .front ()
+                     .get_object_as<dsp::MidiPort> ())
+                ->connect_to (
+                  *graph.get_nodes ().find_node_for_processable (*tp_in_port));
+            }
+          // other ports go directly via initial processor
+          else
+            {
+              initial_processor_node->connect_to (
+                *graph.get_nodes ().find_node_for_processable (*tp_in_port));
+            }
         }
     }
 
@@ -160,6 +158,12 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   if (auto * aip = engine->audio_input_processor ())
     {
       dsp::ProcessorGraphBuilder::add_nodes (graph, *aip);
+    }
+
+  /* add the MIDI input processors */
+  for (const auto &mip : engine->midi_input_processors () | std::views::values)
+    {
+      dsp::ProcessorGraphBuilder::add_nodes (graph, *mip);
     }
 
   /* add each track */
@@ -279,6 +283,17 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       initial_processor_node->connect_to (*aip_node);
     }
 
+  /* connect the MIDI input processors */
+  for (const auto &mip : engine->midi_input_processors () | std::views::values)
+    {
+      dsp::ProcessorGraphBuilder::add_connections (graph, *mip);
+      auto  &mip_out_port = mip->get_output_port ();
+      auto * mip_out_node =
+        graph.get_nodes ().find_node_for_processable (mip_out_port);
+      z_return_if_fail (mip_out_node);
+      initial_processor_node->connect_to (*mip_out_node);
+    }
+
   /* connect tracks */
   const auto * master_track = tracklist->singletonTracks ()->masterTrack ();
   for (const auto &cur_tr : tracklist->collection ()->tracks ())
@@ -341,6 +356,45 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                             "Audio input selection device '{}' does not match current device '{}' for track {}",
                             sel->deviceName (), engine->device_name (),
                             tr->get_uuid ());
+                        }
+                    }
+                }
+            }
+
+          // connect MIDI input processor to this track, if configured
+          const auto &midi_sel_provider =
+            project->midi_input_selection_provider ();
+          if (
+            tr->input_signal_type () == dsp::PortType::Midi && midi_sel_provider)
+            {
+              if (auto * sel = midi_sel_provider (tr->get_uuid ()))
+                {
+                  if (!sel->deviceIdentifier ().isEmpty ())
+                    {
+                      const auto sel_id = utils::Utf8String::from_qstring (
+                        sel->deviceIdentifier ());
+                      auto it = engine->midi_input_processors ().find (sel_id);
+                      if (it != engine->midi_input_processors ().end ())
+                        {
+                          auto &src_port = it->second->get_output_port ();
+                          auto &dst_port =
+                            tr->get_track_processor ()->get_hw_midi_in_port ();
+                          auto * src_node =
+                            graph.get_nodes ().find_node_for_processable (
+                              src_port);
+                          auto * dst_node =
+                            graph.get_nodes ().find_node_for_processable (
+                              dst_port);
+                          if ((src_node != nullptr) && (dst_node != nullptr))
+                            {
+                              src_node->connect_to (*dst_node);
+                            }
+                        }
+                      else
+                        {
+                          z_debug (
+                            "MIDI input processor not found for device '{}' (track {})",
+                            sel_id, tr->get_uuid ());
                         }
                     }
                 }

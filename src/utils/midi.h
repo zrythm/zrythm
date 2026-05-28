@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2018-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -57,6 +57,9 @@ static constexpr uint8_t MIDI_CH1_PITCH_WHEEL_RANGE = 0xE0;
 static constexpr uint8_t MIDI_ALL_NOTES_OFF = 0x7B;
 static constexpr uint8_t MIDI_ALL_SOUND_OFF = 0x78;
 static constexpr uint8_t MIDI_SYSTEM_MESSAGE = 0xF0;
+static constexpr uint8_t MIDI_STATUS_MASK = 0xF0;
+static constexpr uint8_t MIDI_CHANNEL_MASK = 0x0F;
+static constexpr uint8_t MIDI_DATA_MASK = 0x7F;
 static constexpr uint8_t MIDI_SONG_POSITION = 0xF2;
 static constexpr uint8_t MIDI_CLOCK_START = 0xFA;
 static constexpr uint8_t MIDI_CLOCK_CONTINUE = 0xFB;

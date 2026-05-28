@@ -8,6 +8,7 @@
 #include "dsp/engine.h"
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/metronome.h"
+#include "dsp/midi_input_selection.h"
 #include "dsp/port_connections_manager.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
@@ -87,11 +88,15 @@ public:
   using AudioInputSelectionProvider = std::function<dsp::AudioInputSelection *(
     const structure::tracks::Track::Uuid &)>;
 
+  using MidiInputSelectionProvider = std::function<dsp::MidiInputSelection *(
+    const structure::tracks::Track::Uuid &)>;
+
 public:
   Project (
     utils::AppSettings           &app_settings,
     ProjectDirectoryPathProvider  project_directory_path_provider,
     dsp::IHardwareAudioInterface &hw_interface,
+    dsp::IHardwareMidiInterface  &midi_interface,
     std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager,
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Metronome                                 &metronome,
@@ -154,6 +159,16 @@ public:
   const auto &audio_input_selection_provider () const
   {
     return audio_input_selection_provider_;
+  }
+
+  void set_midi_input_selection_provider (MidiInputSelectionProvider provider)
+  {
+    midi_input_selection_provider_ = std::move (provider);
+  }
+
+  const auto &midi_input_selection_provider () const
+  {
+    return midi_input_selection_provider_;
   }
 
   /**
@@ -254,6 +269,7 @@ private:
   dsp::Metronome &metronome_;
 
   AudioInputSelectionProvider audio_input_selection_provider_;
+  MidiInputSelectionProvider  midi_input_selection_provider_;
 
   structure::tracks::TrackRecordingCallback track_recording_callback_;
 

@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <mutex>
+#include <shared_mutex>
 #include <utility>
 
+#include "dsp/midi_device_buffer.h"
 #include "gui/backend/device_manager.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
@@ -14,17 +17,73 @@
 namespace zrythm::gui::backend
 {
 
+struct DeviceManager::MidiImpl
+{
+  class Callback : public juce::MidiInputCallback
+  {
+  public:
+    explicit Callback (MidiImpl &owner) : owner_ (owner) { }
+
+    void handleIncomingMidiMessage (
+      juce::MidiInput *        source,
+      const juce::MidiMessage &message) override
+    {
+      if (source == nullptr)
+        return;
+      const auto ident =
+        utils::Utf8String::from_juce_string (source->getIdentifier ());
+      std::shared_lock lock (owner_.buffers_mutex);
+      auto             it = owner_.buffers.find (ident);
+      if (it != owner_.buffers.end ())
+        {
+          if (!it->second->push (message))
+            {
+              ++owner_.overflow_count;
+            }
+        }
+    }
+
+  private:
+    MidiImpl &owner_;
+  };
+
+  Callback                               callback;
+  dsp::IHardwareMidiInterface::BufferMap buffers;
+  std::shared_mutex                      buffers_mutex;
+  std::atomic<size_t>                    overflow_count{ 0 };
+  std::optional<DeviceChangeCallback>    device_change_cb;
+
+  explicit MidiImpl (DeviceManager &owner)
+      : callback (*this), owner_ (owner) { }
+
+  void register_with_device_manager ()
+  {
+    owner_.addMidiInputDeviceCallback ({}, &callback);
+  }
+
+  void unregister_from_device_manager ()
+  {
+    owner_.removeMidiInputDeviceCallback ({}, &callback);
+  }
+
+private:
+  DeviceManager &owner_;
+};
+
 DeviceManager::DeviceManager (
   XmlStateGetter state_getter,
   XmlStateSetter state_setter)
     : state_getter_ (std::move (state_getter)),
-      state_setter_ (std::move (state_setter))
+      state_setter_ (std::move (state_setter)),
+      midi_impl_ (std::make_unique<MidiImpl> (*this))
 {
   addChangeListener (&device_change_listener_);
+  midi_impl_->register_with_device_manager ();
 }
 
 DeviceManager::~DeviceManager ()
 {
+  midi_impl_->unregister_from_device_manager ();
   removeChangeListener (&device_change_listener_);
 }
 
@@ -44,6 +103,8 @@ DeviceManager::initialize (
           "Audio device initialization failed: {}", ret.toStdString ()));
     }
   Q_EMIT availableAudioInputsChanged ();
+  Q_EMIT availableMidiInputsChanged ();
+  reconcile_midi_buffers ();
 }
 
 void
@@ -141,6 +202,86 @@ DeviceManager::availableAudioInputs () const
   return result;
 }
 
+QVector<MidiInputInfo>
+DeviceManager::availableMidiInputs () const
+{
+  QVector<MidiInputInfo> result;
+  for (const auto &info : juce::MidiInput::getAvailableDevices ())
+    {
+      if (isMidiInputDeviceEnabled (info.identifier))
+        {
+          result.append (
+            { .deviceName = QString::fromUtf8 (info.name.toRawUTF8 ()),
+              .identifier = QString::fromUtf8 (info.identifier.toRawUTF8 ()) });
+        }
+    }
+  return result;
+}
+
+dsp::MidiDeviceBuffer *
+DeviceManager::midi_buffer_for_device (const utils::Utf8String &identifier) const
+{
+  std::shared_lock lock (midi_impl_->buffers_mutex);
+  auto             it = midi_impl_->buffers.find (identifier);
+  return it != midi_impl_->buffers.end () ? it->second.get () : nullptr;
+}
+
+void
+DeviceManager::set_device_change_callback (
+  std::optional<DeviceChangeCallback> cb)
+{
+  midi_impl_->device_change_cb = std::move (cb);
+}
+
+dsp::IHardwareMidiInterface::BufferMap
+DeviceManager::device_buffers () const
+{
+  std::shared_lock lock (midi_impl_->buffers_mutex);
+  return midi_impl_->buffers;
+}
+
+void
+DeviceManager::reconcile_midi_buffers ()
+{
+  auto &buffers = midi_impl_->buffers;
+
+  const auto available_devices = juce::MidiInput::getAvailableDevices ();
+
+  {
+    std::unique_lock lock (midi_impl_->buffers_mutex);
+
+    std::set<utils::Utf8String> active;
+    for (const auto &info : available_devices)
+      {
+        if (isMidiInputDeviceEnabled (info.identifier))
+          {
+            const auto ident =
+              utils::Utf8String::from_juce_string (info.identifier);
+            active.insert (ident);
+            if (!buffers.contains (ident))
+              {
+                buffers.emplace (
+                  ident, std::make_shared<dsp::MidiDeviceBuffer> ());
+              }
+          }
+      }
+
+    std::erase_if (buffers, [&active] (const auto &entry) {
+      return !active.contains (entry.first);
+    });
+  }
+
+  if (const auto count = midi_impl_->overflow_count.exchange (0); count > 0)
+    {
+      z_warning ("{} MIDI events dropped (FIFO full)", count);
+    }
+
+  if (midi_impl_->device_change_cb)
+    {
+      (*midi_impl_->device_change_cb) ();
+    }
+}
+
 DeviceManager::DeviceSelectorWindow::DeviceSelectorWindow (
   DeviceManager &dev_manager)
     : juce::DocumentWindow (
@@ -168,6 +309,8 @@ DeviceManager::DeviceSelectorWindow::closeButtonPressed ()
 {
   dev_manager_.save_state ();
   Q_EMIT dev_manager_.availableAudioInputsChanged ();
+  Q_EMIT dev_manager_.availableMidiInputsChanged ();
+  dev_manager_.reconcile_midi_buffers ();
   auto * dm = &dev_manager_;
   QTimer::singleShot (0, dm, [dm] () { dm->device_selector_window_.reset (); });
 }

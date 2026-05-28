@@ -206,6 +206,12 @@ public:
     return events_.capacity ();
   }
 
+  void reserve (size_t new_capacity)
+  {
+    const std::lock_guard<crill::spin_mutex> lock (lock_);
+    events_.reserve (new_capacity);
+  }
+
   void print () const;
 
   /**

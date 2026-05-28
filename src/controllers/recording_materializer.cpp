@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <stdexcept>
+
 #include "controllers/recording_materializer.h"
 #include "dsp/file_audio_source.h"
 #include "dsp/midi_event.h"
@@ -272,6 +274,10 @@ RecordingMaterializer::on_midi_data_ready (
           handle_discontinuity (state);
         }
 
+      ensure_midi_region (state, track_id, packet.timeline_position);
+
+      const auto packet_end = packet.timeline_position + packet.nframes;
+
       const auto get_midi_region_and_offset = [&] (units::sample_t pos)
         -> std::optional<
           std::pair<structure::arrangement::MidiRegion *, units::sample_t>> {
@@ -289,10 +295,14 @@ RecordingMaterializer::on_midi_data_ready (
       for (const auto &ev : packet.midi_events)
         {
           const auto status = ev.raw_buffer_[0];
-          const auto type = static_cast<uint8_t> (status & 0xF0);
-          const auto channel = static_cast<uint8_t> (status & 0x0F);
-          const auto d1 = static_cast<uint8_t> (ev.raw_buffer_[1] & 0x7F);
-          const auto d2 = static_cast<uint8_t> (ev.raw_buffer_[2] & 0x7F);
+          const auto type =
+            static_cast<uint8_t> (status & utils::midi::MIDI_STATUS_MASK);
+          const auto channel =
+            static_cast<uint8_t> (status & utils::midi::MIDI_CHANNEL_MASK);
+          const auto d1 = static_cast<uint8_t> (
+            ev.raw_buffer_[1] & utils::midi::MIDI_DATA_MASK);
+          const auto d2 = static_cast<uint8_t> (
+            ev.raw_buffer_[2] & utils::midi::MIDI_DATA_MASK);
 
           const auto event_sample_pos =
             packet.timeline_position
@@ -419,6 +429,26 @@ RecordingMaterializer::on_midi_data_ready (
                       ProgramChange,
                     channel, 0, d1);
                 }
+            }
+        }
+
+      if (state.current_region.has_value ())
+        {
+          auto * region = state.current_region->get_object_as<
+            structure::arrangement::MidiRegion> ();
+          if (region != nullptr)
+            {
+              const auto region_start =
+                units::samples (region->position ()->samples ());
+              const auto new_length = packet_end - region_start;
+              if (new_length < units::samples (0))
+                {
+                  throw std::runtime_error (
+                    fmt::format (
+                      "Computed negative MIDI region length: {}", new_length));
+                }
+              region->bounds ()->length ()->setSamples (
+                static_cast<double> (new_length.in (units::samples)));
             }
         }
 

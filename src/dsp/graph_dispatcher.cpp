@@ -170,4 +170,19 @@ DspGraphDispatcher::recalc_graph (bool soft)
 
   z_info ("Processing graph ready");
 }
+
+void
+DspGraphDispatcher::clear_graph ()
+{
+  if (!scheduler_)
+    return;
+
+  const auto device_info = hw_interface_.get_device_info ();
+
+  run_function_with_engine_lock_ ([&] () {
+    scheduler_->rechain_from_node_collection (
+      graph::GraphNodeCollection{}, device_info.sample_rate,
+      device_info.block_length);
+  });
+}
 }

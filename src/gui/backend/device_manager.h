@@ -3,11 +3,21 @@
 
 #pragma once
 
+#include <memory>
+
+#include "dsp/hardware_midi_interface.h"
+#include "utils/utf8_string.h"
+
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+
+namespace zrythm::dsp
+{
+class MidiDeviceBuffer;
+}
 
 namespace zrythm::gui::backend
 {
@@ -31,9 +41,28 @@ public:
 };
 
 /**
+ * @brief Describes a single MIDI input device.
+ */
+struct MidiInputInfo
+{
+  Q_GADGET
+  Q_PROPERTY (QString deviceName MEMBER deviceName)
+  Q_PROPERTY (QString identifier MEMBER identifier)
+  QML_VALUE_TYPE (midiInputInfo)
+  QML_UNCREATABLE ("")
+
+public:
+  QString deviceName;
+  QString identifier;
+};
+
+/**
  * @brief Wrapper over juce::AudioDeviceManager that exposes changes as signals.
  */
-class DeviceManager : public QObject, public juce::AudioDeviceManager
+class DeviceManager
+    : public QObject,
+      public juce::AudioDeviceManager,
+      public dsp::IHardwareMidiInterface
 {
   Q_OBJECT
   QML_ELEMENT
@@ -42,6 +71,9 @@ class DeviceManager : public QObject, public juce::AudioDeviceManager
   Q_PROPERTY (
     QVector<zrythm::gui::backend::AudioInputInfo> availableAudioInputs READ
       availableAudioInputs NOTIFY availableAudioInputsChanged)
+  Q_PROPERTY (
+    QVector<zrythm::gui::backend::MidiInputInfo> availableMidiInputs READ
+      availableMidiInputs NOTIFY availableMidiInputsChanged)
 
 public:
   using XmlStateGetter = std::function<std::unique_ptr<juce::XmlElement> ()>;
@@ -82,7 +114,23 @@ public:
   QVector<AudioInputInfo> availableAudioInputs () const;
   Q_SIGNAL void           availableAudioInputsChanged ();
 
+  QVector<MidiInputInfo> availableMidiInputs () const;
+  Q_SIGNAL void          availableMidiInputsChanged ();
+
+  dsp::MidiDeviceBuffer *
+  midi_buffer_for_device (const utils::Utf8String &identifier) const;
+
+  // IHardwareMidiInterface
+  void
+  set_device_change_callback (std::optional<DeviceChangeCallback> cb) override;
+  BufferMap device_buffers () const override;
+
 private:
+  struct MidiImpl;
+  friend struct MidiImpl;
+
+  void reconcile_midi_buffers ();
+
   class DeviceChangeListener final : public juce::ChangeListener
   {
   public:
@@ -95,6 +143,8 @@ private:
     void changeListenerCallback (juce::ChangeBroadcaster *) override
     {
       Q_EMIT dev_manager_.availableAudioInputsChanged ();
+      Q_EMIT dev_manager_.availableMidiInputsChanged ();
+      dev_manager_.reconcile_midi_buffers ();
     }
 
     DeviceManager &dev_manager_;
@@ -115,5 +165,6 @@ private:
   XmlStateSetter                        state_setter_;
   std::unique_ptr<DeviceSelectorWindow> device_selector_window_;
   DeviceChangeListener                  device_change_listener_{ *this };
+  std::unique_ptr<MidiImpl>             midi_impl_;
 };
 } // namespace zrythm::gui::backend

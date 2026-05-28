@@ -56,7 +56,9 @@ public:
 
   [[gnu::hot]] UuidIdentifiableBase * find_by_raw_uuid (const QUuid &id) const
   {
-    assert_main_thread ();
+    // Lookups are read-only and safe from the Qt render sync thread (which
+    // runs while the main thread is blocked), so no thread assertion here.
+    // Mutating operations (register, acquire, release) still assert main thread.
     return find_by_raw_uuid_impl (id);
   }
 

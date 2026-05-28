@@ -1056,13 +1056,13 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsAreRegionRelative)
   write_midi_and_drain (track_id, units::samples (1256), true, events3);
 
   ASSERT_EQ (midi_note_creations_.size (), 3u);
-  EXPECT_EQ (midi_note_creations_[1].start_position, units::samples (0))
-    << "First note in second region starts at region start (1010)";
-  EXPECT_EQ (midi_note_creations_[1].end_position, units::samples (346));
-  EXPECT_EQ (midi_note_creations_[2].start_position, units::samples (40))
-    << "Second note start (1050) relative to region start (1010)";
-  EXPECT_EQ (midi_note_creations_[2].end_position, units::samples (446))
-    << "Second note end (1456) relative to region start (1010)";
+  EXPECT_EQ (midi_note_creations_[1].start_position, units::samples (10))
+    << "First note in second region starts at 1010 relative to region start (1000)";
+  EXPECT_EQ (midi_note_creations_[1].end_position, units::samples (356));
+  EXPECT_EQ (midi_note_creations_[2].start_position, units::samples (50))
+    << "Second note start (1050) relative to region start (1000)";
+  EXPECT_EQ (midi_note_creations_[2].end_position, units::samples (456))
+    << "Second note end (1456) relative to region start (1000)";
 }
 
 TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
@@ -1084,8 +1084,8 @@ TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
   ASSERT_EQ (midi_region_create_count_, 2);
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
-  EXPECT_EQ (midi_control_event_creations_[0].position, units::samples (0))
-    << "CC at 1050 relative to region start (1050)";
+  EXPECT_EQ (midi_control_event_creations_[0].position, units::samples (50))
+    << "CC at 1050 relative to region start (1000)";
 }
 
 TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
@@ -1115,6 +1115,71 @@ TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
   EXPECT_EQ (midi_note_creations_[0].end_position, units::samples (256))
     << "Force-completed at last_end_position before discontinuity";
   EXPECT_EQ (midi_note_creations_[1].pitch, 64);
+}
+
+TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvents)
+{
+  create_materializer ();
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
+
+  dsp::MidiEventVector empty_events;
+  write_midi_and_drain (track_id, units::samples (0), true, empty_events);
+
+  EXPECT_EQ (midi_region_create_count_, 1)
+    << "MIDI region should be created on first packet, even with no events";
+  EXPECT_EQ (last_midi_start_position_, units::samples (0));
+  EXPECT_EQ (last_midi_track_id_, track_id);
+
+  auto * region =
+    midi_region_refs_[0].get_object_as<structure::arrangement::MidiRegion> ();
+  ASSERT_NE (region, nullptr);
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0)
+    << "Region end should match packet end after first empty packet";
+
+  dsp::MidiEventVector events;
+  events.add_note_on (1, 60, 100, units::samples (0u));
+  write_midi_and_drain (track_id, units::samples (256), true, events);
+
+  EXPECT_EQ (midi_region_create_count_, 1)
+    << "Same region should be reused for contiguous packets";
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 512.0)
+    << "Region end should extend to cover second packet";
+}
+
+TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
+{
+  create_materializer ();
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
+
+  dsp::MidiEventVector events1;
+  events1.add_note_on (1, 60, 100, units::samples (0u));
+  write_midi_and_drain (track_id, units::samples (0), true, events1);
+  ASSERT_EQ (midi_region_create_count_, 1);
+
+  auto * region =
+    midi_region_refs_[0].get_object_as<structure::arrangement::MidiRegion> ();
+  ASSERT_NE (region, nullptr);
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0);
+
+  dsp::MidiEventVector empty;
+  write_midi_and_drain (track_id, units::samples (256), true, empty);
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 512.0)
+    << "Region end should extend even for empty packets";
+
+  write_midi_and_drain (track_id, units::samples (512), true, empty);
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 768.0)
+    << "Region end should keep extending with contiguous empty packets";
+
+  dsp::MidiEventVector events2;
+  events2.add_note_off (1, 60, units::samples (50u));
+  write_midi_and_drain (track_id, units::samples (768), true, events2);
+  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 1024.0)
+    << "Region end should extend to cover note-off packet";
+  EXPECT_EQ (midi_region_create_count_, 1) << "Still one region throughout";
 }
 
 TEST_F (

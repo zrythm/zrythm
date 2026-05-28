@@ -8,6 +8,7 @@
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
+#include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
@@ -86,10 +87,25 @@ ProjectSession::ProjectSession (
       return ui_state_->find_audio_input_selection (uuid);
     });
 
+  project_->set_midi_input_selection_provider (
+    [this] (
+      const structure::tracks::Track::Uuid &uuid) -> dsp::MidiInputSelection * {
+      return ui_state_->find_midi_input_selection (uuid);
+    });
+
+  auto recalc_graph = [this] {
+    project_->engine ()->graph_dispatcher ().recalc_graph (false);
+  };
   QObject::connect (
     ui_state_.get (),
     &structure::project::ProjectUiState::audioInputSelectionChanged, this,
-    [this] { project_->engine ()->graph_dispatcher ().recalc_graph (false); });
+    recalc_graph);
+  QObject::connect (
+    ui_state_.get (),
+    &structure::project::ProjectUiState::midiInputDeviceChanged, this,
+    recalc_graph);
+
+  wire_midi_input_selections_to_tracks ();
 
   recording_coordinator_ =
     utils::make_qobject_unique<controllers::RecordingCoordinator> (this);
@@ -103,7 +119,7 @@ ProjectSession::ProjectSession (
     [coordinator] (
       const structure::tracks::Track::Uuid &track_id,
       units::sample_t timeline_position, const dsp::ITransport &transport,
-      const dsp::MidiEventVector * midi_events,
+      std::optional<std::span<const dsp::MidiEvent>> midi_events,
       std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
                           stereo_ports,
       units::sample_u32_t nframes) {
@@ -125,7 +141,7 @@ ProjectSession::ProjectSession (
               }
           },
           [&] (controllers::MidiRecordingSession * s) {
-            if (midi_events != nullptr)
+            if (midi_events.has_value ())
               {
                 s->write (
                   timeline_position, transport.recording_enabled (),
@@ -543,6 +559,38 @@ ProjectSession::saveAs (const QString &path)
   QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
 
   return wrapper;
+}
+
+void
+ProjectSession::wire_midi_input_selections_to_tracks ()
+{
+  auto wire_track = [this] (structure::tracks::Track * track) {
+    if (track == nullptr || track->input_signal_type () != dsp::PortType::Midi)
+      return;
+    auto * processor = track->get_track_processor ();
+    if (processor == nullptr)
+      return;
+    auto * selection = ui_state_->find_midi_input_selection (track->get_uuid ());
+    if (selection == nullptr)
+      return;
+    processor->set_hw_midi_channel (selection->midiChannel ());
+    QObject::connect (
+      selection, &dsp::MidiInputSelection::midiChannelChanged, processor,
+      [processor, selection] () {
+        processor->set_hw_midi_channel (selection->midiChannel ());
+      });
+  };
+
+  auto * collection = project_->tracklist ()->collection ();
+  for (size_t i = 0; i < collection->track_count (); ++i)
+    wire_track (collection->get_track_at_index (i));
+
+  QObject::connect (
+    collection, &structure::tracks::TrackCollection::rowsInserted, this,
+    [collection, wire_track] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        wire_track (collection->get_track_at_index (i));
+    });
 }
 
 } // namespace zrythm::gui

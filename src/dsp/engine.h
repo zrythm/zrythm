@@ -10,6 +10,7 @@
 #include "dsp/audio_port.h"
 #include "dsp/graph_dispatcher.h"
 #include "dsp/hardware_audio_interface.h"
+#include "dsp/hardware_midi_interface.h"
 #include "dsp/midi_input_processor.h"
 #include "dsp/midi_panic_processor.h"
 #include "dsp/midi_port.h"
@@ -59,6 +60,7 @@ public:
   AudioEngine (
     dsp::Transport          &transport,
     IHardwareAudioInterface &hw_interface,
+    IHardwareMidiInterface  &midi_interface,
     dsp::DspGraphDispatcher &graph_dispatcher,
     const dsp::TempoMap     &tempo_map,
     QObject *                parent = nullptr);
@@ -190,10 +192,7 @@ public:
     return audio_input_processor_.get ();
   }
 
-  /**
-   * @brief Returns the MIDI input processor, or nullptr if not yet created.
-   */
-  auto * midi_input_processor () const { return midi_input_processor_.get (); }
+  const auto &midi_input_processors () const { return midi_input_processors_; }
 
   /**
    * Queues MIDI note off to event queues.
@@ -232,6 +231,17 @@ private:
    */
   void activate_impl (bool activate);
 
+  /**
+   * @brief Updates the per-device MIDI input processors based on active
+   * buffers.
+   *
+   * @note Must only be called with processing paused.
+   *
+   * @param active_buffers Map of device identifier to MidiDeviceBuffer.
+   */
+  void update_midi_processors (
+    const IHardwareMidiInterface::BufferMap &active_buffers);
+
 private:
   utils::ObjectRegistry local_registry_;
 
@@ -244,6 +254,7 @@ private:
   dsp::DspGraphDispatcher &graph_dispatcher_;
 
   IHardwareAudioInterface &hw_interface_;
+  IHardwareMidiInterface  &midi_interface_;
 
   /**
    * Cycle count to know which cycle we are in.
@@ -310,15 +321,8 @@ private:
 
   utils::QObjectUniquePtr<AudioInputProcessor> audio_input_processor_;
 
-  utils::QObjectUniquePtr<MidiInputProcessor> midi_input_processor_;
-
-  /**
-   * @brief Current MIDI events from hardware, updated each audio callback.
-   *
-   * Only accessed on the audio callback thread. MidiInputProcessor's provider
-   * reads it synchronously during the same callback.
-   */
-  juce::MidiBuffer current_midi_events_;
+  std::map<utils::Utf8String, utils::QObjectUniquePtr<MidiInputProcessor>>
+    midi_input_processors_;
 
   /**
    * @brief Current hardware audio input channels, updated each audio callback.
@@ -333,6 +337,14 @@ private:
    * @brief Whether the audio callback is currently periodically getting
    * called.
    */
-  bool callback_running_{};
+  bool audio_callback_active_{};
+
+  /**
+   * @brief Block start time captured from the audio callback, read inside
+   * process() to set per-processor timestamps.
+   *
+   * Only accessed on the audio callback thread.
+   */
+  units::precise_second_t block_start_time_;
 };
 }
