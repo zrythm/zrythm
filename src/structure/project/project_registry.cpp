@@ -35,6 +35,22 @@ struct ProjectRegistry::Impl
     FileAudioSource,
   };
 
+  ~Impl ()
+  {
+    for (auto &[id, var] : ports_)
+      std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, ptr] : params_)
+      delete ptr;
+    for (auto &[id, var] : plugins_)
+      std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, var] : tracks_)
+      std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, var] : arranger_objects_)
+      std::visit ([] (auto * p) { delete p; }, var);
+    for (auto &[id, ptr] : file_audio_sources_)
+      delete ptr;
+  }
+
   boost::unordered::unordered_flat_map<QUuid, dsp::PortPtrVariant> ports_;
   boost::unordered::unordered_flat_map<QUuid, dsp::ProcessorParameter *> params_;
   boost::unordered::unordered_flat_map<QUuid, plugins::PluginPtrVariant> plugins_;
@@ -60,6 +76,7 @@ ProjectRegistry::ProjectRegistry (QObject * parent)
 ProjectRegistry::~ProjectRegistry ()
 {
   destroying_ = true;
+  impl_.reset ();
 }
 
 void

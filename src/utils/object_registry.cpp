@@ -4,6 +4,7 @@
 #include "utils/format_qt.h"
 
 #include "utils/object_registry.h"
+#include "utils/qt.h"
 
 #include <boost/unordered/unordered_flat_map.hpp>
 
@@ -12,7 +13,8 @@ namespace zrythm::utils
 
 struct ObjectRegistry::Impl
 {
-  boost::unordered::unordered_flat_map<QUuid, utils::UuidIdentifiableBase *>
+  boost::unordered::
+    unordered_flat_map<QUuid, QObjectUniquePtr<utils::UuidIdentifiableBase>>
                                                    objects_by_id_;
   boost::unordered::unordered_flat_map<QUuid, int> ref_counts_;
 };
@@ -64,7 +66,7 @@ utils::UuidIdentifiableBase *
 ObjectRegistry::find_by_raw_uuid_impl (const QUuid &id) const
 {
   const auto it = impl_->objects_by_id_.find (id);
-  return it != impl_->objects_by_id_.end () ? it->second : nullptr;
+  return it != impl_->objects_by_id_.end () ? it->second.get () : nullptr;
 }
 
 bool
@@ -78,8 +80,9 @@ ObjectRegistry::for_each_matching_impl (
   const QMetaObject &meta_type,
   ObjectVisitor      visitor) const
 {
-  for (const auto &[id, obj] : impl_->objects_by_id_)
+  for (const auto &[id, obj_ptr] : impl_->objects_by_id_)
     {
+      auto * obj = obj_ptr.get ();
       if (obj->metaObject ()->inherits (&meta_type))
         visitor (*obj);
     }
@@ -91,10 +94,8 @@ ObjectRegistry::delete_object_by_id (const QUuid &id)
   const auto it = impl_->objects_by_id_.find (id);
   if (it == impl_->objects_by_id_.end ())
     return;
-  auto * obj = it->second;
   impl_->objects_by_id_.erase (it);
   impl_->ref_counts_.erase (id);
-  delete obj;
 }
 
 int
