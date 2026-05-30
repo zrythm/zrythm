@@ -441,6 +441,7 @@ build:gnu/linux:
       - BUILD_TYPE: [Debug, Release]
   artifacts:
     paths:
+      - ${BUILDDIR}-${BUILD_TYPE}/version.env
       - package-${BUILD_TYPE}/*.tar.xz*
       - package-${BUILD_TYPE}/*.AppImage*
       - ${BUILDDIR}-${BUILD_TYPE}/test_results/*.xml
