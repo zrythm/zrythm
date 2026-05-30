@@ -1,20 +1,16 @@
 <!---
-SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP
 -->
 
 Zrythm
 ======
 
-> [!WARNING]
-> Zrythm is undergoing major refactoring in this branch.
-> Use the `v1` branch if you are looking for a usable version.
-
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
 
 *a highly automated and intuitive digital audio workstation*
 
-![screenshot](https://www.zrythm.org/static/images/screenshots/screenshot-20240208.png)
+![screenshot](https://www.zrythm.org/downloads/screenshot_20260530.png)
 
 Zrythm is a digital audio workstation tailored for both professionals and beginners, offering an intuitive interface and robust functionality.
 
@@ -31,33 +27,48 @@ in C++23 using Qt/QML and JUCE.
 
 ## Features
 
-- Object looping, cloning, linking and stretching
+- Clip looping and cloning
 - Adaptive snapping
 - Multiple lanes per track
+- Piano roll (MIDI editor) with velocity editor
+- Audio editor with adjustable gain/fades
+- Audio/MIDI recording with takes
+- Wide variety of track types for every purpose
+- Support for VST3, CLAP, LV2, LADSPA and AudioUnit plugins
+- Type 0 and 1 MIDI file support
+- WAV audio file import
+- Built-in plugin browser
+- Undoable user actions with undo history
+- Hardware-accelerated UI
+- SIMD-optimized DSP
+- Cross-platform, cross-audio/MIDI backend and cross-architecture
+- Available in multiple languages including Chinese, Japanese, Russian, Portuguese, French and German
+
+<details>
+<summary>Not yet ported from v1 (click to expand)</summary>
+
+- Clip linking and stretching
 - Bounce anything to audio or MIDI
-- Piano roll (MIDI editor) with chord integration, drum mode and a lollipop velocity editor
-- Audio editor with part editing (including in external app) and adjustable gain/fades
+- Piano roll chord integration and drum mode
+- Audio editor part editing (including in external app)
 - Event viewers (list editors) with editable object parameters
 - Per-context object functions
-- Audio/MIDI/automation recording with options to punch in/out, record on MIDI input and create takes
+- Punch in/out recording and record on MIDI input
 - Device-bindable parameters for external control
-- Wide variety of track types for every purpose
 - Signal manipulation with signal groups, aux sends and direct anywhere-to-anywhere connections
 - In-context listening by dimming other tracks
 - Automate anything using automation events or CV signal from modulator plugins and macro knobs
 - Detachable views for multi-monitor setups
 - Searchable preferences
-- Support for LV2/CLAP/VST2/VST3/AU/LADSPA/DSSI plugins, SFZ/SF2 SoundFonts, Type 0 and 1 MIDI files, and almost every audio file format
-- Flexible built-in file and plugin browsers
+- VST2, DSSI, SFZ/SF2 SoundFont support and other audio file formats
+- Built-in file browser
 - Optional plugin sandboxing (bridging)
 - Stem export
 - Chord pad with built-in and user presets, including the ability to generate chords from scales
 - Automatic project backups
-- Undoable user actions with serializable undo history
-- Hardware-accelerated UI
-- SIMD-optimized DSP
-- Cross-platform, cross-audio/MIDI backend and cross-architecture
-- Available in multiple languages including Chinese, Japanese, Russian, Portuguese, French and German
+- Serializable undo history
+
+</details>
 
 For a full list of features, see the
 [Features page](https://www.zrythm.org/en/features.html)
@@ -106,19 +117,24 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
 > [!NOTE]
 > On Windows, you must build Qt with the same compiler and same configuration (Debug/Release) you use to build Zrythm.
 
-## Using Zryhm
+## Using Zrythm
+
 See the [user manual](http://manual.zrythm.org/).
 
 ## Contributing
+
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hacking
+
 See the [developer docs](https://docs.zrythm.org/).
 
 ## Forum
+
 See [our forum](https://forum.zrythm.org).
 
 ## Chat
+
 * [Zrythm server on Discord](https://discord.gg/ScHUMcNtPb)
 * [#zrythmdaw:matrix.org on Matrix](https://matrix.to/#/#zrythmdaw:matrix.org).
 * [#zrythm on Libera.Chat IRC](https://web.libera.chat/#zrythm).
@@ -127,22 +143,27 @@ See [our forum](https://forum.zrythm.org).
 See [Issues on GitLab](https://gitlab.zrythm.org/zrythm/zrythm/issues).
 
 ## Releases
+
 <https://www.zrythm.org/releases>
 
 ## Copying Zrythm
+
 [![agpl-3.0](https://www.gnu.org/graphics/agplv3-with-text-162x68.png)](https://www.gnu.org/licenses/agpl-3.0)
 
 See [COPYING](COPYING) for general copying conditions and
 [TRADEMARKS.md](TRADEMARKS.md) for our trademark policy.
 
 ## Support
-If you would like to support this project please donate below or purchase a
-binary installer from
-<https://www.zrythm.org/en/download.html> - creating
-a DAW takes years of work and contributions enable
+
+If you would like to support this project please donate below or purchase a binary installer from <https://www.zrythm.org/en/download.html> - creating a DAW takes many years of work and contributions enable
 us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
 - [paypal.me/zrythmdaw](https://paypal.me/zrythmdaw)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
+
+This project is currently funded through [NGI0 Commons Fund](https://nlnet.nl/commonsfund), a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) program. Learn more at the [NLnet project page](https://nlnet.nl/project/Zrythm).
+
+[<img src="https://nlnet.nl/logo/banner.png" alt="NLnet foundation logo" width="20%" />](https://nlnet.nl)
+[<img src="https://nlnet.nl/image/logos/NGI0_tag.svg" alt="NGI Zero Logo" width="20%" />](https://nlnet.nl/commonsfund)
