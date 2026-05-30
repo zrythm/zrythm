@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/serialization.h"
+
 #include "./uuid_reference_test.h"
 #include <gmock/gmock.h>
-#include <nlohmann/json.hpp>
 
 namespace zrythm::utils
 {

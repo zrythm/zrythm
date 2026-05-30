@@ -7,6 +7,7 @@
 
 #include "structure/arrangement/midi_region.h"
 #include "structure/scenes/clip_slot.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"

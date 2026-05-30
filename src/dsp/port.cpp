@@ -5,6 +5,7 @@
 #include "dsp/port_all.h"
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

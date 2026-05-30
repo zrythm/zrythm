@@ -6,6 +6,8 @@
 #include <span>
 
 #include "dsp/curve.h"
+#include "utils/midi.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::structure::arrangement
 {

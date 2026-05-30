@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,6 +6,8 @@
 #include "dsp/parameter.h"
 #include "utils/icloneable.h"
 #include "utils/iobject_registry.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 #define MIDI_MAPPINGS (PROJECT->midi_mappings_)
 
@@ -39,27 +41,8 @@ private:
   static constexpr auto kDeviceIdKey = "deviceIdentifier"sv;
   static constexpr auto kDestIdKey = "destId"sv;
   static constexpr auto kEnabledKey = "enabled"sv;
-  friend void           to_json (nlohmann::json &j, const MidiMapping &mapping)
-  {
-    j[kKeyKey] = mapping.key_;
-    j[kDeviceIdKey] = mapping.device_id_;
-    if (mapping.dest_id_)
-      {
-        j[kDestIdKey] = *mapping.dest_id_;
-      }
-    j[kEnabledKey] = mapping.enabled_.load ();
-  }
-  friend void from_json (const nlohmann::json &j, MidiMapping &mapping)
-  {
-    j.at (kKeyKey).get_to (mapping.key_);
-    j.at (kDeviceIdKey).get_to (mapping.device_id_);
-    if (j.contains (kDestIdKey))
-      {
-        mapping.dest_id_.emplace (mapping.registry_);
-        j.at (kDestIdKey).get_to (*mapping.dest_id_);
-      }
-    mapping.enabled_.store (j.at (kEnabledKey).get<bool> ());
-  }
+  friend void           to_json (nlohmann::json &j, const MidiMapping &mapping);
+  friend void from_json (const nlohmann::json &j, MidiMapping &mapping);
 
 public:
   utils::IObjectRegistry &registry_;
@@ -172,10 +155,7 @@ public:
 
 private:
   static constexpr auto kMappingsKey = "mappings"sv;
-  friend void to_json (nlohmann::json &j, const MidiMappings &mappings)
-  {
-    j[kMappingsKey] = mappings.mappings_;
-  }
+  friend void to_json (nlohmann::json &j, const MidiMappings &mappings);
   friend void from_json (const nlohmann::json &j, MidiMappings &mappings);
 
 public:

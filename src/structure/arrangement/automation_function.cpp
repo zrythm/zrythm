@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2020, 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/curve.h"
 #include "structure/arrangement/automation_function.h"
+#include "structure/arrangement/automation_point.h"
 #include "utils/enum_utils.h"
+#include "utils/logger.h"
 
 DEFINE_ENUM_FORMATTER (
   zrythm::structure::arrangement::AutomationFunction::Type,

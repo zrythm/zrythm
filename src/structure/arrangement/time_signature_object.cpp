@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/time_signature_object.h"
+#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/port_connection.h"
+#include "utils/serialization.h"
 
 #include <gtest/gtest.h>
 

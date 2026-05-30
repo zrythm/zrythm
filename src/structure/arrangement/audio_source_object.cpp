@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/audio_source_object.h"
+#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {

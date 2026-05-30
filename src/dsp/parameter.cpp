@@ -7,8 +7,8 @@
 #include "dsp/port_all.h"
 #include "utils/enum_utils.h"
 #include "utils/registry_utils.h"
-
-#include <nlohmann/json.hpp>
+#include "utils/serialization.h"
+#include "utils/utf8_string.h"
 
 namespace zrythm::dsp
 {

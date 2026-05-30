@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/automation_point.h"
+#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {

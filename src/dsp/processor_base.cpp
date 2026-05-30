@@ -7,6 +7,8 @@
 #include "utils/raii_utils.h"
 #include "utils/views.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 

@@ -6,6 +6,7 @@
 #include "dsp/port_connection.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>

@@ -13,11 +13,15 @@
 #include "utils/audio.h"
 #include "utils/audio_file.h"
 #include "utils/debug.h"
+#include "utils/exceptions.h"
 #include "utils/float_ranges.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
+
+using zrythm::utils::exceptions::ZrythmException;
 
 namespace zrythm::dsp
 {

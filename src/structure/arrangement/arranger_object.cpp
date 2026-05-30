@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/arrangement/arranger_object.h"
+#include "utils/serialization.h"
 
 namespace zrythm::structure::arrangement
 {

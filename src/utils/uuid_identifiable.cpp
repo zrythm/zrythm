@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/serialization.h"
 #include "utils/uuid_identifiable.h"
 
 #include <nlohmann/json.hpp>

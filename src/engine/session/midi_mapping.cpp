@@ -8,7 +8,9 @@
 
 #include "dsp/midi_event.h"
 #include "engine/session/midi_mapping.h"
+#include "utils/logger.h"
 #include "utils/midi.h"
+#include "utils/serialization.h"
 
 namespace zrythm::engine::session
 {
@@ -183,6 +185,37 @@ MidiMappings::get_for_port (
         }
     }
   return count;
+}
+
+void
+to_json (nlohmann::json &j, const MidiMapping &mapping)
+{
+  j[MidiMapping::kKeyKey] = mapping.key_;
+  j[MidiMapping::kDeviceIdKey] = mapping.device_id_;
+  if (mapping.dest_id_)
+    {
+      j[MidiMapping::kDestIdKey] = *mapping.dest_id_;
+    }
+  j[MidiMapping::kEnabledKey] = mapping.enabled_.load ();
+}
+
+void
+from_json (const nlohmann::json &j, MidiMapping &mapping)
+{
+  j.at (MidiMapping::kKeyKey).get_to (mapping.key_);
+  j.at (MidiMapping::kDeviceIdKey).get_to (mapping.device_id_);
+  if (j.contains (MidiMapping::kDestIdKey))
+    {
+      mapping.dest_id_.emplace (mapping.registry_);
+      j.at (MidiMapping::kDestIdKey).get_to (*mapping.dest_id_);
+    }
+  mapping.enabled_.store (j.at (MidiMapping::kEnabledKey).get<bool> ());
+}
+
+void
+to_json (nlohmann::json &j, const MidiMappings &mappings)
+{
+  j[MidiMappings::kMappingsKey] = mappings.mappings_;
 }
 
 void

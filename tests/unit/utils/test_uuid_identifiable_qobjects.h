@@ -6,6 +6,7 @@
 #include "utils/uuid_identifiable_object.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm
 {

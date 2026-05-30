@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/move_tracks_command.h"
-#include "structure/tracks/folder_track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"

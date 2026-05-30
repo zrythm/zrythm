@@ -3,6 +3,7 @@
 
 #include "dsp/passthrough_processors.h"
 #include "utils/object_registry.h"
+#include "utils/serialization.h"
 
 #include <QObject>
 

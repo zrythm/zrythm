@@ -4,6 +4,7 @@
 #include "dsp/port_connections_manager.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {

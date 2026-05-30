@@ -32,7 +32,7 @@ public:
       : QObject (parent), uuid_ (QUuid::createUuid ())
   {
   }
-  UuidIdentifiableBase (const QUuid &id, QObject * parent = nullptr)
+  explicit UuidIdentifiableBase (const QUuid &id, QObject * parent = nullptr)
       : QObject (parent), uuid_ (id)
   {
   }

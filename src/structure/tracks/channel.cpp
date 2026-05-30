@@ -4,6 +4,8 @@
 #include <utility>
 
 #include "structure/tracks/channel.h"
+#include "utils/logger.h"
+#include "utils/serialization.h"
 #include "utils/views.h"
 
 namespace zrythm::structure::tracks

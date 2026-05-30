@@ -6,7 +6,9 @@
 #include "dsp/file_audio_source.h"
 #include "dsp/panning.h"
 #include "utils/audio.h"
+#include "utils/exceptions.h"
 #include "utils/io_utils.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <QSignalSpy>

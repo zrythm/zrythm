@@ -6,6 +6,7 @@
 #include "dsp/fader.h"
 #include "dsp/metronome.h"
 #include "engine/session/control_room.h"
+#include "structure/tracks/track_all.h"
 #include "utils/float_ranges.h"
 
 #include <QFile>

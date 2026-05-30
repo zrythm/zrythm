@@ -8,6 +8,7 @@
 #include "utils/io_utils.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <gtest/gtest.h>

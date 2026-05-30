@@ -7,6 +7,7 @@
 #include "utils/registry_utils.h"
 
 #include <fmt/format.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::tracks
 {

@@ -13,6 +13,8 @@
 #include "utils/midi.h"
 #include "utils/registry_utils.h"
 
+#include <nlohmann/json.hpp>
+
 namespace zrythm::dsp
 {
 

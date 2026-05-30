@@ -4,6 +4,7 @@
 #include "plugins/plugin.h"
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 
 #include <QTimer>
 

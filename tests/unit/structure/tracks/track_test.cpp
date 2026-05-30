@@ -3,6 +3,8 @@
 
 #include "structure/tracks/track.h"
 
+#include <QSignalSpy>
+
 #include "unit/structure/tracks/mock_track.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

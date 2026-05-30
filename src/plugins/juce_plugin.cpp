@@ -10,6 +10,7 @@
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)

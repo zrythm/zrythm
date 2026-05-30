@@ -4,6 +4,7 @@
 #include "plugins/plugin_all.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
+#include "utils/views.h"
 
 namespace zrythm::structure::tracks
 {

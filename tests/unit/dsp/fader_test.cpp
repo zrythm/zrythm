@@ -6,6 +6,7 @@
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
 #include "utils/object_registry.h"
+#include "utils/serialization.h"
 
 #include <QObject>
 

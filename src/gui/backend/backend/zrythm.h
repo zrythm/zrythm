@@ -8,6 +8,7 @@
 #include "utils/monotonic_time_provider.h"
 #include "utils/symap.h"
 #include "utils/types.h"
+#include "utils/utf8_string.h"
 #include "utils/version.h"
 
 #include <QtQmlIntegration/QtQmlIntegration>

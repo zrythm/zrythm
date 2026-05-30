@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/metronome.h"
@@ -466,7 +468,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // add additional custom connections from the PortConnectionsManager
   {
     const auto &mgr = *project->port_connections_manager_;
-    for (const auto &conn : mgr.get_connections ())
+    for (const auto &conn : mgr.connections ())
       {
         auto &src_port_base =
           utils::get_typed<dsp::Port> (project->get_registry (), conn->src_id_);

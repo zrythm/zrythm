@@ -9,9 +9,9 @@
 #include "utils/format.h"
 #include "utils/format_boost.h"
 #include "utils/logger.h"
+#include "utils/serialization.h"
 
 #include <fmt/format.h>
-#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
@@ -30,7 +30,7 @@ init_from (
   obj.connections_.reserve (other.connections_.size ());
   for (const auto &conn : other.connections_)
     {
-      obj.connections_.push_back (utils::clone_qobject (*conn, &obj));
+      obj.connections_.push_back (utils::clone_unique_qobject (*conn, &obj));
     }
   obj.regenerate_hashtables ();
 }
@@ -65,9 +65,7 @@ PortConnectionsManager::update_connection (
       z_return_val_if_reached (false);
     }
 
-  (*it)->setParent (nullptr);
-  (*it)->deleteLater ();
-  *it = utils::clone_qobject (after, this);
+  it->reset (utils::clone_qobject (after, this));
   regenerate_hashtables ();
 
   return true;
@@ -227,7 +225,7 @@ PortConnectionsManager::get_connection (
   auto it = std::ranges::find_if (connections_, [&] (const auto &conn) {
     return conn->src_id_ == src && conn->dest_id_ == dest;
   });
-  return it != connections_.end () ? (*it) : nullptr;
+  return it != connections_.end () ? it->get () : nullptr;
 }
 
 const PortConnection *
@@ -244,12 +242,13 @@ PortConnectionsManager::add_connection (
         {
           conn->update (multiplier, locked, enabled);
           regenerate_hashtables ();
-          return conn;
+          return conn.get ();
         }
     }
 
   connections_.push_back (
-    new PortConnection (src, dest, multiplier, locked, enabled, this));
+    utils::make_qobject_unique<PortConnection> (
+      src, dest, multiplier, locked, enabled, this));
   const auto &conn = connections_.back ();
 
   z_debug (
@@ -257,18 +256,18 @@ PortConnectionsManager::add_connection (
 
   regenerate_hashtables ();
 
-  return conn;
+  return conn.get ();
 }
 
 void
 PortConnectionsManager::remove_connection (const size_t idx)
 {
-  auto * const conn = connections_[idx];
-
-  connections_.erase (std::next (connections_.begin (), (int) idx));
+  auto &conn = connections_[idx];
 
   z_debug (
     "Disconnected <{}>; have {} connections", *conn, connections_.size ());
+
+  connections_.erase (std::next (connections_.begin (), (int) idx));
 
   regenerate_hashtables ();
 }
@@ -318,7 +317,11 @@ PortConnectionsManager::reset_connections_from_other (
 
   if (other != nullptr)
     {
-      connections_ = other->connections_;
+      connections_.reserve (other->connections_.size ());
+      for (const auto &conn : other->connections_)
+        {
+          connections_.push_back (utils::clone_unique_qobject (*conn, this));
+        }
       regenerate_hashtables ();
     }
 }
@@ -351,6 +354,7 @@ PortConnectionsManager::print () const
   z_info ("{}", str.c_str ());
 }
 
+using namespace std::string_view_literals;
 static constexpr auto kConnectionsKey = "connections"sv;
 
 void
@@ -362,13 +366,12 @@ to_json (nlohmann::json &j, const PortConnectionsManager &pcm)
 void
 from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
 {
-  qDeleteAll (pcm.connections_);
   pcm.connections_.clear ();
   for (const auto &conn_json : j.at (kConnectionsKey))
     {
-      auto * conn = new PortConnection (&pcm);
+      auto conn = utils::make_qobject_unique<PortConnection> (&pcm);
       from_json (conn_json, *conn);
-      pcm.connections_.push_back (conn);
+      pcm.connections_.push_back (std::move (conn));
     }
   pcm.regenerate_hashtables ();
 }

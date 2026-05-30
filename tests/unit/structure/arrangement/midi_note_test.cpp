@@ -7,10 +7,13 @@
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/midi_note.h"
 
+#include <QSignalSpy>
+
 #include "helpers/mock_qobject.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

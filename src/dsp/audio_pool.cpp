@@ -10,10 +10,15 @@
 #include <fmt/std.h>
 
 #include "dsp/audio_pool.h"
+#include "utils/exceptions.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 #include "utils/utf8_string.h"
+#include "utils/uuid_identifiable_object.h"
+
+using zrythm::utils::exceptions::ZrythmException;
 
 namespace zrythm::dsp
 {

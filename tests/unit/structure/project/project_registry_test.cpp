@@ -10,6 +10,7 @@
 #include "structure/project/project_registry.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 
 #include "helpers/scoped_qcoreapplication.h"
 

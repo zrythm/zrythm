@@ -14,6 +14,7 @@
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::tracks
 {

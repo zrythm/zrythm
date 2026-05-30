@@ -6,6 +6,7 @@
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"

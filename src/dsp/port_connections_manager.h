@@ -5,6 +5,7 @@
 
 #include "dsp/port_connection.h"
 #include "utils/icloneable.h"
+#include "utils/qt.h"
 
 #include <nlohmann/json_fwd.hpp>
 
@@ -34,7 +35,8 @@ private:
    */
   using ConnectionHashTable = std::unordered_map<PortUuid, ConnectionsVector>;
 
-  static const auto &connection_ref_predicate (const PortConnection * conn)
+  static const auto &
+  connection_ref_predicate (const utils::QObjectUniquePtr<PortConnection> &conn)
   {
     return *conn;
   }
@@ -212,7 +214,7 @@ public:
     regenerate_hashtables ();
   }
 
-  auto &get_connections () const { return connections_; }
+  auto &connections () const { return connections_; }
 
 private:
   friend void to_json (nlohmann::json &j, const PortConnectionsManager &pcm);
@@ -227,7 +229,7 @@ private:
 
 private:
   /** Connections (owned pointers). */
-  std::vector<PortConnection *> connections_;
+  std::vector<utils::QObjectUniquePtr<PortConnection>> connections_;
 
   /**
    * Hashtable to speedup lookup by source port identifier.

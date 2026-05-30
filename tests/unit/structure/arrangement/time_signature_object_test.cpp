@@ -11,6 +11,7 @@
 #include "helpers/mock_qobject.h"
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
 {

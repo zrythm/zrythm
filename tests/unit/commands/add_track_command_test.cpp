@@ -3,7 +3,7 @@
 
 #include "commands/add_track_command.h"
 #include "plugins/internal_plugin_base.h"
-#include "structure/tracks/track.h"
+#include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
