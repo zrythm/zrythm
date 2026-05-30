@@ -35,6 +35,15 @@ stages:
   - source ./venv/bin/activate
   - export CPM_SOURCE_CACHE="${HOME}/.cache/CPM"
 
+.ssh-setup: &ssh-setup
+  - eval $(ssh-agent -s)
+  - chmod 400 "$SSH_PRIVATE_KEY"
+  - ssh-add "$SSH_PRIVATE_KEY"
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  - chmod 600 "$SSH_PRIVATE_KEY"
+
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
   # Temporary solution until cmake 4.2.0 release
@@ -380,6 +389,25 @@ check:sanitizer-realtime:
   variables:
     SANITIZER_TYPE: "REALTIME"
 
+check:build-without-pch:
+  extends: .gnu-linux-template
+  tags:
+    - archlinux
+  stage: check
+  needs: []
+  script:
+    - >-
+      cmake -B build_no_pch ${COMMON_CMAKE_OPTIONS}
+      -G "Ninja"
+      -DCMAKE_C_COMPILER=gcc
+      -DCMAKE_CXX_COMPILER=g++
+      -DCMAKE_PREFIX_PATH=${INSTALLED_QT_PREFIX}
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+      -DZRYTHM_UNITY_BUILD=OFF
+      -DZRYTHM_TESTS=OFF
+    - cmake --build build_no_pch --parallel
+
 # AddressSanitizer/LeakSanitizer/MemorySanitizer are not needed since we are
 # running valgrind anyway
 
@@ -502,14 +530,8 @@ update-manual:
     - cmake --build ${BUILDDIR} --target manual_bundle &> manual_bundle_results.txt || (cat manual_bundle_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times --exclude '*.zip' "${BUILDDIR}"/doc/user/_rendered/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_USER_MANUAL_UPLOAD_PATH
   before_script:
-    - eval $(ssh-agent -s)
-    - chmod 400 "$SSH_PRIVATE_KEY"
-    - ssh-add "$SSH_PRIVATE_KEY"
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - *ssh-setup
     - *unix-activate-venv
-    - chmod 600 "$SSH_PRIVATE_KEY"
 
 update-dev-docs:
   extends: .gnu-linux-template
@@ -527,14 +549,8 @@ update-dev-docs:
     - cmake --build ${BUILDDIR} --target doxygen-docs &> gen_dev_docs_results.txt || (cat gen_dev_docs_results.txt && exit 1)
     - rsync -av --no-group --omit-dir-times "${BUILDDIR}"/doc/dev/html/* $REMOTE_CI_USER@www.zrythm.org:$REMOTE_DEV_DOCS_UPLOAD_PATH
   before_script:
-    - eval $(ssh-agent -s)
-    - chmod 400 "$SSH_PRIVATE_KEY"
-    - ssh-add "$SSH_PRIVATE_KEY"
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+    - *ssh-setup
     - *unix-activate-venv
-    - chmod 600 "$SSH_PRIVATE_KEY"
 
 deploy:installers:
   extends: .gnu-linux-template
@@ -581,10 +597,38 @@ deploy:installers:
     - if [ -n "$gnuLinuxAppImageArtifact" ]; then
       python3 scripts/deploy_file_to_s3.py --prefix "packages/gnu-linux-cpack" "$gnuLinuxAppImageArtifact";
       fi
-    - python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V"
+    # Create product on accounts.zrythm.org
+    - |
+      if [ -n "$CI_COMMIT_TAG" ]; then
+        python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V" --tag
+      else
+        python3 scripts/create_zrythm_accounts_product.py --version "$VERSION_WITHOUT_V"
+      fi
   dependencies:
     - build:windows
     - build:mac-arm
     - build:gnu/linux
   before_script:
+    - *unix-activate-venv
+
+deploy:source:
+  extends: .gnu-linux-template
+  stage: deploy
+  tags:
+    - archlinux
+  variables:
+    GIT_DEPTH: 0
+  only:
+    - tags
+  script:
+    - VERSION_NO_V=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+    - TARBALL_NAME="zrythm-${VERSION_NO_V}"
+    - TARBALL="${TARBALL_NAME}.tar.xz"
+    - git archive --prefix="${TARBALL_NAME}/" --format=tar.xz -o "${TARBALL}" "${CI_COMMIT_TAG}"
+    - gpg --batch --yes --import "$GPG_SIGNING_PRIVATE_KEY_FILE"
+    - gpg --batch --yes --pinentry-mode loopback --armor --detach-sign --output "${TARBALL}.asc" "${TARBALL}"
+    - sha256sum "${TARBALL}" > "${TARBALL}.sha256sum"
+    - rsync -av --no-group --omit-dir-times "${TARBALL}" "${TARBALL}.asc" "${TARBALL}.sha256sum" $REMOTE_CI_USER@www.zrythm.org:$REMOTE_SOURCE_RELEASES_UPLOAD_PATH
+  before_script:
+    - *ssh-setup
     - *unix-activate-venv

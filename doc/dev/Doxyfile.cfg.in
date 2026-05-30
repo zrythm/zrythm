@@ -801,14 +801,12 @@ INPUT                  = \
   @CMAKE_SOURCE_DIR@/doc/dev/playback_cache_architecture.md \
   @CMAKE_SOURCE_DIR@/doc/dev/processing_cycle.h \
   @CMAKE_SOURCE_DIR@/doc/dev/repo-management.md \
-  @CMAKE_SOURCE_DIR@/doc/dev/release_checklist.h \
   @CMAKE_SOURCE_DIR@/doc/dev/weblate.h \
   @CMAKE_SOURCE_DIR@/doc/dev/undo_system.md \
   @CMAKE_SOURCE_DIR@/doc/dev/versioning.md \
   @CMAKE_SOURCE_DIR@/CONTRIBUTING.md \
   @CMAKE_SOURCE_DIR@/doc/dev/group_defs.dox \
-  @CMAKE_SOURCE_DIR@/INSTALL.rst \
-  @CMAKE_SOURCE_DIR@/git-packaging-hooks/README.md
+  @CMAKE_SOURCE_DIR@/INSTALL.rst
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
