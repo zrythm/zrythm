@@ -1,5 +1,5 @@
 #/usr/bin/env python3
-# SPDX-FileCopyrightText: © 2022-2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2022-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import os
@@ -26,10 +26,11 @@ def get_releases():
     for release_info in changelog_list:
         lines = release_info.split("\n")
         ver = lines[0].split("]")[0]
-        # Skip development and pre-v1 releases
-        if ('-' in ver) or ver.startswith("0."):
+        if ver.startswith("0."):
             continue
         date_str = lines[0].split("] - ")[1].strip()
+        is_prerelease = '-' in ver
+        release_type = ' type="development"' if is_prerelease else ""
         changelog_nfo = "\n".join(lines[1:])
         description = []
         for line in changelog_nfo.split("\n"):
@@ -40,7 +41,7 @@ def get_releases():
                 description.extend(get_list_for_changelog_group(changelog_nfo, title))
                 description.append("</ul>")
         releases_list.append(
-            f"""<release date="{date_str}" version="{ver}">
+            f"""<release date="{date_str}" version="{ver}"{release_type}>
                 <url>@release_tag_base_url@/v{ver}</url>
                 <description>
                     {"".join(description)}

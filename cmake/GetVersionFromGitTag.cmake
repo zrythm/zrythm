@@ -1,7 +1,8 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-FileCopyrightText: Nuno Fachada
 # SPDX-License-Identifier: CC0-1.0
 #
-# Taken from https://github.com/nunofachada/cmake-git-semver
+# Taken from https://github.com/nunofachada/cmake-git-semver and modified
 #
 # This cmake module sets the project version and partial version
 # variables by analysing the git tag and commit history. It expects git
@@ -59,7 +60,7 @@ if (should_use_git AND GIT_DESCRIBE_RESULT EQUAL 0)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   # How many commits since last tag
-  execute_process(COMMAND ${GIT_EXECUTABLE} rev-list ${CURRENT_BRANCH} ${${PROJECT_NAME}_VERSION_STRING}^..HEAD --count
+  execute_process(COMMAND ${GIT_EXECUTABLE} rev-list ${CURRENT_BRANCH} ${${PROJECT_NAME}_VERSION_STRING}..HEAD --count
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_AHEAD
     OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -94,8 +95,12 @@ if (should_use_git AND GIT_DESCRIBE_RESULT EQUAL 0)
   unset(${PROJECT_NAME}_PARTIAL_VERSION_LIST)
 
   # Set full project version string
-  set(${PROJECT_NAME}_VERSION_STRING_FULL
-    ${${PROJECT_NAME}_VERSION_STRING}+${${PROJECT_NAME}_VERSION_AHEAD}.${${PROJECT_NAME}_VERSION_GIT_SHA})
+  if(${${PROJECT_NAME}_VERSION_AHEAD} GREATER 0)
+    set(${PROJECT_NAME}_VERSION_STRING_FULL
+      ${${PROJECT_NAME}_VERSION_STRING}+${${PROJECT_NAME}_VERSION_AHEAD}.${${PROJECT_NAME}_VERSION_GIT_SHA})
+  else()
+    set(${PROJECT_NAME}_VERSION_STRING_FULL ${${PROJECT_NAME}_VERSION_STRING})
+  endif()
 
 else()
 
