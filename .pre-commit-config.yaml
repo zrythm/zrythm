@@ -15,11 +15,11 @@ repos:
 - repo: local
   hooks:
   - id: clang-format
-    name: Clang format
-    entry: python3 scripts/run_clang_format.py --dry-run
+    name: clang-format
+    entry: clang-format --dry-run --Werror -style=file
     language: system
-    pass_filenames: false
-    always_run: true
+    types_or: [c++, c]
+    pass_filenames: true
 - repo: https://github.com/fsfe/reuse-tool
   rev: v5.1.1
   hooks:
