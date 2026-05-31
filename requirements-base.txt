@@ -34,3 +34,6 @@ gprof2dot
 
 # HTML parsing (for docs/scripts)
 beautifulsoup4
+
+# GitHub operations
+PyGithub

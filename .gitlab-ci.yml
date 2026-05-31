@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 workflow:
@@ -605,5 +605,26 @@ deploy:installers:
     - build:windows
     - build:mac-arm
     - build:gnu/linux
+  before_script:
+    - *unix-activate-venv
+
+deploy:github-release:
+  extends: .gnu-linux-template
+  stage: deploy
+  tags:
+    - archlinux
+  only:
+    - tags
+  needs:
+    - job: deploy:installers
+    - job: build:gnu/linux
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: Release
+  script:
+    - source ${BUILDDIR}-Release/version.env
+    - VERSION_WITHOUT_V=$(echo $VERSION_STRING_FULL | sed 's/^v//')
+    - python3 scripts/create_github_release.py "$VERSION_WITHOUT_V"
   before_script:
     - *unix-activate-venv
