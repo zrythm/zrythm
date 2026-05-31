@@ -34,23 +34,35 @@ target_link_libraries(zrythm_structure_project_lib
 target_sources(zrythm_structure_project_lib
   PRIVATE
     arranger_tool.cpp
+    audio_clip_editor.cpp
+    automation_editor.cpp
+    chord_editor.cpp
     clip_editor.cpp
+    editor_settings.cpp
+    midi_editor.cpp
     project.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
     project_registry.cpp
     project_ui_state.cpp
+    timeline_editor.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS "../.."
     FILES
       arranger_tool.h
+      audio_clip_editor.h
+      automation_editor.h
+      chord_editor.h
       clip_editor.h
+      editor_settings.h
+      midi_editor.h
       project.h
       project_graph_builder.h
       project_path_provider.h
       project_registry.h
       project_ui_state.h
+      timeline_editor.h
 )
 
 set_target_properties(zrythm_structure_project_lib PROPERTIES

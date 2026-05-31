@@ -17,11 +17,11 @@ Item {
   readonly property real blackKeyWidth: keyWidth * 0.6
   readonly property color borderColor: "#cccccc"
   readonly property int endNote: 127 // Ending MIDI note
-  property real keyHeight: pianoRoll.keyHeight // Visual height per key in pixels
+  property real keyHeight: midiEditor.keyHeight // Visual height per key in pixels
   property real keyWidth: 48 // Width of white keys
   readonly property color labelColor: "#666666"
   readonly property color labelPressedColor: "white"
-  required property PianoRoll pianoRoll
+  required property MidiEditor midiEditor
   readonly property int startNote: 0 // Starting MIDI note (0-127)
   readonly property color whiteKeyPressedColor: Qt.tint("white", Qt.alpha(root.palette.highlight, 0.6)) //"#88aaff"
 
@@ -68,7 +68,7 @@ Item {
           anchors.top: parent.top
           color: root.borderColor
           height: 1
-          visible: keyItem.midiNote < root.endNote && root.pianoRoll.isWhiteKey(keyItem.midiNote) && root.pianoRoll.isNextKeyWhite(keyItem.midiNote)
+          visible: keyItem.midiNote < root.endNote && root.midiEditor.isWhiteKey(keyItem.midiNote) && root.midiEditor.isNextKeyWhite(keyItem.midiNote)
           width: parent.width
         }
 
@@ -78,7 +78,7 @@ Item {
           anchors.left: parent.left
           anchors.top: topBorder.visible ? topBorder.bottom : parent.top
           border.width: 0
-          color: parent.isPressed && root.pianoRoll.isWhiteKey(keyItem.midiNote) ? root.whiteKeyPressedColor : "white"
+          color: parent.isPressed && root.midiEditor.isWhiteKey(keyItem.midiNote) ? root.whiteKeyPressedColor : "white"
           width: parent.width
         }
 
@@ -89,7 +89,7 @@ Item {
           color: parent.isPressed ? root.blackKeyPressedColor : root.blackKeyColor
           height: parent.height
           topRightRadius: root.blackKeyRadius
-          visible: root.pianoRoll.isBlackKey(keyItem.midiNote)
+          visible: root.midiEditor.isBlackKey(keyItem.midiNote)
           width: root.blackKeyWidth
 
           anchors {
@@ -115,7 +115,7 @@ Item {
         Text {
           color: parent.isPressed ? root.labelPressedColor : root.labelColor
           text: root.noteName(keyItem.midiNote)
-          visible: root.pianoRoll.isWhiteKey(keyItem.midiNote) && (keyItem.midiNote % 12 === 0)
+          visible: root.midiEditor.isWhiteKey(keyItem.midiNote) && (keyItem.midiNote % 12 === 0)
 
           font {
             family: "Monospace"

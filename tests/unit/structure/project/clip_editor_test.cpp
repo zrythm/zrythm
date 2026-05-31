@@ -72,24 +72,24 @@ TEST_F (ClipEditorTest, TrackInitiallyNull)
 // Editor Components Tests
 // ============================================================================
 
-TEST_F (ClipEditorTest, PianoRollNotNull)
+TEST_F (ClipEditorTest, MidiEditorNotNull)
 {
-  EXPECT_NE (clip_editor_->getPianoRoll (), nullptr);
+  EXPECT_NE (clip_editor_->midiEditor (), nullptr);
 }
 
 TEST_F (ClipEditorTest, ChordEditorNotNull)
 {
-  EXPECT_NE (clip_editor_->getChordEditor (), nullptr);
+  EXPECT_NE (clip_editor_->chordEditor (), nullptr);
 }
 
 TEST_F (ClipEditorTest, AudioClipEditorNotNull)
 {
-  EXPECT_NE (clip_editor_->getAudioClipEditor (), nullptr);
+  EXPECT_NE (clip_editor_->audioClipEditor (), nullptr);
 }
 
 TEST_F (ClipEditorTest, AutomationEditorNotNull)
 {
-  EXPECT_NE (clip_editor_->getAutomationEditor (), nullptr);
+  EXPECT_NE (clip_editor_->automationEditor (), nullptr);
 }
 
 // ============================================================================
@@ -117,7 +117,7 @@ TEST_F (ClipEditorTest, JsonSerializationNoRegion)
 
   // Verify JSON contains expected keys
   EXPECT_TRUE (j.contains ("regionId"));
-  EXPECT_TRUE (j.contains ("pianoRoll"));
+  EXPECT_TRUE (j.contains ("midiEditor"));
   EXPECT_TRUE (j.contains ("automationEditor"));
   EXPECT_TRUE (j.contains ("chordEditor"));
   EXPECT_TRUE (j.contains ("audioClipEditor"));

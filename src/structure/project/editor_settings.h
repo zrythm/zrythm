@@ -9,7 +9,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
 using namespace std::string_view_literals;
 

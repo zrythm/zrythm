@@ -11,7 +11,7 @@ import ZrythmGui
 Arranger {
   id: root
 
-  required property PianoRoll pianoRoll
+  required property MidiEditor midiEditor
   readonly property MidiRegion region: clipEditor.region
   readonly property Track track: clipEditor.track
 
@@ -30,7 +30,7 @@ Arranger {
   }
 
   function getObjectHeight(obj: MidiNote): real {
-    return root.pianoRoll.keyHeight; // Height of MIDI notes
+    return root.midiEditor.keyHeight; // Height of MIDI notes
   }
 
   function getObjectY(obj: MidiNote): real {
@@ -38,11 +38,11 @@ Arranger {
   }
 
   function getPitchAtY(y: real): int {
-    return pianoRoll.getKeyAtY(y);
+    return midiEditor.getKeyAtY(y);
   }
 
   function getYAtPitch(pitch: int): real {
-    return pianoRoll.keyHeight * (127 - pitch);
+    return midiEditor.keyHeight * (127 - pitch);
   }
 
   function moveSelectionsY(dy: real, prevY: real) {
@@ -66,11 +66,11 @@ Arranger {
     const currentPitch = getPitchAtY(prevY + dy);
     const delta = currentPitch - prevPitch;
     root.tempQmlArrangerObjects.forEach(qmlObj => {
-      qmlObj.y -= delta * pianoRoll.keyHeight;
+      qmlObj.y -= delta * midiEditor.keyHeight;
     });
   }
 
-  editorSettings: pianoRoll.editorSettings
+  editorSettings: midiEditor
   enableYScroll: true
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 
@@ -86,13 +86,13 @@ Arranger {
       readonly property MidiNote midiNote: arrangerObject as MidiNote
 
       arrangerSelectionModel: root.arrangerSelectionModel
-      height: root.pianoRoll.keyHeight
+      height: root.midiEditor.keyHeight
       model: midiNotesRepeater.model
       pxPerTick: root.ruler.pxPerTick
       scrollViewWidth: root.scrollViewWidth
       scrollX: root.scrollX
       unifiedObjectsModel: root.unifiedObjectsModel
-      y: (127 - midiNote.pitch) * root.pianoRoll.keyHeight
+      y: (127 - midiNote.pitch) * root.midiEditor.keyHeight
 
       sourceComponent: Component {
         MidiNoteView {

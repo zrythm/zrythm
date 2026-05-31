@@ -67,7 +67,7 @@ Arranger {
     });
   }
 
-  editorSettings: automationEditor.editorSettings
+  editorSettings: automationEditor
   enableYScroll: false
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 

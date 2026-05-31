@@ -3,10 +3,10 @@
 
 #pragma once
 
-#include "structure/arrangement/audio_clip_editor.h"
-#include "structure/arrangement/automation_editor.h"
-#include "structure/arrangement/chord_editor.h"
-#include "structure/arrangement/piano_roll.h"
+#include "structure/project/audio_clip_editor.h"
+#include "structure/project/automation_editor.h"
+#include "structure/project/chord_editor.h"
+#include "structure/project/midi_editor.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/track_fwd.h"
 #include "utils/iobject_registry.h"
@@ -25,17 +25,17 @@ class ClipEditor : public QObject
   Q_PROPERTY (QVariant region READ region NOTIFY regionChanged)
   Q_PROPERTY (QVariant track READ track NOTIFY regionChanged)
   Q_PROPERTY (
-    zrythm::structure::arrangement::PianoRoll * pianoRoll READ getPianoRoll
+    zrythm::structure::project::MidiEditor * midiEditor READ midiEditor CONSTANT
+      FINAL)
+  Q_PROPERTY (
+    zrythm::structure::project::ChordEditor * chordEditor READ chordEditor
       CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::structure::arrangement::ChordEditor * chordEditor READ
-      getChordEditor CONSTANT FINAL)
+    zrythm::structure::project::AudioClipEditor * audioEditor READ
+      audioClipEditor CONSTANT FINAL)
   Q_PROPERTY (
-    zrythm::structure::arrangement::AudioClipEditor * audioEditor READ
-      getAudioClipEditor CONSTANT FINAL)
-  Q_PROPERTY (
-    zrythm::structure::arrangement::AutomationEditor * automationEditor READ
-      getAutomationEditor CONSTANT FINAL)
+    zrythm::structure::project::AutomationEditor * automationEditor READ
+      automationEditor CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -50,19 +50,13 @@ public:
   // QML Interface
   // ============================================================================
 
-  structure::arrangement::PianoRoll * getPianoRoll () const
-  {
-    return piano_roll_.get ();
-  }
-  structure::arrangement::ChordEditor * getChordEditor () const
-  {
-    return chord_editor_.get ();
-  }
-  structure::arrangement::AudioClipEditor * getAudioClipEditor () const
+  MidiEditor *      midiEditor () const { return midi_editor_.get (); }
+  ChordEditor *     chordEditor () const { return chord_editor_.get (); }
+  AudioClipEditor * audioClipEditor () const
   {
     return audio_clip_editor_.get ();
   }
-  structure::arrangement::AutomationEditor * getAutomationEditor () const
+  AutomationEditor * automationEditor () const
   {
     return automation_editor_.get ();
   }
@@ -102,7 +96,7 @@ public:
 
 private:
   static constexpr auto kRegionIdKey = "regionId"sv;
-  static constexpr auto kPianoRollKey = "pianoRoll"sv;
+  static constexpr auto kMidiEditorKey = "midiEditor"sv;
   static constexpr auto kAutomationEditorKey = "automationEditor"sv;
   static constexpr auto kChordEditorKey = "chordEditor"sv;
   static constexpr auto kAudioClipEditorKey = "audioClipEditor"sv;
@@ -115,12 +109,10 @@ private:
   /** Region currently attached to the clip editor. */
   std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> region_id_;
 
-  utils::QObjectUniquePtr<structure::arrangement::PianoRoll> piano_roll_;
-  utils::QObjectUniquePtr<structure::arrangement::AudioClipEditor>
-    audio_clip_editor_;
-  utils::QObjectUniquePtr<structure::arrangement::AutomationEditor>
-    automation_editor_;
-  utils::QObjectUniquePtr<structure::arrangement::ChordEditor> chord_editor_;
+  utils::QObjectUniquePtr<MidiEditor>       midi_editor_;
+  utils::QObjectUniquePtr<AudioClipEditor>  audio_clip_editor_;
+  utils::QObjectUniquePtr<AutomationEditor> automation_editor_;
+  utils::QObjectUniquePtr<ChordEditor>      chord_editor_;
 };
 
 } // namespace zrythm::structure::project

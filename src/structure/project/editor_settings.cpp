@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2020, 2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/editor_settings.h"
+#include "structure/project/editor_settings.h"
 #include "utils/math_utils.h"
 
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
 void
 EditorSettings::setX (double x)

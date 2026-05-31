@@ -3,12 +3,16 @@
 
 #pragma once
 
-#include "structure/arrangement/editor_settings.h"
-#include "utils/icloneable.h"
+#include "structure/project/editor_settings.h"
 #include "utils/utf8_string.h"
 
-namespace zrythm::structure::arrangement
+#include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
+
+namespace zrythm::structure::project
 {
+
 /**
  * A MIDI modifier to use to display data for.
  */
@@ -30,7 +34,7 @@ enum class MidiModifier
 class MidiNoteDescriptor
 {
 public:
-  auto get_custom_name () const { return custom_name_; }
+  auto custom_name () const { return custom_name_; }
 
   void set_custom_name (const utils::Utf8String &str) { custom_name_ = str; }
 
@@ -68,18 +72,15 @@ public:
 };
 
 /**
- * Piano roll serializable backend.
+ * MIDI editor serializable backend.
  *
  * The actual widgets should reflect the information here.
  */
-class PianoRoll : public QObject
+class MidiEditor : public EditorSettings
 {
   Q_OBJECT
   QML_ELEMENT
-  Q_PROPERTY (
-    zrythm::structure::arrangement::EditorSettings * editorSettings READ
-      getEditorSettings CONSTANT FINAL)
-  Q_PROPERTY (int keyHeight READ getKeyHeight NOTIFY keyHeightChanged)
+  Q_PROPERTY (int keyHeight READ keyHeight NOTIFY keyHeightChanged)
   QML_UNCREATABLE ("")
 
 public:
@@ -94,7 +95,7 @@ public:
     Both,
   };
 
-  PianoRoll (QObject * parent = nullptr);
+  MidiEditor (QObject * parent = nullptr);
 
 private:
   static constexpr std::array<bool, 12> BLACK_NOTES = {
@@ -107,9 +108,7 @@ public:
   // QML Interface
   // ============================================================================
 
-  auto getEditorSettings () const { return editor_settings_.get (); }
-
-  int getKeyHeight () const { return note_height_; }
+  int keyHeight () const { return note_height_; }
 
   Q_SIGNAL void keyHeightChanged ();
 
@@ -203,25 +202,21 @@ public:
   }
 
   /**
-   * Initializes the PianoRoll.
+   * Initializes the MidiEditor.
    */
   void init ();
 
+private:
   friend void init_from (
-    PianoRoll             &obj,
-    const PianoRoll       &other,
-    utils::ObjectCloneType clone_type)
-  {
-    obj.editor_settings_ =
-      utils::clone_unique_qobject (*other.editor_settings_, &obj);
-  }
+    MidiEditor            &obj,
+    const MidiEditor      &other,
+    utils::ObjectCloneType clone_type);
+  friend void to_json (nlohmann::json &j, const MidiEditor &midi_editor);
+  friend void from_json (const nlohmann::json &j, MidiEditor &midi_editor);
 
 private:
-  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
   static constexpr auto kNotesZoomKey = "notesZoom"sv;
   static constexpr auto kMidiModifierKey = "midiModifier"sv;
-  friend void to_json (nlohmann::json &j, const PianoRoll &piano_roll);
-  friend void from_json (const nlohmann::json &j, PianoRoll &piano_roll);
 
   /**
    * Inits the descriptors to the default values.
@@ -232,8 +227,6 @@ private:
   void init_descriptors ();
 
 public:
-  utils::QObjectUniquePtr<EditorSettings> editor_settings_;
-
   /** Notes zoom level. */
   float notes_zoom_ = 1.0f;
 
@@ -271,4 +264,5 @@ public:
   std::vector<MidiNoteDescriptor> drum_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
 };
+
 }

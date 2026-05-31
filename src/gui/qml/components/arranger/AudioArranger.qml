@@ -38,7 +38,7 @@ Arranger {
   function moveTemporaryObjectsY(dy: real, prevY: real) {
   }
 
-  editorSettings: audioEditor.editorSettings
+  editorSettings: audioEditor
   enableYScroll: false
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 

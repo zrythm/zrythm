@@ -1,19 +1,26 @@
 // SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/chord_editor.h"
+#include "structure/project/chord_editor.h"
 #include "utils/logger.h"
-#include "utils/serialization.h"
 #include "utils/utf8_string.h"
 
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
-ChordEditor::ChordEditor (QObject * parent)
-    : QObject (parent),
-      editor_settings_ (utils::make_qobject_unique<EditorSettings> (this))
+
+ChordEditor::ChordEditor (QObject * parent) : EditorSettings (parent) { }
+
+void
+init_from (
+  ChordEditor           &obj,
+  const ChordEditor     &other,
+  utils::ObjectCloneType clone_type)
 {
+  init_from (
+    static_cast<EditorSettings &> (obj),
+    static_cast<const EditorSettings &> (other), clone_type);
 }
 
 void
@@ -130,7 +137,7 @@ ChordEditor::transpose_chords (bool up, bool undoable)
   new_chords.reserve (CHORD_EDITOR_NUM_CHORDS);
   for (const auto i : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
     {
-      new_chords.push_back (get_chord_at_index (i));
+      new_chords.push_back (chord_at_index (i));
       ChordDescriptor &descr = new_chords.back ();
 
       int add = (up ? 1 : 11);
@@ -150,7 +157,7 @@ ChordEditor::get_chord_from_note_number (midi_byte_t note_number)
   if (note_number < 60 || note_number >= 72)
     return nullptr;
 
-  return &get_chord_at_index (note_number - 60);
+  return &chord_at_index (note_number - 60);
 }
 
 int
@@ -158,7 +165,7 @@ ChordEditor::get_chord_index (const ChordDescriptor &chord) const
 {
   for (const auto i : std::views::iota (0, CHORD_EDITOR_NUM_CHORDS))
     {
-      if (get_chord_at_index (i) == chord)
+      if (chord_at_index (i) == chord)
         return i;
     }
 
@@ -168,13 +175,16 @@ ChordEditor::get_chord_index (const ChordDescriptor &chord) const
 void
 to_json (nlohmann::json &j, const ChordEditor &editor)
 {
-  j[ChordEditor::kEditorSettingsKey] = editor.editor_settings_;
+  to_json (j, static_cast<const EditorSettings &> (editor));
   j[ChordEditor::kChordsKey] = editor.chords_;
 }
+
 void
 from_json (const nlohmann::json &j, ChordEditor &editor)
 {
-  j.at (ChordEditor::kEditorSettingsKey).get_to (editor.editor_settings_);
-  j.at (ChordEditor::kChordsKey).get_to (editor.chords_);
+  from_json (j, static_cast<EditorSettings &> (editor));
+  if (j.contains (ChordEditor::kChordsKey))
+    j.at (ChordEditor::kChordsKey).get_to (editor.chords_);
 }
+
 }

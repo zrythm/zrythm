@@ -33,7 +33,7 @@ GridLayout {
     id: ruler
 
     Layout.fillWidth: true
-    editorSettings: root.audioEditor.editorSettings
+    editorSettings: root.audioEditor
     region: root.region
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap

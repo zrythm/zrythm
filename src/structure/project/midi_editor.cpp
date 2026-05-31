@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
-#include "structure/arrangement/piano_roll.h"
+#include "structure/project/midi_editor.h"
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
 
 static constexpr std::array<const char *, 47> drum_labels = {
@@ -62,16 +62,25 @@ static constexpr std::array<const char *, 47> drum_labels = {
   "Open Triangle"
 };
 
-PianoRoll::PianoRoll (QObject * parent)
-    : QObject (parent),
-      editor_settings_ (utils::make_qobject_unique<EditorSettings> (this))
+MidiEditor::MidiEditor (QObject * parent) : EditorSettings (parent)
 {
   // Center in middle
-  editor_settings_->setY (note_height_ * 64.0);
+  setY (note_height_ * 64.0);
 }
 
 void
-PianoRoll::init_descriptors ()
+init_from (
+  MidiEditor            &obj,
+  const MidiEditor      &other,
+  utils::ObjectCloneType clone_type)
+{
+  init_from (
+    static_cast<EditorSettings &> (obj),
+    static_cast<const EditorSettings &> (other), clone_type);
+}
+
+void
+MidiEditor::init_descriptors ()
 {
   int idx = 0;
   for (int i = 127; i >= 0; --i)
@@ -161,14 +170,14 @@ PianoRoll::init_descriptors ()
 }
 
 int
-PianoRoll::getKeyAtY (double y) const
+MidiEditor::getKeyAtY (double y) const
 {
   auto key = 127 - (static_cast<int> (y) / note_height_);
   return std::clamp (key, 0, 127);
 }
 
 void
-PianoRoll::add_current_note (int note)
+MidiEditor::add_current_note (int note)
 {
   if (std::ranges::find (current_notes_, note) != current_notes_.end ())
     {
@@ -177,7 +186,7 @@ PianoRoll::add_current_note (int note)
 }
 
 void
-PianoRoll::remove_current_note (int note)
+MidiEditor::remove_current_note (int note)
 {
   auto it = std::ranges::find (current_notes_, note);
   if (it != current_notes_.end ())
@@ -187,13 +196,13 @@ PianoRoll::remove_current_note (int note)
 }
 
 bool
-PianoRoll::contains_current_note (int note)
+MidiEditor::contains_current_note (int note)
 {
   return std::ranges::contains (current_notes_, note);
 }
 
 const MidiNoteDescriptor *
-PianoRoll::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
+MidiEditor::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
 {
   z_return_val_if_fail (val < 128, nullptr);
 
@@ -212,7 +221,7 @@ PianoRoll::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
 }
 
 void
-PianoRoll::set_highlighting (Highlighting highlighting)
+MidiEditor::set_highlighting (Highlighting highlighting)
 {
   highlighting_ = highlighting;
 
@@ -224,7 +233,7 @@ PianoRoll::set_highlighting (Highlighting highlighting)
 }
 
 void
-PianoRoll::set_notes_zoom (float notes_zoom, bool fire_events)
+MidiEditor::set_notes_zoom (float notes_zoom, bool fire_events)
 {
   if (notes_zoom < 1.f || notes_zoom > 4.5f)
     return;
@@ -238,7 +247,7 @@ PianoRoll::set_notes_zoom (float notes_zoom, bool fire_events)
 }
 
 void
-PianoRoll::set_midi_modifier (MidiModifier modifier)
+MidiEditor::set_midi_modifier (MidiModifier modifier)
 {
   midi_modifier_ = modifier;
 
@@ -252,7 +261,7 @@ PianoRoll::set_midi_modifier (MidiModifier modifier)
 }
 
 void
-PianoRoll::init ()
+MidiEditor::init ()
 {
   notes_zoom_ = 3.f;
 
@@ -262,17 +271,19 @@ PianoRoll::init ()
 }
 
 void
-to_json (nlohmann::json &j, const PianoRoll &piano_roll)
+to_json (nlohmann::json &j, const MidiEditor &midi_editor)
 {
-  j[PianoRoll::kEditorSettingsKey] = piano_roll.editor_settings_;
-  j[PianoRoll::kNotesZoomKey] = piano_roll.notes_zoom_;
-  j[PianoRoll::kMidiModifierKey] = piano_roll.midi_modifier_;
+  to_json (j, static_cast<const EditorSettings &> (midi_editor));
+  j[MidiEditor::kNotesZoomKey] = midi_editor.notes_zoom_;
+  j[MidiEditor::kMidiModifierKey] = midi_editor.midi_modifier_;
 }
+
 void
-from_json (const nlohmann::json &j, PianoRoll &piano_roll)
+from_json (const nlohmann::json &j, MidiEditor &midi_editor)
 {
-  j.at (PianoRoll::kEditorSettingsKey).get_to (piano_roll.editor_settings_);
-  j.at (PianoRoll::kNotesZoomKey).get_to (piano_roll.notes_zoom_);
-  j.at (PianoRoll::kMidiModifierKey).get_to (piano_roll.midi_modifier_);
+  from_json (j, static_cast<EditorSettings &> (midi_editor));
+  j.at (MidiEditor::kNotesZoomKey).get_to (midi_editor.notes_zoom_);
+  j.at (MidiEditor::kMidiModifierKey).get_to (midi_editor.midi_modifier_);
 }
+
 }

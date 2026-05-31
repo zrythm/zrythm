@@ -5,26 +5,23 @@
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/musical_scale.h"
-#include "structure/arrangement/editor_settings.h"
-#include "utils/icloneable.h"
+#include "structure/project/editor_settings.h"
 #include "utils/midi.h"
+
+#include <QtQmlIntegration/qqmlintegration.h>
+
+#include <nlohmann/json_fwd.hpp>
 
 class ChordPreset;
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
 
 constexpr int CHORD_EDITOR_NUM_CHORDS = 12;
 
-/**
- * Backend for the chord editor.
- */
-class ChordEditor : public QObject
+class ChordEditor : public EditorSettings
 {
   Q_OBJECT
-  Q_PROPERTY (
-    zrythm::structure::arrangement::EditorSettings * editorSettings READ
-      getEditorSettings CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -36,14 +33,6 @@ public:
   using MusicalNote = dsp::MusicalNote;
 
   ChordEditor (QObject * parent = nullptr);
-
-  // =========================================================
-  // QML interface
-  // =========================================================
-
-  auto getEditorSettings () const { return editor_settings_.get (); }
-
-  // =========================================================
 
   /**
    * Initializes the ChordEditor.
@@ -70,18 +59,8 @@ public:
 
   int get_chord_index (const ChordDescriptor &chord) const;
 
-  auto &get_chord_at_index (size_t index) { return chords_.at (index); }
-  auto &get_chord_at_index (size_t index) const { return chords_.at (index); }
-
-  friend void init_from (
-    ChordEditor           &obj,
-    const ChordEditor     &other,
-    utils::ObjectCloneType clone_type)
-
-  {
-    obj.editor_settings_ =
-      utils::clone_unique_qobject (*other.editor_settings_, &obj);
-  }
+  auto &chord_at_index (size_t index) { return chords_.at (index); }
+  auto &chord_at_index (size_t index) const { return chords_.at (index); }
 
   void add_chord_descriptor (ChordDescriptor &&chord_descr)
   {
@@ -94,14 +73,19 @@ public:
   {
     chords_.erase (chords_.begin () + index);
     chords_.insert (chords_.begin () + index, std::move (chord_descr));
-    get_chord_at_index (index).update_notes ();
+    chord_at_index (index).update_notes ();
   }
 
 private:
-  static constexpr auto kEditorSettingsKey = "editorSettings"sv;
-  static constexpr auto kChordsKey = "chords"sv;
-  friend void           to_json (nlohmann::json &j, const ChordEditor &editor);
+  friend void init_from (
+    ChordEditor           &obj,
+    const ChordEditor     &other,
+    utils::ObjectCloneType clone_type);
+  friend void to_json (nlohmann::json &j, const ChordEditor &editor);
   friend void from_json (const nlohmann::json &j, ChordEditor &editor);
+
+private:
+  static constexpr auto kChordsKey = "chords"sv;
 
 public:
   /**
@@ -111,9 +95,6 @@ public:
    * be added or removed.
    */
   std::vector<ChordDescriptor> chords_;
-
-private:
-  utils::QObjectUniquePtr<EditorSettings> editor_settings_;
 };
 
 }

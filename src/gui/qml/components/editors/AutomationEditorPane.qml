@@ -42,7 +42,7 @@ GridLayout {
     id: ruler
 
     Layout.fillWidth: true
-    editorSettings: root.automationEditor.editorSettings
+    editorSettings: root.automationEditor
     region: root.region
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap

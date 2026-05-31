@@ -17,7 +17,7 @@ Item {
 
   required property ClipLauncher clipLauncher
   required property ClipPlaybackService clipPlaybackService
-  readonly property EditorSettings editorSettings: timeline.editorSettings
+  readonly property EditorSettings editorSettings: timeline
   required property FileImporter fileImporter
 
   // Synchronize horizontal scrolling

@@ -9,10 +9,10 @@
 #include "dsp/audio_input_selection.h"
 #include "dsp/midi_input_selection.h"
 #include "dsp/snap_grid.h"
-#include "structure/arrangement/timeline.h"
 #include "structure/project/arranger_tool.h"
 #include "structure/project/clip_editor.h"
 #include "structure/project/project.h"
+#include "structure/project/timeline_editor.h"
 #include "structure/tracks/track.h"
 #include "utils/qt.h"
 
@@ -39,7 +39,7 @@ class ProjectUiState : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::structure::arrangement::Timeline * timeline READ timeline CONSTANT
+    zrythm::structure::project::TimelineEditor * timeline READ timeline CONSTANT
       FINAL)
   Q_PROPERTY (
     zrythm::structure::project::ArrangerTool * tool READ tool CONSTANT FINAL)
@@ -64,7 +64,7 @@ public:
 
   structure::project::ArrangerTool * tool () const;
   structure::project::ClipEditor *   clipEditor () const;
-  structure::arrangement::Timeline * timeline () const;
+  TimelineEditor *                   timeline () const;
   dsp::SnapGrid *                    snapGridTimeline () const;
   dsp::SnapGrid *                    snapGridEditor () const;
 
@@ -111,7 +111,7 @@ private:
   utils::QObjectUniquePtr<structure::project::ClipEditor> clip_editor_;
 
   /** Timeline editor state. */
-  utils::QObjectUniquePtr<structure::arrangement::Timeline> timeline_;
+  utils::QObjectUniquePtr<TimelineEditor> timeline_;
 
   /** Snap/grid settings for the timeline. */
   utils::QObjectUniquePtr<dsp::SnapGrid> snap_grid_timeline_;

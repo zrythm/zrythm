@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "structure/arrangement/editor_settings.h"
+#include "structure/project/editor_settings.h"
 
 #include <QSignalSpy>
 
@@ -13,7 +13,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace zrythm::structure::arrangement
+namespace zrythm::structure::project
 {
 
 class EditorSettingsTest : public ::testing::Test
@@ -329,4 +329,4 @@ TEST_F (EditorSettingsTest, ObjectParenting)
   EXPECT_DOUBLE_EQ (child_settings->getX (), 50.0);
 }
 
-} // namespace zrythm::structure::arrangement
+} // namespace zrythm::structure::project

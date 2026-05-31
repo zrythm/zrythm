@@ -88,7 +88,7 @@ GridLayout {
 
       sourceComponent: MidiEditorPane {
         clipEditor: root.clipEditor
-        pianoRoll: root.clipEditor.pianoRoll
+        midiEditor: root.clipEditor.midiEditor
         session: root.session
         region: root.region
       }

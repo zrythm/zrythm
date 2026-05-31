@@ -4,7 +4,7 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
-#include "structure/arrangement/chord_editor.h"
+#include "structure/project/chord_editor.h"
 #include "utils/utf8_string.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>

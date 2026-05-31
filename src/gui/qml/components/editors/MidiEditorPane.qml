@@ -13,7 +13,7 @@ GridLayout {
   id: root
 
   required property ClipEditor clipEditor
-  required property PianoRoll pianoRoll
+  required property MidiEditor midiEditor
   readonly property Project project: session.project
   required property ProjectSession session
   required property MidiRegion region
@@ -62,7 +62,7 @@ GridLayout {
     id: ruler
 
     Layout.fillWidth: true
-    editorSettings: root.pianoRoll.editorSettings
+    editorSettings: root.midiEditor
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
     transport: root.project.transport
@@ -95,11 +95,11 @@ GridLayout {
       id: pianoRollKeys
 
       height: implicitHeight
-      pianoRoll: root.pianoRoll
+      midiEditor: root.midiEditor
     }
 
     Synchronizer {
-      sourceObject: root.pianoRoll.editorSettings
+      sourceObject: root.midiEditor
       sourceProperty: "y"
       targetObject: pianoRollKeysScrollView.contentItem
       targetProperty: "contentY"
@@ -139,7 +139,7 @@ GridLayout {
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
     objectCreator: root.session.arrangerObjectCreator
-    pianoRoll: root.pianoRoll
+    midiEditor: root.midiEditor
     ruler: ruler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor
@@ -164,7 +164,7 @@ GridLayout {
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
     objectCreator: root.session.arrangerObjectCreator
-    pianoRoll: root.pianoRoll
+    midiEditor: root.midiEditor
     ruler: ruler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor

@@ -131,7 +131,7 @@ ColumnLayout {
           }
 
           Synchronizer {
-            sourceObject: root.session.uiState.timeline.editorSettings
+            sourceObject: root.session.uiState.timeline
             sourceProperty: "y"
             targetObject: unpinnedTracklist
             targetProperty: "contentY"
@@ -183,7 +183,7 @@ ColumnLayout {
             Layout.preferredHeight: root.rulerHeight
             playbackCacheCompleteCount: root.cacheActivityAggregator.cacheCompleteCount
             playbackCachePendingCount: root.cacheActivityAggregator.cachePendingCount
-            editorSettings: root.session.uiState.timeline.editorSettings
+            editorSettings: root.session.uiState.timeline
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
             transport: root.project.transport
@@ -206,7 +206,7 @@ ColumnLayout {
               anchors.fill: parent
               arrangerSelectionModel: arrangerSelectionModel
               clipEditor: root.session.uiState.clipEditor
-              editorSettings: root.session.uiState.timeline.editorSettings
+              editorSettings: root.session.uiState.timeline
               laneHeight: root.tempoMapLaneHeight
               laneSpacing: root.tempoMapLaneSpacing
               objectCreator: root.session.arrangerObjectCreator
@@ -315,7 +315,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 32
-            editorSettings: root.session.uiState.timeline.editorSettings
+            editorSettings: root.session.uiState.timeline
             ruler: ruler
             scrollViewWidth: unpinnedTimelineArranger.scrollViewWidth
             tracklist: root.project.tracklist

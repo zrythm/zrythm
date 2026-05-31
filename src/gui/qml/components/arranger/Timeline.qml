@@ -277,7 +277,7 @@ Arranger {
   function moveTemporaryObjectsY(dy: real, prevY: real) {
   }
 
-  editorSettings: timeline.editorSettings
+  editorSettings: timeline
   enableYScroll: !pinned
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 

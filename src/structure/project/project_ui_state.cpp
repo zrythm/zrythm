@@ -18,8 +18,7 @@ ProjectUiState::ProjectUiState (
         utils::make_qobject_unique<
           structure::project::ClipEditor> (project.get_registry (), this)),
       timeline_ (
-        utils::make_qobject_unique<
-          structure::arrangement::Timeline> (project.get_registry (), this)),
+        utils::make_qobject_unique<TimelineEditor> (project.get_registry (), this)),
       snap_grid_timeline_ (
         utils::make_qobject_unique<dsp::SnapGrid> (
           project.tempo_map (),
@@ -51,7 +50,7 @@ ProjectUiState::clipEditor () const
   return clip_editor_.get ();
 }
 
-structure::arrangement::Timeline *
+TimelineEditor *
 ProjectUiState::timeline () const
 {
   return timeline_.get ();

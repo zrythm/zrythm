@@ -10,16 +10,10 @@ namespace zrythm::structure::project
 
 ClipEditor::ClipEditor (utils::IObjectRegistry &reg, QObject * parent)
     : QObject (parent), object_registry_ (reg),
-      piano_roll_ (
-        utils::make_qobject_unique<structure::arrangement::PianoRoll> (this)),
-      audio_clip_editor_ (
-        utils::make_qobject_unique<structure::arrangement::AudioClipEditor> (
-          this)),
-      automation_editor_ (
-        utils::make_qobject_unique<structure::arrangement::AutomationEditor> (
-          this)),
-      chord_editor_ (
-        utils::make_qobject_unique<structure::arrangement::ChordEditor> (this))
+      midi_editor_ (utils::make_qobject_unique<MidiEditor> (this)),
+      audio_clip_editor_ (utils::make_qobject_unique<AudioClipEditor> (this)),
+      automation_editor_ (utils::make_qobject_unique<AutomationEditor> (this)),
+      chord_editor_ (utils::make_qobject_unique<ChordEditor> (this))
 {
 }
 
@@ -92,7 +86,7 @@ ClipEditor::get_region_and_track () const
 void
 ClipEditor::init ()
 {
-  piano_roll_->init ();
+  midi_editor_->init ();
   chord_editor_->init ();
   // the rest of the editors are initialized in their respective classes
 }
@@ -108,14 +102,14 @@ init_from (
   init_from (*obj.audio_clip_editor_, *other.audio_clip_editor_, clone_type);
   init_from (*obj.automation_editor_, *other.automation_editor_, clone_type);
   init_from (*obj.chord_editor_, *other.chord_editor_, clone_type);
-  init_from (*obj.piano_roll_, *other.piano_roll_, clone_type);
+  init_from (*obj.midi_editor_, *other.midi_editor_, clone_type);
 }
 
 void
 to_json (nlohmann::json &j, const ClipEditor &editor)
 {
   j[ClipEditor::kRegionIdKey] = editor.region_id_;
-  j[ClipEditor::kPianoRollKey] = editor.piano_roll_;
+  j[ClipEditor::kMidiEditorKey] = editor.midi_editor_;
   j[ClipEditor::kAutomationEditorKey] = editor.automation_editor_;
   j[ClipEditor::kChordEditorKey] = editor.chord_editor_;
   j[ClipEditor::kAudioClipEditorKey] = editor.audio_clip_editor_;
@@ -125,7 +119,7 @@ void
 from_json (const nlohmann::json &j, ClipEditor &editor)
 {
   j.at (ClipEditor::kRegionIdKey).get_to (editor.region_id_);
-  j.at (ClipEditor::kPianoRollKey).get_to (*editor.piano_roll_);
+  j.at (ClipEditor::kMidiEditorKey).get_to (*editor.midi_editor_);
   j.at (ClipEditor::kAutomationEditorKey).get_to (*editor.automation_editor_);
   j.at (ClipEditor::kChordEditorKey).get_to (*editor.chord_editor_);
   j.at (ClipEditor::kAudioClipEditorKey).get_to (*editor.audio_clip_editor_);
