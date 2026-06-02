@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <span>
+
 #include "utils/units.h"
 
 #include <QObject>
@@ -84,6 +86,21 @@ public:
 
 protected:
   /**
+   * @brief Validates that the given interval has a positive width (start <
+   * end).
+   *
+   * @throws std::invalid_argument if start >= end.
+   */
+  static void validate_interval (IntervalType interval)
+  {
+    if (interval.first >= interval.second)
+      {
+        throw std::invalid_argument (
+          "Interval start must be strictly less than end");
+      }
+  }
+
+  /**
    * @brief Returns true if two intervals truly overlap (adjacent intervals do
    * not count).
    */
@@ -131,7 +148,7 @@ public:
    *
    * @return Reference to the merged MIDI message sequence.
    */
-  const juce::MidiMessageSequence &get_midi_events () const
+  const juce::MidiMessageSequence &midi_events () const
   {
     return merged_midi_events_;
   }
@@ -208,7 +225,7 @@ public:
    *
    * @return Reference to the vector of audio region entries.
    */
-  const std::vector<AudioRegionEntry> &get_audio_regions () const
+  std::span<const AudioRegionEntry> audio_regions () const
   {
     return audio_regions_;
   }
@@ -277,7 +294,7 @@ public:
    *
    * @return Reference to the vector of automation cache entries.
    */
-  const std::vector<AutomationCacheEntry> &get_automation_sequences () const
+  std::span<const AutomationCacheEntry> automation_sequences () const
   {
     return automation_sequences_;
   }

@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <set>
 
 #include "dsp/timeline_data_cache.h"
+#include "utils/logger.h"
 
 namespace zrythm::dsp
 {
@@ -20,6 +22,8 @@ MidiTimelineDataCache::clear_impl ()
 void
 MidiTimelineDataCache::remove_sequences_matching_interval (IntervalType interval)
 {
+  validate_interval (interval);
+
   // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (midi_sequences_, [&] (const auto &entry) {
     return intervals_overlap (entry.first, interval);
@@ -32,6 +36,8 @@ MidiTimelineDataCache::add_midi_sequence (
   const juce::MidiMessageSequence &sequence)
 {
   const auto [start_time, end_time] = interval;
+
+  validate_interval (interval);
 
   // Validate that all events are within the interval
   for (const auto * event : sequence)
@@ -48,35 +54,82 @@ MidiTimelineDataCache::add_midi_sequence (
 
   // Ensure the sequence has no unended notes
   juce::MidiMessageSequence validated_sequence (sequence);
-  validated_sequence.updateMatchedPairs ();
 
-  // Check for unended notes and add note-off events at the interval end time
-  for (const auto * event : validated_sequence)
+  // Single reverse pass over original events: track unmatched note-offs in a
+  // multiset. When we see a noteOn, consume a matching noteOff if available;
+  // otherwise record it for auto-generation. This correctly handles overlapping
+  // same-pitch note-ons (each gets its own note-off) and avoids
+  // mutation-during-iteration by collecting missing note-offs first.
+  using NoteKey = std::pair<int, int>;
+  std::multiset<NoteKey>                  unmatched_note_offs;
+  std::vector<std::pair<NoteKey, double>> missing_note_offs;
+
+  const int original_count = validated_sequence.getNumEvents ();
+  for (int i = original_count - 1; i >= 0; --i)
     {
-      if (event->message.isNoteOn () && event->noteOffObject == nullptr)
+      const auto &msg = validated_sequence.getEventPointer (i)->message;
+      if (!msg.isNoteOn () && !msg.isNoteOff ())
+        continue;
+
+      const auto key = NoteKey{ msg.getChannel (), msg.getNoteNumber () };
+      if (msg.isNoteOff ())
         {
-          // Add a note-off event at the end of the interval
-          validated_sequence.addEvent (
-            juce::MidiMessage::noteOff (
-              event->message.getChannel (), event->message.getNoteNumber ()),
-            end_time.in<double> (units::samples));
+          unmatched_note_offs.insert (key);
+        }
+      else
+        {
+          auto it = unmatched_note_offs.find (key);
+          if (it != unmatched_note_offs.end ())
+            {
+              unmatched_note_offs.erase (it);
+            }
+          else
+            {
+              missing_note_offs.emplace_back (
+                key, end_time.in<double> (units::samples));
+            }
         }
     }
 
-  validated_sequence.updateMatchedPairs ();
+  for (const auto &[key, time] : missing_note_offs)
+    {
+      validated_sequence.addEvent (
+        juce::MidiMessage::noteOff (key.first, key.second), time);
+    }
+
+  z_trace (
+    "{} events, interval=[{}, {}]", validated_sequence.getNumEvents (),
+    start_time, end_time);
   midi_sequences_[interval] = validated_sequence;
 }
 
 void
 MidiTimelineDataCache::finalize_changes_impl ()
 {
-  // Finalize MIDI events
   merged_midi_events_.clear ();
+
+  // Collect all messages from all intervals into one vector
+  std::vector<juce::MidiMessage> all;
+  all.reserve (
+    std::transform_reduce (
+      midi_sequences_.begin (), midi_sequences_.end (), 0, std::plus{},
+      [] (const auto &p) { return p.second.getNumEvents (); }));
   for (const auto &[interval, seq] : midi_sequences_)
     {
-      merged_midi_events_.addSequence (seq, 0);
-      merged_midi_events_.updateMatchedPairs ();
+      for (const auto * ev : seq)
+        all.push_back (ev->message);
     }
+
+  // Sort once: by timestamp, then noteOff before noteOn at same timestamp
+  std::ranges::stable_sort (
+    all, [] (const juce::MidiMessage &a, const juce::MidiMessage &b) {
+      if (a.getTimeStamp () != b.getTimeStamp ())
+        return a.getTimeStamp () < b.getTimeStamp ();
+      return !a.isNoteOn () && b.isNoteOn ();
+    });
+
+  for (const auto &msg : all)
+    merged_midi_events_.addEvent (msg);
 }
 
 bool
@@ -104,6 +157,8 @@ void
 AudioTimelineDataCache::remove_sequences_matching_interval (
   IntervalType interval)
 {
+  validate_interval (interval);
+
   // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (audio_regions_, [&] (const AudioRegionEntry &entry) {
     return intervals_overlap (
@@ -117,6 +172,8 @@ AudioTimelineDataCache::add_audio_region (
   const juce::AudioSampleBuffer &audio_buffer)
 {
   const auto [start_sample, end_sample] = interval;
+
+  validate_interval (interval);
 
   AudioRegionEntry entry;
   // Create a copy of the audio buffer
@@ -163,6 +220,8 @@ void
 AutomationTimelineDataCache::remove_sequences_matching_interval (
   IntervalType interval)
 {
+  validate_interval (interval);
+
   // Strict overlap: adjacent intervals are not considered overlapping.
   std::erase_if (automation_sequences_, [&] (const AutomationCacheEntry &entry) {
     return intervals_overlap (
@@ -176,6 +235,8 @@ AutomationTimelineDataCache::add_automation_sequence (
   const std::vector<float> &automation_values)
 {
   const auto [start_sample, end_sample] = interval;
+
+  validate_interval (interval);
 
   AutomationCacheEntry entry;
   entry.automation_values = automation_values;

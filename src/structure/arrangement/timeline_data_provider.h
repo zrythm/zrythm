@@ -168,7 +168,7 @@ public:
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
 
-  const juce::MidiMessageSequence &get_midi_events () const;
+  const juce::MidiMessageSequence &midi_events () const;
 
   /**
    * @brief Generate the MIDI event sequence to be used during realtime
@@ -187,7 +187,7 @@ public:
   {
     generate_events<arrangement::MidiRegion> (
       tempo_map, midi_regions, affected_range);
-    set_midi_events (midi_cache_->get_midi_events ());
+    set_midi_events (midi_cache_->midi_events ());
   }
 
   /**
@@ -207,7 +207,7 @@ public:
   {
     generate_events<arrangement::ChordRegion> (
       tempo_map, chord_regions, affected_range);
-    set_midi_events (midi_cache_->get_midi_events ());
+    set_midi_events (midi_cache_->midi_events ());
   }
 
 protected:
@@ -296,8 +296,8 @@ public:
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
 
-  const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &
-  get_audio_regions () const;
+  std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry>
+  audio_regions () const;
 
   /**
    * @brief Generate the audio event sequence to be used during realtime
@@ -316,7 +316,7 @@ public:
   {
     generate_events<arrangement::AudioRegion> (
       tempo_map, audio_regions, affected_range);
-    set_audio_regions (audio_cache_->get_audio_regions ());
+    set_audio_regions (audio_cache_->audio_regions ());
   }
 
 protected:
@@ -337,7 +337,7 @@ private:
    * @param regions The audio region entries.
    */
   void set_audio_regions (
-    const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &regions);
+    std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry> regions);
 
   utils::QObjectUniquePtr<dsp::AudioTimelineDataCache> audio_cache_;
 
@@ -387,8 +387,8 @@ public:
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
 
-  const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry> &
-  get_automation_sequences () const;
+  std::span<const dsp::AutomationTimelineDataCache::AutomationCacheEntry>
+  automation_sequences () const;
 
   /**
    * @brief Generate the automation event sequence to be used during realtime
@@ -407,7 +407,7 @@ public:
   {
     generate_events<arrangement::AutomationRegion> (
       tempo_map, automation_regions, affected_range);
-    set_automation_sequences (automation_cache_->get_automation_sequences ());
+    set_automation_sequences (automation_cache_->automation_sequences ());
   }
 
 protected:
@@ -430,8 +430,8 @@ private:
    * @param sequences The automation cache entries.
    */
   void set_automation_sequences (
-    const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry>
-      &sequences);
+    std::span<const dsp::AutomationTimelineDataCache::AutomationCacheEntry>
+      sequences);
 
   utils::QObjectUniquePtr<dsp::AutomationTimelineDataCache> automation_cache_;
 

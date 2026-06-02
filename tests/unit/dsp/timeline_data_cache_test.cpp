@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/timeline_data_cache.h"
@@ -41,7 +41,7 @@ private:
 
 TEST_F (MidiTimelineDataCacheTest, InitialState)
 {
-  EXPECT_TRUE (cache->get_midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
   EXPECT_FALSE (cache->has_content ());
 }
 
@@ -53,14 +53,14 @@ TEST_F (MidiTimelineDataCacheTest, ClearMethod)
   cache->finalize_changes ();
 
   // Verify sequences were added
-  EXPECT_FALSE (cache->get_midi_events ().getNumEvents () == 0);
+  EXPECT_FALSE (cache->midi_events ().getNumEvents () == 0);
   EXPECT_TRUE (cache->has_content ());
 
   // Clear the cache
   cache->clear ();
 
   // Verify cache is empty
-  EXPECT_TRUE (cache->get_midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
   EXPECT_FALSE (cache->has_content ());
 }
 
@@ -72,7 +72,7 @@ TEST_F (MidiTimelineDataCacheTest, AddSequenceAndFinalize)
   cache->finalize_changes ();
 
   // Should have 4 events (2 note-ons + 2 note-offs)
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
   EXPECT_TRUE (cache->has_content ());
 }
 
@@ -96,7 +96,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
     seq2); // After removal interval
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
 
   // Remove sequences overlapping with [60, 140] - should remove nothing
   cache->remove_sequences_matching_interval (
@@ -104,7 +104,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
   cache->finalize_changes ();
 
   // Both sequences should remain
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
 }
 
 TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverlap)
@@ -140,7 +140,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverla
     { units::samples (200), units::samples (300) }, seq4); // No overlap
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 8);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 8);
 
   // Remove sequences overlapping with [90, 160]
   cache->remove_sequences_matching_interval (
@@ -148,7 +148,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverla
   cache->finalize_changes ();
 
   // Only the non-overlapping sequence should remain
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
 }
 TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContained)
 {
@@ -174,7 +174,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
     { units::samples (100), units::samples (150) }, seq3); // After removal
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 6);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 6);
 
   // Remove sequences overlapping with [60, 99] - avoid boundary conflicts
   cache->remove_sequences_matching_interval (
@@ -183,7 +183,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
 
   // Only sequences before and after should remain (sequence at {60,90} is
   // removed)
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
 }
 
 // Regression test for gitlab #5240: adjacent intervals (end == start) must not
@@ -206,7 +206,7 @@ TEST_F (
     { units::samples (100), units::samples (200) }, seq2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
 
   // Remove overlapping with [100, 200) — R1 at [0, 100) is adjacent, not
   // overlapping
@@ -215,7 +215,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // R1 at [0, 100) should remain
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
 }
 
 // Reverse direction: [0, 100) removal must not evict [100, 200)
@@ -236,7 +236,7 @@ TEST_F (
     { units::samples (100), units::samples (200) }, seq2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
 
   // Remove overlapping with [0, 100) - should only remove seq1
   cache->remove_sequences_matching_interval (
@@ -244,7 +244,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // seq2 at [100, 200) should remain
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
 }
 
 TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
@@ -269,7 +269,7 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
     { units::samples (100), units::samples (200) }, seq3);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 6);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 6);
 
   // Remove middle sequence by targeting its interval
   cache->remove_sequences_matching_interval (
@@ -277,7 +277,7 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
   cache->finalize_changes ();
 
   // All sequences should be removed (all truly overlap with [50, 149])
-  EXPECT_EQ (cache->get_midi_events ().getNumEvents (), 0);
+  EXPECT_EQ (cache->midi_events ().getNumEvents (), 0);
 }
 
 TEST_F (MidiTimelineDataCacheTest, EventsOutsideIntervalValidation)
@@ -296,6 +296,17 @@ TEST_F (MidiTimelineDataCacheTest, EventsOutsideIntervalValidation)
     std::invalid_argument);
 }
 
+TEST_F (MidiTimelineDataCacheTest, ReversedIntervalThrows)
+{
+  juce::MidiMessageSequence seq;
+  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
+  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 10.0);
+
+  EXPECT_THROW (
+    cache->add_midi_sequence ({ units::samples (100), units::samples (0) }, seq),
+    std::invalid_argument);
+}
+
 TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
 {
   // Create a sequence with unended notes
@@ -309,7 +320,7 @@ TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
     { units::samples (0), units::samples (100) }, unended_sequence);
   cache->finalize_changes ();
 
-  const auto &merged = cache->get_midi_events ();
+  const auto &merged = cache->midi_events ();
 
   // Should have note-off events added automatically at interval end time (100)
   EXPECT_EQ (merged.getNumEvents (), 4); // 2 note-ons + 2 note-offs
@@ -326,6 +337,96 @@ TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
         }
     }
   EXPECT_EQ (note_off_count, 2);
+}
+
+// Two same-pitch note-ons without any note-offs each generate their own note-off.
+TEST_F (MidiTimelineDataCacheTest, SamePitchOverlappingNoteOnsGetSeparateNoteOffs)
+{
+  juce::MidiMessageSequence seq;
+  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
+  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 50.0);
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
+  cache->finalize_changes ();
+
+  const auto &merged = cache->midi_events ();
+  ASSERT_EQ (merged.getNumEvents (), 4)
+    << "Expected 2 note-ons + 2 auto-generated note-offs";
+
+  int note_off_count = 0;
+  for (int i = 0; i < merged.getNumEvents (); ++i)
+    {
+      if (merged.getEventPointer (i)->message.isNoteOff ())
+        ++note_off_count;
+    }
+  EXPECT_EQ (note_off_count, 2);
+}
+
+// Regression test for GitLab #5279: when two adjacent same-pitch notes are
+// rendered, JUCE's addEvent sorts noteOn before noteOff. Then
+// updateMatchedPairs auto-generates a spurious noteOff(vel=0) which kills
+// the second note.
+TEST_F (MidiTimelineDataCacheTest, AdjacentSamePitchNotesNoSpuriousNoteOff)
+{
+  juce::MidiMessageSequence seq;
+  seq.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 0.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 100.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 100.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 200.0);
+
+  // Confirm the problematic ordering: noteOn@100 before noteOff@100
+  ASSERT_EQ (seq.getNumEvents (), 4);
+  ASSERT_TRUE (seq.getEventPointer (1)->message.isNoteOn ());
+  ASSERT_TRUE (seq.getEventPointer (2)->message.isNoteOff ());
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (200) }, seq);
+  cache->finalize_changes ();
+
+  const auto &merged = cache->midi_events ();
+  ASSERT_EQ (merged.getNumEvents (), 4)
+    << "updateMatchedPairs must not auto-generate spurious noteOff events";
+}
+
+// At the boundary between two adjacent same-pitch notes, the merged output
+// must send noteOff (release voice 1) before noteOn (start voice 2). Some
+// synths use last-voice matching: noteOff for pitch P ends the most recently
+// started voice for P.
+TEST_F (
+  MidiTimelineDataCacheTest,
+  AdjacentSamePitchNotesNoteOffBeforeNoteOnAtBoundary)
+{
+  juce::MidiMessageSequence seq;
+  seq.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 0.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 100.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 100.0);
+  seq.addEvent (
+    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 200.0);
+
+  cache->add_midi_sequence ({ units::samples (0), units::samples (200) }, seq);
+  cache->finalize_changes ();
+
+  const auto &merged = cache->midi_events ();
+  ASSERT_EQ (merged.getNumEvents (), 4);
+
+  for (int i = 0; i < merged.getNumEvents () - 1; ++i)
+    {
+      const auto &cur = merged.getEventPointer (i)->message;
+      const auto &next = merged.getEventPointer (i + 1)->message;
+      if (cur.getTimeStamp () == next.getTimeStamp ())
+        {
+          ASSERT_FALSE (cur.isNoteOn () && next.isNoteOff ())
+            << "At timestamp " << cur.getTimeStamp ()
+            << ": noteOff must precede noteOn for correct voice allocation, "
+            << "but got noteOn then noteOff";
+        }
+    }
 }
 
 TEST_F (MidiTimelineDataCacheTest, CachedRangesSignalOnFinalize)
@@ -390,7 +491,7 @@ TEST_F (MidiTimelineDataCacheTest, EmptyCacheOperations)
     { units::samples (0), units::samples (100) });
   cache->finalize_changes ();
 
-  EXPECT_TRUE (cache->get_midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
   EXPECT_FALSE (cache->has_content ());
 }
 
@@ -401,14 +502,14 @@ TEST_F (MidiTimelineDataCacheTest, ConstCorrectness)
   cache->finalize_changes ();
 
   // cached_events() should return const reference
-  const auto &events = cache->get_midi_events ();
+  const auto &events = cache->midi_events ();
   // Should have 4 events: 2 note-ons + 2 note-offs
   EXPECT_EQ (events.getNumEvents (), 4);
 
   // Verify we can't modify the returned reference (compile-time check)
   static_assert (
     std::is_same_v<
-      decltype (cache->get_midi_events ()), const juce::MidiMessageSequence &>);
+      decltype (cache->midi_events ()), const juce::MidiMessageSequence &>);
 }
 
 // ========== Audio-Specific Tests ==========
@@ -478,14 +579,22 @@ TEST_F (AudioTimelineDataCacheTest, AddAudioRegionAndFinalize)
 
   // Should have one audio region
   EXPECT_TRUE (cache->has_content ());
-  EXPECT_EQ (cache->get_audio_regions ().size (), 1);
+  EXPECT_EQ (cache->audio_regions ().size (), 1);
 
   // Verify the audio region properties
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions[0].start_sample, units::samples (0));
   EXPECT_EQ (regions[0].end_sample, units::samples (256));
   EXPECT_EQ (regions[0].audio_buffer.getNumChannels (), 2);
   EXPECT_EQ (regions[0].audio_buffer.getNumSamples (), 256);
+}
+
+TEST_F (AudioTimelineDataCacheTest, ReversedIntervalThrows)
+{
+  EXPECT_THROW (
+    cache->add_audio_region (
+      { units::samples (200), units::samples (100) }, audio_buffer),
+    std::invalid_argument);
 }
 
 TEST_F (AudioTimelineDataCacheTest, AddMultipleAudioRegions)
@@ -509,7 +618,7 @@ TEST_F (AudioTimelineDataCacheTest, AddMultipleAudioRegions)
   cache->finalize_changes ();
 
   // Should have two regions sorted by start position
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions.size (), 2);
   EXPECT_EQ (regions[0].start_sample, units::samples (0));
   EXPECT_EQ (regions[1].start_sample, units::samples (256));
@@ -542,7 +651,7 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
     buffer3); // After removal interval
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_audio_regions ().size (), 3);
+  EXPECT_EQ (cache->audio_regions ().size (), 3);
 
   // Remove regions overlapping with [150, 350]
   cache->remove_sequences_matching_interval (
@@ -550,7 +659,7 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
   cache->finalize_changes ();
 
   // Should have 2 regions remaining (before and after)
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions.size (), 2);
   EXPECT_EQ (regions[0].start_sample, units::samples (0));
   EXPECT_EQ (regions[1].start_sample, units::samples (400));
@@ -571,7 +680,7 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval_Adjacent)
     { units::samples (100), units::samples (200) }, buffer2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_audio_regions ().size (), 2);
+  EXPECT_EQ (cache->audio_regions ().size (), 2);
 
   // Remove overlapping with [100, 200) — buffer1 at [0, 100) is adjacent, not
   // overlapping
@@ -580,7 +689,7 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval_Adjacent)
   cache->finalize_changes ();
 
   // buffer1 at [0, 100) should remain
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions.size (), 1);
   EXPECT_EQ (regions[0].start_sample, units::samples (0));
 }
@@ -601,7 +710,7 @@ TEST_F (
     { units::samples (100), units::samples (200) }, buffer2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_audio_regions ().size (), 2);
+  EXPECT_EQ (cache->audio_regions ().size (), 2);
 
   // Remove overlapping with [0, 100) — buffer2 at [100, 200) is adjacent, not
   // overlapping
@@ -610,7 +719,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // buffer2 at [100, 200) should remain
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions.size (), 1);
   EXPECT_EQ (regions[0].start_sample, units::samples (100));
 }
@@ -626,7 +735,7 @@ TEST_F (AudioTimelineDataCacheTest, AudioBufferIndependence)
   audio_buffer.setSample (0, 0, 0.2f);
 
   // Verify the cached buffer is unaffected (independent copy)
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_FLOAT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 0.5f);
 
   // Modify the cached buffer
@@ -657,7 +766,7 @@ TEST_F (AudioTimelineDataCacheTest, AudioRegionSorting)
   cache->finalize_changes ();
 
   // Verify regions are sorted by start position
-  const auto &regions = cache->get_audio_regions ();
+  const auto &regions = cache->audio_regions ();
   EXPECT_EQ (regions.size (), 3);
   EXPECT_EQ (regions[0].start_sample, units::samples (100));
   EXPECT_EQ (regions[1].start_sample, units::samples (200));
@@ -722,7 +831,7 @@ TEST_F (AudioTimelineDataCacheTest, EmptyAudioOperations)
 {
   // Operations on empty audio cache should not crash
   EXPECT_FALSE (cache->has_content ());
-  EXPECT_EQ (cache->get_audio_regions ().size (), 0);
+  EXPECT_EQ (cache->audio_regions ().size (), 0);
 
   cache->remove_sequences_matching_interval (
     { units::samples (0), units::samples (100) });
@@ -785,13 +894,21 @@ TEST_F (AutomationTimelineDataCacheTest, AddAutomationSequenceAndFinalize)
 
   // Should have one automation sequence
   EXPECT_TRUE (cache->has_content ());
-  EXPECT_EQ (cache->get_automation_sequences ().size (), 1);
+  EXPECT_EQ (cache->automation_sequences ().size (), 1);
 
   // Verify the automation sequence properties
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences[0].start_sample, units::samples (0));
   EXPECT_EQ (sequences[0].end_sample, units::samples (256));
   EXPECT_EQ (sequences[0].automation_values.size (), automation_values.size ());
+}
+
+TEST_F (AutomationTimelineDataCacheTest, ReversedIntervalThrows)
+{
+  EXPECT_THROW (
+    cache->add_automation_sequence (
+      { units::samples (200), units::samples (100) }, automation_values),
+    std::invalid_argument);
 }
 
 TEST_F (AutomationTimelineDataCacheTest, AddMultipleAutomationSequences)
@@ -809,7 +926,7 @@ TEST_F (AutomationTimelineDataCacheTest, AddMultipleAutomationSequences)
   cache->finalize_changes ();
 
   // Should have two sequences sorted by start position
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences.size (), 2);
   EXPECT_EQ (sequences[0].start_sample, units::samples (0));
   EXPECT_EQ (sequences[1].start_sample, units::samples (256));
@@ -831,7 +948,7 @@ TEST_F (
     automation_values); // After removal interval
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_automation_sequences ().size (), 3);
+  EXPECT_EQ (cache->automation_sequences ().size (), 3);
 
   // Remove sequences overlapping with [150, 350]
   cache->remove_sequences_matching_interval (
@@ -839,7 +956,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // Should have 2 sequences remaining (before and after)
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences.size (), 2);
   EXPECT_EQ (sequences[0].start_sample, units::samples (0));
   EXPECT_EQ (sequences[1].start_sample, units::samples (400));
@@ -857,7 +974,7 @@ TEST_F (
     { units::samples (100), units::samples (200) }, automation_values);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_automation_sequences ().size (), 2);
+  EXPECT_EQ (cache->automation_sequences ().size (), 2);
 
   // Remove overlapping with [100, 200) — first entry at [0, 100) is adjacent,
   // not overlapping
@@ -866,7 +983,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // First sequence at [0, 100) should remain
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences.size (), 1);
   EXPECT_EQ (sequences[0].start_sample, units::samples (0));
 }
@@ -882,7 +999,7 @@ TEST_F (
     { units::samples (100), units::samples (200) }, automation_values);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->get_automation_sequences ().size (), 2);
+  EXPECT_EQ (cache->automation_sequences ().size (), 2);
 
   // Remove overlapping with [0, 100) — second entry at [100, 200) is adjacent,
   // not overlapping
@@ -891,7 +1008,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // Second sequence at [100, 200) should remain
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences.size (), 1);
   EXPECT_EQ (sequences[0].start_sample, units::samples (100));
 }
@@ -911,7 +1028,7 @@ TEST_F (AutomationTimelineDataCacheTest, AutomationSequenceSorting)
   cache->finalize_changes ();
 
   // Verify sequences are sorted by start position
-  const auto &sequences = cache->get_automation_sequences ();
+  const auto &sequences = cache->automation_sequences ();
   EXPECT_EQ (sequences.size (), 3);
   EXPECT_EQ (sequences[0].start_sample, units::samples (100));
   EXPECT_EQ (sequences[1].start_sample, units::samples (200));
@@ -969,7 +1086,7 @@ TEST_F (AutomationTimelineDataCacheTest, EmptyAutomationOperations)
 {
   // Operations on empty automation cache should not crash
   EXPECT_FALSE (cache->has_content ());
-  EXPECT_EQ (cache->get_automation_sequences ().size (), 0);
+  EXPECT_EQ (cache->automation_sequences ().size (), 0);
 
   cache->remove_sequences_matching_interval (
     { units::samples (0), units::samples (100) });

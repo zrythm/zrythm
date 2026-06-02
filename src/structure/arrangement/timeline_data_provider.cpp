@@ -36,9 +36,9 @@ MidiTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
 }
 
 const juce::MidiMessageSequence &
-MidiTimelineDataProvider::get_midi_events () const
+MidiTimelineDataProvider::midi_events () const
 {
-  return midi_cache_->get_midi_events ();
+  return midi_cache_->midi_events ();
 }
 
 void
@@ -113,11 +113,11 @@ MidiTimelineDataProvider::process_midi_events (
 
 void
 AudioTimelineDataProvider::set_audio_regions (
-  const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &regions)
+  std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry> regions)
 {
   decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
     rt_regions{ active_audio_regions_ };
-  *rt_regions = regions;
+  rt_regions->assign (regions.begin (), regions.end ());
 }
 
 void
@@ -154,10 +154,10 @@ AudioTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
   audio_cache_->remove_sequences_matching_interval (interval);
 }
 
-const std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry> &
-AudioTimelineDataProvider::get_audio_regions () const
+std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry>
+AudioTimelineDataProvider::audio_regions () const
 {
-  return audio_cache_->get_audio_regions ();
+  return audio_cache_->audio_regions ();
 }
 
 void
@@ -378,13 +378,13 @@ AudioTimelineDataProvider::process_audio_events (
 
 void
 AutomationTimelineDataProvider::set_automation_sequences (
-  const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry>
-    &sequences)
+  std::span<const dsp::AutomationTimelineDataCache::AutomationCacheEntry>
+    sequences)
 {
   decltype (active_automation_sequences_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_sequences{ active_automation_sequences_ };
-  *rt_sequences = sequences;
+  rt_sequences->assign (sequences.begin (), sequences.end ());
 }
 
 void
@@ -404,10 +404,10 @@ AutomationTimelineDataProvider::
   automation_cache_->remove_sequences_matching_interval (interval);
 }
 
-const std::vector<dsp::AutomationTimelineDataCache::AutomationCacheEntry> &
-AutomationTimelineDataProvider::get_automation_sequences () const
+std::span<const dsp::AutomationTimelineDataCache::AutomationCacheEntry>
+AutomationTimelineDataProvider::automation_sequences () const
 {
-  return automation_cache_->get_automation_sequences ();
+  return automation_cache_->automation_sequences ();
 }
 
 std::optional<float>
