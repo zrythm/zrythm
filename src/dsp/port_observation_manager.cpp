@@ -1,0 +1,239 @@
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+#include "dsp/port.h"
+#include "dsp/port_observation_cache.h"
+#include "dsp/port_observation_manager.h"
+#include "dsp/port_observer.h"
+#include "utils/registry_utils.h"
+
+#include <QTimer>
+
+namespace zrythm::dsp
+{
+
+struct PortObservationManager::Impl
+{
+  Impl (utils::IObjectRegistry &registry) : registry_ (registry) { }
+
+  utils::IObjectRegistry &registry_;
+
+  int next_id_ = 0;
+
+  struct Registration
+  {
+    PortUuid                              port_uuid;
+    std::unique_ptr<PortObservationCache> cache;
+  };
+
+  std::unordered_map<RegistrationId, Registration>            registrations_;
+  std::unordered_map<PortUuid, int>                           ref_counts_;
+  std::unordered_map<PortUuid, std::unique_ptr<PortObserver>> observers_;
+  std::vector<PortObserver *>                                 observer_ptrs_;
+
+  utils::QObjectUniquePtr<QTimer> drain_timer_;
+};
+
+PortObservationManager::PortObservationManager (
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : QObject (parent), impl_ (std::make_unique<Impl> (registry))
+{
+  impl_->drain_timer_ = utils::make_qobject_unique<QTimer> (this);
+  impl_->drain_timer_->setInterval (1000 / 60);
+  QObject::connect (
+    impl_->drain_timer_.get (), &QTimer::timeout, this,
+    [this] () { drain_all (); });
+  impl_->drain_timer_->start ();
+}
+
+PortObservationManager::~PortObservationManager () = default;
+
+PortObservationManager::RegistrationId
+PortObservationManager::register_request (const Port &port)
+{
+  const auto port_uuid = port.get_uuid ();
+  const int  id = impl_->next_id_++;
+
+  impl_->registrations_.emplace (
+    id,
+    Impl::Registration{ port_uuid, std::make_unique<PortObservationCache> () });
+
+  auto      &ref_count = impl_->ref_counts_[port_uuid];
+  const bool was_empty = ref_count == 0;
+  ++ref_count;
+
+  if (was_empty)
+    {
+      auto observer = std::make_unique<PortObserver> (impl_->registry_, port);
+      impl_->observer_ptrs_.push_back (observer.get ());
+      impl_->observers_.emplace (port_uuid, std::move (observer));
+      Q_EMIT observationChanged ();
+    }
+
+  return id;
+}
+
+void
+PortObservationManager::unregister_request (RegistrationId id)
+{
+  auto reg_it = impl_->registrations_.find (id);
+  if (reg_it == impl_->registrations_.end ())
+    return;
+
+  auto port_uuid = reg_it->second.port_uuid;
+  impl_->registrations_.erase (reg_it);
+
+  auto it = impl_->ref_counts_.find (port_uuid);
+  if (it == impl_->ref_counts_.end ())
+    return;
+
+  --it->second;
+  if (it->second == 0)
+    {
+      impl_->ref_counts_.erase (it);
+
+      std::unique_ptr<PortObserver> doomed;
+      auto                          obs_it = impl_->observers_.find (port_uuid);
+      if (obs_it != impl_->observers_.end ())
+        {
+          doomed = std::move (obs_it->second);
+          impl_->observers_.erase (obs_it);
+          std::erase (impl_->observer_ptrs_, doomed.get ());
+        }
+
+      Q_EMIT observationChanged ();
+    }
+}
+
+PortObservationCache &
+PortObservationManager::cache (RegistrationId id)
+{
+  auto it = impl_->registrations_.find (id);
+  if (it == impl_->registrations_.end ())
+    throw std::out_of_range ("PortObservationManager: invalid registration ID");
+  return *it->second.cache;
+}
+
+PortObserver *
+PortObservationManager::find_observer_by_uuid (const PortUuid &port_uuid) const
+{
+  auto it = impl_->observers_.find (port_uuid);
+  return it != impl_->observers_.end () ? it->second.get () : nullptr;
+}
+
+PortObserver *
+PortObservationManager::get_observer (const Port &port) const
+{
+  return find_observer_by_uuid (port.get_uuid ());
+}
+
+std::span<PortObserver * const>
+PortObservationManager::observers () const
+{
+  return impl_->observer_ptrs_;
+}
+
+void
+PortObservationManager::drain_all ()
+{
+  // Read once per port (consuming read), then fan out to all caches
+  struct TempData
+  {
+    std::vector<std::vector<float>> audio;
+    std::vector<RealtimeMidiEvent>  midi;
+  };
+
+  std::unordered_map<PortUuid, TempData> port_data;
+
+  // Pass 1: consuming read from ring buffers into temp storage
+  for (auto &[id, reg] : impl_->registrations_)
+    {
+      if (port_data.contains (reg.port_uuid))
+        continue;
+
+      auto * observer = find_observer_by_uuid (reg.port_uuid);
+      if (observer == nullptr)
+        continue;
+
+      auto &data = port_data[reg.port_uuid];
+
+      if (observer->has_audio_rings ())
+        {
+          const auto num_channels = observer->num_channels ();
+          data.audio.resize (num_channels);
+          for (int ch = 0; ch < num_channels; ++ch)
+            {
+              auto &ring = observer->audio_ring (ch);
+              auto  avail = ring.read_space ();
+              data.audio[ch].resize (avail);
+              if (!ring.read_multiple (data.audio[ch].data (), avail))
+                data.audio[ch].clear ();
+            }
+        }
+
+      if (observer->has_midi_ring ())
+        {
+          auto &ring = observer->midi_ring ();
+          auto  avail = ring.read_space ();
+          data.midi.resize (avail);
+          if (!ring.read_multiple (data.midi.data (), avail))
+            data.midi.clear ();
+        }
+    }
+
+  // Pass 2: copy temp data into all registration caches
+  for (auto &[id, reg] : impl_->registrations_)
+    {
+      auto it = port_data.find (reg.port_uuid);
+      if (it == port_data.end ())
+        continue;
+
+      auto &data = it->second;
+      auto &cache = *reg.cache;
+
+      const auto num_channels = data.audio.size ();
+      if (cache.audio.size () < num_channels)
+        cache.audio.resize (num_channels);
+
+      for (size_t ch = 0; ch < num_channels; ++ch)
+        {
+          auto       prev_size = cache.audio[ch].size ();
+          const auto new_samples = data.audio[ch].size ();
+          const auto new_size = prev_size + new_samples;
+          if (new_size > PortObservationCache::kMaxAudioSamples)
+            {
+              const auto excess =
+                new_size - PortObservationCache::kMaxAudioSamples;
+              const auto to_discard = std::min (excess, prev_size);
+              const auto remaining = prev_size - to_discard;
+              std::memmove (
+                cache.audio[ch].data (), cache.audio[ch].data () + to_discard,
+                remaining * sizeof (float));
+              prev_size = remaining;
+            }
+          cache.audio[ch].resize (prev_size + new_samples);
+          std::ranges::copy (
+            data.audio[ch], cache.audio[ch].begin () + prev_size);
+        }
+
+      {
+        auto       prev_size = cache.midi.size ();
+        const auto new_events = data.midi.size ();
+        const auto new_size = prev_size + new_events;
+        if (new_size > PortObservationCache::kMaxMidiEvents)
+          {
+            const auto excess = new_size - PortObservationCache::kMaxMidiEvents;
+            const auto to_discard = std::min (excess, prev_size);
+            auto       new_begin = std::next (cache.midi.begin (), to_discard);
+            auto       old_end = std::next (cache.midi.begin (), prev_size);
+            std::move (new_begin, old_end, cache.midi.begin ());
+            prev_size -= to_discard;
+          }
+        cache.midi.resize (prev_size + new_events);
+        std::ranges::copy (data.midi, cache.midi.begin () + prev_size);
+      }
+    }
+}
+
+}

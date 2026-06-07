@@ -107,10 +107,10 @@ RecordingSession<Packet>::write (
 template <RecordingPacket Packet>
 void
 RecordingSession<Packet>::write (
-  units::sample_t                 timeline_position,
-  bool                            transport_recording,
-  std::span<const dsp::MidiEvent> midi_events,
-  units::sample_u32_t             nframes_arg) noexcept
+  units::sample_t             timeline_position,
+  bool                        transport_recording,
+  const dsp::MidiEventBuffer &midi_events,
+  units::sample_u32_t         nframes_arg) noexcept
   requires std::same_as<Packet, RecordingMidiPacket>
 {
   State expected = State::Armed;
@@ -150,6 +150,7 @@ RecordingSession<Packet>::drain_pending ()
     {
       const auto &slot = impl_->slots[slot_idx];
       Packet      packet;
+      Packet::resize (packet, slot.nframes);
       Packet::copy_from (packet, slot);
       packets.push_back (std::move (packet));
     }

@@ -68,7 +68,7 @@ ProcessorBase::add_parameter (const dsp::ProcessorParameterUuidReference &uuid)
 }
 
 void
-ProcessorBase::prepare_for_processing (
+ProcessorBase::prepare_for_processing_impl (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
   units::sample_u32_t      max_block_length)
@@ -81,27 +81,25 @@ ProcessorBase::prepare_for_processing (
   processing_caches_->live_input_ports_.clear ();
   processing_caches_->live_output_ports_.clear ();
 
-  const auto call_prepare_for_processing = [&] (auto &&processable) {
-    processable->prepare_for_processing (node, sample_rate, max_block_length);
-  };
   for (const auto &in_ref : input_ports_)
     {
       auto * raw = in_ref.get ();
       auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
-      call_prepare_for_processing (raw);
+      raw->prepare_for_processing (nullptr, sample_rate, max_block_length);
       processing_caches_->live_input_ports_.push_back (var);
     }
   for (const auto &out_ref : output_ports_)
     {
       auto * raw = out_ref.get ();
       auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
-      call_prepare_for_processing (raw);
+      raw->prepare_for_processing (nullptr, sample_rate, max_block_length);
       processing_caches_->live_output_ports_.push_back (var);
     }
   for (const auto &param_ref : params_)
     {
       processing_caches_->live_params_.push_back (param_ref.get ());
-      call_prepare_for_processing (processing_caches_->live_params_.back ());
+      processing_caches_->live_params_.back ()->prepare_for_processing (
+        nullptr, sample_rate, max_block_length);
     }
 
   processing_caches_->change_tracker_.prepare (
@@ -170,6 +168,18 @@ ProcessorBase::process_block (
       processing_caches_->change_tracker_.record_if_changed (i, param);
     }
 
+  // clear output ports before processing
+  for (const auto &out_var : processing_caches_->live_output_ports_)
+    {
+      std::visit (
+        [&] (auto * out_port) {
+          out_port->clear_buffer (
+            time_nfo.buffer_offset_.in (units::samples),
+            time_nfo.nframes_.in (units::samples));
+        },
+        out_var);
+    }
+
   // do processor logic
   custom_process_block (time_nfo, transport, tempo_map);
 
@@ -208,12 +218,11 @@ ProcessorBase::custom_process_block (
             std::is_same_v<InT, dsp::MidiPort *>
             && std::is_same_v<OutT, dsp::MidiPort *>)
             {
-              out_port->clear_buffer (
-                time_nfo.buffer_offset_.in (units::samples),
-                time_nfo.nframes_.in (units::samples));
-              out_port->midi_events_.queued_events_.append (
-                in_port->midi_events_.active_events_, time_nfo.buffer_offset_,
-                time_nfo.nframes_);
+              dsp::midi_event::append_in_range (
+                out_port->buffer_, in_port->buffer_,
+                std::pair{
+                  time_nfo.buffer_offset_,
+                  time_nfo.buffer_offset_ + time_nfo.nframes_ });
             }
           else if constexpr (
             std::is_same_v<InT, dsp::AudioPort *>

@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "dsp/processor_base.h"
 #include "utils/icloneable.h"
 
@@ -42,6 +44,7 @@ class Fader : public QObject, public dsp::ProcessorBase
     std::vector<dsp::AudioPort *> audio_outs_rt_;
     dsp::MidiPort *               midi_in_rt_{};
     dsp::MidiPort *               midi_out_rt_{};
+    dsp::MidiEventBuffer          midi_temp_buf_;
   };
 
 public:
@@ -105,13 +108,13 @@ public:
   // QML Interface
   // ============================================================================
 
-  MidiFaderMode midiMode () const { return midi_mode_; }
+  MidiFaderMode midiMode () const { return midi_mode_.load (); }
   void          setMidiMode (MidiFaderMode mode)
   {
-    if (midi_mode_ == mode)
+    if (midi_mode_.load () == mode)
       return;
 
-    midi_mode_ = mode;
+    midi_mode_.store (mode);
     Q_EMIT midiModeChanged (mode);
   }
   Q_SIGNAL void midiModeChanged (MidiFaderMode mode);
@@ -366,8 +369,9 @@ private:
   /** Swap phase toggle. */
   std::optional<dsp::ProcessorParameter::Uuid> swap_phase_id_;
 
-  /** MIDI fader mode. */
-  MidiFaderMode midi_mode_{ MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER };
+  std::atomic<MidiFaderMode> midi_mode_{
+    MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
+  };
 
   /**
    * @brief Current gain to apply after taking into account the gain parameter

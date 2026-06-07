@@ -174,12 +174,24 @@ TEST_F (PianoRollTrackTest, JsonSerializationDefaultState)
 
 TEST_F (PianoRollTrackTest, TransformMidiInputsFunc)
 {
-  dsp::MidiEventVector events;
+  auto events = dsp::MidiEventBuffer::make_reserved ();
 
   // Add some MIDI events with different channels
-  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
-  events.add_simple (0x91, 61, 100, units::samples (1)); // Note on, channel 2
-  events.add_simple (0x92, 62, 100, units::samples (2)); // Note on, channel 3
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (1, 61, 100, units::samples (1u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (2, 62, 100, units::samples (2u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
 
   // Test with passthrough disabled (default) - should change all channels to
   // track's MIDI channel
@@ -187,36 +199,62 @@ TEST_F (PianoRollTrackTest, TransformMidiInputsFunc)
   track_->setPassthroughMidiInput (false);
   track_->transform_midi_inputs_func (events);
 
-  // All events should now have channel 5
+  // All events should now have channel 4 (0-based)
   EXPECT_EQ (events.size (), 3);
-  EXPECT_EQ (events.at (0).raw_buffer_[0], 0x94); // 0x90 | 0x04 (channel 5)
-  EXPECT_EQ (events.at (1).raw_buffer_[0], 0x94); // 0x90 | 0x04 (channel 5)
-  EXPECT_EQ (events.at (2).raw_buffer_[0], 0x94); // 0x90 | 0x04 (channel 5)
+  {
+    auto it = events.begin ();
+    EXPECT_EQ ((*it).data ()[0], 0x94);
+    ++it;
+    EXPECT_EQ ((*it).data ()[0], 0x94);
+    ++it;
+    EXPECT_EQ ((*it).data ()[0], 0x94);
+  }
 
   // Test with passthrough enabled - should leave channels unchanged
   events.clear ();
-  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
-  events.add_simple (0x91, 61, 100, units::samples (1)); // Note on, channel 2
-  events.add_simple (0x92, 62, 100, units::samples (2)); // Note on, channel 3
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (1, 61, 100, units::samples (1u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (2, 62, 100, units::samples (2u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
 
   track_->setPassthroughMidiInput (true);
   track_->transform_midi_inputs_func (events);
 
   // Channels should remain unchanged
   EXPECT_EQ (events.size (), 3);
-  EXPECT_EQ (events.at (0).raw_buffer_[0], 0x90); // Channel 1
-  EXPECT_EQ (events.at (1).raw_buffer_[0], 0x91); // Channel 2
-  EXPECT_EQ (events.at (2).raw_buffer_[0], 0x92); // Channel 3
+  {
+    auto it = events.begin ();
+    EXPECT_EQ ((*it).data ()[0], 0x90);
+    ++it;
+    EXPECT_EQ ((*it).data ()[0], 0x91);
+    ++it;
+    EXPECT_EQ ((*it).data ()[0], 0x92);
+  }
 
   // Test with different track MIDI channel
   events.clear ();
-  events.add_simple (0x90, 60, 100, units::samples (0)); // Note on, channel 1
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
 
   track_->setMidiChannel (12);
   track_->setPassthroughMidiInput (false);
   track_->transform_midi_inputs_func (events);
 
-  // Event should now have channel 12
-  EXPECT_EQ (events.at (0).raw_buffer_[0], 0x9B); // 0x90 | 0x0B (channel 12)
+  // Event should now have channel 11 (0-based)
+  EXPECT_EQ (events.front ().data ()[0], 0x9B);
 }
 } // namespace zrythm::structure::tracks

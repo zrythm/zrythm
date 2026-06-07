@@ -5,6 +5,7 @@
 #include "dsp/port_all.h"
 #include "utils/icloneable.h"
 
+#include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
 namespace zrythm::dsp
@@ -28,6 +29,9 @@ protected:
     mono_input->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
     stereo_output->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
+
     // Fill with test data
     for (const auto i : std::views::iota (0, BLOCK_LENGTH.in (units::samples)))
       {
@@ -46,8 +50,10 @@ protected:
       }
   }
 
-  std::unique_ptr<AudioPort> mono_input;
-  std::unique_ptr<AudioPort> stereo_output;
+  std::unique_ptr<AudioPort>                 mono_input;
+  std::unique_ptr<AudioPort>                 stereo_output;
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (AudioPortTest, BasicProperties)
@@ -68,10 +74,6 @@ TEST_F (AudioPortTest, BasicProperties)
 TEST_F (AudioPortTest, ResourceManagement)
 {
   // Verify buffers were allocated
-  EXPECT_FALSE (mono_input->audio_ring_buffers ().empty ());
-  EXPECT_FALSE (stereo_output->audio_ring_buffers ().empty ());
-  EXPECT_EQ (mono_input->audio_ring_buffers ().size (), 1u);
-  EXPECT_EQ (stereo_output->audio_ring_buffers ().size (), 2u);
   EXPECT_NE (mono_input->buffers ()->getArrayOfReadPointers (), nullptr);
   EXPECT_NE (stereo_output->buffers ()->getArrayOfReadPointers (), nullptr);
 
@@ -80,8 +82,6 @@ TEST_F (AudioPortTest, ResourceManagement)
   stereo_output->release_resources ();
 
   // Verify buffers were released
-  EXPECT_TRUE (mono_input->audio_ring_buffers ().empty ());
-  EXPECT_TRUE (stereo_output->audio_ring_buffers ().empty ());
   EXPECT_EQ (mono_input->buffers (), nullptr);
   EXPECT_EQ (stereo_output->buffers (), nullptr);
 }
@@ -141,6 +141,33 @@ TEST_F (AudioPortTest, DifferentPurposes)
 
   EXPECT_EQ (main_port->purpose (), AudioPort::Purpose::Main);
   EXPECT_EQ (sidechain_port->purpose (), AudioPort::Purpose::Sidechain);
+}
+
+TEST_F (AudioPortTest, OutputPortPreservesDataThroughProcessBlock)
+{
+  // Write test signal to output port (simulating a processor writing output)
+  for (const auto i : std::views::iota (0, BLOCK_LENGTH.in (units::samples)))
+    {
+      float sample = static_cast<float> (i) * 0.01f;
+      stereo_output->buffers ()->setSample (0, static_cast<int> (i), sample);
+      stereo_output->buffers ()->setSample (1, static_cast<int> (i), -sample);
+    }
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  stereo_output->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  // Output port should not clear — processor-written data survives
+  for (const auto i : std::views::iota (0, BLOCK_LENGTH.in (units::samples)))
+    {
+      float expected = static_cast<float> (i) * 0.01f;
+      EXPECT_NEAR (
+        stereo_output->buffers ()->getSample (0, static_cast<int> (i)),
+        expected, 1e-6f);
+      EXPECT_NEAR (
+        stereo_output->buffers ()->getSample (1, static_cast<int> (i)),
+        -expected, 1e-6f);
+    }
 }
 
 } // namespace zrythm::dsp

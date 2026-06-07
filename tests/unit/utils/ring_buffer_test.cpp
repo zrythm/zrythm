@@ -67,10 +67,12 @@ TEST (RingBufferTest, PeekOperations)
   EXPECT_TRUE (buffer.peek (value));
   EXPECT_EQ (value, 1);
 
-  std::vector<int> peek_values (2);
-  EXPECT_EQ (buffer.peek_multiple (peek_values.data (), 2), 2);
-  EXPECT_EQ (peek_values[0], 1);
-  EXPECT_EQ (peek_values[1], 2);
+  // Single-element reads consume from the buffer
+  int read_val;
+  EXPECT_TRUE (buffer.read (read_val));
+  EXPECT_EQ (read_val, 1);
+  EXPECT_TRUE (buffer.read (read_val));
+  EXPECT_EQ (read_val, 2);
 }
 
 TEST (RingBufferTest, MultiThreaded)

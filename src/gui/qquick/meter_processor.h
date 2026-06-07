@@ -1,19 +1,15 @@
-// SPDX-FileCopyrightText: © 2020, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "dsp/engine.h"
-#include "dsp/kmeter_dsp.h"
-#include "dsp/peak_dsp.h"
+#include <memory>
+
 #include "dsp/port.h"
-#include "dsp/true_peak_dsp.h"
-#include "utils/qt.h"
-#include "utils/types.h"
+#include "dsp/port_observation_manager.h"
 
+#include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
-
-#include <boost/container/static_vector.hpp>
 
 namespace zrythm::gui::qquick
 {
@@ -39,119 +35,81 @@ class MeterProcessor : public QObject
   Q_PROPERTY (zrythm::dsp::Port * port READ port WRITE setPort REQUIRED)
   Q_PROPERTY (int channel READ channel WRITE setChannel)
   Q_PROPERTY (
-    zrythm::dsp::AudioEngine * audioEngine READ audioEngine WRITE setAudioEngine
+    int sampleRate READ sampleRate WRITE setSampleRate NOTIFY sampleRateChanged
       REQUIRED)
+  Q_PROPERTY (
+    zrythm::dsp::PortObservationManager * portObservationManager READ
+      portObservationManager WRITE setPortObservationManager REQUIRED)
   Q_PROPERTY (
     float currentAmplitude READ currentAmplitude NOTIFY currentAmplitudeChanged)
   Q_PROPERTY (float peakAmplitude READ peakAmplitude NOTIFY peakAmplitudeChanged)
+  Q_PROPERTY (
+    MeterAlgorithm algorithm READ algorithm WRITE setAlgorithm NOTIFY
+      algorithmChanged)
 
 public:
-  enum class MeterAlgorithm : std::uint8_t
+  enum class MeterAlgorithm
   {
     /** Use default algorithm for the port. */
-    METER_ALGORITHM_AUTO,
-
-    METER_ALGORITHM_DIGITAL_PEAK,
-
+    Auto,
+    DigitalPeak,
     /** @note True peak is intensive, only use it where needed (mixer). */
-    METER_ALGORITHM_TRUE_PEAK,
-    METER_ALGORITHM_RMS,
-    METER_ALGORITHM_K,
+    TruePeak,
+    RMS,
+    K,
+  };
+  Q_ENUM (MeterAlgorithm)
+
+  enum class AudioValueFormat : std::uint8_t
+  {
+    /** 0 to 2, amplitude. */
+    Amplitude,
+
+    /** dbFS. */
+    DBFS,
+
+    /** 0 to 1, suitable for drawing. */
+    Fader,
   };
 
   MeterProcessor (QObject * parent = nullptr);
+  ~MeterProcessor () override;
 
   // ================================================================
   // QML Interface
   // ================================================================
 
-  dsp::Port * port () const { return port_; }
+  dsp::Port * port () const;
   void        setPort (dsp::Port * port);
 
-  int  channel () const { return channel_; }
+  int  channel () const;
   void setChannel (int channel);
 
-  dsp::AudioEngine * audioEngine () const { return audio_engine_; }
-  void setAudioEngine (dsp::AudioEngine * engine) { audio_engine_ = engine; }
+  int           sampleRate () const;
+  void          setSampleRate (int rate);
+  Q_SIGNAL void sampleRateChanged ();
 
-  float currentAmplitude () const
-  {
-    return current_amp_.load (std::memory_order_relaxed);
-  }
+  dsp::PortObservationManager * portObservationManager () const;
+  void setPortObservationManager (dsp::PortObservationManager * manager);
+
+  MeterAlgorithm algorithm () const;
+  void           setAlgorithm (MeterAlgorithm algo);
+  Q_SIGNAL void  algorithmChanged ();
+
+  float         currentAmplitude () const;
   Q_SIGNAL void currentAmplitudeChanged (float value);
 
-  float peakAmplitude () const
-  {
-    return peak_amp_.load (std::memory_order_relaxed);
-  }
+  float         peakAmplitude () const;
   Q_SIGNAL void peakAmplitudeChanged (float value);
 
   Q_INVOKABLE float toDBFS (float amp) const;
   Q_INVOKABLE float toFader (float amp) const;
 
-  // ================================================================
-
 private:
-  /**
-   * Get the current meter value.
-   *
-   * This should only be called once in a draw cycle.
-   */
-  void get_value (AudioValueFormat format, float * val, float * max);
+  void get_value (AudioValueFormat format, float &val, float &max);
+  void try_create_token ();
 
-public:
-  /** Port associated with this meter. */
-  QPointer<dsp::Port> port_;
-
-  // RAII request for port ring buffers to be filled
-  std::optional<dsp::RingBufferOwningPortMixin::RingBufferReader>
-    ring_buffer_reader_;
-
-  /** True peak processor. */
-  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_processor_;
-  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_max_processor_;
-
-  /** Current true peak. */
-  float true_peak_ = 0.f;
-  float true_peak_max_ = 0.f;
-
-  /** K RMS processor, if K meter. */
-  std::unique_ptr<zrythm::dsp::KMeterDsp> kmeter_processor_;
-
-  std::unique_ptr<zrythm::dsp::PeakDsp> peak_processor_;
-
-  /**
-   * Algorithm to use.
-   *
-   * Auto by default.
-   */
-  MeterAlgorithm algorithm_ = MeterAlgorithm::METER_ALGORITHM_AUTO;
-
-  /** Previous max, used when holding the max value. */
-  float prev_max_ = 0.f;
-
-  /** Last meter value (in amplitude), used to show a falloff and avoid sudden
-   * dips. */
-  float last_amp_ = 0.f;
-
-  /** Time the last val was taken at (last draw time). */
-  SteadyTimePoint last_draw_time_;
-
-  qint64 last_midi_trigger_time_ = 0;
-
-private:
-  std::vector<float> tmp_buf_;
-
-  std::atomic<float> current_amp_ = 0.f;
-  std::atomic<float> peak_amp_ = 0.f;
-
-  // Audio port channel, if audio meter.
-  int channel_{};
-
-  QPointer<dsp::AudioEngine> audio_engine_;
-
-  utils::QObjectUniquePtr<QTimer> timer_;
-
-  boost::container::static_vector<dsp::MidiEvent, 256> tmp_events_;
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 }

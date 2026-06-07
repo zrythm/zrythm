@@ -6,7 +6,6 @@
 #include "dsp/port.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
-#include "utils/ring_buffer.h"
 
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <nlohmann/json_fwd.hpp>
@@ -14,12 +13,8 @@
 namespace zrythm::dsp
 {
 
-/**
- * @brief Audio port specifics.
- */
 class AudioPort final
     : public Port,
-      public RingBufferOwningPortMixin,
       public PortConnectionsCacheMixin<AudioPort>,
       private utils::QElapsedTimeProvider
 {
@@ -60,8 +55,6 @@ public:
     uint8_t           num_channels,
     Purpose           purpose = Purpose::Main);
 
-  static constexpr size_t AUDIO_RING_SIZE = 65536;
-
   [[gnu::hot]] void process_block (
     dsp::graph::ProcessBlockInfo time_nfo,
     const dsp::ITransport       &transport,
@@ -72,7 +65,6 @@ public:
   [[nodiscard]] auto  layout () const { return layout_; }
   [[nodiscard]] auto  purpose () const { return purpose_; }
   [[nodiscard]] auto &buffers () const { return buf_; }
-  [[nodiscard]] auto &audio_ring_buffers () const { return audio_ring_; }
   auto                num_channels () const { return num_channels_; }
 
   void mark_as_requires_limiting () { requires_limiting_ = true; }
@@ -96,7 +88,7 @@ public:
     const AudioPort       &other,
     utils::ObjectCloneType clone_type);
 
-  void prepare_for_processing (
+  void prepare_for_processing_impl (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
     units::sample_u32_t      max_block_length) override;
@@ -128,17 +120,6 @@ private:
    * Audio data buffer(s).
    */
   std::unique_ptr<juce::AudioSampleBuffer> buf_;
-
-  /**
-   * Ring buffer(s) for saving the contents of the audio buffer to be used in
-   * the UI instead of directly accessing the buffer.
-   *
-   * 1 ring buffer per channel.
-   *
-   * This should contain blocks of block_length samples and should maintain at
-   * least 10 cycles' worth of buffers.
-   */
-  std::vector<RingBuffer<float>> audio_ring_;
 
   BOOST_DESCRIBE_CLASS (
     AudioPort,

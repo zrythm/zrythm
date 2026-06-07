@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/recording_materializer.h"
+#include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_fwd.h"
@@ -176,10 +177,10 @@ protected:
   }
 
   void write_midi_and_drain (
-    TrackUuid             track_id,
-    units::sample_t       position,
-    bool                  transport_recording,
-    dsp::MidiEventVector &events)
+    TrackUuid                   track_id,
+    units::sample_t             position,
+    bool                        transport_recording,
+    const dsp::MidiEventBuffer &events)
   {
     auto session = coordinator_->session_for_track (track_id);
     ASSERT_TRUE (std::holds_alternative<MidiRecordingSession *> (session));
@@ -595,14 +596,22 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffCreatesNote)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector note_on;
-  note_on.add_note_on (1, 60, 100, units::samples (0u));
+  auto note_on = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    note_on.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, note_on);
 
   EXPECT_EQ (midi_region_create_count_, 1) << "Region created on note-on";
 
-  dsp::MidiEventVector note_off;
-  note_off.add_note_off (1, 60, units::samples (100u));
+  auto note_off = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    note_off.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, note_off);
 
   ASSERT_EQ (midi_note_creations_.size (), 1u);
@@ -620,9 +629,17 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffInSamePacket)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 64, 80, units::samples (0u));
-  events.add_note_off (1, 64, units::samples (200u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 64, 80, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_note_creations_.size (), 1u);
@@ -639,14 +656,30 @@ TEST_F (RecordingMaterializerTest, MidiMultipleNotesCreateMultipleNotes)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_on (1, 64, 90, units::samples (0u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 64, 90, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_off (1, 60, units::samples (100u));
-  events2.add_note_off (1, 64, units::samples (150u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 64, units::samples (150u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
 
   ASSERT_EQ (midi_note_creations_.size (), 2u);
@@ -665,8 +698,12 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnWithoutOff_ForceCompletedAtDisarm)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   coordinator_->disarm_track (track_id);
@@ -689,8 +726,12 @@ TEST_F (
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (3, 60, 100, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (2, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   coordinator_->disarm_track (track_id);
@@ -708,8 +749,12 @@ TEST_F (RecordingMaterializerTest, MidiCCCreatesControlEvent)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_control_change (1, 1, 64, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_control_change (0, 1, 64, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -728,10 +773,14 @@ TEST_F (RecordingMaterializerTest, MidiPitchBendCreatesControlEvent)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  uint8_t              pb_lsb = 0x00;
-  uint8_t              pb_msb = 0x40;
-  events.add_simple (0xE0, pb_lsb, pb_msb, units::samples (0u));
+  auto    events = dsp::MidiEventBuffer::make_reserved ();
+  uint8_t pb_lsb = 0x00;
+  uint8_t pb_msb = 0x40;
+  {
+    const auto _ev = dsp::midi_event::make_pitchbend (
+      0, (pb_msb << 7) | pb_lsb, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -749,8 +798,12 @@ TEST_F (RecordingMaterializerTest, MidiChannelPressureCreatesControlEvent)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_channel_pressure (1, 96, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_channel_pressure (0, 96, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -769,8 +822,12 @@ TEST_F (RecordingMaterializerTest, MidiPolyAftertouchCreatesControlEvent)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_simple (0xA0, 60, 80, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev = dsp::midi_event::make_raw (
+      std::array<midi_byte_t, 3>{ 0xA0, 60, 80 }, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -788,8 +845,12 @@ TEST_F (RecordingMaterializerTest, MidiProgramChangeCreatesControlEvent)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_simple (0xC0, 42, 0, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev = dsp::midi_event::make_raw (
+      std::array<midi_byte_t, 3>{ 0xC0, 42, 0 }, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -807,9 +868,17 @@ TEST_F (RecordingMaterializerTest, MidiTransportRecordingFalseDiscardsEvents)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
-  events.add_note_off (1, 60, units::samples (100u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), false, events);
 
   EXPECT_TRUE (midi_note_creations_.empty ());
@@ -823,15 +892,31 @@ TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewRegion)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   EXPECT_EQ (midi_region_create_count_, 1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 62, 90, units::samples (0u));
-  events2.add_note_off (1, 62, units::samples (100u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 62, 90, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
   EXPECT_EQ (midi_region_create_count_, 2);
   EXPECT_EQ (midi_note_creations_.size (), 2u);
@@ -844,9 +929,17 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   ASSERT_EQ (midi_region_create_count_, 1);
 
@@ -855,9 +948,17 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
   ASSERT_NE (first_region, nullptr);
   EXPECT_FALSE (first_region->mute ()->muted ());
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 62, 90, units::samples (0u));
-  events2.add_note_off (1, 62, units::samples (100u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 62, 90, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
   EXPECT_EQ (midi_region_create_count_, 2);
 
@@ -872,15 +973,31 @@ TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewRegion)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   EXPECT_EQ (last_midi_lane_index_, 0u);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 62, 90, units::samples (0u));
-  events2.add_note_off (1, 62, units::samples (100u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 62, 90, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
   EXPECT_EQ (last_midi_lane_index_, 1u);
 }
@@ -892,10 +1009,22 @@ TEST_F (RecordingMaterializerTest, MidiNoteAndCCShareRegion)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
-  events.add_control_change (1, 1, 64, units::samples (50u));
-  events.add_note_off (1, 60, units::samples (200u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_control_change (0, 1, 64, units::samples (50u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (200u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   EXPECT_EQ (midi_region_create_count_, 1)
@@ -917,12 +1046,20 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsRecordedAsSamples)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector note_on;
-  note_on.add_note_on (1, 60, 100, units::samples (0u));
+  auto note_on = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    note_on.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, note_on);
 
-  dsp::MidiEventVector note_off;
-  note_off.add_note_off (1, 60, units::samples (100u));
+  auto note_off = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    note_off.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, note_off);
 
   ASSERT_EQ (midi_note_creations_.size (), 1u);
@@ -939,14 +1076,30 @@ TEST_F (
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_on (2, 60, 80, units::samples (0u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (1, 60, 80, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_off (1, 60, units::samples (100u));
-  events2.add_note_off (2, 60, units::samples (200u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (1, 60, units::samples (200u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
 
   ASSERT_EQ (midi_note_creations_.size (), 2u);
@@ -967,9 +1120,17 @@ TEST_F (RecordingMaterializerTest, MidiHighBitDataBytesMasked)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 0x80, 0xFF, units::samples (0u));
-  events.add_note_off (1, 0x80, units::samples (100u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 0x80, 0xFF, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 0x80, units::samples (100u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
   ASSERT_EQ (midi_note_creations_.size (), 1u);
@@ -986,16 +1147,36 @@ TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameRegion)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
-  events1.add_control_change (1, 1, 64, units::samples (150u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_control_change (0, 1, 64, units::samples (150u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   EXPECT_EQ (midi_region_create_count_, 1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 64, 80, units::samples (0u));
-  events2.add_note_off (1, 64, units::samples (200u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 64, 80, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
 
   EXPECT_EQ (midi_region_create_count_, 1)
@@ -1011,18 +1192,34 @@ TEST_F (RecordingMaterializerTest, MidiEmptyPacketsMaintainContiguity)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   EXPECT_EQ (midi_region_create_count_, 1);
 
-  dsp::MidiEventVector empty_events;
+  auto empty_events = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (256), true, empty_events);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 62, 90, units::samples (0u));
-  events2.add_note_off (1, 62, units::samples (100u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 62, 90, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (512), true, events2);
 
   EXPECT_EQ (midi_region_create_count_, 1)
@@ -1037,22 +1234,46 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsAreRegionRelative)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   ASSERT_EQ (midi_note_creations_.size (), 1u);
   EXPECT_EQ (midi_note_creations_[0].start_position, units::samples (0));
   EXPECT_EQ (midi_note_creations_[0].end_position, units::samples (100));
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 60, 100, units::samples (10u));
-  events2.add_note_on (1, 64, 90, units::samples (50u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (10u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 64, 90, units::samples (50u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
 
-  dsp::MidiEventVector events3;
-  events3.add_note_off (1, 60, units::samples (100u));
-  events3.add_note_off (1, 64, units::samples (200u));
+  auto events3 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    events3.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    events3.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1256), true, events3);
 
   ASSERT_EQ (midi_note_creations_.size (), 3u);
@@ -1072,15 +1293,27 @@ TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_off (1, 60, units::samples (50u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   ASSERT_EQ (midi_region_create_count_, 1);
   ASSERT_EQ (midi_control_event_creations_.size (), 0u);
 
-  dsp::MidiEventVector events2;
-  events2.add_control_change (1, 1, 64, units::samples (50u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_control_change (0, 1, 64, units::samples (50u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
   ASSERT_EQ (midi_region_create_count_, 2);
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
@@ -1095,17 +1328,32 @@ TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_on (1, 64, 80, units::samples (0u));
-  events2.add_note_off (1, 64, units::samples (100u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 64, 80, units::samples (0u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 64, units::samples (100u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
 
-  dsp::MidiEventVector events3;
-  events3.add_note_off (1, 60, units::samples (0u));
+  auto events3 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev = dsp::midi_event::make_note_off (0, 60, units::samples (0u));
+    events3.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (1000 + 256), true, events3);
 
   ASSERT_EQ (midi_note_creations_.size (), 2u);
@@ -1124,7 +1372,7 @@ TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvent
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector empty_events;
+  auto empty_events = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (0), true, empty_events);
 
   EXPECT_EQ (midi_region_create_count_, 1)
@@ -1138,8 +1386,12 @@ TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvent
   EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0)
     << "Region end should match packet end after first empty packet";
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, events);
 
   EXPECT_EQ (midi_region_create_count_, 1)
@@ -1155,8 +1407,12 @@ TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
   ASSERT_EQ (midi_region_create_count_, 1);
 
@@ -1165,7 +1421,7 @@ TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
   ASSERT_NE (region, nullptr);
   EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0);
 
-  dsp::MidiEventVector empty;
+  auto empty = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (256), true, empty);
   EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 512.0)
     << "Region end should extend even for empty packets";
@@ -1174,8 +1430,12 @@ TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
   EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 768.0)
     << "Region end should keep extending with contiguous empty packets";
 
-  dsp::MidiEventVector events2;
-  events2.add_note_off (1, 60, units::samples (50u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (768), true, events2);
   EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 1024.0)
     << "Region end should extend to cover note-off packet";
@@ -1191,14 +1451,30 @@ TEST_F (
   auto track_id = TrackUuid (QUuid::createUuid ());
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Midi);
 
-  dsp::MidiEventVector events1;
-  events1.add_note_on (1, 60, 100, units::samples (0u));
-  events1.add_note_on (1, 60, 80, units::samples (100u));
+  auto events1 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 80, units::samples (100u));
+    events1.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
 
-  dsp::MidiEventVector events2;
-  events2.add_note_off (1, 60, units::samples (50u));
-  events2.add_note_off (1, 60, units::samples (150u));
+  auto events2 = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_off (0, 60, units::samples (150u));
+    events2.push_back (_ev.time_, _ev.data ());
+  }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
 
   ASSERT_EQ (midi_note_creations_.size (), 2u);

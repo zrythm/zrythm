@@ -13,7 +13,7 @@ namespace zrythm::dsp
 {
 DspGraphDispatcher::DspGraphDispatcher (
   std::unique_ptr<graph::IGraphBuilder>      graph_builder,
-  std::vector<graph::IProcessable *>         terminal_processables,
+  TerminalProcessablesProvider               terminal_processables_provider,
   const IHardwareAudioInterface             &hw_interface,
   RunFunctionWithEngineLock                  run_function_with_engine_lock,
   graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread,
@@ -21,7 +21,7 @@ DspGraphDispatcher::DspGraphDispatcher (
     : graph_builder_ (std::move (graph_builder)), hw_interface_ (hw_interface),
       workgroup_ (std::move (workgroup)),
       run_function_with_engine_lock_ (std::move (run_function_with_engine_lock)),
-      terminal_processables_ (std::move (terminal_processables)),
+      terminal_processables_provider_ (std::move (terminal_processables_provider)),
       run_on_main_thread_ (std::move (run_on_main_thread))
 {
 }
@@ -64,16 +64,32 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
                 if (track->pianoRollTrackMixin ()
                       ->allow_only_specific_midi_channels ())
                   {
-                    target_port.midi_events_.active_events_.append_w_filter (
-                      midi_events,
-                      track->pianoRollTrackMixin ()->midi_channels_to_allow (),
-                      time_nfo.buffer_offset_, time_nfo.nframes_);
+                    {
+                      const auto channels =
+                        track->pianoRollTrackMixin ()->midi_channels_to_allow ();
+                      for (const auto &src_ev : midi_events)
+                        {
+                          if (
+                            src_ev.time_ < time_nfo.buffer_offset_
+                            || src_ev.time_
+                                 >= time_nfo.buffer_offset_ + time_nfo.nframes_)
+                            continue;
+                          const auto d = src_ev.data ();
+                          const midi_byte_t channel = d[0] & 0x0f;
+                          if (!channels[channel])
+                            continue;
+                          target_port.buffer_.push_back (src_ev);
+                        }
+                    }
                   }
                 /* otherwise append normally */
                 else
                   {
-                    target_port.midi_events_.active_events_.append (
-                      midi_events, time_nfo.buffer_offset_, time_nfo.nframes_);
+                    midi_event::append_in_range (
+                      target_port.buffer_, midi_events,
+                      std::make_pair (
+                        time_nfo.buffer_offset_,
+                        time_nfo.buffer_offset_ + time_nfo.nframes_));
                   }
                 midi_events.clear ();
               }
@@ -132,7 +148,7 @@ DspGraphDispatcher::recalc_graph (bool soft)
     // Prune graph
     {
       std::vector<std::reference_wrapper<graph::GraphNode>> terminals;
-      for (const auto &processable : terminal_processables_)
+      for (const auto &processable : terminal_processables_provider_ ())
         {
           auto * node =
             graph.get_nodes ().find_node_for_processable (*processable);

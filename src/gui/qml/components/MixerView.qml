@@ -14,6 +14,7 @@ RowLayout {
   required property AudioEngine audioEngine
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
+  required property PortObservationManager portObservationManager
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -32,6 +33,7 @@ RowLayout {
       channel: track.channel
       pluginImporter: root.pluginImporter
       pluginOperator: root.pluginOperator
+      portObservationManager: root.portObservationManager
       trackModelIndex: mixerProxyModel.mapToSource(mixerProxyModel.index(index, 0))
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.tracklist

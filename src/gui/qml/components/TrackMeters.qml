@@ -10,10 +10,13 @@ import Zrythm
 RowLayout {
   id: root
 
+  readonly property bool _isMasterTrack: root.track && root.track.type === Track.Master
+  required property AudioEngine audioEngine
   required property Channel channel
   readonly property real currentAmplitude: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentAmplitude : midiMetersLoader.item.currentAmplitude) : 0
   readonly property real currentPeak: channel ? (audioMetersLoader.active ? audioMetersLoader.item.currentPeak : midiMetersLoader.item.currentPeak) : 0
-  required property AudioEngine audioEngine
+  required property PortObservationManager portObservationManager
+  required property Track track
 
   Loader {
     id: audioMetersLoader
@@ -37,9 +40,11 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
+        algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
         audioEngine: root.audioEngine
         channel: 0
         port: root.channel.audioOutPort
+        portObservationManager: root.portObservationManager
       }
 
       Meter {
@@ -47,9 +52,11 @@ RowLayout {
 
         Layout.fillHeight: true
         Layout.preferredWidth: width
+        algorithm: root._isMasterTrack ? MeterProcessor.K : MeterProcessor.DigitalPeak
         audioEngine: root.audioEngine
         channel: 1
         port: root.channel.audioOutPort
+        portObservationManager: root.portObservationManager
       }
     }
   }
@@ -72,6 +79,7 @@ RowLayout {
       anchors.fill: parent
       audioEngine: root.audioEngine
       port: root.channel.midiOut
+      portObservationManager: root.portObservationManager
     }
   }
 }

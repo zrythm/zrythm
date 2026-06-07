@@ -79,8 +79,11 @@ protected:
     midi_byte_t     velocity)
   {
     assert (port != nullptr);
-    port->midi_events_.active_events_.add_note_on (
-      channel, note, velocity, units::samples (0));
+    {
+      const auto _ev = dsp::midi_event::make_note_on (
+        channel, note, velocity, units::samples (0u));
+      port->buffer_.push_back (_ev.time_, _ev.data ());
+    }
   }
 
   static dsp::MidiPort * find_midi_input_port (plugins::Plugin &plugin)
@@ -231,7 +234,7 @@ TEST_P (PluginInstrumentTest, FreshInstanceProducesSound)
 
   auto * midi_in = find_midi_input_port (*plugin);
   ASSERT_NE (midi_in, nullptr);
-  inject_midi_note_on (midi_in, 1, 60, 100);
+  inject_midi_note_on (midi_in, 0, 60, 100);
 
   auto  time_nfo = make_time_info (256);
   auto &transport = *owned_project_->transport_;
@@ -340,7 +343,7 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
 
   auto * midi_in2 = find_midi_input_port (*plugin2);
   ASSERT_NE (midi_in2, nullptr);
-  inject_midi_note_on (midi_in2, 1, 60, 100);
+  inject_midi_note_on (midi_in2, 0, 60, 100);
 
   auto &transport2 = *project2->transport_;
   auto &tempo_map2 = project2->tempo_map ();
@@ -407,10 +410,13 @@ TEST_P (PluginParamSyncTest, ParameterChangesReachPlugin)
   ASSERT_FALSE (state_default.empty ());
 
   target_param->setBaseValue (0.9f);
-  for (int i = 0; i < 3; ++i)
+  auto state_changed = state_default;
+  ScopedQCoreApplication::process_events_until_true ([&] () {
     plugin->process_block (time_nfo, transport, tempo_map);
+    state_changed = plugin->save_state ();
+    return state_changed != state_default;
+  });
 
-  auto state_changed = plugin->save_state ();
   EXPECT_NE (state_default, state_changed)
     << "Plugin state unchanged after parameter edit";
 }

@@ -24,7 +24,6 @@ init_from (Port &obj, const Port &other, utils::ObjectCloneType clone_type)
 }
 
 Port::~Port () = default;
-RingBufferOwningPortMixin::~RingBufferOwningPortMixin () = default;
 
 void
 to_json (nlohmann::json &j, const Port &p)

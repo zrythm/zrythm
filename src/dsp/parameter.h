@@ -379,7 +379,7 @@ public:
     const dsp::ITransport       &transport,
     const dsp::TempoMap         &tempo_map) noexcept override;
 
-  void prepare_for_processing (
+  void prepare_for_processing_impl (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
     units::sample_u32_t      max_block_length) override;

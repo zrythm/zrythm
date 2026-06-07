@@ -197,7 +197,7 @@ ProcessorParameter::process_block (
 }
 
 void
-ProcessorParameter::prepare_for_processing (
+ProcessorParameter::prepare_for_processing_impl (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
   units::sample_u32_t      max_block_length)

@@ -137,18 +137,19 @@ MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 }
 
 void
-MidiMappings::apply_from_cc_events (const dsp::MidiEventVector &events)
+MidiMappings::apply_from_cc_events (
+  std::span<const dsp::RealtimeMidiEvent> events)
 {
   for (const auto &ev : events)
     {
-      if (utils::midi::midi_is_controller (ev.raw_buffer_))
-        {
-          auto channel = utils::midi::midi_get_channel_1_to_16 (ev.raw_buffer_);
-          auto controller =
-            utils::midi::midi_get_controller_number (ev.raw_buffer_);
-          auto &mapping = mappings_[(channel - 1) * 128 + controller];
-          mapping->apply (ev.raw_buffer_);
-        }
+      auto d = ev.data ();
+      if (d.size () < 3 || !utils::midi::midi_is_controller (d))
+        continue;
+      auto  channel = utils::midi::midi_get_channel_1_to_16 (d);
+      auto  controller = utils::midi::midi_get_controller_number (d);
+      auto &mapping = mappings_[(channel - 1) * 128 + controller];
+      std::array<midi_byte_t, 3> buf = { d[0], d[1], d[2] };
+      mapping->apply (buf);
     }
 }
 

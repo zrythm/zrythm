@@ -57,66 +57,62 @@ TEST_F (MidiPortTest, BasicProperties)
   EXPECT_FALSE (output_port->is_input ());
 }
 
-TEST_F (MidiPortTest, MidiEventHandling)
+TEST_F (MidiPortTest, InputPortClearsOnProcessWithNoSources)
 {
   // Add event to input port
-  input_port->midi_events_.queued_events_.add_note_on (
-    1, 60, 100, units::samples (0));
+  auto ev = dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+  input_port->buffer_.push_back (ev.time_, ev.data ());
 
-  // Process input port
+  // Process input port (no sources connected)
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), BLOCK_LENGTH);
   input_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
-  // Verify event was processed
-  EXPECT_TRUE (input_port->midi_events_.queued_events_.empty ());
-  EXPECT_FALSE (input_port->midi_events_.active_events_.empty ());
-}
-
-TEST_F (MidiPortTest, RingBufferFunctionality)
-{
-  // Request ring buffer functionality
-  RingBufferOwningPortMixin::RingBufferReader reader (*output_port);
-
-  // Add event to output port
-  output_port->midi_events_.queued_events_.add_control_change (
-    2, 1, 127, units::samples (20));
-
-  // Process output port
-  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
-    units::samples (0), BLOCK_LENGTH);
-  output_port->process_block (time_info, *mock_transport_, *tempo_map_);
-
-  // Verify event was added to ring buffer
-  EXPECT_NE (output_port->midi_ring_, nullptr);
-
-  // Read from ring buffer
-  MidiEvent read_event;
-  EXPECT_TRUE (output_port->midi_ring_->read (read_event));
-
-  // Verify event data
-  EXPECT_TRUE (utils::midi::midi_is_controller (read_event.raw_buffer_));
-  EXPECT_EQ (utils::midi::midi_get_channel_1_to_16 (read_event.raw_buffer_), 2);
-  EXPECT_EQ (
-    utils::midi::midi_get_controller_number (read_event.raw_buffer_), 1);
-  EXPECT_EQ (
-    utils::midi::midi_get_controller_value (read_event.raw_buffer_), 127);
-  EXPECT_EQ (read_event.time_, units::samples (20));
+  // Input port clears and aggregates from sources — with no sources, buffer
+  // is empty
+  EXPECT_TRUE (input_port->buffer_.empty ());
 }
 
 TEST_F (MidiPortTest, ResourceManagement)
 {
-  // Verify resources were allocated
-  EXPECT_NE (input_port->midi_ring_, nullptr);
-  EXPECT_NE (output_port->midi_ring_, nullptr);
-
   // Release resources
   input_port->release_resources ();
   output_port->release_resources ();
+}
 
-  // Verify resources were released
-  EXPECT_EQ (input_port->midi_ring_, nullptr);
-  EXPECT_EQ (output_port->midi_ring_, nullptr);
+TEST_F (MidiPortTest, OutputPortPreservesEventsThroughProcessBlock)
+{
+  auto ev = dsp::midi_event::make_note_on (0, 60, 100, units::samples (10));
+  output_port->buffer_.push_back (ev.time_, ev.data ());
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  output_port->process_block (time_info, *mock_transport_, *tempo_map_);
+
+  ASSERT_EQ (output_port->buffer_.size (), 1);
+  auto out_data = (*output_port->buffer_.begin ()).data ();
+  auto ev_data = ev.data ();
+  ASSERT_EQ (out_data.size (), ev_data.size ());
+  EXPECT_TRUE (std::ranges::equal (out_data, ev_data));
+}
+
+TEST_F (MidiPortTest, InputPortClearsAndAggregatesFromSources)
+{
+  // Set up: output_port feeds into input_port
+  input_port->set_port_sources (std::array<MidiPort *, 1>{ output_port.get () });
+
+  auto ev = dsp::midi_event::make_note_on (0, 64, 80, units::samples (5));
+  output_port->buffer_.push_back (ev.time_, ev.data ());
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  input_port->process_block (time_info, *mock_transport_, *tempo_map_);
+
+  ASSERT_EQ (input_port->buffer_.size (), 1);
+  auto out_data = (*input_port->buffer_.begin ()).data ();
+  auto ev_data = ev.data ();
+  ASSERT_EQ (out_data.size (), ev_data.size ());
+  EXPECT_TRUE (std::ranges::equal (out_data, ev_data));
 }
 
 } // namespace zrythm::dsp

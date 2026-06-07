@@ -118,7 +118,7 @@ public:
   units::sample_u32_t get_single_playback_latency () const override;
 
 protected:
-  void prepare_for_processing_impl (
+  void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;
 
@@ -195,7 +195,7 @@ private:
    *
    * Populated incrementally during paramsRescan() on the main thread.
    * Read on the audio thread during process_impl(). Safe because audio
-   * processing starts after prepare_for_processing_impl(), which is called
+   * processing starts after prepare_plugin_for_processing(), which is called
    * after the map is built.
    */
   std::unordered_map<dsp::ProcessorParameter *, clap_id> zrythm_to_clap_;

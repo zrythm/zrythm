@@ -8,6 +8,7 @@
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/timeline_data_provider.h"
+#include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/types.h"
@@ -208,7 +209,7 @@ protected:
 TEST_F (TimelineDataProviderTest, InitialState)
 {
   // Provider should start with no events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -220,7 +221,7 @@ TEST_F (TimelineDataProviderTest, InitialState)
 TEST_F (TimelineDataProviderTest, ProcessEventsWithNoEvents)
 {
   // Test processing when no events are available
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (1000), units::samples (512));
 
@@ -239,7 +240,7 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
   midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
 
   // Verify no events are generated
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -262,7 +263,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -276,12 +277,12 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
   if (!output_buffer.empty ())
     {
       const auto &event = output_buffer.front ();
-      EXPECT_GE (event.time_, units::samples (0));
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_GE (event.time (), units::samples (0));
+      EXPECT_LT (event.time (), time_info.nframes_);
 
       // Verify it's a note on event with the correct pitch
-      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
-      EXPECT_EQ (event.raw_buffer_[1], 60);          // Pitch
+      EXPECT_TRUE (utils::midi::midi_is_note_on (event.data ()));
+      EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60);
     }
 }
 
@@ -299,7 +300,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -324,7 +325,7 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events with a global offset that's far from the note
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = {
     .transport_position_ = units::samples (10000),
     // 100 frame offset
@@ -365,7 +366,7 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing events that should include all notes
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = {
     .transport_position_ = region1_start_samples,
     .buffer_offset_ = units::samples (0),
@@ -383,9 +384,10 @@ TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
   std::vector<int> found_pitches;
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ()))
         {
-          found_pitches.push_back (event.raw_buffer_[1]);
+          found_pitches.push_back (
+            utils::midi::midi_get_note_number (event.data ()));
         }
     }
 
@@ -400,7 +402,7 @@ TEST_F (TimelineDataProviderTest, MidiBasicFunctionality)
   EXPECT_NE (midi_provider_, nullptr);
 
   // Test that process_midi_events can be called without crashing
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -438,7 +440,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include the note
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -457,13 +459,13 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   // All events should be within the sample interval
   for (const auto &event : output_buffer)
     {
-      const auto event_time = event.time_;
+      const auto event_time = event.time ();
       EXPECT_GE (event_time, sample_start);
       EXPECT_LE (event_time, sample_end);
 
       // Verify it's a note on event with the correct pitch
-      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
-      EXPECT_EQ (event.raw_buffer_[1], 60);          // Pitch
+      EXPECT_TRUE (utils::midi::midi_is_note_on (event.data ()));
+      EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60);
     }
 }
 
@@ -484,7 +486,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should NOT include the note
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -516,7 +518,7 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events that should include only the first region
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (512));
 
@@ -529,9 +531,9 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
   // All events should be from the first region (pitch 60)
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ()))
         {
-          EXPECT_EQ (event.raw_buffer_[1], 60);
+          EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60);
         }
     }
 }
@@ -557,7 +559,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -600,7 +602,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
     tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
 
   // Test processing events that should include all notes
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = {
     .transport_position_ = region1_start_samples,
     .buffer_offset_ = units::samples (0),
@@ -618,9 +620,10 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
   std::vector<int> found_pitches;
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ()))
         {
-          found_pitches.push_back (event.raw_buffer_[1]);
+          found_pitches.push_back (
+            utils::midi::midi_get_note_number (event.data ()));
         }
     }
 
@@ -655,7 +658,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -668,9 +671,9 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
   // All events should be from the original region (pitch 60)
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ()))
         {
-          EXPECT_EQ (event.raw_buffer_[1], 60);
+          EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60);
         }
     }
 }
@@ -709,7 +712,7 @@ TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
   const auto r1_end_samples =
     tempo_map_->tick_to_samples_rounded (units::ticks (r1_end));
 
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     r1_start_samples, r1_end_samples - r1_start_samples);
 
@@ -735,7 +738,7 @@ TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
   int note_on_count_after = 0;
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90)
+      if (utils::midi::midi_is_note_on (event.data ()))
         ++note_on_count_after;
     }
   EXPECT_EQ (note_on_count_after, 1); // R1 has one note
@@ -755,7 +758,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -802,7 +805,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
     tempo_map_->tick_to_samples_rounded (units::ticks (region_start_ticks));
 
   // Test processing events that should include the note
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     region_start_samples, units::samples (256));
 
@@ -819,10 +822,10 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 
       // The event should be at the beginning of our processing block
       // since the note is at the start of the region
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_LT (event.time (), time_info.nframes_);
       // Verify it's a note on event with the correct pitch
-      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
-      EXPECT_EQ (event.raw_buffer_[1], 60);          // Pitch
+      EXPECT_TRUE (utils::midi::midi_is_note_on (event.data ()));
+      EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60);
     }
 }
 
@@ -1561,7 +1564,7 @@ TEST_F (
 TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
 {
   // Provider should start with no chord events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1592,7 +1595,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should include chord events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1605,11 +1608,10 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   // Verify events are valid MIDI events
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, units::samples (0));
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_GE (event.time (), units::samples (0));
+      EXPECT_LT (event.time (), time_info.nframes_);
       // Check that it's a valid MIDI message
-      EXPECT_GE (event.raw_buffer_[0], 0x80);
-      EXPECT_LE (event.raw_buffer_[0], 0xEF);
+      EXPECT_TRUE (utils::midi::midi_is_short_msg (event.data ()));
     }
 }
 
@@ -1635,7 +1637,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events that should NOT include the chord
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1665,7 +1667,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1734,7 +1736,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
   midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1772,7 +1774,7 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // Test processing events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1789,13 +1791,13 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
 
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ()))
         {
-          if (event.raw_buffer_[1] == 60)
+          if (utils::midi::midi_get_note_number (event.data ()) == 60)
             {
               found_muted_note = true;
             }
-          else if (event.raw_buffer_[1] == 64)
+          else if (utils::midi::midi_get_note_number (event.data ()) == 64)
             {
               found_unmuted_note = true;
             }
@@ -1822,7 +1824,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
   // First, process with transport rolling - should generate MIDI events
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -1841,9 +1843,8 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
   EXPECT_EQ (output_buffer.size (), 16);
 
   // Verify it's the all-notes-off event
-  const auto &event = output_buffer.at (0);
-  EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
-  EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+  const auto &event = output_buffer.front ();
+  EXPECT_TRUE (utils::midi::midi_is_all_notes_off (event.data ()));
 }
 
 TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
@@ -1911,7 +1912,7 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
   // First, process at position 0 with transport rolling
   auto time_info1 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -1938,9 +1939,8 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
   EXPECT_EQ (output_buffer.size (), 16);
 
   // Verify it's the all-notes-off event
-  const auto &event = output_buffer.at (0);
-  EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
-  EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+  const auto &event = output_buffer.front ();
+  EXPECT_TRUE (utils::midi::midi_is_all_notes_off (event.data ()));
 }
 
 TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
@@ -1956,7 +1956,7 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
   // First, process at position 0 with transport rolling
   auto time_info1 = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -1983,11 +1983,9 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Should not have all-notes-off event
-  for (const auto &event : output_buffer)
-    {
-      EXPECT_FALSE (
-        (event.raw_buffer_[0] & 0xF0) == 0xB0 && event.raw_buffer_[1] == 123);
-    }
+  EXPECT_TRUE (std::ranges::none_of (output_buffer, [] (const auto &ev) {
+    return utils::midi::midi_is_all_notes_off (ev.data ());
+  }));
 }
 
 TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
@@ -2003,7 +2001,7 @@ TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
   midi_provider_->generate_midi_events (*tempo_map_, regions, range);
 
-  dsp::MidiEventVector output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
@@ -2055,10 +2053,10 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
   EXPECT_NE (automation_provider_, nullptr);
 
   // Test that process methods can be called without crashing
-  dsp::MidiEventVector midi_buffer;
-  std::vector<float>   audio_left (256, 0.0f);
-  std::vector<float>   audio_right (256, 0.0f);
-  std::vector<float>   automation_values (256, 0.0f);
+  auto               midi_buffer = dsp::MidiEventBuffer::make_reserved ();
+  std::vector<float> audio_left (256, 0.0f);
+  std::vector<float> audio_right (256, 0.0f);
+  std::vector<float> automation_values (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 

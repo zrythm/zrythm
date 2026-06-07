@@ -28,6 +28,7 @@ add_executable(zrythm_dsp_unit_tests
   kmeter_dsp_test.cpp
   metronome_test.cpp
   midi_device_buffer_test.cpp
+  midi_event_buffer_test.cpp
   midi_event_test.cpp
   midi_input_processor_test.cpp
   midi_panic_processor_test.cpp
@@ -43,6 +44,8 @@ add_executable(zrythm_dsp_unit_tests
   playhead_qml_adapter_test.cpp
   port_connection_test.cpp
   port_connections_manager_test.cpp
+  port_observation_manager_test.cpp
+  port_observer_test.cpp
   port_test.cpp
   processor_base_test.cpp
   snap_grid_test.cpp

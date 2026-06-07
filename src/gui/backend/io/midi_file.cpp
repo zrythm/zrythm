@@ -238,6 +238,8 @@ MidiFile::export_midi_region_to_midi_file (
   mf.writeTo (*output_stream, midi_version);
 }
 
+// TODO
+#if 0
 void
 MidiFile::export_midi_lane_to_sequence (
   juce::MidiMessageSequence          &message_sequence,
@@ -250,8 +252,6 @@ MidiFile::export_midi_lane_to_sequence (
   bool                                lanes_as_tracks,
   bool                                use_track_or_lane_pos)
 {
-// TODO
-#if 0
   auto calculate_lane_idx_for_midi_serialization =
     [&tracklist, &track, &lane] () {
       const auto lane_index = track.lanes ().get_lane_index (lane.get_uuid ());
@@ -334,6 +334,6 @@ MidiFile::export_midi_lane_to_sequence (
       // TODO
       // own_events->write_to_midi_file (mf, midi_track_pos);
     }
+  }
 #endif
-}
 }

@@ -222,12 +222,13 @@ TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesUpdatedOnFinalize)
   QSignalSpy ranges_spy (
     &tracker, &PlaybackCacheActivityTracker::cachedRangesChanged);
 
-  juce::MidiMessageSequence seq;
-  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
-  seq.updateMatchedPairs ();
+  std::vector<dsp::SampleBasedMidiEvent> events;
+  events.push_back (
+    dsp::midi_event::make_note_on (0, 60, 127, units::samples (0)));
+  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (50)));
 
-  cache_->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
+  cache_->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, events);
   cache_->finalize_changes ();
 
   ASSERT_EQ (ranges_spy.count (), 1);
@@ -247,11 +248,12 @@ TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesClearedOnCacheClear)
 {
   auto tracker = make_tracker ();
 
-  juce::MidiMessageSequence seq;
-  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
-  seq.updateMatchedPairs ();
-  cache_->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
+  std::vector<dsp::SampleBasedMidiEvent> events;
+  events.push_back (
+    dsp::midi_event::make_note_on (0, 60, 127, units::samples (0)));
+  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (50)));
+  cache_->add_midi_sequence (
+    { units::samples (0), units::samples (100) }, events);
   cache_->finalize_changes ();
 
   ASSERT_EQ (tracker.cachedRanges ().size (), 1);

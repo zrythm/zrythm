@@ -4,6 +4,7 @@
 #pragma once
 
 #include <functional>
+#include <stdexcept>
 #include <string_view>
 
 #include "dsp/graph_node.h"
@@ -12,6 +13,8 @@
 #include "utils/typed_uuid_reference.h"
 #include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
+
+#include <fmt/format.h>
 
 using namespace std::string_view_literals;
 
@@ -33,6 +36,9 @@ namespace zrythm::dsp
 class Port : public utils::UuidIdentifiableObject<Port>, public dsp::graph::IProcessable
 {
   Q_OBJECT
+  QML_ELEMENT
+  QML_UNCREATABLE ("")
+
   Q_DISABLE_COPY_MOVE (Port)
 public:
   using FullDesignationProvider =
@@ -145,47 +151,6 @@ private:
     (label_, sym_, port_group_))
 };
 
-class RingBufferOwningPortMixin
-{
-public:
-  virtual ~RingBufferOwningPortMixin ();
-
-  /**
-   * @brief Number of entities that want ring buffers to be written.
-   *
-   * This is used to avoid writing ring buffers when they are not needed by any
-   * entity. If a UI element needs ring buffers filled, this should be
-   * incremented, and then decremented when no longer needed.
-   *
-   * @note Significant ports like master output will write to their ring buffers
-   * anyway.
-   */
-  std::atomic<int> num_ring_buffer_readers_{ 0 };
-
-  /**
-   * @brief RAII helper for managing ring buffer reader count.
-   *
-   * Increments the count on construction and decrements on destruction.
-   */
-  class RingBufferReader
-  {
-  public:
-    explicit RingBufferReader (RingBufferOwningPortMixin &owner)
-        : owner_ (owner)
-    {
-      owner_.num_ring_buffer_readers_++;
-    }
-
-    ~RingBufferReader () { owner_.num_ring_buffer_readers_--; }
-
-    // Delete copy and move operations
-    Q_DISABLE_COPY_MOVE (RingBufferReader)
-
-  private:
-    RingBufferOwningPortMixin &owner_;
-  };
-};
-
 template <typename PortT> class PortConnectionsCacheMixin
 {
   using ElementType =
@@ -201,8 +166,25 @@ public:
     [[clang::blocking]]
   {
     self.port_sources_.clear ();
+    if (self.flow () != PortFlow::Input)
+      {
+        throw std::runtime_error (
+          fmt::format (
+            "Destination port '{}' must be an input port (is {})",
+            self.get_full_designation (),
+            self.flow () == PortFlow::Output ? "Output" : "Unknown"));
+      }
     for (const auto &source_port : source_ports)
       {
+        if (source_port->flow () != PortFlow::Output)
+          {
+            throw std::runtime_error (
+              fmt::format (
+                "Source port '{}' must be an output port (is {}), destination '{}'",
+                source_port->get_full_designation (),
+                source_port->flow () == PortFlow::Input ? "Input" : "Unknown",
+                self.get_full_designation ()));
+          }
         self.port_sources_.push_back (
           std::make_pair (
             source_port,

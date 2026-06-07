@@ -87,14 +87,7 @@ public:
   /**
    * @brief Callback to be used as TrackProcessor's transform function.
    */
-  void transform_midi_inputs_func (dsp::MidiEventVector &events) const
-  {
-    // change the MIDI channel on the midi input to the channel set on the track
-    if (!passthrough_midi_input_)
-      {
-        events.set_channel (midi_ch_);
-      }
-  }
+  void transform_midi_inputs_func (dsp::MidiEventBuffer &events) const;
 
 private:
   static constexpr auto kDrumModeKey = "drumMode"sv;
@@ -133,5 +126,8 @@ private:
    * If nullopt, the channel will accept MIDI messages from all MIDI channels.
    */
   std::optional<std::array<bool, 16>> midi_channels_;
+
+  /** Pre-allocated scratch buffer for transform_midi_inputs_func (RT path). */
+  mutable dsp::MidiEventBuffer transform_scratch_;
 };
 }

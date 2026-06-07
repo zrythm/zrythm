@@ -98,6 +98,7 @@ ColumnLayout {
           Layout.preferredHeight: contentHeight
           audioEngine: root.project.engine
           pinned: true
+          portObservationManager: root.project.portObservationManager
           trackCollectionOperator: trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist
@@ -111,6 +112,7 @@ ColumnLayout {
           Layout.fillWidth: true
           audioEngine: root.project.engine
           pinned: false
+          portObservationManager: root.project.portObservationManager
           trackCollectionOperator: trackCollectionOperator
           trackSelectionModel: root.trackSelectionModel
           tracklist: root.project.tracklist

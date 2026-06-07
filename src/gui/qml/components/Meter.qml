@@ -1,19 +1,21 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
 import ZrythmStyle
-import ZrythmGui
+import Zrythm
 
 Rectangle {
   id: root
 
+  property int algorithm
+  required property AudioEngine audioEngine
   property int channel
   readonly property real currentPx: meterProcessor.toFader(meterProcessor.currentAmplitude) * root.height
-  required property AudioEngine audioEngine
   readonly property alias meterProcessor: meterProcessor
   readonly property real peakPx: meterProcessor.toFader(meterProcessor.peakAmplitude) * root.height
-  required property var port
+  required property Port port
+  required property PortObservationManager portObservationManager
 
   clip: true
   color: "transparent"
@@ -24,9 +26,11 @@ Rectangle {
   MeterProcessor {
     id: meterProcessor
 
-    audioEngine: root.audioEngine
+    algorithm: root.algorithm
     channel: root.channel
     port: root.port
+    portObservationManager: root.portObservationManager
+    sampleRate: root.audioEngine.sampleRate
   }
 
   Rectangle {

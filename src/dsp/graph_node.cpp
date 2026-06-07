@@ -27,6 +27,7 @@
  */
 
 #include <algorithm>
+#include <stdexcept>
 #include <utility>
 
 #include "dsp/graph_node.h"
@@ -34,8 +35,23 @@
 #include "utils/debug.h"
 #include "utils/utf8_string.h"
 
+#include <fmt/format.h>
+
 namespace zrythm::dsp::graph
 {
+
+void
+IProcessable::prepare_for_processing (
+  const GraphNode *    node,
+  units::sample_rate_t sample_rate,
+  units::sample_u32_t  max_block_length)
+{
+  assert (
+    node == nullptr
+    || std::addressof (node->get_processable ())
+         == static_cast<const IProcessable *> (this));
+  prepare_for_processing_impl (node, sample_rate, max_block_length);
+}
 
 utils::Utf8String
 InitialProcessor::get_node_name () const
@@ -246,6 +262,14 @@ GraphNode::set_route_playback_latency (units::sample_u32_t dest_latency)
 void
 GraphNode::connect_to (GraphNode &target)
 {
+  if (std::addressof (target) == this)
+    {
+      throw std::runtime_error (
+        fmt::format (
+          "Self-connection attempted on node '{}' ({})",
+          get_processable ().get_node_name (), static_cast<const void *> (this)));
+    }
+
   if (std::ranges::any_of (childnodes_, [&target] (const auto &cur) {
         return std::addressof (cur.get ()) == &target;
       }))

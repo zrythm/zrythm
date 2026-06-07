@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "controllers/recording_session.h"
+#include "dsp/midi_event.h"
 
 #include <gtest/gtest.h>
 
@@ -339,16 +340,24 @@ TEST_F (MidiRecordingSessionTest, InitialStateIsArmed)
 
 TEST_F (MidiRecordingSessionTest, WriteTransitionsToCapturing)
 {
-  dsp::MidiEventVector events;
-  events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   session_->write (units::samples (0), true, events, units::samples (256u));
   EXPECT_EQ (session_->state (), MidiRecordingSession::State::Capturing);
 }
 
 TEST_F (MidiRecordingSessionTest, DrainPendingReadsWrittenData)
 {
-  dsp::MidiEventVector events;
-  events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   session_->write (units::samples (0), true, events, units::samples (256u));
 
   auto packets = session_->drain_pending ();
@@ -360,22 +369,34 @@ TEST_F (MidiRecordingSessionTest, DrainPendingReadsWrittenData)
 
 TEST_F (MidiRecordingSessionTest, DrainPendingContainsCorrectMidiData)
 {
-  dsp::MidiEventVector events;
-  events.push_back (dsp::MidiEvent (0x90, 60, 100, units::samples (0)));
-  events.push_back (dsp::MidiEvent (0xB0, 74, 64, units::samples (10)));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+    events.push_back (_ev.time_, _ev.data ());
+  }
+  {
+    const auto _ev =
+      dsp::midi_event::make_control_change (0, 74, 64, units::samples (10));
+    events.push_back (_ev.time_, _ev.data ());
+  }
 
   session_->write (units::samples (100), true, events, units::samples (256u));
 
   auto packets = session_->drain_pending ();
   ASSERT_EQ (packets.size (), 1);
   ASSERT_EQ (packets[0].midi_events.size (), 2);
-  EXPECT_EQ (packets[0].midi_events[0].raw_buffer_[1], 60);
-  EXPECT_EQ (packets[0].midi_events[1].raw_buffer_[1], 74);
+  {
+    auto it = packets[0].midi_events.begin ();
+    EXPECT_EQ ((*it).data ()[1], 60);
+    ++it;
+    EXPECT_EQ ((*it).data ()[1], 74);
+  }
 }
 
 TEST_F (MidiRecordingSessionTest, FinalizeRejectsFurtherWrites)
 {
-  dsp::MidiEventVector events;
+  auto events = dsp::MidiEventBuffer::make_reserved ();
   session_->write (units::samples (0), true, events, units::samples (256u));
   session_->finalize ();
 
@@ -387,7 +408,7 @@ TEST_F (MidiRecordingSessionTest, FinalizeRejectsFurtherWrites)
 
 TEST_F (MidiRecordingSessionTest, ResetClearsStateAndCounters)
 {
-  dsp::MidiEventVector events;
+  auto events = dsp::MidiEventBuffer::make_reserved ();
   session_->write (units::samples (0), true, events, units::samples (256u));
   session_->write (units::samples (128), true, events, units::samples (256u));
   EXPECT_EQ (session_->state (), MidiRecordingSession::State::Capturing);

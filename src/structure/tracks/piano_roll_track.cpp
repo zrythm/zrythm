@@ -1,14 +1,46 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "structure/tracks/piano_roll_track.h"
 
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::tracks
 {
+void
+PianoRollTrackMixin::transform_midi_inputs_func (
+  dsp::MidiEventBuffer &events) const
+{
+  // Change the MIDI channel on the midi input to the channel set on the track
+  if (!passthrough_midi_input_)
+    {
+      const auto ch = static_cast<midi_byte_t> (midi_ch_ - 1);
+      transform_scratch_.clear ();
+      for (const auto &ev : events)
+        {
+          const auto d = ev.data ();
+          if (d.size () >= 1 && (d[0] & 0xF0) != 0xF0)
+            {
+              const std::array<midi_byte_t, 3> raw = {
+                static_cast<midi_byte_t> ((d[0] & 0xF0) | ch),
+                d.size () > 1 ? static_cast<midi_byte_t> (d[1]) : midi_byte_t{ 0 },
+                d.size () > 2 ? static_cast<midi_byte_t> (d[2]) : midi_byte_t{ 0 },
+              };
+              transform_scratch_.push_back (ev.time (), raw);
+            }
+          else
+            {
+              transform_scratch_.push_back (ev.time (), d);
+            }
+        }
+      events.swap (transform_scratch_);
+    }
+}
+
 PianoRollTrackMixin::PianoRollTrackMixin (QObject * parent) : QObject (parent)
 {
+  transform_scratch_.reserve (4096);
 }
 
 void

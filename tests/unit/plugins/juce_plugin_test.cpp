@@ -485,9 +485,9 @@ TEST_F (JucePluginTest, MidiProcessing)
 
   const auto &midi_out =
     plugin_->get_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
-  EXPECT_EQ (midi_out->midi_events_.queued_events_.size (), 1);
-  const auto &ev = midi_out->midi_events_.queued_events_.front ();
-  EXPECT_TRUE (utils::midi::midi_is_note_on (ev.raw_buffer_));
+  ASSERT_EQ (midi_out->buffer_.size (), 1);
+  EXPECT_TRUE (
+    utils::midi::midi_is_note_on (midi_out->buffer_.front ().data ()));
 }
 
 TEST_F (JucePluginTest, BidirectionalParameterSync)

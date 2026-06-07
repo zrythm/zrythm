@@ -4,7 +4,9 @@
 #include "dsp/panning.h"
 #include "dsp/port_all.h"
 #include "utils/float_ranges.h"
+#include "utils/logger.h"
 #include "utils/math_utils.h"
+#include "utils/views.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -149,19 +151,24 @@ AudioPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
-AudioPort::prepare_for_processing (
+AudioPort::prepare_for_processing_impl (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
   units::sample_u32_t      max_block_length)
 {
-  if (node != nullptr)
+  assert (
+    node == nullptr
+    || std::addressof (node->get_processable ())
+         == static_cast<graph::IProcessable *> (this));
+
+  if (node != nullptr && flow () == PortFlow::Input)
     {
       auto source_audio_ports =
         node->depends () | std::views::transform ([] (const auto &child_node) {
           return dynamic_cast<AudioPort *> (
             &child_node.get ().get_processable ());
         })
-        | std::views::filter ([] (const auto * port) { return port != nullptr; });
+        | utils::views::filter_null;
       set_port_sources (source_audio_ports);
     }
 
@@ -169,19 +176,12 @@ AudioPort::prepare_for_processing (
   buf_ = std::make_unique<juce::AudioSampleBuffer> (
     num_channels_, max.in<int> (units::samples));
   buf_->clear ();
-
-  // 8 cycles
-  audio_ring_.clear ();
-  std::ranges::for_each (std::views::iota (0u, num_channels_), [&] (const auto &) {
-    audio_ring_.emplace_back (max.in (units::samples) * 8);
-  });
 }
 
 void
 AudioPort::release_resources ()
 {
   buf_.reset ();
-  audio_ring_.clear ();
 }
 
 void
@@ -190,33 +190,38 @@ AudioPort::process_block (
   const dsp::ITransport       &transport,
   const dsp::TempoMap         &tempo_map) noexcept
 {
-  for (const auto &[_src_port, conn] : port_sources ())
+  /* Input ports: aggregate from sources. */
+  if (flow () == PortFlow::Input)
     {
-      if (!conn->enabled_)
-        continue;
-
-      const auto * src_port = dynamic_cast<const AudioPort *> (_src_port);
-      const float  multiplier = conn->multiplier_;
-
-      if (conn->source_ch_to_destination_ch_mapping_.has_value ())
+      for (const auto &[_src_port, conn] : port_sources ())
         {
-          const auto [source_ch, dest_ch] =
-            conn->source_ch_to_destination_ch_mapping_.value ();
+          if (!conn->enabled_)
+            continue;
 
-          /* sum the signals */
-          buf_->addFrom (
-            static_cast<int> (dest_ch),
-            time_nfo.buffer_offset_.in<int> (units::samples), *src_port->buf_,
-            static_cast<int> (source_ch),
-            time_nfo.buffer_offset_.in<int> (units::samples),
-            time_nfo.nframes_.in<int> (units::samples), multiplier);
-        }
-      else
-        {
-          add_source_rt (*src_port, time_nfo, multiplier);
+          const auto * src_port = dynamic_cast<const AudioPort *> (_src_port);
+          const float  multiplier = conn->multiplier_;
+
+          if (conn->source_ch_to_destination_ch_mapping_.has_value ())
+            {
+              const auto [source_ch, dest_ch] =
+                conn->source_ch_to_destination_ch_mapping_.value ();
+
+              /* sum the signals */
+              buf_->addFrom (
+                static_cast<int> (dest_ch),
+                time_nfo.buffer_offset_.in<int> (units::samples),
+                *src_port->buf_, static_cast<int> (source_ch),
+                time_nfo.buffer_offset_.in<int> (units::samples),
+                time_nfo.nframes_.in<int> (units::samples), multiplier);
+            }
+          else
+            {
+              add_source_rt (*src_port, time_nfo, multiplier);
+            }
         }
     }
 
+  /* Limiting + ring buffer (both input and output). */
   if (requires_limiting_)
     {
       constexpr float max_allowed_peak = 2.f;
@@ -236,18 +241,6 @@ AudioPort::process_block (
                   time_nfo.nframes_.in (units::samples) },
                 -max_allowed_peak, max_allowed_peak);
             }
-        }
-    }
-
-  if (num_ring_buffer_readers_ > 0)
-    {
-      for (const auto ch : std::views::iota (0u, num_channels_))
-        {
-          audio_ring_[ch].force_write_multiple (
-            buf_->getReadPointer (
-              static_cast<int> (ch),
-              time_nfo.buffer_offset_.in<int> (units::samples)),
-            time_nfo.nframes_.in (units::samples));
         }
     }
 }

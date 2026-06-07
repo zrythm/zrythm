@@ -6,6 +6,7 @@
 #include "dsp/fader.h"
 #include "dsp/graph.h"
 #include "dsp/metronome.h"
+#include "dsp/port_observer.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/channel_subgraph_builder.h"
@@ -115,10 +116,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   auto * tracklist = project_->tracklist ();
   auto * transport = project->getTransport ();
   auto * midi_panic_processor = engine->midi_panic_processor ();
-
-  const auto add_node_for_processable = [&] (auto &processable) {
-    return graph.add_node_for_processable (processable);
-  };
+  auto * observation_manager = project->portObservationManager ();
 
   const auto connect_ports =
     [&] (
@@ -127,12 +125,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       tracks::ChannelSubgraphBuilder::add_connection_for_ports (
         graph, src, dest);
     };
-
-  // add engine monitor output
-  {
-    auto &monitor_out = engine->get_monitor_out_port ();
-    add_node_for_processable (monitor_out);
-  }
 
   /* add the sample processor */
 // TODO
@@ -204,6 +196,15 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
         }
     }
 
+  /* add port observers */
+  if (observation_manager != nullptr)
+    {
+      for (auto * observer : observation_manager->observers ())
+        {
+          dsp::ProcessorGraphBuilder::add_nodes (graph, *observer);
+        }
+    }
+
     /* ========================
      * now connect them
      * ======================== */
@@ -264,17 +265,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       }
   }
 #endif
-
-  // connect monitor fader output to engine monitor output
-  {
-    const auto &mf_out = monitor_fader_->get_output_ports ().front ();
-    const auto &monitor_out = engine->get_monitor_out_port ();
-    auto *      mf_out_node = graph.get_nodes ().find_node_for_processable (
-      *mf_out.get_object_as<dsp::AudioPort> ());
-    auto * monitor_out_node =
-      graph.get_nodes ().find_node_for_processable (monitor_out);
-    mf_out_node->connect_to (*monitor_out_node);
-  }
 
   /* connect the audio input processor */
   if (auto * aip = engine->audio_input_processor ())
@@ -494,6 +484,23 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           src_port_var, dest_port_var);
       }
   }
+
+  // connect port observers to their observed ports
+  if (observation_manager != nullptr)
+    {
+      for (auto * observer : observation_manager->observers ())
+        {
+          auto &port = observer->observed_port ();
+          auto * port_node = graph.get_nodes ().find_node_for_processable (port);
+          if (port_node != nullptr)
+            {
+              auto * observer_node =
+                graph.get_nodes ().find_node_for_processable (*observer);
+              assert (observer_node != nullptr);
+              port_node->connect_to (*observer_node);
+            }
+        }
+    }
 }
 
 bool

@@ -37,7 +37,7 @@ protected:
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (units::samples (0)));
-    ON_CALL (*processable_, prepare_for_processing (_, _, _))
+    ON_CALL (*processable_, prepare_for_processing_impl (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
 
@@ -152,7 +152,8 @@ TEST_F (GraphSchedulerTest, ResourceManagement)
   // Expect prepare to be called for each node
   EXPECT_CALL (
     *processable_,
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (3);
 
   // Expect release to be called when scheduler is destroyed
@@ -173,7 +174,8 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
   // First chain with initial parameters
   EXPECT_CALL (
     *processable_,
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (3);
   scheduler_->rechain_from_node_collection (
     std::move (collection), sample_rate_, block_length_);
@@ -187,7 +189,8 @@ TEST_F (GraphSchedulerTest, RechainWithLargerBufferSize)
 
   // Expect prepare to be called with new parameters
   EXPECT_CALL (
-    *processable_, prepare_for_processing (_, new_sample_rate, new_block_length))
+    *processable_,
+    prepare_for_processing_impl (_, new_sample_rate, new_block_length))
     .Times (3);
 
   scheduler_->rechain_from_node_collection (

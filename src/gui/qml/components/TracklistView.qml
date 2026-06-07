@@ -19,6 +19,7 @@ ListView {
   property Track draggedTrack: null
   property Track dropTargetFolder: null
   property int dropTargetIndex: -1
+  required property PortObservationManager portObservationManager
   required property bool pinned
   required property TrackCollectionOperator trackCollectionOperator
   required property TrackSelectionModel trackSelectionModel
@@ -43,6 +44,7 @@ ListView {
     listViewDropTargetIndex: root.dropTargetIndex
     listViewIsLast: index === ListView.view.count - 1
     listViewPastEndIndex: root.pinned ? ListView.view.count : ListView.view.count + root.tracklist.pinnedTracksCutoff
+    portObservationManager: root.portObservationManager
     trackCollectionOperator: root.trackCollectionOperator
     trackIndex: root.pinned ? index : index + root.tracklist.pinnedTracksCutoff
     trackSelectionModel: root.trackSelectionModel

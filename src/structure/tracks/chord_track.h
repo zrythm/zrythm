@@ -37,7 +37,7 @@ public:
   using ChordObject = arrangement::ChordObject;
   using ScaleObjectPtr = ScaleObject *;
   using NotePitchToChordDescriptorFunc =
-    dsp::MidiEventVector::NotePitchToChordDescriptorFunc;
+    std::function<const dsp::ChordDescriptor *(midi_byte_t)>;
 
   ChordTrack (FinalTrackDependencies dependencies);
 
@@ -62,6 +62,26 @@ public:
   }
 
   ScaleObject * get_scale_at (size_t index) const;
+
+  /**
+   * @brief Transforms note-on/off events into chord events.
+   *
+   * For each note-on/off in @p src within the given @p range, looks up the
+   * corresponding chord descriptor via @p note_to_chord. If found, expands
+   * the single note into all notes of the chord.
+   *
+   * @param dest Destination buffer.
+   * @param src Source events.
+   * @param note_to_chord Maps a MIDI note number to a ChordDescriptor.
+   * @param velocity Velocity to use for generated note-ons.
+   * @param range Time range [start, end) to filter events.
+   */
+  static void transform_chord_and_append (
+    dsp::MidiEventBuffer                               &dest,
+    const dsp::MidiEventBuffer                         &src,
+    const NotePitchToChordDescriptorFunc               &note_to_chord,
+    midi_byte_t                                         velocity,
+    std::pair<units::sample_u32_t, units::sample_u32_t> range);
 
   /**
    * Returns the ChordObject at the given Position
@@ -108,8 +128,7 @@ private:
   bool initialize ();
 
 private:
-  std::optional<dsp::MidiEventVector::NotePitchToChordDescriptorFunc>
-    note_pitch_to_descriptor_;
+  std::optional<NotePitchToChordDescriptorFunc> note_pitch_to_descriptor_;
 };
 
 } // namespace zrythm::structure::tracks

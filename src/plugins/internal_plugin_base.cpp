@@ -49,7 +49,7 @@ InternalPluginBase::on_ui_visibility_changed ()
 }
 
 void
-InternalPluginBase::prepare_for_processing_impl (
+InternalPluginBase::prepare_plugin_for_processing (
   units::sample_rate_t sample_rate,
   units::sample_u32_t  max_block_length)
 {

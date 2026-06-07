@@ -376,7 +376,7 @@ JucePlugin::get_single_playback_latency () const
 }
 
 void
-JucePlugin::prepare_for_processing_impl (
+JucePlugin::prepare_plugin_for_processing (
   units::sample_rate_t sample_rate,
   units::sample_u32_t  max_block_length)
 {
@@ -474,14 +474,14 @@ JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
   auto * midi_in = midi_in_port_;
   if ((midi_in != nullptr) && juce_plugin_->acceptsMidi ())
     {
-      for (const auto &ev : midi_in->midi_events_.active_events_)
+      for (const auto &ev : midi_in->buffer_)
         {
-          if (ev.time_ >= local_offset && ev.time_ < local_offset + nframes)
+          if (ev.time () >= local_offset && ev.time () < local_offset + nframes)
             {
+              auto d = ev.data ();
               juce_midi_buffer_.addEvent (
-                ev.raw_buffer_.data (),
-                static_cast<int> (ev.raw_buffer_.size ()),
-                ev.time_.in<int> (units::samples));
+                d.data (), static_cast<int> (d.size ()),
+                ev.time ().in<int> (units::samples));
             }
         }
     }
@@ -538,8 +538,11 @@ JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
     {
       for (const auto &ev : juce_midi_buffer_)
         {
-          midi_out->midi_events_.queued_events_.add_raw (
-            ev.data, ev.numBytes, units::samples (ev.samplePosition));
+          midi_out->buffer_.push_back (
+            units::samples (ev.samplePosition),
+            std::span<const midi_byte_t>{
+              reinterpret_cast<const midi_byte_t *> (ev.data),
+              static_cast<size_t> (ev.numBytes) });
         }
     }
 }

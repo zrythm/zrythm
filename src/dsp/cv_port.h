@@ -5,7 +5,6 @@
 
 #include "dsp/port.h"
 #include "utils/icloneable.h"
-#include "utils/ring_buffer.h"
 
 namespace zrythm::dsp
 {
@@ -18,10 +17,7 @@ namespace zrythm::dsp
  *
  * The range is assumed to be 0 to 1.
  */
-class CVPort final
-    : public Port,
-      public RingBufferOwningPortMixin,
-      public PortConnectionsCacheMixin<CVPort>
+class CVPort final : public Port, public PortConnectionsCacheMixin<CVPort>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -40,7 +36,7 @@ public:
   friend void
   init_from (CVPort &obj, const CVPort &other, utils::ObjectCloneType clone_type);
 
-  void prepare_for_processing (
+  void prepare_for_processing_impl (
     const graph::GraphNode * node,
     units::sample_rate_t     sample_rate,
     units::sample_u32_t      max_block_length) override;
@@ -58,21 +54,7 @@ private:
   }
 
 public:
-  /**
-   * Audio-like data buffer.
-   */
   std::vector<float> buf_;
-
-  /**
-   * Ring buffer for saving the contents of the audio buffer to be used in the
-   * UI instead of directly accessing the buffer.
-   *
-   * This should contain blocks of block_length samples and should maintain at
-   * least 10 cycles' worth of buffers.
-   *
-   * This is also used for CV.
-   */
-  std::unique_ptr<RingBuffer<float>> cv_ring_;
 
 private:
   BOOST_DESCRIBE_CLASS (CVPort, (Port), (), (), ())

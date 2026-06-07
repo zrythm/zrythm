@@ -229,6 +229,15 @@ concept RangeOf =
     // handle pointers too
   (IsRawPointer<std::ranges::range_value_t<R>> && IsRawPointer<T> && std::derived_from<std::remove_pointer_t<std::ranges::range_value_t<R>>, std::remove_pointer_t<T>>) );
 
+template <typename R, typename T>
+concept MutableContainerOf =
+  std::ranges::random_access_range<R> && requires (R &r, T &&val) {
+    { r.push_back (std::forward<T> (val)) };
+    { r.clear () };
+    { r.erase (r.begin (), r.end ()) };
+    { r.size () } -> std::convertible_to<std::size_t>;
+  };
+
 namespace detail
 {
 struct build_test_type

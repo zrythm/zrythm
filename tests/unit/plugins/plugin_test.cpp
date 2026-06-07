@@ -40,7 +40,7 @@ public:
     Q_EMIT instantiationFinished (successful, error);
   }
 
-  void prepare_for_processing_impl (
+  void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override
   {

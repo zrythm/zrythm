@@ -35,7 +35,7 @@ ctest --test-dir builddir_cmake -R "TransportControllerTest" --output-on-failure
 # List all available tests to see test names
 ctest --test-dir builddir_cmake -N
 
-# Run specific test binary directly
+# Run specific test binary directly (used when we want to run the full module test suite)
 ./builddir_cmake/products/bin/zrythm_dsp_unit_tests
 
 # Run specific test case with filter

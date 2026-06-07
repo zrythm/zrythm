@@ -22,7 +22,7 @@ public:
     (const, override));
   MOCK_METHOD (
     void,
-    prepare_for_processing,
+    prepare_for_processing_impl,
     (const graph::GraphNode *, units::sample_rate_t, units::sample_u32_t),
     (override));
   MOCK_METHOD (

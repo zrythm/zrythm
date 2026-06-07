@@ -218,36 +218,6 @@ public:
     return true;
   }
 
-  /**
-   * @brief Peek multiple elements from the ring buffer without moving the read
-   * head.
-   *
-   * This function attempts to peek up to the requested number of elements from
-   * the ring buffer, starting from the current read position. It does not
-   * modify the state of the buffer.
-   *
-   * @param[out] dst Pointer to the destination array where peeked elements will
-   * be stored.
-   * @param[in] count Maximum number of elements to peek.
-   * @return The number of elements actually peeked, which may be less than or
-   * equal to count.
-   */
-  size_t peek_multiple (T * dst, size_t count) const
-  {
-    const size_t read_pos = read_head_.load (std::memory_order_acquire);
-    const size_t write_pos = write_head_.load (std::memory_order_acquire);
-    const size_t available = (write_pos - read_pos + size_) % size_;
-
-    size_t peeked = std::min (count, available);
-
-    for (size_t i = 0; i < peeked; ++i)
-      {
-        dst[i] = buf_[(read_pos + i) % size_];
-      }
-
-    return peeked;
-  }
-
   void reset ()
   {
     read_head_.store (0, std::memory_order_relaxed);

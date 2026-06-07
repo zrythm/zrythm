@@ -113,7 +113,7 @@ public:
   /** Instrument for MIDI auditioning. */
   std::unique_ptr<zrythm::plugins::PluginConfiguration> instrument_setting_;
 
-  std::unique_ptr<dsp::MidiEvents> midi_events_;
+  std::vector<dsp::RealtimeMidiEvent> midi_events_buffer_;
 
   /** Fader connected to the main output. */
   std::unique_ptr<dsp::Fader> fader_;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
+#include "dsp/midi_event.h"
 #include "structure/arrangement/midi_note.h"
 
 #include <fmt/format.h>
@@ -41,8 +42,7 @@ MidiNote::listen (bool listen)
       using TrackT = utils::base_type<decltype (track)>;
       if constexpr (std::derived_from<TrackT, tracks::PianoRollTrack>)
         {
-          auto &events =
-            track->processor_->get_midi_in_port ().midi_events_.queued_events_;
+          auto &events = track->processor_->get_midi_in_port ().buffer_;
 
           if (listen)
             {
@@ -50,10 +50,10 @@ MidiNote::listen (bool listen)
               if (currently_listened_ && pitch_ != last_listened_pitch_)
                 {
                   /* create midi note off */
-                  events.add_note_off (1, last_listened_pitch_, 0);
+                  events.push_back (dsp::midi_event::make_note_off (0, last_listened_pitch_, 0));
 
                   /* create note on at the new value */
-                  events.add_note_on (1, pitch_, vel_->vel_, 0);
+                  events.push_back (dsp::midi_event::make_note_on (0, pitch_, vel_->vel_, 0));
                   last_listened_pitch_ = pitch_;
                 }
               /* if note is on and pitch is the same */
@@ -65,7 +65,7 @@ MidiNote::listen (bool listen)
               else if (!currently_listened_)
                 {
                   /* turn it on */
-                  events.add_note_on (1, pitch_, vel_->vel_, 0);
+                  events.push_back (dsp::midi_event::make_note_on (0, pitch_, vel_->vel_, 0));
                   last_listened_pitch_ = pitch_;
                   currently_listened_ = 1;
                 }
@@ -74,7 +74,7 @@ MidiNote::listen (bool listen)
           else if (currently_listened_)
             {
               /* create midi note off */
-              events.add_note_off (1, last_listened_pitch_, 0);
+              events.push_back (dsp::midi_event::make_note_off (0, last_listened_pitch_, 0));
               currently_listened_ = false;
               last_listened_pitch_ = 255;
             }
@@ -134,11 +134,10 @@ MidiNote::set_pitch (const uint8_t val)
           if constexpr (std::derived_from<TrackT, tracks::PianoRollTrack>)
             {
               auto &midi_events =
-                track->processor_->get_piano_roll_port ()
-                  .midi_events_.queued_events_;
+                track->processor_->get_piano_roll_port ().buffer_;
 
               uint8_t midi_ch = region->get_midi_ch ();
-              midi_events.add_note_off (midi_ch, pitch_, 0);
+              midi_events.push_back (dsp::midi_event::make_note_off (midi_ch, pitch_, 0));
             }
         },
         track_var);

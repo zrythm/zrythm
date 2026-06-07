@@ -78,7 +78,7 @@ TEST_F (MidiInputProcessorTest, ProcessBlockWithEmptyBufferIsNoOp)
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   auto &port = processor_->get_output_port ();
-  EXPECT_TRUE (port.midi_events_.queued_events_.empty ());
+  EXPECT_TRUE (port.buffer_.empty ());
 }
 
 // ========================================================================
@@ -98,8 +98,8 @@ TEST_F (MidiInputProcessorTest, ProcessBlockCopiesNoteOnEvents)
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   auto &port = processor_->get_output_port ();
-  ASSERT_EQ (port.midi_events_.queued_events_.size (), 1);
-  EXPECT_EQ (port.midi_events_.queued_events_.at (0).raw_buffer_[0], 0x90);
+  ASSERT_EQ (port.buffer_.size (), 1);
+  EXPECT_EQ (port.buffer_.front ().data ()[0], 0x90);
 }
 
 TEST_F (MidiInputProcessorTest, ProcessBlockCopiesMultipleEvents)
@@ -123,7 +123,7 @@ TEST_F (MidiInputProcessorTest, ProcessBlockCopiesMultipleEvents)
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   auto &port = processor_->get_output_port ();
-  EXPECT_EQ (port.midi_events_.queued_events_.size (), 3);
+  EXPECT_EQ (port.buffer_.size (), 3);
 }
 
 TEST_F (MidiInputProcessorTest, ProcessBlockCopiesPitchBend)
@@ -139,14 +139,14 @@ TEST_F (MidiInputProcessorTest, ProcessBlockCopiesPitchBend)
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   auto &port = processor_->get_output_port ();
-  EXPECT_EQ (port.midi_events_.queued_events_.size (), 1);
+  EXPECT_EQ (port.buffer_.size (), 1);
 }
 
 // ========================================================================
 // Process block — accumulates across calls
 // ========================================================================
 
-TEST_F (MidiInputProcessorTest, ProcessBlockAccumulatesAcrossCalls)
+TEST_F (MidiInputProcessorTest, ProcessBlockOutputIsClearedEachCycle)
 {
   create_processor ();
 
@@ -164,7 +164,8 @@ TEST_F (MidiInputProcessorTest, ProcessBlockAccumulatesAcrossCalls)
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   auto &port = processor_->get_output_port ();
-  EXPECT_EQ (port.midi_events_.queued_events_.size (), 2);
+  // Output is cleared each cycle, so only the second event survives
+  EXPECT_EQ (port.buffer_.size (), 1);
 }
 
 // ========================================================================

@@ -179,7 +179,11 @@ public:
     units::sample_u32_t                 roll_nframes,
     units::sample_u32_t nframes) noexcept [[clang::nonblocking]];
 
-  auto &get_monitor_out_port () { return monitor_out_; }
+  void set_monitor_out_source (dsp::AudioPort &port)
+  {
+    assert (!audio_callback_active_);
+    monitor_out_source_ = &port;
+  }
 
   auto * midi_panic_processor () const { return midi_panic_processor_.get (); }
 
@@ -264,10 +268,11 @@ private:
   std::atomic_uint64_t cycle_{ 0 };
 
   /**
-   * @brief The last audio output in the signal chain.
+   * @brief Pointer to the audio port whose buffers are copied to the audio
+   * output device at the end of every processing cycle.
    *
-   * The contents of this port will be passed on to the audio output device
-   * at the end of every processing cycle.
+   * Set externally via set_monitor_out_source(). This is typically the
+   * monitor fader's stereo output port.
    *
    * @note Since the audio engine runs (but finishes early) even while the
    * graph gets recalculated, this port's buffers can be re-allocated by the
@@ -275,7 +280,7 @@ private:
    * processing is successful (no early finish). See the AudioCallback
    * lambda for details.
    */
-  dsp::AudioPort monitor_out_;
+  dsp::AudioPort * monitor_out_source_ = nullptr;
 
   /**
    * Port used for receiving MIDI in messages for binding CC and other

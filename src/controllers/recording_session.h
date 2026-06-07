@@ -87,10 +87,10 @@ public:
    * pre-allocated slot memory and pushes the slot index onto the SPSC fifo.
    */
   void write (
-    units::sample_t                 timeline_position,
-    bool                            transport_recording,
-    std::span<const dsp::MidiEvent> midi_events,
-    units::sample_u32_t             nframes) noexcept [[clang::nonblocking]]
+    units::sample_t             timeline_position,
+    bool                        transport_recording,
+    const dsp::MidiEventBuffer &midi_events,
+    units::sample_u32_t         nframes) noexcept [[clang::nonblocking]]
     requires std::same_as<Packet, RecordingMidiPacket>;
 
   /**

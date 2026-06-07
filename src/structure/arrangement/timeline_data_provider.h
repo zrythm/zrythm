@@ -162,13 +162,13 @@ public:
   void process_midi_events (
     const dsp::graph::ProcessBlockInfo &time_nfo,
     dsp::ITransport::PlayState          transport_state,
-    dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
+    dsp::MidiEventBuffer &output_buffer) noexcept [[clang::nonblocking]];
 
   void clear_all_caches () override;
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
 
-  const juce::MidiMessageSequence &midi_events () const;
+  std::span<const dsp::SampleBasedMidiEvent> midi_events () const;
 
   /**
    * @brief Generate the MIDI event sequence to be used during realtime
@@ -231,15 +231,19 @@ private:
     arrangement::RegionRenderer::serialize_to_sequence (region, region_seq);
     region_seq.addTimeToMessages (region.position ()->ticks ());
 
-    // Convert timings to samples
-    for (auto &event : region_seq)
+    // Convert JUCE sequence to native events with sample timestamps
+    std::vector<dsp::SampleBasedMidiEvent> native_events;
+    native_events.reserve (region_seq.getNumEvents ());
+    for (const auto &event : region_seq)
       {
-        event->message.setTimeStamp (
-          static_cast<double> (
-            tempo_map
-              .tick_to_samples_rounded (
-                units::ticks (event->message.getTimeStamp ()))
-              .in (units::samples)));
+        const auto sample_time = tempo_map.tick_to_samples_rounded (
+          units::ticks (event->message.getTimeStamp ()));
+        const auto * raw = event->message.getRawData ();
+        const auto   raw_size =
+          static_cast<size_t> (event->message.getRawDataSize ());
+        native_events.push_back (
+          dsp::midi_event::make_raw (
+            std::span<const midi_byte_t>{ raw, raw_size }, sample_time));
       }
 
     // Add to cache
@@ -247,7 +251,7 @@ private:
       std::make_pair (
         units::samples (region.position ()->samples ()),
         region.bounds ()->get_end_position_samples (true)),
-      region_seq);
+      native_events);
   }
 
   /**
@@ -255,12 +259,12 @@ private:
    *
    * @param events The MIDI events sequence.
    */
-  void set_midi_events (const juce::MidiMessageSequence &events);
+  void set_midi_events (std::span<const dsp::SampleBasedMidiEvent> events);
 
   utils::QObjectUniquePtr<dsp::MidiTimelineDataCache> midi_cache_;
 
   farbot::RealtimeObject<
-    juce::MidiMessageSequence,
+    std::vector<dsp::SampleBasedMidiEvent>,
     farbot::RealtimeObjectOptions::nonRealtimeMutatable>
     active_midi_playback_sequence_;
 };

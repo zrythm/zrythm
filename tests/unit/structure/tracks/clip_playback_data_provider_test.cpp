@@ -7,6 +7,7 @@
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/tracks/clip_playback_data_provider.h"
+#include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/types.h"
@@ -108,28 +109,29 @@ protected:
 
   // Helper function to find events with specific pitch
   std::vector<units::sample_u32_t>
-  find_event_timestamps (const dsp::MidiEventVector &events, midi_byte_t pitch)
+  find_event_timestamps (const dsp::MidiEventBuffer &events, midi_byte_t pitch)
   {
     std::vector<units::sample_u32_t> timestamps;
     for (const auto &event : events)
       {
         if (
-          (event.raw_buffer_[0] & 0xF0) == 0x90 // Note on
-          && event.raw_buffer_[1] == pitch)     // Matching pitch
+          utils::midi::midi_is_note_on (event.data ()) // Note on
+          && utils::midi::midi_get_note_number (event.data ()) == pitch) // Matching
+                                                                         // pitch
           {
-            timestamps.push_back (event.time_);
+            timestamps.push_back (event.time ());
           }
       }
     return timestamps;
   }
 
   // Helper function to check for timestamp overflow
-  bool has_timestamp_overflow (const dsp::MidiEventVector &events)
+  bool has_timestamp_overflow (const dsp::MidiEventBuffer &events)
   {
     return std::ranges::any_of (events, [] (const auto &ev) {
       // Check if timestamp is greater than a reasonable maximum
       // (e.g., 1 second of audio at 44100Hz = 44100 samples)
-      return ev.time_ > units::samples (44100);
+      return ev.time () > units::samples (44100);
     });
   }
 
@@ -288,7 +290,7 @@ protected:
 TEST_F (ClipPlaybackDataProviderTest, InitialState)
 {
   // Provider should start with no events
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -305,7 +307,7 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiRegion)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events that should include the note
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -317,12 +319,12 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiRegion)
   if (!output_buffer.empty ())
     {
       const auto &event = output_buffer.front ();
-      EXPECT_GE (event.time_, units::samples (0));
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_GE (event.time (), units::samples (0));
+      EXPECT_LT (event.time (), time_info.nframes_);
 
       // Verify it's a note on event with the correct pitch
-      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0x90); // Note on
-      EXPECT_EQ (event.raw_buffer_[1], 60);          // Pitch
+      EXPECT_TRUE (utils::midi::midi_is_note_on (event.data ())); // Note on
+      EXPECT_EQ (utils::midi::midi_get_note_number (event.data ()), 60); // Pitch
     }
 }
 
@@ -336,7 +338,7 @@ TEST_F (ClipPlaybackDataProviderTest, ClearEvents)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events - should have events
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -374,7 +376,7 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizeOptions)
       provider_->generate_midi_events (*region, quantize_option);
 
       // Test processing events
-      dsp::MidiEventVector         output_buffer;
+      auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
       dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
       provider_->process_midi_events (time_info, output_buffer);
@@ -403,7 +405,7 @@ TEST_F (ClipPlaybackDataProviderTest, MultipleNotesInRegion)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events that should include all notes
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -415,9 +417,10 @@ TEST_F (ClipPlaybackDataProviderTest, MultipleNotesInRegion)
   std::vector<int> found_pitches;
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ())) // Note on
         {
-          found_pitches.push_back (event.raw_buffer_[1]);
+          found_pitches.push_back (
+            utils::midi::midi_get_note_number (event.data ()));
         }
     }
 
@@ -440,7 +443,7 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseLoopingBehavior)
 
   // Process multiple buffers to trigger looping
   std::vector<std::vector<units::sample_u32_t>> loop_events;
-  dsp::MidiEventVector                          output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
   // Process first buffer
   dsp::graph::ProcessBlockInfo time_info1 = create_time_info (0, 0, 1024);
@@ -502,7 +505,7 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseEventTiming)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process events
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 4096);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -530,8 +533,8 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseEventTiming)
   // Verify that all timestamps are within the buffer range
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, units::samples (0));
-      EXPECT_LT (event.time_, time_info.nframes_);
+      EXPECT_GE (event.time (), units::samples (0));
+      EXPECT_LT (event.time (), time_info.nframes_);
     }
 
   // Check for timestamp overflow
@@ -549,7 +552,7 @@ TEST_F (ClipPlaybackDataProviderTest, BarBoundaryQuantization)
 
   // Test processing events that should NOT include the note initially
   // because we're quantizing to the next bar
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (64, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -580,7 +583,7 @@ TEST_F (ClipPlaybackDataProviderTest, BeatBoundaryQuantization)
 
   // Test processing events that should NOT include the note initially
   // because we're quantizing to the next beat
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (64, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -625,7 +628,7 @@ TEST_P (
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events with the specific buffer size
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, buffer_size);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -636,17 +639,18 @@ TEST_P (
   // Verify that event timestamps are within the buffer range
   for (const auto &event : output_buffer)
     {
-      EXPECT_GE (event.time_, units::samples (0));
-      EXPECT_LT (event.time_, units::samples (buffer_size));
+      EXPECT_GE (event.time (), units::samples (0));
+      EXPECT_LT (event.time (), units::samples (buffer_size));
     }
 
   // Check that we have the expected pitches
   std::vector<int> found_pitches;
   for (const auto &event : output_buffer)
     {
-      if ((event.raw_buffer_[0] & 0xF0) == 0x90) // Note on
+      if (utils::midi::midi_is_note_on (event.data ())) // Note on
         {
-          found_pitches.push_back (event.raw_buffer_[1]);
+          found_pitches.push_back (
+            utils::midi::midi_get_note_number (event.data ()));
         }
     }
 
@@ -670,7 +674,7 @@ TEST_F (ClipPlaybackDataProviderTest, ProcessEventsWithOffset)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events with a global offset
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (10000, 100, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -699,7 +703,7 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizationTimingAccuracy)
     *region, structure::tracks::ClipQuantizeOption::NextBeat);
 
   // Start processing from a position that's not on a beat boundary
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (64, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -745,7 +749,7 @@ TEST_F (ClipPlaybackDataProviderTest, StateManagementAcrossBuffers)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer
-  dsp::MidiEventVector         output_buffer1;
+  auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info1 = create_time_info (0, 0, 128);
 
   provider_->process_midi_events (time_info1, output_buffer1);
@@ -757,7 +761,7 @@ TEST_F (ClipPlaybackDataProviderTest, StateManagementAcrossBuffers)
   EXPECT_EQ (pitch_62_events1.size (), 0);
 
   // Process second buffer continuing from where we left off
-  dsp::MidiEventVector         output_buffer2;
+  auto output_buffer2 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info2 = create_time_info (128, 0, 2048);
 
   provider_->process_midi_events (time_info2, output_buffer2);
@@ -779,7 +783,7 @@ TEST_F (ClipPlaybackDataProviderTest, BasicFunctionality)
   EXPECT_NE (provider_, nullptr);
 
   // Test that process_midi_events can be called without crashing
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -813,7 +817,7 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMutedNote)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -836,7 +840,7 @@ TEST_F (ClipPlaybackDataProviderTest, LoopingEdgeCases)
 
   // Process multiple buffers to verify looping
   std::vector<std::vector<units::sample_u32_t>> loop_events;
-  dsp::MidiEventVector                          output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
   // Process several buffers
   for (int i = 0; i < 5; ++i)
@@ -885,7 +889,7 @@ TEST_F (ClipPlaybackDataProviderTest, EventsOnBufferBoundaries)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer
-  dsp::MidiEventVector         output_buffer1;
+  auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info1 = create_time_info (0, 0, 128);
 
   provider_->process_midi_events (time_info1, output_buffer1);
@@ -895,7 +899,7 @@ TEST_F (ClipPlaybackDataProviderTest, EventsOnBufferBoundaries)
   EXPECT_EQ (pitch_60_events1.size (), 0);
 
   // Process second buffer starting at the boundary
-  dsp::MidiEventVector         output_buffer2;
+  auto output_buffer2 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info2 = create_time_info (128, 0, 128);
 
   provider_->process_midi_events (time_info2, output_buffer2);
@@ -923,7 +927,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer starting at frame 0
-  dsp::MidiEventVector         output_buffer1;
+  auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info1 = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info1, output_buffer1);
@@ -933,7 +937,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
   EXPECT_GT (pitch_60_events1.size (), 0);
 
   // Process second buffer continuing forward
-  dsp::MidiEventVector         output_buffer2;
+  auto output_buffer2 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info2 = create_time_info (256, 0, 256);
 
   provider_->process_midi_events (time_info2, output_buffer2);
@@ -945,7 +949,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
 
   // Now simulate transport looping back to frame 0
   // This is the critical test - when playhead moves backwards
-  dsp::MidiEventVector         output_buffer3;
+  auto output_buffer3 = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info3 = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info3, output_buffer3);
@@ -976,7 +980,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovementWithLoop)
   // Process several buffers to establish a playback position
   for (int i = 0; i < 3; ++i)
     {
-      dsp::MidiEventVector         output_buffer;
+      auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
       dsp::graph::ProcessBlockInfo time_info =
         create_time_info (i * 256, 0, 256);
       provider_->process_midi_events (time_info, output_buffer);
@@ -987,7 +991,7 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovementWithLoop)
     }
 
   // Now simulate transport looping back to frame 0
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   provider_->process_midi_events (time_info, output_buffer);
@@ -1543,7 +1547,7 @@ TEST_F (ClipPlaybackDataProviderTest, MidiAllNotesOffWhenClipStops)
   provider_->generate_midi_events (
     *region, structure::tracks::ClipQuantizeOption::Immediate);
 
-  dsp::MidiEventVector         output_buffer;
+  auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
 
   // First, process events to establish playing state
@@ -1568,8 +1572,9 @@ TEST_F (ClipPlaybackDataProviderTest, MidiAllNotesOffWhenClipStops)
   // Verify they are all all-notes-off events (CC 123)
   for (const auto &event : output_buffer)
     {
-      EXPECT_EQ (event.raw_buffer_[0] & 0xF0, 0xB0); // Control change
-      EXPECT_EQ (event.raw_buffer_[1], 123);         // All notes off
+      EXPECT_TRUE (
+        utils::midi::midi_is_all_notes_off (event.data ())); // Control change
+                                                             // All notes off
     }
 
   // Clear the queued events for next test

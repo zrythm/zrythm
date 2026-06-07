@@ -105,7 +105,7 @@ Plugin::custom_prepare_for_processing (
 {
   init_param_caches ();
   param_sync_.prepare (get_parameters ().size ());
-  prepare_for_processing_impl (sample_rate, max_block_length);
+  prepare_plugin_for_processing (sample_rate, max_block_length);
   param_flush_timer_->start (std::chrono::milliseconds (20));
 }
 

@@ -119,7 +119,7 @@ ProjectSession::ProjectSession (
     [coordinator] (
       const structure::tracks::Track::Uuid &track_id,
       units::sample_t timeline_position, const dsp::ITransport &transport,
-      std::optional<std::span<const dsp::MidiEvent>> midi_events,
+      const dsp::MidiEventBuffer * midi_events,
       std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>
                           stereo_ports,
       units::sample_u32_t nframes) {
@@ -141,7 +141,7 @@ ProjectSession::ProjectSession (
               }
           },
           [&] (controllers::MidiRecordingSession * s) {
-            if (midi_events.has_value ())
+            if (midi_events != nullptr)
               {
                 s->write (
                   timeline_position, transport.recording_enabled (),

@@ -248,7 +248,7 @@ public:
   void flush_plugin_values ();
 
 private:
-  virtual void prepare_for_processing_impl (
+  virtual void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) { };
 

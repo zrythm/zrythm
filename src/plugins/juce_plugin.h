@@ -56,7 +56,7 @@ public:
   units::sample_u32_t get_single_playback_latency () const override;
 
 protected:
-  void prepare_for_processing_impl (
+  void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;
 

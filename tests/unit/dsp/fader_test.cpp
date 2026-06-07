@@ -253,11 +253,14 @@ TEST_F (FaderTest, MidiProcessing)
   auto &midi_out = midi_fader_->get_midi_out_port ();
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 60, 100, units::samples (0));
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 64, 90, units::samples (10));
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (100));
+  const auto ev1 =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+  midi_in.buffer_.push_back (ev1.time_, ev1.data ());
+  const auto ev2 =
+    dsp::midi_event::make_note_on (0, 64, 90, units::samples (10));
+  midi_in.buffer_.push_back (ev2.time_, ev2.data ());
+  const auto ev3 = dsp::midi_event::make_note_off (0, 60, units::samples (100));
+  midi_in.buffer_.push_back (ev3.time_, ev3.data ());
 
   // Set gain parameter
   midi_fader_->gain ()->setBaseValue (0.8f);
@@ -267,7 +270,7 @@ TEST_F (FaderTest, MidiProcessing)
   midi_fader_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied (fader doesn't modify MIDI events)
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+  EXPECT_EQ (midi_out.buffer_.size (), 3);
 }
 
 TEST_F (FaderTest, MuteFunctionality)

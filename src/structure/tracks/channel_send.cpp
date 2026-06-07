@@ -179,9 +179,10 @@ ChannelSend::custom_process_block (
     {
       if (is_enabled)
         {
-          processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
-            processing_caches_->midi_in_rt_->midi_events_.active_events_,
-            local_offset, nframes);
+          dsp::midi_event::append_in_range (
+            processing_caches_->midi_out_rt_->buffer_,
+            processing_caches_->midi_in_rt_->buffer_,
+            std::pair{ local_offset, local_offset + nframes });
         }
       // When disabled, don't copy any MIDI events (output remains empty)
     }

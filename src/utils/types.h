@@ -81,18 +81,6 @@ using GenericCallback = std::function<void ()>;
 
 using GenericBoolGetter = std::function<bool ()>;
 
-enum class AudioValueFormat
-{
-  /** 0 to 2, amplitude. */
-  Amplitude,
-
-  /** dbFS. */
-  DBFS,
-
-  /** 0 to 1, suitable for drawing. */
-  Fader,
-};
-
 /**
  * Beat unit.
  */

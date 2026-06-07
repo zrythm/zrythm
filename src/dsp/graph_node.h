@@ -122,13 +122,20 @@ public:
    * @param sample_rate
    * @param max_block_length
    */
-  virtual void prepare_for_processing (
+  void prepare_for_processing (
+    const GraphNode *    node,
+    units::sample_rate_t sample_rate,
+    units::sample_u32_t  max_block_length);
+
+protected:
+  virtual void prepare_for_processing_impl (
     const GraphNode *    node,
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length)
   {
   }
 
+public:
   [[gnu::hot]] virtual void process_block (
     dsp::graph::ProcessBlockInfo time_nfo,
     const dsp::ITransport       &transport,
@@ -229,7 +236,8 @@ public:
    */
   void set_skip_processing (bool skip) { bypass_ = skip; }
 
-  IProcessable &get_processable () { return processable_; }
+  IProcessable       &get_processable () { return processable_; }
+  const IProcessable &get_processable () const { return processable_; }
 
   /**
    * @brief Read-only access to child nodes (outgoing connections).

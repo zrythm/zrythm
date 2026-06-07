@@ -113,7 +113,8 @@ protected:
             pl->add_input_port (createMockPort (
               dsp::PortType::Audio,
               utils::Utf8String ::from_utf8_encoded_string (
-                fmt::format ("Audio In {}", i + 1))));
+                fmt::format ("Audio In {}", i + 1)),
+              dsp::PortFlow::Input));
           }
       }
     if (output_type == dsp::PortType::Audio)
@@ -123,34 +124,37 @@ protected:
             pl->add_output_port (createMockPort (
               dsp::PortType::Audio,
               utils::Utf8String ::from_utf8_encoded_string (
-                fmt::format ("Audio Out {}", i + 1))));
+                fmt::format ("Audio Out {}", i + 1)),
+              dsp::PortFlow::Output));
           }
       }
     if (has_midi_input)
       {
-        pl->add_input_port (createMockPort (dsp::PortType::Midi, u8"MIDI In"));
+        pl->add_input_port (createMockPort (
+          dsp::PortType::Midi, u8"MIDI In", dsp::PortFlow::Input));
       }
     if (has_midi_output)
       {
-        pl->add_output_port (createMockPort (dsp::PortType::Midi, u8"MIDI Out"));
+        pl->add_output_port (createMockPort (
+          dsp::PortType::Midi, u8"MIDI Out", dsp::PortFlow::Output));
       }
 
     return ref;
   }
 
-  dsp::PortUuidReference
-  createMockPort (dsp::PortType type, const utils::Utf8String &name)
+  dsp::PortUuidReference createMockPort (
+    dsp::PortType            type,
+    const utils::Utf8String &name,
+    dsp::PortFlow            flow)
   {
     if (type == dsp::PortType::Audio)
       {
         return utils::create_object<dsp::AudioPort> (
-          *registry_, name, dsp::PortFlow::Output,
-          dsp::AudioPort::BusLayout::Mono, 1);
+          *registry_, name, flow, dsp::AudioPort::BusLayout::Mono, 1);
       }
     else if (type == dsp::PortType::Midi)
       {
-        return utils::create_object<dsp::MidiPort> (
-          *registry_, name, dsp::PortFlow::Output);
+        return utils::create_object<dsp::MidiPort> (*registry_, name, flow);
       }
     throw std::runtime_error ("Unsupported port type");
   }

@@ -28,6 +28,7 @@ Control {
   property int listViewDropTargetIndex: -1
   property bool listViewIsLast: false
   property int listViewPastEndIndex: -1
+  required property PortObservationManager portObservationManager
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property TrackCollectionOperator trackCollectionOperator
   required property int trackIndex
@@ -409,6 +410,8 @@ Control {
           Layout.fillWidth: false
           audioEngine: root.audioEngine
           channel: root.track.channel
+          portObservationManager: root.portObservationManager
+          track: root.track
         }
       }
     }

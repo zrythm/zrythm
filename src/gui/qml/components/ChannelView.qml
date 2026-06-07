@@ -16,6 +16,7 @@ ColumnLayout {
   property bool hovered: false
   required property PluginImporter pluginImporter
   required property PluginOperator pluginOperator
+  required property PortObservationManager portObservationManager
   required property Track track
   required property var trackModelIndex
   required property TrackSelectionModel trackSelectionModel
@@ -181,6 +182,8 @@ ColumnLayout {
           Layout.fillWidth: false
           audioEngine: root.audioEngine
           channel: root.channel
+          portObservationManager: root.portObservationManager
+          track: root.track
         }
       }
 

@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/midi_event.h"
 #include "dsp/timeline_data_cache.h"
+#include "utils/midi.h"
 #include "utils/qt.h"
 
 #include <QSignalSpy>
@@ -9,7 +11,6 @@
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gtest/gtest.h>
-#include <juce_audio_formats/juce_audio_formats.h>
 
 using namespace zrythm::test_helpers;
 
@@ -23,17 +24,9 @@ protected:
   {
     app_ = std::make_unique<ScopedQCoreApplication> ();
     cache = utils::make_qobject_unique<dsp::MidiTimelineDataCache> ();
-
-    // Create a simple MIDI sequence with note on/off events
-    sequence.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-    sequence.addEvent (juce::MidiMessage::noteOff (1, 60), 1.0);
-    sequence.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 2.0);
-    sequence.addEvent (juce::MidiMessage::noteOff (1, 64), 3.0);
-    sequence.updateMatchedPairs ();
   }
 
   utils::QObjectUniquePtr<dsp::MidiTimelineDataCache> cache;
-  juce::MidiMessageSequence                           sequence;
 
 private:
   std::unique_ptr<ScopedQCoreApplication> app_;
@@ -41,51 +34,63 @@ private:
 
 TEST_F (MidiTimelineDataCacheTest, InitialState)
 {
-  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().empty ());
   EXPECT_FALSE (cache->has_content ());
 }
 
 TEST_F (MidiTimelineDataCacheTest, ClearMethod)
 {
   // Add a MIDI sequence first
-  cache->add_midi_sequence (
-    { units::samples (0), units::samples (100) }, sequence);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (1)),
+    midi_event::make_note_on (0, 64, 127, units::samples (2)),
+    midi_event::make_note_off (0, 64, units::samples (3)),
+  };
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
 
   // Verify sequences were added
-  EXPECT_FALSE (cache->midi_events ().getNumEvents () == 0);
+  EXPECT_FALSE (cache->midi_events ().empty ());
   EXPECT_TRUE (cache->has_content ());
 
   // Clear the cache
   cache->clear ();
 
   // Verify cache is empty
-  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().empty ());
   EXPECT_FALSE (cache->has_content ());
 }
 
 TEST_F (MidiTimelineDataCacheTest, AddSequenceAndFinalize)
 {
   // Add MIDI sequence and finalize
-  cache->add_midi_sequence (
-    { units::samples (0), units::samples (100) }, sequence);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (1)),
+    midi_event::make_note_on (0, 64, 127, units::samples (2)),
+    midi_event::make_note_off (0, 64, units::samples (3)),
+  };
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
 
   // Should have 4 events (2 note-ons + 2 note-offs)
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
   EXPECT_TRUE (cache->has_content ());
 }
 
 TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
 {
   // Create sequences that match their intervals
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 25.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (25)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 160.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 175.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (160)),
+    midi_event::make_note_off (0, 64, units::samples (175)),
+  };
 
   // Add sequences that don't overlap with removal interval
   cache->add_midi_sequence (
@@ -96,7 +101,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
     seq2); // After removal interval
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
 
   // Remove sequences overlapping with [60, 140] - should remove nothing
   cache->remove_sequences_matching_interval (
@@ -104,27 +109,31 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
   cache->finalize_changes ();
 
   // Both sequences should remain
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
 }
 
 TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverlap)
 {
   // Create sequences that match their intervals
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (50)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 90.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 170.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (90)),
+    midi_event::make_note_off (0, 64, units::samples (170)),
+  };
 
-  juce::MidiMessageSequence seq3;
-  seq3.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 160.0);
-  seq3.addEvent (juce::MidiMessage::noteOff (1, 67), 240.0);
+  std::vector<SampleBasedMidiEvent> seq3{
+    midi_event::make_note_on (0, 67, 127, units::samples (160)),
+    midi_event::make_note_off (0, 67, units::samples (240)),
+  };
 
-  juce::MidiMessageSequence seq4;
-  seq4.addEvent (juce::MidiMessage::noteOn (1, 69, 1.0f), 210.0);
-  seq4.addEvent (juce::MidiMessage::noteOff (1, 69), 290.0);
+  std::vector<SampleBasedMidiEvent> seq4{
+    midi_event::make_note_on (0, 69, 127, units::samples (210)),
+    midi_event::make_note_off (0, 69, units::samples (290)),
+  };
 
   // Add sequences with various overlaps
   cache->add_midi_sequence (
@@ -140,7 +149,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverla
     { units::samples (200), units::samples (300) }, seq4); // No overlap
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 8);
+  EXPECT_EQ (cache->midi_events ().size (), 8);
 
   // Remove sequences overlapping with [90, 160]
   cache->remove_sequences_matching_interval (
@@ -148,22 +157,25 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverla
   cache->finalize_changes ();
 
   // Only the non-overlapping sequence should remain
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().size (), 2);
 }
 TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContained)
 {
   // Create sequences that match their intervals
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 25.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (25)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 70.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 85.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (70)),
+    midi_event::make_note_off (0, 64, units::samples (85)),
+  };
 
-  juce::MidiMessageSequence seq3;
-  seq3.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 110.0);
-  seq3.addEvent (juce::MidiMessage::noteOff (1, 67), 140.0);
+  std::vector<SampleBasedMidiEvent> seq3{
+    midi_event::make_note_on (0, 67, 127, units::samples (110)),
+    midi_event::make_note_off (0, 67, units::samples (140)),
+  };
 
   // Add sequences where one is fully contained within removal interval
   cache->add_midi_sequence (
@@ -174,7 +186,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
     { units::samples (100), units::samples (150) }, seq3); // After removal
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 6);
+  EXPECT_EQ (cache->midi_events ().size (), 6);
 
   // Remove sequences overlapping with [60, 99] - avoid boundary conflicts
   cache->remove_sequences_matching_interval (
@@ -183,7 +195,7 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
 
   // Only sequences before and after should remain (sequence at {60,90} is
   // removed)
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
 }
 
 // Regression test for gitlab #5240: adjacent intervals (end == start) must not
@@ -193,20 +205,22 @@ TEST_F (
   RemoveSequencesMatchingInterval_AdjacentNotOverlapping)
 {
   // Two adjacent regions: R1 at [0, 100) and R2 at [100, 200)
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 10.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 90.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (10)),
+    midi_event::make_note_off (0, 60, units::samples (90)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 190.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (110)),
+    midi_event::make_note_off (0, 64, units::samples (190)),
+  };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
   cache->add_midi_sequence (
     { units::samples (100), units::samples (200) }, seq2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
 
   // Remove overlapping with [100, 200) — R1 at [0, 100) is adjacent, not
   // overlapping
@@ -215,7 +229,7 @@ TEST_F (
   cache->finalize_changes ();
 
   // R1 at [0, 100) should remain
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().size (), 2);
 }
 
 // Reverse direction: [0, 100) removal must not evict [100, 200)
@@ -223,20 +237,22 @@ TEST_F (
   MidiTimelineDataCacheTest,
   RemoveSequencesMatchingInterval_AdjacentReverse)
 {
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 10.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 90.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (10)),
+    midi_event::make_note_off (0, 60, units::samples (90)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 190.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (110)),
+    midi_event::make_note_off (0, 64, units::samples (190)),
+  };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
   cache->add_midi_sequence (
     { units::samples (100), units::samples (200) }, seq2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 4);
+  EXPECT_EQ (cache->midi_events ().size (), 4);
 
   // Remove overlapping with [0, 100) - should only remove seq1
   cache->remove_sequences_matching_interval (
@@ -244,23 +260,26 @@ TEST_F (
   cache->finalize_changes ();
 
   // seq2 at [100, 200) should remain
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 2);
+  EXPECT_EQ (cache->midi_events ().size (), 2);
 }
 
 TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
 {
   // Create sequences that match their intervals
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 50.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (50)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 70.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 140.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (70)),
+    midi_event::make_note_off (0, 64, units::samples (140)),
+  };
 
-  juce::MidiMessageSequence seq3;
-  seq3.addEvent (juce::MidiMessage::noteOn (1, 67, 1.0f), 110.0);
-  seq3.addEvent (juce::MidiMessage::noteOff (1, 67), 190.0);
+  std::vector<SampleBasedMidiEvent> seq3{
+    midi_event::make_note_on (0, 67, 127, units::samples (110)),
+    midi_event::make_note_off (0, 67, units::samples (190)),
+  };
 
   // Add multiple overlapping sequences
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
@@ -269,7 +288,7 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
     { units::samples (100), units::samples (200) }, seq3);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 6);
+  EXPECT_EQ (cache->midi_events ().size (), 6);
 
   // Remove middle sequence by targeting its interval
   cache->remove_sequences_matching_interval (
@@ -277,17 +296,18 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
   cache->finalize_changes ();
 
   // All sequences should be removed (all truly overlap with [50, 149])
-  EXPECT_EQ (cache->midi_events ().getNumEvents (), 0);
+  EXPECT_EQ (cache->midi_events ().size (), 0);
 }
 
 TEST_F (MidiTimelineDataCacheTest, EventsOutsideIntervalValidation)
 {
   // Create a sequence with events outside the specified interval
-  juce::MidiMessageSequence out_of_bounds_sequence;
-  out_of_bounds_sequence.addEvent (
-    juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0); // Within interval [0, 100]
-  out_of_bounds_sequence.addEvent (
-    juce::MidiMessage::noteOn (1, 64, 1.0f), 150.0); // Outside interval [0, 100]
+  std::vector<SampleBasedMidiEvent> out_of_bounds_sequence{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)), // Within interval
+                                                               // [0, 100]
+    midi_event::make_note_on (
+      0, 64, 127, units::samples (150)), // Outside interval [0, 100]
+  };
 
   // Should throw exception when adding sequence with events outside interval
   EXPECT_THROW (
@@ -298,9 +318,10 @@ TEST_F (MidiTimelineDataCacheTest, EventsOutsideIntervalValidation)
 
 TEST_F (MidiTimelineDataCacheTest, ReversedIntervalThrows)
 {
-  juce::MidiMessageSequence seq;
-  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq.addEvent (juce::MidiMessage::noteOff (1, 60), 10.0);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (10)),
+  };
 
   EXPECT_THROW (
     cache->add_midi_sequence ({ units::samples (100), units::samples (0) }, seq),
@@ -310,10 +331,11 @@ TEST_F (MidiTimelineDataCacheTest, ReversedIntervalThrows)
 TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
 {
   // Create a sequence with unended notes
-  juce::MidiMessageSequence unended_sequence;
-  unended_sequence.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  unended_sequence.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 10.0);
-  // Intentionally missing note-off events
+  std::vector<SampleBasedMidiEvent> unended_sequence{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_on (0, 64, 127, units::samples (10)),
+    // Intentionally missing note-off events
+  };
 
   // Add sequence with interval [0, 100]
   cache->add_midi_sequence (
@@ -323,17 +345,16 @@ TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
   const auto &merged = cache->midi_events ();
 
   // Should have note-off events added automatically at interval end time (100)
-  EXPECT_EQ (merged.getNumEvents (), 4); // 2 note-ons + 2 note-offs
+  EXPECT_EQ (merged.size (), 4); // 2 note-ons + 2 note-offs
 
   // Verify note-off events were added at the correct time
   int note_off_count = 0;
-  for (int i = 0; i < merged.getNumEvents (); ++i)
+  for (const auto &ev : merged)
     {
-      const auto * event = merged.getEventPointer (i);
-      if (event->message.isNoteOff ())
+      if (utils::midi::midi_is_note_off (ev.data ()))
         {
           note_off_count++;
-          EXPECT_EQ (event->message.getTimeStamp (), 100.0);
+          EXPECT_EQ (ev.time_, units::samples (100));
         }
     }
   EXPECT_EQ (note_off_count, 2);
@@ -342,21 +363,22 @@ TEST_F (MidiTimelineDataCacheTest, UnendedNotesValidation)
 // Two same-pitch note-ons without any note-offs each generate their own note-off.
 TEST_F (MidiTimelineDataCacheTest, SamePitchOverlappingNoteOnsGetSeparateNoteOffs)
 {
-  juce::MidiMessageSequence seq;
-  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 50.0);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_on (0, 60, 127, units::samples (50)),
+  };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
 
   const auto &merged = cache->midi_events ();
-  ASSERT_EQ (merged.getNumEvents (), 4)
+  ASSERT_EQ (merged.size (), 4)
     << "Expected 2 note-ons + 2 auto-generated note-offs";
 
   int note_off_count = 0;
-  for (int i = 0; i < merged.getNumEvents (); ++i)
+  for (const auto &ev : merged)
     {
-      if (merged.getEventPointer (i)->message.isNoteOff ())
+      if (utils::midi::midi_is_note_off (ev.data ()))
         ++note_off_count;
     }
   EXPECT_EQ (note_off_count, 2);
@@ -368,26 +390,25 @@ TEST_F (MidiTimelineDataCacheTest, SamePitchOverlappingNoteOnsGetSeparateNoteOff
 // the second note.
 TEST_F (MidiTimelineDataCacheTest, AdjacentSamePitchNotesNoSpuriousNoteOff)
 {
-  juce::MidiMessageSequence seq;
-  seq.addEvent (
-    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 0.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 100.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 100.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 200.0);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (
+      0, 60, static_cast<midi_byte_t> (90), units::samples (0)),
+    midi_event::make_note_on (
+      0, 60, static_cast<midi_byte_t> (90), units::samples (100)),
+    midi_event::make_note_off (0, 60, units::samples (100)),
+    midi_event::make_note_off (0, 60, units::samples (200)),
+  };
 
   // Confirm the problematic ordering: noteOn@100 before noteOff@100
-  ASSERT_EQ (seq.getNumEvents (), 4);
-  ASSERT_TRUE (seq.getEventPointer (1)->message.isNoteOn ());
-  ASSERT_TRUE (seq.getEventPointer (2)->message.isNoteOff ());
+  ASSERT_EQ (seq.size (), 4);
+  ASSERT_TRUE (utils::midi::midi_is_note_on (seq[1].data ()));
+  ASSERT_TRUE (utils::midi::midi_is_note_off (seq[2].data ()));
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (200) }, seq);
   cache->finalize_changes ();
 
   const auto &merged = cache->midi_events ();
-  ASSERT_EQ (merged.getNumEvents (), 4)
+  ASSERT_EQ (merged.size (), 4)
     << "updateMatchedPairs must not auto-generate spurious noteOff events";
 }
 
@@ -399,30 +420,29 @@ TEST_F (
   MidiTimelineDataCacheTest,
   AdjacentSamePitchNotesNoteOffBeforeNoteOnAtBoundary)
 {
-  juce::MidiMessageSequence seq;
-  seq.addEvent (
-    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 0.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOn (1, 60, static_cast<uint8_t> (90)), 100.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 100.0);
-  seq.addEvent (
-    juce::MidiMessage::noteOff (1, 60, static_cast<uint8_t> (90)), 200.0);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (
+      0, 60, static_cast<midi_byte_t> (90), units::samples (0)),
+    midi_event::make_note_on (
+      0, 60, static_cast<midi_byte_t> (90), units::samples (100)),
+    midi_event::make_note_off (0, 60, units::samples (100)),
+    midi_event::make_note_off (0, 60, units::samples (200)),
+  };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (200) }, seq);
   cache->finalize_changes ();
 
   const auto &merged = cache->midi_events ();
-  ASSERT_EQ (merged.getNumEvents (), 4);
+  ASSERT_EQ (merged.size (), 4);
 
-  for (int i = 0; i < merged.getNumEvents () - 1; ++i)
+  for (size_t i = 0; i + 1 < merged.size (); ++i)
     {
-      const auto &cur = merged.getEventPointer (i)->message;
-      const auto &next = merged.getEventPointer (i + 1)->message;
-      if (cur.getTimeStamp () == next.getTimeStamp ())
+      if (merged[i].time_ == merged[i + 1].time_)
         {
-          ASSERT_FALSE (cur.isNoteOn () && next.isNoteOff ())
-            << "At timestamp " << cur.getTimeStamp ()
+          ASSERT_FALSE (
+            utils::midi::midi_is_note_on (merged[i].data ())
+            && utils::midi::midi_is_note_off (merged[i + 1].data ()))
+            << "At timestamp " << merged[i].time_.in (units::samples)
             << ": noteOff must precede noteOn for correct voice allocation, "
             << "but got noteOn then noteOff";
         }
@@ -433,13 +453,15 @@ TEST_F (MidiTimelineDataCacheTest, CachedRangesSignalOnFinalize)
 {
   QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
 
-  juce::MidiMessageSequence seq1;
-  seq1.addEvent (juce::MidiMessage::noteOn (1, 60, 1.0f), 0.0);
-  seq1.addEvent (juce::MidiMessage::noteOff (1, 60), 25.0);
+  std::vector<SampleBasedMidiEvent> seq1{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (25)),
+  };
 
-  juce::MidiMessageSequence seq2;
-  seq2.addEvent (juce::MidiMessage::noteOn (1, 64, 1.0f), 110.0);
-  seq2.addEvent (juce::MidiMessage::noteOff (1, 64), 150.0);
+  std::vector<SampleBasedMidiEvent> seq2{
+    midi_event::make_note_on (0, 64, 127, units::samples (110)),
+    midi_event::make_note_off (0, 64, units::samples (150)),
+  };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (50) }, seq1);
   cache->add_midi_sequence (
@@ -470,8 +492,13 @@ TEST_F (MidiTimelineDataCacheTest, CachedRangesEmptyWhenNoContent)
 
 TEST_F (MidiTimelineDataCacheTest, CachedRangesClearedOnClear)
 {
-  cache->add_midi_sequence (
-    { units::samples (0), units::samples (100) }, sequence);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_on (0, 64, 127, units::samples (60)),
+    midi_event::make_note_off (0, 64, units::samples (80)),
+  };
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
 
   QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
@@ -491,25 +518,30 @@ TEST_F (MidiTimelineDataCacheTest, EmptyCacheOperations)
     { units::samples (0), units::samples (100) });
   cache->finalize_changes ();
 
-  EXPECT_TRUE (cache->midi_events ().getNumEvents () == 0);
+  EXPECT_TRUE (cache->midi_events ().size () == 0);
   EXPECT_FALSE (cache->has_content ());
 }
 
 TEST_F (MidiTimelineDataCacheTest, ConstCorrectness)
 {
-  cache->add_midi_sequence (
-    { units::samples (0), units::samples (100) }, sequence);
+  std::vector<SampleBasedMidiEvent> seq{
+    midi_event::make_note_on (0, 60, 127, units::samples (0)),
+    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_on (0, 64, 127, units::samples (60)),
+    midi_event::make_note_off (0, 64, units::samples (80)),
+  };
+  cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
 
   // cached_events() should return const reference
   const auto &events = cache->midi_events ();
   // Should have 4 events: 2 note-ons + 2 note-offs
-  EXPECT_EQ (events.getNumEvents (), 4);
+  EXPECT_EQ (events.size (), 4);
 
   // Verify we can't modify the returned reference (compile-time check)
   static_assert (
     std::is_same_v<
-      decltype (cache->midi_events ()), const juce::MidiMessageSequence &>);
+      decltype (cache->midi_events ()), std::span<const SampleBasedMidiEvent>>);
 }
 
 // ========== Audio-Specific Tests ==========

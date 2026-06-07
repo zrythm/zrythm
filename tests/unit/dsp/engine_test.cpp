@@ -54,7 +54,6 @@ protected:
       });
 
     // Create real graph dispatcher
-    auto terminal_processables = std::vector<graph::IProcessable *>{};
     auto run_function_with_engine_lock = [] (std::function<void ()> func) {
       func ();
     };
@@ -63,7 +62,8 @@ protected:
       std::make_unique<test_helpers::MockHardwareAudioInterface> ();
 
     graph_dispatcher_ = std::make_unique<DspGraphDispatcher> (
-      std::move (graph_builder_), terminal_processables, *hw_interface_,
+      std::move (graph_builder_),
+      [this] () { return std::span (terminal_processables_); }, *hw_interface_,
       run_function_with_engine_lock, run_function_with_engine_lock);
   }
 
@@ -74,11 +74,12 @@ protected:
     MOCK_METHOD (void, build_graph_impl, (graph::Graph &), (override));
   };
 
-  std::unique_ptr<TempoMap>                                 tempo_map_;
-  std::unique_ptr<Transport>                                transport_;
-  std::unique_ptr<MockProcessable>                          processable_;
-  std::unique_ptr<MockGraphBuilder>                         graph_builder_;
-  std::unique_ptr<DspGraphDispatcher>                       graph_dispatcher_;
+  std::unique_ptr<TempoMap>           tempo_map_;
+  std::unique_ptr<Transport>          transport_;
+  std::unique_ptr<MockProcessable>    processable_;
+  std::unique_ptr<MockGraphBuilder>   graph_builder_;
+  std::unique_ptr<DspGraphDispatcher> graph_dispatcher_;
+  std::vector<graph::IProcessable *>  terminal_processables_;
   std::unique_ptr<test_helpers::MockHardwareAudioInterface> hw_interface_;
   test_helpers::MockHardwareMidiInterface                   midi_interface_;
   Transport::ConfigProvider                                 config_provider_;
@@ -750,18 +751,6 @@ TEST_F (AudioEngineTest, XRunCountReturnsValidValue)
   // Should return a valid count (initially 0)
   int xruns = engine->xRunCount ();
   EXPECT_GE (xruns, 0);
-}
-
-TEST_F (AudioEngineTest, GetMonitorOutPortReturnsValidPort)
-{
-  auto engine = std::make_unique<AudioEngine> (
-    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
-    *tempo_map_);
-
-  auto &monitor_out = engine->get_monitor_out_port ();
-
-  // Should return a valid reference to the monitor out port
-  EXPECT_EQ (&monitor_out, &engine->get_monitor_out_port ());
 }
 
 TEST_F (AudioEngineTest, GetGraphDispatcherReturnsValidDispatcher)

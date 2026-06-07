@@ -28,9 +28,12 @@ class DspGraphDispatcher final
 public:
   using RunFunctionWithEngineLock = std::function<void (std::function<void ()>)>;
 
+  using TerminalProcessablesProvider =
+    std::function<std::span<graph::IProcessable *> ()>;
+
   DspGraphDispatcher (
     std::unique_ptr<graph::IGraphBuilder>      graph_builder,
-    std::vector<graph::IProcessable *>         terminal_processables,
+    TerminalProcessablesProvider               terminal_processables_provider,
     const IHardwareAudioInterface             &hw_interface,
     RunFunctionWithEngineLock                  run_function_with_engine_lock,
     graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread,
@@ -160,7 +163,7 @@ private:
   /**
    * @brief Terminal processables to prune the graph to.
    */
-  std::vector<graph::IProcessable *> terminal_processables_;
+  TerminalProcessablesProvider terminal_processables_provider_;
 
   std::unique_ptr<graph::GraphScheduler> scheduler_;
 

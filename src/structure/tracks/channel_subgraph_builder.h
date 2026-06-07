@@ -55,6 +55,9 @@ public:
     auto * dest = graph.get_nodes ().find_node_for_processable (dest_port);
     assert (src);
     assert (dest);
+    assert (src != dest && "Cannot connect a port to itself");
+    assert (src_port.is_output () && "Source port must be an output port");
+    assert (dest_port.is_input () && "Destination port must be an input port");
     src->connect_to (*dest);
   }
 

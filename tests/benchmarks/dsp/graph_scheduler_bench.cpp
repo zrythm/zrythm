@@ -72,7 +72,8 @@ protected:
       .WillByDefault (Return (utils::Utf8String (u8"bench_node")));
     ON_CALL (*proc, get_single_playback_latency ())
       .WillByDefault (Return (units::samples (0)));
-    ON_CALL (*proc, prepare_for_processing (_, _, _)).WillByDefault (Return ());
+    ON_CALL (*proc, prepare_for_processing_impl (_, _, _))
+      .WillByDefault (Return ());
     ON_CALL (*proc, release_resources ()).WillByDefault (Return ());
 
     // Simulate actual processing work
@@ -98,7 +99,8 @@ protected:
     EXPECT_CALL (*proc, get_node_name ()).Times (AnyNumber ());
     EXPECT_CALL (*proc, get_single_playback_latency ()).Times (AnyNumber ());
     EXPECT_CALL (*proc, process_block (_, _, _)).Times (AnyNumber ());
-    EXPECT_CALL (*proc, prepare_for_processing (_, _, _)).Times (AnyNumber ());
+    EXPECT_CALL (*proc, prepare_for_processing_impl (_, _, _))
+      .Times (AnyNumber ());
     EXPECT_CALL (*proc, release_resources ()).Times (AnyNumber ());
 
     return proc;

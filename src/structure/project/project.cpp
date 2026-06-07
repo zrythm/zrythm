@@ -9,6 +9,7 @@
 #include "dsp/hardware_midi_interface.h"
 #include "dsp/juce_hardware_audio_interface.h"
 #include "dsp/port_connections_manager.h"
+#include "dsp/port_observer.h"
 #include "dsp/transport.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
@@ -136,11 +137,19 @@ Project::Project (
         utils::make_qobject_unique<
           structure::arrangement::TempoObjectManager> (project_registry_, this)),
       monitor_fader_ (monitor_fader), metronome_ (metronome),
+      port_observation_manager_ (
+        utils::make_qobject_unique<
+          dsp::PortObservationManager> (project_registry_, this)),
+      fixed_graph_endpoints_ (
+        std::views::single (
+          static_cast<dsp::graph::IProcessable *> (
+            &monitor_fader.get_stereo_out_port ()))
+        | std::ranges::to<std::vector> ()),
+      playback_graph_endpoints_ (fixed_graph_endpoints_),
       graph_dispatcher_ (
         std::unique_ptr<dsp::graph::IGraphBuilder> (
           new ProjectGraphBuilder (*this, metronome, monitor_fader)),
-        std::views::single (&audio_engine_->get_monitor_out_port ())
-          | std::ranges::to<std::vector<dsp::graph::IProcessable *>> (),
+        [this] () { return std::span (playback_graph_endpoints_); },
         hw_interface_,
         [this] (const std::function<void ()> &callable) {
           bool engine_running = audio_engine_->running ();
@@ -158,10 +167,23 @@ Project::Project (
           return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
         }())
 {
+  audio_engine_->set_monitor_out_source (monitor_fader_.get_stereo_out_port ());
+
   QObject::connect (
     audio_engine_.get (), &dsp::AudioEngine::sampleRateChanged,
     tempo_map_wrapper_.get (), [this] (int new_rate) {
       tempo_map_wrapper_->setSampleRate (static_cast<double> (new_rate));
+    });
+
+  QObject::connect (
+    port_observation_manager_.get (),
+    &dsp::PortObservationManager::observationChanged, this, [this] () {
+      playback_graph_endpoints_ = fixed_graph_endpoints_;
+      for (auto * observer : port_observation_manager_->observers ())
+        {
+          playback_graph_endpoints_.push_back (observer);
+        }
+      graph_dispatcher_.recalc_graph (false);
     });
 
   // Keep up-to-date realtime cache of tracks
@@ -423,6 +445,12 @@ dsp::AudioEngine *
 Project::engine () const
 {
   return audio_engine_.get ();
+}
+
+dsp::PortObservationManager *
+Project::portObservationManager () const
+{
+  return port_observation_manager_.get ();
 }
 
 dsp::TempoMapWrapper *

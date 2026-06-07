@@ -101,7 +101,7 @@ SampleProcessor::init_common ()
   // TODO
   // tracklist_ =
   //   std::make_unique<Tracklist> (audio_engine_->get_track_registry (), this);
-  midi_events_ = std::make_unique<dsp::MidiEvents> ();
+  midi_events_buffer_.clear ();
 }
 
 void
@@ -198,7 +198,7 @@ SampleProcessor::process_block (
 
   if (roll_)
     {
-      midi_events_->active_events_.clear ();
+      midi_events_buffer_.clear ();
       for (
         auto track_var :
         tracklist_->collection ()->get_track_span () | std::views::reverse)
@@ -235,11 +235,13 @@ SampleProcessor::process_block (
                     {
                       track->get_track_processor ()->process_block (
                         inner_time_nfo);
-                      midi_events_->active_events_.append (
+                      const auto &port_buffer =
                         track->get_track_processor ()
                           ->get_midi_out_port ()
-                          .midi_events_.active_events_,
-                        cycle_offset, nframes);
+                          .buffer_;
+                      dsp::midi_event::append_in_range (
+                        midi_events_buffer_, port_buffer,
+                        { cycle_offset, cycle_offset + nframes });
                     }
                   else if constexpr (std::is_same_v<TrackT, InstrumentTrack>)
                     {
@@ -253,8 +255,9 @@ SampleProcessor::process_block (
 
                           ins->prepare_process (
                             AUDIO_ENGINE->get_block_length ());
-                          ins->midi_in_port_->midi_events_.active_events_.append (
-                            midi_events_->active_events_, cycle_offset, nframes);
+                          dsp::midi_event::append_in_range (
+                            ins->midi_in_port_->buffer_, midi_events_buffer_,
+                            { cycle_offset, cycle_offset + nframes });
                           ins->process_block (inner_time_nfo);
                           audio_data_l = ins->l_out_->buf_.data ();
                           audio_data_r = ins->r_out_->buf_.data ();

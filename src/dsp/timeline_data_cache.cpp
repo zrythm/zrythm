@@ -32,75 +32,66 @@ MidiTimelineDataCache::remove_sequences_matching_interval (IntervalType interval
 
 void
 MidiTimelineDataCache::add_midi_sequence (
-  IntervalType                     interval,
-  const juce::MidiMessageSequence &sequence)
+  IntervalType                          interval,
+  std::span<const SampleBasedMidiEvent> events)
 {
   const auto [start_time, end_time] = interval;
 
   validate_interval (interval);
 
-  // Validate that all events are within the interval
-  for (const auto * event : sequence)
+  for (const auto &event : events)
     {
-      const double event_time = event->message.getTimeStamp ();
-      if (
-        event_time < start_time.in<double> (units::samples)
-        || event_time > end_time.in<double> (units::samples))
+      if (event.time_ < start_time || event.time_ > end_time)
         {
           throw std::invalid_argument (
             "MIDI sequence contains events outside the specified interval");
         }
     }
 
-  // Ensure the sequence has no unended notes
-  juce::MidiMessageSequence validated_sequence (sequence);
+  auto validated =
+    events | std::ranges::to<std::vector<SampleBasedMidiEvent>> ();
 
-  // Single reverse pass over original events: track unmatched note-offs in a
-  // multiset. When we see a noteOn, consume a matching noteOff if available;
-  // otherwise record it for auto-generation. This correctly handles overlapping
-  // same-pitch note-ons (each gets its own note-off) and avoids
-  // mutation-during-iteration by collecting missing note-offs first.
+  // Single reverse pass: accumulate note-offs in a multiset, consume one per
+  // matching note-on. Unmatched note-ons get an auto-generated note-off at
+  // interval end. Collects missing note-offs first to avoid
+  // mutation-during-iteration.
   using NoteKey = std::pair<int, int>;
-  std::multiset<NoteKey>                  unmatched_note_offs;
-  std::vector<std::pair<NoteKey, double>> missing_note_offs;
+  std::multiset<NoteKey>                           unmatched_note_offs;
+  std::vector<std::pair<NoteKey, units::sample_t>> missing_note_offs;
 
-  const int original_count = validated_sequence.getNumEvents ();
-  for (int i = original_count - 1; i >= 0; --i)
+  for (const auto &ev : validated | std::views::reverse)
     {
-      const auto &msg = validated_sequence.getEventPointer (i)->message;
-      if (!msg.isNoteOn () && !msg.isNoteOff ())
+      const auto d = ev.data ();
+      if (
+        !utils::midi::midi_is_note_on (d) && !utils::midi::midi_is_note_off (d))
         continue;
 
-      const auto key = NoteKey{ msg.getChannel (), msg.getNoteNumber () };
-      if (msg.isNoteOff ())
+      const NoteKey key{ d[0] & 0x0F, d[1] };
+      if (utils::midi::midi_is_note_off (d))
         {
           unmatched_note_offs.insert (key);
         }
+      else if (
+        auto it = unmatched_note_offs.find (key);
+        it != unmatched_note_offs.end ())
+        {
+          unmatched_note_offs.erase (it);
+        }
       else
         {
-          auto it = unmatched_note_offs.find (key);
-          if (it != unmatched_note_offs.end ())
-            {
-              unmatched_note_offs.erase (it);
-            }
-          else
-            {
-              missing_note_offs.emplace_back (
-                key, end_time.in<double> (units::samples));
-            }
+          missing_note_offs.emplace_back (key, end_time);
         }
     }
 
   for (const auto &[key, time] : missing_note_offs)
     {
-      validated_sequence.addEvent (
-        juce::MidiMessage::noteOff (key.first, key.second), time);
+      validated.push_back (
+        midi_event::make_note_off (key.first, key.second, time));
     }
 
   z_trace (
-    "{} events, interval=[{}, {}]", validated_sequence.getNumEvents (),
-    start_time, end_time);
-  midi_sequences_[interval] = validated_sequence;
+    "{} events, interval=[{}, {}]", validated.size (), start_time, end_time);
+  midi_sequences_[interval] = std::move (validated);
 }
 
 void
@@ -108,34 +99,30 @@ MidiTimelineDataCache::finalize_changes_impl ()
 {
   merged_midi_events_.clear ();
 
-  // Collect all messages from all intervals into one vector
-  std::vector<juce::MidiMessage> all;
-  all.reserve (
-    std::transform_reduce (
-      midi_sequences_.begin (), midi_sequences_.end (), 0, std::plus{},
-      [] (const auto &p) { return p.second.getNumEvents (); }));
+  // Concatenate all events from all intervals into one vector
   for (const auto &[interval, seq] : midi_sequences_)
     {
-      for (const auto * ev : seq)
-        all.push_back (ev->message);
+      merged_midi_events_.insert (
+        merged_midi_events_.end (), seq.begin (), seq.end ());
     }
 
   // Sort once: by timestamp, then noteOff before noteOn at same timestamp
   std::ranges::stable_sort (
-    all, [] (const juce::MidiMessage &a, const juce::MidiMessage &b) {
-      if (a.getTimeStamp () != b.getTimeStamp ())
-        return a.getTimeStamp () < b.getTimeStamp ();
-      return !a.isNoteOn () && b.isNoteOn ();
+    merged_midi_events_,
+    [] (const SampleBasedMidiEvent &a, const SampleBasedMidiEvent &b) {
+      if (a.time_ != b.time_)
+        return a.time_ < b.time_;
+      const auto ad = a.data ();
+      const auto bd = b.data ();
+      return !utils::midi::midi_is_note_on (ad)
+             && utils::midi::midi_is_note_on (bd);
     });
-
-  for (const auto &msg : all)
-    merged_midi_events_.addEvent (msg);
 }
 
 bool
 MidiTimelineDataCache::has_content () const
 {
-  return merged_midi_events_.getNumEvents () > 0;
+  return !merged_midi_events_.empty ();
 }
 
 std::vector<MidiTimelineDataCache::IntervalType>

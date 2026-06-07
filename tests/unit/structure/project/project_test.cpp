@@ -95,7 +95,7 @@ protected:
     project->install_recording_callback (
       [] (
         const structure::tracks::Track::Uuid &, units::sample_t,
-        const dsp::ITransport &, std::optional<std::span<const dsp::MidiEvent>>,
+        const dsp::ITransport &, const dsp::MidiEventBuffer *,
         std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
         units::sample_u32_t) { });
 
@@ -394,7 +394,7 @@ TEST_F (ProjectTest, InstallRecordingCallbackThrowsOnDoubleInstall)
     project->install_recording_callback (
       [] (
         const structure::tracks::Track::Uuid &, units::sample_t,
-        const dsp::ITransport &, std::optional<std::span<const dsp::MidiEvent>>,
+        const dsp::ITransport &, const dsp::MidiEventBuffer *,
         std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
         units::sample_u32_t) { }),
     std::runtime_error);

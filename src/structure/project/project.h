@@ -10,6 +10,7 @@
 #include "dsp/metronome.h"
 #include "dsp/midi_input_selection.h"
 #include "dsp/port_connections_manager.h"
+#include "dsp/port_observation_manager.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 #include "plugins/plugin.h"
@@ -68,6 +69,9 @@ class Project final : public QObject
     zrythm::dsp::Transport * transport READ getTransport CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::TempoMapWrapper * tempoMap READ getTempoMap CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::dsp::PortObservationManager * portObservationManager READ
+      portObservationManager CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::structure::arrangement::TempoObjectManager * tempoObjectManager READ
       tempoObjectManager CONSTANT FINAL)
@@ -128,6 +132,8 @@ public:
   {
     return arranger_object_factory_.get ();
   }
+
+  dsp::PortObservationManager * portObservationManager () const;
 
   friend void init_from (
     Project               &obj,
@@ -272,6 +278,27 @@ private:
   MidiInputSelectionProvider  midi_input_selection_provider_;
 
   structure::tracks::TrackRecordingCallback track_recording_callback_;
+
+  /**
+   * @brief Port observation manager.
+   *
+   * Manages PortObserver lifecycle and drain timer for UI-side
+   * metering/analysis.
+   */
+  utils::QObjectUniquePtr<dsp::PortObservationManager> port_observation_manager_;
+
+  /**
+   * @brief Fixed graph endpoints that never change (e.g., monitor output port).
+   */
+  std::vector<dsp::graph::IProcessable *> fixed_graph_endpoints_;
+
+  /**
+   * @brief Processables that the graph must be pruned to during playback.
+   *
+   * Contains fixed endpoints and dynamic observer endpoints (PortObserver
+   * instances). Rebuilt from @p fixed_graph_endpoints_ when observers change.
+   */
+  std::vector<dsp::graph::IProcessable *> playback_graph_endpoints_;
 
   /**
    * @brief Graph dispatcher.

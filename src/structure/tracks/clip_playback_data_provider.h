@@ -22,15 +22,15 @@ class ClipPlaybackDataProvider final
   struct MidiCache
   {
     MidiCache (
-      juce::MidiMessageSequence           &&midi_seq,
-      structure::tracks::ClipQuantizeOption quantize_opt,
-      units::precise_tick_t                 end_position)
-        : midi_seq_ (std::move (midi_seq)), quantize_opt_ (quantize_opt),
+      std::vector<dsp::SampleBasedMidiEvent> &&midi_events,
+      structure::tracks::ClipQuantizeOption    quantize_opt,
+      units::precise_tick_t                    end_position)
+        : midi_events_ (std::move (midi_events)), quantize_opt_ (quantize_opt),
           end_position_ (end_position)
     {
     }
-    juce::MidiMessageSequence             midi_seq_;
-    structure::tracks::ClipQuantizeOption quantize_opt_;
+    std::vector<dsp::SampleBasedMidiEvent> midi_events_;
+    structure::tracks::ClipQuantizeOption  quantize_opt_;
 
     /**
      * @brief End position to loop at.
@@ -91,7 +91,7 @@ public:
   // TrackEventProvider interface
   void process_midi_events (
     const dsp::graph::ProcessBlockInfo &time_nfo,
-    dsp::MidiEventVector &output_buffer) noexcept [[clang::nonblocking]];
+    dsp::MidiEventBuffer &output_buffer) noexcept [[clang::nonblocking]];
 
   /**
    * @brief Process audio events for clip launcher playback.

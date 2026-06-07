@@ -3,6 +3,7 @@
 
 #include "dsp/graph.h"
 #include "dsp/graph_builder.h"
+#include "dsp/midi_event.h"
 #include "dsp/parameter.h"
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
@@ -313,11 +314,14 @@ TEST_F (ChannelSendTest, MidiProcessing)
   auto &midi_out = midi_send_->get_midi_out_port ();
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 60, 100, units::samples (0));
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 64, 90, units::samples (10));
-  midi_in.midi_events_.active_events_.add_note_off (1, 60, units::samples (100));
+  const auto _ev1 =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+  midi_in.buffer_.push_back (_ev1.time_, _ev1.data ());
+  const auto _ev2 =
+    dsp::midi_event::make_note_on (0, 64, 90, units::samples (10));
+  midi_in.buffer_.push_back (_ev2.time_, _ev2.data ());
+  const auto _ev3 = dsp::midi_event::make_note_off (0, 60, units::samples (100));
+  midi_in.buffer_.push_back (_ev3.time_, _ev3.data ());
 
   // Set amount parameter
   midi_send_->amountParam ()->setBaseValue (0.8f);
@@ -327,7 +331,7 @@ TEST_F (ChannelSendTest, MidiProcessing)
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+  EXPECT_EQ (midi_out.buffer_.size (), 3);
 }
 
 TEST_F (ChannelSendTest, MidiProcessingWhenDisabled)
@@ -341,17 +345,19 @@ TEST_F (ChannelSendTest, MidiProcessingWhenDisabled)
   midi_send_->enabledParam ()->setBaseValue (0.0f);
 
   // Add MIDI events to input
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 60, 100, units::samples (0));
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 64, 90, units::samples (10));
+  const auto _ev4 =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+  midi_in.buffer_.push_back (_ev4.time_, _ev4.data ());
+  const auto _ev5 =
+    dsp::midi_event::make_note_on (0, 64, 90, units::samples (10));
+  midi_in.buffer_.push_back (_ev5.time_, _ev5.data ());
 
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (512));
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Output should be empty when disabled
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
+  EXPECT_EQ (midi_out.buffer_.size (), 0);
 }
 
 TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
@@ -597,12 +603,15 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
 
   // Add MIDI events to input
   const auto add_events = [&] () {
-    midi_in.midi_events_.active_events_.add_note_on (
-      1, 60, 100, units::samples (0));
-    midi_in.midi_events_.active_events_.add_note_on (
-      1, 64, 90, units::samples (10));
-    midi_in.midi_events_.active_events_.add_note_off (
-      1, 60, units::samples (100));
+    const auto _ev1 =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0));
+    midi_in.buffer_.push_back (_ev1.time_, _ev1.data ());
+    const auto _ev2 =
+      dsp::midi_event::make_note_on (0, 64, 90, units::samples (10));
+    midi_in.buffer_.push_back (_ev2.time_, _ev2.data ());
+    const auto _ev3 =
+      dsp::midi_event::make_note_off (0, 60, units::samples (100));
+    midi_in.buffer_.push_back (_ev3.time_, _ev3.data ());
   };
 
   // First process call
@@ -610,26 +619,26 @@ TEST_F (ChannelSendTest, MidiBufferClearingBetweenProcessCalls)
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+  EXPECT_EQ (midi_out.buffer_.size (), 3);
 
   // Clear output events
-  midi_out.midi_events_.queued_events_.clear ();
+  midi_out.buffer_.clear ();
 
   // Second process call with same input
   add_events ();
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify MIDI events are copied again (no accumulation)
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 3);
+  EXPECT_EQ (midi_out.buffer_.size (), 3);
 
   // Third process call with no new MIDI events
-  midi_in.midi_events_.active_events_.clear ();
-  midi_out.midi_events_.queued_events_.clear ();
+  midi_in.buffer_.clear ();
+  midi_out.buffer_.clear ();
 
   midi_send_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify no events are output when input is empty
-  EXPECT_EQ (midi_out.midi_events_.queued_events_.size (), 0);
+  EXPECT_EQ (midi_out.buffer_.size (), 0);
 }
 
 } // namespace zrythm::structure::tracks

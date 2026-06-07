@@ -43,7 +43,7 @@ protected:
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (units::samples (0)));
-    ON_CALL (*processable_, prepare_for_processing (_, _, _))
+    ON_CALL (*processable_, prepare_for_processing_impl (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
 

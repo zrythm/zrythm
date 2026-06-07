@@ -4,6 +4,7 @@
 #include "dsp/cv_port.h"
 #include "utils/float_ranges.h"
 #include "utils/math_utils.h"
+#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -19,33 +20,29 @@ CVPort::clear_buffer (std::size_t offset, std::size_t nframes)
 }
 
 void
-CVPort::prepare_for_processing (
+CVPort::prepare_for_processing_impl (
   const graph::GraphNode * node,
   units::sample_rate_t     sample_rate,
   units::sample_u32_t      max_block_length)
 {
-  if (node != nullptr)
+  if (node != nullptr && flow () == PortFlow::Input)
     {
       auto source_ports =
         node->depends () | std::views::transform ([] (const auto &child_node) {
           return dynamic_cast<CVPort *> (&child_node.get ().get_processable ());
         })
-        | std::views::filter ([] (const auto * port) { return port != nullptr; });
+        | utils::views::filter_null;
       set_port_sources (source_ports);
     }
 
   size_t max = std::max (max_block_length.in (units::samples), 1u);
   buf_.resize (max);
-
-  // 8 cycles
-  cv_ring_ = std::make_unique<RingBuffer<float>> (max * 8);
 }
 
 void
 CVPort::release_resources ()
 {
   buf_.clear ();
-  cv_ring_.reset ();
 }
 
 void
@@ -56,34 +53,31 @@ CVPort::process_block (
 {
   const auto sub_offset = time_nfo.buffer_offset_.in (units::samples);
   const auto sub_nframes = time_nfo.nframes_.in (units::samples);
-  for (const auto &[src_port, conn] : port_sources ())
+  /* Input ports: aggregate from sources. */
+  if (flow () == PortFlow::Input)
     {
-      if (!conn->enabled_)
-        continue;
-
-      const float multiplier = conn->multiplier_;
-
-      /* sum the signals */
-      if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
+      for (const auto &[src_port, conn] : port_sources ())
         {
-          utils::float_ranges::add2 (
-            std::span (buf_).subspan (sub_offset, sub_nframes),
-            std::span (src_port->buf_).subspan (sub_offset, sub_nframes));
-        }
-      else
-        {
-          utils::float_ranges::mix_product (
-            std::span (buf_).subspan (sub_offset, sub_nframes),
-            std::span (src_port->buf_).subspan (sub_offset, sub_nframes),
-            multiplier);
-        }
-    } /* foreach source */
+          if (!conn->enabled_)
+            continue;
 
-  if (num_ring_buffer_readers_ > 0)
-    {
-      cv_ring_->force_write_multiple (
-        &buf_[time_nfo.buffer_offset_.in (units::samples)],
-        time_nfo.nframes_.in (units::samples));
+          const float multiplier = conn->multiplier_;
+
+          /* sum the signals */
+          if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]
+            {
+              utils::float_ranges::add2 (
+                std::span (buf_).subspan (sub_offset, sub_nframes),
+                std::span (src_port->buf_).subspan (sub_offset, sub_nframes));
+            }
+          else
+            {
+              utils::float_ranges::mix_product (
+                std::span (buf_).subspan (sub_offset, sub_nframes),
+                std::span (src_port->buf_).subspan (sub_offset, sub_nframes),
+                multiplier);
+            }
+        }
     }
 }
 

@@ -1,111 +1,224 @@
-// SPDX-FileCopyrightText: © 2020-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
 
-#include "dsp/audio_port.h"
-#include "dsp/engine.h"
 #include "dsp/kmeter_dsp.h"
 #include "dsp/midi_event.h"
-#include "dsp/midi_port.h"
-#include "gui/backend/project_manager.h"
+#include "dsp/peak_dsp.h"
+#include "dsp/port.h"
+#include "dsp/port_observation_token.h"
+#include "dsp/true_peak_dsp.h"
 #include "gui/qquick/meter_processor.h"
 #include "utils/math_utils.h"
-#include "utils/ring_buffer.h"
+#include "utils/qt.h"
+#include "utils/types.h"
 
 namespace zrythm::gui::qquick
 {
-MeterProcessor::MeterProcessor (QObject * parent) : QObject (parent) { }
+
+struct MeterProcessor::Impl
+{
+  QPointer<dsp::Port> port_;
+
+  std::optional<dsp::ObservationToken> observation_token_;
+
+  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_processor_;
+  std::unique_ptr<zrythm::dsp::TruePeakDsp> true_peak_max_processor_;
+
+  float true_peak_ = 0.f;
+  float true_peak_max_ = 0.f;
+
+  std::unique_ptr<zrythm::dsp::KMeterDsp> kmeter_processor_;
+  std::unique_ptr<zrythm::dsp::PeakDsp>   peak_processor_;
+
+  MeterAlgorithm algorithm_ = MeterAlgorithm::Auto;
+
+  float prev_max_ = 0.f;
+  float last_amp_ = 0.f;
+
+  SteadyTimePoint last_draw_time_;
+
+  std::optional<dsp::RealtimeMidiEvent> last_seen_midi_event_;
+
+  float current_amp_ = 0.f;
+  float peak_amp_ = 0.f;
+
+  int channel_{};
+  int sample_rate_{};
+
+  QPointer<dsp::PortObservationManager> observation_manager_;
+
+  utils::QObjectUniquePtr<QTimer> timer_;
+};
+
+MeterProcessor::MeterProcessor (QObject * parent)
+    : QObject (parent), impl_ (std::make_unique<Impl> ())
+{
+}
+
+MeterProcessor::~MeterProcessor () = default;
+
+dsp::Port *
+MeterProcessor::port () const
+{
+  return impl_->port_;
+}
+
+int
+MeterProcessor::channel () const
+{
+  return impl_->channel_;
+}
+
+int
+MeterProcessor::sampleRate () const
+{
+  return impl_->sample_rate_;
+}
+
+dsp::PortObservationManager *
+MeterProcessor::portObservationManager () const
+{
+  return impl_->observation_manager_;
+}
+
+MeterProcessor::MeterAlgorithm
+MeterProcessor::algorithm () const
+{
+  return impl_->algorithm_;
+}
+
+void
+MeterProcessor::setAlgorithm (MeterAlgorithm algo)
+{
+  if (impl_->algorithm_ == algo)
+    return;
+  impl_->algorithm_ = algo;
+
+  impl_->kmeter_processor_.reset ();
+  impl_->peak_processor_.reset ();
+  impl_->true_peak_processor_.reset ();
+  impl_->true_peak_max_processor_.reset ();
+
+  switch (impl_->algorithm_)
+    {
+    case MeterAlgorithm::K:
+      impl_->kmeter_processor_ = std::make_unique<zrythm::dsp::KMeterDsp> ();
+      impl_->kmeter_processor_->init (impl_->sample_rate_);
+      break;
+    case MeterAlgorithm::TruePeak:
+      impl_->true_peak_processor_ =
+        std::make_unique<zrythm::dsp::TruePeakDsp> ();
+      impl_->true_peak_processor_->init (impl_->sample_rate_);
+      break;
+    case MeterAlgorithm::RMS:
+    case MeterAlgorithm::DigitalPeak:
+      impl_->peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
+      impl_->peak_processor_->init (impl_->sample_rate_);
+      break;
+    case MeterAlgorithm::Auto:
+      break;
+    }
+
+  Q_EMIT algorithmChanged ();
+}
+
+float
+MeterProcessor::currentAmplitude () const
+{
+  return impl_->current_amp_;
+}
+
+float
+MeterProcessor::peakAmplitude () const
+{
+  return impl_->peak_amp_;
+}
 
 void
 MeterProcessor::setChannel (int channel)
 {
-  channel_ = channel;
+  impl_->channel_ = channel;
+}
+
+void
+MeterProcessor::setSampleRate (int rate)
+{
+  if (impl_->sample_rate_ == rate)
+    return;
+  impl_->sample_rate_ = rate;
+  if (impl_->kmeter_processor_)
+    impl_->kmeter_processor_->init (impl_->sample_rate_);
+  if (impl_->peak_processor_)
+    impl_->peak_processor_->init (impl_->sample_rate_);
+  if (impl_->true_peak_processor_)
+    impl_->true_peak_processor_->init (impl_->sample_rate_);
+  Q_EMIT sampleRateChanged ();
+}
+
+void
+MeterProcessor::setPortObservationManager (dsp::PortObservationManager * manager)
+{
+  impl_->observation_manager_ = manager;
+  try_create_token ();
+}
+
+void
+MeterProcessor::try_create_token ()
+{
+  if (impl_->port_ == nullptr || impl_->observation_manager_ == nullptr)
+    return;
+  impl_->observation_token_.emplace (
+    *impl_->observation_manager_, *impl_->port_);
 }
 
 void
 MeterProcessor::setPort (dsp::Port * port)
 {
-  if (port_ != nullptr)
+  if (impl_->port_ != nullptr)
     {
-      ring_buffer_reader_.reset ();
-      port_.clear ();
+      impl_->observation_token_.reset ();
+      QObject::disconnect (impl_->port_, &QObject::destroyed, this, nullptr);
+      impl_->port_.clear ();
     }
-  port_ = port;
-  if (port_ != nullptr)
+  impl_->port_ = port;
+  if (impl_->port_ != nullptr)
     {
-      QObject::connect (port_, &QObject::destroyed, this, [this] () {
-        ring_buffer_reader_.reset ();
-        port_.clear ();
+      QObject::connect (impl_->port_, &QObject::destroyed, this, [this] () {
+        impl_->observation_token_.reset ();
+        impl_->port_.clear ();
       });
 
-      z_trace ("setting port to {}", port_->get_label ());
+      z_trace ("setting port to {}", impl_->port_->get_label ());
 
-      if (port_->is_audio ())
+      try_create_token ();
+
+      if (impl_->algorithm_ == MeterAlgorithm::Auto)
         {
-          bool is_master_fader =
-            port_->get_uuid ()
-            == P_MASTER_TRACK->channel ()->audioOutPort ()->get_uuid ();
-
-          if (is_master_fader)
-            {
-              algorithm_ = MeterAlgorithm::METER_ALGORITHM_K;
-              kmeter_processor_ = std::make_unique<zrythm::dsp::KMeterDsp> ();
-              kmeter_processor_->init (audio_engine_->sampleRate ());
-            }
-          else
-            {
-              algorithm_ = MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK;
-              peak_processor_ = std::make_unique<zrythm::dsp::PeakDsp> ();
-              peak_processor_->init (audio_engine_->sampleRate ());
-            }
-
-          tmp_buf_.reserve (dsp::AudioPort::AUDIO_RING_SIZE);
-
-          auto * mixin =
-            dynamic_cast<dsp::RingBufferOwningPortMixin *> (port_.get ());
-          assert (mixin != nullptr);
-          ring_buffer_reader_.emplace (*mixin);
-        }
-      else if (port_->is_cv ())
-        {
-          tmp_buf_.reserve (dsp::AudioPort::AUDIO_RING_SIZE);
-          auto * mixin =
-            dynamic_cast<dsp::RingBufferOwningPortMixin *> (port_.get ());
-          assert (mixin != nullptr);
-          ring_buffer_reader_.emplace (*mixin);
-        }
-      else if (port_->is_midi ())
-        {
-          ring_buffer_reader_.emplace (
-            *qobject_cast<dsp::MidiPort *> (port_.get ()));
+          if (impl_->port_->is_audio () || impl_->port_->is_cv ())
+            setAlgorithm (MeterAlgorithm::DigitalPeak);
         }
 
-      timer_ = utils::make_qobject_unique<QTimer> (this);
-      timer_->setInterval (1000 / 60); // 60 fps
-      connect (timer_.get (), &QTimer::timeout, this, [&] () {
+      impl_->timer_ = utils::make_qobject_unique<QTimer> (this);
+      impl_->timer_->setInterval (1000 / 60);
+      connect (impl_->timer_.get (), &QTimer::timeout, this, [&] () {
         float val = 0.0;
         float max = 0.0;
-        get_value (AudioValueFormat::Amplitude, &val, &max);
-        if (val > 1e-19 || max > 1e-19)
-          {
-            // z_debug ("values: {}, {}", val, max);
-          }
+        get_value (AudioValueFormat::Amplitude, val, max);
 
-        if (!utils::math::floats_equal (
-              current_amp_.load (std::memory_order_relaxed), val))
+        if (!utils::math::floats_equal (impl_->current_amp_, val))
           {
-            current_amp_.store (val);
+            impl_->current_amp_ = val;
             Q_EMIT currentAmplitudeChanged (val);
           }
-        if (!utils::math::floats_equal (
-              peak_amp_.load (std::memory_order_relaxed), max))
+        if (!utils::math::floats_equal (impl_->peak_amp_, max))
           {
-            peak_amp_.store (max);
+            impl_->peak_amp_ = max;
             Q_EMIT peakAmplitudeChanged (max);
           }
       });
-      timer_->start ();
+      impl_->timer_->start ();
     }
 }
 
@@ -122,171 +235,106 @@ MeterProcessor::toFader (const float amp) const
 }
 
 void
-MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
+MeterProcessor::get_value (AudioValueFormat format, float &val, float &max)
 {
-  if (port_ == nullptr)
+  if (impl_->port_ == nullptr)
     {
-      *val = 1e-20f;
-      *max = 1e-20f;
+      val = 1e-20f;
+      max = 1e-20f;
       z_warning ("port not set");
-      return;
-    }
-
-  if (!audio_engine_->activated () || !audio_engine_->running ())
-    {
       return;
     }
 
   float amp = -1.f;
   float max_amp = -1.f;
 
-  if (port_->is_audio ())
+  if (!impl_->observation_token_)
     {
-      auto * audio_port = qobject_cast<dsp::AudioPort *> (port_.get ());
-      assert (audio_port != nullptr);
-      if (audio_port->audio_ring_buffers ().empty ())
-        {
-          z_debug ("no audio ring buffers available");
-          return;
-        }
-      const auto &ring = audio_port->audio_ring_buffers ().at (channel_);
+      val = 1e-20f;
+      max = 1e-20f;
+      return;
+    }
 
-      size_t     read_space_avail = ring.read_space ();
-      const auto block_length =
-        static_cast<size_t> (audio_engine_->blockLength ());
-      size_t blocks_to_read =
-        block_length == 0 ? 0 : read_space_avail / block_length;
-      /* if no blocks available, skip */
-      if (blocks_to_read == 0)
+  auto &cache = impl_->observation_token_->cache ();
+
+  if (impl_->port_->is_audio ())
+    {
+      auto &channel_data = cache.audio[impl_->channel_];
+      if (channel_data.empty ())
         {
-          *val = 1e-20f;
-          *max = 1e-20f;
-          z_trace ("no blocks to read for port {}", port_->get_label ());
+          val = 1e-20f;
+          max = 1e-20f;
           return;
         }
 
-      z_return_if_fail (tmp_buf_.capacity () >= read_space_avail);
-      tmp_buf_.resize (read_space_avail);
-      auto samples_read =
-        ring.peek_multiple (tmp_buf_.data (), read_space_avail);
-      auto   blocks_read = samples_read / block_length;
-      auto   num_cycles = std::min (static_cast<size_t> (4), blocks_read);
-      size_t start_index = (blocks_read - num_cycles) * block_length;
-      if (blocks_read == 0)
+      auto   buf_sz = static_cast<int> (channel_data.size ());
+      auto * buf = channel_data.data ();
+      switch (impl_->algorithm_)
         {
-          z_debug ("blocks read for port {} is 0", port_->get_label ());
-          *val = 1e-20f;
-          *max = 1e-20f;
-          return;
-        }
-
-      const float * buf = &tmp_buf_[start_index];
-      const auto    buf_sz = static_cast<int> (num_cycles * block_length);
-      switch (algorithm_)
-        {
-        case MeterAlgorithm::METER_ALGORITHM_RMS:
-          /* not used */
+        case MeterAlgorithm::RMS:
           z_warn_if_reached ();
           amp = utils::math::calculate_rms_amp (buf, buf_sz);
           break;
-        case MeterAlgorithm::METER_ALGORITHM_TRUE_PEAK:
-          true_peak_processor_->process (const_cast<float *> (buf), buf_sz);
-          amp = true_peak_processor_->read_f ();
+        case MeterAlgorithm::TruePeak:
+          impl_->true_peak_processor_->process (buf, buf_sz);
+          amp = impl_->true_peak_processor_->read_f ();
           break;
-        case MeterAlgorithm::METER_ALGORITHM_K:
-          kmeter_processor_->process (buf, buf_sz);
-          std::tie (amp, max_amp) = kmeter_processor_->read ();
+        case MeterAlgorithm::K:
+          impl_->kmeter_processor_->process (buf, buf_sz);
+          std::tie (amp, max_amp) = impl_->kmeter_processor_->read ();
           break;
-        case MeterAlgorithm::METER_ALGORITHM_DIGITAL_PEAK:
-          peak_processor_->process (const_cast<float *> (buf), buf_sz);
-          std::tie (amp, max_amp) = peak_processor_->read ();
+        case MeterAlgorithm::DigitalPeak:
+          impl_->peak_processor_->process (buf, buf_sz);
+          std::tie (amp, max_amp) = impl_->peak_processor_->read ();
           break;
         default:
           break;
         }
+      cache.clear_audio ();
     }
-  else if (port_->is_cv ())
+  else if (impl_->port_->is_cv ())
     {
-      auto * cv_port = qobject_cast<dsp::CVPort *> (port_.get ());
-      assert (cv_port != nullptr);
-      if (!cv_port->cv_ring_)
+      auto &channel_data = cache.audio[0];
+      if (channel_data.empty ())
         {
-          z_debug ("no cv ring buffer available");
-          return;
-        }
-      const auto &ring = *cv_port->cv_ring_;
-
-      size_t     read_space_avail = ring.read_space ();
-      const auto block_length =
-        static_cast<size_t> (audio_engine_->blockLength ());
-      size_t blocks_to_read =
-        block_length == 0 ? 0 : read_space_avail / block_length;
-      if (blocks_to_read == 0)
-        {
-          *val = 1e-20f;
-          *max = 1e-20f;
+          val = 1e-20f;
+          max = 1e-20f;
           return;
         }
 
-      z_return_if_fail (tmp_buf_.capacity () >= read_space_avail);
-      tmp_buf_.resize (read_space_avail);
-      auto samples_read =
-        ring.peek_multiple (tmp_buf_.data (), read_space_avail);
-      auto blocks_read = samples_read / block_length;
-      if (blocks_read == 0)
-        {
-          *val = 1e-20f;
-          *max = 1e-20f;
-          return;
-        }
-
-      auto   num_cycles = std::min (static_cast<size_t> (4), blocks_read);
-      size_t start_index = (blocks_read - num_cycles) * block_length;
-      const float * buf = &tmp_buf_[start_index];
-      const auto    buf_sz = static_cast<int> (num_cycles * block_length);
-
-      peak_processor_->process (const_cast<float *> (buf), buf_sz);
-      std::tie (amp, max_amp) = peak_processor_->read ();
+      auto buf_sz = static_cast<int> (channel_data.size ());
+      impl_->peak_processor_->process (channel_data.data (), buf_sz);
+      std::tie (amp, max_amp) = impl_->peak_processor_->read ();
+      cache.clear_audio ();
     }
-  else if (port_->is_midi ())
+  else if (impl_->port_->is_midi ())
     {
-      auto * midi_port = qobject_cast<dsp::MidiPort *> (port_.get ());
-      assert (midi_port != nullptr);
       bool on = false;
-      tmp_events_.clear ();
-      if (!midi_port->midi_ring_)
+      if (!cache.midi.empty ())
         {
-          z_debug ("no midi ring");
-          return;
-        }
-      const auto events_read = midi_port->midi_ring_->peek_multiple (
-        tmp_events_.data (), decltype (tmp_events_)::capacity ());
-      if (events_read > 0)
-        {
-          tmp_events_.resize (events_read);
-          for (const auto &event : tmp_events_)
+          const auto &latest = cache.midi.back ();
+          if (
+            !impl_->last_seen_midi_event_.has_value ()
+            || latest != *impl_->last_seen_midi_event_)
             {
-              if (event.systime_ > last_midi_trigger_time_)
-                {
-                  on = true;
-                  last_midi_trigger_time_ = event.systime_;
-                  break;
-                }
+              on = true;
+              impl_->last_seen_midi_event_ = latest;
             }
         }
 
       amp = on ? 2.f : 0.f;
       max_amp = amp;
+      cache.clear_midi ();
     }
 
   /* adjust falloff */
   auto now = SteadyClock::now ();
-  if (amp < last_amp_)
+  if (amp < impl_->last_amp_)
     {
       float falloff =
         (static_cast<float> (
            std::chrono::duration_cast<std::chrono::milliseconds> (
-             now - last_draw_time_)
+             now - impl_->last_draw_time_)
              .count ())
          / 1000.f)
         *
@@ -296,7 +344,7 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
       /* use prev val plus falloff if higher than current val */
 
       float prev_val_after_falloff = utils::math::dbfs_to_amp (
-        utils::math::amp_to_dbfs (last_amp_) - falloff);
+        utils::math::amp_to_dbfs (impl_->last_amp_) - falloff);
       amp = std::max (prev_val_after_falloff, amp);
     }
 
@@ -304,23 +352,23 @@ MeterProcessor::get_value (AudioValueFormat format, float * val, float * max)
   max_amp = std::max (max_amp, amp);
 
   /* remember vals */
-  last_draw_time_ = now;
-  last_amp_ = amp;
-  prev_max_ = max_amp;
+  impl_->last_draw_time_ = now;
+  impl_->last_amp_ = amp;
+  impl_->prev_max_ = max_amp;
 
   switch (format)
     {
     case AudioValueFormat::Amplitude:
-      *val = amp;
-      *max = max_amp;
+      val = amp;
+      max = max_amp;
       break;
     case AudioValueFormat::DBFS:
-      *val = utils::math::amp_to_dbfs (amp);
-      *max = utils::math::amp_to_dbfs (max_amp);
+      val = utils::math::amp_to_dbfs (amp);
+      max = utils::math::amp_to_dbfs (max_amp);
       break;
     case AudioValueFormat::Fader:
-      *val = utils::math::get_fader_val_from_amp (amp);
-      *max = utils::math::get_fader_val_from_amp (max_amp);
+      val = utils::math::get_fader_val_from_amp (amp);
+      max = utils::math::get_fader_val_from_amp (max_amp);
       break;
     default:
       break;

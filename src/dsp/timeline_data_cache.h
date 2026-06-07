@@ -5,6 +5,7 @@
 
 #include <span>
 
+#include "dsp/midi_event.h"
 #include "utils/units.h"
 
 #include <QObject>
@@ -140,15 +141,15 @@ public:
    * @param sequence The MIDI message sequence.
    */
   void add_midi_sequence (
-    IntervalType                     interval,
-    const juce::MidiMessageSequence &sequence);
+    IntervalType                          interval,
+    std::span<const SampleBasedMidiEvent> events);
 
   /**
    * @brief Gets the cached MIDI events.
    *
-   * @return Reference to the merged MIDI message sequence.
+   * @return Span of the merged MIDI events.
    */
-  const juce::MidiMessageSequence &midi_events () const
+  std::span<const SampleBasedMidiEvent> midi_events () const
   {
     return merged_midi_events_;
   }
@@ -164,17 +165,17 @@ private:
    * @brief MIDI sequences organized by time interval.
    *
    * The key is the time interval (start/end samples) and the value is the
-   * MIDI message sequence for that interval.
+   * MIDI events for that interval.
    */
-  std::map<IntervalType, juce::MidiMessageSequence> midi_sequences_;
+  std::map<IntervalType, std::vector<SampleBasedMidiEvent>> midi_sequences_;
 
   /**
    * @brief Merged MIDI events ready for real-time access.
    *
    * This is populated during finalize_changes() and contains all MIDI events
-   * from all sequences, properly merged and with matched pairs.
+   * from all sequences, properly merged and sorted.
    */
-  juce::MidiMessageSequence merged_midi_events_;
+  std::vector<SampleBasedMidiEvent> merged_midi_events_;
 };
 
 /**

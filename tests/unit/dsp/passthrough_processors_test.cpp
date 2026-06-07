@@ -57,9 +57,9 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   auto &midi_out = midi_proc_->get_midi_out_port (0);
 
   // Create test event
-  midi_in.midi_events_.active_events_.add_note_on (
-    1, 0x3C, 0x7F, units::samples (3));
-  const auto event = midi_in.midi_events_.active_events_.at (0);
+  const auto test_event =
+    dsp::midi_event::make_note_on (0, 0x3C, 0x7F, units::samples (3));
+  midi_in.buffer_.push_back (test_event.time_, test_event.data ());
 
   // Process
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -67,9 +67,11 @@ TEST_F (PassthroughProcessorsTest, MidiPassthroughBasic)
   midi_proc_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   // Verify
-  ASSERT_EQ (midi_out.midi_events_.queued_events_.size (), 1);
-  EXPECT_EQ (
-    midi_out.midi_events_.queued_events_.at (0).raw_buffer_, event.raw_buffer_);
+  ASSERT_EQ (midi_out.buffer_.size (), 1);
+  auto out_data = (*midi_out.buffer_.begin ()).data ();
+  auto ev_data = test_event.data ();
+  ASSERT_EQ (out_data.size (), ev_data.size ());
+  EXPECT_TRUE (std::ranges::equal (out_data, ev_data));
 }
 
 TEST_F (PassthroughProcessorsTest, AudioPassthroughBasic)
@@ -114,9 +116,7 @@ TEST_F (PassthroughProcessorsTest, ResourceManagement)
   audio_proc_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   // Verify buffers are allocated
-  auto &midi_in = midi_proc_->get_midi_in_port (0);
   auto &audio_in = audio_proc_->get_audio_in_port ();
-  EXPECT_NE (midi_in.midi_ring_, nullptr);
   EXPECT_GE (
     units::samples (audio_in.buffers ()->getNumSamples ()), max_block_length_);
 

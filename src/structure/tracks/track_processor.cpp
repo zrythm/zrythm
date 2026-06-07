@@ -115,11 +115,11 @@ struct TrackProcessor::Impl
    * @brief Temporary buffer for preparing MIDI events before passing to the
    * recording callback.
    *
-   * Events are copied from @ref active_events_, shifted to be relative to the
-   * recording range start, and filtered to exclude events outside the range.
-   * Reused each cycle to avoid allocation in the audio thread.
+   * Events are copied from the HW MIDI input port buffer, shifted to be relative
+   * to the recording range start, and filtered to exclude events outside the
+   * range. Reused each cycle to avoid allocation in the audio thread.
    */
-  std::vector<dsp::MidiEvent> recording_events_buf_;
+  dsp::MidiEventBuffer recording_events_buf_;
 
   static_assert (decltype (active_midi_event_providers_)::is_always_lock_free);
 
@@ -133,7 +133,7 @@ struct TrackProcessor::Impl
     const dsp::graph::ProcessBlockInfo        &time_nfo,
     const dsp::ITransport                     &transport,
     const ProcessingCaches                    &processing_caches,
-    std::vector<dsp::MidiEvent>               &midi_recording_buf,
+    dsp::MidiEventBuffer                      &midi_recording_buf,
     const TrackProcessor::RecordingCallbackRT &recording_cb) noexcept;
 };
 
@@ -169,10 +169,13 @@ TrackProcessor::TrackProcessor (
     append_midi_inputs_to_outputs_func.has_value ()
       ? append_midi_inputs_to_outputs_func.value ()
       : [] (
-          dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
+          dsp::MidiEventBuffer &out_events, const dsp::MidiEventBuffer &in_events,
           const dsp::graph::ProcessBlockInfo &time_nfo) {
-          out_events.append (
-            in_events, time_nfo.buffer_offset_, time_nfo.nframes_);
+          dsp::midi_event::append_in_range (
+            out_events, in_events,
+            std::pair{
+              time_nfo.buffer_offset_,
+              time_nfo.buffer_offset_ + time_nfo.nframes_ });
         };
   impl_->transform_midi_inputs_func_ = std::move (transform_midi_inputs_func);
 
@@ -485,7 +488,7 @@ TrackProcessor::Impl::handle_recording (
   const dsp::graph::ProcessBlockInfo        &time_nfo,
   const dsp::ITransport                     &transport,
   const ProcessingCaches                    &processing_caches,
-  std::vector<dsp::MidiEvent>               &midi_recording_buf,
+  dsp::MidiEventBuffer                      &midi_recording_buf,
   const TrackProcessor::RecordingCallbackRT &recording_cb) noexcept
 {
   const auto start = time_nfo.transport_position_;
@@ -568,9 +571,9 @@ TrackProcessor::Impl::handle_recording (
         {
           midi_recording_buf.clear ();
           const auto time_shift = range.first - start;
-          processing_caches.hw_midi_in_rt_->midi_events_.active_events_
-            .foreach_event ([&] (const dsp::MidiEvent &ev) {
-              const auto adjusted_time = ev.time_ - time_shift;
+          for (const auto &ev : processing_caches.hw_midi_in_rt_->buffer_)
+            {
+              const auto adjusted_time = ev.time () - time_shift;
               if (
                 adjusted_time >= units::samples (0)
                 && adjusted_time < range.second)
@@ -579,13 +582,12 @@ TrackProcessor::Impl::handle_recording (
                     midi_recording_buf.size ()
                     < static_cast<size_t> (dsp::MAX_MIDI_EVENTS))
                     {
-                      midi_recording_buf.push_back (ev);
-                      midi_recording_buf.back ().time_ = adjusted_time;
+                      midi_recording_buf.push_back (adjusted_time, ev.data ());
                     }
                 }
-            });
+            }
           recording_cb (
-            range.first, transport, midi_recording_buf, std::nullopt,
+            range.first, transport, &midi_recording_buf, std::nullopt,
             range.second);
         }
       else if (is_audio)
@@ -608,7 +610,7 @@ TrackProcessor::Impl::handle_recording (
               ? l
               : out_buf->getWritePointer (1) + offset;
           recording_cb (
-            range.first, transport, std::nullopt,
+            range.first, transport, nullptr,
             std::make_pair (
               std::span (l, recording_nframes), std::span (r, recording_nframes)),
             range.second);
@@ -656,7 +658,7 @@ void
 TrackProcessor::fill_midi_events (
   const dsp::graph::ProcessBlockInfo &time_nfo,
   const dsp::ITransport              &transport,
-  dsp::MidiEventVector               &midi_events)
+  dsp::MidiEventBuffer               &midi_events)
 {
   const auto active_providers = impl_->active_midi_event_providers_.load ();
 
@@ -721,16 +723,7 @@ TrackProcessor::custom_process_block (
   const dsp::ITransport       &transport,
   const dsp::TempoMap         &tempo_map) noexcept
 {
-  // First, clear all output
-  if (is_audio ())
-    {
-      impl_->processing_caches_->audio_outs_rt_.front ()->buffers ()->clear ();
-    }
-  else if (is_midi ())
-    {
-      impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_
-        .clear ();
-    }
+  // Output ports are already cleared by ProcessorBase::process_block.
 
   if (!enabled_provider_ ())
     {
@@ -753,20 +746,19 @@ TrackProcessor::custom_process_block (
   else if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       fill_midi_events (
-        time_nfo, transport,
-        impl_->processing_caches_->piano_roll_rt_->midi_events_.queued_events_);
+        time_nfo, transport, impl_->processing_caches_->piano_roll_rt_->buffer_);
     }
 
   // dequeue piano roll contents into MIDI output port
   if (ENUM_BITSET_TEST (capabilities_, Capabilities::PianoRoll))
     {
       auto &pr = *impl_->processing_caches_->piano_roll_rt_;
-      pr.midi_events_.dequeue (time_nfo.buffer_offset_, time_nfo.nframes_);
 
       /* append the midi events from piano roll to MIDI out */
-      impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_.append (
-        pr.midi_events_.active_events_, time_nfo.buffer_offset_,
-        time_nfo.nframes_);
+      dsp::midi_event::append_in_range (
+        impl_->processing_caches_->midi_out_rt_->buffer_, pr.buffer_,
+        std::pair{
+          time_nfo.buffer_offset_, time_nfo.buffer_offset_ + time_nfo.nframes_ });
     }
 
   /* add inputs to outputs */
@@ -834,14 +826,13 @@ TrackProcessor::custom_process_block (
         {
           std::invoke (
             *impl_->transform_midi_inputs_func_,
-            impl_->processing_caches_->midi_in_rt_->midi_events_.active_events_);
+            impl_->processing_caches_->midi_in_rt_->buffer_);
         }
 
       // append data from MIDI input -> MIDI output
       impl_->append_midi_inputs_to_outputs_func_ (
-        impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_,
-        impl_->processing_caches_->midi_in_rt_->midi_events_.active_events_,
-        time_nfo);
+        impl_->processing_caches_->midi_out_rt_->buffer_,
+        impl_->processing_caches_->midi_in_rt_->buffer_, time_nfo);
 
       /* filter hw_midi_in by channel, then append to midi_out for
        * playback and leave filtered events in hw_midi_in for recording */
@@ -853,21 +844,27 @@ TrackProcessor::custom_process_block (
             channel_access{ impl_->hw_midi_channel_ };
           ch = *channel_access;
         }
-        auto &hw_events =
-          impl_->processing_caches_->hw_midi_in_rt_->midi_events_.active_events_;
+        auto &hw_events = impl_->processing_caches_->hw_midi_in_rt_->buffer_;
         if (ch > 0 && ch <= 16)
           {
-            const midi_byte_t pass_ch = static_cast<midi_byte_t> (ch - 1);
-            hw_events.remove_if ([pass_ch] (const dsp::MidiEvent &ev) {
-              const auto status = ev.raw_buffer_[0];
+            const auto pass_ch = static_cast<midi_byte_t> (ch - 1);
+            hw_events.remove_if ([pass_ch] (const dsp::MidiEventView &ev) {
+              const auto d = ev.data ();
+              const auto status = d[0];
               if (status >= utils::midi::MIDI_SYSTEM_MESSAGE)
                 return false;
               return (status & utils::midi::MIDI_CHANNEL_MASK) != pass_ch;
             });
           }
-        impl_->processing_caches_->midi_out_rt_->midi_events_.queued_events_
-          .append (hw_events, time_nfo.buffer_offset_, time_nfo.nframes_);
+        dsp::midi_event::append_in_range (
+          impl_->processing_caches_->midi_out_rt_->buffer_, hw_events,
+          std::pair{
+            time_nfo.buffer_offset_,
+            time_nfo.buffer_offset_ + time_nfo.nframes_ });
       }
+
+      dsp::midi_event::sort_with_note_off_priority (
+        impl_->processing_caches_->midi_out_rt_->buffer_);
     }
 
   if (

@@ -480,6 +480,8 @@ ScrollView {
               Layout.fillWidth: false
               audioEngine: root.audioEngine
               channel: root.track.channel
+              portObservationManager: root.session.project.portObservationManager
+              track: root.track
             }
 
             Label {

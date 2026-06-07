@@ -10,12 +10,12 @@ namespace zrythm::structure::arrangement
 
 void
 MidiTimelineDataProvider::set_midi_events (
-  const juce::MidiMessageSequence &events)
+  std::span<const dsp::SampleBasedMidiEvent> events)
 {
   decltype (active_midi_playback_sequence_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_events{ active_midi_playback_sequence_ };
-  *rt_events = events;
+  rt_events->assign (events.begin (), events.end ());
 }
 
 void
@@ -35,7 +35,7 @@ MidiTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
   midi_cache_->remove_sequences_matching_interval (interval);
 }
 
-const juce::MidiMessageSequence &
+std::span<const dsp::SampleBasedMidiEvent>
 MidiTimelineDataProvider::midi_events () const
 {
   return midi_cache_->midi_events ();
@@ -45,7 +45,7 @@ void
 MidiTimelineDataProvider::process_midi_events (
   const dsp::graph::ProcessBlockInfo &time_nfo,
   dsp::ITransport::PlayState          transport_state,
-  dsp::MidiEventVector               &output_buffer) noexcept
+  dsp::MidiEventBuffer               &output_buffer) noexcept
 {
   const bool transport_rolling =
     transport_state == dsp::ITransport::PlayState::Rolling;
@@ -67,11 +67,11 @@ MidiTimelineDataProvider::process_midi_events (
     transport_stopped_rolling
     || (transport_rolling && transport_position_jumped))
     {
-      for (const auto channel : std::views::iota (1, 17))
+      for (const auto channel : std::views::iota (0, 16))
         {
-          output_buffer.add_all_notes_off (
-            channel, time_nfo.buffer_offset_,
-            true); // All notes off
+          const auto ev = dsp::midi_event::make_all_notes_off (
+            static_cast<midi_byte_t> (channel), time_nfo.buffer_offset_);
+          output_buffer.push_back (ev.time_, ev.data ());
         }
     }
 
@@ -80,26 +80,20 @@ MidiTimelineDataProvider::process_midi_events (
     {
       decltype (active_midi_playback_sequence_)::ScopedAccess<
         farbot::ThreadType::realtime>
-                 midi_seq{ active_midi_playback_sequence_ };
-      const auto first_idx = midi_seq->getNextIndexAtTime (
-        time_nfo.transport_position_.in<double> (units::samples));
-      for (int i = first_idx; i < midi_seq->getNumEvents (); ++i)
+           midi_events_rt{ active_midi_playback_sequence_ };
+      auto it = std::ranges::lower_bound (
+        *midi_events_rt, current_transport_position, {},
+        &dsp::SampleBasedMidiEvent::time_);
+      for (; it != midi_events_rt->end (); ++it)
         {
-          const auto * event = midi_seq->getEventPointer (i);
-          const auto   timestamp_dbl = event->message.getTimeStamp ();
-          if (
-            timestamp_dbl
-            >= time_nfo.end_position ().in<double> (units::samples))
-            {
-              break;
-            }
+          if (it->time_ >= time_nfo.end_position ())
+            break;
 
           const auto local_timestamp =
-            time_nfo.buffer_offset_
-            + (units::samples (timestamp_dbl) - time_nfo.transport_position_);
-          output_buffer.add_raw (
-            event->message.getRawData (), event->message.getRawDataSize (),
-            au::floor_as<uint32_t> (units::samples, local_timestamp));
+            time_nfo.buffer_offset_ + (it->time_ - current_transport_position);
+          const auto ts =
+            au::floor_as<uint32_t> (units::samples, local_timestamp);
+          output_buffer.push_back (ts, it->data ());
         }
     }
 

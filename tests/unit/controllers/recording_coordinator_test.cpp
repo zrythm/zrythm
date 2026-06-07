@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "controllers/recording_coordinator.h"
+#include "dsp/midi_event.h"
 #include "structure/tracks/track_fwd.h"
 
 #include <QSignalSpy>
@@ -449,8 +450,12 @@ TEST_F (RecordingCoordinatorTest, MidiSessionAcceptsWrites)
   auto   session = coordinator_->session_for_track (track_uuid);
   auto * s = std::get<MidiRecordingSession *> (session);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   s->write (units::samples (0), true, events, units::samples (256u));
   EXPECT_EQ (s->state (), MidiRecordingSession::State::Capturing);
 }
@@ -466,8 +471,12 @@ TEST_F (RecordingCoordinatorTest, MidiDataReadyEmittedOnDrain)
   auto   session = coordinator_->session_for_track (track_uuid);
   auto * s = std::get<MidiRecordingSession *> (session);
 
-  dsp::MidiEventVector events;
-  events.add_note_on (1, 60, 100, units::samples (0u));
+  auto events = dsp::MidiEventBuffer::make_reserved ();
+  {
+    const auto _ev =
+      dsp::midi_event::make_note_on (0, 60, 100, units::samples (0u));
+    events.push_back (_ev.time_, _ev.data ());
+  }
   s->write (units::samples (0), true, events, units::samples (256u));
 
   coordinator_->process_pending ();

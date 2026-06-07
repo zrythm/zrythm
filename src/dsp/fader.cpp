@@ -5,7 +5,6 @@
 
 #include "dsp/audio_port.h"
 #include "dsp/fader.h"
-#include "dsp/midi_event.h"
 #include "dsp/panning.h"
 #include "dsp/port.h"
 #include "utils/float_ranges.h"
@@ -319,6 +318,8 @@ Fader::custom_prepare_for_processing (
     {
       processing_caches_->midi_in_rt_ = &get_midi_in_port ();
       processing_caches_->midi_out_rt_ = &get_midi_out_port ();
+      processing_caches_->midi_temp_buf_.reserve (
+        static_cast<size_t> (max_block_length.in (units::samples)) * 4);
     }
 }
 
@@ -445,27 +446,41 @@ Fader::custom_process_block (
     {
       if (!effectively_muted_rt ())
         {
-          auto &target_events =
-            processing_caches_->midi_out_rt_->midi_events_.queued_events_;
-          target_events.append (
-            processing_caches_->midi_in_rt_->midi_events_.active_events_,
-            time_nfo.buffer_offset_, time_nfo.nframes_);
+          auto &target_events = processing_caches_->midi_out_rt_->buffer_;
+          auto &source_events = processing_caches_->midi_in_rt_->buffer_;
 
-          // also apply volume changes
-          for (auto &ev : target_events)
+          dsp::midi_event::append_in_range (
+            target_events, source_events,
+            std::pair{
+              time_nfo.buffer_offset_,
+              time_nfo.buffer_offset_ + time_nfo.nframes_ });
+
+          if (midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER)
             {
-              if (
-                midi_mode_ == MidiFaderMode::MIDI_FADER_MODE_VEL_MULTIPLIER
-                && utils::midi::midi_is_note_on (ev.raw_buffer_))
+              auto &temp = processing_caches_->midi_temp_buf_;
+              temp.clear ();
+              for (const auto &ev : target_events)
                 {
-                  const midi_byte_t prev_vel =
-                    utils::midi::midi_get_velocity (ev.raw_buffer_);
-                  const auto new_vel =
-                    (midi_byte_t) ((float) prev_vel
-                                   * current_gain_.getCurrentValue ());
-                  ev.set_velocity (
-                    std::min (new_vel, static_cast<midi_byte_t> (127)));
+                  if (utils::midi::midi_is_note_on (ev.data ()))
+                    {
+                      const midi_byte_t prev_vel =
+                        utils::midi::midi_get_velocity (ev.data ());
+                      const auto new_vel = static_cast<midi_byte_t> (
+                        static_cast<float> (prev_vel)
+                        * current_gain_.getCurrentValue ());
+                      auto                             d = ev.data ();
+                      const std::array<midi_byte_t, 3> raw = {
+                        d[0], d[1],
+                        std::min (new_vel, static_cast<midi_byte_t> (127))
+                      };
+                      temp.push_back (ev.time (), raw);
+                    }
+                  else
+                    {
+                      temp.push_back (ev.time (), ev.data ());
+                    }
                 }
+              target_events.swap (temp);
             }
 
           if (
@@ -498,14 +513,15 @@ void
 to_json (nlohmann::json &j, const Fader &fader)
 {
   to_json (j, static_cast<const dsp::ProcessorBase &> (fader));
-  j[Fader::kMidiModeKey] = fader.midi_mode_;
+  j[Fader::kMidiModeKey] = fader.midi_mode_.load ();
 }
 
 void
 from_json (const nlohmann::json &j, Fader &fader)
 {
   from_json (j, static_cast<dsp::ProcessorBase &> (fader));
-  j.at (Fader::kMidiModeKey).get_to (fader.midi_mode_);
+  fader.midi_mode_.store (
+    j.at (Fader::kMidiModeKey).get<Fader::MidiFaderMode> ());
   fader.init_param_caches ();
 }
 

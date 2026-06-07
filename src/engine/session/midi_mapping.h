@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/midi_event.h"
 #include "dsp/parameter.h"
 #include "utils/icloneable.h"
 #include "utils/iobject_registry.h"
@@ -126,7 +127,7 @@ public:
    *
    * @note Must only be called while transport is recording.
    */
-  void apply_from_cc_events (const dsp::MidiEventVector &events);
+  void apply_from_cc_events (std::span<const dsp::RealtimeMidiEvent> events);
 
   /**
    * Applies the given buffer to the matching ports.

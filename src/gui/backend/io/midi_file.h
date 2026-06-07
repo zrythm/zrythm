@@ -105,6 +105,8 @@ public:
     int                                       midi_version,
     bool                                      export_full);
 
+  // TODO
+#if 0
   /**
    * Writes the lane to the given MIDI sequence.
    *
@@ -153,8 +155,6 @@ public:
     bool                                lanes_as_tracks,
     bool                                use_track_pos)
   {
-// TODO
-#if 0
   std::unique_ptr<dsp::MidiEventVector> own_events;
   if (!lanes_as_tracks && use_track_pos)
     {
@@ -174,8 +174,8 @@ public:
     {
       own_events->write_to_midi_file (mf, midi_track_pos);
     }
-#endif
   }
+#endif
 
 private:
   juce::MidiFile midi_file_;

@@ -156,7 +156,7 @@ Track::make_track_processor (
       internal_recording_cb =
         [this, cb] (
           units::sample_t timeline_position, const dsp::ITransport &transport_ref,
-          std::optional<std::span<const dsp::MidiEvent>>     midi_events,
+          const dsp::MidiEventBuffer *                       midi_events,
           std::optional<TrackProcessor::ConstStereoPortPair> stereo_ports,
           units::sample_u32_t                                nframes) {
           cb (

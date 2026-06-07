@@ -114,8 +114,8 @@ protected:
     extra_audio_port_ = std::make_unique<AudioPort> (
       u8"TestAudioOut2", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
     extra_audio_port_for_summing_ = std::make_unique<AudioPort> (
-      u8"TestAudioOutForSumming", PortFlow::Output,
-      AudioPort::BusLayout::Stereo, 2);
+      u8"TestAudioInForSumming", PortFlow::Input, AudioPort::BusLayout::Stereo,
+      2);
 
     // Create mock processable with default behavior
     processable_ = std::make_unique<MockProcessable> ();
@@ -125,7 +125,7 @@ protected:
       .WillByDefault (Return (u8"test_node"));
     ON_CALL (*processable_, get_single_playback_latency ())
       .WillByDefault (Return (units::samples (0)));
-    ON_CALL (*processable_, prepare_for_processing (_, _, _))
+    ON_CALL (*processable_, prepare_for_processing_impl (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_, release_resources ()).WillByDefault (Return ());
     ON_CALL (*processable_, process_block (_, _, _))
@@ -167,7 +167,7 @@ protected:
       .WillByDefault (Return (u8"no_latency_node"));
     ON_CALL (*processable_no_latency, get_single_playback_latency ())
       .WillByDefault (Return (units::samples (0)));
-    ON_CALL (*processable_no_latency, prepare_for_processing (_, _, _))
+    ON_CALL (*processable_no_latency, prepare_for_processing_impl (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_no_latency, release_resources ())
       .WillByDefault (Return ());
@@ -186,7 +186,7 @@ protected:
       .WillByDefault (Return (u8"latency_node"));
     ON_CALL (*processable_with_latency, get_single_playback_latency ())
       .WillByDefault (Return (latency));
-    ON_CALL (*processable_with_latency, prepare_for_processing (_, _, _))
+    ON_CALL (*processable_with_latency, prepare_for_processing_impl (_, _, _))
       .WillByDefault (Return ());
     ON_CALL (*processable_with_latency, release_resources ())
       .WillByDefault (Return ());
@@ -505,7 +505,8 @@ TEST_F (GraphRendererTest, ResourceManagement)
   // Expect resource management calls
   EXPECT_CALL (
     *processable_,
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (*processable_, release_resources ()).Times (1);
 

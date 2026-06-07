@@ -49,7 +49,7 @@ public:
   using FillEventsCallback = std::function<void (
     const dsp::ITransport              &transport,
     const dsp::graph::ProcessBlockInfo &time_nfo,
-    dsp::MidiEventVector *              midi_events,
+    dsp::MidiEventBuffer *              midi_events,
     std::optional<StereoPortPair>       stereo_ports)>;
 
   /**
@@ -61,11 +61,11 @@ public:
    * @param stereo_ports Audio data that should be recorded, if any.
    */
   using RecordingCallbackRT = std::function<void (
-    units::sample_t                                timeline_position,
-    const dsp::ITransport                         &transport,
-    std::optional<std::span<const dsp::MidiEvent>> midi_events,
-    std::optional<ConstStereoPortPair>             stereo_ports,
-    units::sample_u32_t                            nframes)>;
+    units::sample_t                    timeline_position,
+    const dsp::ITransport             &transport,
+    const dsp::MidiEventBuffer *       midi_events,
+    std::optional<ConstStereoPortPair> stereo_ports,
+    units::sample_u32_t                nframes)>;
 
   /**
    * @brief Custom logic to use when appending the MIDI input events to the
@@ -77,8 +77,8 @@ public:
    * output notes that match the chord.
    */
   using AppendMidiInputsToOutputsFunc = std::function<void (
-    dsp::MidiEventVector               &out_events,
-    const dsp::MidiEventVector         &in_events,
+    dsp::MidiEventBuffer               &out_events,
+    const dsp::MidiEventBuffer         &in_events,
     const dsp::graph::ProcessBlockInfo &time_nfo)>;
 
   /**
@@ -86,7 +86,7 @@ public:
    *
    * This is used to, for example, change the channel of all events.
    */
-  using TransformMidiInputsFunc = std::function<void (dsp::MidiEventVector &)>;
+  using TransformMidiInputsFunc = std::function<void (dsp::MidiEventBuffer &)>;
 
   /**
    * @brief Function that returns if the track for this processor is enabled.
@@ -113,7 +113,7 @@ public:
 
   using MidiEventProviderProcessFunc = std::function<void (
     const dsp::graph::ProcessBlockInfo &time_nfo,
-    dsp::MidiEventVector               &output_buffer)>;
+    dsp::MidiEventBuffer               &output_buffer)>;
 
   enum class ActiveMidiEventProviders : uint8_t
   {
@@ -153,7 +153,7 @@ public:
       [] (
         units::sample_t,
         const dsp::ITransport &,
-        std::optional<std::span<const dsp::MidiEvent>>,
+        const dsp::MidiEventBuffer *,
         std::optional<ConstStereoPortPair>,
         units::sample_u32_t) { },
     QObject * parent = nullptr);
@@ -316,7 +316,7 @@ public:
   void fill_midi_events (
     const dsp::graph::ProcessBlockInfo &time_nfo,
     const dsp::ITransport              &transport,
-    dsp::MidiEventVector               &midi_events);
+    dsp::MidiEventBuffer               &midi_events);
 
   /**
    * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
@@ -360,4 +360,6 @@ private:
 
 ENUM_ENABLE_BITSET (
   zrythm::structure::tracks::TrackProcessor::ActiveMidiEventProviders);
+ENUM_ENABLE_BITSET (
+  zrythm::structure::tracks::TrackProcessor::ActiveAudioProviders);
 ENUM_ENABLE_BITSET (zrythm::structure::tracks::TrackProcessor::Capabilities);

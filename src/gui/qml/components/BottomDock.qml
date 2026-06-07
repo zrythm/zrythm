@@ -58,6 +58,7 @@ ColumnLayout {
       audioEngine: root.project.engine
       pluginImporter: root.session.pluginImporter
       pluginOperator: root.session.pluginOperator
+      portObservationManager: root.project.portObservationManager
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.project.tracklist
       undoStack: root.session.undoStack

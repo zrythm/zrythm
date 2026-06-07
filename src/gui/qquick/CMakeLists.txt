@@ -19,10 +19,11 @@ target_sources(zrythm_gui_lib
       qml_utils.h
       ruler_grid_canvas_item.h
       ruler_grid_canvas_renderer.h
-      spectrum_analyzer_processor.h
+      spectrum_analyzer_canvas_item.h
+      spectrum_analyzer_canvas_renderer.h
+      live_waveform_canvas_item.h
       waveform_canvas_item.h
       waveform_canvas_renderer.h
-      waveform_viewer_processor.h
   PRIVATE
     arranger_grid_canvas_item.cpp
     arranger_grid_canvas_renderer.cpp
@@ -30,6 +31,7 @@ target_sources(zrythm_gui_lib
     fade_overlay_canvas_item.cpp
     fade_overlay_canvas_renderer.cpp
     grid_line_computer.cpp
+    live_waveform_canvas_item.cpp
     meter_processor.cpp
     midi_region_canvas_item.cpp
     midi_region_canvas_renderer.cpp
@@ -37,8 +39,8 @@ target_sources(zrythm_gui_lib
     qml_utils.cpp
     ruler_grid_canvas_item.cpp
     ruler_grid_canvas_renderer.cpp
-    spectrum_analyzer_processor.cpp
+    spectrum_analyzer_canvas_item.cpp
+    spectrum_analyzer_canvas_renderer.cpp
     waveform_canvas_item.cpp
     waveform_canvas_renderer.cpp
-    waveform_viewer_processor.cpp
 )

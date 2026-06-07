@@ -54,8 +54,7 @@ MidiInputProcessor::custom_prepare_for_processing (
   constexpr int kMidiBufferBytesPerEvent = 16;
   impl_->drain_buffer.ensureSize (
     static_cast<int> (MidiDeviceBuffer::kCapacity * kMidiBufferBytesPerEvent));
-  impl_->output_port->midi_events_.queued_events_.reserve (
-    MidiDeviceBuffer::kCapacity);
+  impl_->output_port->buffer_.reserve (MidiDeviceBuffer::kCapacity);
 }
 
 void
@@ -84,22 +83,18 @@ MidiInputProcessor::custom_process_block (
       const auto &msg = metadata.getMessage ();
       const auto raw_data = std::span (msg.getRawData (), msg.getRawDataSize ());
 
-      // SysEx messages (>3 bytes) are silently skipped. MidiEvent::raw_buffer_
-      // is fixed at 3 bytes — supporting SysEx requires making it
-      // variable-length.
-      if (raw_data.size () > 3)
-        continue;
-
-      dsp::MidiEvent ev;
-      ev.time_ =
+      // SysEx messages (>3 bytes) use external storage in RealtimeMidiEvent.
+      const auto midi_time =
         units::samples (static_cast<uint32_t> (metadata.samplePosition));
-      std::ranges::copy (raw_data, ev.raw_buffer_.begin ());
-      ev.raw_buffer_sz_ = static_cast<uint_fast8_t> (raw_data.size ());
-      port.midi_events_.queued_events_.push_back (ev);
 
       // Prevent unbounded growth
-      if (port.midi_events_.queued_events_.size () >= dsp::MAX_MIDI_EVENTS)
+      const auto needed =
+        port.buffer_.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+        + raw_data.size ();
+      if (needed > port.buffer_.capacity ())
         break;
+
+      port.buffer_.push_back (midi_time, raw_data);
     }
 }
 

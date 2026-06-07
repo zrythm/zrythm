@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_dsp_lib STATIC)
@@ -51,6 +51,8 @@ target_sources(zrythm_dsp_lib
     port.cpp
     port_connection.cpp
     port_connections_manager.cpp
+    port_observation_manager.cpp
+    port_observer.cpp
     processor_base.cpp
     snap_grid.cpp
     stretcher.cpp
@@ -95,6 +97,7 @@ target_sources(zrythm_dsp_lib
       kmeter_dsp.h
       metronome.h
       midi_device_buffer.h
+      midi_event_buffer.h
       midi_event.h
       midi_input_processor.h
       midi_input_selection.h
@@ -114,6 +117,10 @@ target_sources(zrythm_dsp_lib
       port_all.h
       port_connection.h
       port_connections_manager.h
+      port_observation_cache.h
+      port_observation_manager.h
+      port_observation_token.h
+      port_observer.h
       processor_base.h
       snap_grid.h
       stretcher.h

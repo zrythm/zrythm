@@ -692,7 +692,7 @@ ClapPlugin::latencyChanged () noexcept
 }
 
 void
-ClapPlugin::prepare_for_processing_impl (
+ClapPlugin::prepare_plugin_for_processing (
   units::sample_rate_t sample_rate,
   units::sample_u32_t  max_block_length)
 {
@@ -709,13 +709,19 @@ ClapPlugin::prepare_for_processing_impl (
 
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
+  const size_t max_midi_events =
+    static_cast<size_t> (get_descriptor ().num_midi_ins_)
+    * static_cast<size_t> (max_block_length.in (units::samples)) * 4;
+  const size_t total_events = zrythm_to_clap_.size () + max_midi_events;
+
   // Pre-allocate the input event list so that
-  // generateChangedParamInputEvents() never needs to grow the vector on the
-  // audio thread. Reserve space for all parameters plus headroom for MIDI
-  // events.
-  pimpl_->evIn_.reserveEvents (
-    zrythm_to_clap_.size ()
-    + static_cast<size_t> (get_descriptor ().num_midi_ins_) * 16);
+  // generateChangedParamInputEvents() and generateMidiInputEvents() never
+  // need to grow on the audio thread. Both the events vector and the heap
+  // must be reserved (see MidiPort::prepare_for_processing for buffer size).
+  pimpl_->evIn_.reserveEvents (total_events);
+  pimpl_->evIn_.reserveHeap (
+    total_events
+    * (sizeof (clap_event_param_value) + alignof (clap_event_param_value)));
 
   if (
     !pimpl_->plugin_->activate (
@@ -1215,17 +1221,34 @@ ClapPlugin::ClapPluginImpl::generateMidiInputEvents () noexcept
   // Fill MIDI events from the MIDI input port
   if (owner_.get_descriptor ().num_midi_ins_ > 0)
     {
-      for (const auto &ev : owner_.midi_in_port_->midi_events_.active_events_)
+      for (const auto &ev : owner_.midi_in_port_->buffer_)
         {
-          clap_event_midi clap_ev{};
-          clap_ev.header.time = ev.time_.in<uint32_t> (units::samples);
-          clap_ev.header.type = CLAP_EVENT_MIDI;
-          clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-          clap_ev.header.flags = 0;
-          clap_ev.header.size = sizeof (clap_ev);
-          clap_ev.port_index = 0;
-          std::ranges::copy (ev.raw_buffer_, clap_ev.data);
-          evIn_.push (&clap_ev.header);
+          const auto ev_data = ev.data ();
+          if (ev_data.size () <= 3)
+            {
+              clap_event_midi clap_ev{};
+              clap_ev.header.time = ev.time ().in<uint32_t> (units::samples);
+              clap_ev.header.type = CLAP_EVENT_MIDI;
+              clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+              clap_ev.header.flags = 0;
+              clap_ev.header.size = sizeof (clap_ev);
+              clap_ev.port_index = 0;
+              std::ranges::copy (ev_data, clap_ev.data);
+              evIn_.push (&clap_ev.header);
+            }
+          else
+            {
+              clap_event_midi_sysex clap_ev{};
+              clap_ev.header.time = ev.time ().in<uint32_t> (units::samples);
+              clap_ev.header.type = CLAP_EVENT_MIDI_SYSEX;
+              clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+              clap_ev.header.flags = 0;
+              clap_ev.header.size = sizeof (clap_ev);
+              clap_ev.port_index = 0;
+              clap_ev.buffer = ev_data.data ();
+              clap_ev.size = static_cast<uint32_t> (ev_data.size ());
+              evIn_.push (&clap_ev.header);
+            }
         }
     }
 }

@@ -44,22 +44,26 @@ ClipPlaybackDataProvider::generate_midi_events (
   // Serialize region (timings in ticks)
   arrangement::RegionRenderer::serialize_to_sequence (midi_region, region_seq);
 
-  // Convert timings to samples
-  for (auto &event : region_seq)
+  // Convert JUCE sequence to native events with sample timestamps
+  std::vector<dsp::SampleBasedMidiEvent> native_events;
+  native_events.reserve (region_seq.getNumEvents ());
+  for (const auto &event : region_seq)
     {
-      event->message.setTimeStamp (
-        static_cast<double> (
-          tempo_map_
-            .tick_to_samples_rounded (
-              units::ticks (event->message.getTimeStamp ()))
-            .in (units::samples)));
+      const auto sample_time = tempo_map_.tick_to_samples_rounded (
+        units::ticks (event->message.getTimeStamp ()));
+      const auto * raw = event->message.getRawData ();
+      const auto   raw_size =
+        static_cast<size_t> (event->message.getRawDataSize ());
+      native_events.push_back (
+        dsp::midi_event::make_raw (
+          std::span<const midi_byte_t>{ raw, raw_size }, sample_time));
     }
 
   decltype (active_midi_playback_sequence_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_events{ active_midi_playback_sequence_ };
   *rt_events = MidiCache{
-    std::move (region_seq), quantize_option,
+    std::move (native_events), quantize_option,
     units::ticks (midi_region.bounds ()->length ()->ticks ())
   };
 }
@@ -98,7 +102,7 @@ ClipPlaybackDataProvider::queue_stop_playback (
 void
 ClipPlaybackDataProvider::process_midi_events (
   const dsp::graph::ProcessBlockInfo &time_nfo,
-  dsp::MidiEventVector               &output_buffer) noexcept
+  dsp::MidiEventBuffer               &output_buffer) noexcept
 {
   [&] () {
     decltype (active_midi_playback_sequence_)::ScopedAccess<
@@ -110,7 +114,7 @@ ClipPlaybackDataProvider::process_midi_events (
         return;
       }
     const auto &cache = cache_opt->value ();
-    const auto &midi_seq = cache.midi_seq_;
+    const auto &midi_events = cache.midi_events_;
     const auto  clip_loop_end_samples =
       tempo_map_.tick_to_samples_rounded (cache.end_position_);
 
@@ -146,68 +150,61 @@ ClipPlaybackDataProvider::process_midi_events (
         if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
           {
             // Debug: Print all events in the sequence
-            z_debug ("Total events in sequence: {}", midi_seq.getNumEvents ());
-            for (int j = 0; j < midi_seq.getNumEvents (); ++j)
+            z_debug ("Total events in sequence: {}", midi_events.size ());
+            for (size_t j = 0; j < midi_events.size (); ++j)
               {
-                const auto * event = midi_seq.getEventPointer (j);
-                if (event->message.isNoteOn ())
+                const auto &ev = midi_events[j];
+                if (utils::midi::midi_is_note_on (ev.data ()))
                   {
                     z_debug (
                       "Sequence Event {}: note_on={}, timestamp={}", j,
-                      event->message.getNoteNumber (),
-                      event->message.getTimeStamp ());
+                      ev.data ()[1], ev.time_.in (units::samples));
                   }
               }
           }
 
         // Calculate events, offsetting from current position
-        const auto first_idx = midi_seq.getNextIndexAtTime (
-          static_cast<double> (
-            current_internal_buffer_offset.in (units::samples)));
+        auto it = std::ranges::lower_bound (
+          midi_events, current_internal_buffer_offset, {},
+          &dsp::SampleBasedMidiEvent::time_);
+        const auto chunk_end =
+          current_internal_buffer_offset + samples_to_process_in_chunk;
+
         if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
           z_debug (
-            "Processing chunk: current_internal_buffer_offset={}, samples_to_process_in_chunk={}, first_idx={}",
+            "Processing chunk: current_internal_buffer_offset={}, samples_to_process_in_chunk={}",
             current_internal_buffer_offset.in (units::samples),
-            samples_to_process_in_chunk.in (units::samples), first_idx);
+            samples_to_process_in_chunk.in (units::samples));
 
-        for (int i = first_idx; i < midi_seq.getNumEvents (); ++i)
+        for (; it != midi_events.end (); ++it)
           {
-            const auto * event = midi_seq.getEventPointer (i);
-            const auto   timestamp_dbl = event->message.getTimeStamp ();
+            if (it->time_ >= chunk_end)
+              break;
 
             if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
               {
                 // Debug output for each event
-                if (event->message.isNoteOn ())
-                  {
-                    z_debug (
-                      "Event {}: note_on={}, timestamp={}", i,
-                      event->message.getNoteNumber (), timestamp_dbl);
-                  }
-              }
-
-            if (
-              timestamp_dbl
-              >= (current_internal_buffer_offset + samples_to_process_in_chunk)
-                   .in<double> (units::samples))
-              {
-                break;
+                if (utils::midi::midi_is_note_on (it->data ()))
+                  z_debug (
+                    "Event: note_on={}, timestamp={}", it->data ()[1],
+                    it->time_.in (units::samples));
               }
 
             // Calculate the timestamp in the output buffer
             // This is the event's timestamp relative to the start of this
             // processing chunk plus the total samples already processed
             const auto event_offset_in_chunk =
-              static_cast<uint64_t> (timestamp_dbl)
+              it->time_.in<uint64_t> (units::samples)
               - current_internal_buffer_offset.in<uint64_t> (units::samples);
             const auto local_timestamp =
               total_samples_processed.in<uint64_t> (units::samples)
               + event_offset_in_chunk
               + output_buffer_timestamp_offset.in<uint64_t> (units::samples);
 
-            output_buffer.add_raw (
-              event->message.getRawData (), event->message.getRawDataSize (),
-              units::samples (local_timestamp));
+            const auto d = it->data ();
+            const auto ts = au::floor_as<uint32_t> (
+              units::samples, units::samples (local_timestamp));
+            output_buffer.push_back (ts, d);
             if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
               z_debug ("Adding event with local_timestamp={}", local_timestamp);
           }
@@ -220,11 +217,11 @@ ClipPlaybackDataProvider::process_midi_events (
   if (was_playing_ && !current_playing)
     {
       // We just transitioned from playing to stopped - send all-notes-off
-      for (int channel = 1; channel <= 16; ++channel)
+      for (const auto channel : std::views::iota (0, 16))
         {
-          output_buffer.add_all_notes_off (
-            channel, time_nfo.buffer_offset_,
-            true); // All notes off
+          const auto ev = dsp::midi_event::make_all_notes_off (
+            static_cast<midi_byte_t> (channel), time_nfo.buffer_offset_);
+          output_buffer.push_back (ev.time_, ev.data ());
         }
     }
 

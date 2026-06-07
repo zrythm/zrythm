@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
 import Qt.labs.synchronizer
@@ -67,20 +68,27 @@ ZrythmToolBar {
   ]
   rightItems: [
     SpectrumAnalyzer {
-      audioEngine: root.project.engine
-      padding: 2
+      Layout.preferredWidth: 60
+      fftSize: 512
+      portObservationManager: root.project.portObservationManager
+      sampleRate: root.project.engine.sampleRate
       stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
-      width: 120
+
+      ToolTip {
+        text: qsTr("Master Output Spectrum")
+      }
     },
     WaveformViewer {
-      audioEngine: root.project.engine
-      padding: 2
+      Layout.preferredWidth: 60
+      portObservationManager: root.project.portObservationManager
       stereoPort: root.project.tracklist.singletonTracks.masterTrack.channel.audioOutPort
-      width: 120
+
+      ToolTip {
+        text: qsTr("Master Output Visualizer")
+      }
     },
     DspLoadIndicator {
       id: dspLoadIndicator
-
     },
     ToolButton {
       id: toggleRightDock

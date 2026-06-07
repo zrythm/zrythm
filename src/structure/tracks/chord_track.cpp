@@ -7,6 +7,70 @@
 
 namespace zrythm::structure::tracks
 {
+
+void
+ChordTrack::transform_chord_and_append (
+  dsp::MidiEventBuffer                               &dest,
+  const dsp::MidiEventBuffer                         &src,
+  const NotePitchToChordDescriptorFunc               &note_to_chord,
+  midi_byte_t                                         velocity,
+  std::pair<units::sample_u32_t, units::sample_u32_t> range)
+{
+  const auto [start, end] = range;
+  for (const auto &src_ev : src)
+    {
+      if (src_ev.time () < start || src_ev.time () >= end)
+        continue;
+
+      const auto data = src_ev.data ();
+      if (
+        !utils::midi::midi_is_note_on (data)
+        && !utils::midi::midi_is_note_off (data))
+        continue;
+
+      const midi_byte_t note_number = utils::midi::midi_get_note_number (data);
+      const auto *      descr = note_to_chord (note_number);
+      if (descr == nullptr)
+        continue;
+
+      if (utils::midi::midi_is_note_on (data))
+        {
+          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+            {
+              if (descr->notes_[i])
+                {
+                  const auto ev = dsp::midi_event::make_note_on (
+                    0, static_cast<midi_byte_t> (i + 36), velocity,
+                    src_ev.time ());
+                  if (
+                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                      + ev.data ().size ()
+                    > dest.capacity ())
+                    return;
+                  dest.push_back (ev.time_, ev.data ());
+                }
+            }
+        }
+      else
+        {
+          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+            {
+              if (descr->notes_[i])
+                {
+                  const auto ev = dsp::midi_event::make_note_off (
+                    0, static_cast<midi_byte_t> (i + 36), src_ev.time ());
+                  if (
+                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                      + ev.data ().size ()
+                    > dest.capacity ())
+                    return;
+                  dest.push_back (ev.time_, ev.data ());
+                }
+            }
+        }
+    }
+}
+
 ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     : Track (
         Track::Type::Chord,
@@ -23,15 +87,16 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
   processor_ = make_track_processor (
     std::nullopt, std::nullopt,
     [this] (
-      dsp::MidiEventVector &out_events, const dsp::MidiEventVector &in_events,
+      auto &out_events, const auto &in_events,
       const dsp::graph::ProcessBlockInfo &time_nfo) {
-      out_events.transform_chord_and_append (
-        in_events,
+      transform_chord_and_append (
+        out_events, in_events,
         [this] (midi_byte_t note_number) {
           return note_pitch_to_chord_descriptor (note_number);
         },
-        arrangement::MidiNote::DEFAULT_VELOCITY, time_nfo.buffer_offset_,
-        time_nfo.nframes_);
+        arrangement::MidiNote::DEFAULT_VELOCITY,
+        std::pair{
+          time_nfo.buffer_offset_, time_nfo.buffer_offset_ + time_nfo.nframes_ });
     });
 }
 

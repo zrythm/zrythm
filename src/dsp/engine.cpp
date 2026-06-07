@@ -77,11 +77,6 @@ AudioEngine::AudioEngine (
     : QObject (parent), transport_ (transport), tempo_map_ (tempo_map),
       graph_dispatcher_ (graph_dispatcher), hw_interface_ (hw_interface),
       midi_interface_ (midi_interface),
-      monitor_out_ (
-        u8"Monitor Out",
-        dsp::PortFlow::Output,
-        dsp::AudioPort::BusLayout::Stereo,
-        2),
       midi_in_ (
         std::make_unique<dsp::MidiPort> (u8"MIDI in", dsp::PortFlow::Input)),
       midi_panic_processor_ (
@@ -108,21 +103,28 @@ AudioEngine::AudioEngine (
             current_hw_input_ = {};
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
-                // Note: the monitor output ports below require the processing
-                // graph to be operational. We are guarding against other cases
-                // by checking the process() return status
-                const auto samples = numSamples.in<size_t> (units::samples);
-                if (!outputChannels.empty ())
+                // Note: the monitor output source below requires the
+                // processing graph to be operational. We are guarding against
+                // other cases by checking the process() return status
+                if (
+                  monitor_out_source_ != nullptr
+                  && monitor_out_source_->buffers () != nullptr)
                   {
-                    utils::float_ranges::copy (
-                      { outputChannels[0], samples },
-                      { monitor_out_.buffers ()->getReadPointer (0), samples });
-                  }
-                if (outputChannels.size () > 1)
-                  {
-                    utils::float_ranges::copy (
-                      { outputChannels[1], samples },
-                      { monitor_out_.buffers ()->getReadPointer (1), samples });
+                    const auto samples = numSamples.in<size_t> (units::samples);
+                    if (!outputChannels.empty ())
+                      {
+                        utils::float_ranges::copy (
+                          { outputChannels[0], samples },
+                          { monitor_out_source_->buffers ()->getReadPointer (0, 0),
+                            samples });
+                      }
+                    if (outputChannels.size () > 1)
+                      {
+                        utils::float_ranges::copy (
+                          { outputChannels[1], samples },
+                          { monitor_out_source_->buffers ()->getReadPointer (1, 0),
+                            samples });
+                      }
                   }
               }
           },
@@ -144,8 +146,6 @@ AudioEngine::AudioEngine (
             });
             update_midi_processors (midi_interface_.device_buffers ());
             graph_dispatcher_.recalc_graph (false);
-            monitor_out_.prepare_for_processing (
-              nullptr, info.sample_rate, info.block_length);
             Q_EMIT sampleRateChanged (info.sample_rate.in (units::sample_rate));
             Q_EMIT blockLengthChanged (
               info.block_length.in<int> (units::samples));
@@ -156,12 +156,10 @@ AudioEngine::AudioEngine (
             graph_dispatcher_.clear_graph ();
             midi_input_processors_.clear ();
             cached_device_info_.reset ();
-            monitor_out_.release_resources ();
             audio_callback_active_ = false;
           }))
 {
   midi_in_->set_symbol (u8"midi_in");
-  monitor_out_.set_symbol (u8"monitor_out");
   z_debug ("Audio engine created");
 }
 
@@ -387,7 +385,6 @@ AudioEngine::process_prepare (
     }
 
   // Clear all buffers
-  monitor_out_.clear_buffer (0, block_length.in (units::samples));
   midi_in_->clear_buffer (0, block_length.in (units::samples));
 
   return false;

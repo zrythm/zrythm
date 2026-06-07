@@ -294,20 +294,27 @@ RecordingMaterializer::on_midi_data_ready (
 
       for (const auto &ev : packet.midi_events)
         {
-          const auto status = ev.raw_buffer_[0];
+          const auto d = ev.data ();
+          if (d.empty ())
+            continue;
+          const auto status = d[0];
           const auto type =
             static_cast<uint8_t> (status & utils::midi::MIDI_STATUS_MASK);
           const auto channel =
             static_cast<uint8_t> (status & utils::midi::MIDI_CHANNEL_MASK);
-          const auto d1 = static_cast<uint8_t> (
-            ev.raw_buffer_[1] & utils::midi::MIDI_DATA_MASK);
-          const auto d2 = static_cast<uint8_t> (
-            ev.raw_buffer_[2] & utils::midi::MIDI_DATA_MASK);
+          const auto d1 =
+            d.size () > 1
+              ? static_cast<uint8_t> (d[1] & utils::midi::MIDI_DATA_MASK)
+              : uint8_t{ 0 };
+          const auto d2 =
+            d.size () > 2
+              ? static_cast<uint8_t> (d[2] & utils::midi::MIDI_DATA_MASK)
+              : uint8_t{ 0 };
 
           const auto event_sample_pos =
             packet.timeline_position
             + units::samples (
-              static_cast<int64_t> (ev.time_.in (units::samples)));
+              static_cast<int64_t> (ev.time ().in (units::samples)));
 
           if (type == utils::midi::MIDI_CH1_NOTE_ON && d2 > 0)
             {

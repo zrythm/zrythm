@@ -81,33 +81,38 @@ TEST_F (CVPortTest, SignalProcessing)
 
   // Verify signal was processed
   EXPECT_NE (output_port->buf_[0], 0.0f);
-  EXPECT_NE (output_port->cv_ring_, nullptr);
 }
 
-TEST_F (CVPortTest, RingBufferWriting)
+TEST_F (CVPortTest, ResourceManagement)
 {
-  // Enable ring buffer writing
-  RingBufferOwningPortMixin::RingBufferReader reader (*output_port);
+  EXPECT_FALSE (output_port->buf_.empty ());
+
+  output_port->release_resources ();
+
+  EXPECT_TRUE (output_port->buf_.empty ());
+}
+
+TEST_F (CVPortTest, OutputPortPreservesDataThroughProcessBlock)
+{
+  // Write test signal to output port (simulating a processor writing output)
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
+    {
+      output_port->buf_[i] = static_cast<float> (i) * 0.01f;
+    }
 
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), BLOCK_LENGTH);
   output_port->process_block (time_info, *mock_transport_, *tempo_map_);
 
-  // Check ring buffer contents
-  float sample = 0.0f;
-  EXPECT_TRUE (output_port->cv_ring_->read (sample) > 0);
-  EXPECT_NE (sample, 0.0f);
-}
-
-TEST_F (CVPortTest, ResourceManagement)
-{
-  EXPECT_NE (output_port->cv_ring_, nullptr);
-  EXPECT_FALSE (output_port->buf_.empty ());
-
-  output_port->release_resources ();
-
-  EXPECT_EQ (output_port->cv_ring_, nullptr);
-  EXPECT_TRUE (output_port->buf_.empty ());
+  // Output port should not clear — processor-written data survives
+  for (
+    const auto i :
+    std::views::iota (size_t{ 0 }, BLOCK_LENGTH.in<size_t> (units::samples)))
+    {
+      EXPECT_NEAR (output_port->buf_[i], static_cast<float> (i) * 0.01f, 1e-6f);
+    }
 }
 
 } // namespace zrythm::dsp

@@ -47,7 +47,7 @@ protected:
           .WillByDefault (Return (units::samples (0)));
         ON_CALL (
           *processables_.back (),
-          prepare_for_processing (
+          prepare_for_processing_impl (
             An<const graph::GraphNode *> (), An<units::sample_rate_t> (),
             An<units::sample_u32_t> ()))
           .WillByDefault (Return ());
@@ -95,7 +95,8 @@ protected:
   void create_dispatcher ()
   {
     dispatcher_ = std::make_unique<DspGraphDispatcher> (
-      std::move (mock_graph_builder_), terminal_processables_, *hw_interface_,
+      std::move (mock_graph_builder_),
+      [this] () { return std::span (terminal_processables_); }, *hw_interface_,
       run_function_with_engine_lock_,
       [] (std::function<void ()> func) { func (); });
   }
@@ -145,15 +146,18 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftFalse)
   // Expect prepare_for_processing to be called for each node
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   // Adjust playback latency for a node
@@ -361,15 +365,18 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
   // First recalculation
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   dispatcher_->recalc_graph (false);
@@ -381,15 +388,18 @@ TEST_F (DspGraphDispatcherTest, MultipleRecalcGraphCalls)
 
   EXPECT_CALL (
     *processables_[0],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[1],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
   EXPECT_CALL (
     *processables_[2],
-    prepare_for_processing (_, units::sample_rate (48000), units::samples (256u)))
+    prepare_for_processing_impl (
+      _, units::sample_rate (48000), units::samples (256u)))
     .Times (1);
 
   dispatcher_->recalc_graph (false);
@@ -415,6 +425,61 @@ TEST_F (DspGraphDispatcherTest, PreprocessAtStartOfCycleNoThrow)
     dispatcher_->start_cycle (
       *transport_, time_info, units::samples (0), false, *tempo_map_);
   });
+}
+
+TEST_F (DspGraphDispatcherTest, DynamicTerminalProviderAffectsPruning)
+{
+  EXPECT_CALL (*mock_graph_builder_, build_graph_impl (_))
+    .Times (2)
+    .WillRepeatedly ([this] (graph::Graph &graph) {
+      auto * node1 = graph.add_node_for_processable (*processables_[0]);
+      auto * node2 = graph.add_node_for_processable (*processables_[1]);
+      auto * node3 = graph.add_node_for_processable (*processables_[2]);
+      node1->connect_to (*node2);
+      node2->connect_to (*node3);
+    });
+
+  terminal_processables_ = { processables_[2].get () };
+
+  create_dispatcher ();
+
+  EXPECT_CALL (*processables_[0], prepare_for_processing_impl (_, _, _))
+    .Times (1);
+  EXPECT_CALL (*processables_[1], prepare_for_processing_impl (_, _, _))
+    .Times (1);
+  EXPECT_CALL (*processables_[2], prepare_for_processing_impl (_, _, _))
+    .Times (1);
+  dispatcher_->recalc_graph (false);
+
+  const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (1);
+  dispatcher_->start_cycle (
+    *transport_, time_info, units::samples (0), true, *tempo_map_);
+
+  // Change terminal to B — C should be pruned on next recalc
+  terminal_processables_ = { processables_[1].get () };
+
+  EXPECT_CALL (*processables_[0], release_resources ()).Times (1);
+  EXPECT_CALL (*processables_[1], release_resources ()).Times (1);
+  EXPECT_CALL (*processables_[2], release_resources ()).Times (1);
+  EXPECT_CALL (*processables_[0], prepare_for_processing_impl (_, _, _))
+    .Times (1);
+  EXPECT_CALL (*processables_[1], prepare_for_processing_impl (_, _, _))
+    .Times (1);
+  dispatcher_->recalc_graph (false);
+
+  EXPECT_CALL (*processables_[0], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[1], process_block (_, _, _)).Times (1);
+  EXPECT_CALL (*processables_[2], process_block (_, _, _)).Times (0);
+  dispatcher_->start_cycle (
+    *transport_, time_info, units::samples (0), true, *tempo_map_);
+
+  EXPECT_CALL (*processables_[0], release_resources ()).Times (1);
+  EXPECT_CALL (*processables_[1], release_resources ()).Times (1);
 }
 
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,474 +6,400 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
-#include <functional>
+#include <memory>
+#include <span>
+#include <variant>
 
 #include "utils/midi.h"
+#include "utils/traits.h"
 #include "utils/units.h"
-
-#include <crill/spin_mutex.h>
-#include <juce_audio_basics/juce_audio_basics.h>
 
 namespace zrythm::dsp
 {
-class ChordDescriptor;
-
 /** Max events to hold in queues. */
 constexpr int MAX_MIDI_EVENTS = 2560;
 
 /**
- * Timed MIDI event.
+ * @brief Type-erased MIDI event with small-buffer optimization.
+ *
+ * Stores channel messages (≤3 bytes) inline in a fixed-size array sized to
+ * sizeof(pointer), and larger messages (e.g. sysex) via shared
+ * heap storage.
+ *
+ * @note Not realtime-safe. use MidiEventBuffer in RT contexts.
+ *
+ * @tparam TimeT The timestamp type (e.g. units::sample_t,
+ * units::precise_tick_t).
  */
-struct MidiEvent final
+template <typename TimeT> struct MidiEvent
 {
-public:
-  // Rule of 0
+  using InlineStorage = std::array<midi_byte_t, sizeof (const midi_byte_t *)>;
+  using ExternalStorage = std::shared_ptr<const midi_byte_t[]>;
+  using TimeType = TimeT;
+
+  static constexpr size_t inline_capacity = InlineStorage{}.size ();
+
+  // Note: ExternalStorage thread safety needs auditing before use in
+  // RT contexts. Inline storage (channel messages) is always RT-safe.
+
+  std::variant<InlineStorage, ExternalStorage> storage;
+  uint16_t size_{}; ///< Number of valid MIDI bytes
+  TimeType time_{}; ///< Timestamp (meaning depends on TimeType)
+
   MidiEvent () = default;
-  MidiEvent (
-    midi_byte_t         byte1,
-    midi_byte_t         byte2,
-    midi_byte_t         byte3,
-    units::sample_u32_t time)
-      : raw_buffer_sz_ (3), time_ (time)
+
+  /**
+   * @brief Converting constructor for compatible time types.
+   *
+   * Allows implicit conversion e.g. from MidiEvent<Quantity<Sample, int>>
+   * to MidiEvent<Quantity<Sample, long>> (SampleBasedMidiEvent).
+   */
+  template <typename OtherTimeType>
+    requires std::constructible_from<TimeType, OtherTimeType>
+               && (!std::same_as<TimeType, OtherTimeType>)
+  MidiEvent (const MidiEvent<OtherTimeType> &other) noexcept
+      : storage (other.storage), size_ (other.size_),
+        time_ (static_cast<TimeType> (other.time_))
   {
-    raw_buffer_[0] = byte1;
-    raw_buffer_[1] = byte2;
-    raw_buffer_[2] = byte3;
   }
 
-  void set_velocity (midi_byte_t vel);
+  std::span<const midi_byte_t> data () const noexcept [[clang::nonblocking]]
+  {
+    return {
+      std::visit (
+        [] (const auto &s) -> const midi_byte_t * {
+          if constexpr (
+            std::is_same_v<std::decay_t<decltype (s)>, InlineStorage>)
+            return s.data ();
+          else
+            return s.get ();
+        },
+        storage),
+      size_
+    };
+  }
 
-  void print () const;
+  void set_inline (std::span<const midi_byte_t> d) noexcept [[clang::blocking]]
+  {
+    assert (d.size () <= inline_capacity);
+    size_ = static_cast<uint16_t> (d.size ());
+    if (!std::holds_alternative<InlineStorage> (storage))
+      storage = InlineStorage{};
+    auto &arr = std::get<InlineStorage> (storage);
+    std::ranges::copy (d, arr.begin ());
+  }
 
-public:
-  /** Raw MIDI data. */
-  std::array<midi_byte_t, 3> raw_buffer_{ 0, 0, 0 };
+  /**
+   * @brief RT-safe version of set_inline that only works on inline storage.
+   *
+   * Asserts if the variant currently holds external storage — this must
+   * only be called on freshly-constructed or already-inline events.
+   */
+  void
+  set_inline_rt (std::span<const midi_byte_t> d) noexcept [[clang::nonblocking]]
+  {
+    assert (d.size () <= inline_capacity);
+    assert (std::holds_alternative<InlineStorage> (storage));
+    size_ = static_cast<uint16_t> (d.size ());
+    auto &arr = std::get<InlineStorage> (storage);
+    std::ranges::copy (d, arr.begin ());
+  }
 
-  uint_fast8_t raw_buffer_sz_{};
+  void
+  set_external (std::shared_ptr<const midi_byte_t[]> ptr, uint16_t sz) noexcept
+    [[clang::blocking]]
+  {
+    size_ = sz;
+    storage = std::move (ptr);
+  }
 
-  /** Time of the MIDI event, in frames from the start of the current cycle. */
-  units::sample_u32_t time_;
+  bool is_inline () const noexcept
+  {
+    return std::holds_alternative<InlineStorage> (storage);
+  }
 
-  /** Time using g_get_monotonic_time(). */
-  std::int64_t systime_{};
+  friend bool operator== (const MidiEvent &lhs, const MidiEvent &rhs) noexcept
+  {
+    if (lhs.time_ != rhs.time_ || lhs.size_ != rhs.size_)
+      return false;
+    const auto ld = lhs.data ();
+    const auto rd = rhs.data ();
+    return std::ranges::equal (ld, rd);
+  }
 };
 
-inline bool
-operator== (const MidiEvent &lhs, const MidiEvent &rhs)
+/// Cache/playback: absolute sample position (int64, rounded from ticks).
+using SampleBasedMidiEvent = MidiEvent<units::sample_t>;
+/// Serialization: tick position (double precision).
+using TickBasedMidiEvent = MidiEvent<units::precise_tick_t>;
+/// RT buffers: relative frame offset within a processing cycle.
+using RealtimeMidiEvent = MidiEvent<units::sample_u32_t>;
+
+/// Factory functions and algorithms for MidiEvent containers.
+namespace midi_event
 {
-  return lhs.time_ == rhs.time_ && lhs.raw_buffer_sz_ == rhs.raw_buffer_sz_
-         && lhs.raw_buffer_ == rhs.raw_buffer_;
+
+/**
+ * @brief Creates a note on event.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_note_on (
+  midi_byte_t channel,
+  midi_byte_t note_pitch,
+  midi_byte_t velocity,
+  TimeType    time)
+{
+  assert (channel <= 15);
+  const std::array<midi_byte_t, 3> raw = {
+    static_cast<midi_byte_t> (utils::midi::MIDI_CH1_NOTE_ON | channel),
+    note_pitch, velocity
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  assert (utils::midi::midi_is_note_on (ev.data ()));
+  return ev;
 }
 
 /**
- * @brief A lock-free thread-safe vector of `MidiEvent`s.
+ * @brief Creates a note off event.
  *
- * Not necessarily the best implementation, but it's good enough for now.
+ * @param channel MIDI channel (0-based, 0-15).
  */
-class MidiEventVector final
+template <typename TimeType>
+MidiEvent<TimeType>
+make_note_off (midi_byte_t channel, midi_byte_t note_pitch, TimeType time)
 {
-public:
-  MidiEventVector () { events_.reserve (MAX_MIDI_EVENTS); }
+  assert (channel <= 15);
+  const std::array<midi_byte_t, 3> raw = {
+    static_cast<midi_byte_t> (utils::midi::MIDI_CH1_NOTE_OFF | channel),
+    note_pitch, 0
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  assert (utils::midi::midi_is_note_off (ev.data ()));
+  return ev;
+}
 
-  using ChordDescriptor = dsp::ChordDescriptor;
+/**
+ * @brief Creates a control change event.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_control_change (
+  midi_byte_t channel,
+  midi_byte_t controller,
+  midi_byte_t value,
+  TimeType    time)
+{
+  assert (channel <= 15);
+  const std::array<midi_byte_t, 3> raw = {
+    static_cast<midi_byte_t> (0xB0 | channel), controller, value
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  return ev;
+}
 
-  // Iterator types
-  using Iterator = std::vector<MidiEvent>::iterator;
-  using ConstIterator = std::vector<MidiEvent>::const_iterator;
+/**
+ * @brief Creates a pitchbend event.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ * @param pitchbend 0 to 16384 (8192 = center).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_pitchbend (midi_byte_t channel, uint32_t pitchbend, TimeType time)
+{
+  assert (channel <= 15);
+  assert (pitchbend <= 16384);
+  const std::array<midi_byte_t, 3> raw = {
+    static_cast<midi_byte_t> (0xE0 | channel),
+    static_cast<midi_byte_t> (pitchbend & 0x7F),
+    static_cast<midi_byte_t> ((pitchbend >> 7) & 0x7F)
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  return ev;
+}
 
-  // Iterator methods
-  Iterator begin ()
+/**
+ * @brief Creates a channel pressure (aftertouch) event.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_channel_pressure (midi_byte_t channel, midi_byte_t value, TimeType time)
+{
+  assert (channel <= 15);
+  const std::array<midi_byte_t, 2> raw = {
+    static_cast<midi_byte_t> (0xD0 | channel), value
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  return ev;
+}
+
+/**
+ * @brief Creates an all-notes-off event.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_all_notes_off (midi_byte_t channel, TimeType time)
+{
+  assert (channel <= 15);
+  const std::array<midi_byte_t, 3> raw = {
+    static_cast<midi_byte_t> (0xB0 | channel), 0x7B, 0
+  };
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  return ev;
+}
+
+/**
+ * @brief Creates a MIDI event from the given bytes, RT-safe.
+ *
+ * Only handles inline messages (≤ inline_capacity bytes). Asserts on
+ * larger payloads — use make_raw() for those (not RT-safe).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_raw_rt (std::span<const midi_byte_t> raw, TimeType time) noexcept
+  [[clang::nonblocking]]
+{
+  assert (raw.size () <= MidiEvent<TimeType>::inline_capacity);
+  MidiEvent<TimeType> ev;
+  ev.set_inline_rt (raw);
+  ev.time_ = time;
+  return ev;
+}
+
+/**
+ * @brief Creates a raw MIDI event from the given bytes.
+ *
+ * Handles arbitrarily-sized payloads (including SysEx) by allocating
+ * external storage. Not RT-safe — use make_raw_rt() in RT contexts.
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_raw (std::span<const midi_byte_t> raw, TimeType time) [[clang::blocking]]
+{
+  MidiEvent<TimeType> ev;
+  if (raw.size () <= MidiEvent<TimeType>::inline_capacity)
+    {
+      ev.set_inline_rt (raw);
+    }
+  else
+    {
+      auto external = std::make_shared<midi_byte_t[]> (raw.size ());
+      std::ranges::copy (raw, external.get ());
+      ev.set_external (
+        std::move (external), static_cast<uint16_t> (raw.size ()));
+    }
+  ev.time_ = time;
+  return ev;
+}
+
+/**
+ * @brief Comparator for sorting MidiEvents by time, with noteOff before
+ * noteOn at the same timestamp.
+ */
+struct NoteOffBeforeNoteOnCompare
+{
+  template <typename TimeType>
+  bool
+  operator() (const MidiEvent<TimeType> &a, const MidiEvent<TimeType> &b) const
   {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.begin ();
+    if (a.time_ != b.time_)
+      return a.time_ < b.time_;
+    const auto ad = a.data ();
+    const auto bd = b.data ();
+    return !utils::midi::midi_is_note_on (ad) && utils::midi::midi_is_note_on (bd);
   }
-
-  Iterator end ()
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.end ();
-  }
-
-  void erase (Iterator it, Iterator it_end)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.erase (it, it_end);
-  }
-
-  ConstIterator begin () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.begin ();
-  }
-
-  ConstIterator end () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.end ();
-  }
-
-  void push_back (const MidiEvent &ev)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.push_back (ev);
-  }
-
-  void push_back (const std::vector<MidiEvent> &events)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.insert (events_.end (), events.begin (), events.end ());
-  }
-
-  MidiEvent pop_front ()
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    MidiEvent                                ev = events_.front ();
-    events_.erase (events_.begin ());
-    return ev;
-  }
-
-  MidiEvent pop_back ()
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    MidiEvent                                ev = events_.back ();
-    events_.pop_back ();
-    return ev;
-  }
-
-  void clear ()
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.clear ();
-  }
-
-  size_t size () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.size ();
-  }
-
-  MidiEvent front () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.front ();
-  }
-
-  MidiEvent back () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.back ();
-  }
-
-  MidiEvent at (size_t index) const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.at (index);
-  }
-
-  void swap (MidiEventVector &other)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.swap (other.events_);
-  }
-
-  void remove_if (std::function<bool (const MidiEvent &)> predicate)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    // std::erase_if (events_, std::move (predicate)); // fails to build on
-    // Xcode 26
-    auto it =
-      std::remove_if (events_.begin (), events_.end (), std::move (predicate));
-    events_.erase (it, events_.end ());
-  }
-
-  /**
-   * @brief Removes all events that match @p event.
-   */
-  void remove (const MidiEvent &event)
-  {
-    remove_if ([&event] (const MidiEvent &e) { return e == event; });
-  }
-
-  template <typename Func> void foreach_event (Func &&func) const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    std::ranges::for_each (events_, std::forward<Func> (func));
-  }
-
-  size_t capacity () const
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    return events_.capacity ();
-  }
-
-  void reserve (size_t new_capacity)
-  {
-    const std::lock_guard<crill::spin_mutex> lock (lock_);
-    events_.reserve (new_capacity);
-  }
-
-  void print () const;
-
-  /**
-   * Appends the events from @p src.
-   *
-   * @param channels Allowed channels (array of 16 booleans).
-   * @param local_offset The local offset from 0 in this cycle.
-   * @param nframes Number of frames to process.
-   */
-  [[gnu::hot]] void append_w_filter (
-    const MidiEventVector              &src,
-    std::optional<std::array<bool, 16>> channels,
-    units::sample_u32_t                 local_offset,
-    units::sample_u32_t                 nframes);
-
-  /**
-   * Appends the events from @p src.
-   *
-   * @param local_offset The start frame offset from 0 in this cycle.
-   * @param nframes Number of frames to process.
-   */
-  void append (
-    const MidiEventVector &src,
-    units::sample_u32_t    local_offset,
-    units::sample_u32_t    nframes);
-
-  using NotePitchToChordDescriptorFunc =
-    std::function<const ChordDescriptor *(midi_byte_t)>;
-
-  /**
-   * Transforms the given MIDI input to the MIDI notes of the corresponding
-   * chord.
-   *
-   * Only C0~B0 are considered.
-   */
-  void transform_chord_and_append (
-    const MidiEventVector         &src,
-    NotePitchToChordDescriptorFunc note_number_to_chord_descriptor,
-    midi_byte_t                    velocity_to_use,
-    units::sample_u32_t            local_offset,
-    units::sample_u32_t            nframes);
-
-  /**
-   * Adds a note on event to the given MidiEvents.
-   *
-   * @param channel MIDI channel starting from 1.
-   * @param queued Add to queued events instead.
-   */
-  void add_note_on (
-    midi_byte_t         channel,
-    midi_byte_t         note_pitch,
-    midi_byte_t         velocity,
-    units::sample_u32_t time);
-
-  /**
-   * Adds a note on for each note in the chord.
-   */
-  void add_note_ons_from_chord_descr (
-    const ChordDescriptor &descr,
-    midi_byte_t            channel,
-    midi_byte_t            velocity,
-    units::sample_u32_t    time);
-
-  /**
-   * Adds a note off for each note in the chord.
-   */
-  void add_note_offs_from_chord_descr (
-    const ChordDescriptor &descr,
-    midi_byte_t            channel,
-    units::sample_u32_t    time);
-
-  /**
-   * Add CC volume event.
-   *
-   * TODO
-   */
-  void add_cc_volume (
-    midi_byte_t         channel,
-    midi_byte_t         volume,
-    units::sample_u32_t time);
-
-#if 0
-  /**
-   * Returrns if the MidiEvents have any note on events.
-   *
-   * @param check_main Check the main events.
-   * @param check_queued Check the queued events.
-   */
-  bool has_note_on (bool check_main, bool check_queued);
-#endif
-
-  bool has_any () const { return !empty (); }
-  bool empty () const { return size () == 0; }
-
-  /**
-   * Parses a MidiEvent from a raw MIDI buffer.
-   *
-   * This must be a full 3-byte message. If in 'running status' mode, the
-   * caller is responsible for prepending the status byte.
-   */
-  void
-  add_event_from_buf (units::sample_u32_t time, midi_byte_t * buf, int buf_size);
-
-  /**
-   * Adds a note off event to the given MidiEvents.
-   *
-   * @param channel MIDI channel starting from 1.
-   * @param queued Add to queued events instead.
-   */
-  void add_note_off (
-    midi_byte_t         channel,
-    midi_byte_t         note_pitch,
-    units::sample_u32_t time);
-
-  /**
-   * Adds a control event to the given MidiEvents.
-   *
-   * @param channel MIDI channel starting from 1.
-   */
-  void add_control_change (
-    midi_byte_t         channel,
-    midi_byte_t         controller,
-    midi_byte_t         control,
-    units::sample_u32_t time);
-
-  /**
-   * Adds a song position event to the queue.
-   *
-   * @param total_sixteenths Total sixteenths.
-   */
-  void add_song_pos (int64_t total_sixteenths, units::sample_u32_t time);
-
-  void add_raw (const uint8_t * buf, size_t buf_sz, units::sample_u32_t time);
-
-  void add_simple (
-    midi_byte_t         byte1,
-    midi_byte_t         byte2,
-    midi_byte_t         byte3,
-    units::sample_u32_t time)
-  {
-    push_back (MidiEvent (byte1, byte2, byte3, time));
-  }
-
-  /**
-   * Adds a control event to the given MidiEvents.
-   *
-   * @param channel MIDI channel starting from 1.
-   * @param pitchbend 0 to 16384.
-   */
-  void add_pitchbend (
-    midi_byte_t         channel,
-    uint32_t            pitchbend,
-    units::sample_u32_t time);
-
-  void add_channel_pressure (
-    midi_byte_t         channel,
-    midi_byte_t         value,
-    units::sample_u32_t time);
-
-  /**
-   * Queues MIDI note off to event queue.
-   */
-  void add_all_notes_off (
-    midi_byte_t         channel,
-    units::sample_u32_t time,
-    bool                with_lock);
-
-  /**
-   * Adds a note off message to every MIDI channel.
-   */
-  void panic_without_lock (units::sample_u32_t time)
-  {
-    for (midi_byte_t i = 1; i < 17; i++)
-      {
-        add_all_notes_off (i, time, false);
-      }
-  }
-
-  /**
-   * Must only be called from the UI thread.
-   */
-  void panic ();
-
-  /**
-   * @brief Writes the events to a MIDI sequence.
-   *
-   * This assumes that the event timestamps are in ticks.
-   *
-   * @param sequence
-   * @param update_matched_pairs If true, ensures there are note off events for
-   * every note on event.
-   */
-  void write_to_midi_sequence (
-    juce::MidiMessageSequence &sequence,
-    bool                       update_matched_pairs) const;
-
-  /**
-   * Clears duplicates.
-   */
-  void clear_duplicates ();
-
-#if 0
-  /**
-   * Returns if a note on event for the given note exists in the given events.
-   */
-  bool check_for_note_on (int note);
-
-  /**
-   * Deletes the midi event with a note on signal from the queue, and returns if
-   * it deleted or not.
-   */
-  bool delete_note_on (int note);
-#endif
-
-  /**
-   * Sorts the MidiEvents by time.
-   */
-  void sort ();
-
-  /**
-   * Sets the given MIDI channel on all applicable
-   * MIDI events.
-   */
-  void set_channel (midi_byte_t channel);
-
-  void delete_event (const MidiEvent * ev);
-
-private:
-  std::vector<MidiEvent> events_;
-
-  /** Spinlock for exclusive read/write. */
-  mutable crill::spin_mutex lock_;
 };
 
 /**
- * Container for passing midi events through ports.
- *
- * This should be passed in the data field of MIDI Ports.
+ * @brief Sorts events by time, with noteOff before noteOn at the same
+ * timestamp.
  */
-class MidiEvents final
+template <std::ranges::random_access_range Container>
+void
+sort_with_note_off_priority (Container &container)
 {
-public:
-  /**
-   * Copies the queue contents to the original struct
-   *
-   * @param local_offset The start frame offset from 0 in this cycle.
-   * @param nframes Number of frames to process.
-   */
-  void dequeue (units::sample_u32_t local_offset, units::sample_u32_t nframes);
+  std::ranges::stable_sort (container, NoteOffBeforeNoteOnCompare{});
+}
 
-public:
-  /** Events to use in this cycle. */
-  MidiEventVector active_events_;
+/**
+ * @brief Sorts events by time only. Event ordering at the same timestamp
+ * is preserved (stable sort). Producers (caches, input processors) are
+ * responsible for inserting events in the correct order.
+ */
+template <std::ranges::random_access_range Container>
+void
+sort (Container &container)
+{
+  auto proj = [] (const auto &ev) -> const auto & { return ev.time_; };
+  std::ranges::stable_sort (container, {}, proj);
+}
 
-  /**
-   * For queueing events from the GUI or from hardware, since they run in
-   * different threads.
-   *
-   * Engine will copy them to the unqueued MIDI events when ready to be
-   * processed.
-   */
-  MidiEventVector queued_events_;
-};
+/**
+ * @brief Sets the MIDI channel on all events in the container.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <std::ranges::random_access_range Container>
+void
+set_channel (Container &container, midi_byte_t channel)
+{
+  assert (channel <= 15);
+  for (auto &ev : container)
+    {
+      auto d = ev.data ();
+      if (d.size () >= 1 && (d[0] & 0xF0) != 0xF0)
+        {
+          std::array<midi_byte_t, 8> raw{};
+          raw[0] = static_cast<midi_byte_t> ((d[0] & 0xF0) | channel);
+          std::ranges::copy (d | std::views::drop (1), raw.begin () + 1);
+          ev.set_inline_rt (
+            std::span<const midi_byte_t>{ raw.data (), d.size () });
+        }
+    }
+}
+
+template <
+  typename TimeType,
+  utils::MutableContainerOf<MidiEvent<TimeType>> DestContainer,
+  std::ranges::range                             SrcContainer>
+void
+append_in_range (
+  DestContainer                &dest,
+  const SrcContainer           &src,
+  std::pair<TimeType, TimeType> range)
+{
+  for (const auto &ev : src)
+    {
+      if (ev.time_ >= range.first && ev.time_ < range.second)
+        dest.push_back (ev);
+    }
+}
+
+} // namespace midi_event
+
+extern template struct MidiEvent<units::sample_t>;
+extern template struct MidiEvent<units::precise_tick_t>;
+extern template struct MidiEvent<units::sample_u32_t>;
 
 } // namespace zrythm::dsp
