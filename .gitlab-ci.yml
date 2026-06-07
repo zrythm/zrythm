@@ -156,7 +156,7 @@ configure:gnu/linux:
       -DZRYTHM_WITH_LIBDW=OFF
       -DZRYTHM_UNITY_BUILD=ON
       $(if [ "${BUILD_TYPE}" = "Debug" ]; then echo "-DZRYTHM_COVERAGE=ON"; fi)
-      -DZRYTHM_GCC_X86_64_V2_OPTIMIZATIONS=ON
+      -DZRYTHM_GCC_X86_64_V3_OPTIMIZATIONS=ON
   parallel:
     matrix:
       - BUILD_TYPE: [Debug, Release]
