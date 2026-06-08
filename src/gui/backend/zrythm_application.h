@@ -89,6 +89,9 @@ private:
   void setup_device_manager ();
   void setup_control_room ();
 
+protected:
+  bool notify (QObject * receiver, QEvent * event) override;
+
 private Q_SLOTS:
   void onEngineOutput ();
   void onAboutToQuit ();

@@ -5,7 +5,6 @@
 #include "dsp/port_observation_cache.h"
 #include "dsp/port_observation_manager.h"
 #include "dsp/port_observer.h"
-#include "utils/registry_utils.h"
 
 #include <QTimer>
 

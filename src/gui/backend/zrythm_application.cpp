@@ -15,6 +15,7 @@
 #include "utils/format_juce.h"
 #include "utils/qsettings_backend.h"
 #include "utils/thread_safe_fftw.h"
+#include "utils/tracy.h"
 
 #include <QFontDatabase>
 #include <QIcon>
@@ -129,6 +130,11 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
 
+  zrythm::utils::start_tracy ();
+  zrythm::utils::set_thread_name ("Main");
+
+  ZoneScopedN ("App initialization");
+
   // Create control room after command-line parsing to avoid leaking
   // AudioBuffers when --help/--version calls std::exit()
   impl_
@@ -159,6 +165,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   impl_->juce_dispatch_timer_ = utils::make_qobject_unique<QTimer> (this);
   QObject::connect (
     impl_->juce_dispatch_timer_.get (), &QTimer::timeout, this, [] () {
+      ZoneScopedN ("JUCE message dispatch");
+
       // We need to do this on GNU/Linux otherwise plugin UIs appear blank.
       juce::detail::dispatchNextMessageOnSystemQueue (true);
     });
@@ -588,8 +596,20 @@ ZrythmApplication::onAboutToQuit ()
   z_info ("Shutting down...");
 }
 
+bool
+ZrythmApplication::notify (QObject * receiver, QEvent * event)
+{
+  if (zrythm::utils::is_tracy_initialized ())
+    {
+      FrameMarkNamed ("Qt event loop");
+    }
+  return QApplication::notify (receiver, event);
+}
+
 ZrythmApplication::~ZrythmApplication ()
 {
+  zrythm::utils::stop_tracy ();
+
   impl_->device_manager_->closeAudioDevice ();
 
   // Delete the project manager first to release project resources (engine,

@@ -233,6 +233,7 @@ option(ZRYTHM_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR "Compile with undefined behavi
 option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_REALTIME "Compile with realtime sanitizer" OFF)
+option(ZRYTHM_TRACY "Enable Tracy profiling instrumentation" OFF)
 option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_VERIFY_INTERFACE_HEADER_SETS OFF)
@@ -992,6 +993,11 @@ add_library(zrythm::benchmark ALIAS _benchmark_libs)
 
 CPMGetPackage(tbb)
 CPMGetPackage(farbot)
+
+if(ZRYTHM_TRACY)
+  CPMGetPackage(Tracy)
+  list(APPEND zrythm_link_libs Tracy::TracyClient)
+endif()
 
 find_package(Qt6 6.11
   COMPONENTS

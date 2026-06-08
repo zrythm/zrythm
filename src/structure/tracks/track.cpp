@@ -5,6 +5,7 @@
 
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track.h"
+#include "utils/tracy.h"
 #include "utils/views.h"
 
 DEFINE_ENUM_FORMATTER (
@@ -491,6 +492,7 @@ Track::setClipLauncherMode (bool mode)
 void
 Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
 {
+  ZoneScoped;
   const auto generate_events_for_region_type =
     [&]<arrangement::RegionObject RegionT> () {
       auto all_regions =

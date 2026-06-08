@@ -69,12 +69,11 @@
  * ---
  */
 
-#include "zrythm-config.h"
-
 #include <utility>
 
 #include "utils/dsp_context.h"
 #include "utils/logger.h"
+#include "utils/tracy.h"
 
 #include <fmt/format.h>
 
@@ -83,8 +82,6 @@
 #endif
 
 #if !defined _WIN32 && defined __GLIBC__
-#  include <climits>
-
 #  include <dlfcn.h>
 #  include <pthread.h>
 #endif
@@ -300,6 +297,9 @@ GraphThread::run ()
     }
 
   DspContextRAII dsp_context_raii;
+
+  zrythm::utils::set_thread_name (
+    id_ == -1 ? "DSP main" : fmt::format ("DSP worker {}", id_), 1780889180);
 
   z_info (
     "Worker thread {} created (num threads {})", id_, scheduler_.num_threads ());

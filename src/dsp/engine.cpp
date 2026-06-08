@@ -33,6 +33,7 @@
 #include "dsp/midi_device_buffer.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
+#include "utils/tracy.h"
 
 namespace zrythm::dsp
 {
@@ -88,6 +89,8 @@ AudioEngine::AudioEngine (
             std::span<float * const>       outputChannels,
             units::sample_u32_t            numSamples) {
             current_hw_input_ = inputChannels;
+
+            ScopedFrame audio_frame{ "Audio" };
 
             block_start_time_ = au::milli (units::seconds) (
               juce::Time::getMillisecondCounterHiRes ());
@@ -451,7 +454,6 @@ AudioEngine::process (
   auto total_frames_remaining = total_frames_to_process;
 
   /* --- handle preroll --- */
-
   dsp::graph::ProcessBlockInfo split_time_nfo = {
     .transport_position_ =
       current_transport_state.get_playhead_position_in_audio_thread (),

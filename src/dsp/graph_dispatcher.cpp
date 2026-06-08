@@ -8,6 +8,7 @@
 #include "dsp/graph_export.h"
 #include "dsp/graph_pruner.h"
 #include "utils/logger.h"
+#include "utils/tracy.h"
 
 namespace zrythm::dsp
 {
@@ -108,6 +109,8 @@ DspGraphDispatcher::start_cycle (
   bool                         realtime_context,
   const dsp::TempoMap         &tempo_map) noexcept
 {
+  ZoneScopedN ("Graph cycle");
+
   if (scheduler_ == nullptr)
     {
       return;

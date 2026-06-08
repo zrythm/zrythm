@@ -7,6 +7,7 @@
 #include "gui/qquick/spectrum_analyzer_canvas_item.h"
 #include "gui/qquick/spectrum_analyzer_canvas_renderer.h"
 #include "utils/math_utils.h"
+#include "utils/tracy.h"
 
 namespace zrythm::gui::qquick
 {
@@ -32,6 +33,7 @@ SpectrumAnalyzerCanvasRenderer::synchronize (QCanvasPainterItem * item)
 void
 SpectrumAnalyzerCanvasRenderer::paint (QCanvasPainter * painter)
 {
+  ZoneScoped;
   const int bin_count = spectrum_data_.size ();
   if (bin_count == 0)
     return;

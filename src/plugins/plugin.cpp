@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-
 #include "plugins/plugin.h"
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
+#include "utils/tracy.h"
 
 #include <QTimer>
 
@@ -115,6 +115,9 @@ Plugin::custom_process_block (
   const dsp::ITransport             &transport,
   const dsp::TempoMap               &tempo_map) noexcept
 {
+  ZoneScopedN ("Plugin process");
+  ZoneText (get_name ().c_str (), strlen (get_name ().c_str ()));
+
   if (instantiation_failed_)
     return;
 
