@@ -27,6 +27,7 @@ add_executable(zrythm_dsp_unit_tests
   graph_test.cpp
   kmeter_dsp_test.cpp
   metronome_test.cpp
+  midi_activity_provider_test.cpp
   midi_device_buffer_test.cpp
   midi_event_buffer_test.cpp
   midi_event_test.cpp

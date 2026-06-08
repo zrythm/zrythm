@@ -15,9 +15,10 @@ GridLayout {
   required property ClipEditor clipEditor
   required property MidiEditor midiEditor
   readonly property Project project: session.project
-  required property ProjectSession session
   required property MidiRegion region
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  required property ProjectSession session
+  readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.region)
 
   columnSpacing: 0
   columns: 3
@@ -63,11 +64,11 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.midiEditor
+    region: root.region
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
-    transport: root.project.transport
-    region: root.region
     track: root.project.tracklist.getTrackForTimelineObject(root.region)
+    transport: root.project.transport
   }
 
   ColumnLayout {
@@ -83,6 +84,13 @@ GridLayout {
     }
   }
 
+  MidiActivityProvider {
+    id: noteActivityProvider
+
+    port: root.track ? root.track.trackProcessorMidiOut : null
+    portObservationManager: root.project.portObservationManager
+  }
+
   ScrollView {
     id: pianoRollKeysScrollView
 
@@ -96,6 +104,7 @@ GridLayout {
 
       height: implicitHeight
       midiEditor: root.midiEditor
+      noteActivityProvider: noteActivityProvider
     }
 
     Synchronizer {
@@ -108,7 +117,6 @@ GridLayout {
 
   UnifiedProxyModel {
     id: unifiedObjectsModel
-
   }
 
   ItemSelectionModel {
@@ -138,8 +146,8 @@ GridLayout {
     arrangerContentHeight: pianoRollKeys.height
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
-    objectCreator: root.session.arrangerObjectCreator
     midiEditor: root.midiEditor
+    objectCreator: root.session.arrangerObjectCreator
     ruler: ruler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor
@@ -163,8 +171,8 @@ GridLayout {
     Layout.fillWidth: true
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor
-    objectCreator: root.session.arrangerObjectCreator
     midiEditor: root.midiEditor
+    objectCreator: root.session.arrangerObjectCreator
     ruler: ruler
     selectionOperator: root.selectionOperator
     snapGrid: root.session.uiState.snapGridEditor

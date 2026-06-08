@@ -694,4 +694,13 @@ from_json (const nlohmann::json &j, Track &track)
       j.at (Track::kPianoRollKey).get_to (*track.piano_roll_track_mixin_);
     }
 }
+
+dsp::MidiPort *
+Track::trackProcessorMidiOut () const
+{
+  if (processor_ && processor_->is_midi ())
+    return &processor_->get_midi_out_port ();
+  return nullptr;
+}
+
 }

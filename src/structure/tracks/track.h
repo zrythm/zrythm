@@ -92,6 +92,9 @@ class Track : public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (
     zrythm::structure::tracks::PlaybackCacheActivityTracker *
       playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::MidiPort * trackProcessorMidiOut READ trackProcessorMidiOut
+      CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 public:
@@ -462,6 +465,8 @@ public:
   {
     return playback_cache_activity_tracker_.get ();
   }
+
+  dsp::MidiPort * trackProcessorMidiOut () const;
 
   /**
    * @brief To be connected to to notify of any changes to the playable content,

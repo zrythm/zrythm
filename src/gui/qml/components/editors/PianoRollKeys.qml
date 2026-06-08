@@ -22,6 +22,7 @@ Item {
   readonly property color labelColor: "#666666"
   readonly property color labelPressedColor: "white"
   required property MidiEditor midiEditor
+  required property MidiActivityProvider noteActivityProvider
   readonly property int startNote: 0 // Starting MIDI note (0-127)
   readonly property color whiteKeyPressedColor: Qt.tint("white", Qt.alpha(root.palette.highlight, 0.6)) //"#88aaff"
 
@@ -39,6 +40,18 @@ Item {
 
   implicitHeight: (endNote - startNote + 1) * keyHeight
   implicitWidth: keyWidth
+
+  Connections {
+    function onActiveNotesChanged() {
+      for (let i = 0; i < repeater.count; ++i) {
+        const item = repeater.itemAt(i);
+        if (item)
+          item.isPressed = root.noteActivityProvider.isNoteActive(item.midiNote);
+      }
+    }
+
+    target: root.noteActivityProvider
+  }
 
   ColumnLayout {
     id: keysLayout
@@ -139,19 +152,15 @@ Item {
     property int lastValidNote: -1
 
     function handleNotePress(yPos) {
-      var idx = Math.floor(yPos / root.keyHeight);
+      const idx = Math.floor(yPos / root.keyHeight);
       if (idx < 0 || idx >= repeater.count)
         return;
 
       currentNote = root.endNote - idx;
-      var keyItem = repeater.itemAt(idx);
       if (currentNote !== lastValidNote) {
         if (lastValidNote !== -1) {
-          var prevIdx = root.endNote - lastValidNote;
-          repeater.itemAt(prevIdx).isPressed = false;
           root.noteReleased(lastValidNote);
         }
-        keyItem.isPressed = true;
         root.notePressed(currentNote);
         lastValidNote = currentNote;
       }
@@ -159,8 +168,6 @@ Item {
 
     function handleNoteRelease() {
       if (lastValidNote !== -1) {
-        var prevIdx = root.endNote - lastValidNote;
-        repeater.itemAt(prevIdx).isPressed = false;
         root.noteReleased(lastValidNote);
         lastValidNote = -1;
       }
