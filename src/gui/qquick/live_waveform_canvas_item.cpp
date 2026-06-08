@@ -6,6 +6,8 @@
 #include "utils/float_ranges.h"
 #include "utils/qt.h"
 
+#include <QTimer>
+
 namespace zrythm::gui::qquick
 {
 

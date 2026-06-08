@@ -5,7 +5,7 @@
 
 #include <string_view>
 
-#include "dsp/midi_event.h"
+#include "dsp/midi_event_buffer.h"
 #include "utils/icloneable.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>

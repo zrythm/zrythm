@@ -10,9 +10,12 @@
 #include "dsp/port_observation_token.h"
 #include "dsp/true_peak_dsp.h"
 #include "gui/qquick/meter_processor.h"
+#include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/qt.h"
 #include "utils/types.h"
+
+#include <QTimer>
 
 namespace zrythm::gui::qquick
 {

@@ -11,6 +11,7 @@
 #include "dsp/port_observer.h"
 #include "dsp/tempo_map.h"
 #include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/scoped_qcoreapplication.h"
 

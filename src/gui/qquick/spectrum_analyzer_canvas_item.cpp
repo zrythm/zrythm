@@ -13,6 +13,8 @@
 #include "utils/math_utils.h"
 #include "utils/qt.h"
 
+#include <QTimer>
+
 #include <juce_dsp/juce_dsp.h>
 #include <kiss_fft.h>
 
