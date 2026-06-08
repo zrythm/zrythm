@@ -82,7 +82,7 @@ if(WIN32)
 endif()
 
 target_sources(zrythm PRIVATE main.cpp)
-target_link_libraries(zrythm PRIVATE zrythm_gui_lib)
+target_link_libraries(zrythm PRIVATE zrythm_gui_lib zrythm_qml_lib)
 target_precompile_headers(zrythm REUSE_FROM zrythm_gui_lib)
 
 if(OS_GNU)

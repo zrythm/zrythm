@@ -8,3 +8,7 @@ add_subdirectory(structure)
 add_subdirectory(commands)
 add_subdirectory(controllers)
 add_subdirectory(actions)
+
+if(ZRYTHM_GUI_TESTS)
+  add_subdirectory(gui)
+endif()

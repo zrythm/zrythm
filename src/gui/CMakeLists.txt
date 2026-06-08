@@ -321,7 +321,9 @@ target_include_directories(zrythm_gui_lib
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/backend/settings
 )
 
-qt_add_qml_module(zrythm
+qt_add_library(zrythm_qml_lib STATIC)
+
+qt_add_qml_module(zrythm_qml_lib
   URI Zrythm
   VERSION 1.0
   DEPENDENCIES
@@ -355,4 +357,29 @@ qt_add_qml_module(zrythm
   # compile qml files listed in QML_FILES to C++ using qmltc
   # (currently cannot extend QtQuick Controls directly)
   # ENABLE_TYPE_COMPILER
+)
+set_target_properties(zrythm_qml_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+
+target_link_libraries(zrythm_qml_lib
+  PUBLIC
+    zrythm_utils_lib
+    zrythm_dsp_lib
+    zrythm_arrangement_lib
+    zrythm_plugins_lib
+    zrythm_structure_tracks_lib
+    zrythm_structure_scenes_lib
+    zrythm_structure_project_lib
+    zrythm_commands_lib
+    zrythm_undo_lib
+    zrythm_controllers_lib
+    zrythm_actions_lib
+    zrythm_gui_lib
+    zrythm_style
+)
+
+qt_add_qml_module(zrythm
+  URI ZrythmApp
+  VERSION 1.0
+  IMPORTS
+    TARGET zrythm_qml_lib
 )

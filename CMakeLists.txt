@@ -1008,6 +1008,7 @@ find_package(Qt6 6.11
     QuickControls2
     Concurrent
     LinguistTools
+    QuickTest
     Test
     CanvasPainter
   REQUIRED
