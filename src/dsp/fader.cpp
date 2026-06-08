@@ -319,7 +319,7 @@ Fader::custom_prepare_for_processing (
       processing_caches_->midi_in_rt_ = &get_midi_in_port ();
       processing_caches_->midi_out_rt_ = &get_midi_out_port ();
       processing_caches_->midi_temp_buf_.reserve (
-        static_cast<size_t> (max_block_length.in (units::samples)) * 4);
+        dsp::MidiEventBuffer::kMaxReserveBytes);
     }
 }
 

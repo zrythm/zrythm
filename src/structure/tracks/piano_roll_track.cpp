@@ -40,7 +40,7 @@ PianoRollTrackMixin::transform_midi_inputs_func (
 
 PianoRollTrackMixin::PianoRollTrackMixin (QObject * parent) : QObject (parent)
 {
-  transform_scratch_.reserve (4096);
+  transform_scratch_.reserve (dsp::MidiEventBuffer::kMaxReserveBytes);
 }
 
 void

@@ -41,8 +41,7 @@ MidiPort::prepare_for_processing_impl (
       set_port_sources (source_ports);
     }
 
-  buffer_.reserve (
-    static_cast<size_t> (max_block_length.in (units::samples)) * 4);
+  buffer_.reserve (dsp::MidiEventBuffer::kMaxReserveBytes);
 }
 
 void

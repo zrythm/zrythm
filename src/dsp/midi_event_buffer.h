@@ -76,8 +76,11 @@ public:
   /** Bytes per event header: 2 (size) + 4 (timestamp). */
   static constexpr size_t kHeaderSize = sizeof (uint16_t) + sizeof (uint32_t);
 
-  /** Default pre-allocation for test helpers. */
-  static constexpr size_t kDefaultReserveBytes = 1024;
+  /** Default pre-allocation. */
+  static constexpr size_t kDefaultReserveBytes = 0x1000;
+
+  /** Max bytes to hold in queues. */
+  static constexpr size_t kMaxReserveBytes = 0x4000;
 
   /**
    * @brief Create a pre-allocated buffer suitable for test use.
@@ -189,7 +192,7 @@ public:
   }
 
   /** Pre-allocate internal byte storage (and scratch/index buffers). */
-  void reserve (size_t bytes)
+  void reserve (size_t bytes = kMaxReserveBytes)
   {
     storage_.reserve (bytes);
     scratch_.reserve (bytes);

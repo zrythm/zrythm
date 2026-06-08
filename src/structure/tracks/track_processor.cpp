@@ -947,7 +947,8 @@ TrackProcessor::custom_prepare_for_processing (
 
   if (is_midi ())
     {
-      impl_->recording_events_buf_.reserve (dsp::MAX_MIDI_EVENTS);
+      impl_->recording_events_buf_.reserve (
+        dsp::MidiEventBuffer::kMaxReserveBytes);
     }
 }
 

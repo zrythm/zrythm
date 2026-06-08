@@ -51,10 +51,8 @@ MidiInputProcessor::custom_prepare_for_processing (
   units::sample_u32_t           max_block_length)
 {
   impl_->sample_rate = sample_rate;
-  constexpr int kMidiBufferBytesPerEvent = 16;
-  impl_->drain_buffer.ensureSize (
-    static_cast<int> (MidiDeviceBuffer::kCapacity * kMidiBufferBytesPerEvent));
-  impl_->output_port->buffer_.reserve (MidiDeviceBuffer::kCapacity);
+  impl_->drain_buffer.ensureSize (dsp::MidiEventBuffer::kMaxReserveBytes);
+  impl_->output_port->buffer_.reserve (dsp::MidiEventBuffer::kMaxReserveBytes);
 }
 
 void

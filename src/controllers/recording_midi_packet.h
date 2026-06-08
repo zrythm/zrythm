@@ -11,9 +11,6 @@ namespace zrythm::controllers
 
 struct RecordingMidiPacket
 {
-  static constexpr size_t kMaxEventsPerBlock = 256;
-  static constexpr size_t kDefaultReserveBytes = 4096;
-
   units::sample_t      timeline_position;
   bool                 transport_recording{};
   units::sample_u32_t  nframes;
@@ -54,8 +51,7 @@ struct RecordingMidiPacket
   static void
   resize (RecordingMidiPacket &slot, units::sample_u32_t /*block_length*/)
   {
-    slot.midi_events.reserve (kDefaultReserveBytes);
+    slot.midi_events.reserve (dsp::MidiEventBuffer::kMaxReserveBytes);
   }
 };
-
 }
