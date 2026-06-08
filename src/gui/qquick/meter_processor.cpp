@@ -260,52 +260,54 @@ MeterProcessor::get_value (AudioValueFormat format, float &val, float &max)
   if (impl_->port_->is_audio ())
     {
       auto &channel_data = cache.audio[impl_->channel_];
-      if (channel_data.empty ())
+      if (!channel_data.empty ())
         {
-          val = 1e-20f;
-          max = 1e-20f;
-          return;
+          auto   buf_sz = static_cast<int> (channel_data.size ());
+          auto * buf = channel_data.data ();
+          switch (impl_->algorithm_)
+            {
+            case MeterAlgorithm::RMS:
+              z_warn_if_reached ();
+              amp = utils::math::calculate_rms_amp (buf, buf_sz);
+              break;
+            case MeterAlgorithm::TruePeak:
+              impl_->true_peak_processor_->process (buf, buf_sz);
+              amp = impl_->true_peak_processor_->read_f ();
+              break;
+            case MeterAlgorithm::K:
+              impl_->kmeter_processor_->process (buf, buf_sz);
+              std::tie (amp, max_amp) = impl_->kmeter_processor_->read ();
+              break;
+            case MeterAlgorithm::DigitalPeak:
+              impl_->peak_processor_->process (buf, buf_sz);
+              std::tie (amp, max_amp) = impl_->peak_processor_->read ();
+              break;
+            default:
+              break;
+            }
+          cache.clear_audio ();
         }
-
-      auto   buf_sz = static_cast<int> (channel_data.size ());
-      auto * buf = channel_data.data ();
-      switch (impl_->algorithm_)
+      else
         {
-        case MeterAlgorithm::RMS:
-          z_warn_if_reached ();
-          amp = utils::math::calculate_rms_amp (buf, buf_sz);
-          break;
-        case MeterAlgorithm::TruePeak:
-          impl_->true_peak_processor_->process (buf, buf_sz);
-          amp = impl_->true_peak_processor_->read_f ();
-          break;
-        case MeterAlgorithm::K:
-          impl_->kmeter_processor_->process (buf, buf_sz);
-          std::tie (amp, max_amp) = impl_->kmeter_processor_->read ();
-          break;
-        case MeterAlgorithm::DigitalPeak:
-          impl_->peak_processor_->process (buf, buf_sz);
-          std::tie (amp, max_amp) = impl_->peak_processor_->read ();
-          break;
-        default:
-          break;
+          amp = 0.f;
+          max_amp = 0.f;
         }
-      cache.clear_audio ();
     }
   else if (impl_->port_->is_cv ())
     {
       auto &channel_data = cache.audio[0];
-      if (channel_data.empty ())
+      if (!channel_data.empty ())
         {
-          val = 1e-20f;
-          max = 1e-20f;
-          return;
+          auto buf_sz = static_cast<int> (channel_data.size ());
+          impl_->peak_processor_->process (channel_data.data (), buf_sz);
+          std::tie (amp, max_amp) = impl_->peak_processor_->read ();
+          cache.clear_audio ();
         }
-
-      auto buf_sz = static_cast<int> (channel_data.size ());
-      impl_->peak_processor_->process (channel_data.data (), buf_sz);
-      std::tie (amp, max_amp) = impl_->peak_processor_->read ();
-      cache.clear_audio ();
+      else
+        {
+          amp = 0.f;
+          max_amp = 0.f;
+        }
     }
   else if (impl_->port_->is_midi ())
     {
