@@ -4,6 +4,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import ZrythmStyle
 import ZrythmArrangement
 import ZrythmGui

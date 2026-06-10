@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import QtQml.Models
 import ZrythmArrangement
 import Zrythm

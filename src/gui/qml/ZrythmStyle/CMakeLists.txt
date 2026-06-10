@@ -11,7 +11,7 @@ qt_add_library(zrythm_style STATIC)
 qt_add_qml_module(zrythm_style
   URI ZrythmStyle
   VERSION 1.0
-  IMPORTS QtQuick.Controls.Basic/6.9 # fallback to Basic
+  IMPORTS QtQuick.Controls.Basic/6.11 # fallback to Basic
   QML_FILES
     ApplicationWindow.qml
     # Action.qml

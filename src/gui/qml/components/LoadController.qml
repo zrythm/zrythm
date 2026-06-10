@@ -3,6 +3,7 @@
 
 import QtCore
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Dialogs
 import Zrythm
 
