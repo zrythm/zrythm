@@ -104,7 +104,7 @@ MenuBar {
         text: qsTr("Switch Light/Dark Theme")
 
         onTriggered: {
-          Style.darkMode = !Style.darkMode;
+          ZrythmTheme.darkMode = !ZrythmTheme.darkMode;
         }
       }
 
@@ -112,11 +112,11 @@ MenuBar {
         title: qsTr("Theme Color")
 
         Action {
-          enabled: Style.darkMode
+          enabled: ZrythmTheme.darkMode
           text: qsTr("Zrythm Orange")
 
           onTriggered: {
-            Style.primaryColor = Style.zrythmColor;
+            ZrythmTheme.primaryColor = ZrythmTheme.zrythmColor;
           }
         }
 
@@ -124,43 +124,43 @@ MenuBar {
           text: qsTr("Celestial Blue")
 
           onTriggered: {
-            Style.primaryColor = Style.celestialBlueColor;
+            ZrythmTheme.primaryColor = ZrythmTheme.celestialBlueColor;
           }
         }
 
         Action {
-          enabled: Style.darkMode
+          enabled: ZrythmTheme.darkMode
           text: qsTr("Jonquil Yellow")
 
           onTriggered: {
-            Style.primaryColor = Style.jonquilYellowColor;
+            ZrythmTheme.primaryColor = ZrythmTheme.jonquilYellowColor;
           }
         }
 
         Action {
-          enabled: Style.darkMode
+          enabled: ZrythmTheme.darkMode
           text: qsTr("Spring Green")
 
           onTriggered: {
-            Style.primaryColor = Style.springGreen;
+            ZrythmTheme.primaryColor = ZrythmTheme.springGreen;
           }
         }
 
         Action {
-          enabled: Style.darkMode
+          enabled: ZrythmTheme.darkMode
           text: qsTr("Munsell Red")
 
           onTriggered: {
-            Style.primaryColor = Style.munsellRed;
+            ZrythmTheme.primaryColor = ZrythmTheme.munsellRed;
           }
         }
 
         Action {
-          enabled: !Style.darkMode
+          enabled: !ZrythmTheme.darkMode
           text: qsTr("Gunmetal")
 
           onTriggered: {
-            Style.primaryColor = Style.gunmetalColor;
+            ZrythmTheme.primaryColor = ZrythmTheme.gunmetalColor;
           }
         }
 
@@ -168,7 +168,7 @@ MenuBar {
           text: qsTr("Electric Purple")
 
           onTriggered: {
-            Style.primaryColor = Style.electricPurple;
+            ZrythmTheme.primaryColor = ZrythmTheme.electricPurple;
           }
         }
       }

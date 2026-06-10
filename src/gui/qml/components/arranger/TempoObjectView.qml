@@ -14,7 +14,7 @@ ArrangerObjectBaseView {
 
   property TempoObject tempoObject: root.arrangerObject as TempoObject
 
-  width: textMetrics.width + 2 * Style.buttonPadding
+  width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
 
   ContextMenu.menu: Menu {
     Menu {
@@ -65,7 +65,7 @@ ArrangerObjectBaseView {
   Rectangle {
     anchors.fill: parent
     color: root.objectColor
-    radius: Style.toolButtonRadius
+    radius: ZrythmTheme.toolButtonRadius
   }
 
   Text {
@@ -73,7 +73,7 @@ ArrangerObjectBaseView {
 
     color: root.palette.text
     font: root.font
-    padding: Style.buttonPadding
+    padding: ZrythmTheme.buttonPadding
     text: "%1 (%2)".arg(root.tempoObject.tempo).arg(root.tempoObject.curve === TempoEventWrapper.Constant ? "constant" : "linear")
   }
 
@@ -95,7 +95,7 @@ ArrangerObjectBaseView {
     title: qsTr("Edit Tempo")
 
     contentItem: ColumnLayout {
-      spacing: Style.buttonPadding
+      spacing: ZrythmTheme.buttonPadding
 
       Label {
         text: qsTr("BPM:")

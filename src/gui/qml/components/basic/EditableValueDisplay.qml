@@ -19,7 +19,7 @@ Control {
 
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: 2
 
   contentItem: RowLayout {
@@ -37,12 +37,12 @@ Control {
       Layout.minimumHeight: control.minValueHeight
       Layout.minimumWidth: control.minValueWidth
       color: control.palette.text
-      font: Style.semiBoldTextFont
+      font: ZrythmTheme.semiBoldTextFont
       horizontalAlignment: Text.AlignHCenter
       textFormat: Text.PlainText
 
       Behavior on text {
-        animation: Style.propertyAnimation
+        animation: ZrythmTheme.propertyAnimation
       }
     }
 
@@ -51,7 +51,7 @@ Control {
 
       Layout.alignment: Qt.AlignBaseline
       color: control.palette.placeholderText
-      font: Style.fadedTextFont
+      font: ZrythmTheme.fadedTextFont
       text: control.label
     }
   }

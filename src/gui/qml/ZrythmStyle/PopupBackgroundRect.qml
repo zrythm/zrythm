@@ -8,17 +8,17 @@ import ZrythmStyle 1.0
 Rectangle {
   id: root
 
-  color: Style.colorPalette.button
-  implicitHeight: Style.buttonHeight
-  implicitWidth: Style.buttonHeight // 200
+  color: ZrythmTheme.colorPalette.button
+  implicitHeight: ZrythmTheme.buttonHeight
+  implicitWidth: ZrythmTheme.buttonHeight // 200
   layer.enabled: true
-  radius: Style.textFieldRadius
+  radius: ZrythmTheme.textFieldRadius
 
   layer.effect: DropShadowEffect {
   }
 
   border {
-    color: Style.backgroundAppendColor
+    color: ZrythmTheme.backgroundAppendColor
     width: 1
   }
 }

@@ -506,7 +506,7 @@ ScrollView {
               Binding {
                 property: "color"
                 target: peakLabel
-                value: Style.dangerColor
+                value: ZrythmTheme.dangerColor
                 when: peakLabel.peak_in_dbfs > 0
               }
             }

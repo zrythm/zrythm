@@ -8,13 +8,13 @@ import Zrythm
 ArrangerObjectBaseView {
   id: root
 
-  height: textMetrics.height + 2 * Style.buttonPadding
-  width: textMetrics.width + 2 * Style.buttonPadding
+  height: textMetrics.height + 2 * ZrythmTheme.buttonPadding
+  width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
 
   Rectangle {
     anchors.fill: parent
     color: root.objectColor
-    radius: Style.toolButtonRadius
+    radius: ZrythmTheme.toolButtonRadius
   }
 
   Text {
@@ -23,7 +23,7 @@ ArrangerObjectBaseView {
     anchors.centerIn: parent
     color: root.palette.text
     font: root.font
-    padding: Style.buttonPadding
+    padding: ZrythmTheme.buttonPadding
     text: root.arrangerObject.name.name
   }
 

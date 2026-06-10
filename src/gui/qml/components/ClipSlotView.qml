@@ -27,9 +27,9 @@ Control {
     clip: true
     color: {
       let c = root.clipSlot.region ? root.track.color : palette.button;
-      return Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.activeFocus, tapHandler.pressed);
+      return ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.activeFocus, tapHandler.pressed);
     }
-    radius: Style.textFieldRadius
+    radius: ZrythmTheme.textFieldRadius
 
     Loader {
       active: root.clipSlot.region !== null && root.clipSlot.region.type === ArrangerObject.MidiRegion

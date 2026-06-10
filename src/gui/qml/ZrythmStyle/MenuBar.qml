@@ -13,8 +13,8 @@ T.MenuBar {
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, contentWidth + leftPadding + rightPadding)
 
   background: Rectangle {
-    color: Style.backgroundColor
-    implicitHeight: Style.buttonHeight
+    color: ZrythmTheme.backgroundColor
+    implicitHeight: ZrythmTheme.buttonHeight
   }
   contentItem: Row {
     spacing: control.spacing

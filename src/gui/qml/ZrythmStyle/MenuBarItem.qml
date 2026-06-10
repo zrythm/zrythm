@@ -13,15 +13,15 @@ T.MenuBarItem {
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   leftPadding: 12
-  padding: Style.buttonPadding
+  padding: ZrythmTheme.buttonPadding
   rightPadding: 16
-  spacing: Style.buttonPadding
+  spacing: ZrythmTheme.buttonPadding
 
   background: Rectangle {
-    readonly property color baseColor: control.highlighted ? Style.backgroundAppendColor : "transparent"
+    readonly property color baseColor: control.highlighted ? ZrythmTheme.backgroundAppendColor : "transparent"
 
     color: control.down ? control.palette.highlight : baseColor
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 40
   }
   contentItem: IconLabel {
@@ -37,12 +37,12 @@ T.MenuBarItem {
 
   font {
     family: control.font.family
-    pointSize: Style.fontPointSize
+    pointSize: ZrythmTheme.fontPointSize
   }
 
   icon {
     // height: 24
     color: control.palette.buttonText
-    width: Style.buttonHeight - padding * 2
+    width: ZrythmTheme.buttonHeight - padding * 2
   }
 }

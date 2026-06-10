@@ -40,7 +40,7 @@ ColumnLayout {
     color: QmlUtils.getTrackBackground(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered, false)
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     HoverHandler {
@@ -112,7 +112,7 @@ ColumnLayout {
       Label {
         Layout.fillWidth: true
         elide: Text.ElideRight
-        font: selectionTracker.isSelected ? Style.buttonTextFont : Style.normalTextFont
+        font: selectionTracker.isSelected ? ZrythmTheme.buttonTextFont : ZrythmTheme.normalTextFont
         text: root.track.name
       }
 

@@ -16,7 +16,7 @@ Item {
 
   MidiRegionCanvas {
     height: root.contentHeight
-    noteColor: Style.regionContentColor
+    noteColor: ZrythmTheme.regionContentColor
     region: root.region
     width: root.contentWidth
   }

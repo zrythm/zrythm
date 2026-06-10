@@ -568,7 +568,7 @@ Item {
         Rectangle {
           id: playhead
 
-          color: Style.dangerColor
+          color: ZrythmTheme.dangerColor
           height: parent.height
           width: 2
           x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
@@ -584,9 +584,9 @@ Item {
           readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
           readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
 
-          border.color: Style.backgroundAppendColor
+          border.color: ZrythmTheme.backgroundAppendColor
           border.width: 2
-          color: Qt.alpha(Style.backgroundAppendColor, 0.1)
+          color: Qt.alpha(ZrythmTheme.backgroundAppendColor, 0.1)
           height: maxY - minY
           opacity: 0.5
           visible: scrollView.currentAction === Arranger.Selecting

@@ -14,7 +14,7 @@ T.TreeViewDelegate {
   required property var model
   required property int row
 
-  font: Style.semiBoldTextFont
+  font: ZrythmTheme.semiBoldTextFont
   highlighted: control.selected || control.current || ((control.treeView.selectionBehavior === TableView.SelectRows || control.treeView.selectionBehavior === TableView.SelectionDisabled) && control.row === control.treeView.currentRow)
   implicitHeight: Math.max(indicator ? indicator.height : 0, implicitContentHeight) * 1.25
   implicitWidth: leftMargin + __contentIndent + implicitContentWidth + rightPadding + rightMargin
@@ -56,16 +56,16 @@ T.TreeViewDelegate {
   }
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, hoverHandler.hovered && !control.highlighted, control.visualFocus, control.down)
+    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(baseColor, hoverHandler.hovered && !control.highlighted, control.visualFocus, control.down)
 
     border.width: Qt.styleHints.accessibility.contrastPreference !== Qt.HighContrast ? 0 : control.current ? 2 : 1
     color: colorAdjustedForHoverOrFocusOrDown
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 100
     visible: control.down || control.highlighted || control.visualFocus || hoverHandler.hovered
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   contentItem: Label {
@@ -80,7 +80,7 @@ T.TreeViewDelegate {
     // click on, since the image is a bit small.
     readonly property real __indicatorIndent: control.leftMargin + (control.depth * control.indentation)
 
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 20
     x: !control.mirrored ? __indicatorIndent : control.width - __indicatorIndent - width
     y: (control.height - height) / 2

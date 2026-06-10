@@ -74,9 +74,9 @@ Item {
     id: background
 
     anchors.fill: parent
-    color: Style.getColorBlendedTowardsContrast(palette.window)
+    color: ZrythmTheme.getColorBlendedTowardsContrast(palette.window)
     opacity: root.hovered ? 0.8 : 0.6
-    radius: Style.textFieldRadius
+    radius: ZrythmTheme.textFieldRadius
   }
 
   // Left channel indicator

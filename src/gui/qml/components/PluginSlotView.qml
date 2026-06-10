@@ -267,7 +267,7 @@ Control {
     readonly property color baseColor: {
       let c = root.pluginEnabled ? palette.base : palette.window;
       if (root.plugin && root.plugin.uiVisible) {
-        c = Style.getColorBlendedTowardsContrast(c);
+        c = ZrythmTheme.getColorBlendedTowardsContrast(c);
       }
       return c;
     }
@@ -279,7 +279,7 @@ Control {
       return palette.alternateBase;
     }
     border.width: 1
-    color: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, root.hovered, root.visualFocus, root.down)
+    color: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(baseColor, root.hovered, root.visualFocus, root.down)
     radius: 6
 
     // Drop insert indicator: top border only
@@ -326,12 +326,12 @@ Control {
       color: {
         let c;
         if (root.plugin && root.plugin.instantiationStatus === Plugin.Failed) {
-          c = Style.dangerColor;
+          c = ZrythmTheme.dangerColor;
         } else {
           c = palette.text;
         }
         if (!root.pluginEnabled) {
-          return Style.getColorBlendedTowardsContrast(c);
+          return ZrythmTheme.getColorBlendedTowardsContrast(c);
         }
         return c;
       }

@@ -36,7 +36,7 @@ GridLayout {
       id: rotatedText
 
       Layout.fillHeight: true
-      font: Style.normalTextFont
+      font: ZrythmTheme.normalTextFont
       text: root.region.name.name
     }
   }

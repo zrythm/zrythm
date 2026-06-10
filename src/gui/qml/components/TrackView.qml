@@ -46,7 +46,7 @@ Control {
   hoverEnabled: true
   implicitHeight: 48
   implicitWidth: 200
-  opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : Style.getOpacity(track.enabled, root.Window.active)
+  opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : ZrythmTheme.getOpacity(track.enabled, root.Window.active)
 
   ContextMenu.menu: Menu {
     id: contextMenu
@@ -87,7 +87,7 @@ Control {
     color: QmlUtils.getTrackBackground(root.palette.window, root.track.color, root.palette.windowText, selectionTracker.isSelected || bgTapHandler.pressed, root.hovered, false)
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     TapHandler {
@@ -262,7 +262,7 @@ Control {
             width: iconSize
 
             Behavior on rotation {
-              animation: Style.propertyAnimation
+              animation: ZrythmTheme.propertyAnimation
             }
           }
 
@@ -536,7 +536,7 @@ Control {
             Layout.alignment: Qt.AlignLeft | Qt.AlignBaseline
             Layout.fillWidth: true
             elide: Text.ElideRight
-            font: selectionTracker.isSelected ? Style.buttonTextFont : Style.normalTextFont
+            font: selectionTracker.isSelected ? ZrythmTheme.buttonTextFont : ZrythmTheme.normalTextFont
             text: root.track.name
           }
 
@@ -606,7 +606,7 @@ Control {
             id: chordScalesLabel
 
             Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-            font: Style.smallTextFont
+            font: ZrythmTheme.smallTextFont
             text: qsTr("Scales")
             visible: root.track.type === Track.Chord
           }

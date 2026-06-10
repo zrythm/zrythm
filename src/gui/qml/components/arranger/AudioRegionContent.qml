@@ -16,9 +16,9 @@ Item {
 
   AudioRegionWaveformCanvas {
     height: root.contentHeight
-    outlineColor: Qt.lighter(Style.regionContentColor, 1.4)
+    outlineColor: Qt.lighter(ZrythmTheme.regionContentColor, 1.4)
     region: root.region
-    waveformColor: Style.regionContentColor
+    waveformColor: ZrythmTheme.regionContentColor
     width: root.contentWidth
   }
 }

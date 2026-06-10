@@ -9,10 +9,10 @@ import ZrythmStyle 1.0
 
 T.Menu {
   // header: Item {
-  //     height: Style.buttonRadius
+  //     height: ZrythmTheme.buttonRadius
   // }
   // footer: Item {
-  //     height: Style.buttonRadius
+  //     height: ZrythmTheme.buttonRadius
   // }
 
   id: control

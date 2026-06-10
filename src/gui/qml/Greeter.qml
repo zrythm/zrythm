@@ -41,8 +41,8 @@ ApplicationWindow {
     root.hide();
   }
 
-  font.family: Style.fontFamily
-  font.pointSize: Style.fontPointSize
+  font.family: ZrythmTheme.fontFamily
+  font.pointSize: ZrythmTheme.fontPointSize
   height: 420
   minimumWidth: 256
   title: "Zrythm"

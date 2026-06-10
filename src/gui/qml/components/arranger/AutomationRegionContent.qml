@@ -84,7 +84,7 @@ Item {
       const pixelWidth = values.length;
 
       // Set the stroke color
-      const regionColor = Style.regionContentColor;
+      const regionColor = ZrythmTheme.regionContentColor;
       ctx.strokeStyle = regionColor;
       ctx.fillStyle = regionColor;
       ctx.lineWidth = 1;

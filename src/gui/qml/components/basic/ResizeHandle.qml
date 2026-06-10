@@ -22,7 +22,7 @@ Rectangle {
 
   Rectangle {
     anchors.centerIn: parent
-    color: Qt.alpha(Style.backgroundAppendColor, 0.2)
+    color: Qt.alpha(ZrythmTheme.backgroundAppendColor, 0.2)
     height: 2
     radius: 2
     width: 24

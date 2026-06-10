@@ -55,7 +55,7 @@ Rectangle {
       }
     }
     Behavior on height {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     anchors {
@@ -70,13 +70,13 @@ Rectangle {
 
     readonly property bool isOver: meterProcessor.peakAmplitude > 1
 
-    color: isOver ? Style.dangerColor : Style.backgroundAppendColor
+    color: isOver ? ZrythmTheme.dangerColor : ZrythmTheme.backgroundAppendColor
     height: isOver ? 2 : 1.5
     opacity: isOver ? 1 : meterProcessor.peakAmplitude
     y: root.height - root.peakPx
 
     Behavior on y {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     anchors {

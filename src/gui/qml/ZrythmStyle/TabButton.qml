@@ -12,10 +12,10 @@ T.TabButton {
 
   readonly property color iconLabelColor: control.checked ? control.palette.brightText : control.palette.buttonText
 
-  font: Style.semiBoldTextFont
+  font: ZrythmTheme.semiBoldTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: 4
   spacing: 4
 
@@ -29,23 +29,23 @@ T.TabButton {
     color: {
       let c = control.checked ? control.palette.highlight : control.palette.button;
       if (control.down)
-        return Style.getStrongerColor(c);
+        return ZrythmTheme.getStrongerColor(c);
       else if (control.visualFocus || (control.hovered && !control.checked))
-        return Style.getColorBlendedTowardsContrast(c);
+        return ZrythmTheme.getColorBlendedTowardsContrast(c);
       return c;
     }
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     topLeftRadius: isBeginning ? radiusToUse : 0
     topRightRadius: isEnd ? radiusToUse : 0
 
     Behavior on border.color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     border {
@@ -65,7 +65,7 @@ T.TabButton {
 
   icon {
     color: iconLabelColor
-    height: Style.buttonHeight - 2 * padding
-    width: Style.buttonHeight - 2 * padding
+    height: ZrythmTheme.buttonHeight - 2 * padding
+    width: ZrythmTheme.buttonHeight - 2 * padding
   }
 }

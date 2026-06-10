@@ -249,7 +249,7 @@ Item {
 
             color: palette.button
             height: track.fullVisibleHeight
-            radius: Style.textFieldRadius
+            radius: ZrythmTheme.textFieldRadius
             width: root.sceneWidth
 
             DropArea {

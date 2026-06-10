@@ -105,9 +105,9 @@ Item {
 
     // Grid lines and labels
     RulerGridCanvas {
-      barLabelFont: Style.smallTextFont
+      barLabelFont: ZrythmTheme.smallTextFont
       barLineOpacity: root.barLineOpacity
-      beatLabelFont: Style.xSmallTextFont
+      beatLabelFont: ZrythmTheme.xSmallTextFont
       beatLineOpacity: root.beatLineOpacity
       detailMeasureLabelPxThreshold: root.detailMeasureLabelPxThreshold
       detailMeasurePxThreshold: root.detailMeasurePxThreshold
@@ -115,7 +115,7 @@ Item {
       pxPerTick: root.pxPerTick
       scrollX: root.editorSettings?.x ?? 0
       scrollXPlusWidth: (root.editorSettings?.x ?? 0) + scrollView.width
-      sixteenthLabelFont: Style.xxSmallTextFont
+      sixteenthLabelFont: ZrythmTheme.xxSmallTextFont
       sixteenthLineOpacity: root.sixteenthLineOpacity
       tempoMap: root.tempoMap
       textColor: root.palette.text

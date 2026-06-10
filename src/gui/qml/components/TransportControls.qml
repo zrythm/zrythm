@@ -83,7 +83,7 @@ RowLayout {
       TextMetrics {
         id: timeTextMetrics
 
-        font: Style.semiBoldTextFont
+        font: ZrythmTheme.semiBoldTextFont
         text: "99.9.9.999"
       }
     }

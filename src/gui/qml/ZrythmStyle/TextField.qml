@@ -11,12 +11,12 @@ T.TextField {
   id: control
 
   color: control.palette.text
-  font: Style.normalTextFont
+  font: ZrythmTheme.normalTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, contentHeight + topPadding + bottomPadding, placeholder.implicitHeight + topPadding + bottomPadding)
   implicitWidth: implicitBackgroundWidth + leftInset + rightInset || Math.max(contentWidth, placeholder.implicitWidth) + leftPadding + rightPadding
   leftPadding: padding + 4
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
-  padding: Style.buttonPadding
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
+  padding: ZrythmTheme.buttonPadding
   placeholderTextColor: control.palette.placeholderText
   selectedTextColor: control.palette.highlightedText
   selectionColor: control.palette.highlight
@@ -24,18 +24,18 @@ T.TextField {
 
   background: Rectangle {
     color: control.palette.base
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 200
-    radius: Style.textFieldRadius
+    radius: ZrythmTheme.textFieldRadius
 
     Behavior on border.color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     border {

@@ -10,7 +10,7 @@ Item {
   id: root
 
   property real ampAtStart: 0.0
-  readonly property int bgRadius: Style.toolButtonRadius
+  readonly property int bgRadius: ZrythmTheme.toolButtonRadius
   property real currentAutomatedValue: faderValue
   property real currentModulatedValue: faderValue
   readonly property real defaultFaderValue: 0.8
@@ -90,7 +90,7 @@ Item {
     id: background
 
     anchors.fill: parent
-    color: Style.getColorBlendedTowardsContrast(palette.window)
+    color: ZrythmTheme.getColorBlendedTowardsContrast(palette.window)
     opacity: root.hovered ? 0.8 : 0.6
     radius: root.bgRadius
   }
@@ -98,7 +98,7 @@ Item {
   Rectangle {
     id: fillRect
 
-    readonly property color endColor: Style.getColorBlendedTowardsContrast(palette.accent)
+    readonly property color endColor: ZrythmTheme.getColorBlendedTowardsContrast(palette.accent)
 
     bottomLeftRadius: root.bgRadius
     bottomRightRadius: root.bgRadius

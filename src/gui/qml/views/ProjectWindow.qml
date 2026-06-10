@@ -401,8 +401,8 @@ ApplicationWindow {
 
       RowLayout {
         anchors.fill: parent
-        anchors.rightMargin: Style.buttonPadding * 2
-        spacing: Style.buttonPadding * 2
+        anchors.rightMargin: ZrythmTheme.buttonPadding * 2
+        spacing: ZrythmTheme.buttonPadding * 2
 
         Item {
           Layout.fillWidth: true
