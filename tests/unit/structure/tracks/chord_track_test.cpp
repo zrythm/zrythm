@@ -15,9 +15,8 @@ class ChordTrackTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    chord_c_major_ = dsp::ChordDescriptor (
-      dsp::MusicalNote::C, false, dsp::MusicalNote::C, dsp::ChordType::Major,
-      dsp::ChordAccent::None, 0);
+    chord_c_major_.setRootNote (dsp::MusicalNote::C);
+    chord_c_major_.setChordType (dsp::ChordType::Major);
   }
 
   dsp::ChordDescriptor chord_c_major_;

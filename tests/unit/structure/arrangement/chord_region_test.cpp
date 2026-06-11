@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
@@ -22,20 +22,28 @@ protected:
     region->bounds ()->length ()->setTicks (200);
   }
 
-  auto create_chord_object (int chord_index)
+  auto create_chord_object (
+    dsp::MusicalNote root,
+    dsp::ChordType   type,
+    dsp::ChordAccent accent = dsp::ChordAccent::None,
+    int              inversion = 0)
   {
-    // Create ChordObject using registry
     auto chord_ref =
       utils::create_object<ChordObject> (registry, *tempo_map, region.get ());
-    chord_ref.get_object_as<ChordObject> ()->setChordDescriptorIndex (
-      chord_index);
+    auto * descr = chord_ref.get_object_as<ChordObject> ()->chordDescriptor ();
+    descr->setRootNote (root);
+    descr->setChordType (type);
+    descr->setChordAccent (accent);
+    descr->setInversion (inversion);
     return chord_ref;
   }
 
-  void
-  add_chord_object (int chord_index, double position_ticks, double length_ticks)
+  void add_chord_object (
+    dsp::MusicalNote root,
+    dsp::ChordType   type,
+    double           position_ticks)
   {
-    auto chord_ref = create_chord_object (chord_index);
+    auto chord_ref = create_chord_object (root, type);
     chord_ref.get_object_as<ChordObject> ()->position ()->setTicks (
       position_ticks);
     region->add_object (chord_ref);
@@ -60,93 +68,89 @@ TEST_F (ChordRegionTest, InitialState)
 
 TEST_F (ChordRegionTest, AddChordObject)
 {
-  // Add a chord object
-  add_chord_object (3, 100, 50);
+  // Add a C Major chord object
+  add_chord_object (dsp::MusicalNote::C, dsp::ChordType::Major, 100);
 
-  // Verify object was added
   EXPECT_EQ (region->get_children_vector ().size (), 1);
   auto chord_obj = region->get_children_view ()[0];
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), 3);
+  EXPECT_EQ (chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
+  EXPECT_EQ (chord_obj->chordDescriptor ()->chordType (), dsp::ChordType::Major);
   EXPECT_EQ (chord_obj->position ()->ticks (), 100);
 }
 
 TEST_F (ChordRegionTest, RemoveChordObject)
 {
-  // Add a chord object
-  auto chord_ref = create_chord_object (2);
+  auto chord_ref =
+    create_chord_object (dsp::MusicalNote::D, dsp::ChordType::Minor);
   region->add_object (chord_ref);
 
-  // Remove object
   auto removed_ref = region->remove_object (chord_ref.id ());
 
-  // Verify object was removed
   EXPECT_EQ (region->get_children_vector ().size (), 0);
   EXPECT_EQ (removed_ref.id (), chord_ref.id ());
 }
 
-TEST_F (ChordRegionTest, ChordIndexChange)
+TEST_F (ChordRegionTest, ChordPropertyChange)
 {
   // Add a chord object
-  add_chord_object (1, 100, 50);
+  add_chord_object (dsp::MusicalNote::C, dsp::ChordType::Major, 100);
 
-  // Change chord index
-  region->get_children_view ()[0]->setChordDescriptorIndex (5);
+  // Change chord properties
+  auto * descr = region->get_children_view ()[0]->chordDescriptor ();
+  descr->setRootNote (dsp::MusicalNote::A);
+  descr->setChordType (dsp::ChordType::Minor);
+  descr->setChordAccent (dsp::ChordAccent::Seventh);
 
-  // Verify change
-  EXPECT_EQ (region->get_children_view ()[0]->chordDescriptorIndex (), 5);
+  EXPECT_EQ (descr->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (descr->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (descr->chordAccent (), dsp::ChordAccent::Seventh);
 }
 
 TEST_F (ChordRegionTest, MuteFunctionality)
 {
-  // Add a chord object
-  add_chord_object (4, 100, 50);
+  add_chord_object (dsp::MusicalNote::F, dsp::ChordType::Major, 100);
 
-  // Mute the chord
   region->get_children_view ()[0]->mute ()->setMuted (true);
 
-  // Verify mute
   EXPECT_TRUE (region->get_children_view ()[0]->mute ()->muted ());
 }
 
 TEST_F (ChordRegionTest, Serialization)
 {
-  // Add a chord object
-  add_chord_object (2, 150, 75);
+  // Add a D Minor chord
+  add_chord_object (dsp::MusicalNote::D, dsp::ChordType::Minor, 150);
   const auto chord_id = region->get_children_view ()[0]->get_uuid ();
 
-  // Serialize
   nlohmann::json j;
   to_json (j, *region);
 
-  // Create new region
   auto new_region =
     std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
   from_json (j, *new_region);
 
-  // Verify deserialization
   EXPECT_EQ (new_region->get_children_vector ().size (), 1);
   auto chord_obj = new_region->get_children_view ()[0];
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), 2);
+  EXPECT_EQ (chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (chord_obj->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
   EXPECT_EQ (chord_obj->position ()->ticks (), 150);
   EXPECT_EQ (chord_obj->get_uuid (), chord_id);
 }
 
 TEST_F (ChordRegionTest, ObjectCloning)
 {
-  // Add a chord object
-  add_chord_object (3, 200, 100);
+  add_chord_object (dsp::MusicalNote::E, dsp::ChordType::Minor, 200);
 
-  // Clone region with new identities
   auto cloned_region =
     std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
   init_from (*cloned_region, *region, utils::ObjectCloneType::NewIdentity);
 
-  // Verify cloning
   EXPECT_EQ (cloned_region->get_children_vector ().size (), 1);
   auto cloned_chord = cloned_region->get_children_view ()[0];
   EXPECT_NE (
     cloned_chord->get_uuid (), region->get_children_view ()[0]->get_uuid ());
-  EXPECT_EQ (cloned_chord->chordDescriptorIndex (), 3);
+  EXPECT_EQ (cloned_chord->chordDescriptor ()->rootNote (), dsp::MusicalNote::E);
+  EXPECT_EQ (
+    cloned_chord->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
   EXPECT_EQ (cloned_chord->position ()->ticks (), 200);
 }
 

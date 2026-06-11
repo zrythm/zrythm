@@ -55,21 +55,15 @@ TEST (MusicalScaleTest, ChordContainment)
   MusicalScale c_major (MusicalScale::ScaleType::Major, MusicalNote::C);
 
   // Test major chord in scale
-  ChordDescriptor c_maj (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major, ChordAccent::None,
-    0);
+  ChordDescriptor c_maj (MusicalNote::C, ChordType::Major);
   EXPECT_TRUE (c_major.contains_chord (c_maj));
 
   // Test minor chord in scale
-  ChordDescriptor d_min (
-    MusicalNote::D, false, MusicalNote::D, ChordType::Minor, ChordAccent::None,
-    0);
+  ChordDescriptor d_min (MusicalNote::D, ChordType::Minor);
   EXPECT_TRUE (c_major.contains_chord (d_min));
 
   // Test chord not in scale
-  ChordDescriptor c_sharp_maj (
-    MusicalNote::CSharp, false, MusicalNote::CSharp, ChordType::Major,
-    ChordAccent::None, 0);
+  ChordDescriptor c_sharp_maj (MusicalNote::CSharp, ChordType::Major);
   EXPECT_FALSE (c_major.contains_chord (c_sharp_maj));
 }
 

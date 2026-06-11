@@ -181,24 +181,17 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
     snap_grid_editor_.defaultTicks (static_cast<int64_t> (startTicks));
 
   /* create midi notes */
-  for (
-    const auto i : std::views::iota (
-      static_cast<decltype (dsp::ChordDescriptor::MAX_NOTES)> (0),
-      dsp::ChordDescriptor::MAX_NOTES))
+  for (auto pitch : descr.getMidiPitches ())
     {
-      if (descr.notes_.at (i))
-        {
-          auto mn =
-            arranger_object_factory_
-              .get_builder<structure::arrangement::MidiNote> ()
-              .with_pitch (static_cast<int> (i) + 36)
-              .with_velocity (structure::arrangement::MidiNote::DEFAULT_VELOCITY)
-              .with_start_ticks (units::ticks (0))
-              .with_end_ticks (units::ticks (mn_len_ticks))
-              .build_in_registry ();
-          mr->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
-            mn);
-        }
+      auto mn =
+        arranger_object_factory_
+          .get_builder<structure::arrangement::MidiNote> ()
+          .with_pitch (static_cast<int> (pitch))
+          .with_velocity (structure::arrangement::MidiNote::DEFAULT_VELOCITY)
+          .with_start_ticks (units::ticks (0))
+          .with_end_ticks (units::ticks (mn_len_ticks))
+          .build_in_registry ();
+      mr->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (mn);
     }
 
   return mr;

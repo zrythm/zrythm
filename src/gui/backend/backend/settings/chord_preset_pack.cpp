@@ -99,7 +99,14 @@ void
 to_json (nlohmann::json &j, const ChordPresetPack &pack)
 {
   j[ChordPresetPack::kNameKey] = pack.name_;
-  j[ChordPresetPack::kPresetsKey] = pack.presets_;
+  nlohmann::json presets_arr = nlohmann::json::array ();
+  for (const auto * pset : pack.presets_)
+    {
+      nlohmann::json pset_json;
+      to_json (pset_json, *pset);
+      presets_arr.push_back (pset_json);
+    }
+  j[ChordPresetPack::kPresetsKey] = presets_arr;
   j[ChordPresetPack::kIsStandardKey] = pack.is_standard_;
 }
 void

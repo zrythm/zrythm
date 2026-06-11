@@ -1,14 +1,16 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
 #include <array>
 #include <cstdint>
+#include <optional>
 
 #include <QObject>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <boost/container/static_vector.hpp>
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::utils
@@ -93,126 +95,201 @@ using ChordType = chords::ChordType;
 using ChordAccent = chords::ChordAccent;
 
 /**
- * A ChordDescriptor describes a chord and is not linked to any specific object
- * by itself.
+ * Describes a musical chord by its root note, type, accent, inversion,
+ * and optional bass note.
  *
- * Chord objects should include a ChordDescriptor.
+ * The chord's note content is defined by intervals computed on demand from
+ * (type, accent) — no cached derived state.
  */
-class ChordDescriptor
+class ChordDescriptor : public QObject
 {
-public:
-  static constexpr size_t MAX_NOTES = 48;
+  Q_OBJECT
+  QML_ELEMENT
 
 public:
+  static constexpr std::uint8_t kDefaultBasePitch = 36; // C2
+
   ChordDescriptor () = default;
 
-  /**
-   * Creates a ChordDescriptor.
-   */
   ChordDescriptor (
-    MusicalNote root,
-    bool        has_bass,
-    MusicalNote bass,
-    ChordType   type,
-    ChordAccent accent,
-    int         inversion)
-      : has_bass_ (has_bass), root_note_ (root), bass_note_ (bass),
-        type_ (type), accent_ (accent), inversion_ (inversion)
+    MusicalNote                root,
+    ChordType                  type,
+    ChordAccent                accent = ChordAccent::None,
+    int                        inversion = 0,
+    std::optional<MusicalNote> bass = std::nullopt,
+    QObject *                  parent = nullptr)
+      : QObject (parent), root_note_ (root), type_ (type), accent_ (accent),
+        inversion_ (inversion), bass_note_ (bass)
   {
-    update_notes ();
   }
 
-  int get_max_inversion () const
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  Q_PROPERTY (
+    zrythm::dsp::chords::MusicalNote rootNote READ rootNote WRITE setRootNote
+      NOTIFY rootNoteChanged)
+  Q_PROPERTY (bool hasBass READ hasBass WRITE setHasBass NOTIFY hasBassChanged)
+  Q_PROPERTY (
+    zrythm::dsp::chords::MusicalNote bassNote READ bassNote WRITE setBassNote
+      NOTIFY bassNoteChanged)
+  Q_PROPERTY (
+    zrythm::dsp::chords::ChordType chordType READ chordType WRITE setChordType
+      NOTIFY chordTypeChanged)
+  Q_PROPERTY (
+    zrythm::dsp::chords::ChordAccent chordAccent READ chordAccent WRITE
+      setChordAccent NOTIFY chordAccentChanged)
+  Q_PROPERTY (
+    int inversion READ inversion WRITE setInversion NOTIFY inversionChanged)
+  Q_PROPERTY (QString displayName READ displayName NOTIFY displayNameChanged)
+
+  MusicalNote rootNote () const { return root_note_; }
+  void        setRootNote (MusicalNote v)
   {
-    int max_inv = 2;
-    switch (accent_)
+    if (root_note_ != v)
       {
-      case ChordAccent::None:
-        break;
-      case ChordAccent::Seventh:
-      case ChordAccent::MajorSeventh:
-      case ChordAccent::FlatNinth:
-      case ChordAccent::Ninth:
-      case ChordAccent::SharpNinth:
-      case ChordAccent::Eleventh:
-        max_inv = 3;
-        break;
-      case ChordAccent::FlatFifthSharpEleventh:
-      case ChordAccent::SharpFifthFlatThirteenth:
-      case ChordAccent::SixthThirteenth:
-        max_inv = 4;
-        break;
-      default:
-        break;
+        root_note_ = v;
+        Q_EMIT rootNoteChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
       }
-
-    return max_inv;
   }
 
-  int get_min_inversion () const { return -get_max_inversion (); }
+  bool hasBass () const { return bass_note_.has_value (); }
+  void setHasBass (bool v)
+  {
+    if (hasBass () != v)
+      {
+        bass_note_ = v ? std::optional<MusicalNote> (root_note_) : std::nullopt;
+        Q_EMIT hasBassChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
+      }
+  }
 
-  /**
-   * Returns if the given key is in the chord represented by the given
-   * ChordDescriptor.
-   *
-   * @param key A note inside a single octave (0-11).
-   */
+  MusicalNote bassNote () const { return bass_note_.value_or (MusicalNote::C); }
+  void        setBassNote (MusicalNote v)
+  {
+    bool had = hasBass ();
+    if (!bass_note_.has_value () || *bass_note_ != v)
+      {
+        bass_note_ = v;
+        if (!had)
+          Q_EMIT hasBassChanged (true);
+        Q_EMIT bassNoteChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
+      }
+  }
+
+  ChordType chordType () const { return type_; }
+  void      setChordType (ChordType v)
+  {
+    if (type_ != v)
+      {
+        type_ = v;
+        Q_EMIT chordTypeChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
+      }
+  }
+
+  ChordAccent chordAccent () const { return accent_; }
+  void        setChordAccent (ChordAccent v)
+  {
+    if (accent_ != v)
+      {
+        accent_ = v;
+        Q_EMIT chordAccentChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
+      }
+  }
+
+  int  inversion () const { return inversion_; }
+  void setInversion (int v)
+  {
+    if (inversion_ != v)
+      {
+        inversion_ = v;
+        Q_EMIT inversionChanged (v);
+        Q_EMIT displayNameChanged ();
+        Q_EMIT changed ();
+      }
+  }
+
+  QString displayName () const;
+
+  Q_SIGNAL void rootNoteChanged (zrythm::dsp::chords::MusicalNote note);
+  Q_SIGNAL void hasBassChanged (bool has);
+  Q_SIGNAL void bassNoteChanged (zrythm::dsp::chords::MusicalNote note);
+  Q_SIGNAL void chordTypeChanged (zrythm::dsp::chords::ChordType type);
+  Q_SIGNAL void chordAccentChanged (zrythm::dsp::chords::ChordAccent accent);
+  Q_SIGNAL void inversionChanged (int inversion);
+  Q_SIGNAL void displayNameChanged ();
+  Q_SIGNAL void changed ();
+
+  // ========================================================================
+  // Queries
+  // ========================================================================
+
   bool is_key_in_chord (MusicalNote key) const;
-
-  /**
-   * Returns if @ref key is the bass or root note of @ref chord.
-   *
-   * @param key A note inside a single octave (0-11).
-   */
   bool is_key_bass (MusicalNote key) const;
 
-  /**
-   * Returns the chord type as a string (eg. "aug").
-   */
-  static utils::Utf8String chord_type_to_string (ChordType type);
+  static constexpr size_t kMaxIntervals = 12;
 
   /**
-   * Returns the chord accent as a string (eg. "j7").
+   * Returns the semitone intervals from root for the current type and accent.
+   * e.g., Major = {0, 4, 7}, Minor7 = {0, 3, 7, 10}
    */
-  static utils::Utf8String chord_accent_to_string (ChordAccent accent);
+  boost::container::static_vector<int, kMaxIntervals> getIntervals () const;
 
   /**
-   * Returns the musical note as a string (eg. "C3").
+   * Stack-allocated container for chord MIDI pitches.
+   * Large enough for any chord (triad + accent + bass).
    */
-  static utils::Utf8String note_to_string (MusicalNote note);
-
-  /**
-   * Returns the chord in human readable string.
-   */
-  utils::Utf8String to_string () const;
-
-  /**
-   * Updates the notes array based on the current
-   * settings.
-   */
-  void update_notes ();
-
-  friend bool
-  operator== (const ChordDescriptor &lhs, const ChordDescriptor &rhs)
+  struct ChordPitches
   {
-    return lhs.has_bass_ == rhs.has_bass_ && lhs.root_note_ == rhs.root_note_
-           && lhs.bass_note_ == rhs.bass_note_ && lhs.type_ == rhs.type_
-           && lhs.notes_ == rhs.notes_ && lhs.inversion_ == rhs.inversion_;
-  }
+    static constexpr size_t               kMaxPitches = 8;
+    std::array<std::uint8_t, kMaxPitches> data{};
+    size_t                                count = 0;
+
+    auto         begin () const { return data.begin (); }
+    auto         end () const { return data.begin () + count; }
+    bool         empty () const { return count == 0; }
+    size_t       size () const { return count; }
+    std::uint8_t operator[] (size_t i) const { return data[i]; }
+  };
+
+  /**
+   * Returns the MIDI pitches for this chord's voicing.
+   * Applies octave placement, bass note, and inversion.
+   * Stack-allocated, realtime-safe.
+   */
+  ChordPitches
+  getMidiPitches (std::uint8_t base_pitch = kDefaultBasePitch) const;
+
+  int maxInversion () const;
+  int minInversion () const { return -maxInversion (); }
+
+  // ========================================================================
+  // String utilities
+  // ========================================================================
+
+  static utils::Utf8String chord_type_to_string (ChordType type);
+  static utils::Utf8String chord_accent_to_string (ChordAccent accent);
+  static utils::Utf8String note_to_string (MusicalNote note);
+  utils::Utf8String        to_string () const;
+
+  bool isEquivalent (const ChordDescriptor &other) const;
 
 private:
   friend void to_json (nlohmann::json &j, const ChordDescriptor &c);
   friend void from_json (const nlohmann::json &j, ChordDescriptor &c);
 
-public:
-  /** Has bass note or not. */
-  bool has_bass_ = false;
-
   /** Root note. */
   MusicalNote root_note_ = MusicalNote::C;
-
-  /** Bass note 1 octave below. */
-  MusicalNote bass_note_ = MusicalNote::C;
 
   /** Chord type. */
   ChordType type_ = ChordType::None;
@@ -225,21 +302,24 @@ public:
   ChordAccent accent_ = ChordAccent::None;
 
   /**
-   * Only used if custom chord.
-   *
-   * 4 octaves, 1st octave is where bass note is, but bass note should not be
-   * part of this.
-   *
-   * Starts at C always, from MIDI pitch 36.
-   */
-  std::array<bool, MAX_NOTES> notes_{};
-
-  /**
    * 0 no inversion,
    * less than 0 highest note(s) drop an octave,
    * greater than 0 lowest note(s) receive an octave.
    */
   int inversion_ = 0;
+
+  /** Bass note 1 octave below. */
+  std::optional<MusicalNote> bass_note_;
+
+  /**
+   * Custom chord intervals (semitone offsets from root).
+   * Only used when type_ is ChordType::Custom.
+   *
+   * TODO: Implement custom chord editing. When set, these intervals
+   * override the standard type+accent computation in getIntervals().
+   */
+  std::optional<boost::container::static_vector<int, kMaxIntervals>>
+    custom_intervals_;
 };
 
 } // namespace zrythm::dsp

@@ -35,37 +35,30 @@ ChordTrack::transform_chord_and_append (
 
       if (utils::midi::midi_is_note_on (data))
         {
-          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+          for (auto pitch : descr->getMidiPitches ())
             {
-              if (descr->notes_[i])
-                {
-                  const auto ev = dsp::midi_event::make_note_on (
-                    0, static_cast<midi_byte_t> (i + 36), velocity,
-                    src_ev.time ());
-                  if (
-                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
-                      + ev.data ().size ()
-                    > dest.capacity ())
-                    return;
-                  dest.push_back (ev.time_, ev.data ());
-                }
+              const auto ev = dsp::midi_event::make_note_on (
+                0, pitch, velocity, src_ev.time ());
+              if (
+                dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                  + ev.data ().size ()
+                > dest.capacity ())
+                return;
+              dest.push_back (ev.time_, ev.data ());
             }
         }
       else
         {
-          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+          for (auto pitch : descr->getMidiPitches ())
             {
-              if (descr->notes_[i])
-                {
-                  const auto ev = dsp::midi_event::make_note_off (
-                    0, static_cast<midi_byte_t> (i + 36), src_ev.time ());
-                  if (
-                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
-                      + ev.data ().size ()
-                    > dest.capacity ())
-                    return;
-                  dest.push_back (ev.time_, ev.data ());
-                }
+              const auto ev =
+                dsp::midi_event::make_note_off (0, pitch, src_ev.time ());
+              if (
+                dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                  + ev.data ().size ()
+                > dest.capacity ())
+                return;
+              dest.push_back (ev.time_, ev.data ());
             }
         }
     }

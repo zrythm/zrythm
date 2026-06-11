@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/qt.h"
 #include "utils/registry_utils.h"
 
 namespace zrythm::structure::arrangement
@@ -112,10 +113,16 @@ public:
       return *this;
     }
 
-    Builder &with_chord_descriptor (const int chord_descriptor_index)
+    Builder &with_chord_descriptor (
+      dsp::MusicalNote                root,
+      dsp::ChordType                  type,
+      dsp::ChordAccent                accent = dsp::ChordAccent::None,
+      int                             inversion = 0,
+      std::optional<dsp::MusicalNote> bass = std::nullopt)
       requires (std::is_same_v<ObjT, ChordObject>)
     {
-      chord_descriptor_index_ = chord_descriptor_index;
+      chord_descr_ = utils::make_qobject_unique<dsp::ChordDescriptor> (
+        root, type, accent, inversion, bass);
       return *this;
     }
 
@@ -305,11 +312,17 @@ public:
             dependencies_.automation_curve_algorithm_provider_ ());
         }
 
-      if (chord_descriptor_index_)
+      if (chord_descr_)
         {
           if constexpr (std::is_same_v<ObjT, ChordObject>)
             {
-              obj->setChordDescriptorIndex (*chord_descriptor_index_);
+              auto * dest = obj->chordDescriptor ();
+              dest->setRootNote (chord_descr_->rootNote ());
+              dest->setChordType (chord_descr_->chordType ());
+              dest->setChordAccent (chord_descr_->chordAccent ());
+              dest->setInversion (chord_descr_->inversion ());
+              if (chord_descr_->hasBass ())
+                dest->setBassNote (chord_descr_->bassNote ());
             }
         }
 
@@ -324,7 +337,7 @@ public:
     std::optional<QString>                           name_;
     std::optional<int>                               pitch_;
     std::optional<double>                            automatable_value_;
-    std::optional<int>                               chord_descriptor_index_;
+    utils::QObjectUniquePtr<dsp::ChordDescriptor>    chord_descr_;
     utils::QObjectUniquePtr<dsp::MusicalScale>       scale_;
     std::optional<int>                               velocity_;
     std::optional<int>                               midi_channel_;
@@ -406,7 +419,10 @@ public:
       }
     else if constexpr (std::is_same_v<ChildT, ChordObject>)
       {
-        builder.with_chord_descriptor (std::get<int> (value));
+        // Value was formerly a chord index into ChordEditor; now interpreted
+        // as root note for the inline ChordDescriptor.
+        const auto root = static_cast<dsp::MusicalNote> (std::get<int> (value));
+        builder.with_chord_descriptor (root, dsp::ChordType::Major);
       }
     return builder.build_in_registry ();
   }

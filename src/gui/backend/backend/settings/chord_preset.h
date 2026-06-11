@@ -5,6 +5,7 @@
 
 #include "dsp/chord_descriptor.h"
 #include "structure/project/chord_editor.h"
+#include "utils/qt.h"
 #include "utils/utf8_string.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -58,7 +59,8 @@ public:
   NameT name_;
 
   /** Chord descriptors. */
-  std::vector<zrythm::dsp::ChordDescriptor> descr_;
+  std::vector<zrythm::utils::QObjectUniquePtr<zrythm::dsp::ChordDescriptor>>
+    descr_;
 
   /** Pointer to owner pack. */
   ChordPresetPack * pack_ = nullptr;
@@ -67,5 +69,12 @@ public:
 inline bool
 operator== (const ChordPreset &lhs, const ChordPreset &rhs)
 {
-  return lhs.name_ == rhs.name_ && lhs.descr_ == rhs.descr_;
+  if (lhs.name_ != rhs.name_ || lhs.descr_.size () != rhs.descr_.size ())
+    return false;
+  for (size_t i = 0; i < lhs.descr_.size (); ++i)
+    {
+      if (!lhs.descr_[i]->isEquivalent (*rhs.descr_[i]))
+        return false;
+    }
+  return true;
 }

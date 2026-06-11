@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,6 +7,7 @@
 #include "dsp/musical_scale.h"
 #include "structure/project/editor_settings.h"
 #include "utils/midi.h"
+#include "utils/qt.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
 
@@ -42,7 +43,9 @@ public:
   void
   apply_single_chord (const ChordDescriptor &chord, int idx, bool undoable);
 
-  void apply_chords (const std::vector<ChordDescriptor> &chords, bool undoable);
+  void apply_chords (
+    const std::vector<utils::QObjectUniquePtr<ChordDescriptor>> &chords,
+    bool                                                         undoable);
 
   void apply_preset_from_scale (
     MusicalScale::ScaleType scale,
@@ -59,21 +62,25 @@ public:
 
   int get_chord_index (const ChordDescriptor &chord) const;
 
-  auto &chord_at_index (size_t index) { return chords_.at (index); }
-  auto &chord_at_index (size_t index) const { return chords_.at (index); }
-
-  void add_chord_descriptor (ChordDescriptor &&chord_descr)
+  ChordDescriptor * chord_at_index (size_t index)
   {
-    chords_.emplace_back (std::move (chord_descr));
-    chords_.back ().update_notes ();
+    return chords_.at (index).get ();
+  }
+  const ChordDescriptor * chord_at_index (size_t index) const
+  {
+    return chords_.at (index).get ();
   }
 
-  void
-  replace_chord_descriptor (const auto index, ChordDescriptor &&chord_descr)
+  void add_chord_descriptor (
+    MusicalNote                root,
+    ChordType                  type,
+    ChordAccent                accent = ChordAccent::None,
+    int                        inversion = 0,
+    std::optional<MusicalNote> bass = std::nullopt)
   {
-    chords_.erase (chords_.begin () + index);
-    chords_.insert (chords_.begin () + index, std::move (chord_descr));
-    chord_at_index (index).update_notes ();
+    chords_.push_back (
+      utils::make_qobject_unique<ChordDescriptor> (
+        root, type, accent, inversion, bass));
   }
 
 private:
@@ -93,8 +100,11 @@ public:
    *
    * Currently fixed to 12 chords whose order cannot be edited. Chords cannot
    * be added or removed.
+   *
+   * This is temporary — in the new inline model, ChordEditor will not store
+   * chords at all.
    */
-  std::vector<ChordDescriptor> chords_;
+  std::vector<utils::QObjectUniquePtr<ChordDescriptor>> chords_;
 };
 
 }

@@ -1,26 +1,26 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include "dsp/chord_descriptor.h"
 #include "structure/arrangement/arranger_object.h"
 #include "utils/icloneable.h"
+#include "utils/qt.h"
 
 namespace zrythm::structure::arrangement
 {
+
 /**
- * @brief The ChordObject class represents a chord inside the chord editor.
+ * A chord placed inside a ChordRegion on the chord track.
  *
- * It maintains the index of the corresponding chord in the chord editor.
- *
- * This is normally part of a ChordRegion.
+ * Owns its ChordDescriptor inline.
  */
 class ChordObject final : public ArrangerObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    int chordDescriptorIndex READ chordDescriptorIndex WRITE
-      setChordDescriptorIndex NOTIFY chordDescriptorIndexChanged)
+    zrythm::dsp::ChordDescriptor * chordDescriptor READ chordDescriptor CONSTANT)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -31,9 +31,10 @@ public:
   // QML Interface
   // ========================================================================
 
-  int           chordDescriptorIndex () const { return chord_index_; }
-  void          setChordDescriptorIndex (int descr);
-  Q_SIGNAL void chordDescriptorIndexChanged (int);
+  dsp::ChordDescriptor * chordDescriptor () const
+  {
+    return chord_descriptor_.get ();
+  }
 
   // ========================================================================
 
@@ -43,15 +44,14 @@ private:
     const ChordObject     &other,
     utils::ObjectCloneType clone_type);
 
-  static constexpr auto kChordIndexKey = "chordIndex"sv;
+  static constexpr auto kChordDescriptorKey = "chordDescriptor"sv;
   friend void           to_json (nlohmann::json &j, const ChordObject &co);
   friend void           from_json (const nlohmann::json &j, ChordObject &co);
 
 private:
-  /** The index of the chord it belongs to (0 topmost). */
-  int chord_index_ = 0;
+  utils::QObjectUniquePtr<dsp::ChordDescriptor> chord_descriptor_;
 
-  BOOST_DESCRIBE_CLASS (ChordObject, (ArrangerObject), (), (), (chord_index_))
+  BOOST_DESCRIBE_CLASS (ChordObject, (ArrangerObject), (), (), (chord_descriptor_))
 };
 
 }

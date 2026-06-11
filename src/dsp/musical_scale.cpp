@@ -322,11 +322,15 @@ MusicalScale::containsNote (MusicalNote note) const
 bool
 MusicalScale::contains_chord (const ChordDescriptor &chord) const
 {
-  for (size_t i = 0; i < ChordDescriptor::MAX_NOTES; i++)
+  if (chord.hasBass () && !containsNote (chord.bassNote ()))
+    return false;
+
+  const auto root_val = std::to_underlying (chord.rootNote ());
+  for (int interval : chord.getIntervals ())
     {
-      if (
-        chord.notes_[i]
-        && !containsNote (ENUM_INT_TO_VALUE (MusicalNote, i % 12)))
+      const auto note =
+        ENUM_INT_TO_VALUE (MusicalNote, (root_val + interval) % 12);
+      if (!containsNote (note))
         return false;
     }
   return true;

@@ -243,26 +243,17 @@ RegionRenderer::handle_chord_region_range (
         absolute_start + (chord_object_virtual_start - virtual_range.first));
 
       // Get the chord descriptor from the chord object
-      // TODO: Implement a proper way to get the chord descriptor
-      // For now, create a simple C major chord as an example
-      dsp::ChordDescriptor chord_descr (
-        dsp::MusicalNote::C, false, dsp::MusicalNote::C, dsp::ChordType::Major,
-        dsp::ChordAccent::None, 0);
-      chord_descr.update_notes ();
+      auto pitches = chord_object->chordDescriptor ()->getMidiPitches ();
 
       // Add note on events for all notes in the chord
-      for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+      for (auto note : pitches)
         {
-          if (chord_descr.notes_.at (i))
-            {
-              const auto note = static_cast<midi_byte_t> (36 + i); // C2 + offset
-              events.addEvent (
-                juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
-                chord_object_absolute_start.in (units::ticks));
-              events.addEvent (
-                juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
-                absolute_end.in (units::ticks) -1.0);
-            }
+          events.addEvent (
+            juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
+            chord_object_absolute_start.in (units::ticks));
+          events.addEvent (
+            juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
+            absolute_end.in (units::ticks) -1.0);
         }
     }
 }

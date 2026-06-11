@@ -1742,25 +1742,40 @@
             "endPosition": {
               "$ref": "#/definitions/position"
             },
-            "chord": {
+            "chordDescriptor": {
               "type": "object",
               "properties": {
-                "root": {
+                "rootNote": {
                   "type": "integer",
                   "minimum": 0,
-                  "maximum": 11
+                  "maximum": 11,
+                  "description": "Root note (MusicalNote enum value)"
                 },
                 "type": {
-                  "type": "string",
-                  "description": "Chord type (e.g., 'major', 'minor', '7')"
+                  "type": "integer",
+                  "description": "ChordType enum value"
                 },
                 "accent": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
+                  "type": "integer",
+                  "description": "ChordAccent enum value"
+                },
+                "inversion": {
+                  "type": "integer",
+                  "description": "Inversion count (0 = none)"
+                },
+                "bassNote": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 11,
+                  "description": "Optional bass note (MusicalNote enum value)"
                 }
-              }
+              },
+              "required": [
+                "rootNote",
+                "type",
+                "accent",
+                "inversion"
+              ]
             }
           }
         }

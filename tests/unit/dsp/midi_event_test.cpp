@@ -15,13 +15,11 @@ class MidiEventTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    // Create test chord descriptors
-    chord_c_major_ = ChordDescriptor (
-      MusicalNote::C, false, MusicalNote::C, ChordType::Major,
-      ChordAccent::None, 0);
-    chord_a_minor_ = ChordDescriptor (
-      MusicalNote::A, false, MusicalNote::A, ChordType::Minor,
-      ChordAccent::None, 0);
+    chord_c_major_.setRootNote (MusicalNote::C);
+    chord_c_major_.setChordType (ChordType::Major);
+
+    chord_a_minor_.setRootNote (MusicalNote::A);
+    chord_a_minor_.setChordType (ChordType::Minor);
   }
 
   ChordDescriptor chord_c_major_;

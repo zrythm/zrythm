@@ -1,12 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
 
 #include "dsp/tempo_map.h"
 #include "structure/arrangement/chord_object.h"
-
-#include <QSignalSpy>
 
 #include "helpers/mock_qobject.h"
 
@@ -35,50 +33,29 @@ TEST_F (ChordObjectTest, InitialState)
 {
   EXPECT_EQ (chord_obj->type (), ArrangerObject::Type::ChordObject);
   EXPECT_EQ (chord_obj->position ()->samples (), 0);
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), 0);
+  EXPECT_NE (chord_obj->chordDescriptor (), nullptr);
+  // Default ChordDescriptor is C / None
+  EXPECT_EQ (chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
+  EXPECT_EQ (chord_obj->chordDescriptor ()->chordType (), dsp::ChordType::None);
   EXPECT_FALSE (chord_obj->mute ()->muted ());
 }
 
-// Test chordDescriptorIndex property
-TEST_F (ChordObjectTest, ChordDescriptorIndex)
+// Test chordDescriptor properties
+TEST_F (ChordObjectTest, ChordDescriptorProperties)
 {
-  // Set index
-  chord_obj->setChordDescriptorIndex (3);
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), 3);
-
-  // Set same index (should be no-op)
-  QSignalSpy spy (chord_obj.get (), &ChordObject::chordDescriptorIndexChanged);
-  chord_obj->setChordDescriptorIndex (3);
-  EXPECT_EQ (spy.count (), 0);
-}
-
-// Test chordDescriptorIndexChanged signal
-TEST_F (ChordObjectTest, ChordDescriptorIndexChangedSignal)
-{
-  // Setup signal spy
-  QSignalSpy spy (chord_obj.get (), &ChordObject::chordDescriptorIndexChanged);
-
-  // First set
-  chord_obj->setChordDescriptorIndex (2);
-  EXPECT_EQ (spy.count (), 1);
-  QList<QVariant> arguments = spy.takeFirst ();
-  EXPECT_EQ (arguments.at (0).toInt (), 2);
-
-  // Change index
-  chord_obj->setChordDescriptorIndex (4);
-  EXPECT_EQ (spy.count (), 1);
-  arguments = spy.takeFirst ();
-  EXPECT_EQ (arguments.at (0).toInt (), 4);
+  auto * descr = chord_obj->chordDescriptor ();
+  descr->setRootNote (dsp::MusicalNote::A);
+  descr->setChordType (dsp::ChordType::Minor);
+  EXPECT_EQ (descr->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (descr->chordType (), dsp::ChordType::Minor);
 }
 
 // Test mute functionality
 TEST_F (ChordObjectTest, MuteFunctionality)
 {
-  // Mute the object
   chord_obj->mute ()->setMuted (true);
   EXPECT_TRUE (chord_obj->mute ()->muted ());
 
-  // Unmute the object
   chord_obj->mute ()->setMuted (false);
   EXPECT_FALSE (chord_obj->mute ()->muted ());
 }
@@ -86,60 +63,61 @@ TEST_F (ChordObjectTest, MuteFunctionality)
 // Test serialization/deserialization
 TEST_F (ChordObjectTest, Serialization)
 {
-  // Set initial state
   chord_obj->position ()->setSamples (1000);
-  chord_obj->setChordDescriptorIndex (5);
+  chord_obj->chordDescriptor ()->setRootNote (dsp::MusicalNote::D);
+  chord_obj->chordDescriptor ()->setChordType (dsp::ChordType::Major);
+  chord_obj->chordDescriptor ()->setChordAccent (dsp::ChordAccent::Seventh);
   chord_obj->mute ()->setMuted (true);
 
-  // Serialize
   nlohmann::json j;
   to_json (j, *chord_obj);
 
-  // Create new object
   auto new_chord_obj = std::make_unique<ChordObject> (*tempo_map, parent.get ());
   from_json (j, *new_chord_obj);
 
-  // Verify
   EXPECT_EQ (new_chord_obj->position ()->samples (), 1000);
-  EXPECT_EQ (new_chord_obj->chordDescriptorIndex (), 5);
+  EXPECT_EQ (
+    new_chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (
+    new_chord_obj->chordDescriptor ()->chordType (), dsp::ChordType::Major);
+  EXPECT_EQ (
+    new_chord_obj->chordDescriptor ()->chordAccent (),
+    dsp::ChordAccent::Seventh);
   EXPECT_TRUE (new_chord_obj->mute ()->muted ());
 }
 
 // Test copying with init_from
 TEST_F (ChordObjectTest, Copying)
 {
-  // Set initial state
   chord_obj->position ()->setSamples (2000);
-  chord_obj->setChordDescriptorIndex (7);
+  chord_obj->chordDescriptor ()->setRootNote (dsp::MusicalNote::E);
+  chord_obj->chordDescriptor ()->setChordType (dsp::ChordType::Minor);
+  chord_obj->chordDescriptor ()->setInversion (2);
   chord_obj->mute ()->setMuted (false);
 
-  // Create target
   auto target = std::make_unique<ChordObject> (*tempo_map, parent.get ());
 
-  // Copy
   init_from (*target, *chord_obj, utils::ObjectCloneType::Snapshot);
 
-  // Verify
   EXPECT_EQ (target->position ()->samples (), 2000);
-  EXPECT_EQ (target->chordDescriptorIndex (), 7);
+  EXPECT_EQ (target->chordDescriptor ()->rootNote (), dsp::MusicalNote::E);
+  EXPECT_EQ (target->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (target->chordDescriptor ()->inversion (), 2);
   EXPECT_FALSE (target->mute ()->muted ());
 }
 
 // Test edge cases
 TEST_F (ChordObjectTest, EdgeCases)
 {
-  // Negative index
-  chord_obj->setChordDescriptorIndex (-1);
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), -1);
-
-  // Large index
-  chord_obj->setChordDescriptorIndex (10000);
-  EXPECT_EQ (chord_obj->chordDescriptorIndex (), 10000);
-
   // Position at max value
   chord_obj->position ()->setSamples (std::numeric_limits<int>::max ());
   EXPECT_EQ (
     chord_obj->position ()->samples (), std::numeric_limits<int>::max ());
+
+  // Chord with bass note
+  chord_obj->chordDescriptor ()->setBassNote (dsp::MusicalNote::G);
+  EXPECT_TRUE (chord_obj->chordDescriptor ()->hasBass ());
+  EXPECT_EQ (chord_obj->chordDescriptor ()->bassNote (), dsp::MusicalNote::G);
 }
 
 } // namespace zrythm::structure::arrangement
