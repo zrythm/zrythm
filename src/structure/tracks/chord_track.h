@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/chord_audition_state.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/scale_object.h"
@@ -44,6 +45,22 @@ public:
   // ========================================================================
   // QML Interface
   // ========================================================================
+
+  /**
+   * @brief Start or stop auditioning a chord.
+   *
+   * Thread-safe: delegates to ChordAuditionState which uses a lock-free
+   * container for audio thread access.
+   *
+   * @param descriptor The chord descriptor to audition (or nullptr to stop all).
+   * @param on True to start audition, false to stop.
+   * @param velocity MIDI velocity for note-ons (defaults to
+   * ChordAuditionState::kDefaultVelocity).
+   */
+  Q_INVOKABLE void auditionChord (
+    const zrythm::dsp::ChordDescriptor * descriptor,
+    bool                                 on,
+    midi_byte_t velocity = dsp::ChordAuditionState::kDefaultVelocity);
 
   // ========================================================================
 
@@ -127,7 +144,8 @@ private:
 
   bool initialize ();
 
-private:
+  dsp::ChordAuditionState audition_state_;
+
   std::optional<NotePitchToChordDescriptorFunc> note_pitch_to_descriptor_;
 };
 

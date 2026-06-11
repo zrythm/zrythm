@@ -13,6 +13,17 @@
 namespace zrythm::dsp
 {
 
+bool
+operator== (
+  const ChordDescriptor::ChordPitches &lhs,
+  const ChordDescriptor::ChordPitches &rhs)
+{
+  return lhs.count == rhs.count
+         && std::ranges::equal (
+           std::views::take (lhs.data, lhs.count),
+           std::views::take (rhs.data, rhs.count));
+}
+
 boost::container::static_vector<int, ChordDescriptor::kMaxIntervals>
 ChordDescriptor::getIntervals () const
 {

@@ -82,6 +82,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     [this] (
       auto &out_events, const auto &in_events,
       const dsp::graph::ProcessBlockInfo &time_nfo) {
+      audition_state_.process (out_events, time_nfo);
       transform_chord_and_append (
         out_events, in_events,
         [this] (midi_byte_t note_number) {
@@ -163,6 +164,20 @@ ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;
+}
+
+void
+ChordTrack::auditionChord (
+  const zrythm::dsp::ChordDescriptor * descriptor,
+  bool                                 on,
+  midi_byte_t                          velocity)
+{
+  if (on && descriptor != nullptr)
+    audition_state_.start (*descriptor, velocity);
+  else if (!on && descriptor != nullptr)
+    audition_state_.stop (*descriptor);
+  else
+    audition_state_.stopAll ();
 }
 
 }

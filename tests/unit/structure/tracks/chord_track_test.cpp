@@ -73,4 +73,35 @@ TEST_F (ChordTrackTest, TransformChordExpandsSingleNoteToChord)
   EXPECT_EQ (note_off_pitches[2], 55);
 }
 
+TEST_F (ChordTrackTest, ChordPitchesEquality)
+{
+  auto a = chord_c_major_.getMidiPitches ();
+  auto b = chord_c_major_.getMidiPitches ();
+  EXPECT_EQ (a, b);
+
+  dsp::ChordDescriptor chord_d_minor;
+  chord_d_minor.setRootNote (dsp::MusicalNote::D);
+  chord_d_minor.setChordType (dsp::ChordType::Minor);
+  auto c = chord_d_minor.getMidiPitches ();
+  EXPECT_NE (a, c);
+}
+
+TEST_F (ChordTrackTest, ChordPitchesEmptyNotEqual)
+{
+  auto                               a = chord_c_major_.getMidiPitches ();
+  dsp::ChordDescriptor::ChordPitches empty;
+  EXPECT_NE (a, empty);
+  EXPECT_NE (empty, a);
+  EXPECT_EQ (empty, empty);
+}
+
+TEST_F (ChordTrackTest, ChordPitchesSelfEquality)
+{
+  dsp::ChordDescriptor chord_d_minor;
+  chord_d_minor.setRootNote (dsp::MusicalNote::D);
+  chord_d_minor.setChordType (dsp::ChordType::Minor);
+  auto pitches = chord_d_minor.getMidiPitches ();
+  EXPECT_EQ (pitches, pitches);
+}
+
 } // namespace zrythm::structure::tracks
