@@ -195,6 +195,9 @@ ProjectManager::create_default (
 
   project_session->uiState ()->clipEditor ()->init ();
 
+  project_session->uiState ()->chordPadBank ()->applyPresetFromScale (
+    dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A);
+
   z_debug ("done creating default project");
 
   return project_session;

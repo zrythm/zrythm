@@ -10,6 +10,7 @@
 #include "dsp/midi_input_selection.h"
 #include "dsp/snap_grid.h"
 #include "structure/project/arranger_tool.h"
+#include "structure/project/chord_pad_bank.h"
 #include "structure/project/clip_editor.h"
 #include "structure/project/project.h"
 #include "structure/project/timeline_editor.h"
@@ -47,6 +48,9 @@ class ProjectUiState : public QObject
     zrythm::structure::project::ClipEditor * clipEditor READ clipEditor CONSTANT
       FINAL)
   Q_PROPERTY (
+    zrythm::structure::project::ChordPadBank * chordPadBank READ chordPadBank
+      CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridTimeline READ snapGridTimeline CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::dsp::SnapGrid * snapGridEditor READ snapGridEditor CONSTANT FINAL)
@@ -64,6 +68,7 @@ public:
 
   structure::project::ArrangerTool * tool () const;
   structure::project::ClipEditor *   clipEditor () const;
+  ChordPadBank *                     chordPadBank () const;
   TimelineEditor *                   timeline () const;
   dsp::SnapGrid *                    snapGridTimeline () const;
   dsp::SnapGrid *                    snapGridEditor () const;
@@ -80,6 +85,9 @@ public:
   dsp::MidiInputSelection *
   find_midi_input_selection (const structure::tracks::Track::Uuid &uuid) const;
 
+  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
+  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
+  static constexpr auto kChordPadBankKey = "chordPadBank"sv;
   static constexpr auto kAudioInputSelectionsKey = "audioInputSelections"sv;
   static constexpr auto kMidiInputSelectionsKey = "midiInputSelections"sv;
 
@@ -94,11 +102,8 @@ private:
   dsp::MidiInputSelection * get_or_create_midi_input_selection (
     const structure::tracks::Track::Uuid &uuid);
 
-private:
-  static constexpr auto kSnapGridTimelineKey = "snapGridTimeline"sv;
-  static constexpr auto kSnapGridEditorKey = "snapGridEditor"sv;
-  friend void           to_json (nlohmann::json &j, const ProjectUiState &p);
-  friend void           from_json (const nlohmann::json &j, ProjectUiState &p);
+  friend void to_json (nlohmann::json &j, const ProjectUiState &p);
+  friend void from_json (const nlohmann::json &j, ProjectUiState &p);
 
 private:
   Project            &project_;
@@ -109,6 +114,9 @@ private:
 
   /** Clip editor state (selected region, etc.). */
   utils::QObjectUniquePtr<structure::project::ClipEditor> clip_editor_;
+
+  /** Chord pad bank (variable-length chord descriptors for the pad panel). */
+  utils::QObjectUniquePtr<ChordPadBank> chord_pad_bank_;
 
   /** Timeline editor state. */
   utils::QObjectUniquePtr<TimelineEditor> timeline_;

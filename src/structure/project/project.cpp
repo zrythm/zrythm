@@ -323,13 +323,9 @@ Project::add_default_tracks ()
   /* chord */
   auto * chord_track = add_track.operator()<ChordTrack> (QObject::tr ("Chords"));
   tracklist_->singletonTracks ()->setChordTrack (chord_track);
-// TODO
-#if 0
-  chord_track->set_note_pitch_to_descriptor_func ([this] (midi_byte_t note_pitch) {
-    return getClipEditor ()->getChordEditor ()->get_chord_from_note_number (
-      note_pitch);
-  });
-#endif
+
+  /* chord track MIDI expansion wiring is done in ProjectSession after
+   * ProjectUiState is constructed. */
 
   /* add a scale */
   auto scale_ref =
@@ -524,15 +520,7 @@ from_json (const nlohmann::json &j, Project &project)
       j.at (Project::kClipLauncherKey).get_to (*project.clip_launcher_);
     }
 
-// TODO
-#if 0
-  project.tracklist_->singletonTracks ()
-    ->chordTrack ()
-    ->set_note_pitch_to_descriptor_func ([&project] (midi_byte_t note_pitch) {
-      return project.getClipEditor ()
-        ->getChordEditor ()
-        ->get_chord_from_note_number (note_pitch);
-    });
-#endif
+  /* chord track MIDI expansion wiring is done in ProjectSession after
+   * ProjectUiState is deserialized. */
 }
 }

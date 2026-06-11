@@ -17,6 +17,7 @@ ProjectUiState::ProjectUiState (
       clip_editor_ (
         utils::make_qobject_unique<
           structure::project::ClipEditor> (project.get_registry (), this)),
+      chord_pad_bank_ (utils::make_qobject_unique<ChordPadBank> (this)),
       timeline_ (
         utils::make_qobject_unique<TimelineEditor> (project.get_registry (), this)),
       snap_grid_timeline_ (
@@ -48,6 +49,12 @@ structure::project::ClipEditor *
 ProjectUiState::clipEditor () const
 {
   return clip_editor_.get ();
+}
+
+ChordPadBank *
+ProjectUiState::chordPadBank () const
+{
+  return chord_pad_bank_.get ();
 }
 
 TimelineEditor *
@@ -155,7 +162,8 @@ to_json (nlohmann::json &j, const ProjectUiState &p)
 {
   j = nlohmann::json{
     { ProjectUiState::kSnapGridTimelineKey, *p.snap_grid_timeline_ },
-    { ProjectUiState::kSnapGridEditorKey,   *p.snap_grid_editor_   }
+    { ProjectUiState::kSnapGridEditorKey,   *p.snap_grid_editor_   },
+    { ProjectUiState::kChordPadBankKey,     *p.chord_pad_bank_     }
   };
 
   nlohmann::json selections_json = nlohmann::json::array ();
@@ -206,6 +214,10 @@ from_json (const nlohmann::json &j, ProjectUiState &p)
     {
       from_json (
         j.at (ProjectUiState::kSnapGridEditorKey), *p.snap_grid_editor_);
+    }
+  if (j.contains (ProjectUiState::kChordPadBankKey))
+    {
+      from_json (j.at (ProjectUiState::kChordPadBankKey), *p.chord_pad_bank_);
     }
   if (j.contains (ProjectUiState::kAudioInputSelectionsKey))
     {

@@ -4,7 +4,6 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
-#include "structure/project/chord_editor.h"
 #include "utils/qt.h"
 #include "utils/utf8_string.h"
 

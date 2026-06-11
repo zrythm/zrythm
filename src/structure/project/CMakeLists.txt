@@ -37,6 +37,7 @@ target_sources(zrythm_structure_project_lib
     audio_clip_editor.cpp
     automation_editor.cpp
     chord_editor.cpp
+    chord_pad_bank.cpp
     clip_editor.cpp
     editor_settings.cpp
     midi_editor.cpp
@@ -54,6 +55,7 @@ target_sources(zrythm_structure_project_lib
       audio_clip_editor.h
       automation_editor.h
       chord_editor.h
+      chord_pad_bank.h
       clip_editor.h
       editor_settings.h
       midi_editor.h
