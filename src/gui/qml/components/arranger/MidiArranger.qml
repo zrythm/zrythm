@@ -12,6 +12,8 @@ import ZrythmGui
 Arranger {
   id: root
 
+  property ChordTrack chordTrack: null
+  property int highlightMode: 0
   required property MidiEditor midiEditor
   readonly property MidiRegion region: clipEditor.region
   readonly property Track track: clipEditor.track
@@ -99,6 +101,8 @@ Arranger {
         MidiNoteView {
           id: midiNoteView
 
+          chordTrack: root.chordTrack
+          highlightMode: root.highlightMode
           arrangerObject: midiNoteLoader.arrangerObject
           isSelected: midiNoteLoader.selectionTracker.isSelected
           track: root.track

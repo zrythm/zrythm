@@ -75,6 +75,10 @@ Loader {
 
           target: root.tracklist.trackRouting
         }
+
+        Component.onCompleted: {
+          routeTargetComboBox.currentIndex = routeTargetComboBox.indexOfValue(root.tracklist.trackRouting.getOutputTrack(root.track));
+        }
       }
 
       Button {

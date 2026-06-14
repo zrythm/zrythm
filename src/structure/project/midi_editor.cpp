@@ -221,18 +221,6 @@ MidiEditor::find_midi_note_descriptor_by_val (bool drum_mode, const uint8_t val)
 }
 
 void
-MidiEditor::set_highlighting (Highlighting highlighting)
-{
-  highlighting_ = highlighting;
-
-// TODO
-#if 0
-  zrythm::gui::SettingsManager::get_instance ()->set_pianoRollHighlight (
-    ENUM_VALUE_TO_INT (highlighting));
-#endif
-}
-
-void
 MidiEditor::set_notes_zoom (float notes_zoom, bool fire_events)
 {
   if (notes_zoom < 1.f || notes_zoom > 4.5f)

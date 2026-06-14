@@ -23,6 +23,7 @@
 #include "utils/utf8_string.h"
 
 #include <QObject>
+#include <QVariant>
 
 #include <fmt/format.h>
 
@@ -75,7 +76,8 @@ using namespace magic_enum::bitwise_operators;
     { \
       static constexpr std::array<const char *, VA_ARGS_SIZE (__VA_ARGS__)> \
                    enum_strings = { __VA_ARGS__ }; \
-      const char * str = enum_strings.at (static_cast<int> (val)); \
+      const auto   idx = magic_enum::enum_index (val); \
+      const char * str = idx.has_value () ? enum_strings.at (*idx) : "unknown"; \
       return format_to ( \
         ctx.out (), FMT_STRING ("{}"), \
         translate_ \
@@ -109,13 +111,35 @@ using namespace magic_enum::bitwise_operators;
   { \
     for (size_t i = 0; i < VA_ARGS_SIZE (__VA_ARGS__); ++i) \
       { \
-        if ( \
-          str == enum_name##_to_string (static_cast<enum_type> (i), translate)) \
+        const auto eval = magic_enum::enum_value<enum_type> (i); \
+        if (str == enum_name##_to_string (eval, translate)) \
           { \
-            return static_cast<enum_type> (i); \
+            return eval; \
           } \
       } \
     throw std::runtime_error ( \
       fmt::format ("Enum value from '{}' not found", str)); \
     return static_cast<enum_type> (0); \
+  } \
+\
+  inline constexpr size_t enum_name##_count () \
+  { \
+    return VA_ARGS_SIZE (__VA_ARGS__); \
+  } \
+\
+  inline QVariantList enum_name##_to_qml_list () \
+  { \
+    static constexpr std::array<const char *, VA_ARGS_SIZE (__VA_ARGS__)> \
+                 enum_strings = { __VA_ARGS__ }; \
+    QVariantList list; \
+    for (size_t i = 0; i < enum_strings.size (); ++i) \
+      { \
+        QVariantMap entry; \
+        entry[QStringLiteral ("display")] = QObject::tr (enum_strings[i]); \
+        entry[QStringLiteral ("name")] = QString::fromUtf8 (enum_strings[i]); \
+        entry[QStringLiteral ("value")] = \
+          static_cast<int> (magic_enum::enum_value<enum_type> (i)); \
+        list.append (entry); \
+      } \
+    return list; \
   }

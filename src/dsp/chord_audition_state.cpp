@@ -20,7 +20,12 @@ ChordAuditionState::start (
 void
 ChordAuditionState::stop (const ChordDescriptor &descriptor)
 {
-  auto pitches = descriptor.getMidiPitches ();
+  stop (descriptor.getMidiPitches ());
+}
+
+void
+ChordAuditionState::stop (const ChordDescriptor::ChordPitches &pitches)
+{
   auto result =
     std::ranges::find_last_if (active_chords_, [&] (const auto &entry) {
       return entry.pitches == pitches;

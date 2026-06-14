@@ -244,6 +244,7 @@ Zrythm makes extensive use of modern C++ features:
 - Functions annotated with `[[clang::nonblocking]]` are real-time-safe contexts. When RealtimeSanitizer (RTSan) is enabled via `-fsanitize=realtime`, Clang treats calls within these functions as real-time context and flags any blocking operations (malloc, mutex locks, etc.)
 - Audio processing functions (like `process_impl()`) and their callees must never allocate, lock mutexes, or call blocking APIs
 - If a function is marked `[[clang::nonblocking]]`, ALL code paths within it must be non-blocking — this is enforced by RTSan at runtime
+- APIs intended for real-time (audio thread) use must be marked `noexcept [[clang::nonblocking]]` on the declaration
 
 ### Qt/QML Integration
 
@@ -253,7 +254,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
-- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers
+- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers. Note: this only applies to Q_PROPERTY, not to Q_INVOKABLE (which can use local type aliases or unqualified names)
 - When connecting signals, use the overload that takes:
   1. The source object instance
   2. The source object signal
@@ -264,6 +265,7 @@ Zrythm makes extensive use of modern C++ features:
 **QML Property Bindings:**
 - Never use dead-expression tricks (e.g., `root.selectionModel.selection; // binding`) to create binding dependencies — they are unreliable in packaged builds where the QML engine may optimize away the statement
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
+- Never use `parent.parent.someProperty` chains to access delegate properties from child items — they are fragile and break easily. Use IDs instead (e.g., give the delegate an `id: myDelegate` and reference `myDelegate.someProperty`)
 
 ### External Documentation
 

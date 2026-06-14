@@ -238,6 +238,8 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/ChannelView.qml
+  components/ChordPadPanel.qml
+  components/ChordSelectorDialog.qml
   components/ClipLaunchButton.qml
   components/ClipLauncherView.qml
   components/ClipSlotView.qml
@@ -262,6 +264,7 @@ set(rel_qml_file_paths
   components/Ruler.qml
   components/LoadController.qml
   components/SaveController.qml
+  components/ScaleSelectorDialog.qml
   components/SnapGridButton.qml
   components/SpectrumAnalyzer.qml
   components/TempoMapLaneHeader.qml

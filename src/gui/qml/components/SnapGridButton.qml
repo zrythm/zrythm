@@ -21,7 +21,7 @@ Button {
   display: AbstractButton.TextBesideIcon
 
   // Button appearance
-  icon.source: "qrc:/icons/snap-to-grid.svg"
+  icon.source: ResourceManager.getIconUrl("zrythm-dark", "snap-to-grid.svg")
 
   // Button text based on current snap settings
   text: {

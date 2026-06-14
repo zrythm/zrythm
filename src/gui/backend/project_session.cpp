@@ -602,9 +602,9 @@ ProjectSession::wire_chord_track_to_pad_bank ()
     return;
 
   auto * pad_bank = ui_state_->chordPadBank ();
-  chord_track->set_note_pitch_to_descriptor_func (
+  chord_track->set_note_pitch_to_pitches_func (
     [pad_bank] (midi_byte_t note_pitch) {
-      return pad_bank->get_chord_from_note_number (note_pitch);
+      return pad_bank->get_pitches_for_note (note_pitch);
     });
 }
 

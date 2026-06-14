@@ -15,7 +15,6 @@
 
 #include <juce_core/juce_core.h>
 
-class ChordPresetPackManager;
 class DspContextRAII;
 class Settings;
 
@@ -191,9 +190,6 @@ public:
 
   /** Process ID for pipewire (used in tests). */
   ProcessId pipewire_pid_ = 0;
-
-  /** Chord preset pack manager. */
-  std::unique_ptr<ChordPresetPackManager> chord_preset_pack_manager_;
 
   /**
    * @brief LSP DSP context for the main thread.

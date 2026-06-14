@@ -648,6 +648,7 @@ from_json (const nlohmann::json &j, Tracklist &t)
         }
     }
   from_json (j, *t.track_routing_);
+  Q_EMIT t.track_routing_->routingChanged ();
 }
 
 Tracklist::~Tracklist () = default;

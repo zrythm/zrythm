@@ -4,15 +4,15 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
+#include "dsp/chord_preset.h"
 #include "dsp/musical_scale.h"
 #include "utils/qt.h"
 
 #include <QAbstractListModel>
 #include <QtQmlIntegration/qqmlintegration.h>
 
+#include <farbot/RealtimeObject.hpp>
 #include <nlohmann/json_fwd.hpp>
-
-class ChordPreset;
 
 namespace zrythm::structure::project
 {
@@ -52,37 +52,50 @@ public:
   // QML Interface
   // ========================================================================
 
-  Q_INVOKABLE void addChord (
+  void addChord (
     dsp::MusicalNote                root,
     dsp::ChordType                  type,
     dsp::ChordAccent                accent = dsp::ChordAccent::None,
     int                             inversion = 0,
     std::optional<dsp::MusicalNote> bass = std::nullopt);
 
-  Q_INVOKABLE void removeChord (int index);
+  void insertChord (
+    int                             index,
+    dsp::MusicalNote                root,
+    dsp::ChordType                  type,
+    dsp::ChordAccent                accent = dsp::ChordAccent::None,
+    int                             inversion = 0,
+    std::optional<dsp::MusicalNote> bass = std::nullopt);
 
-  Q_INVOKABLE void transposeChords (bool up);
+  void removeChord (int index);
 
-  Q_INVOKABLE void applyPresetFromScale (
+  void moveChord (int from, int to);
+
+  void transposeChords (bool up);
+
+  void applyPresetFromScale (
     dsp::MusicalScale::ScaleType scale,
     dsp::MusicalNote             root_note);
+
+  void applyPreset (ChordPreset * preset);
 
   void apply_preset (const ChordPreset &preset);
 
   // ========================================================================
 
   /**
-   * @brief Returns the ChordDescriptor for a MIDI note number.
+   * @brief Returns the pre-computed MIDI pitches for a pad triggered by the
+   * given MIDI note number.
    *
-   * Maps notes 60-71 (C3-B3) to chord indices 0-11.
-   * Returns nullptr if out of range or no chord at that index.
+   * Maps notes 60-71 (C3-B3) to chord pad indices 0-11.
+   * Returns std::nullopt if out of range or no chord at that index.
+   *
+   * Realtime-safe: reads from a lock-free snapshot updated by the main thread.
    */
-  dsp::ChordDescriptor * get_chord_from_note_number (midi_byte_t note_number);
+  std::optional<dsp::ChordDescriptor::ChordPitches>
+  get_pitches_for_note (midi_byte_t note_number) noexcept [[clang::nonblocking]];
 
-  dsp::ChordDescriptor * chord_at (int index)
-  {
-    return chords_.at (index).get ();
-  }
+  Q_INVOKABLE dsp::ChordDescriptor * chordAt (int index);
 
   friend void to_json (nlohmann::json &j, const ChordPadBank &bank);
   friend void from_json (const nlohmann::json &j, ChordPadBank &bank);
@@ -90,7 +103,31 @@ public:
 private:
   static constexpr auto kChordsKey = "chords"sv;
 
+  /**
+   * @brief Pre-computed chord pitches per pad slot, for audio-thread access.
+   *
+   * Index 0 = note 60 (C3), index 11 = note 71 (B3).
+   */
+  struct ChordPadPlaybackData
+  {
+    struct Slot
+    {
+      bool                               has_chord = false;
+      dsp::ChordDescriptor::ChordPitches pitches;
+    };
+    std::array<Slot, 12> slots{};
+  };
+
+  void rebuild_playback_data ();
+  void connect_chord_signals ();
+  void connect_chord_signal (int index);
+
   std::vector<zrythm::utils::QObjectUniquePtr<dsp::ChordDescriptor>> chords_;
+
+  farbot::RealtimeObject<
+    ChordPadPlaybackData,
+    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    playback_data_;
 };
 
 }

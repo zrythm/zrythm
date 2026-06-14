@@ -5,6 +5,7 @@ add_executable(zrythm_actions_unit_tests
   arranger_object_creator_test.cpp
   arranger_object_selection_operator_test.h
   arranger_object_selection_operator_test.cpp
+  chord_pad_bank_operator_test.cpp
   file_importer_test.cpp
   mock_undo_stack.h
   qobject_property_operator_test.cpp

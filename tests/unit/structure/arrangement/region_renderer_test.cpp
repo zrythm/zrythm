@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <cmath>
+#include <map>
 
 #include "structure/arrangement/region_renderer.h"
 #include "utils/object_registry.h"
@@ -35,6 +36,14 @@ protected:
       std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
     automation_region->position ()->setTicks (100);
     automation_region->bounds ()->length ()->setTicks (200);
+
+    // Set up Chord region (no looping)
+    chord_region = std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
+    chord_region->position ()->setTicks (0);
+    chord_region->bounds ()->length ()->setTicks (200);
+    chord_region->loopRange ()->loopStartPosition ()->setTicks (0);
+    chord_region->loopRange ()->loopEndPosition ()->setTicks (200);
+    chord_region->loopRange ()->clipStartPosition ()->setTicks (0);
   }
 
   void add_automation_point (float value, double position_ticks)
@@ -65,6 +74,21 @@ protected:
 
     // Add to region
     midi_region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
+  }
+
+  void add_chord_object (
+    dsp::MusicalNote root,
+    dsp::ChordType   type,
+    double           position_ticks)
+  {
+    auto chord_ref = utils::create_object<ChordObject> (
+      registry, *tempo_map, chord_region.get ());
+    auto * descr = chord_ref.get_object_as<ChordObject> ()->chordDescriptor ();
+    descr->setRootNote (root);
+    descr->setChordType (type);
+    chord_ref.get_object_as<ChordObject> ()->position ()->setTicks (
+      position_ticks);
+    chord_region->add_object (chord_ref);
   }
 
   void setup_audio_region ()
@@ -137,6 +161,7 @@ protected:
   std::unique_ptr<MidiRegion>       midi_region;
   std::unique_ptr<AudioRegion>      audio_region;
   std::unique_ptr<AutomationRegion> automation_region;
+  std::unique_ptr<ChordRegion>      chord_region;
   juce::AudioSampleBuffer           test_audio_buffer;
 };
 
@@ -312,6 +337,62 @@ TEST_F (RegionRendererTest, MidiNoteChannelRendered)
   EXPECT_EQ (events.getEventPointer (0)->message.getChannel (), 5)
     << "MIDI channel should be stored value + 1";
   EXPECT_EQ (events.getEventPointer (1)->message.getChannel (), 5);
+}
+
+// ========== Chord Region Tests ==========
+
+namespace
+{
+// Collects note-off timestamps keyed by pitch from a MIDI sequence.
+std::map<int, double>
+collect_note_off_times (const juce::MidiMessageSequence &events)
+{
+  std::map<int, double> note_off_times;
+  for (const auto &ev : events)
+    {
+      if (ev->message.isNoteOff ())
+        note_off_times[ev->message.getNoteNumber ()] =
+          ev->message.getTimeStamp ();
+    }
+  return note_off_times;
+}
+} // namespace
+
+// Regression test: when multiple chords follow each other in a chord region,
+// each chord's notes must be released (note-off) when the next chord begins,
+// rather than sustaining until the end of the region.
+TEST_F (RegionRendererTest, ChordNotesStopAtNextChordStart)
+{
+  // C Major at tick 0 -> pitches {48, 52, 55}
+  add_chord_object (dsp::MusicalNote::C, dsp::ChordType::Major, 0);
+  // A Minor at tick 100 -> pitches {57, 60, 64}
+  add_chord_object (dsp::MusicalNote::A, dsp::ChordType::Minor, 100);
+
+  juce::MidiMessageSequence events;
+  RegionRenderer::serialize_to_sequence (*chord_region, events);
+
+  const auto note_off_times = collect_note_off_times (events);
+
+  // C Major notes must stop at tick 100 (start of the next chord), not at the
+  // region end (200).
+  for (int pitch : { 48, 52, 55 })
+    {
+      SCOPED_TRACE ("C Major pitch " + std::to_string (pitch));
+      ASSERT_TRUE (note_off_times.count (pitch))
+        << "missing note-off for C Major pitch";
+      EXPECT_DOUBLE_EQ (note_off_times.at (pitch), 100.0)
+        << "C Major should stop when A Minor begins";
+    }
+
+  // A Minor notes stop at the region end (tick 200) since it is the last chord.
+  for (int pitch : { 57, 60, 64 })
+    {
+      SCOPED_TRACE ("A Minor pitch " + std::to_string (pitch));
+      ASSERT_TRUE (note_off_times.count (pitch))
+        << "missing note-off for A Minor pitch";
+      EXPECT_DOUBLE_EQ (note_off_times.at (pitch), 200.0)
+        << "last chord should stop at region end";
+    }
 }
 
 // ========== Audio Region Tests ==========

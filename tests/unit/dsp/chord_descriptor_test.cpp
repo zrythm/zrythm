@@ -12,25 +12,25 @@ using namespace zrythm::dsp;
 TEST (ChordDescriptorTest, BasicChords)
 {
   ChordDescriptor major (MusicalNote::C, ChordType::Major);
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::E));
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::G));
-  EXPECT_FALSE (major.is_key_in_chord (MusicalNote::B));
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::E));
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::G));
+  EXPECT_FALSE (major.isKeyInChord (MusicalNote::B));
   EXPECT_EQ (major.to_string (), "CMaj");
 
   ChordDescriptor minor (MusicalNote::A, ChordType::Minor);
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::A));
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::E));
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::A));
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::E));
   EXPECT_EQ (minor.to_string (), "Amin");
 }
 
 TEST (ChordDescriptorTest, ChordInversions)
 {
   ChordDescriptor chord (MusicalNote::C, ChordType::Major, ChordAccent::None, 1);
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::E));
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::G));
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::E));
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::G));
   EXPECT_EQ (chord.to_string (), "CMaj i1");
 }
 
@@ -38,10 +38,10 @@ TEST (ChordDescriptorTest, ChordAccents)
 {
   ChordDescriptor seventh (
     MusicalNote::D, ChordType::Major, ChordAccent::Seventh);
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::D));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::FSharp));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::A));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::C));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::D));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::FSharp));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::A));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::C));
   EXPECT_EQ (seventh.to_string (), "DMaj 7");
 }
 
@@ -49,8 +49,8 @@ TEST (ChordDescriptorTest, BassNotes)
 {
   ChordDescriptor with_bass (
     MusicalNote::C, ChordType::Major, ChordAccent::None, 0, MusicalNote::G);
-  EXPECT_TRUE (with_bass.is_key_bass (MusicalNote::G));
-  EXPECT_FALSE (with_bass.is_key_bass (MusicalNote::C));
+  EXPECT_TRUE (with_bass.isKeyBass (MusicalNote::G));
+  EXPECT_FALSE (with_bass.isKeyBass (MusicalNote::C));
   EXPECT_EQ (with_bass.to_string (), "CMaj/G");
 }
 

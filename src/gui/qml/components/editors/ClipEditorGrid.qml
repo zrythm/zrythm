@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.synchronizer
 import Zrythm
 
 GridLayout {
@@ -13,8 +14,8 @@ GridLayout {
 
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  required property ProjectSession session
   readonly property var region: clipEditor.region
+  required property ProjectSession session
   readonly property var track: clipEditor.track
 
   columns: 2
@@ -46,14 +47,49 @@ GridLayout {
 
     Layout.fillWidth: true
 
-    centerItems: [
-      ToolButton {
-        text: "center"
-      }
-    ]
     leftItems: [
       SnapGridButton {
         snapGrid: root.session.uiState.snapGridEditor
+      },
+      RowLayout {
+        visible: root.region.type === ArrangerObject.MidiRegion
+
+        Label {
+          Layout.alignment: Qt.AlignVCenter
+          text: qsTr("Highlight")
+        }
+
+        ComboBox {
+          model: [
+            {
+              text: qsTr("No Highlight"),
+              value: MidiEditor.None
+            },
+            {
+              text: qsTr("Chord"),
+              value: MidiEditor.Chord
+            },
+            {
+              text: qsTr("Scale"),
+              value: MidiEditor.Scale
+            },
+            {
+              text: qsTr("Scale + Chord"),
+              value: MidiEditor.Both
+            }
+          ]
+          textRole: "text"
+          valueRole: "value"
+
+          Synchronizer on currentValue {
+            sourceObject: GlobalState.application.appSettings
+            sourceProperty: "pianoRollHighlight"
+          }
+
+          ToolTip {
+            text: qsTr("Piano Roll Highlighting")
+          }
+        }
       }
     ]
     rightItems: [
@@ -89,8 +125,8 @@ GridLayout {
       sourceComponent: MidiEditorPane {
         clipEditor: root.clipEditor
         midiEditor: root.clipEditor.midiEditor
-        session: root.session
         region: root.region
+        session: root.session
       }
     }
 
@@ -101,8 +137,8 @@ GridLayout {
 
       sourceComponent: AudioEditorPane {
         clipEditor: root.clipEditor
-        session: root.session
         region: root.region
+        session: root.session
       }
     }
 
@@ -112,10 +148,10 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 2
 
       sourceComponent: AutomationEditorPane {
-        clipEditor: root.clipEditor
         automationEditor: root.clipEditor.automationEditor
-        session: root.session
+        clipEditor: root.clipEditor
         region: root.region
+        session: root.session
       }
     }
 
@@ -125,8 +161,8 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 3
 
       sourceComponent: ChordEditorPane {
-        session: root.session
         region: root.region
+        session: root.session
       }
     }
   }

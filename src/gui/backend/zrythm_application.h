@@ -6,6 +6,7 @@
 #include "engine/session/control_room.h"
 #include "gui/backend/alert_manager.h"
 #include "gui/backend/backend/theme_manager.h"
+#include "gui/backend/chord_preset_manager.h"
 #include "gui/backend/device_manager.h"
 #include "gui/backend/file_system_model.h"
 #include "gui/backend/plugin_manager.h"
@@ -55,6 +56,9 @@ class ZrythmApplication final : public QApplication
   Q_PROPERTY (
     zrythm::engine::session::ControlRoom * controlRoom READ controlRoom CONSTANT
       FINAL)
+  Q_PROPERTY (
+    ChordPresetManager * chordPresetManager READ chordPresetManager CONSTANT
+      FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -77,6 +81,8 @@ public:
   zrythm::gui::FileSystemModel *        fileSystemModel () const;
 
   engine::session::ControlRoom * controlRoom () const;
+
+  ChordPresetManager * chordPresetManager () const;
 
   DirectoryManager                            &get_directory_manager () const;
   QQmlApplicationEngine *                      get_qml_engine () const;

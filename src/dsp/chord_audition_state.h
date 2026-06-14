@@ -77,6 +77,14 @@ public:
   void stop (const ChordDescriptor &descriptor);
 
   /**
+   * @brief Stop auditioning by exact pitches.
+   *
+   * Main thread only. As above, but matches on pitches directly, so a caller
+   * does not need to keep a (non-copyable) ChordDescriptor around.
+   */
+  void stop (const ChordDescriptor::ChordPitches &pitches);
+
+  /**
    * @brief Stop all auditioning.
    *
    * Main thread only. Clears all active pitches.

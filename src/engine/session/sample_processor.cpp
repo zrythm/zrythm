@@ -3,11 +3,11 @@
 
 #include <algorithm>
 
+#include "dsp/chord_preset.h"
 #include "dsp/engine.h"
 #include "dsp/midi_event.h"
 #include "dsp/port.h"
 #include "engine/session/sample_processor.h"
-#include "gui/backend/backend/settings/chord_preset.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"

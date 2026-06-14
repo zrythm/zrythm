@@ -220,6 +220,17 @@ RegionRenderer::handle_chord_region_range (
   const auto virtual_range_length = virtual_range.second - virtual_range.first;
   const auto absolute_end = absolute_start + virtual_range_length;
 
+  // Gather the unmuted chord objects that fall within this loop segment,
+  // together with their absolute start position. A ChordObject has no
+  // duration of its own, so each chord is held until the next chord begins
+  // (or until the segment end for the last chord, so that it re-triggers
+  // cleanly on loop wrap-around).
+  struct ChordInSegment
+  {
+    const ChordObject *   chord;
+    units::precise_tick_t absolute_start;
+  };
+  std::vector<ChordInSegment> active_chords;
   // Add chord objects for this loop segment
   for (
     const auto * chord_object :
@@ -242,18 +253,33 @@ RegionRenderer::handle_chord_region_range (
         absolute_start,
         absolute_start + (chord_object_virtual_start - virtual_range.first));
 
+      active_chords.push_back ({ chord_object, chord_object_absolute_start });
+    }
+
+  std::ranges::sort (active_chords, {}, &ChordInSegment::absolute_start);
+
+  for (size_t i = 0; i < active_chords.size (); ++i)
+    {
+      // The chord stops when the next chord begins, or at the segment end for
+      // the last chord in this segment.
+      const auto note_off_absolute =
+        (i + 1 < active_chords.size ())
+          ? active_chords[i + 1].absolute_start
+          : absolute_end;
+
       // Get the chord descriptor from the chord object
-      auto pitches = chord_object->chordDescriptor ()->getMidiPitches ();
+      const auto pitches =
+        active_chords[i].chord->chordDescriptor ()->getMidiPitches ();
 
       // Add note on events for all notes in the chord
       for (auto note : pitches)
         {
           events.addEvent (
             juce::MidiMessage::noteOn (1, note, MidiNote::DEFAULT_VELOCITY),
-            chord_object_absolute_start.in (units::ticks));
+            active_chords[i].absolute_start.in (units::ticks));
           events.addEvent (
             juce::MidiMessage::noteOff (1, note, MidiNote::DEFAULT_VELOCITY),
-            absolute_end.in (units::ticks) -1.0);
+            note_off_absolute.in (units::ticks));
         }
     }
 }

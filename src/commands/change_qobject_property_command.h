@@ -11,6 +11,17 @@
 
 namespace zrythm::commands
 {
+
+/**
+ * @brief Changes a QObject property with undo support.
+ *
+ * @warning This command stores a raw reference (@ref object_) to the QObject.
+ * The caller MUST ensure the QObject outlives this command on the undo stack.
+ * If the object may be destroyed by other commands (e.g., it is owned by a
+ * model that can remove/replace it), use a state-based command that captures
+ * the data by value instead — otherwise undo will dereference a dangling
+ * reference (use-after-free).
+ */
 class ChangeQObjectPropertyCommand : public QUndoCommand
 {
 public:

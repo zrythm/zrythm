@@ -94,6 +94,7 @@ public:
     Scale,
     Both,
   };
+  Q_ENUM (Highlighting)
 
   MidiEditor (QObject * parent = nullptr);
 
@@ -170,11 +171,6 @@ public:
   find_midi_note_descriptor_by_val (bool drum_mode, uint8_t val);
 
   /**
-   * Updates the highlighting and notifies the UI.
-   */
-  void set_highlighting (Highlighting highlighting);
-
-  /**
    * Sets the MIDI modifier.
    */
   void set_midi_modifier (MidiModifier modifier);
@@ -247,11 +243,6 @@ public:
    */
   std::vector<MidiNoteDescriptor> piano_descriptors_ =
     std::vector<MidiNoteDescriptor> (128);
-
-  /**
-   * Highlighting notes depending on the current chord or scale.
-   */
-  Highlighting highlighting_ = Highlighting::None;
 
   /**
    * Drum mode descriptors.

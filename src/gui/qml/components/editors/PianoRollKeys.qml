@@ -6,6 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Zrythm
+import ZrythmStyle
 
 // Keys on the left side of the MIDI editor
 Item {
@@ -17,14 +18,52 @@ Item {
   readonly property real blackKeyWidth: keyWidth * 0.6
   readonly property color borderColor: "#cccccc"
   readonly property int endNote: 127 // Ending MIDI note
-  property real keyHeight: midiEditor.keyHeight // Visual height per key in pixels
-  property real keyWidth: 48 // Width of white keys
+  readonly property real keyHeight: midiEditor.keyHeight // Visual height per key in pixels
+  readonly property real keyWidth: 48 // Width of white keys
   readonly property color labelColor: "#666666"
   readonly property color labelPressedColor: "white"
   required property MidiEditor midiEditor
   required property MidiActivityProvider noteActivityProvider
   readonly property int startNote: 0 // Starting MIDI note (0-127)
   readonly property color whiteKeyPressedColor: Qt.tint("white", Qt.alpha(root.palette.highlight, 0.6)) //"#88aaff"
+
+  // Highlighting state — set by parent based on playhead position
+  property ChordTrack chordTrack: null
+  property ChordObject activeChord: null
+  property ScaleObject activeScale: null
+  property int highlightMode: 0
+
+  property var _highlightCache: new Array(12).fill("transparent")
+
+  function _rebuildHighlightCache() {
+    const chordDescr = root.activeChord && root.activeChord.chordDescriptor ? root.activeChord.chordDescriptor : null;
+    const scale = root.activeScale && root.activeScale.scale ? root.activeScale.scale : null;
+    root._highlightCache = ChordHighlighter.highlightColors(root.palette.highlight, chordDescr, scale, root.highlightMode, 0.8);
+  }
+
+  Component.onCompleted: root._rebuildHighlightCache()
+  onActiveChordChanged: root._rebuildHighlightCache()
+  onActiveScaleChanged: root._rebuildHighlightCache()
+  onHighlightModeChanged: root._rebuildHighlightCache()
+  onPaletteChanged: root._rebuildHighlightCache()
+
+  // Re-read live descriptor state on chord/scale content changes so that
+  // in-place descriptor edits (which leave the activeChord pointer unchanged)
+  // still refresh the highlight colours.
+  Connections {
+    function onContentChanged() {
+      root._rebuildHighlightCache();
+    }
+
+    target: root.chordTrack?.chordRegions ?? null
+  }
+  Connections {
+    function onContentChanged() {
+      root._rebuildHighlightCache();
+    }
+
+    target: root.chordTrack?.scaleObjects ?? null
+  }
 
   signal noteDragged(int fromNote, int toNote)
 
@@ -87,12 +126,25 @@ Item {
 
         // White key background
         Rectangle {
-          anchors.bottom: parent.bottom
-          anchors.left: parent.left
-          anchors.top: topBorder.visible ? topBorder.bottom : parent.top
+          anchors {
+            bottom: parent.bottom
+            left: parent.left
+            top: topBorder.visible ? topBorder.bottom : parent.top
+          }
           border.width: 0
           color: parent.isPressed && root.midiEditor.isWhiteKey(keyItem.midiNote) ? root.whiteKeyPressedColor : "white"
           width: parent.width
+        }
+
+        // Highlight overlay (on top of both white and black keys)
+        Rectangle {
+          id: highlightOverlay
+
+          anchors.fill: parent
+          border.width: 0
+          color: root._highlightCache[keyItem.midiNote % 12]
+          visible: color.a > 0
+          z: 3
         }
 
         // Black key
@@ -104,6 +156,7 @@ Item {
           topRightRadius: root.blackKeyRadius
           visible: root.midiEditor.isBlackKey(keyItem.midiNote)
           width: root.blackKeyWidth
+          z: 1
 
           anchors {
             left: parent.left
@@ -129,6 +182,7 @@ Item {
           color: parent.isPressed ? root.labelPressedColor : root.labelColor
           text: root.noteName(keyItem.midiNote)
           visible: root.midiEditor.isWhiteKey(keyItem.midiNote) && (keyItem.midiNote % 12 === 0)
+          z: 4
 
           font {
             family: "Monospace"
@@ -177,6 +231,7 @@ Item {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     anchors.fill: parent
     preventStealing: true
+    z: 4
 
     onPositionChanged: {
       if (pressed)

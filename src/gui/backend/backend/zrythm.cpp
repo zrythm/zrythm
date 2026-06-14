@@ -15,7 +15,6 @@
 #  include <sys/mman.h>
 #endif
 
-#include "gui/backend/backend/settings/chord_preset_pack_manager.h"
 #include "gui/backend/backend/settings/settings.h"
 #include "gui/backend/backend/zrythm.h"
 #include "utils/dsp_context.h"
@@ -67,8 +66,6 @@ void
 Zrythm::init ()
 {
   settings_->init ();
-  chord_preset_pack_manager_ = std::make_unique<ChordPresetPackManager> (
-    have_ui_ && !ZRYTHM_TESTING && !ZRYTHM_BENCHMARKING);
 
   if (have_ui_)
     {

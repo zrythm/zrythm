@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings/chord_preset.h"
+#include "dsp/chord_preset.h"
 #include "utils/serialization.h"
 
 #include <nlohmann/json.hpp>
@@ -10,10 +10,19 @@ using namespace zrythm;
 
 ChordPreset::ChordPreset (QObject * parent) : QObject (parent) { }
 
-ChordPreset::ChordPreset (const ChordPreset::NameT &name, QObject * parent)
-    : ChordPreset (parent)
+ChordPreset::ChordPreset (const QString &name, QObject * parent)
+    : QObject (parent), name_ (name)
 {
-  name_ = name;
+}
+
+ChordPreset::ChordPreset (
+  const QString &name,
+  const QString &category,
+  bool           is_builtin,
+  QObject *      parent)
+    : QObject (parent), name_ (name), category_ (category),
+      is_builtin_ (is_builtin)
+{
 }
 
 void
@@ -23,6 +32,8 @@ init_from (
   utils::ObjectCloneType clone_type)
 {
   obj.name_ = other.name_;
+  obj.category_ = other.category_;
+  obj.is_builtin_ = other.is_builtin_;
   obj.descr_.clear ();
   for (const auto &ptr : other.descr_)
     {
@@ -36,8 +47,15 @@ init_from (
     }
 }
 
-utils::Utf8String
-ChordPreset::get_info_text () const
+void
+ChordPreset::addDescriptor (
+  utils::QObjectUniquePtr<dsp::ChordDescriptor> &&descr)
+{
+  descr_.push_back (std::move (descr));
+}
+
+QString
+ChordPreset::infoText () const
 {
   auto str = utils::Utf8String::from_qstring (QObject::tr ("Chords"));
   str += u8":\n";
@@ -49,17 +67,30 @@ ChordPreset::get_info_text () const
     }),
     u8", ");
 
-  return str + joined_str;
+  return (str + joined_str).to_qstring ();
 }
 
-ChordPreset::NameT
-ChordPreset::getName () const
+bool
+operator== (const ChordPreset &lhs, const ChordPreset &rhs)
+{
+  if (lhs.name_ != rhs.name_ || lhs.descr_.size () != rhs.descr_.size ())
+    return false;
+  for (size_t i = 0; i < lhs.descr_.size (); ++i)
+    {
+      if (!lhs.descr_[i]->isEquivalent (*rhs.descr_[i]))
+        return false;
+    }
+  return true;
+}
+
+QString
+ChordPreset::name () const
 {
   return name_;
 }
 
 void
-ChordPreset::setName (const ChordPreset::NameT &name)
+ChordPreset::setName (const QString &name)
 {
   if (name_ == name)
     return;
@@ -68,10 +99,27 @@ ChordPreset::setName (const ChordPreset::NameT &name)
   Q_EMIT nameChanged (name_);
 }
 
+QString
+ChordPreset::category () const
+{
+  return category_;
+}
+
+void
+ChordPreset::setCategory (const QString &category)
+{
+  if (category_ == category)
+    return;
+
+  category_ = category;
+  Q_EMIT categoryChanged (category_);
+}
+
 void
 to_json (nlohmann::json &j, const ChordPreset &preset)
 {
   j[ChordPreset::kNameKey] = preset.name_;
+  j[ChordPreset::kCategoryKey] = preset.category_;
   nlohmann::json descr_arr = nlohmann::json::array ();
   for (const auto &ptr : preset.descr_)
     {
@@ -85,6 +133,8 @@ void
 from_json (const nlohmann::json &j, ChordPreset &preset)
 {
   j.at (ChordPreset::kNameKey).get_to (preset.name_);
+  if (j.contains (ChordPreset::kCategoryKey))
+    j.at (ChordPreset::kCategoryKey).get_to (preset.category_);
   preset.descr_.clear ();
   for (const auto &descr_json : j.at (ChordPreset::kDescriptorsKey))
     {
@@ -93,30 +143,3 @@ from_json (const nlohmann::json &j, ChordPreset &preset)
       preset.descr_.push_back (std::move (ptr));
     }
 }
-
-#if 0
-GMenuModel *
-ChordPreset::generate_context_menu () const
-{
-  ChordPresetPack * pack =
-    CHORD_PRESET_PACK_MANAGER->get_pack_for_preset (*this);
-  z_return_val_if_fail (pack, nullptr);
-  if (pack->is_standard_)
-    return nullptr;
-
-  GMenu * menu = g_menu_new ();
-  char    action[800];
-
-  /* rename */
-  sprintf (action, "app.rename-chord-preset::%p", this);
-  g_menu_append_item (
-    menu, z_gtk_create_menu_item (QObject::tr ("_Rename"), "edit-rename", action));
-
-  /* delete */
-  sprintf (action, "app.delete-chord-preset::%p", this);
-  g_menu_append_item (
-    menu, z_gtk_create_menu_item (QObject::tr ("_Delete"), "edit-delete", action));
-
-  return G_MENU_MODEL (menu);
-}
-#endif

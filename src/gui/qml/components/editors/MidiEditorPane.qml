@@ -4,10 +4,9 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.synchronizer
 import ZrythmGui
 import ZrythmStyle
-
-import Qt.labs.synchronizer
 
 GridLayout {
   id: root
@@ -20,10 +19,54 @@ GridLayout {
   required property ProjectSession session
   readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.region)
 
+  readonly property ChordTrack chordTrack: root.project.tracklist.singletonTracks.chordTrack ?? null
+  readonly property int highlightMode: GlobalState.application.appSettings.pianoRollHighlight
+  // Resolved at the playhead and updated imperatively so they stay current when
+  // the chord track changes structurally or via in-place descriptor edits while
+  // the playhead is stationary (a readonly binding would miss those cases).
+  property ChordObject activeChord: null
+  property ScaleObject activeScale: null
+
+  function _updateActiveChordAndScale() {
+    if (root.chordTrack) {
+      const ticks = root.project.transport.playhead.ticks;
+      root.activeChord = root.chordTrack.chordAtTicks(ticks);
+      root.activeScale = root.chordTrack.scaleAtTicks(ticks);
+    } else {
+      root.activeChord = null;
+      root.activeScale = null;
+    }
+  }
+
   columnSpacing: 0
   columns: 3
   rowSpacing: 0
   rows: 3
+
+  Component.onCompleted: root._updateActiveChordAndScale()
+  onChordTrackChanged: root._updateActiveChordAndScale()
+
+  Connections {
+    function onTicksChanged() {
+      root._updateActiveChordAndScale();
+    }
+
+    target: root.project.transport.playhead
+  }
+  Connections {
+    function onContentChanged() {
+      root._updateActiveChordAndScale();
+    }
+
+    target: root.chordTrack?.chordRegions ?? null
+  }
+  Connections {
+    function onContentChanged() {
+      root._updateActiveChordAndScale();
+    }
+
+    target: root.chordTrack?.scaleObjects ?? null
+  }
 
   ZrythmToolBar {
     id: topOfPianoRollToolbar
@@ -105,6 +148,10 @@ GridLayout {
       height: implicitHeight
       midiEditor: root.midiEditor
       noteActivityProvider: noteActivityProvider
+      chordTrack: root.chordTrack
+      activeChord: root.activeChord
+      activeScale: root.activeScale
+      highlightMode: root.highlightMode
     }
 
     Synchronizer {
@@ -143,6 +190,8 @@ GridLayout {
 
     Layout.fillHeight: true
     Layout.fillWidth: true
+    chordTrack: root.chordTrack
+    highlightMode: root.highlightMode
     arrangerContentHeight: pianoRollKeys.height
     arrangerSelectionModel: arrangerSelectionModel
     clipEditor: root.clipEditor

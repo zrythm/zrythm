@@ -134,6 +134,49 @@ TEST_F (ChordAuditionStateTest, StopSendsNoteOffs)
   EXPECT_EQ (offs[2], 55);
 }
 
+TEST_F (ChordAuditionStateTest, StopByPitchesSendsNoteOffs)
+{
+  auto c_major = make_chord (MusicalNote::C, ChordType::Major);
+  state_.start (*c_major);
+  state_.process (out_, make_block_info ());
+
+  out_.clear ();
+  // Stop using the pitches overload (the caller need not keep a descriptor).
+  state_.stop (c_major->getMidiPitches ());
+  state_.process (out_, make_block_info ());
+
+  EXPECT_TRUE (collect_note_on_pitches (out_).empty ());
+  auto offs = collect_note_off_pitches (out_);
+  ASSERT_EQ (offs.size (), 3u);
+  EXPECT_EQ (offs[0], 48);
+  EXPECT_EQ (offs[1], 52);
+  EXPECT_EQ (offs[2], 55);
+}
+
+TEST_F (ChordAuditionStateTest, StopByPitchesNonMatchingIsNoOp)
+{
+  auto c_major = make_chord (MusicalNote::C, ChordType::Major);
+  state_.start (*c_major);
+  state_.process (out_, make_block_info ());
+  ASSERT_EQ (collect_note_on_pitches (out_).size (), 3u);
+
+  out_.clear ();
+  // D minor pitches do not match the active C major entry.
+  auto d_minor = make_chord (MusicalNote::D, ChordType::Minor);
+  state_.stop (d_minor->getMidiPitches ());
+  state_.process (out_, make_block_info ());
+
+  EXPECT_TRUE (collect_note_on_pitches (out_).empty ());
+  EXPECT_TRUE (collect_note_off_pitches (out_).empty ())
+    << "Non-matching pitches must not stop the active chord";
+
+  // The original chord is still active and can be stopped normally.
+  out_.clear ();
+  state_.stop (c_major->getMidiPitches ());
+  state_.process (out_, make_block_info ());
+  EXPECT_EQ (collect_note_off_pitches (out_).size (), 3u);
+}
+
 TEST_F (ChordAuditionStateTest, NoOpProcessSendsNothing)
 {
   auto c_major = make_chord (MusicalNote::C, ChordType::Major);

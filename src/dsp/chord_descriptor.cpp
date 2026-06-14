@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "dsp/chord_descriptor.h"
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
@@ -25,17 +27,16 @@ operator== (
 }
 
 boost::container::static_vector<int, ChordDescriptor::kMaxIntervals>
-ChordDescriptor::getIntervals () const
+ChordDescriptor::get_intervals_for_type_and_accent (
+  ChordType   type,
+  ChordAccent accent)
 {
-  if (custom_intervals_)
-    return *custom_intervals_;
-
-  if (type_ == ChordType::None || type_ == ChordType::Custom)
+  if (type == ChordType::None || type == ChordType::Custom)
     return {};
 
   boost::container::static_vector<int, kMaxIntervals> intervals;
 
-  switch (type_)
+  switch (type)
     {
     case ChordType::Major:
       intervals = { 0, 4, 7 };
@@ -59,9 +60,9 @@ ChordDescriptor::getIntervals () const
       return {};
     }
 
-  const unsigned int min_seventh = type_ == ChordType::Diminished ? 9 : 10;
+  const unsigned int min_seventh = type == ChordType::Diminished ? 9 : 10;
 
-  switch (accent_)
+  switch (accent)
     {
     case ChordAccent::None:
       break;
@@ -108,6 +109,15 @@ ChordDescriptor::getIntervals () const
     }
 
   return intervals;
+}
+
+boost::container::static_vector<int, ChordDescriptor::kMaxIntervals>
+ChordDescriptor::getIntervals () const
+{
+  if (custom_intervals_)
+    return *custom_intervals_;
+
+  return get_intervals_for_type_and_accent (type_, accent_);
 }
 
 auto
@@ -238,7 +248,7 @@ ChordDescriptor::chord_accent_to_string (ChordAccent accent)
 }
 
 bool
-ChordDescriptor::is_key_bass (MusicalNote key) const
+ChordDescriptor::isKeyBass (MusicalNote key) const
 {
   if (bass_note_)
     return *bass_note_ == key;
@@ -246,9 +256,9 @@ ChordDescriptor::is_key_bass (MusicalNote key) const
 }
 
 bool
-ChordDescriptor::is_key_in_chord (MusicalNote key) const
+ChordDescriptor::isKeyInChord (MusicalNote key) const
 {
-  if (is_key_bass (key))
+  if (isKeyBass (key))
     return true;
 
   const auto key_val = static_cast<int> (key);
@@ -324,9 +334,26 @@ from_json (const nlohmann::json &j, ChordDescriptor &c)
   j.at ("type").get_to (c.type_);
   j.at ("accent").get_to (c.accent_);
   j.at ("inversion").get_to (c.inversion_);
+  // Clamp to valid range for the deserialized inversion. Guards against
+  // pathological values (e.g. INT_MIN/INT_MAX) from untrusted preset JSON,
+  // which would cause excessive iteration / UB in getMidiPitches().
+  c.inversion_ = std::clamp (c.inversion_, c.minInversion (), c.maxInversion ());
+
+  // Validate enum fields from untrusted JSON. Invalid values are reset to
+  // safe defaults to prevent out-of-bounds access in string lookup tables.
+  if (!magic_enum::enum_contains (c.root_note_))
+    c.root_note_ = MusicalNote::C;
+  if (!magic_enum::enum_contains (c.type_))
+    c.type_ = ChordType::None;
+  if (!magic_enum::enum_contains (c.accent_))
+    c.accent_ = ChordAccent::None;
 
   if (j.contains ("bassNote"))
-    c.bass_note_ = j.at ("bassNote").get<MusicalNote> ();
+    {
+      auto bass = j.at ("bassNote").get<MusicalNote> ();
+      c.bass_note_ =
+        magic_enum::enum_contains (bass) ? std::optional (bass) : std::nullopt;
+    }
   else
     c.bass_note_ = std::nullopt;
 }

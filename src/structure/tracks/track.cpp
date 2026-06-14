@@ -278,6 +278,17 @@ Track::init_cache_scheduler ()
         &utils::PlaybackCacheScheduler::queueCacheRequest);
     }
 
+  if (
+    auto * chord_owner = dynamic_cast<
+      arrangement::ArrangerObjectOwner<arrangement::ChordRegion> *> (this))
+    {
+      QObject::connect (
+        chord_owner->get_model (),
+        &arrangement::ArrangerObjectListModel::contentChanged,
+        playable_content_cache_request_debouncer_.get (),
+        &utils::PlaybackCacheScheduler::queueCacheRequest);
+    }
+
   QObject::connect (
     &base_dependencies_.tempo_map_, &dsp::TempoMapWrapper::tempoEventsChanged,
     playable_content_cache_request_debouncer_.get (), [this] () {
@@ -495,23 +506,27 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
   ZoneScoped;
   const auto generate_events_for_region_type =
     [&]<arrangement::RegionObject RegionT> () {
-      auto all_regions =
-        lanes_->lanes ()
-        | std::views::transform ([] (auto &uptr) -> const TrackLane * {
-            return uptr.get ();
-          })
-        | std::views::transform ([] (const TrackLane * lane) {
-            return lane
-              ->arrangement::ArrangerObjectOwner<RegionT>::get_children_view ();
-          })
-        | std::views::join;
       z_debug (
         "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
         name (), affectedRange);
+
+      auto get_all_lane_regions = [this] () {
+        return lanes_->lanes ()
+               | std::views::transform ([] (auto &uptr) -> const TrackLane * {
+                   return uptr.get ();
+                 })
+               | std::views::transform ([] (const TrackLane * lane) {
+                   return lane->arrangement::ArrangerObjectOwner<
+                     RegionT>::get_children_view ();
+                 })
+               | std::views::join;
+      };
+
       if constexpr (std::is_same_v<RegionT, arrangement::MidiRegion>)
         {
-          if (processor_->is_midi ())
+          if (processor_->is_midi () && lanes_)
             {
+              auto all_regions = get_all_lane_regions ();
               processor_->timeline_midi_data_provider ().generate_midi_events (
                 base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
                 affectedRange);
@@ -519,8 +534,9 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
         }
       else if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
         {
-          if (processor_->is_audio ())
+          if (processor_->is_audio () && lanes_)
             {
+              auto all_regions = get_all_lane_regions ();
               processor_->timeline_audio_data_provider ().generate_audio_events (
                 base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
                 affectedRange);
@@ -529,6 +545,19 @@ Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
     };
   generate_events_for_region_type.operator()<arrangement::MidiRegion> ();
   generate_events_for_region_type.operator()<arrangement::AudioRegion> ();
+
+  if (
+    auto * chord_owner = dynamic_cast<
+      arrangement::ArrangerObjectOwner<arrangement::ChordRegion> *> (this))
+    {
+      if (processor_->is_midi ())
+        {
+          auto chord_regions = chord_owner->get_children_view ();
+          processor_->timeline_midi_data_provider ().generate_midi_events (
+            base_dependencies_.tempo_map_.get_tempo_map (), chord_regions,
+            affectedRange);
+        }
+    }
 
   if (playback_cache_activity_tracker_)
     playback_cache_activity_tracker_->onRegenerationComplete (affectedRange);

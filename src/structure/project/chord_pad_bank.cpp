@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/settings/chord_preset.h"
+#include <stdexcept>
+
+#include "dsp/chord_preset.h"
 #include "structure/project/chord_pad_bank.h"
 #include "utils/logger.h"
 
@@ -54,6 +56,30 @@ ChordPadBank::addChord (
     zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
       root, type, accent, inversion, bass));
   endInsertRows ();
+  connect_chord_signal (row);
+  rebuild_playback_data ();
+}
+
+void
+ChordPadBank::insertChord (
+  int                             index,
+  dsp::MusicalNote                root,
+  dsp::ChordType                  type,
+  dsp::ChordAccent                accent,
+  int                             inversion,
+  std::optional<dsp::MusicalNote> bass)
+{
+  if (index < 0 || index > static_cast<int> (chords_.size ()))
+    throw std::out_of_range ("insertChord: index out of range");
+
+  beginInsertRows ({}, index, index);
+  chords_.insert (
+    std::next (chords_.begin (), index),
+    zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
+      root, type, accent, inversion, bass));
+  endInsertRows ();
+  connect_chord_signal (index);
+  rebuild_playback_data ();
 }
 
 void
@@ -65,26 +91,54 @@ ChordPadBank::removeChord (int index)
   beginRemoveRows ({}, index, index);
   chords_.erase (chords_.begin () + index);
   endRemoveRows ();
+  rebuild_playback_data ();
+}
+
+void
+ChordPadBank::moveChord (int from, int to)
+{
+  if (from < 0 || from >= static_cast<int> (chords_.size ()))
+    return;
+  if (to < 0 || to >= static_cast<int> (chords_.size ()))
+    return;
+  if (from == to)
+    return;
+
+  beginMoveRows ({}, from, from, {}, to > from ? to + 1 : to);
+  auto ptr = std::move (chords_[from]);
+  chords_.erase (chords_.begin () + from);
+  chords_.insert (chords_.begin () + to, std::move (ptr));
+  endMoveRows ();
+  rebuild_playback_data ();
 }
 
 void
 ChordPadBank::transposeChords (bool up)
 {
-  const int add = up ? 1 : 11;
-  for (auto &descr : chords_)
+  for (const auto &descr : chords_)
     {
-      descr->setRootNote (
-        static_cast<dsp::MusicalNote> (
-          (static_cast<int> (descr->rootNote ()) + add) % 12));
+      QSignalBlocker blocker (descr.get ());
+      descr->setRootNote (dsp::chords::transpose_note (descr->rootNote (), up));
       if (descr->hasBass ())
         descr->setBassNote (
-          static_cast<dsp::MusicalNote> (
-            (static_cast<int> (descr->bassNote ()) + add) % 12));
+          dsp::chords::transpose_note (descr->bassNote (), up));
     }
 
   const auto last = static_cast<int> (chords_.size ()) - 1;
   if (last >= 0)
     Q_EMIT dataChanged (index (0), index (last), { ChordDescriptorRole });
+  rebuild_playback_data ();
+}
+
+dsp::ChordDescriptor *
+ChordPadBank::chordAt (int index)
+{
+  if (index < 0 || index >= static_cast<int> (chords_.size ()))
+    {
+      z_error ("chordAt: index {} out of range [0, {})", index, chords_.size ());
+      return nullptr;
+    }
+  return chords_[index].get ();
 }
 
 void
@@ -97,26 +151,30 @@ ChordPadBank::applyPresetFromScale (
     dsp::MusicalScale::type_to_string (scale),
     dsp::ChordDescriptor::note_to_string (root_note));
 
-  const auto triads = dsp::MusicalScale::get_triad_types_for_type (scale, true);
-  const bool * notes = dsp::MusicalScale::get_notes_for_type (scale, true);
+  const auto triads = dsp::MusicalScale::get_diatonic_triads (scale, root_note);
 
   beginResetModel ();
   chords_.clear ();
 
-  int cur_chord = 0;
-  for (int i = 0; i < 12; i++)
+  for (const auto &triad : triads)
     {
-      if (!notes[i])
-        continue;
-
       chords_.push_back (
         zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
-          static_cast<dsp::MusicalNote> ((static_cast<int> (root_note) + i) % 12),
-          triads[cur_chord]));
-      ++cur_chord;
+          triad.root_note, triad.chord_type));
     }
 
   endResetModel ();
+  connect_chord_signals ();
+  rebuild_playback_data ();
+}
+
+void
+ChordPadBank::applyPreset (ChordPreset * preset)
+{
+  if (preset == nullptr)
+    return;
+
+  apply_preset (*preset);
 }
 
 void
@@ -125,7 +183,7 @@ ChordPadBank::apply_preset (const ChordPreset &preset)
   beginResetModel ();
   chords_.clear ();
 
-  for (const auto &descr : preset.descr_)
+  for (const auto &descr : preset.descriptors ())
     {
       auto new_descr =
         zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> ();
@@ -139,19 +197,65 @@ ChordPadBank::apply_preset (const ChordPreset &preset)
     }
 
   endResetModel ();
+  connect_chord_signals ();
+  rebuild_playback_data ();
 }
 
-dsp::ChordDescriptor *
-ChordPadBank::get_chord_from_note_number (midi_byte_t note_number)
+void
+ChordPadBank::rebuild_playback_data ()
+{
+  ChordPadPlaybackData data;
+  for (size_t i = 0; i < chords_.size () && i < 12; ++i)
+    {
+      data.slots[i].has_chord = true;
+      data.slots[i].pitches = chords_[i]->getMidiPitches ();
+    }
+
+  decltype (playback_data_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    access{ playback_data_ };
+  *access = std::move (data);
+}
+
+void
+ChordPadBank::connect_chord_signals ()
+{
+  for (const auto &descr : chords_)
+    {
+      // Disconnect any existing connection from this chord's changed signal
+      // to avoid accumulating duplicates when called repeatedly (e.g., after
+      // applyPreset*/from_json).
+      QObject::disconnect (
+        descr.get (), &dsp::ChordDescriptor::changed, this, nullptr);
+      QObject::connect (
+        descr.get (), &dsp::ChordDescriptor::changed, this,
+        [this] () { rebuild_playback_data (); });
+    }
+}
+
+void
+ChordPadBank::connect_chord_signal (int index)
+{
+  const auto &descr = chords_[index];
+  QObject::connect (
+    descr.get (), &dsp::ChordDescriptor::changed, this,
+    [this] () { rebuild_playback_data (); });
+}
+
+std::optional<dsp::ChordDescriptor::ChordPitches>
+ChordPadBank::get_pitches_for_note (midi_byte_t note_number) noexcept
 {
   if (note_number < 60 || note_number >= 72)
-    return nullptr;
+    return std::nullopt;
 
-  const auto idx = static_cast<int> (note_number - 60);
-  if (idx >= static_cast<int> (chords_.size ()))
-    return nullptr;
+  decltype (playback_data_)::ScopedAccess<farbot::ThreadType::realtime> access{
+    playback_data_
+  };
 
-  return chords_[idx].get ();
+  const auto &slot = (*access).slots[note_number - 60];
+  if (!slot.has_chord)
+    return std::nullopt;
+
+  return slot.pitches;
 }
 
 void
@@ -181,6 +285,8 @@ from_json (const nlohmann::json &j, ChordPadBank &bank)
           bank.chords_.push_back (std::move (ptr));
         }
       bank.endResetModel ();
+      bank.connect_chord_signals ();
+      bank.rebuild_playback_data ();
     }
 }
 

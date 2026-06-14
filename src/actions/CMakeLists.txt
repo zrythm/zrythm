@@ -7,6 +7,7 @@ target_sources(zrythm_actions_lib
   PRIVATE
     arranger_object_creator.cpp
     arranger_object_selection_operator.cpp
+    chord_pad_bank_operator.cpp
     file_importer.cpp
     qobject_property_operator.cpp
     parameter_operator.cpp
@@ -21,6 +22,7 @@ target_sources(zrythm_actions_lib
     FILES
       arranger_object_creator.h
       arranger_object_selection_operator.h
+      chord_pad_bank_operator.h
       file_importer.h
       qobject_property_operator.h
       parameter_operator.h

@@ -5,6 +5,8 @@ target_sources(zrythm_gui_lib
   PRIVATE
     action_controller.h
     action_controller.cpp
+    chord_preset_manager.h
+    chord_preset_manager.cpp
     alert_manager.h
     alert_manager.cpp
     # carla_discovery.h

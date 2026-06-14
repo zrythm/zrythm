@@ -1,5 +1,7 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
 
 import QtQuick
 import Zrythm
@@ -10,8 +12,23 @@ ArrangerObjectBaseView {
 
   readonly property ScaleObject scaleObject: arrangerObject as ScaleObject
 
+  property string scaleName: ""
+
+  Connections {
+    target: root.scaleObject?.scale ?? null
+    function onScaleTypeChanged() { root.scaleName = root.scaleObject.scale.toString() }
+    function onRootKeyChanged() { root.scaleName = root.scaleObject.scale.toString() }
+  }
+
+  Component.onCompleted: {
+    if (root.scaleObject?.scale)
+      root.scaleName = root.scaleObject.scale.toString();
+  }
+
   height: textMetrics.height + 2 * ZrythmTheme.buttonPadding
   width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
+
+  onObjectDoubleClicked: scaleDialog.open()
 
   Rectangle {
     anchors.fill: parent
@@ -25,12 +42,7 @@ ArrangerObjectBaseView {
     color: root.palette.text
     font: root.font
     padding: ZrythmTheme.buttonPadding
-    text: {
-      // bindings
-      root.scaleObject.scale.scaleType;
-      root.scaleObject.scale.rootKey;
-      return root.scaleObject.scale.toString();
-    }
+    text: root.scaleName
   }
 
   TextMetrics {
@@ -38,5 +50,25 @@ ArrangerObjectBaseView {
 
     font: nameText.font
     text: nameText.text
+  }
+
+  QObjectPropertyOperator {
+    id: scalePropertyOp
+
+    undoStack: root.undoStack
+  }
+
+  ScaleSelectorDialog {
+    id: scaleDialog
+
+    musicalScale: root.scaleObject.scale
+
+    onScaleSelected: (rootKey, scaleType) => {
+      scalePropertyOp.currentObject = root.scaleObject.scale;
+      root.undoStack.beginMacro(qsTr("Edit Scale"));
+      scalePropertyOp.setValue("rootKey", rootKey);
+      scalePropertyOp.setValue("scaleType", scaleType);
+      root.undoStack.endMacro();
+    }
   }
 }

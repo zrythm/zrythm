@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -84,6 +85,20 @@ enum class ChordAccent : std::uint8_t
   SixthThirteenth,
 };
 Q_ENUM_NS (ChordAccent)
+
+/**
+ * @brief Transposes a @ref MusicalNote by one semitone up or down with
+ * wrap-around within a single octave (0-11).
+ *
+ * @param note The note to transpose.
+ * @param up True to transpose up, false to transpose down.
+ */
+constexpr MusicalNote
+transpose_note (MusicalNote note, bool up) noexcept
+{
+  return static_cast<MusicalNote> (
+    (static_cast<int> (note) + (up ? 1 : 11)) % 12);
+}
 
 } // namespace zrythm::dsp::chords
 
@@ -210,6 +225,7 @@ public:
   int  inversion () const { return inversion_; }
   void setInversion (int v)
   {
+    v = std::clamp (v, minInversion (), maxInversion ());
     if (inversion_ != v)
       {
         inversion_ = v;
@@ -234,10 +250,17 @@ public:
   // Queries
   // ========================================================================
 
-  bool is_key_in_chord (MusicalNote key) const;
-  bool is_key_bass (MusicalNote key) const;
+  Q_INVOKABLE bool isKeyInChord (MusicalNote key) const;
+  Q_INVOKABLE bool isKeyBass (MusicalNote key) const;
 
   static constexpr size_t kMaxIntervals = 12;
+
+  /**
+   * Returns the semitone intervals from root for the given type and accent.
+   * e.g., Major = {0, 4, 7}, Minor7 = {0, 3, 7, 10}
+   */
+  static boost::container::static_vector<int, kMaxIntervals>
+  get_intervals_for_type_and_accent (ChordType type, ChordAccent accent);
 
   /**
    * Returns the semitone intervals from root for the current type and accent.

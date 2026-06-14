@@ -9,6 +9,7 @@ add_executable(zrythm_commands_unit_tests
   delete_tracks_command_test.cpp
   change_qobject_property_command_test.cpp
   change_parameter_value_command_test.cpp
+  chord_pad_commands_test.cpp
   change_track_color_command_test.cpp
   change_track_comment_command_test.cpp
   move_arranger_objects_command_test.cpp
