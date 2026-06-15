@@ -163,12 +163,20 @@ Item {
     }
   }
 
+  TextMetrics {
+    id: valueTextMetrics
+
+    font: valueText.font
+    text: "-99.99 dB"
+  }
+
   Text {
     id: valueText
 
     anchors.centerIn: handle
     color: palette.buttonText
     font.pixelSize: 10
+    horizontalAlignment: Text.AlignHCenter
     text: {
       var db = 20 * Math.log10(root.faderGain.baseValue);
       if (db < -100)
@@ -176,6 +184,7 @@ Item {
       return db.toFixed(1) + " dB";
     }
     visible: root.hovered || root.dragging
+    width: valueTextMetrics.width
   }
 
   MouseArea {
