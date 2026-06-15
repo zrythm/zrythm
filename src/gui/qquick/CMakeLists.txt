@@ -9,6 +9,7 @@ target_sources(zrythm_gui_lib
       arranger_grid_canvas_renderer.h
       audio_region_waveform_canvas_item.h
       chord_highlighter.h
+      chord_row_list_model.h
       fade_overlay_canvas_item.h
       fade_overlay_canvas_renderer.h
       grid_line_computer.h
@@ -30,6 +31,7 @@ target_sources(zrythm_gui_lib
     arranger_grid_canvas_renderer.cpp
     audio_region_waveform_canvas_item.cpp
     chord_highlighter.cpp
+    chord_row_list_model.cpp
     fade_overlay_canvas_item.cpp
     fade_overlay_canvas_renderer.cpp
     grid_line_computer.cpp

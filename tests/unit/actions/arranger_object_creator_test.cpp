@@ -8,6 +8,8 @@
 #include "undo/undo_stack.h"
 #include "utils/object_registry.h"
 
+#include "helpers/scoped_qcoreapplication.h"
+
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -20,6 +22,10 @@ class ArrangerObjectCreatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
+    // Must be created first and destroyed last to keep the event dispatcher
+    // alive during teardown of timer-bearing objects (ChordTrack, UndoStack).
+    app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
+
     // Create singleton tracks
     singleton_tracks_ = std::make_unique<structure::tracks::SingletonTracks> ();
 
@@ -97,6 +103,8 @@ protected:
       *undo_stack_, *arranger_object_factory, *snap_grid_timeline,
       *snap_grid_editor);
   }
+
+  std::unique_ptr<test_helpers::ScopedQCoreApplication> app_;
 
   dsp::TempoMap                  tempo_map_{ units::sample_rate (44100.0) };
   dsp::TempoMapWrapper           tempo_map_wrapper_{ tempo_map_ };
@@ -361,6 +369,161 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiControlEventUndoRedo)
   control_events = region->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiControlEvent>::get_children_view ();
   EXPECT_FALSE (control_events.empty ());
+}
+
+// === Chord object tests ===
+
+TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromFields)
+{
+  auto * chord_track = singleton_tracks_->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  // Create a chord region.
+  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+  ASSERT_NE (region, nullptr);
+
+  // Add a D Minor 7 chord with bass note A.
+  auto * co = creator->addChordObjectFromFields (
+    region, 0.0, dsp::MusicalNote::D, dsp::ChordType::Minor,
+    dsp::ChordAccent::Seventh, true, dsp::MusicalNote::A, 1);
+  ASSERT_NE (co, nullptr);
+
+  auto * desc = co->chordDescriptor ();
+  EXPECT_EQ (desc->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (desc->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (desc->chordAccent (), dsp::ChordAccent::Seventh);
+  EXPECT_TRUE (desc->hasBass ());
+  EXPECT_EQ (desc->bassNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (desc->inversion (), 1);
+
+  // Undo removes the chord object.
+  undo_stack_->undo ();
+  EXPECT_EQ (region->chordObjects ()->rowCount (), 0);
+
+  // Redo re-adds it.
+  undo_stack_->redo ();
+  EXPECT_EQ (region->chordObjects ()->rowCount (), 1);
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromDescriptor)
+{
+  auto * chord_track = singleton_tracks_->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+
+  // Build a source descriptor.
+  dsp::ChordDescriptor src (
+    dsp::MusicalNote::E, dsp::ChordType::Diminished, dsp::ChordAccent::Ninth, 2,
+    dsp::MusicalNote::B);
+
+  auto * co = creator->addChordObjectFromDescriptor (region, 480.0, &src);
+  ASSERT_NE (co, nullptr);
+  EXPECT_EQ (co->chordDescriptor ()->rootNote (), dsp::MusicalNote::E);
+  EXPECT_EQ (co->chordDescriptor ()->chordType (), dsp::ChordType::Diminished);
+  EXPECT_EQ (co->chordDescriptor ()->chordAccent (), dsp::ChordAccent::Ninth);
+  EXPECT_EQ (co->chordDescriptor ()->inversion (), 2);
+  EXPECT_TRUE (co->chordDescriptor ()->hasBass ());
+  EXPECT_EQ (co->chordDescriptor ()->bassNote (), dsp::MusicalNote::B);
+}
+
+TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromDescriptorNullReturnsNull)
+{
+  auto * chord_track = singleton_tracks_->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+
+  auto * co = creator->addChordObjectFromDescriptor (region, 0.0, nullptr);
+  EXPECT_EQ (co, nullptr);
+}
+
+TEST_F (ArrangerObjectCreatorTest, EditChordObjectsDescriptor)
+{
+  auto * chord_track = singleton_tracks_->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+
+  // Add two C Major chord objects.
+  auto * co1 = creator->addChordObjectFromFields (
+    region, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
+  auto * co2 = creator->addChordObjectFromFields (
+    region, 480.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
+
+  // Batch-edit both to D Minor 7.
+  creator->editChordObjectsDescriptor (
+    QVariantList{ QVariant::fromValue (co1), QVariant::fromValue (co2) },
+    dsp::MusicalNote::D, dsp::ChordType::Minor, dsp::ChordAccent::Seventh,
+    false, dsp::MusicalNote::C, 0);
+
+  // Both should now be D Minor 7.
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (co1->chordDescriptor ()->chordAccent (), dsp::ChordAccent::Seventh);
+  EXPECT_EQ (co2->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (co2->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+
+  // Undo restores both to C Major (one undo step for the batch).
+  undo_stack_->undo ();
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Major);
+  EXPECT_EQ (co1->chordDescriptor ()->chordAccent (), dsp::ChordAccent::None);
+  EXPECT_EQ (co2->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
+  EXPECT_EQ (co2->chordDescriptor ()->chordType (), dsp::ChordType::Major);
+
+  // Redo re-applies.
+  undo_stack_->redo ();
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+}
+
+TEST_F (ArrangerObjectCreatorTest, EditChordObjectsDescriptorIsOneUndoStep)
+{
+  auto * chord_track = singleton_tracks_->chordTrack ();
+  ASSERT_NE (chord_track, nullptr);
+
+  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+
+  auto * co1 = creator->addChordObjectFromFields (
+    region, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
+  auto * co2 = creator->addChordObjectFromFields (
+    region, 480.0, dsp::MusicalNote::G, dsp::ChordType::Major,
+    dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
+
+  const int count_before = undo_stack_->count ();
+
+  creator->editChordObjectsDescriptor (
+    QVariantList{ QVariant::fromValue (co1), QVariant::fromValue (co2) },
+    dsp::MusicalNote::A, dsp::ChordType::Minor, dsp::ChordAccent::None, false,
+    dsp::MusicalNote::C, 0);
+
+  // The edit actually applied to both objects.
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (co2->chordDescriptor ()->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (co2->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+
+  // The batch edit should add exactly one entry to the undo stack (the macro).
+  EXPECT_EQ (undo_stack_->count (), count_before + 1);
+
+  // Undo restores the originals as one step.
+  undo_stack_->undo ();
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Major);
+  EXPECT_EQ (co2->chordDescriptor ()->rootNote (), dsp::MusicalNote::G);
+  EXPECT_EQ (co2->chordDescriptor ()->chordType (), dsp::ChordType::Major);
+
+  // Redo re-applies the batch to both objects.
+  undo_stack_->redo ();
+  EXPECT_EQ (co1->chordDescriptor ()->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (co1->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
+  EXPECT_EQ (co1->chordDescriptor ()->chordAccent (), dsp::ChordAccent::None);
+  EXPECT_EQ (co2->chordDescriptor ()->rootNote (), dsp::MusicalNote::A);
+  EXPECT_EQ (co2->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
 }
 
 } // namespace zrythm::actions

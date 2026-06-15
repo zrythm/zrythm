@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
+
 #include "utils/format_qt.h"
 
 #include "actions/arranger_object_creator.h"
 #include "commands/add_region_to_clip_slot_command.h"
+#include "commands/edit_chord_object_command.h"
 #include "utils/variant_helpers.h"
 
 namespace zrythm::actions
@@ -250,6 +253,93 @@ ArrangerObjectCreator::addChordObject (
 {
   return add_editor_object<structure::arrangement::ChordObject> (
     *region, units::ticks (startTicks), chordIndex);
+}
+
+structure::arrangement::ChordObject *
+ArrangerObjectCreator::addChordObjectFromFields (
+  structure::arrangement::ChordRegion * region,
+  double                                startTicks,
+  dsp::MusicalNote                      rootNote,
+  dsp::ChordType                        chordType,
+  dsp::ChordAccent                      chordAccent,
+  bool                                  hasBass,
+  dsp::MusicalNote                      bassNote,
+  int                                   inversion)
+{
+  assert (region != nullptr);
+  auto builder = std::move (
+    arranger_object_factory_.get_builder<structure::arrangement::ChordObject> ()
+      .with_start_ticks (units::ticks (startTicks)));
+  builder.with_chord_descriptor (
+    rootNote, chordType, chordAccent, inversion,
+    hasBass ? std::make_optional (bassNote) : std::nullopt);
+  auto obj_ref = builder.build_in_registry ();
+  undo_stack_.push (
+    new commands::AddArrangerObjectCommand<structure::arrangement::ChordObject> (
+      *region, obj_ref));
+  return obj_ref.get_object_as<structure::arrangement::ChordObject> ();
+}
+
+structure::arrangement::ChordObject *
+ArrangerObjectCreator::addChordObjectFromDescriptor (
+  structure::arrangement::ChordRegion * region,
+  double                                startTicks,
+  dsp::ChordDescriptor *                descriptor)
+{
+  assert (region != nullptr);
+  if (descriptor == nullptr)
+    return nullptr;
+  return addChordObjectFromFields (
+    region, startTicks, descriptor->rootNote (), descriptor->chordType (),
+    descriptor->chordAccent (), descriptor->hasBass (),
+    descriptor->hasBass () ? descriptor->bassNote () : dsp::MusicalNote::C,
+    descriptor->inversion ());
+}
+
+void
+ArrangerObjectCreator::editChordObjectsDescriptor (
+  QVariantList     chordObjects,
+  dsp::MusicalNote rootNote,
+  dsp::ChordType   chordType,
+  dsp::ChordAccent chordAccent,
+  bool             hasBass,
+  dsp::MusicalNote bassNote,
+  int              inversion)
+{
+  // Build a target descriptor from the given fields.
+  dsp::ChordDescriptor target;
+  target.setRootNote (rootNote);
+  target.setChordType (chordType);
+  target.setChordAccent (chordAccent);
+  target.setInversion (inversion);
+  if (hasBass)
+    target.setBassNote (bassNote);
+  else
+    target.setHasBass (false);
+
+  // Count valid (non-null) targets so a single edit can be pushed without a
+  // macro, allowing it to merge with the previous top-level edit (one undo
+  // step for repeated tweaks of the same object).
+  int valid_count = 0;
+  for (const auto &variant : chordObjects)
+    {
+      if (variant.value<structure::arrangement::ChordObject *> () != nullptr)
+        ++valid_count;
+    }
+  if (valid_count == 0)
+    return;
+
+  const bool single = (valid_count == 1);
+  if (!single)
+    undo_stack_.beginMacro (QObject::tr ("Edit chord"));
+  for (const auto &variant : chordObjects)
+    {
+      auto * co = variant.value<structure::arrangement::ChordObject *> ();
+      if (co != nullptr)
+        undo_stack_.push (new commands::EditChordObjectCommand (co, target));
+    }
+  if (!single)
+    undo_stack_.endMacro ();
 }
 
 structure::arrangement::MidiRegion *

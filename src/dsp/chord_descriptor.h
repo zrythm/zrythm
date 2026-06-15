@@ -134,7 +134,8 @@ public:
     std::optional<MusicalNote> bass = std::nullopt,
     QObject *                  parent = nullptr)
       : QObject (parent), root_note_ (root), type_ (type), accent_ (accent),
-        inversion_ (inversion), bass_note_ (bass)
+        inversion_ (std::clamp (inversion, minInversion (), maxInversion ())),
+        bass_note_ (bass)
   {
   }
 

@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.TabButton {
   id: control
@@ -67,5 +67,24 @@ T.TabButton {
     color: iconLabelColor
     height: ZrythmTheme.buttonHeight - 2 * padding
     width: ZrythmTheme.buttonHeight - 2 * padding
+  }
+
+  // Switch to this tab when a drag hovers for a brief moment, without
+  // consuming the drop so the drag continues to its final target (e.g. drag
+  // from chord pad to editor).
+  DropArea {
+    anchors.fill: parent
+
+    onDropped: drop => drop.accepted = false
+    onEntered: dragSwitchTimer.start()
+    onExited: dragSwitchTimer.stop()
+
+    Timer {
+      id: dragSwitchTimer
+
+      interval: Qt.styleHints.startDragTime
+
+      onTriggered: control.TabBar.tabBar.currentIndex = control.TabBar.index
+    }
   }
 }

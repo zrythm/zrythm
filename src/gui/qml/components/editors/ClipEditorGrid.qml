@@ -161,6 +161,7 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 3
 
       sourceComponent: ChordEditorPane {
+        clipEditor: root.clipEditor
         region: root.region
         session: root.session
       }

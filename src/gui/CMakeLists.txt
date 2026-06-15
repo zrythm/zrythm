@@ -223,6 +223,8 @@ set(rel_qml_file_paths
   components/arranger/TimeSignatureObjectView.qml
   components/arranger/VelocityArranger.qml
   components/arranger/VelocityBarView.qml
+  components/arranger/ChordObjectView.qml
+  components/arranger/ChordArranger.qml
   components/dialogs/ProgressDialog.qml
   components/dialogs/ProgressDialogWithFuture.qml
   components/editors/AudioEditorPane.qml
@@ -231,6 +233,7 @@ set(rel_qml_file_paths
   components/editors/MidiEditorPane.qml
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
+  components/editors/ChordRowLabels.qml
   components/AboutDialog.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml

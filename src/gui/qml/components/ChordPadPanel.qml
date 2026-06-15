@@ -159,8 +159,32 @@ ColumnLayout {
         height: 64
         width: 120
 
+        // Drag-to-editor support: declarative Drag properties + DragHandler.
+        Drag.dragType: Drag.Automatic
+        Drag.supportedActions: Qt.CopyAction
+        Drag.keys: ["application/x-zrythm-chord"]
+        Drag.mimeData: padWrapper.chordDescriptor ? {
+          "application/x-zrythm-chord": JSON.stringify ({
+            root: padWrapper.chordDescriptor.rootNote,
+            type: padWrapper.chordDescriptor.chordType,
+            accent: padWrapper.chordDescriptor.chordAccent,
+            hasBass: padWrapper.chordDescriptor.hasBass,
+            bass: padWrapper.chordDescriptor.hasBass ? padWrapper.chordDescriptor.bassNote : 0,
+            inversion: padWrapper.chordDescriptor.inversion
+          })
+        } : ({})
+
         HoverHandler {
           id: padHoverHandler
+        }
+
+        DragHandler {
+          id: padDragHandler
+          target: null
+
+          onActiveChanged: {
+            padWrapper.Drag.active = active;
+          }
         }
 
         AbstractButton {

@@ -2,3 +2,4 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_subdirectory(qml)
+add_subdirectory(qquick)

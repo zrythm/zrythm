@@ -10,25 +10,29 @@ import ZrythmStyle
 ArrangerObjectBaseView {
   id: root
 
+  property string scaleName: ""
   readonly property ScaleObject scaleObject: arrangerObject as ScaleObject
 
-  property string scaleName: ""
-
-  Connections {
-    target: root.scaleObject?.scale ?? null
-    function onScaleTypeChanged() { root.scaleName = root.scaleObject.scale.toString() }
-    function onRootKeyChanged() { root.scaleName = root.scaleObject.scale.toString() }
-  }
+  height: textMetrics.height + 2 * ZrythmTheme.buttonPadding
+  width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
 
   Component.onCompleted: {
     if (root.scaleObject?.scale)
       root.scaleName = root.scaleObject.scale.toString();
   }
-
-  height: textMetrics.height + 2 * ZrythmTheme.buttonPadding
-  width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
-
   onObjectDoubleClicked: scaleDialog.open()
+
+  Connections {
+    function onRootKeyChanged() {
+      root.scaleName = root.scaleObject.scale.toString();
+    }
+
+    function onScaleTypeChanged() {
+      root.scaleName = root.scaleObject.scale.toString();
+    }
+
+    target: root.scaleObject?.scale ?? null
+  }
 
   Rectangle {
     anchors.fill: parent
