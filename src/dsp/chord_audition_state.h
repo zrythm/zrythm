@@ -4,7 +4,8 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
-#include "dsp/midi_event.h"
+#include "dsp/graph_node.h"
+#include "dsp/midi_event_buffer.h"
 
 #include <boost/container/static_vector.hpp>
 #include <farbot/RealtimeObject.hpp>

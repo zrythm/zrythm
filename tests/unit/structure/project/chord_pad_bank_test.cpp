@@ -33,7 +33,9 @@ protected:
     EXPECT_EQ (chord.inversion (), expected_inversion);
     EXPECT_EQ (chord.hasBass (), expected_bass.has_value ());
     if (expected_bass)
-      EXPECT_EQ (chord.bassNote (), *expected_bass);
+      {
+        EXPECT_EQ (chord.bassNote (), *expected_bass);
+      }
   }
 
   std::unique_ptr<ChordPadBank> bank_;

@@ -76,6 +76,7 @@ target_sources(zrythm_dsp_lib
       audio_input_processor.h
       audio_pool.h
       audio_port.h
+      chord_audition_state.h
       chord_descriptor.h
       chord_preset.h
       curve.h
