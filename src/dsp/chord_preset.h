@@ -6,6 +6,7 @@
 #include <span>
 
 #include "dsp/chord_descriptor.h"
+#include "utils/icloneable.h"
 #include "utils/qt.h"
 #include "utils/utf8_string.h"
 

@@ -6,6 +6,7 @@
 #include "dsp/chord_descriptor.h"
 #include "dsp/chord_preset.h"
 #include "dsp/musical_scale.h"
+#include "utils/midi.h"
 #include "utils/qt.h"
 
 #include <QAbstractListModel>
@@ -13,6 +14,8 @@
 
 #include <farbot/RealtimeObject.hpp>
 #include <nlohmann/json_fwd.hpp>
+
+using namespace std::string_view_literals;
 
 namespace zrythm::structure::project
 {
