@@ -122,7 +122,7 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 ### Build System Notes
 
 - **Binary Output**: `builddir_cmake/products/bin/`
-- **Tests**: Enable with `-DZRYTHM_TESTS=ON`, `-DZRYTHM_BENCHMARKS=ON`, or `-DZRYTHM_GUI_TESTS=ON` during CMake configuration
+- **Tests**: Enable with `-DZRYTHM_TESTS=ON`, `-DZRYTHM_BENCHMARKS=ON`, or `-DZRYTHM_QML_TESTS=ON` during CMake configuration
 - **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build builddir_cmake`, `ctest --test-dir builddir_cmake`)
 
 ---

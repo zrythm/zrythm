@@ -20,7 +20,7 @@ variables:
   COMMON_CMAKE_OPTIONS: >-
     -DZRYTHM_STRICT=ON
     -DZRYTHM_TESTS=ON
-    -DZRYTHM_GUI_TESTS=ON
+    -DZRYTHM_QML_TESTS=ON
     -DZRYTHM_BENCHMARKS=ON
     -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
     -DCPM_DOWNLOAD_ALL=ON
@@ -252,7 +252,7 @@ configure:windows:
       cmake -B "${env:BUILDDIR}-${env:BUILD_TYPE}"
       -DZRYTHM_STRICT=ON
       -DZRYTHM_TESTS=ON
-      -DZRYTHM_GUI_TESTS=ON
+      -DZRYTHM_QML_TESTS=ON
       -DZRYTHM_BENCHMARKS=ON
       -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
       -DCPM_DOWNLOAD_ALL=ON
@@ -320,11 +320,11 @@ check:exif:
     - scripts/exif_check.sh
 
 .unix_test_cmd: &unix_test_cmd
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyTest --rerun-failed --output-on-failure
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlyTest --rerun-failed --output-on-failure
   - if [ "${BUILD_TYPE}" = "Debug" ]; then
-      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlyCoverage ;
+      ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlyCoverage ;
     fi
-  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -D NightlySubmit
+  - ctest --test-dir ${BUILDDIR}-${BUILD_TYPE} -C ${BUILD_TYPE} -D NightlySubmit
   - if [ "${BUILD_TYPE}" = "Release" ]; then
       cmake --build ${BUILDDIR}-${BUILD_TYPE} --config ${BUILD_TYPE} --target run_all_benchmarks ;
     fi

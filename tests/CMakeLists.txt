@@ -326,8 +326,6 @@ dsp/port
 dsp/sample_processor
 dsp/tempo_track
 dsp/tracklist
-gui/backend/arranger_selections
-gui/backend/timeline_selections
 integration/memory_allocation
 integration/recording
 plugins/carla_discovery
@@ -350,13 +348,6 @@ list(APPEND TESTS
     integration/midi_file
     integration/run_graph_with_latencies
     integration/undo_redo_helm_track_creation
-)
-endif()
-
-if(ZRYTHM_GUI_TESTS)
-list(APPEND TESTS
-    gui/widgets/region
-    gui/widgets/track
 )
 endif()
 
