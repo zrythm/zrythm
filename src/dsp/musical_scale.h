@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "dsp/chord_descriptor.h"
 #include "utils/icloneable.h"
 
@@ -215,7 +217,8 @@ public:
    * @param ascending Whether to get the notes when ascending or descending
    * (some scales have different notes when rising/falling).
    */
-  static const bool * get_notes_for_type (ScaleType type, bool ascending);
+  static std::array<bool, 12>
+  get_notes_for_type (ScaleType type, bool ascending);
 
   /**
    * Returns the triads in the given scale.

@@ -189,216 +189,323 @@ MusicalScale::get_triad_types_for_type (ScaleType type, bool ascending)
 #undef SET_7_TRIADS
 }
 
-const bool *
+std::array<bool, 12>
 MusicalScale::get_notes_for_type (ScaleType type, bool ascending)
 {
-#define SET_NOTES(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
-  { \
-    static const bool notes[] = { \
-      n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12 \
-    }; \
-    return notes; \
-  }
-
-  /* get the notes starting at C */
+  // Notes starting at C for each scale type. Constant expressions 0/1 are
+  // used instead of false/true for readability — they fit in bool without
+  // narrowing.
   switch (type)
     {
     case ScaleType::Chromatic:
-      SET_NOTES (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-      break;
+      return {
+        true, true, true, true, true, true, true, true, true, true, true, true
+      };
     case ScaleType::Major:
     case ScaleType::Ionian:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1);
-      break;
+      return {
+        true,  false, true,  false, true,  true,
+        false, true,  false, true,  false, true
+      };
     case ScaleType::Dorian:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true,  false, true,  true, false, true,
+        false, true,  false, true, true,  false
+      };
     case ScaleType::Phrygian:
-      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true,  true, false, true,  false, true,
+        false, true, true,  false, true,  false
+      };
     case ScaleType::Lydian:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1);
-      break;
+      return {
+        true, false, true,  false, true,  false,
+        true, true,  false, true,  false, true
+      };
     case ScaleType::Mixolydian:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true,  false, true,  false, true, true,
+        false, true,  false, true,  true, false
+      };
     case ScaleType::Minor:
     case ScaleType::Aeolian:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true,  false, true, true,  false, true,
+        false, true,  true, false, true,  false
+      };
     case ScaleType::Locrian:
-      SET_NOTES (1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, true,  false, true,
+        true, false, true,  false, true,  false
+      };
     case ScaleType::MelodicMinor:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1);
-      break;
+      return {
+        true,  false, true,  true, false, true,
+        false, true,  false, true, false, true
+      };
     case ScaleType::HarmonicMinor:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  false, true, true,  false, true,
+        false, true,  true, false, false, true
+      };
     /* below need double check */
     case ScaleType::HarmonicMajor:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1);
-      break;
+      return {
+        true, false, true, false, true,  false,
+        true, false, true, true,  false, true
+      };
     case ScaleType::MajorPentatonic:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0);
-      break;
+      return {
+        true,  false, true,  false, true,  false,
+        false, true,  false, true,  false, false
+      };
     case ScaleType::MinorPentatonic:
-      SET_NOTES (1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0);
-      break;
+      return {
+        true,  false, false, true,  false, true,
+        false, true,  false, false, true,  false
+      };
     case ScaleType::PhrygianDominant:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true,  true, false, false, true, true,
+        false, true, true,  false, true, false
+      };
     case ScaleType::MajorLocrian:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, false, true, false, true, true,
+        true, false, true, false, true, false
+      };
     case ScaleType::Acoustic:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true, false, true,  false, true, false,
+        true, true,  false, true,  true, false
+      };
     case ScaleType::Altered:
-      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, true,  true, false,
+        true, false, true,  false, true, false
+      };
     case ScaleType::Algerian:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true, false, true, true,  false, true,
+        true, true,  true, false, false, true
+      };
     case ScaleType::Augmented:
-      SET_NOTES (1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  false, false, true,  true,  false,
+        false, true,  true,  false, false, true
+      };
     case ScaleType::DoubleHarmonic:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  true, false, false, true,  true,
+        false, true, true,  false, false, true
+      };
     case ScaleType::Chinese:
-      SET_NOTES (1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1);
-      break;
+      return {
+        true, false, false, false, true,  false,
+        true, true,  false, false, false, true
+      };
     case ScaleType::Diminished:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
-      break;
+      return {
+        true, false, true, true, false, true,
+        true, false, true, true, false, true
+      };
     case ScaleType::DominantDiminished:
-      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true, true, false, true, true, false,
+        true, true, false, true, true, false
+      };
     case ScaleType::Egyptian:
-      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0);
-      break;
+      return {
+        true,  false, true,  false, false, true,
+        false, true,  false, false, true,  false
+      };
     case ScaleType::EightToneSpanish:
-      SET_NOTES (1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, true,  true, true,
+        true, false, true,  false, true, false
+      };
     case ScaleType::Enigmatic:
-      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1);
-      break;
+      return {
+        true, true,  false, false, true, false,
+        true, false, true,  false, true, true
+      };
     case ScaleType::Geez:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true,  false, true, true,  false, true,
+        false, true,  true, false, true,  false
+      };
     case ScaleType::Hindu:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true,  false, true, false, true, true,
+        false, true,  true, false, true, false
+      };
     case ScaleType::Hirajoshi:
-      SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, false, false, true,
+        true, false, false, false, true,  false
+      };
     case ScaleType::HungarianGypsy:
-      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true, false, true, true,  false, false,
+        true, true,  true, false, false, true
+      };
     case ScaleType::Insen:
-      SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0);
-      break;
+      return {
+        true,  true, false, false, false, true,
+        false, true, false, false, true,  false
+      };
     case ScaleType::NeapolitanMajor:
-      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
-      break;
+      return {
+        true,  true, false, true, false, true,
+        false, true, false, true, false, true
+      };
     case ScaleType::NeapolitanMinor:
-      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  true, false, true,  false, true,
+        false, true, true,  false, false, true
+      };
     case ScaleType::OctatonicHalfWhole:
-      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true, true, false, true, true, false,
+        true, true, false, true, true, false
+      };
     case ScaleType::OctatonicWholeHalf:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
-      break;
+      return {
+        true, false, true, true, false, true,
+        true, false, true, true, false, true
+      };
     case ScaleType::Oriental:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0);
-      break;
+      return {
+        true, true,  false, false, true, true,
+        true, false, false, true,  true, false
+      };
     case ScaleType::WholeTone:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, false, true, false, true, false,
+        true, false, true, false, true, false
+      };
     case ScaleType::RomanianMinor:
-      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0);
-      break;
+      return {
+        true, false, true,  true, false, false,
+        true, true,  false, true, true,  false
+      };
     case ScaleType::Maqam:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  true, false, false, true,  true,
+        false, true, true,  false, false, true
+      };
     case ScaleType::Yo:
-      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0);
-      break;
+      return {
+        true,  false, true,  false, false, true,
+        false, true,  false, true,  false, false
+      };
     case ScaleType::BebopLocrian:
-      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1);
-      break;
+      return {
+        true, false, true, true,  false, true,
+        true, false, true, false, true,  true
+      };
     case ScaleType::BebopDominant:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1);
-      break;
+      return {
+        true,  false, true,  false, true, true,
+        false, true,  false, true,  true, true
+      };
     case ScaleType::BebopMajor:
-      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1);
-      break;
+      return {
+        true,  false, true, false, true,  true,
+        false, true,  true, true,  false, true
+      };
     case ScaleType::SuperLocrian:
-      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, true,  true, false,
+        true, false, true,  false, true, false
+      };
     case ScaleType::EnigmaticMinor:
-      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1);
-      break;
+      return {
+        true, true, false, true,  false, false,
+        true, true, false, false, true,  true
+      };
     case ScaleType::Composite:
-      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true, true, false, false, true,  false,
+        true, true, true,  false, false, true
+      };
     case ScaleType::Bhairav:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true,  true, false, false, true,  true,
+        false, true, true,  false, false, true
+      };
     case ScaleType::HungarianMinor:
-      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
-      break;
+      return {
+        true, false, true, true,  false, false,
+        true, true,  true, false, false, true
+      };
     case ScaleType::Persian:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1);
-      break;
+      return {
+        true, true,  false, false, true,  true,
+        true, false, true,  false, false, true
+      };
     case ScaleType::Iwato:
-      SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
-      break;
+      return {
+        true, true,  false, false, false, true,
+        true, false, false, false, true,  false
+      };
     case ScaleType::Kumoi:
-      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
-      break;
+      return {
+        true,  false, true,  true, false, false,
+        false, true,  false, true, false, false
+      };
     case ScaleType::Pelog:
-      SET_NOTES (1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0);
-      break;
+      return {
+        true,  true, false, true,  true,  false,
+        false, true, true,  false, false, false
+      };
     case ScaleType::Prometheus:
-      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);
-      break;
+      return {
+        true, false, true,  false, true, false,
+        true, false, false, true,  true, false
+      };
     case ScaleType::PrometheusNeapolitan:
-      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0);
-      break;
+      return {
+        true, true,  false, false, true, false,
+        true, false, false, true,  true, false
+      };
     case ScaleType::PrometheusLiszt:
-      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
-      break;
+      return {
+        true,  true,  false, false, true,  true,
+        false, false, true,  true,  false, false
+      };
     case ScaleType::Balinese:
-      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0);
-      break;
+      return {
+        true,  false, true, true,  false, false,
+        false, true,  true, false, false, false
+      };
     case ScaleType::Ragatodi:
-      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0);
-      break;
+      return {
+        true, true, false, true,  false, false,
+        true, true, true,  false, true,  false
+      };
     case ScaleType::Japanese1:
-      SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
-      break;
+      return {
+        true,  true, false, false, false, true,
+        false, true, true,  false, false, false
+      };
     case ScaleType::Japanese2:
-      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0);
-      break;
+      return {
+        true,  false, true, false, false, true,
+        false, true,  true, false, false, false
+      };
     default:
       break;
     }
 
-#undef SET_NOTES
-
-  return nullptr;
+  return {};
 }
 
 boost::container::static_vector<MusicalScale::DiatonicTriad, 12>
 MusicalScale::get_diatonic_triads (ScaleType type, MusicalNote root_note)
 {
-  const auto   triads = get_triad_types_for_type (type, true);
-  const auto * notes = get_notes_for_type (type, true);
-  if (notes == nullptr)
-    return {};
+  const auto triads = get_triad_types_for_type (type, true);
+  const auto notes = get_notes_for_type (type, true);
 
   const auto root_val = std::to_underlying (root_note);
 
@@ -432,7 +539,7 @@ MusicalScale::containsNote (MusicalNote note) const
       return false;
     }
 
-  const bool * notes = get_notes_for_type (type_, false);
+  const auto notes = get_notes_for_type (type_, false);
 
   return notes[(note_int - std::to_underlying (root_key_) + 12) % 12];
 }
@@ -452,9 +559,7 @@ MusicalScale::
   if (root_int >= 12)
     return false;
 
-  const bool * notes = get_notes_for_type (type, false);
-  if (notes == nullptr)
-    return false;
+  const auto notes = get_notes_for_type (type, false);
 
   return notes[(note_int - root_int + 12) % 12];
 }
@@ -522,10 +627,8 @@ MusicalScale::getDiatonicChords (ScaleType type, MusicalNote rootKey)
     "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII",
   };
 
-  const auto   triads = get_triad_types_for_type (type, true);
-  const auto * notes = get_notes_for_type (type, true);
-  if (notes == nullptr)
-    return {};
+  const auto triads = get_triad_types_for_type (type, true);
+  const auto notes = get_notes_for_type (type, true);
 
   const auto root_val = std::to_underlying (rootKey);
 

@@ -16,6 +16,7 @@ target_sources(zrythm_dsp_lib
     chord_audition_state.cpp
     chord_descriptor.cpp
     chord_preset.cpp
+    chord_suggestion.cpp
     curve.cpp
     cv_port.cpp
     ditherer.cpp
@@ -79,6 +80,7 @@ target_sources(zrythm_dsp_lib
       chord_audition_state.h
       chord_descriptor.h
       chord_preset.h
+      chord_suggestion.h
       curve.h
       cv_port.h
       ditherer.h
