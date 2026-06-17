@@ -20,6 +20,13 @@ ColumnLayout {
   readonly property ChordTrack chordTrack: root.session.project.tracklist.singletonTracks.chordTrack ?? null
   required property ProjectSession session
 
+  function scoreToColor(score) {
+    if (score < 0)
+      return root.palette.button;
+    const hue = score * 0.33;
+    return Qt.hsla(hue, 0.7, 0.5, 1.0);
+  }
+
   spacing: 0
 
   ChordPadBankOperator {
@@ -27,6 +34,18 @@ ColumnLayout {
 
     chordPadBank: root.chordPadBank
     undoStack: root.session.undoStack
+  }
+
+  ChordSuggestionProvider {
+    id: suggestionProvider
+
+    currentScale: {
+      if (!root.chordTrack)
+        return null;
+      const ticks = root.session.project.transport.playhead.ticks;
+      const so = root.chordTrack.scaleAtTicks(ticks);
+      return so ? so.scale : null;
+    }
   }
 
   ZrythmToolBar {
@@ -142,6 +161,47 @@ ColumnLayout {
     ]
   }
 
+  Label {
+    id: chordGlyphMetrics
+
+    font.bold: true
+    text: "A♯♭♮°ødim"
+    visible: false
+  }
+
+  RowLayout {
+    Layout.fillWidth: true
+    Layout.leftMargin: 8
+    Layout.preferredHeight: chordGlyphMetrics.height
+    Layout.rightMargin: 8
+
+    Label {
+      color: root.palette.placeholderText
+      text: !root.chordTrack || suggestionProvider.currentScale === null ? qsTr("Add a scale to the chord track to see chord suggestions") : qsTr("Press a chord for suggestions")
+      visible: suggestionProvider.topSuggestions.length === 0
+    }
+
+    Label {
+      id: suggestionsLabel
+
+      font.bold: true
+      text: qsTr("Suggestions:")
+      visible: suggestionProvider.topSuggestions.length > 0
+    }
+
+    Repeater {
+      model: suggestionProvider.topSuggestions
+
+      Label {
+        required property var modelData
+
+        color: scoreToColor(modelData.score)
+        font.bold: true
+        text: modelData.chordName
+      }
+    }
+  }
+
   Flow {
     Layout.fillWidth: true
     padding: ZrythmTheme.buttonPadding
@@ -155,16 +215,14 @@ ColumnLayout {
 
         required property ChordDescriptor chordDescriptor
         required property int index
-
-        height: 64
-        width: 120
+        property real previousSuggestionScore: -1.0
+        property real suggestionScore: -1.0
 
         // Drag-to-editor support: declarative Drag properties + DragHandler.
         Drag.dragType: Drag.Automatic
-        Drag.supportedActions: Qt.CopyAction
         Drag.keys: ["application/x-zrythm-chord"]
         Drag.mimeData: padWrapper.chordDescriptor ? {
-          "application/x-zrythm-chord": JSON.stringify ({
+          "application/x-zrythm-chord": JSON.stringify({
             root: padWrapper.chordDescriptor.rootNote,
             type: padWrapper.chordDescriptor.chordType,
             accent: padWrapper.chordDescriptor.chordAccent,
@@ -173,6 +231,9 @@ ColumnLayout {
             inversion: padWrapper.chordDescriptor.inversion
           })
         } : ({})
+        Drag.supportedActions: Qt.CopyAction
+        height: 64
+        width: 120
 
         HoverHandler {
           id: padHoverHandler
@@ -180,6 +241,7 @@ ColumnLayout {
 
         DragHandler {
           id: padDragHandler
+
           target: null
 
           onActiveChanged: {
@@ -216,10 +278,125 @@ ColumnLayout {
           onPressed: {
             if (root.chordTrack && padWrapper.chordDescriptor)
               root.chordTrack.auditionChord(padWrapper.chordDescriptor, true);
+            suggestionProvider.currentChord = padWrapper.chordDescriptor;
           }
           onReleased: {
             if (root.chordTrack && padWrapper.chordDescriptor)
               root.chordTrack.auditionChord(padWrapper.chordDescriptor, false);
+            suggestionProvider.scheduleClear();
+          }
+        }
+
+        Connections {
+          function onSuggestionsChanged() {
+            if (suggestionProvider.currentChord && padWrapper.chordDescriptor) {
+              padWrapper.suggestionScore = suggestionProvider.scoreForChord(padWrapper.chordDescriptor);
+            } else {
+              padWrapper.suggestionScore = -1.0;
+            }
+          }
+
+          target: suggestionProvider
+        }
+
+        // Score indicator strip along the bottom of the pad.
+        // Width encodes the score magnitude, color encodes the score hue.
+        // Entry: expand from center + fade in.
+        // Exit: fade out + slight contract.
+        // Score updates while active: width/color animate smoothly via Behavior.
+        Rectangle {
+          id: scoreStrip
+
+          color: scoreToColor(padWrapper.suggestionScore)
+          height: 5
+          opacity: 0
+          radius: 1.5
+          scale: 0
+          transformOrigin: Item.Center
+          visible: padWrapper.suggestionScore >= 0 || exitAnim.running
+          width: Math.max(8, padWrapper.width * padWrapper.suggestionScore)
+
+          Behavior on color {
+            ColorAnimation {
+              duration: ZrythmTheme.animationDuration
+              easing.type: ZrythmTheme.animationEasingType
+            }
+          }
+          Behavior on width {
+            NumberAnimation {
+              duration: ZrythmTheme.animationDuration
+              easing.type: ZrythmTheme.animationEasingType
+            }
+          }
+
+          anchors {
+            bottom: parent.bottom
+            bottomMargin: 2
+            horizontalCenter: parent.horizontalCenter
+          }
+        }
+
+        // Detect score transitions and kick off entry/exit animations.
+        Connections {
+          function onSuggestionScoreChanged() {
+            const newScore = padWrapper.suggestionScore;
+            const oldScore = padWrapper.previousSuggestionScore;
+            padWrapper.previousSuggestionScore = newScore;
+
+            const becameActive = newScore >= 0 && oldScore < 0;
+            const becameInactive = newScore < 0 && oldScore >= 0;
+
+            if (becameActive) {
+              exitAnim.stop();
+              entryAnim.start();
+            } else if (becameInactive) {
+              entryAnim.stop();
+              exitAnim.start();
+            }
+            // Score-only updates (>=0 → >=0) are handled by the
+            // Behavior on width/color — nothing to do here.
+          }
+
+          target: padWrapper
+        }
+
+        ParallelAnimation {
+          id: entryAnim
+
+          ScaleAnimator {
+            duration: ZrythmTheme.animationDuration
+            easing.type: ZrythmTheme.animationEasingType
+            from: 0
+            target: scoreStrip
+            to: 1
+          }
+
+          OpacityAnimator {
+            duration: ZrythmTheme.animationDuration
+            easing.type: ZrythmTheme.animationEasingType
+            from: 0
+            target: scoreStrip
+            to: 1
+          }
+        }
+
+        ParallelAnimation {
+          id: exitAnim
+
+          OpacityAnimator {
+            duration: ZrythmTheme.animationDuration
+            easing.type: ZrythmTheme.animationEasingType
+            from: 1
+            target: scoreStrip
+            to: 0
+          }
+
+          ScaleAnimator {
+            duration: ZrythmTheme.animationDuration
+            easing.type: ZrythmTheme.animationEasingType
+            from: 1
+            target: scoreStrip
+            to: 0.6
           }
         }
 
