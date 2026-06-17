@@ -208,6 +208,7 @@ set(rel_qml_file_paths
   components/arranger/ArrangerObjectBaseView.qml
   components/arranger/ArrangerObjectLoader.qml
   components/arranger/ArrangerObjectTemporaryView.qml
+  components/arranger/ChordRegionContent.qml
   components/arranger/ChordRegionView.qml
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml

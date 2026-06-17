@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_gui_qquick_unit_tests
+  chord_region_segmenter_test.cpp
   chord_row_list_model_test.cpp
 )
 
