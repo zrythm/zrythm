@@ -24,6 +24,14 @@ add_test(
 )
 
 if(WIN32)
+  # Both this target and the main `zrythm` executable share the same runtime
+  # output directory and deploy overlapping sets of Qt DLLs via their
+  # POST_BUILD steps. Without a build ordering, MSBuild runs them in parallel
+  # and the two `cmake -E copy` invocations race on the same destination
+  # files (e.g. `icuuc.dll`), producing "Existing file ... is not writable".
+  # Serialise them so the test target's deployment runs after `zrythm`'s.
+  add_dependencies(zrythm_gui_qml_unit_tests zrythm)
+
   # Deploy Qt DLLs/plugins/QML modules needed by this test executable. The
   # main `zrythm` target's post-build step does not cover QtQuickTest/QtTest
   # (which only this test links), so without this the binary fails to start
