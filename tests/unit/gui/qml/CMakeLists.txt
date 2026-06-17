@@ -24,23 +24,20 @@ add_test(
 )
 
 if(WIN32)
-  # Both this target and the main `zrythm` executable share the same runtime
-  # output directory and deploy overlapping sets of Qt DLLs via their
-  # POST_BUILD steps. Without a build ordering, MSBuild runs them in parallel
-  # and the two `cmake -E copy` invocations race on the same destination
-  # files (e.g. `icuuc.dll`), producing "Existing file ... is not writable".
-  # Serialise them so the test target's deployment runs after `zrythm`'s.
+  # `zrythm` deploys the shared Qt runtime into this directory first; this
+  # target only adds the QtTest bits it additionally needs (see below).
   add_dependencies(zrythm_gui_qml_unit_tests zrythm)
 
-  # Deploy Qt DLLs/plugins/QML modules needed by this test executable. The
-  # main `zrythm` target's post-build step does not cover QtQuickTest/QtTest
-  # (which only this test links), so without this the binary fails to start
-  # with STATUS_DLL_NOT_FOUND (0xc0000135).
+  # Deploy `Qt6::QuickTest`, the `QtTest` QML module (`import QtTest`) and the
+  # offscreen platform plugin (`-platform offscreen`) that `zrythm` does not
+  # bring in. `copy_if_different` and the absence of `--force` keep this purely
+  # additive -- shared files already deployed by `zrythm` are left untouched,
+  # avoiding `windeployqt`'s `DeleteFile` failing on them with
+  # "Cannot remove existing file ...".
   add_custom_command(TARGET zrythm_gui_qml_unit_tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests> $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different -t $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests> $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests>
     COMMAND "${WINDEPLOYQT_EXECUTABLE}"
       --qmldir "${CMAKE_BINARY_DIR}"
-      --force
       -qml -quick -test
       $<TARGET_FILE:zrythm_gui_qml_unit_tests>
     COMMAND_EXPAND_LISTS
