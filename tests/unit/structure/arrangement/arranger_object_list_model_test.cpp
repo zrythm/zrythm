@@ -207,6 +207,52 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnPropertyChange)
   EXPECT_EQ (contentChangedSpy.count (), 1);
 }
 
+// Test that contentChanged fires AFTER removal, so synchronous consumers
+// see the post-removal container state (not the stale pre-removal state).
+TEST_F (ArrangerObjectListModelTest, ContentChangedFiresAfterRemoval)
+{
+  // Record the model's rowCount at the time contentChanged fires.
+  int row_count_at_signal = -1;
+  QObject::connect (
+    model_.get (), &ArrangerObjectListModel::contentChanged, model_.get (),
+    [&] (utils::ExpandableTickRange) {
+      row_count_at_signal = model_->rowCount ();
+    });
+
+  // Start with 5 objects (from SetUp). Remove one.
+  ASSERT_EQ (model_->rowCount (), 5);
+  model_->removeRows (2, 1);
+
+  // The signal handler should have seen the post-removal count (4),
+  // not the stale pre-removal count (5).
+  EXPECT_EQ (row_count_at_signal, 4);
+  EXPECT_EQ (model_->rowCount (), 4);
+}
+
+// Test that contentChanged on removal contains the removed object's range
+TEST_F (ArrangerObjectListModelTest, ContentChangedOnRemovalContainsRange)
+{
+  // Set a known position on the object we'll remove
+  auto * obj_to_remove =
+    objects_.get<random_access_index> ()[2].get_object_as<MidiNote> ();
+  obj_to_remove->position ()->setTicks (200.0);
+  obj_to_remove->bounds ()->length ()->setTicks (100.0);
+
+  QSignalSpy contentChangedSpy (
+    model_.get (), &ArrangerObjectListModel::contentChanged);
+
+  model_->removeRows (2, 1);
+
+  ASSERT_EQ (contentChangedSpy.count (), 1);
+  auto rangeArg =
+    contentChangedSpy.takeFirst ().at (0).value<utils::ExpandableTickRange> ();
+  auto range = rangeArg.range ();
+  ASSERT_TRUE (range.has_value ());
+  // Range should cover [200, 300) — the removed object's footprint
+  EXPECT_NEAR (range->first, 200.0, 0.01);
+  EXPECT_NEAR (range->second, 300.0, 0.01);
+}
+
 // Test ExpandableTickRange calculation
 TEST_F (ArrangerObjectListModelTest, ExpandableTickRangeCalculation)
 {

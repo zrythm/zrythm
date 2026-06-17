@@ -36,14 +36,33 @@ ArrangerObjectListModel::setup_signals (bool is_parent_arranger_object)
     [this, is_parent_arranger_object] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         {
+          auto * obj = objects_.get<random_access_index> ().at (i).get ();
+
+          // Capture the object's tick range before disconnecting — will
+          // be emitted as contentChanged in rowsRemoved (after the actual
+          // data removal).
+          auto range = get_object_tick_range (obj);
+          pending_removal_ranges_.emplace_back (
+            std::make_pair (range.first, range.second));
+
           if (is_parent_arranger_object)
-            {
-              auto * obj = objects_.get<random_access_index> ().at (i).get ();
-              obj->setParentObject (nullptr);
-            }
+            obj->setParentObject (nullptr);
 
           disconnect_object_signals (i);
         }
+    });
+
+  QObject::connect (
+    this, &ArrangerObjectListModel::rowsRemoved, this,
+    [this] (const QModelIndex &, int, int) {
+      if (pending_removal_ranges_.empty ())
+        return;
+      // Coalesce all pending removal ranges into a single expanded range.
+      utils::ExpandableTickRange combined = pending_removal_ranges_.front ();
+      for (const auto &r : pending_removal_ranges_ | std::views::drop (1))
+        combined.expand (r);
+      pending_removal_ranges_.clear ();
+      Q_EMIT contentChanged (combined);
     });
 }
 
@@ -52,15 +71,15 @@ ArrangerObjectListModel::connect_object_signals (int index)
 {
   const auto * obj = objects_.get<random_access_index> ().at (index).get ();
 
-  // Emit once for the fact that we've added this object
-  Q_EMIT handle_object_change (obj);
-
-  // Store initial position
-  {
-    const auto obj_tick_range = get_object_tick_range (obj);
-    previous_object_ranges_[obj->get_uuid ()] = std::make_pair (
-      units::ticks (obj_tick_range.first), units::ticks (obj_tick_range.second));
-  }
+  // Store initial position and emit contentChanged for the newly added
+  // object. No objects_.modify() needed — the sorted index already has
+  // the correct position from the insertion.
+  const auto obj_tick_range = get_object_tick_range (obj);
+  previous_object_ranges_[obj->get_uuid ()] = std::make_pair (
+    units::ticks (obj_tick_range.first), units::ticks (obj_tick_range.second));
+  Q_EMIT contentChanged (
+    utils::ExpandableTickRange (
+      std::make_pair (obj_tick_range.first, obj_tick_range.second)));
 
   // Emit on property changes
   QObject::connect (
@@ -83,9 +102,6 @@ void
 ArrangerObjectListModel::disconnect_object_signals (int index)
 {
   const auto * obj = objects_.get<random_access_index> ().at (index).get ();
-
-  // Emit content changed for the object being removed
-  handle_object_change (obj);
 
   // Remove from previous ranges cache
   previous_object_ranges_.erase (obj->get_uuid ());

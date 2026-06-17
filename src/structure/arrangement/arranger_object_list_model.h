@@ -194,5 +194,10 @@ private:
     ArrangerObject::Uuid,
     std::pair<units::precise_tick_t, units::precise_tick_t>>
     previous_object_ranges_;
+
+  /** Tick ranges of objects being removed, captured in
+   * rowsAboutToBeRemoved and emitted as contentChanged in rowsRemoved
+   * (after the actual data removal). */
+  std::vector<utils::ExpandableTickRange> pending_removal_ranges_;
 };
 }
