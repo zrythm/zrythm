@@ -27,6 +27,27 @@ QtObject {
     let bounds = getObjectBounds(obj);
     if (bounds) {
       return obj.position.ticks + bounds.length.ticks;
+    } else if (obj.type === ArrangerObject.ChordObject && obj.parentObject) {
+      // Chord objects have no bounds — derive end from the next distinct
+      // chord position in the region, or the region end if this is the last.
+      const region = obj.parentObject;
+      const myPos = obj.position.ticks;
+      let nextPos = -1;
+      const chordObjects = region.chordObjects;
+      for (let i = 0; i < chordObjects.rowCount(); i++) {
+        const other = chordObjects.data(chordObjects.index(i, 0), ArrangerObjectListModel.ArrangerObjectPtrRole);
+        const otherPos = other.position.ticks;
+        if (otherPos > myPos + 1e-9) {
+          if (nextPos < 0 || otherPos < nextPos)
+            nextPos = otherPos;
+        }
+      }
+      if (nextPos >= 0)
+        return nextPos;
+      const regionBounds = region.bounds;
+      if (regionBounds)
+        return regionBounds.length.ticks;
+      return myPos;
     } else {
       return obj.position.ticks;
     }

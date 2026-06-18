@@ -11,7 +11,7 @@ MultiEffect {
   readonly property real shadowOffset: 2
 
   shadowBlur: 0.6
-  shadowColor: Style.shadowColor
+  shadowColor: ZrythmTheme.shadowColor
   shadowEnabled: true
   shadowHorizontalOffset: shadowOffset
   shadowVerticalOffset: shadowOffset

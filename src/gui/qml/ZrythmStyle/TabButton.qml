@@ -1,21 +1,21 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: Copyright (C) 2017 The Qt Company Ltd.
 // SPDX-License-Identifier: GPL-3.0-only
 
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
-import ZrythmStyle 1.0
+import ZrythmStyle
 
 T.TabButton {
   id: control
 
   readonly property color iconLabelColor: control.checked ? control.palette.brightText : control.palette.buttonText
 
-  font: Style.semiBoldTextFont
+  font: ZrythmTheme.semiBoldTextFont
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: 4
   spacing: 4
 
@@ -29,23 +29,23 @@ T.TabButton {
     color: {
       let c = control.checked ? control.palette.highlight : control.palette.button;
       if (control.down)
-        return Style.getStrongerColor(c);
+        return ZrythmTheme.getStrongerColor(c);
       else if (control.visualFocus || (control.hovered && !control.checked))
-        return Style.getColorBlendedTowardsContrast(c);
+        return ZrythmTheme.getColorBlendedTowardsContrast(c);
       return c;
     }
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     topLeftRadius: isBeginning ? radiusToUse : 0
     topRightRadius: isEnd ? radiusToUse : 0
 
     Behavior on border.color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     border {
@@ -65,7 +65,26 @@ T.TabButton {
 
   icon {
     color: iconLabelColor
-    height: Style.buttonHeight - 2 * padding
-    width: Style.buttonHeight - 2 * padding
+    height: ZrythmTheme.buttonHeight - 2 * padding
+    width: ZrythmTheme.buttonHeight - 2 * padding
+  }
+
+  // Switch to this tab when a drag hovers for a brief moment, without
+  // consuming the drop so the drag continues to its final target (e.g. drag
+  // from chord pad to editor).
+  DropArea {
+    anchors.fill: parent
+
+    onDropped: drop => drop.accepted = false
+    onEntered: dragSwitchTimer.start()
+    onExited: dragSwitchTimer.stop()
+
+    Timer {
+      id: dragSwitchTimer
+
+      interval: Qt.styleHints.startDragTime
+
+      onTriggered: control.TabBar.tabBar.currentIndex = control.TabBar.index
+    }
   }
 }

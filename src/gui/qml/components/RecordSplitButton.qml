@@ -19,8 +19,8 @@ SplitButton {
 
   iconSource: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
   mainButton.checkable: true
-  mainButton.palette.accent: Style.dangerColor
-  mainButton.palette.buttonText: Style.dangerColor
+  mainButton.palette.accent: ZrythmTheme.dangerColor
+  mainButton.palette.buttonText: ZrythmTheme.dangerColor
   menuTooltipText: qsTr("Record Options")
   tooltipText: qsTr("Record")
 

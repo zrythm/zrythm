@@ -19,9 +19,6 @@
 namespace zrythm::dsp
 {
 
-namespace
-{
-
 using graph_test::MockTransport;
 
 class MidiActivityProviderTest : public ::testing::Test
@@ -97,8 +94,6 @@ push_all_notes_off (MidiPort &port, midi_byte_t channel)
   const auto ev = midi_event::make_control_change (
     channel, utils::midi::MIDI_ALL_NOTES_OFF, 0, units::samples (0));
   port.buffer_.push_back (ev.time_, ev.data ());
-}
-
 }
 
 TEST_F (MidiActivityProviderTest, InitiallyNoActivity)

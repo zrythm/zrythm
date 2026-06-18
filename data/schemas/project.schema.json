@@ -85,6 +85,18 @@
             "additionalItems": false
           }
         },
+        "chordPadBank": {
+          "type": "object",
+          "description": "Chord pad bank - variable-length list of chord descriptors for the pad panel",
+          "properties": {
+            "chords": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/chordDescriptor"
+              }
+            }
+          }
+        },
         "midiInputSelections": {
           "type": "array",
           "description": "MIDI hardware input selections per track (pruned to live tracks on save)",
@@ -539,6 +551,42 @@
           "type": "boolean"
         }
       }
+    },
+    "chordDescriptor": {
+      "type": "object",
+      "description": "A chord descriptor (root note, type, accent, inversion, optional bass)",
+      "properties": {
+        "rootNote": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11,
+          "description": "Root note (MusicalNote enum value)"
+        },
+        "type": {
+          "type": "integer",
+          "description": "ChordType enum value"
+        },
+        "accent": {
+          "type": "integer",
+          "description": "ChordAccent enum value"
+        },
+        "inversion": {
+          "type": "integer",
+          "description": "Inversion count (0 = none)"
+        },
+        "bassNote": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11,
+          "description": "Optional bass note (MusicalNote enum value)"
+        }
+      },
+      "required": [
+        "rootNote",
+        "type",
+        "accent",
+        "inversion"
+      ]
     },
     "registryObjectBase": {
       "$comment": "Base class for all objects in registries",
@@ -1742,25 +1790,8 @@
             "endPosition": {
               "$ref": "#/definitions/position"
             },
-            "chord": {
-              "type": "object",
-              "properties": {
-                "root": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 11
-                },
-                "type": {
-                  "type": "string",
-                  "description": "Chord type (e.g., 'major', 'minor', '7')"
-                },
-                "accent": {
-                  "type": "array",
-                  "items": {
-                    "type": "integer"
-                  }
-                }
-              }
+            "chordDescriptor": {
+              "$ref": "#/definitions/chordDescriptor"
             }
           }
         }

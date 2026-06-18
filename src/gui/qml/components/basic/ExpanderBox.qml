@@ -52,7 +52,7 @@ Control {
       visible: root.expanded
 
       Behavior on Layout.preferredHeight {
-        animation: Style.propertyAnimation
+        animation: ZrythmTheme.propertyAnimation
       }
       background: Rectangle {
         anchors.fill: parent

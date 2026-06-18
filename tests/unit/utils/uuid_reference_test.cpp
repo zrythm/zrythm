@@ -644,8 +644,8 @@ TEST (GetTypedTest, ReturnsCorrectObject)
 TEST (TypedUuidReferenceConversionTest, DerivedToBaseConversion)
 {
   utils::ObjectRegistry registry;
-  auto                  derived_ref = utils::create_object<DerivedTestObject> (
-    registry, DerivedTestObject::Uuid{ QUuid::createUuid () }, "derived");
+  auto derived_ref = utils::create_object<DerivedUuidRefTestObject> (
+    registry, DerivedUuidRefTestObject::Uuid{ QUuid::createUuid () }, "derived");
   TypedUuidReference<TestObject> base_ref = derived_ref;
   EXPECT_EQ (base_ref.id (), derived_ref.id ());
   EXPECT_EQ (base_ref.get ()->name (), "derived");
@@ -654,8 +654,8 @@ TEST (TypedUuidReferenceConversionTest, DerivedToBaseConversion)
 TEST (TypedUuidReferenceConversionTest, DerivedToBaseSharesRefcount)
 {
   utils::ObjectRegistry registry;
-  auto                  derived_ref = utils::create_object<DerivedTestObject> (
-    registry, DerivedTestObject::Uuid{ QUuid::createUuid () }, "derived");
+  auto derived_ref = utils::create_object<DerivedUuidRefTestObject> (
+    registry, DerivedUuidRefTestObject::Uuid{ QUuid::createUuid () }, "derived");
   const auto raw_id = type_safe::get (derived_ref.id ());
   EXPECT_EQ (registry.ref_count (raw_id), 1);
   {

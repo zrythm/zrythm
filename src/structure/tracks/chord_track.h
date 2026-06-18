@@ -3,10 +3,14 @@
 
 #pragma once
 
+#include "dsp/chord_audition_state.h"
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/scale_object.h"
 #include "structure/tracks/track.h"
+#include "utils/qt.h"
+
+#include <QTimer>
 
 namespace zrythm::structure::tracks
 {
@@ -36,8 +40,8 @@ public:
   using ChordRegion = arrangement::ChordRegion;
   using ChordObject = arrangement::ChordObject;
   using ScaleObjectPtr = ScaleObject *;
-  using NotePitchToChordDescriptorFunc =
-    std::function<const dsp::ChordDescriptor *(midi_byte_t)>;
+  using NotePitchToPitchesFunc = std::function<
+    std::optional<dsp::ChordDescriptor::ChordPitches> (midi_byte_t)>;
 
   ChordTrack (FinalTrackDependencies dependencies);
 
@@ -45,20 +49,44 @@ public:
   // QML Interface
   // ========================================================================
 
+  /**
+   * @brief Start or stop auditioning a chord.
+   *
+   * Thread-safe: delegates to ChordAuditionState which uses a lock-free
+   * container for audio thread access.
+   *
+   * @param descriptor The chord descriptor to audition (or nullptr to stop all).
+   * @param on True to start audition, false to stop.
+   * @param velocity MIDI velocity for note-ons (defaults to
+   * ChordAuditionState::kDefaultVelocity).
+   */
+  Q_INVOKABLE void auditionChord (
+    const zrythm::dsp::ChordDescriptor * descriptor,
+    bool                                 on,
+    midi_byte_t velocity = dsp::ChordAuditionState::kDefaultVelocity);
+
+  /**
+   * Auditions @p descriptor for @p duration_ms milliseconds, then stops
+   * automatically. Re-triggering stops the previous preview and restarts.
+   */
+  Q_INVOKABLE void previewChord (
+    const zrythm::dsp::ChordDescriptor * descriptor,
+    int                                  duration_ms = 400);
+
   // ========================================================================
 
-  const dsp::ChordDescriptor *
-  note_pitch_to_chord_descriptor (midi_byte_t note_pitch) const
+  std::optional<dsp::ChordDescriptor::ChordPitches>
+  note_pitch_to_pitches (midi_byte_t note_pitch) const
   {
-    assert (note_pitch_to_descriptor_.has_value ());
-    return std::invoke (*note_pitch_to_descriptor_, note_pitch);
+    assert (note_pitch_to_pitches_.has_value ());
+    return std::invoke (*note_pitch_to_pitches_, note_pitch);
   }
 
   // FIXME: eventually this dependency should be injected via a constructor
   // argument
-  void set_note_pitch_to_descriptor_func (NotePitchToChordDescriptorFunc func)
+  void set_note_pitch_to_pitches_func (NotePitchToPitchesFunc func)
   {
-    note_pitch_to_descriptor_ = func;
+    note_pitch_to_pitches_ = func;
   }
 
   ScaleObject * get_scale_at (size_t index) const;
@@ -79,7 +107,7 @@ public:
   static void transform_chord_and_append (
     dsp::MidiEventBuffer                               &dest,
     const dsp::MidiEventBuffer                         &src,
-    const NotePitchToChordDescriptorFunc               &note_to_chord,
+    const NotePitchToPitchesFunc                       &note_to_pitches,
     midi_byte_t                                         velocity,
     std::pair<units::sample_u32_t, units::sample_u32_t> range);
 
@@ -94,6 +122,13 @@ public:
    * in the TimelineArranger.
    */
   ScaleObject * get_scale_at_ticks (units::precise_tick_t timeline_ticks) const;
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  Q_INVOKABLE ChordObject * chordAtTicks (double ticks) const;
+  Q_INVOKABLE ScaleObject * scaleAtTicks (double ticks) const;
 
   friend void init_from (
     ChordTrack            &obj,
@@ -127,8 +162,15 @@ private:
 
   bool initialize ();
 
-private:
-  std::optional<NotePitchToChordDescriptorFunc> note_pitch_to_descriptor_;
+  dsp::ChordAuditionState audition_state_;
+
+  /** Pitches currently being previewed (for stopPreview). */
+  dsp::ChordDescriptor::ChordPitches previewing_pitches_;
+  utils::QObjectUniquePtr<QTimer>    preview_timer_;
+
+  void stopPreview ();
+
+  std::optional<NotePitchToPitchesFunc> note_pitch_to_pitches_;
 };
 
 } // namespace zrythm::structure::tracks

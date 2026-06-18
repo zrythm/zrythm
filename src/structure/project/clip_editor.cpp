@@ -87,7 +87,6 @@ void
 ClipEditor::init ()
 {
   midi_editor_->init ();
-  chord_editor_->init ();
   // the rest of the editors are initialized in their respective classes
 }
 

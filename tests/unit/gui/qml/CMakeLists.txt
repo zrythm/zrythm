@@ -22,3 +22,25 @@ add_test(
   NAME zrythm_gui_qml_unit_tests
   COMMAND zrythm_gui_qml_unit_tests -platform offscreen
 )
+
+if(WIN32)
+  # `zrythm` deploys the shared Qt runtime into this directory first; this
+  # target only adds the QtTest bits it additionally needs (see below).
+  add_dependencies(zrythm_gui_qml_unit_tests zrythm)
+
+  # Deploy `Qt6::QuickTest`, the `QtTest` QML module (`import QtTest`) and the
+  # offscreen platform plugin (`-platform offscreen`) that `zrythm` does not
+  # bring in. `copy_if_different` and the absence of `--force` keep this purely
+  # additive -- shared files already deployed by `zrythm` are left untouched,
+  # avoiding `windeployqt`'s `DeleteFile` failing on them with
+  # "Cannot remove existing file ...".
+  add_custom_command(TARGET zrythm_gui_qml_unit_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests> $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests>
+    COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+      --qmldir "${CMAKE_BINARY_DIR}"
+      --include-plugins qoffscreen
+      -qml -quick -test
+      $<TARGET_FILE:zrythm_gui_qml_unit_tests>
+    COMMAND_EXPAND_LISTS
+  )
+endif()

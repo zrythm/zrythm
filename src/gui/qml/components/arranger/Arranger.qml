@@ -92,6 +92,10 @@ Item {
   // Used to defer deselection to mouse release so that Ctrl+drag always has a valid target.
   property bool wasClickedObjectSelectedOnPress: false
 
+  // Emitted when a drop occurs on the arranger canvas. Subclasses can handle
+  // this for type-specific drops (e.g. chord pad → chord editor).
+  signal canvasDrop(DragEvent drop)
+
   function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
   }
@@ -523,6 +527,8 @@ Item {
             onContainsDragChanged: {
               if (containsDrag) {
                 const item = arrangerDropArea.drag.source as Item;
+                if (!item)
+                  return; // external/MIME-only drags (e.g. chord pad) have no Item source
                 const size = Qt.size(item.width, item.height);
                 dropRectImage.width = item.width;
                 dropRectImage.height = item.height;
@@ -534,6 +540,7 @@ Item {
             onDropped: drop => {
               // Handle the dropped file(s)
               console.log("Drop on arranger at coordinates", drop.x, drop.y);
+              root.canvasDrop(drop);
             }
             onPositionChanged:
             // TODO: Show drop positions, etc.
@@ -568,7 +575,7 @@ Item {
         Rectangle {
           id: playhead
 
-          color: Style.dangerColor
+          color: ZrythmTheme.dangerColor
           height: parent.height
           width: 2
           x: root.transport.playhead.ticks * root.ruler.pxPerTick - width / 2
@@ -584,9 +591,9 @@ Item {
           readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
           readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
 
-          border.color: Style.backgroundAppendColor
+          border.color: ZrythmTheme.backgroundAppendColor
           border.width: 2
-          color: Qt.alpha(Style.backgroundAppendColor, 0.1)
+          color: Qt.alpha(ZrythmTheme.backgroundAppendColor, 0.1)
           height: maxY - minY
           opacity: 0.5
           visible: scrollView.currentAction === Arranger.Selecting
@@ -878,6 +885,8 @@ Item {
                   const firstTempObj = root.tempQmlArrangerObjects[0];
                   // Calculate the final snapped position difference
                   const finalTicksDiff = (firstTempObj.x - firstTempObj.coordinatesOnConstruction.x) / root.ruler.pxPerTick;
+                  const finalYDiff = firstTempObj.y - firstTempObj.coordinatesOnConstruction.y;
+                  const hasHorizontalMove = Math.abs(finalTicksDiff) > 0.001;
                   if (action === Arranger.MovingCopy) {
                     root.undoStack.beginMacro(qsTr("Copy Objects"));
                     // This creates new object clones at the original positions, and the following move operations move the original objects
@@ -888,12 +897,14 @@ Item {
                     // For now this performs a plain move. Replace with a proper link
                     // operation once the C++ API is available.
                     root.undoStack.beginMacro(qsTr("Move Objects"));
-                  } else {
+                  } else if (hasHorizontalMove) {
                     root.undoStack.beginMacro(qsTr("Move Objects"));
                   }
-                  moveSelectionsX(finalTicksDiff);
-                  moveSelectionsY(firstTempObj.y - firstTempObj.coordinatesOnConstruction.y, firstTempObj.coordinatesOnConstruction.y);
-                  root.undoStack.endMacro();
+                  if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
+                    moveSelectionsX(finalTicksDiff);
+                  moveSelectionsY(finalYDiff, firstTempObj.coordinatesOnConstruction.y);
+                  if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
+                    root.undoStack.endMacro();
                 }
               } else if (action === Arranger.CreatingMoving) {
                 root.undoStack.endMacro();

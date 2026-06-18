@@ -10,20 +10,20 @@ import ZrythmStyle 1.0
 T.RoundButton {
   id: control
 
-  property real styleHeight: Style.buttonHeight
+  property real styleHeight: ZrythmTheme.buttonHeight
 
-  font: Style.buttonTextFont
+  font: ZrythmTheme.buttonTextFont
   horizontalPadding: padding + 2
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: 4
   spacing: 4
 
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
     readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
+    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
 
     border.color: control.palette.highlight
     border.width: control.visualFocus || control.down ? 2 : 0
@@ -34,10 +34,10 @@ T.RoundButton {
     visible: !control.flat || control.down || control.checked || control.highlighted
 
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   contentItem: IconLabel {

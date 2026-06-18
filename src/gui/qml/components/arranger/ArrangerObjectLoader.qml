@@ -27,7 +27,7 @@ Loader {
   readonly property bool useParentPosition: arrangerObject.parentObject !== null
 
   // Viewport culling
-  active: objectEndX + Style.scrollLoaderBufferPx >= scrollX && objectX <= (scrollX + scrollViewWidth + Style.scrollLoaderBufferPx)
+  active: objectEndX + ZrythmTheme.scrollLoaderBufferPx >= scrollX && objectX <= (scrollX + scrollViewWidth + ZrythmTheme.scrollLoaderBufferPx)
   asynchronous: true
   visible: status === Loader.Ready
   x: objectX

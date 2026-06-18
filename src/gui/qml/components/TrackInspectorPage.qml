@@ -484,11 +484,19 @@ ScrollView {
               track: root.track
             }
 
+            TextMetrics {
+              id: peakLabelMetrics
+
+              font: peakLabel.font
+              text: "Peak:\n-9.9 db"
+            }
+
             Label {
               id: peakLabel
 
               readonly property real peak_in_dbfs: QmlUtils.amplitudeToDbfs(meters.currentPeak)
 
+              Layout.minimumWidth: peakLabelMetrics.width
               text: {
                 let txt_val = "Peak:\n";
                 if (peak_in_dbfs < -98) {
@@ -506,7 +514,7 @@ ScrollView {
               Binding {
                 property: "color"
                 target: peakLabel
-                value: Style.dangerColor
+                value: ZrythmTheme.dangerColor
                 when: peakLabel.peak_in_dbfs > 0
               }
             }

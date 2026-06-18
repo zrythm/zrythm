@@ -9,5 +9,5 @@ T.ApplicationWindow {
   id: window
 
   color: palette.window
-  palette: Style.colorPalette
+  palette: ZrythmTheme.colorPalette
 }

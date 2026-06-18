@@ -54,8 +54,8 @@ Control {
   property int size: 30
 
   // Computed colors based on palette
-  readonly property color darkArcBackgroundColor: Style.getColorBlendedTowardsContrast(palette.window)
-  readonly property color colorAtZero: Style.getColorBlendedTowardsContrast(palette.text) //palette.mid
+  readonly property color darkArcBackgroundColor: ZrythmTheme.getColorBlendedTowardsContrast(palette.window)
+  readonly property color colorAtZero: ZrythmTheme.getColorBlendedTowardsContrast(palette.text) //palette.mid
   readonly property color flatStyleColor: palette.button
   readonly property color flatTopColor: palette.highlight
   readonly property color hoverHighlightColor: Qt.rgba(1, 1, 1, 0.12)

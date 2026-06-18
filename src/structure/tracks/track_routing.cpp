@@ -115,17 +115,16 @@ TrackRouting::remove_routes_for_destination (const TrackUuid &destination)
   });
   Q_EMIT routingChanged ();
 }
-
 std::optional<TrackUuidReference>
 TrackRouting::get_output_track (const TrackUuid &source) const
 {
   auto it = track_routes_.find (source);
-  if (it == track_routes_.end ())
+  if (it != track_routes_.end ())
     {
-      return std::nullopt;
+      return TrackUuidReference{ it->second, registry_ };
     }
 
-  return TrackUuidReference{ it->second, registry_ };
+  return std::nullopt;
 }
 
 void

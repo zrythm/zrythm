@@ -9,7 +9,10 @@ add_executable(zrythm_dsp_unit_tests
   audio_input_processor_test.cpp
   audio_port_test.cpp
   audio_sample_processor_test.cpp
+  chord_audition_state_test.cpp
   chord_descriptor_test.cpp
+  chord_preset_test.cpp
+  chord_suggestion_test.cpp
   curve_test.cpp
   cv_port_test.cpp
   ditherer_test.cpp

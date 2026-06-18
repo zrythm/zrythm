@@ -12,7 +12,7 @@ void
 ChordTrack::transform_chord_and_append (
   dsp::MidiEventBuffer                               &dest,
   const dsp::MidiEventBuffer                         &src,
-  const NotePitchToChordDescriptorFunc               &note_to_chord,
+  const NotePitchToPitchesFunc                       &note_to_pitches,
   midi_byte_t                                         velocity,
   std::pair<units::sample_u32_t, units::sample_u32_t> range)
 {
@@ -29,43 +29,36 @@ ChordTrack::transform_chord_and_append (
         continue;
 
       const midi_byte_t note_number = utils::midi::midi_get_note_number (data);
-      const auto *      descr = note_to_chord (note_number);
-      if (descr == nullptr)
+      const auto        pitches_opt = note_to_pitches (note_number);
+      if (!pitches_opt.has_value ())
         continue;
 
       if (utils::midi::midi_is_note_on (data))
         {
-          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+          for (auto pitch : *pitches_opt)
             {
-              if (descr->notes_[i])
-                {
-                  const auto ev = dsp::midi_event::make_note_on (
-                    0, static_cast<midi_byte_t> (i + 36), velocity,
-                    src_ev.time ());
-                  if (
-                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
-                      + ev.data ().size ()
-                    > dest.capacity ())
-                    return;
-                  dest.push_back (ev.time_, ev.data ());
-                }
+              const auto ev = dsp::midi_event::make_note_on (
+                0, pitch, velocity, src_ev.time ());
+              if (
+                dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                  + ev.data ().size ()
+                > dest.capacity ())
+                return;
+              dest.push_back (ev.time_, ev.data ());
             }
         }
       else
         {
-          for (size_t i = 0; i < dsp::ChordDescriptor::MAX_NOTES; ++i)
+          for (auto pitch : *pitches_opt)
             {
-              if (descr->notes_[i])
-                {
-                  const auto ev = dsp::midi_event::make_note_off (
-                    0, static_cast<midi_byte_t> (i + 36), src_ev.time ());
-                  if (
-                    dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
-                      + ev.data ().size ()
-                    > dest.capacity ())
-                    return;
-                  dest.push_back (ev.time_, ev.data ());
-                }
+              const auto ev =
+                dsp::midi_event::make_note_off (0, pitch, src_ev.time ());
+              if (
+                dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
+                  + ev.data ().size ()
+                > dest.capacity ())
+                return;
+              dest.push_back (ev.time_, ev.data ());
             }
         }
     }
@@ -89,15 +82,21 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
     [this] (
       auto &out_events, const auto &in_events,
       const dsp::graph::ProcessBlockInfo &time_nfo) {
+      audition_state_.process (out_events, time_nfo);
       transform_chord_and_append (
         out_events, in_events,
         [this] (midi_byte_t note_number) {
-          return note_pitch_to_chord_descriptor (note_number);
+          return note_pitch_to_pitches (note_number);
         },
         arrangement::MidiNote::DEFAULT_VELOCITY,
         std::pair{
           time_nfo.buffer_offset_, time_nfo.buffer_offset_ + time_nfo.nframes_ });
     });
+
+  preview_timer_ = utils::make_qobject_unique<QTimer> ();
+  preview_timer_->setSingleShot (true);
+  QObject::connect (
+    preview_timer_.get (), &QTimer::timeout, this, &ChordTrack::stopPreview);
 }
 
 void
@@ -170,6 +169,54 @@ ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
     });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;
+}
+
+auto
+ChordTrack::chordAtTicks (double ticks) const -> ChordObject *
+{
+  return get_chord_at_ticks (units::ticks (ticks));
+}
+
+auto
+ChordTrack::scaleAtTicks (double ticks) const -> ScaleObject *
+{
+  return get_scale_at_ticks (units::ticks (ticks));
+}
+
+void
+ChordTrack::auditionChord (
+  const zrythm::dsp::ChordDescriptor * descriptor,
+  bool                                 on,
+  midi_byte_t                          velocity)
+{
+  if (on && descriptor != nullptr)
+    audition_state_.start (*descriptor, velocity);
+  else if (!on && descriptor != nullptr)
+    audition_state_.stop (*descriptor);
+  else
+    audition_state_.stopAll ();
+}
+
+void
+ChordTrack::previewChord (
+  const zrythm::dsp::ChordDescriptor * descriptor,
+  int                                  duration_ms)
+{
+  if (descriptor == nullptr)
+    return;
+
+  if (preview_timer_->isActive ())
+    audition_state_.stop (previewing_pitches_);
+
+  previewing_pitches_ = descriptor->getMidiPitches ();
+  audition_state_.start (*descriptor);
+  preview_timer_->start (duration_ms);
+}
+
+void
+ChordTrack::stopPreview ()
+{
+  audition_state_.stop (previewing_pitches_);
 }
 
 }

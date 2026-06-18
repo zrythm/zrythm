@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
@@ -11,75 +11,61 @@ using namespace zrythm::dsp;
 
 TEST (ChordDescriptorTest, BasicChords)
 {
-  // Test major triad
-  ChordDescriptor major (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major, ChordAccent::None,
-    0);
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::E));
-  EXPECT_TRUE (major.is_key_in_chord (MusicalNote::G));
-  EXPECT_FALSE (major.is_key_in_chord (MusicalNote::B));
+  ChordDescriptor major (MusicalNote::C, ChordType::Major);
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::E));
+  EXPECT_TRUE (major.isKeyInChord (MusicalNote::G));
+  EXPECT_FALSE (major.isKeyInChord (MusicalNote::B));
   EXPECT_EQ (major.to_string (), "CMaj");
 
-  // Test minor triad
-  ChordDescriptor minor (
-    MusicalNote::A, false, MusicalNote::A, ChordType::Minor, ChordAccent::None,
-    0);
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::A));
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (minor.is_key_in_chord (MusicalNote::E));
+  ChordDescriptor minor (MusicalNote::A, ChordType::Minor);
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::A));
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (minor.isKeyInChord (MusicalNote::E));
   EXPECT_EQ (minor.to_string (), "Amin");
 }
 
 TEST (ChordDescriptorTest, ChordInversions)
 {
-  ChordDescriptor chord (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major, ChordAccent::None,
-    1);
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::C));
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::E));
-  EXPECT_TRUE (chord.is_key_in_chord (MusicalNote::G));
+  ChordDescriptor chord (MusicalNote::C, ChordType::Major, ChordAccent::None, 1);
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::C));
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::E));
+  EXPECT_TRUE (chord.isKeyInChord (MusicalNote::G));
   EXPECT_EQ (chord.to_string (), "CMaj i1");
 }
 
 TEST (ChordDescriptorTest, ChordAccents)
 {
   ChordDescriptor seventh (
-    MusicalNote::D, false, MusicalNote::D, ChordType::Major,
-    ChordAccent::Seventh, 0);
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::D));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::FSharp));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::A));
-  EXPECT_TRUE (seventh.is_key_in_chord (MusicalNote::C));
+    MusicalNote::D, ChordType::Major, ChordAccent::Seventh);
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::D));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::FSharp));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::A));
+  EXPECT_TRUE (seventh.isKeyInChord (MusicalNote::C));
   EXPECT_EQ (seventh.to_string (), "DMaj 7");
 }
 
 TEST (ChordDescriptorTest, BassNotes)
 {
   ChordDescriptor with_bass (
-    MusicalNote::C, true, MusicalNote::G, ChordType::Major, ChordAccent::None,
-    0);
-  EXPECT_TRUE (with_bass.is_key_bass (MusicalNote::G));
-  EXPECT_FALSE (with_bass.is_key_bass (MusicalNote::C));
+    MusicalNote::C, ChordType::Major, ChordAccent::None, 0, MusicalNote::G);
+  EXPECT_TRUE (with_bass.isKeyBass (MusicalNote::G));
+  EXPECT_FALSE (with_bass.isKeyBass (MusicalNote::C));
   EXPECT_EQ (with_bass.to_string (), "CMaj/G");
 }
 
 TEST (ChordDescriptorTest, MaxInversions)
 {
-  ChordDescriptor triad (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major, ChordAccent::None,
-    0);
-  EXPECT_EQ (triad.get_max_inversion (), 2);
+  ChordDescriptor triad (MusicalNote::C, ChordType::Major);
+  EXPECT_EQ (triad.maxInversion (), 2);
 
   ChordDescriptor seventh (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major,
-    ChordAccent::Seventh, 0);
-  EXPECT_EQ (seventh.get_max_inversion (), 3);
+    MusicalNote::C, ChordType::Major, ChordAccent::Seventh);
+  EXPECT_EQ (seventh.maxInversion (), 3);
 
   ChordDescriptor extended (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major,
-    ChordAccent::SixthThirteenth, 0);
-  EXPECT_EQ (extended.get_max_inversion (), 4);
+    MusicalNote::C, ChordType::Major, ChordAccent::SixthThirteenth);
+  EXPECT_EQ (extended.maxInversion (), 4);
 }
 
 TEST (ChordDescriptorTest, StringRepresentations)
@@ -96,23 +82,50 @@ TEST (ChordDescriptorTest, StringRepresentations)
 TEST (ChordDescriptorTest, Serialization)
 {
   ChordDescriptor chord1 (
-    MusicalNote::C, true, MusicalNote::G, ChordType::Major,
-    ChordAccent::Seventh, 1);
-  chord1.update_notes ();
+    MusicalNote::C, ChordType::Major, ChordAccent::Seventh, 1, MusicalNote::G);
 
-  // Serialize to JSON
   nlohmann::json j = chord1;
 
-  // Create new object and deserialize
   ChordDescriptor chord2;
   from_json (j, chord2);
 
-  // Verify all fields match
-  EXPECT_EQ (chord1.has_bass_, chord2.has_bass_);
-  EXPECT_EQ (chord1.root_note_, chord2.root_note_);
-  EXPECT_EQ (chord1.bass_note_, chord2.bass_note_);
-  EXPECT_EQ (chord1.type_, chord2.type_);
-  EXPECT_EQ (chord1.accent_, chord2.accent_);
-  EXPECT_EQ (chord1.notes_, chord2.notes_);
-  EXPECT_EQ (chord1.inversion_, chord2.inversion_);
+  EXPECT_TRUE (chord1.isEquivalent (chord2));
+}
+
+TEST (ChordDescriptorTest, GetIntervals)
+{
+  ChordDescriptor major (MusicalNote::C, ChordType::Major);
+  auto            intervals = major.getIntervals ();
+  EXPECT_EQ (intervals.size (), 3u);
+  EXPECT_EQ (intervals[0], 0);
+  EXPECT_EQ (intervals[1], 4);
+  EXPECT_EQ (intervals[2], 7);
+
+  ChordDescriptor minor7 (
+    MusicalNote::A, ChordType::Minor, ChordAccent::Seventh);
+  intervals = minor7.getIntervals ();
+  EXPECT_EQ (intervals.size (), 4u);
+  EXPECT_EQ (intervals[0], 0);
+  EXPECT_EQ (intervals[1], 3);
+  EXPECT_EQ (intervals[2], 7);
+  EXPECT_EQ (intervals[3], 10);
+}
+
+TEST (ChordDescriptorTest, GetMidiPitches)
+{
+  ChordDescriptor c_major (MusicalNote::C, ChordType::Major);
+  auto            pitches = c_major.getMidiPitches ();
+  ASSERT_EQ (pitches.size (), 3u);
+  EXPECT_EQ (pitches[0], 48); // C3
+  EXPECT_EQ (pitches[1], 52); // E3
+  EXPECT_EQ (pitches[2], 55); // G3
+
+  ChordDescriptor with_bass (
+    MusicalNote::C, ChordType::Major, ChordAccent::None, 0, MusicalNote::G);
+  pitches = with_bass.getMidiPitches ();
+  ASSERT_EQ (pitches.size (), 4u);
+  EXPECT_EQ (pitches[0], 43); // G2 (bass)
+  EXPECT_EQ (pitches[1], 48); // C3
+  EXPECT_EQ (pitches[2], 52); // E3
+  EXPECT_EQ (pitches[3], 55); // G3
 }

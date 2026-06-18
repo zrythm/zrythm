@@ -12,6 +12,7 @@ import ZrythmStyle
 ColumnLayout {
   id: root
 
+  required property ChordPresetManager chordPresetManager
   readonly property Project project: session.project
   required property ProjectSession session
   required property TrackSelectionModel trackSelectionModel
@@ -68,6 +69,11 @@ ColumnLayout {
       }
     }
 
+    ChordPadPanel {
+      chordPresetManager: root.chordPresetManager
+      session: root.session
+    }
+
     Repeater {
       model: 2
 
@@ -110,9 +116,9 @@ ColumnLayout {
     //   text: qsTr("Modulators")
     // }
 
-    // TabButton {
-    //   icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
-    //   text: qsTr("Chord Pad")
-    // }
+    TabButton {
+      icon.source: ResourceManager.getIconUrl("zrythm-dark", "chord-pad.svg")
+      text: qsTr("Chord Pad")
+    }
   }
 }

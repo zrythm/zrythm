@@ -11,7 +11,7 @@ RowLayout {
 
   default property alias content: root.children
   property alias enableDropShadow: root.layer.enabled
-  property int radius: Style.textFieldRadius
+  property int radius: ZrythmTheme.textFieldRadius
 
   Layout.maximumWidth: implicitWidth
   Layout.preferredWidth: implicitWidth

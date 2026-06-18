@@ -11,6 +11,7 @@ add_executable(zrythm_utils_unit_tests
   concurrency_test.cpp
   datetime_test.cpp
   debouncer_test.cpp
+  enum_utils_test.cpp
   directory_manager_test.cpp
   expandable_tick_range_test.cpp
   float_ranges_test.cpp

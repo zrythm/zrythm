@@ -13,7 +13,7 @@ Button {
   text: "S"
 
   palette {
-    accent: Style.soloGreenColor
+    accent: ZrythmTheme.soloGreenColor
   }
 
   ToolTip {

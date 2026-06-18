@@ -208,6 +208,7 @@ set(rel_qml_file_paths
   components/arranger/ArrangerObjectBaseView.qml
   components/arranger/ArrangerObjectLoader.qml
   components/arranger/ArrangerObjectTemporaryView.qml
+  components/arranger/ChordRegionContent.qml
   components/arranger/ChordRegionView.qml
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml
@@ -223,6 +224,8 @@ set(rel_qml_file_paths
   components/arranger/TimeSignatureObjectView.qml
   components/arranger/VelocityArranger.qml
   components/arranger/VelocityBarView.qml
+  components/arranger/ChordObjectView.qml
+  components/arranger/ChordArranger.qml
   components/dialogs/ProgressDialog.qml
   components/dialogs/ProgressDialogWithFuture.qml
   components/editors/AudioEditorPane.qml
@@ -231,6 +234,7 @@ set(rel_qml_file_paths
   components/editors/MidiEditorPane.qml
   components/editors/ChordEditorPane.qml
   components/editors/PianoRollKeys.qml
+  components/editors/ChordRowLabels.qml
   components/AboutDialog.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
@@ -238,6 +242,8 @@ set(rel_qml_file_paths
   components/BottomDock.qml
   components/CenterDock.qml
   components/ChannelView.qml
+  components/ChordPadPanel.qml
+  components/ChordSelectorDialog.qml
   components/ClipLaunchButton.qml
   components/ClipLauncherView.qml
   components/ClipSlotView.qml
@@ -262,6 +268,7 @@ set(rel_qml_file_paths
   components/Ruler.qml
   components/LoadController.qml
   components/SaveController.qml
+  components/ScaleSelectorDialog.qml
   components/SnapGridButton.qml
   components/SpectrumAnalyzer.qml
   components/TempoMapLaneHeader.qml

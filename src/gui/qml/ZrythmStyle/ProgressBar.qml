@@ -14,7 +14,7 @@ T.ProgressBar {
 
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
 
   background: Rectangle {
     color: control.palette.text

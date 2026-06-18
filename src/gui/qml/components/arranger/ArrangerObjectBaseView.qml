@@ -23,9 +23,9 @@ Control {
   readonly property color objectColor: {
     let c = (arrangerObject.color && arrangerObject.color.useColor) ? arrangerObject.color.color : (track ? track.color : palette.button);
     if (root.isSelected)
-      c = Style.getColorBlendedTowardsContrastByFactor(c, 1.1);
+      c = ZrythmTheme.getColorBlendedTowardsContrastByFactor(c, 1.1);
 
-    c = Style.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
+    c = ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.visualFocus, root.down);
 
     if (root._isMuted)
       c = QmlUtils.saturate(c, 0.0);
@@ -44,7 +44,7 @@ Control {
   }
 
   focusPolicy: Qt.StrongFocus
-  font: root.isSelected ? Style.arrangerObjectBoldTextFont : Style.arrangerObjectTextFont
+  font: root.isSelected ? ZrythmTheme.arrangerObjectBoldTextFont : ZrythmTheme.arrangerObjectTextFont
   height: track.height
   hoverEnabled: true
   implicitWidth: 20
@@ -104,12 +104,12 @@ Control {
 
     required property bool isLeft
 
-    bottomLeftRadius: isLeft ? Style.toolButtonRadius : 0
-    bottomRightRadius: isLeft ? 0 : Style.toolButtonRadius
-    color: Style.backgroundAppendColor
+    bottomLeftRadius: isLeft ? ZrythmTheme.toolButtonRadius : 0
+    bottomRightRadius: isLeft ? 0 : ZrythmTheme.toolButtonRadius
+    color: ZrythmTheme.backgroundAppendColor
     height: parent.height
-    topLeftRadius: isLeft ? Style.toolButtonRadius : 0
-    topRightRadius: isLeft ? 0 : Style.toolButtonRadius
+    topLeftRadius: isLeft ? ZrythmTheme.toolButtonRadius : 0
+    topRightRadius: isLeft ? 0 : ZrythmTheme.toolButtonRadius
     visible: root.hovered || handleDragArea.pressed
     width: 5
 

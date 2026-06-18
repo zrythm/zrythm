@@ -133,7 +133,7 @@ ApplicationWindow {
           text: qsTr("Switch Light/Dark Theme")
 
           onTriggered: {
-            Style.darkMode = !Style.darkMode;
+            ZrythmTheme.darkMode = !ZrythmTheme.darkMode;
           }
         }
 
@@ -144,7 +144,7 @@ ApplicationWindow {
             text: qsTr("Zrythm Orange")
 
             onTriggered: {
-              Style.primaryColor = Style.zrythmColor;
+              ZrythmTheme.primaryColor = ZrythmTheme.zrythmColor;
             }
           }
 
@@ -152,7 +152,7 @@ ApplicationWindow {
             text: qsTr("Celestial Blue")
 
             onTriggered: {
-              Style.primaryColor = Style.celestialBlueColor;
+              ZrythmTheme.primaryColor = ZrythmTheme.celestialBlueColor;
             }
           }
 
@@ -160,7 +160,7 @@ ApplicationWindow {
             text: qsTr("Jonquil Yellow")
 
             onTriggered: {
-              Style.primaryColor = Style.jonquilYellowColor;
+              ZrythmTheme.primaryColor = ZrythmTheme.jonquilYellowColor;
             }
           }
         }
@@ -313,14 +313,14 @@ ApplicationWindow {
 
               NumberAnimation {
                 duration: 2000
-                easing.type: Style.animationEasingType
+                easing.type: ZrythmTheme.animationEasingType
                 from: 0
                 to: 100
               }
 
               NumberAnimation {
                 duration: 2000
-                easing.type: Style.animationEasingType
+                easing.type: ZrythmTheme.animationEasingType
                 from: 100
                 to: 0
               }

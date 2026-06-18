@@ -10,17 +10,17 @@ import ZrythmStyle 1.0
 T.MenuItem {
   id: control
 
-  font: Style.semiBoldTextFont
+  font: ZrythmTheme.semiBoldTextFont
   // icon.height: 24
-  icon.color: Style.colorPalette.windowText
-  icon.width: Style.buttonHeight - 2 * control.padding
+  icon.color: ZrythmTheme.colorPalette.windowText
+  icon.width: ZrythmTheme.buttonHeight - 2 * control.padding
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  padding: Style.buttonPadding
-  spacing: Style.buttonPadding
+  padding: ZrythmTheme.buttonPadding
+  spacing: ZrythmTheme.buttonPadding
 
   arrow: ColorImage {
-    color: Style.colorPalette.windowText
+    color: ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
     mirror: control.mirrored
     source: control.subMenu ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/arrow-indicator.png" : ""
@@ -31,19 +31,19 @@ T.MenuItem {
     y: control.topPadding + (control.availableHeight - height) / 2
   }
   background: Rectangle {
-    readonly property color baseColor: control.highlighted ? Style.colorPalette.highlight : Style.colorPalette.button
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, control.visualFocus, control.down) //control.hovered
+    readonly property color baseColor: control.highlighted ? ZrythmTheme.colorPalette.highlight : ZrythmTheme.colorPalette.button
+    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(baseColor, false, control.visualFocus, control.down) //control.hovered
 
     color: colorAdjustedForHoverOrFocusOrDown
     height: control.height - 2
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 200
     width: control.width - 2
     x: 1
     y: 1
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   contentItem: IconLabel {
@@ -51,7 +51,7 @@ T.MenuItem {
     readonly property real indicatorPadding: control.checkable && control.indicator ? control.indicator.width + control.spacing : 0
 
     alignment: Qt.AlignLeft
-    color: control.highlighted ? Style.colorPalette.highlightedText : Style.colorPalette.windowText
+    color: control.highlighted ? ZrythmTheme.colorPalette.highlightedText : ZrythmTheme.colorPalette.windowText
     display: control.display
     font: control.font
     icon: control.icon
@@ -62,7 +62,7 @@ T.MenuItem {
     text: control.text
   }
   indicator: ColorImage {
-    color: Style.colorPalette.windowText
+    color: ZrythmTheme.colorPalette.windowText
     defaultColor: "#353637"
     source: control.checkable ? "qrc:/qt-project.org/imports/QtQuick/Controls/Basic/images/check.png" : ""
     sourceSize.height: control.icon.width

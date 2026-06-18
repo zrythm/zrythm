@@ -68,6 +68,8 @@ public:
   utils::QObjectUniquePtr<FileSystemModel>              file_system_model_;
   utils::QObjectUniquePtr<engine::session::ControlRoom> control_room_;
 
+  utils::QObjectUniquePtr<ChordPresetManager> chord_preset_manager_;
+
   utils::QObjectUniquePtr<zrythm::gui::old_dsp::plugins::PluginManager>
     plugin_manager_;
 
@@ -152,6 +154,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
       return project_session->project ()->tracks_rt_;
     },
     this);
+
+  impl_->chord_preset_manager_ =
+    utils::make_qobject_unique<ChordPresetManager> (this);
 
   // Initialize JUCE
   impl_->juce_message_handler_initializer_ =
@@ -689,6 +694,12 @@ engine::session::ControlRoom *
 ZrythmApplication::controlRoom () const
 {
   return impl_->control_room_.get ();
+}
+
+ChordPresetManager *
+ZrythmApplication::chordPresetManager () const
+{
+  return impl_->chord_preset_manager_.get ();
 }
 
 DirectoryManager &

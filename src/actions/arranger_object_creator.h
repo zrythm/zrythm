@@ -172,6 +172,37 @@ public:
     double                                startTicks,
     const int                             chordIndex);
 
+  Q_INVOKABLE structure::arrangement::ChordObject * addChordObjectFromFields (
+    structure::arrangement::ChordRegion * region,
+    double                                startTicks,
+    dsp::MusicalNote                      rootNote,
+    dsp::ChordType                        chordType,
+    dsp::ChordAccent                      chordAccent,
+    bool                                  hasBass,
+    dsp::MusicalNote                      bassNote,
+    int                                   inversion);
+
+  Q_INVOKABLE structure::arrangement::ChordObject *
+              addChordObjectFromDescriptor (
+                structure::arrangement::ChordRegion * region,
+                double                                startTicks,
+                zrythm::dsp::ChordDescriptor *        descriptor);
+
+  /**
+   * @brief Sets the descriptor of one or more chord objects to the given fields.
+   *
+   * Pushes one EditChordObjectCommand per object inside a macro, so the whole
+   * batch is a single undo step.
+   */
+  Q_INVOKABLE void editChordObjectsDescriptor (
+    QVariantList     chordObjects,
+    dsp::MusicalNote rootNote,
+    dsp::ChordType   chordType,
+    dsp::ChordAccent chordAccent,
+    bool             hasBass,
+    dsp::MusicalNote bassNote,
+    int              inversion);
+
 private:
   /**
    * @brief Used for MIDI/Audio regions.

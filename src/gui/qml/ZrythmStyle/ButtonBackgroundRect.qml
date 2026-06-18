@@ -7,22 +7,22 @@ import ZrythmStyle 1.0
 Rectangle {
   readonly property color baseColor: control.highlighted ? control.palette.dark : control.palette.button
   readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
-  readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
+  readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
   required property var control
-   readonly property real styleHeight: Style.buttonHeight
+   readonly property real styleHeight: ZrythmTheme.buttonHeight
 
   border.color: control.palette.highlight
   border.width: control.visualFocus || control.down ? 2 : 0
   color: colorAdjustedForHoverOrFocusOrDown
   implicitHeight: styleHeight
   implicitWidth: styleHeight
-  radius: Style.buttonRadius
+  radius: ZrythmTheme.buttonRadius
   visible: !control.flat || control.down || control.checked || control.highlighted
 
   Behavior on border.width {
-    animation: Style.propertyAnimation
+    animation: ZrythmTheme.propertyAnimation
   }
   Behavior on color {
-    animation: Style.propertyAnimation
+    animation: ZrythmTheme.propertyAnimation
   }
 }

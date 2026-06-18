@@ -13,8 +13,8 @@ Button {
   icon.source: ResourceManager.getIconUrl("zrythm-dark", "record.svg")
 
   palette {
-    accent: Style.dangerColor
-    buttonText: Style.dangerColor
+    accent: ZrythmTheme.dangerColor
+    buttonText: ZrythmTheme.dangerColor
   }
 
   ToolTip {

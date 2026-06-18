@@ -14,7 +14,7 @@ ArrangerObjectBaseView {
 
   property TimeSignatureObject timeSignatureObject: root.arrangerObject as TimeSignatureObject
 
-  width: textMetrics.width + 2 * Style.buttonPadding
+  width: textMetrics.width + 2 * ZrythmTheme.buttonPadding
 
   ContextMenu.menu: Menu {
     Menu {
@@ -66,7 +66,7 @@ ArrangerObjectBaseView {
   Rectangle {
     anchors.fill: parent
     color: root.objectColor
-    radius: Style.toolButtonRadius
+    radius: ZrythmTheme.toolButtonRadius
   }
 
   Text {
@@ -74,7 +74,7 @@ ArrangerObjectBaseView {
 
     color: root.palette.text
     font: root.font
-    padding: Style.buttonPadding
+    padding: ZrythmTheme.buttonPadding
     text: "%1/%2".arg(root.timeSignatureObject.numerator).arg(root.timeSignatureObject.denominator)
   }
 
@@ -96,7 +96,7 @@ ArrangerObjectBaseView {
     title: qsTr("Edit Time Signature")
 
     contentItem: ColumnLayout {
-      spacing: Style.buttonPadding
+      spacing: ZrythmTheme.buttonPadding
 
       Label {
         text: qsTr("Beats per bar:")

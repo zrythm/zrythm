@@ -122,8 +122,15 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 ### Build System Notes
 
 - **Binary Output**: `builddir_cmake/products/bin/`
-- **Tests**: Enable with `-DZRYTHM_TESTS=ON`, `-DZRYTHM_BENCHMARKS=ON`, or `-DZRYTHM_GUI_TESTS=ON` during CMake configuration
+- **Tests**: Enable with `-DZRYTHM_TESTS=ON`, `-DZRYTHM_BENCHMARKS=ON`, or `-DZRYTHM_QML_TESTS=ON` during CMake configuration
 - **Working Directory**: Never use `cd` for build/test commands; pass the build directory as an argument (e.g., `cmake --build builddir_cmake`, `ctest --test-dir builddir_cmake`)
+- **AUTOMOC cache staleness**: When adding a new header containing `Q_OBJECT`/`Q_GADGET`/`QML_ELEMENT`, CMake's AUTOMOC may fail to pick it up even after reconfiguring, producing linker errors like `undefined symbol: ...::staticMetaObject` or `vtable for ...`. Fix by deleting the affected target's autogen directories and reconfiguring. For the GUI library:
+  ```bash
+  rm -rf builddir_cmake/src/zrythm_gui_lib_autogen \
+         builddir_cmake/src/CMakeFiles/zrythm_gui_lib.dir/zrythm_gui_lib_autogen
+  cmake -B builddir_cmake -S .
+  ```
+  The same pattern applies to other targets — substitute the target name in the paths.
 
 ---
 
@@ -133,7 +140,7 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 
 - **Repository**: This project uses a self-hosted GitLab instance at https://gitlab.zrythm.org/zrythm/zrythm
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
-- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body
+- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body. **Bullet points should describe behavioral or user-facing changes, not implementation details** — don't mention specific C++ patterns, smart pointer types, refactoring mechanics, or other details obvious from reading the diff
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
 - See [AI_POLICY.md](doc/dev/AI_POLICY.md) for `Assisted-by:` trailers, which must be included in commit messages
 - Use `Fixes #123` for bugfixes, `Implements #123` for new features and the git trailer `GitLab-Work-Item: #123` to specify relations to GitLab issues (work items)
@@ -244,6 +251,7 @@ Zrythm makes extensive use of modern C++ features:
 - Functions annotated with `[[clang::nonblocking]]` are real-time-safe contexts. When RealtimeSanitizer (RTSan) is enabled via `-fsanitize=realtime`, Clang treats calls within these functions as real-time context and flags any blocking operations (malloc, mutex locks, etc.)
 - Audio processing functions (like `process_impl()`) and their callees must never allocate, lock mutexes, or call blocking APIs
 - If a function is marked `[[clang::nonblocking]]`, ALL code paths within it must be non-blocking — this is enforced by RTSan at runtime
+- APIs intended for real-time (audio thread) use must be marked `noexcept [[clang::nonblocking]]` on the declaration
 
 ### Qt/QML Integration
 
@@ -253,7 +261,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use Qt's signal/slot system for event handling
 - Implement proper model/view separation
 - Use the following naming pattern for property declarations: `Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)`
-- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers
+- Q_PROPERTY types must use fully qualified class names (e.g., `zrythm::dsp::ProcessorParameter *`, not `ProcessorParameter *`) — even for types declared in the same namespace or included via headers. Note: this only applies to Q_PROPERTY, not to Q_INVOKABLE (which can use local type aliases or unqualified names)
 - When connecting signals, use the overload that takes:
   1. The source object instance
   2. The source object signal
@@ -264,6 +272,7 @@ Zrythm makes extensive use of modern C++ features:
 **QML Property Bindings:**
 - Never use dead-expression tricks (e.g., `root.selectionModel.selection; // binding`) to create binding dependencies — they are unreliable in packaged builds where the QML engine may optimize away the statement
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
+- Never use `parent.parent.someProperty` chains to access delegate properties from child items — they are fragile and break easily. Use IDs instead (e.g., give the delegate an `id: myDelegate` and reference `myDelegate.someProperty`)
 
 ### External Documentation
 

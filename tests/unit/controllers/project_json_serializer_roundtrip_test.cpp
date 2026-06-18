@@ -731,7 +731,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_ChordRegionWithChord_Validates)
     auto chord_ref =
       factory.get_builder<structure::arrangement::ChordObject> ()
         .with_start_ticks (units::ticks (0))
-        .with_chord_descriptor (0)
+        .with_chord_descriptor (dsp::MusicalNote::C, dsp::ChordType::Major)
         .build_in_registry ();
     region->add_object (chord_ref);
   }

@@ -3,13 +3,13 @@
 
 pragma ComponentBehavior: Bound
 
-import "../config.js" as Config
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
+import "../config.js" as Config
 
 ApplicationWindow {
   id: root
@@ -18,6 +18,7 @@ ApplicationWindow {
   required property AlertManager alertManager
   required property AppSettings appSettings
   required property ControlRoom controlRoom
+  required property ChordPresetManager chordPresetManager
   readonly property Action deleteAction: Action {
     id: deleteAction
 
@@ -364,6 +365,7 @@ ApplicationWindow {
           SplitView.fillWidth: true
           SplitView.minimumHeight: 40
           SplitView.preferredHeight: 240
+          chordPresetManager: root.chordPresetManager
           session: root.session
           trackSelectionModel: trackSelectionModel
           visible: root.appSettings.bottomPanelVisible
@@ -401,8 +403,8 @@ ApplicationWindow {
 
       RowLayout {
         anchors.fill: parent
-        anchors.rightMargin: Style.buttonPadding * 2
-        spacing: Style.buttonPadding * 2
+        anchors.rightMargin: ZrythmTheme.buttonPadding * 2
+        spacing: ZrythmTheme.buttonPadding * 2
 
         Item {
           Layout.fillWidth: true

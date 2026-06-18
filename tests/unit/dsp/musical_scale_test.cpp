@@ -55,22 +55,13 @@ TEST (MusicalScaleTest, ChordContainment)
   MusicalScale c_major (MusicalScale::ScaleType::Major, MusicalNote::C);
 
   // Test major chord in scale
-  ChordDescriptor c_maj (
-    MusicalNote::C, false, MusicalNote::C, ChordType::Major, ChordAccent::None,
-    0);
-  EXPECT_TRUE (c_major.contains_chord (c_maj));
+  EXPECT_TRUE (c_major.containsChord (MusicalNote::C, ChordType::Major));
 
   // Test minor chord in scale
-  ChordDescriptor d_min (
-    MusicalNote::D, false, MusicalNote::D, ChordType::Minor, ChordAccent::None,
-    0);
-  EXPECT_TRUE (c_major.contains_chord (d_min));
+  EXPECT_TRUE (c_major.containsChord (MusicalNote::D, ChordType::Minor));
 
   // Test chord not in scale
-  ChordDescriptor c_sharp_maj (
-    MusicalNote::CSharp, false, MusicalNote::CSharp, ChordType::Major,
-    ChordAccent::None, 0);
-  EXPECT_FALSE (c_major.contains_chord (c_sharp_maj));
+  EXPECT_FALSE (c_major.containsChord (MusicalNote::CSharp, ChordType::Major));
 }
 
 TEST (MusicalScaleTest, ScaleTriads)
@@ -91,15 +82,15 @@ TEST (MusicalScaleTest, AccentInScale)
   MusicalScale c_major (MusicalScale::ScaleType::Major, MusicalNote::C);
 
   // Test major seventh in scale (B is in C major)
-  EXPECT_TRUE (c_major.is_accent_in_scale (
+  EXPECT_TRUE (c_major.isAccentInScale (
     MusicalNote::C, ChordType::Major, ChordAccent::MajorSeventh));
 
   // Test seventh not in scale (Bb is not in C major)
-  EXPECT_FALSE (c_major.is_accent_in_scale (
+  EXPECT_FALSE (c_major.isAccentInScale (
     MusicalNote::C, ChordType::Major, ChordAccent::Seventh));
 
   // Test ninth not in scale (requires seventh)
-  EXPECT_FALSE (c_major.is_accent_in_scale (
+  EXPECT_FALSE (c_major.isAccentInScale (
     MusicalNote::C, ChordType::Major, ChordAccent::Ninth));
 }
 

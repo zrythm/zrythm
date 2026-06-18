@@ -5,6 +5,7 @@ qt_add_library(zrythm_commands_lib STATIC)
 
 target_sources(zrythm_commands_lib
   PRIVATE
+    chord_pad_commands.cpp
     move_arranger_objects_command.cpp
     move_plugins_command.cpp
     move_tracks_command.cpp
@@ -19,9 +20,11 @@ target_sources(zrythm_commands_lib
       add_plugin_command.h
       add_region_to_clip_slot_command.h
       add_track_command.h
+      chord_pad_commands.h
       route_track_command.h
       change_parameter_value_command.h
       change_qobject_property_command.h
+      edit_chord_object_command.h
       change_track_color_command.h
       change_track_comment_command.h
       move_arranger_objects_command.h

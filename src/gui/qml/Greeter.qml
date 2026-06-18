@@ -28,6 +28,7 @@ ApplicationWindow {
       "session": session,
       "deviceManager": deviceManager,
       "appSettings": appSettings,
+      "chordPresetManager": app.chordPresetManager,
       "controlRoom": app.controlRoom,
       "alertManager": alertManager
     }) as ProjectWindow;
@@ -41,8 +42,8 @@ ApplicationWindow {
     root.hide();
   }
 
-  font.family: Style.fontFamily
-  font.pointSize: Style.fontPointSize
+  font.family: ZrythmTheme.fontFamily
+  font.pointSize: ZrythmTheme.fontPointSize
   height: 420
   minimumWidth: 256
   title: "Zrythm"
@@ -288,10 +289,12 @@ ApplicationWindow {
         }
 
         ColumnLayout {
-          anchors.bottom: parent.bottom
-          anchors.left: parent.left
-          anchors.margins: 26
-          anchors.right: parent.right
+          anchors {
+            bottom: parent.bottom
+            left: parent.left
+            margins: 26
+            right: parent.right
+          }
           spacing: 12
 
           Text {

@@ -10,7 +10,7 @@ import ZrythmStyle
 T.ItemDelegate {
   id: control
 
-  font: Style.semiBoldTextFont
+  font: ZrythmTheme.semiBoldTextFont
   icon.color: control.highlighted ? control.palette.highlightedText : control.palette.text
   icon.height: 24
   icon.width: 24
@@ -21,15 +21,15 @@ T.ItemDelegate {
 
   background: Rectangle {
     readonly property color baseColor: control.highlighted ? control.palette.highlight : control.palette.button
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(baseColor, hoverHandler.hovered && !control.highlighted, control.visualFocus, control.down)
+    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(baseColor, hoverHandler.hovered && !control.highlighted, control.visualFocus, control.down)
 
     color: colorAdjustedForHoverOrFocusOrDown
-    implicitHeight: Style.buttonHeight
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 100
     visible: control.down || control.highlighted || control.visualFocus || hoverHandler.hovered
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   contentItem: IconLabel {

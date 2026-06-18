@@ -138,6 +138,11 @@ private:
    */
   void wire_midi_input_selections_to_tracks ();
 
+  /**
+   * @brief Wires the chord track's MIDI expansion to the chord pad bank.
+   */
+  void wire_chord_track_to_pad_bank ();
+
   utils::AppSettings &app_settings_;
 
   // Project title and directory

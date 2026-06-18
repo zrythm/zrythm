@@ -3,6 +3,7 @@
 
 add_executable(zrythm_structure_project_unit_tests
   arranger_tool_test.cpp
+  chord_pad_bank_test.cpp
   clip_editor_test.cpp
   editor_settings_test.cpp
   midi_editor_test.cpp

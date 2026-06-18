@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import QtQml.Models
 import ZrythmArrangement
 import Zrythm
@@ -103,14 +104,14 @@ Arranger {
   function getObjectHeight(obj: ArrangerObject): real {
     // Determine height based on object type
     if (obj.type === ArrangerObject.ScaleObject) {
-      return arrangerObjectTextMetrics.height + 2 * Style.buttonPadding;
+      return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
     } else if (obj.type === ArrangerObject.Marker) {
-      return arrangerObjectTextMetrics.height + 2 * Style.buttonPadding;
+      return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
     } else if (obj.type === ArrangerObject.ChordRegion) {
       // Chord regions use the main track height minus scale objects height
       const track = getTrackForObject(obj);
       if (track) {
-        return track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+        return track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
       }
     } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
       // For regions, check if lanes are visible
@@ -152,10 +153,10 @@ Arranger {
     // Determine Y position relative to track
     if (obj.type === ArrangerObject.ScaleObject) {
       // Scale objects are at the bottom of the track
-      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
     } else if (obj.type === ArrangerObject.Marker) {
       // Markers are at the top of the track
-      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * Style.buttonPadding);
+      relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
     } else if (obj.type === ArrangerObject.ChordRegion) {
       // Chord regions are in the main track area
       relativeY = 0;
@@ -315,7 +316,7 @@ Arranger {
   TextMetrics {
     id: arrangerObjectTextMetrics
 
-    font: Style.arrangerObjectTextFont
+    font: ZrythmTheme.arrangerObjectTextFont
     text: "Some text"
   }
 
@@ -426,7 +427,7 @@ Arranger {
           id: scalesLoader
 
           active: trackDelegate.track.type === Track.Chord
-          height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+          height: arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding
           visible: active
           width: parent.width
           y: trackDelegate.track.height - height
@@ -473,7 +474,7 @@ Arranger {
           id: markersLoader
 
           active: trackDelegate.track.type === Track.Marker
-          height: arrangerObjectTextMetrics.height + 2 * Style.buttonPadding
+          height: arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding
           visible: active
           width: parent.width
           y: trackDelegate.track.height - height

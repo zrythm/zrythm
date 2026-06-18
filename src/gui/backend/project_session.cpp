@@ -106,6 +106,7 @@ ProjectSession::ProjectSession (
     recalc_graph);
 
   wire_midi_input_selections_to_tracks ();
+  wire_chord_track_to_pad_bank ();
 
   recording_coordinator_ =
     utils::make_qobject_unique<controllers::RecordingCoordinator> (this);
@@ -590,6 +591,20 @@ ProjectSession::wire_midi_input_selections_to_tracks ()
     [collection, wire_track] (const QModelIndex &, int first, int last) {
       for (int i = first; i <= last; ++i)
         wire_track (collection->get_track_at_index (i));
+    });
+}
+
+void
+ProjectSession::wire_chord_track_to_pad_bank ()
+{
+  auto * chord_track = project_->tracklist ()->singletonTracks ()->chordTrack ();
+  if (chord_track == nullptr)
+    return;
+
+  auto * pad_bank = ui_state_->chordPadBank ();
+  chord_track->set_note_pitch_to_pitches_func (
+    [pad_bank] (midi_byte_t note_pitch) {
+      return pad_bank->get_pitches_for_note (note_pitch);
     });
 }
 

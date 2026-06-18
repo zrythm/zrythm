@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "dsp/chord_descriptor.h"
 #include "utils/icloneable.h"
 
@@ -178,6 +180,35 @@ public:
    */
   Q_INVOKABLE bool containsNote (MusicalNote note) const;
 
+  Q_INVOKABLE static bool
+  scaleContainsNote (ScaleType type, MusicalNote rootKey, MusicalNote note);
+
+  Q_INVOKABLE static QString noteToString (MusicalNote note);
+
+  /**
+   * @brief Returns the display names of all 12 notes in a single octave.
+   *
+   * Convenience for QML consumers that need the full list in a single call
+   * instead of invoking @ref noteToString 12 times.
+   */
+  Q_INVOKABLE static QStringList allNoteNames ();
+
+  Q_INVOKABLE static QVariantList availableScaleTypes ();
+  Q_INVOKABLE static QVariantList availableScaleTypesExotic ();
+
+  /**
+   * Scales with pre-defined triad data in @ref get_triad_types_for_type.
+   * Used by the chord pad to populate chords from a scale.
+   */
+  Q_INVOKABLE static QVariantList availableScaleTypesWithTriads ();
+
+  /**
+   * Returns a QVariantList of diatonic chord descriptors for the given scale,
+   * each as {display, rootNote, chordType}.
+   */
+  Q_INVOKABLE static QVariantList
+  getDiatonicChords (ScaleType type, MusicalNote rootKey);
+
   // ========================================================================
 
   /**
@@ -186,7 +217,8 @@ public:
    * @param ascending Whether to get the notes when ascending or descending
    * (some scales have different notes when rising/falling).
    */
-  static const bool * get_notes_for_type (ScaleType type, bool ascending);
+  static std::array<bool, 12>
+  get_notes_for_type (ScaleType type, bool ascending);
 
   /**
    * Returns the triads in the given scale.
@@ -200,6 +232,28 @@ public:
   static std::array<ChordType, 12>
   get_triad_types_for_type (ScaleType type, bool ascending);
 
+  /**
+   * @brief A diatonic triad: the root note and chord type for a scale degree.
+   */
+  struct DiatonicTriad
+  {
+    MusicalNote root_note;
+    ChordType   chord_type;
+  };
+
+  /**
+   * @brief Returns the diatonic triads for the given scale and root note.
+   *
+   * Enumerates the enabled notes in the scale, pairs each with its
+   * corresponding triad type, and computes the absolute root note.
+   * Returns an empty result if the scale type is unimplemented.
+   *
+   * @param type The scale type.
+   * @param root_note The root note of the scale.
+   */
+  static boost::container::static_vector<DiatonicTriad, 12>
+  get_diatonic_triads (ScaleType type, MusicalNote root_note);
+
   static utils::Utf8String type_to_string (ScaleType type);
 
   /**
@@ -210,12 +264,15 @@ public:
   /**
    * Returns if all of the chord's notes are in the scale.
    */
-  bool contains_chord (const ChordDescriptor &chord) const;
+  Q_INVOKABLE bool containsChord (
+    MusicalNote root,
+    ChordType   type,
+    ChordAccent accent = ChordAccent::None) const;
 
   /**
    * Returns if the accent is in the scale.
    */
-  bool is_accent_in_scale (
+  Q_INVOKABLE bool isAccentInScale (
     MusicalNote chord_root,
     ChordType   type,
     ChordAccent chord_accent) const;

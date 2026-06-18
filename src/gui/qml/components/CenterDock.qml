@@ -80,7 +80,7 @@ ColumnLayout {
           clip: true
 
           Behavior on Layout.preferredHeight {
-            animation: Style.propertyAnimation
+            animation: ZrythmTheme.propertyAnimation
           }
           sourceComponent: TempoMapLegend {
             id: tempoMapLegend
@@ -200,7 +200,7 @@ ColumnLayout {
             visible: active
 
             Behavior on Layout.preferredHeight {
-              animation: Style.propertyAnimation
+              animation: ZrythmTheme.propertyAnimation
             }
             sourceComponent: TempoMapArranger {
               id: tempoMapArranger

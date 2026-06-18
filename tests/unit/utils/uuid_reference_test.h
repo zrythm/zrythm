@@ -56,13 +56,13 @@ private:
 
 static_assert (UuidIdentifiable<TestObject>);
 
-class DerivedTestObject : public TestObject
+class DerivedUuidRefTestObject : public TestObject
 {
   Q_OBJECT
 public:
   using TestObject::TestObject;
 };
-static_assert (UuidIdentifiable<DerivedTestObject>);
+static_assert (UuidIdentifiable<DerivedUuidRefTestObject>);
 
 /**
  * @brief Mock IObjectRegistry for testing reference behavior in isolation.

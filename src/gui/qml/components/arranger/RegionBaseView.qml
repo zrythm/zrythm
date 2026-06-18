@@ -31,10 +31,10 @@ ArrangerObjectBaseView {
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.top: parent.top
-    color: QmlUtils.adjustOpacity(QmlUtils.makeBrighter(root.objectColor, Style.darkMode ? 0.6 : 1.4), 0.7)
+    color: QmlUtils.adjustOpacity(QmlUtils.makeBrighter(root.objectColor, ZrythmTheme.darkMode ? 0.6 : 1.4), 0.7)
     height: nameRect.height
-    topLeftRadius: Style.toolButtonRadius
-    topRightRadius: Style.toolButtonRadius
+    topLeftRadius: ZrythmTheme.toolButtonRadius
+    topRightRadius: ZrythmTheme.toolButtonRadius
     z: 3
 
     IconImage {
@@ -51,9 +51,9 @@ ArrangerObjectBaseView {
 
       anchors {
         right: parent.right
-        rightMargin: Style.buttonPadding / 2
+        rightMargin: ZrythmTheme.buttonPadding / 2
         top: parent.top
-        topMargin: Style.buttonPadding / 2
+        topMargin: ZrythmTheme.buttonPadding / 2
       }
     }
   }
@@ -64,8 +64,8 @@ ArrangerObjectBaseView {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    bottomLeftRadius: Style.toolButtonRadius
-    bottomRightRadius: Style.toolButtonRadius
+    bottomLeftRadius: ZrythmTheme.toolButtonRadius
+    bottomRightRadius: ZrythmTheme.toolButtonRadius
     color: root.objectColor
     height: parent.height - topBackgroundRect.height
     z: 1
@@ -134,10 +134,10 @@ ArrangerObjectBaseView {
   Rectangle {
     id: nameRect
 
-    bottomRightRadius: Style.toolButtonRadius
+    bottomRightRadius: ZrythmTheme.toolButtonRadius
     color: "transparent" // palette.button
-    height: Math.min(textMetrics.height + 2 * (Style.buttonPadding / 2), root.height - Style.toolButtonRadius)
-    topLeftRadius: Style.toolButtonRadius
+    height: Math.min(textMetrics.height + 2 * (ZrythmTheme.buttonPadding / 2), root.height - ZrythmTheme.toolButtonRadius)
+    topLeftRadius: ZrythmTheme.toolButtonRadius
     z: 5
 
     anchors {
@@ -150,15 +150,15 @@ ArrangerObjectBaseView {
       id: nameText
 
       anchors.fill: parent
-      bottomPadding: Style.buttonPadding / 2
+      bottomPadding: ZrythmTheme.buttonPadding / 2
       color: root.palette.buttonText
       elide: Text.ElideRight
       font: root.font
       horizontalAlignment: Text.AlignLeft
-      leftPadding: Style.buttonPadding
-      rightPadding: Style.buttonPadding
+      leftPadding: ZrythmTheme.buttonPadding
+      rightPadding: ZrythmTheme.buttonPadding
       text: root.arrangerObject.name.name
-      topPadding: Style.buttonPadding / 2
+      topPadding: ZrythmTheme.buttonPadding / 2
       verticalAlignment: Text.AlignVCenter
     }
 

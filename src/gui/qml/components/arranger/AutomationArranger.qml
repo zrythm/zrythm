@@ -4,6 +4,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls
 import ZrythmStyle
 import ZrythmArrangement
 import ZrythmGui
@@ -34,7 +35,7 @@ Arranger {
   }
 
   function getObjectHeight(obj: AutomationPoint): real {
-    return 2 * Style.buttonPadding; // Height of automation points
+    return 2 * ZrythmTheme.buttonPadding; // Height of automation points
   }
 
   function getObjectY(obj: AutomationPoint): real {
@@ -83,7 +84,7 @@ Arranger {
       readonly property AutomationPoint automationPoint: arrangerObject as AutomationPoint
 
       arrangerSelectionModel: root.arrangerSelectionModel
-      height: 2 * Style.buttonPadding
+      height: 2 * ZrythmTheme.buttonPadding
       model: automationPointsRepeater.model
       pxPerTick: root.ruler.pxPerTick
       scrollViewWidth: root.scrollViewWidth

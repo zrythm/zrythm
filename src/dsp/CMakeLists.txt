@@ -13,7 +13,10 @@ target_sources(zrythm_dsp_lib
     audio_pool.cpp
     audio_port.cpp
     audio_sample_processor.cpp
+    chord_audition_state.cpp
     chord_descriptor.cpp
+    chord_preset.cpp
+    chord_suggestion.cpp
     curve.cpp
     cv_port.cpp
     ditherer.cpp
@@ -74,7 +77,10 @@ target_sources(zrythm_dsp_lib
       audio_input_processor.h
       audio_pool.h
       audio_port.h
+      chord_audition_state.h
       chord_descriptor.h
+      chord_preset.h
+      chord_suggestion.h
       curve.h
       cv_port.h
       ditherer.h

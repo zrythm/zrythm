@@ -19,43 +19,43 @@ T.ToolButton {
     if (!control.hovered && !control.focus && !control.down)
       return c;
     else if (control.down)
-      return Style.getStrongerColor(c);
+      return ZrythmTheme.getStrongerColor(c);
     else if (hovered || focus)
       return c;
   }
 
   flat: true
-  font: Style.buttonTextFont
+  font: ZrythmTheme.buttonTextFont
   hoverEnabled: true
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
-  padding: Style.buttonPadding
-  spacing: Style.buttonPadding
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
+  padding: ZrythmTheme.buttonPadding
+  spacing: ZrythmTheme.buttonPadding
 
   background: Rectangle {
     color: {
       let c = Qt.color("transparent");
       if (control.hovered)
-        c = Style.buttonHoverBackgroundAppendColor;
+        c = ZrythmTheme.buttonHoverBackgroundAppendColor;
 
       if (control.down) {
-        if (Style.isColorDark(c))
-          c.lighter(Style.lightenFactor);
+        if (ZrythmTheme.isColorDark(c))
+          c.lighter(ZrythmTheme.lightenFactor);
         else
-          c.darker(Style.lightenFactor);
+          c.darker(ZrythmTheme.lightenFactor);
       }
       return c;
     }
-    implicitHeight: Style.buttonHeight
-    implicitWidth: Style.buttonHeight
-    radius: Style.toolButtonRadius
+    implicitHeight: ZrythmTheme.buttonHeight
+    implicitWidth: ZrythmTheme.buttonHeight
+    radius: ZrythmTheme.toolButtonRadius
 
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
 
     border {
@@ -73,7 +73,7 @@ T.ToolButton {
     text: control.text
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
 
@@ -86,11 +86,11 @@ T.ToolButton {
 
   icon {
     color: control.getTextColor()
-    height: Style.buttonHeight - 2 * control.padding
-    width: Style.buttonHeight - 2 * control.padding
+    height: ZrythmTheme.buttonHeight - 2 * control.padding
+    width: ZrythmTheme.buttonHeight - 2 * control.padding
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
 }

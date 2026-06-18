@@ -11,28 +11,28 @@ import QtQuick.Templates as T
 T.ComboBox {
   id: control
 
-  font: Style.buttonTextFont
+  font: ZrythmTheme.buttonTextFont
   hoverEnabled: true
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding, implicitIndicatorHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   leftPadding: padding + (!control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   rightPadding: padding + (control.mirrored || !indicator || !indicator.visible ? 0 : indicator.width + spacing)
 
   background: Rectangle {
     border.color: control.palette.highlight
     border.width: !control.editable && (control.visualFocus || control.down) ? 2 : 0
-    color: Style.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
-    implicitHeight: Style.buttonHeight
+    color: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(control.palette.button, control.hovered, control.visualFocus, control.down)
+    implicitHeight: ZrythmTheme.buttonHeight
     implicitWidth: 140
-    radius: Style.buttonRadius
+    radius: ZrythmTheme.buttonRadius
     visible: !control.flat || control.down
 
     Behavior on border.width {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   contentItem: T.TextField {
@@ -101,25 +101,25 @@ T.ComboBox {
       T.ScrollIndicator.vertical: ScrollIndicator {
       }
       footer: Item {
-        height: Style.buttonRadius
+        height: ZrythmTheme.buttonRadius
       }
       header: Item {
-        height: Style.buttonRadius
+        height: ZrythmTheme.buttonRadius
       }
     }
     enter: Transition {
       ParallelAnimation {
         PropertyAnimation {
-          duration: Style.animationDuration
-          easing.type: Style.animationEasingType
+          duration: ZrythmTheme.animationDuration
+          easing.type: ZrythmTheme.animationEasingType
           from: control.height / 2
           property: "y"
           to: control.height - 1
         }
 
         PropertyAnimation {
-          duration: Style.animationDuration
-          easing.type: Style.animationEasingType
+          duration: ZrythmTheme.animationDuration
+          easing.type: ZrythmTheme.animationEasingType
           from: 0
           property: "opacity"
           to: 1
@@ -128,8 +128,8 @@ T.ComboBox {
     }
     exit: Transition {
       PropertyAnimation {
-        duration: Style.animationDuration
-        easing.type: Style.animationEasingType
+        duration: ZrythmTheme.animationDuration
+        easing.type: ZrythmTheme.animationEasingType
         property: "opacity"
         to: 0
       }

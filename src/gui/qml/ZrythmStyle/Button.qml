@@ -10,15 +10,15 @@ import ZrythmStyle 1.0
 T.Button {
   id: control
 
-  property real styleHeight: Style.buttonHeight
+  property real styleHeight: ZrythmTheme.buttonHeight
 
-  font: Style.buttonTextFont
+  font: ZrythmTheme.buttonTextFont
   horizontalPadding: padding + 2
   hoverEnabled: true
   implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset, implicitContentHeight + topPadding + bottomPadding)
   implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset, implicitContentWidth + leftPadding + rightPadding)
   layer.enabled: true
-  opacity: Style.getOpacity(control.enabled, control.Window.active)
+  opacity: ZrythmTheme.getOpacity(control.enabled, control.Window.active)
   padding: 4
   spacing: 4
 
@@ -28,7 +28,7 @@ T.Button {
   contentItem: IconLabel {
     readonly property color baseColor: control.highlighted ? control.palette.brightText : control.palette.buttonText
     readonly property color colorAdjustedForChecked: control.checked ? control.palette.brightText : baseColor
-    readonly property color colorAdjustedForHoverOrFocusOrDown: Style.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
+    readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, false, false, control.down)
 
     color: colorAdjustedForHoverOrFocusOrDown
     display: control.display
@@ -39,7 +39,7 @@ T.Button {
     text: control.text
 
     Behavior on color {
-      animation: Style.propertyAnimation
+      animation: ZrythmTheme.propertyAnimation
     }
   }
   layer.effect: DropShadowEffect {
