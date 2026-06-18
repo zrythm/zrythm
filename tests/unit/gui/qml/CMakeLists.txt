@@ -38,6 +38,7 @@ if(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests> $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests>
     COMMAND "${WINDEPLOYQT_EXECUTABLE}"
       --qmldir "${CMAKE_BINARY_DIR}"
+      --include-plugins qoffscreen
       -qml -quick -test
       $<TARGET_FILE:zrythm_gui_qml_unit_tests>
     COMMAND_EXPAND_LISTS
