@@ -35,7 +35,7 @@ if(WIN32)
   # avoiding `windeployqt`'s `DeleteFile` failing on them with
   # "Cannot remove existing file ...".
   add_custom_command(TARGET zrythm_gui_qml_unit_tests POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different -t $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests> $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:zrythm_gui_qml_unit_tests> $<TARGET_FILE_DIR:zrythm_gui_qml_unit_tests>
     COMMAND "${WINDEPLOYQT_EXECUTABLE}"
       --qmldir "${CMAKE_BINARY_DIR}"
       -qml -quick -test
