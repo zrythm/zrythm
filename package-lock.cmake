@@ -115,8 +115,8 @@ CPMDeclarePackage(magic_enum
 # fmt
 CPMDeclarePackage(fmt
   NAME fmt
-  VERSION 12.1.0
-  GIT_TAG 407c905e45ad75fc29bf0f9bb7c5c2fd3475976f
+  VERSION 12.2.0
+  GIT_TAG 1be298e1bd68957e4cd352e1f676f00e07dcfb57
   GITHUB_REPOSITORY fmtlib/fmt
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
