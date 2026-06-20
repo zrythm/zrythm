@@ -187,6 +187,75 @@ TEST_F (PortObservationManagerTest, DrainFillsMidiCache)
   EXPECT_TRUE (utils::midi::midi_is_note_on (cache.midi[0].data ()));
 }
 
+// A drain batch larger than kMaxAudioSamples landing in an empty cache is
+// trimmed to the cap.
+TEST_F (PortObservationManagerTest, DrainTrimsAudioCacheWhenBatchExceedsCap)
+{
+  auto port_ref = utils::create_object<AudioPort> (
+    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+  auto * port = port_ref.get_object_as<AudioPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  ObservationToken token (manager_, *port);
+  auto *           observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  const auto         time_nfo = default_time_nfo ();
+  const unsigned int block_size =
+    time_nfo.nframes_.in<unsigned int> (units::samples);
+  const size_t blocks_needed =
+    PortObservationCache::kMaxAudioSamples / block_size + 1;
+
+  // Accumulate more samples than the cap without draining, so the next
+  // drain reads a single batch larger than kMaxAudioSamples.
+  for (size_t b = 0; b < blocks_needed; ++b)
+    {
+      port->buffers ()->clear ();
+      float * data = port->buffers ()->getWritePointer (0);
+      for (unsigned int i = 0; i < block_size; ++i)
+        data[i] = 1.0f;
+      observer->process_block (time_nfo, mock_transport_, tempo_map_);
+    }
+
+  manager_.drain_all ();
+
+  const auto &result = token.cache ();
+  ASSERT_EQ (result.audio[0].size (), PortObservationCache::kMaxAudioSamples);
+  EXPECT_FLOAT_EQ (result.audio[0].front (), 1.0f);
+  EXPECT_FLOAT_EQ (result.audio[0].back (), 1.0f);
+}
+
+// A single MIDI drain batch larger than kMaxMidiEvents is trimmed to the cap.
+TEST_F (PortObservationManagerTest, DrainTrimsMidiCacheWhenBatchExceedsCap)
+{
+  auto port_ref =
+    utils::create_object<MidiPort> (registry_, u8"Test MIDI", PortFlow::Output);
+  auto * port = port_ref.get_object_as<MidiPort> ();
+  port->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  ObservationToken token (manager_, *port);
+  auto *           observer = manager_.get_observer (*port);
+  ASSERT_NE (observer, nullptr);
+  observer->prepare_for_processing (nullptr, sample_rate_, block_length_);
+
+  const auto   time_nfo = default_time_nfo ();
+  const auto   ev = midi_event::make_note_on (0, 64, 127, units::samples (0));
+  const size_t events_needed = PortObservationCache::kMaxMidiEvents + 1;
+
+  // Accumulate more events than the cap without draining.
+  for (size_t e = 0; e < events_needed; ++e)
+    {
+      port->buffer_.clear ();
+      port->buffer_.push_back (ev.time_, ev.data ());
+      observer->process_block (time_nfo, mock_transport_, tempo_map_);
+    }
+
+  manager_.drain_all ();
+
+  ASSERT_EQ (token.cache ().midi.size (), PortObservationCache::kMaxMidiEvents);
+}
+
 // ============================================================
 // Token tests
 // ============================================================
