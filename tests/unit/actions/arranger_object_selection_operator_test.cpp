@@ -3,6 +3,7 @@
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
+#include "commands/remove_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -11,7 +12,6 @@
 #include "utils/variant_helpers.h"
 
 #include "unit/actions/arranger_object_selection_operator_test.h"
-#include "unit/actions/mock_undo_stack.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -109,8 +109,14 @@ protected:
     original_positions_.push_back (
       time_signature_ref.get ()->position ()->ticks ());
 
-    // Create undo stack
-    undo_stack_ = create_mock_undo_stack ();
+    // Create undo stack with a recording callback so tests can assert whether
+    // an engine pause was requested for a pushed command.
+    engine_pause_requested_ = false;
+    undo_stack_ = std::make_unique<undo::UndoStack> (
+      [this] (const std::function<void ()> &action, bool) {
+        engine_pause_requested_ = true;
+        action ();
+      });
 
     // Create selection model and set up with test objects
     selection_model_ = std::make_unique<QItemSelectionModel> (&list_model_);
@@ -198,8 +204,9 @@ protected:
   std::unique_ptr<dsp::TempoMap>                               tempo_map;
   utils::ObjectRegistry                                        registry_;
   structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
-  std::vector<double>                              original_positions_;
-  std::unique_ptr<undo::UndoStack>                 undo_stack_;
+  std::vector<double>              original_positions_;
+  std::unique_ptr<undo::UndoStack> undo_stack_;
+  bool                             engine_pause_requested_{ false };
   std::unique_ptr<ArrangerObjectSelectionOperator> operator_;
   structure::arrangement::ArrangerObjectListModel  list_model_{ test_objects_ };
   std::unique_ptr<QItemSelectionModel>             selection_model_;
@@ -694,6 +701,108 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
       structure::arrangement::MidiNote>::contains_object (note_id);
   EXPECT_FALSE (marker_found_after) << "Marker should have been deleted";
   EXPECT_FALSE (note_found_after) << "Note should have been deleted";
+}
+
+// Test deleting tempo/time-signature objects (owned by TempoObjectManager, not
+// a track) — guards the TempoObject/TimeSignatureObject owner dispatch.
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsTempoAndTimeSignature)
+{
+  // tempo_ref is index 4, time_signature_ref is index 5 in the list model.
+  selection_model_->select (
+    list_model_.index (4, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (5, 0), QItemSelectionModel::Select);
+
+  const auto tempo_id = tempo_ref.id ();
+  const auto ts_id = time_signature_ref.id ();
+
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TempoObject>::contains_object (tempo_id));
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TimeSignatureObject>::contains_object (ts_id));
+
+  EXPECT_TRUE (operator_->deleteObjects ());
+
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TempoObject>::contains_object (tempo_id))
+    << "Tempo object should have been deleted";
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::TimeSignatureObject>::contains_object (ts_id))
+    << "Time-signature object should have been deleted";
+}
+
+// The undo stack must recognize tempo/time-signature object removals as
+// requiring the audio engine to be paused (so the tempo map can be rebuilt
+// without the RT thread reading torn data).
+TEST_F (ArrangerObjectSelectionOperatorTest, RemoveTempoObjectRequestsEnginePause)
+{
+  bool            engine_pause_requested = false;
+  undo::UndoStack stack (
+    [&engine_pause_requested] (const std::function<void ()> &action, bool) {
+      engine_pause_requested = true;
+      action ();
+    });
+
+  stack.push (
+    new commands::RemoveArrangerObjectCommand<
+      structure::arrangement::TempoObject> (*mock_owner_, tempo_ref));
+
+  EXPECT_TRUE (engine_pause_requested)
+    << "Removing a tempo object must request an engine pause";
+}
+
+// Non-tempo-map-affecting removals must NOT pause the engine.
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RemoveNonTempoObjectDoesNotRequestEnginePause)
+{
+  bool            engine_pause_requested = false;
+  undo::UndoStack stack (
+    [&engine_pause_requested] (const std::function<void ()> &action, bool) {
+      engine_pause_requested = true;
+      action ();
+    });
+
+  stack.push (
+    new commands::RemoveArrangerObjectCommand<structure::arrangement::Marker> (
+      *mock_owner_, marker_ref));
+
+  EXPECT_FALSE (engine_pause_requested);
+}
+
+// Cloning a tempo object must use the tempo-map-affecting add command so the
+// engine is paused.
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CloneObjectsTempoObjectRequestsEnginePause)
+{
+  // tempo_ref is index 4 in the list model.
+  selection_model_->select (
+    list_model_.index (4, 0), QItemSelectionModel::Select);
+
+  EXPECT_TRUE (operator_->cloneObjects ());
+  EXPECT_TRUE (engine_pause_requested_)
+    << "Cloning a tempo object must request an engine pause";
+}
+
+// Deleting a tempo object via deleteObjects() must request an engine pause
+// (end-to-end check through the selection operator + macro-wrapped removes).
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DeleteTempoObjectRequestsEnginePauseViaDeleteObjects)
+{
+  // tempo_ref is index 4 in the list model.
+  selection_model_->select (
+    list_model_.index (4, 0), QItemSelectionModel::Select);
+
+  EXPECT_TRUE (operator_->deleteObjects ());
+  EXPECT_TRUE (engine_pause_requested_)
+    << "Deleting a tempo object via deleteObjects() must request an engine "
+       "pause";
 }
 
 // Test deleteObjects with no selection

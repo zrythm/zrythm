@@ -431,6 +431,15 @@ ProjectSession::createArrangerObjectSelectionOperator (
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 ObjT> *> (project_->tracklist ()->getTrackLaneForObject (obj));
             }
+          else if constexpr (
+            std::is_same_v<ObjT, structure::arrangement::TempoObject>
+            || std::is_same_v<ObjT, structure::arrangement::TimeSignatureObject>)
+            {
+              // Tempo/time-signature objects live on the timeline but are owned
+              // by the project's TempoObjectManager, not by a track.
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjT> *> (project_->tempoObjectManager ());
+            }
           else if constexpr (structure::arrangement::TimelineObject<ObjT>)
             {
               return dynamic_cast<

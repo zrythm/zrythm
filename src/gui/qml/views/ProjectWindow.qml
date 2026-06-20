@@ -28,7 +28,7 @@ ApplicationWindow {
 
     onTriggered: {
       if (root.activeArranger) {
-        root.activeArranger.selectionOperator.deleteObjects(root.project.tracklist);
+        root.activeArranger.selectionOperator.deleteObjects();
       }
     }
   }

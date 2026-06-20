@@ -91,8 +91,7 @@ ArrangerObjectCreator::addTempoObject (
       .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   undo_stack_.push (
-    new commands::AddTempoMapAffectingArrangerObjectCommand<
-      structure::arrangement::TempoObject> (
+    new commands::AddArrangerObjectCommand<structure::arrangement::TempoObject> (
       *tempoObjectManager, tempo_object_ref));
   return tempo_object_ref.get_object_as<structure::arrangement::TempoObject> ();
 }
@@ -110,7 +109,7 @@ ArrangerObjectCreator::addTimeSignatureObject (
       .with_start_ticks (units::ticks (startTicks))
       .build_in_registry ();
   undo_stack_.push (
-    new commands::AddTempoMapAffectingArrangerObjectCommand<
+    new commands::AddArrangerObjectCommand<
       structure::arrangement::TimeSignatureObject> (
       *tempoObjectManager, time_signature_object_ref));
   return time_signature_object_ref
