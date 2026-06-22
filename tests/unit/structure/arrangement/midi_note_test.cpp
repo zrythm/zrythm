@@ -5,6 +5,7 @@
 
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/midi_note.h"
 
 #include <QSignalSpy>
@@ -23,13 +24,15 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
-    note = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+    note = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<MidiNote>      note;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<MidiNote>             note;
 };
 
 // Test initial state
@@ -208,17 +211,17 @@ TEST_F (MidiNoteTest, MuteFunctionality)
 TEST_F (MidiNoteTest, FriendFunctions)
 {
   // Create multiple notes with different properties
-  auto note1 = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto note1 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   note1->position ()->setSamples (1000);
   note1->bounds ()->length ()->setSamples (500); // End at 1500
   note1->setPitch (60);                          // C4
 
-  auto note2 = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto note2 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   note2->position ()->setSamples (2000);
   note2->bounds ()->length ()->setSamples (300); // End at 2300
   note2->setPitch (72);                          // C5
 
-  auto note3 = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto note3 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   note3->position ()->setSamples (500);
   note3->bounds ()->length ()->setSamples (1000); // End at 1500
   note3->setPitch (48);                           // C3
@@ -264,12 +267,12 @@ TEST_F (MidiNoteTest, FriendFunctions)
 TEST_F (MidiNoteTest, FriendFunctionsEdgeCases)
 {
   // Create notes with same positions
-  auto note1 = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto note1 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   note1->position ()->setSamples (1000);
   note1->bounds ()->length ()->setSamples (500);
   note1->setPitch (60);
 
-  auto note2 = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto note2 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   note2->position ()->setSamples (1000);
   note2->bounds ()->length ()->setSamples (500);
   note2->setPitch (72);
@@ -296,10 +299,10 @@ TEST_F (MidiNoteTest, FriendFunctionsEdgeCases)
   EXPECT_EQ (equal_pitch_range->second, 60);
 
   // Test with notes at minimum/maximum pitches
-  auto minNote = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto minNote = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   minNote->setPitch (0);
 
-  auto maxNote = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto maxNote = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   maxNote->setPitch (127);
 
   std::vector<MidiNote *> extremeNotes = { minNote.get (), maxNote.get () };
@@ -324,7 +327,7 @@ TEST_F (MidiNoteTest, Serialization)
   to_json (j, *note);
 
   // Create new note
-  auto new_note = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto new_note = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_note);
 
   // Verify state
@@ -346,7 +349,7 @@ TEST_F (MidiNoteTest, Copying)
   note->bounds ()->length ()->setSamples (1500);
 
   // Create target
-  auto target = std::make_unique<MidiNote> (*tempo_map, parent.get ());
+  auto target = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *note, utils::ObjectCloneType::Snapshot);

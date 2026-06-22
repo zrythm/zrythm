@@ -243,9 +243,9 @@ public:
   };
 
   Transport (
-    const dsp::TempoMap &tempo_map,
-    ConfigProvider       config_provider,
-    QObject *            parent = nullptr);
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    ConfigProvider              config_provider,
+    QObject *                   parent = nullptr);
 
   // ==================================================================
   // QML Interface

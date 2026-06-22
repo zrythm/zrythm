@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_lane_list.h"
 #include "utils/object_registry.h"
@@ -467,8 +468,9 @@ TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
   // Create a MIDI region and add it to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
   auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+    *registry_, *tempo_map_wrapper, *registry_, lane);
 
   // Add the region to the lane - this should trigger the signal
   lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
@@ -496,8 +498,9 @@ TEST_F (TrackLaneListTest, SignalConnectionsOnLaneOperations)
   // Create and add a MIDI region to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
   auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+    *registry_, *tempo_map_wrapper, *registry_, lane);
 
   lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region_ref);
@@ -529,8 +532,9 @@ TEST_F (TrackLaneListTest, ExpandableTickRangeInLaneContext)
   // Create a MIDI region with specific position and bounds
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
   auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+    *registry_, *tempo_map_wrapper, *registry_, lane);
   auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
   region->position ()->setTicks (100.0);
   region->bounds ()->setLengthTicks (50.0);
@@ -576,16 +580,17 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   // Add objects to both lanes
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
   // Add to first lane
   auto region1_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane1);
+    *registry_, *tempo_map_wrapper, *registry_, lane1);
   lane1->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region1_ref);
 
   // Add to second lane
   auto region2_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane2);
+    *registry_, *tempo_map_wrapper, *registry_, lane2);
   lane2->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
     region2_ref);
 
@@ -601,7 +606,7 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
 
   // Only the remaining lane should trigger signals
   auto region3_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane_list_->at (0));
+    *registry_, *tempo_map_wrapper, *registry_, lane_list_->at (0));
   lane_list_->at (0)->arrangement::
     ArrangerObjectOwner<arrangement::MidiRegion>::add_object (region3_ref);
 
@@ -617,8 +622,9 @@ TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
   auto * lane = lane_list_->addLane ();
   auto   tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
   auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+    *registry_, *tempo_map_wrapper, *registry_, lane);
   auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
   region->position ()->setTicks (100.0);
   region->bounds ()->setLengthTicks (50.0);

@@ -9,12 +9,15 @@ namespace zrythm::structure::arrangement
 {
 ArrangerObjectLoopRange::ArrangerObjectLoopRange (
   const ArrangerObjectBounds &bounds,
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
   QObject *                   parent)
     : QObject (parent), bounds_ (bounds),
       clip_start_pos_ (bounds.length ()->position ().time_conversion_functions ()),
       clip_start_pos_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           clip_start_pos_,
+          tempo_map_wrapper,
+          *bounds.position (),
           // Clip start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::min (
@@ -27,6 +30,8 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
       loop_start_pos_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           loop_start_pos_,
+          tempo_map_wrapper,
+          *bounds.position (),
           // Loop start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (ticks, units::ticks (0.0));
@@ -39,6 +44,8 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
       loop_end_pos_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           loop_end_pos_,
+          tempo_map_wrapper,
+          *bounds.position (),
           // Loop end must be after loop start and clip start and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (
@@ -58,10 +65,21 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
           track_bounds_connection_ = QObject::connect (
             bounds_.length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
             this, [this] () {
-              // Set all positions to defaults when tracking bounds
+              // Sync the loop points to the bounds length, preserving the
+              // length's time format (Musical ticks or Absolute seconds).
+              // Using setTicks() unconditionally would convert through the
+              // project tempo when the length is Absolute (e.g. an audio region
+              // in non-musical mode), desynchronising loop_end from the length.
+              const auto mode = length ()->mode ();
+              clipStartPosition ()->setMode (mode);
+              loopStartPosition ()->setMode (mode);
+              loopEndPosition ()->setMode (mode);
               clipStartPosition ()->setTicks (0.0);
               loopStartPosition ()->setTicks (0.0);
-              loopEndPosition ()->setTicks (length ()->ticks ());
+              if (mode == dsp::AtomicPosition::TimeFormat::Absolute)
+                loopEndPosition ()->setSeconds (length ()->seconds ());
+              else
+                loopEndPosition ()->setTicks (length ()->ticks ());
             });
 
           // also emit the signal to update all positions since we are

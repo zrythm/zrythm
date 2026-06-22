@@ -3,6 +3,7 @@
 
 #include "dsp/file_audio_source.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "utils/audio.h"
 #include "utils/object_registry.h"
@@ -23,6 +24,7 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     // Create & register a dummy audio source
     source_ref = utils::create_object<dsp::FileAudioSource> (
@@ -32,10 +34,11 @@ protected:
 
     // Create audio source object
     source_object = std::make_unique<AudioSourceObject> (
-      *tempo_map, registry, *source_ref, nullptr);
+      *tempo_map_wrapper, registry, *source_ref, nullptr);
   }
 
   std::unique_ptr<dsp::TempoMap>                   tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>            tempo_map_wrapper;
   utils::ObjectRegistry                            registry;
   std::optional<dsp::FileAudioSourceUuidReference> source_ref;
   std::shared_ptr<dsp::FileAudioSource>            dummy_audio_source;
@@ -67,7 +70,7 @@ TEST_F (AudioSourceObjectTest, Serialization)
 
   // Create new object
   auto new_source_object = std::make_unique<AudioSourceObject> (
-    *tempo_map, registry,
+    *tempo_map_wrapper, registry,
     dummy_source_ref, // Dummy, will be overwritten by deserialization
     nullptr);
   from_json (j, *new_source_object);
@@ -82,7 +85,7 @@ TEST_F (AudioSourceObjectTest, ObjectCloning)
 {
   // Clone with new identity
   auto cloned_object = std::make_unique<AudioSourceObject> (
-    *tempo_map, registry, *source_ref, nullptr);
+    *tempo_map_wrapper, registry, *source_ref, nullptr);
   init_from (
     *cloned_object, *source_object, utils::ObjectCloneType::NewIdentity);
 

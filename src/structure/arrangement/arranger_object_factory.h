@@ -20,15 +20,14 @@ public:
 
   struct Dependencies
   {
-    using MusicalModeGetter = std::function<bool ()>;
     using LastTimelineObjectLengthProvider = std::function<double ()>;
     using LastEditorObjectLengthProvider = std::function<double ()>;
     using AutomationCurveAlgorithmProvider =
       std::function<dsp::CurveOptions::Algorithm ()>;
 
-    const dsp::TempoMap             &tempo_map_;
+    const dsp::TempoMapWrapper      &tempo_map_;
     utils::IObjectRegistry          &registry_;
-    MusicalModeGetter                musical_mode_getter_;
+    utils::AppSettings              &app_settings_;
     LastTimelineObjectLengthProvider last_timeline_obj_len_provider_;
     LastEditorObjectLengthProvider   last_editor_obj_len_provider_;
     AutomationCurveAlgorithmProvider automation_curve_algorithm_provider_;
@@ -150,7 +149,7 @@ public:
         {
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.registry_,
-            dependencies_.musical_mode_getter_);
+            dependencies_.app_settings_);
         }
       else if constexpr (RegionObject<ObjT>)
         {
@@ -231,10 +230,9 @@ public:
                 dependencies_.registry_, dependencies_.tempo_map_,
                 dependencies_.registry_, clip_id_.value ());
               obj->set_source (source_object);
-              obj->bounds ()->length ()->setSamples (
-                clip_id_.value ()
-                  .template get_object_as<dsp::FileAudioSource> ()
-                  ->get_num_frames ());
+              // set_source() calls init_length_from_clip(), which sets the
+              // region length to the clip's full duration in the format for the
+              // effective musical mode.
             }
         }
 
@@ -371,7 +369,7 @@ public:
   {
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, utils::Utf8String::from_qstring (absPath),
-      sample_rate_provider_ (), bpm_provider_ ());
+      sample_rate_provider_ ());
     return create_audio_region_with_clip (std::move (clip), startTicks);
   }
 
@@ -435,7 +433,7 @@ public:
         return utils::clone_object (
           other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
           dependencies_.tempo_map_, dependencies_.registry_,
-          dependencies_.musical_mode_getter_);
+          dependencies_.app_settings_);
       }
     else if constexpr (RegionObject<ObjT>)
       {

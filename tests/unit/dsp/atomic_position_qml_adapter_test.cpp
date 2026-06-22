@@ -3,6 +3,8 @@
 
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 
 #include <QSignalSpy>
 
@@ -20,12 +22,16 @@ protected:
     // 120 BPM = 960 ticks per beat, 0.5 seconds per beat
     time_conversion_funcs = basic_conversion_providers ();
     atomic_pos = std::make_unique<AtomicPosition> (*time_conversion_funcs);
-    qml_pos =
-      std::make_unique<AtomicPositionQmlAdapter> (*atomic_pos, std::nullopt);
+    tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
+    qml_pos = std::make_unique<AtomicPositionQmlAdapter> (
+      *atomic_pos, *tempo_map_wrapper_, std::nullopt);
   }
 
   std::unique_ptr<AtomicPosition::TimeConversionFunctions> time_conversion_funcs;
   std::unique_ptr<AtomicPosition>           atomic_pos;
+  std::unique_ptr<TempoMap>                 tempo_map_;
+  std::unique_ptr<TempoMapWrapper>          tempo_map_wrapper_;
   std::unique_ptr<AtomicPositionQmlAdapter> qml_pos;
 };
 
@@ -144,7 +150,7 @@ TEST_F (AtomicPositionQmlAdapterTest, NonNegativeConstraint)
     return std::max (ticks, units::ticks (0.0));
   };
   AtomicPositionQmlAdapter qml_pos_constrained (
-    *atomic_pos, non_negative_constraint);
+    *atomic_pos, *tempo_map_wrapper_, non_negative_constraint);
 
   // Test that negative values are clamped to 0
   qml_pos_constrained.setTicks (-100.0);
@@ -177,7 +183,7 @@ TEST_F (AtomicPositionQmlAdapterTest, ComplexConstraint)
     return std::max (ticks, units::ticks (480.0));
   };
   AtomicPositionQmlAdapter qml_pos_min_length (
-    *atomic_pos, min_length_constraint);
+    *atomic_pos, *tempo_map_wrapper_, min_length_constraint);
 
   // Test that values below minimum are clamped
   qml_pos_min_length.setTicks (100.0);
@@ -196,7 +202,8 @@ TEST_F (AtomicPositionQmlAdapterTest, ComplexConstraint)
 TEST_F (AtomicPositionQmlAdapterTest, NoConstraint)
 {
   // Create adapter with no constraint (std::nullopt)
-  AtomicPositionQmlAdapter qml_pos_unconstrained (*atomic_pos, std::nullopt);
+  AtomicPositionQmlAdapter qml_pos_unconstrained (
+    *atomic_pos, *tempo_map_wrapper_, std::nullopt);
 
   // Test that negative values are allowed
   qml_pos_unconstrained.setTicks (-100.0);
@@ -208,6 +215,127 @@ TEST_F (AtomicPositionQmlAdapterTest, NoConstraint)
   // Test that positive values work normally
   qml_pos_unconstrained.setTicks (960.0);
   EXPECT_DOUBLE_EQ (qml_pos_unconstrained.ticks (), 960.0);
+}
+
+// Test: tempo change emits positionChanged in Absolute mode
+TEST_F (AtomicPositionQmlAdapterTest, TempoChangeNotifiesInAbsoluteMode)
+{
+  qml_pos->setMode (AtomicPosition::TimeFormat::Absolute);
+  ASSERT_EQ (qml_pos->mode (), AtomicPosition::TimeFormat::Absolute);
+
+  QSignalSpy spy (qml_pos.get (), &AtomicPositionQmlAdapter::positionChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  tempo_map_wrapper_->addTempoEvent (
+    0, 60.0, TempoEventWrapper::CurveType::Constant);
+
+  EXPECT_EQ (spy.count (), 1);
+}
+
+// Test: tempo change does NOT emit positionChanged in Musical mode
+TEST_F (AtomicPositionQmlAdapterTest, TempoChangeDoesNotNotifyInMusicalMode)
+{
+  // Mode is Musical by default
+  ASSERT_EQ (qml_pos->mode (), AtomicPosition::TimeFormat::Musical);
+
+  QSignalSpy spy (qml_pos.get (), &AtomicPositionQmlAdapter::positionChanged);
+
+  tempo_map_wrapper_->addTempoEvent (
+    0, 60.0, TempoEventWrapper::CurveType::Constant);
+
+  EXPECT_EQ (spy.count (), 0);
+}
+
+// Test: anchor computes tick delta relative to anchor position
+TEST_F (AtomicPositionQmlAdapterTest, AnchorComputesTicksRelativeToAnchor)
+{
+  // Build tempo map: 120 BPM at tick 0, 240 BPM at tick 9600 (= 5 sec at 120 BPM)
+  tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
+  tempo_map_->add_tempo_event (
+    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_tempo_event (
+    units::ticks (9600), 240.0, TempoMap::CurveType::Constant);
+  tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
+
+  auto tcf =
+    AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map_);
+
+  // Anchor at 6 seconds (after tempo change at 5 seconds)
+  AtomicPosition anchor_pos (*tcf);
+  anchor_pos.set_seconds (units::seconds (6.0));
+  AtomicPositionQmlAdapter anchor (
+    anchor_pos, *tempo_map_wrapper_, std::nullopt);
+
+  // Duration: 4 seconds in Absolute mode, anchored
+  AtomicPosition           dur_pos (*tcf);
+  AtomicPositionQmlAdapter dur (dur_pos, *tempo_map_wrapper_, anchor);
+  dur.setMode (AtomicPosition::TimeFormat::Absolute);
+  dur.setSeconds (4.0);
+
+  // With anchor: delta from 6s→10s = seconds_to_tick(10) - seconds_to_tick(6)
+  //   = 28800 - 13440 = 15360 ticks (4 sec at 240 BPM, the tempo at anchor)
+  // Without anchor would give 7680 ticks (4 sec at 120 BPM from timeline 0)
+  EXPECT_NEAR (dur.ticks (), 15360.0, 1.0);
+}
+
+// Test: anchor ignored in Musical mode
+TEST_F (AtomicPositionQmlAdapterTest, AnchorIgnoredInMusicalMode)
+{
+  AtomicPosition anchor_pos (*time_conversion_funcs);
+  anchor_pos.set_ticks (units::ticks (960.0));
+  AtomicPositionQmlAdapter anchor (
+    anchor_pos, *tempo_map_wrapper_, std::nullopt);
+
+  AtomicPosition           dur_pos (*time_conversion_funcs);
+  AtomicPositionQmlAdapter dur (dur_pos, *tempo_map_wrapper_, anchor);
+
+  dur.setTicks (480.0);
+  EXPECT_DOUBLE_EQ (dur.ticks (), 480.0);
+}
+
+// Test: setTicks round-trip with anchor in Absolute mode
+TEST_F (AtomicPositionQmlAdapterTest, AnchorSetTicksRoundTrip)
+{
+  tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
+  tempo_map_->add_tempo_event (
+    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+  tempo_map_->add_tempo_event (
+    units::ticks (9600), 240.0, TempoMap::CurveType::Constant);
+  tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
+
+  auto tcf =
+    AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map_);
+
+  AtomicPosition anchor_pos (*tcf);
+  anchor_pos.set_seconds (units::seconds (6.0));
+  AtomicPositionQmlAdapter anchor (
+    anchor_pos, *tempo_map_wrapper_, std::nullopt);
+
+  AtomicPosition           dur_pos (*tcf);
+  AtomicPositionQmlAdapter dur (dur_pos, *tempo_map_wrapper_, anchor);
+  dur.setMode (AtomicPosition::TimeFormat::Absolute);
+
+  dur.setTicks (15360.0);
+  EXPECT_NEAR (dur.ticks (), 15360.0, 1.0);
+  EXPECT_NEAR (dur.seconds (), 4.0, 0.001);
+}
+
+// Test: anchor positionChanged propagates to anchored adapter in Absolute mode
+TEST_F (AtomicPositionQmlAdapterTest, AnchorPositionChangePropagates)
+{
+  AtomicPosition           anchor_pos (*time_conversion_funcs);
+  AtomicPositionQmlAdapter anchor (
+    anchor_pos, *tempo_map_wrapper_, std::nullopt);
+
+  AtomicPosition           dur_pos (*time_conversion_funcs);
+  AtomicPositionQmlAdapter dur (dur_pos, *tempo_map_wrapper_, anchor);
+  dur.setMode (AtomicPosition::TimeFormat::Absolute);
+  dur.setSeconds (1.0);
+
+  QSignalSpy spy (&dur, &AtomicPositionQmlAdapter::positionChanged);
+  anchor.setTicks (960.0);
+
+  EXPECT_EQ (spy.count (), 1);
 }
 
 } // namespace zrythm::dsp

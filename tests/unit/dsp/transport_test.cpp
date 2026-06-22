@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 
 #include "helpers/scoped_qcoreapplication.h"
@@ -24,6 +25,7 @@ protected:
     scoped_qt_app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
     tempo_map_ = std::make_unique<TempoMap> (SAMPLE_RATE);
+    tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
     // Setup config provider with default values
     config_provider_ = {
@@ -32,11 +34,13 @@ protected:
       .recording_preroll_bars_ = [] () { return 0; }
     };
 
-    transport_ = std::make_unique<Transport> (*tempo_map_, config_provider_);
+    transport_ =
+      std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
   }
 
   std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qt_app_;
   std::unique_ptr<TempoMap>                             tempo_map_;
+  std::unique_ptr<TempoMapWrapper>                      tempo_map_wrapper_;
   std::unique_ptr<Transport>                            transport_;
   Transport::ConfigProvider                             config_provider_;
 };
@@ -260,7 +264,7 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
   };
 
   auto countin_transport =
-    std::make_unique<Transport> (*tempo_map_, countin_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, countin_config);
 
   // Request roll to trigger count-in
   countin_transport->requestRoll ();
@@ -291,7 +295,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
   };
 
   auto preroll_transport =
-    std::make_unique<Transport> (*tempo_map_, preroll_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, preroll_config);
 
   // Enable recording and request roll to trigger preroll
   preroll_transport->setRecordEnabled (true);
@@ -328,7 +332,7 @@ TEST_F (TransportTest, Serialization)
   j = *transport_;
 
   // Create new transport and deserialize
-  Transport new_transport (*tempo_map_, config_provider_);
+  Transport new_transport (*tempo_map_wrapper_, config_provider_);
   j.get_to (new_transport);
 
   // Verify positions were restored

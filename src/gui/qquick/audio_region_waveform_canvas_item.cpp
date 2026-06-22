@@ -172,4 +172,28 @@ AudioRegionWaveformCanvasItem::setRegion (QObject * region)
   Q_EMIT regionChanged ();
 }
 
+void
+AudioRegionWaveformCanvasItem::setTempoMap (QObject * tempoMap)
+{
+  if (tempo_map_ == tempoMap)
+    return;
+
+  for (const auto &connection : tempo_map_connections_)
+    QObject::disconnect (connection);
+  tempo_map_connections_.clear ();
+
+  tempo_map_ = tempoMap;
+
+  if (tempo_map_ != nullptr)
+    {
+      tempo_map_connections_.push_back (
+        QObject::connect (
+          tempo_map_, SIGNAL (tempoEventsChanged ()), this,
+          SLOT (handle_property_change ()),
+          Qt::ConnectionType::QueuedConnection));
+    }
+
+  Q_EMIT tempoMapChanged ();
+}
+
 } // namespace zrythm::gui::qquick

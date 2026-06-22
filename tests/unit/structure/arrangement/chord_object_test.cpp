@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/chord_object.h"
 
 #include "helpers/mock_qobject.h"
@@ -19,13 +20,16 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
-    chord_obj = std::make_unique<ChordObject> (*tempo_map, parent.get ());
+    chord_obj =
+      std::make_unique<ChordObject> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<ChordObject>   chord_obj;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<ChordObject>          chord_obj;
 };
 
 // Test initial state
@@ -72,7 +76,8 @@ TEST_F (ChordObjectTest, Serialization)
   nlohmann::json j;
   to_json (j, *chord_obj);
 
-  auto new_chord_obj = std::make_unique<ChordObject> (*tempo_map, parent.get ());
+  auto new_chord_obj =
+    std::make_unique<ChordObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_chord_obj);
 
   EXPECT_EQ (new_chord_obj->position ()->samples (), 1000);
@@ -95,7 +100,8 @@ TEST_F (ChordObjectTest, Copying)
   chord_obj->chordDescriptor ()->setInversion (2);
   chord_obj->mute ()->setMuted (false);
 
-  auto target = std::make_unique<ChordObject> (*tempo_map, parent.get ());
+  auto target =
+    std::make_unique<ChordObject> (*tempo_map_wrapper, parent.get ());
 
   init_from (*target, *chord_obj, utils::ObjectCloneType::Snapshot);
 

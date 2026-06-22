@@ -34,6 +34,7 @@ class ArrangerObjectLoopRange : public QObject
 public:
   ArrangerObjectLoopRange (
     const ArrangerObjectBounds &bounds,
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
     QObject *                   parent = nullptr);
 
   /**

@@ -3,7 +3,10 @@
 
 #include "commands/edit_chord_object_command.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -16,12 +19,16 @@ protected:
   void SetUp () override
   {
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
+
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
 
     factory_ = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map_,
+        .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = registry_,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -52,8 +59,10 @@ protected:
     EXPECT_EQ (desc.inversion (), inversion);
   }
 
-  std::unique_ptr<dsp::TempoMap>                                 tempo_map_;
-  utils::ObjectRegistry                                          registry_;
+  std::unique_ptr<dsp::TempoMap>        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+  utils::ObjectRegistry                 registry_;
+  std::unique_ptr<utils::AppSettings>   app_settings_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory_;
   structure::arrangement::ChordObject * chord_obj_ = nullptr;
   std::vector<structure::arrangement::ArrangerObjectUuidReference> chord_refs_;

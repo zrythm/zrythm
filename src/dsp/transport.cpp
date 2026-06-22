@@ -12,34 +12,49 @@
 namespace zrythm::dsp
 {
 Transport::Transport (
-  const dsp::TempoMap &tempo_map,
-  ConfigProvider       config_provider,
-  QObject *            parent)
-    : QObject (parent), playhead_ (tempo_map),
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  ConfigProvider              config_provider,
+  QObject *                   parent)
+    : QObject (parent), playhead_ (tempo_map_wrapper.get_tempo_map ()),
       playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
       time_conversion_funcs_ (
         dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (
           playhead_.get_tempo_map ())),
       cue_position_ (*time_conversion_funcs_),
       cue_position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (cue_position_, std::nullopt, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          cue_position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this)),
       loop_start_position_ (*time_conversion_funcs_),
       loop_start_position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_start_position_, std::nullopt, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          loop_start_position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this)),
       loop_end_position_ (*time_conversion_funcs_),
       loop_end_position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (loop_end_position_, std::nullopt, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          loop_end_position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this)),
       punch_in_position_ (*time_conversion_funcs_),
       punch_in_position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (punch_in_position_, std::nullopt, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          punch_in_position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this)),
       punch_out_position_ (*time_conversion_funcs_),
       punch_out_position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (punch_out_position_, std::nullopt, this)),
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          punch_out_position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this)),
       property_notification_timer_ (new QTimer (this)),
       config_provider_ (std::move (config_provider))
 {
@@ -59,12 +74,15 @@ Transport::Transport (
       return;
     }
 
-  loop_end_position_.set_ticks (tempo_map.musical_position_to_tick (
-    { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  punch_in_position_.set_ticks (tempo_map.musical_position_to_tick (
-    { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  punch_out_position_.set_ticks (tempo_map.musical_position_to_tick (
-    { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
+  loop_end_position_.set_ticks (
+    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
+      { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
+  punch_in_position_.set_ticks (
+    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
+      { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
+  punch_out_position_.set_ticks (
+    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
+      { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
 }
 
 void

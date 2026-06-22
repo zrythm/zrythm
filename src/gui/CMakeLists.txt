@@ -123,6 +123,8 @@ set(font_filepaths
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/NotoSans/NotoSans-Italic-VariableFont_wdth_wght.ttf
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Arabic/NotoSansArabic-VariableFont_wdth_wght.ttf
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Hebrew/NotoSansHebrew-VariableFont_wdth_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Symbols/NotoSansSymbols-VariableFont_wght.ttf
+  ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Symbols_2/NotoSansSymbols2-Regular.ttf
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_Thai/NotoSansThai-VariableFont_wdth_wght.ttf
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_KR/NotoSansKR-VariableFont_wght.ttf
   ${CMAKE_CURRENT_SOURCE_DIR}/resources/fonts/Noto_Sans_SC/NotoSansSC-VariableFont_wght.ttf

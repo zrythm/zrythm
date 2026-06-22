@@ -52,13 +52,15 @@ add_executable(zrythm_dsp_unit_tests
   port_observer_test.cpp
   port_test.cpp
   processor_base_test.cpp
+  rubberband_timestretch_engine_test.cpp
   snap_grid_test.cpp
-  stretcher_test.cpp
   tempo_map_test.cpp
   tempo_map_qml_adapter_test.cpp
+  tempo_warp_map_test.cpp
   timeline_data_cache_test.cpp
   transport_test.cpp
   true_peak_dsp_test.cpp
+  time_warp_map_test.cpp
 )
 
 set_target_properties(zrythm_dsp_unit_tests PROPERTIES

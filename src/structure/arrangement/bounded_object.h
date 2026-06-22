@@ -37,6 +37,7 @@ class ArrangerObjectBounds : public QObject
 public:
   ArrangerObjectBounds (
     const dsp::AtomicPositionQmlAdapter &start_position,
+    const dsp::TempoMapWrapper          &tempo_map_wrapper,
     QObject *                            parent = nullptr);
   ~ArrangerObjectBounds () override = default;
   Q_DISABLE_COPY_MOVE (ArrangerObjectBounds)
@@ -48,6 +49,11 @@ public:
   dsp::AtomicPositionQmlAdapter * length () const
   {
     return length_adapter_.get ();
+  }
+
+  const dsp::AtomicPositionQmlAdapter * position () const
+  {
+    return std::addressof (position_);
   }
 
   // Convenience method
@@ -98,11 +104,6 @@ private:
   static constexpr auto kLengthKey = "length"sv;
   friend void to_json (nlohmann::json &j, const ArrangerObjectBounds &object);
   friend void from_json (const nlohmann::json &j, ArrangerObjectBounds &object);
-
-  auto position () const -> const dsp::AtomicPositionQmlAdapter *
-  {
-    return std::addressof (position_);
-  }
 
 private:
   const dsp::AtomicPositionQmlAdapter &position_;

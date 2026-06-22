@@ -12,6 +12,7 @@ repos:
   - id: check-yaml
     args: [--unsafe]
   - id: check-added-large-files
+    exclude: src/gui/resources/fonts/Noto_Sans_Symbols_2/NotoSansSymbols2-Regular\.ttf
 - repo: local
   hooks:
   - id: clang-format

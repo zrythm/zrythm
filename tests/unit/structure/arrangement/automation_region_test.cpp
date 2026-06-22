@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/object_registry.h"
 
@@ -15,7 +16,9 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    region = std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    region = std::make_unique<AutomationRegion> (
+      *tempo_map_wrapper, registry, nullptr);
 
     // Set up region properties
     region->position ()->setTicks (100);
@@ -26,7 +29,7 @@ protected:
   {
     // Create AutomationPoint using registry
     auto point_ref = utils::create_object<AutomationPoint> (
-      registry, *tempo_map, region.get ());
+      registry, *tempo_map_wrapper, region.get ());
     point_ref.get_object_as<AutomationPoint> ()->setValue (
       static_cast<float> (value));
     return point_ref;
@@ -40,9 +43,10 @@ protected:
     region->add_object (point_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap>    tempo_map;
-  utils::ObjectRegistry             registry;
-  std::unique_ptr<AutomationRegion> region;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 registry;
+  std::unique_ptr<AutomationRegion>     region;
 };
 
 TEST_F (AutomationRegionTest, InitialState)
@@ -181,7 +185,7 @@ TEST_F (AutomationRegionTest, Serialization)
 
   // Create new region
   auto new_region =
-    std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
+    std::make_unique<AutomationRegion> (*tempo_map_wrapper, registry, nullptr);
   from_json (j, *new_region);
 
   // Verify deserialization
@@ -200,7 +204,7 @@ TEST_F (AutomationRegionTest, ObjectCloning)
 
   // Clone region with new identities
   auto cloned_region =
-    std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
+    std::make_unique<AutomationRegion> (*tempo_map_wrapper, registry, nullptr);
   init_from (*cloned_region, *region, utils::ObjectCloneType::NewIdentity);
 
   // Verify cloning

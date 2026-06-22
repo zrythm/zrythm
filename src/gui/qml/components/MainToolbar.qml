@@ -57,6 +57,23 @@ ZrythmToolBar {
       isUndo: false
       undoStack: root.session.undoStack
     },
+    ToolButton {
+      id: musicalModeToggle
+
+      checkable: true
+      text: "♪"
+
+      Synchronizer on checked {
+        sourceObject: root.appSettings
+        sourceProperty: "musicalMode"
+      }
+
+      ToolTip {
+        text: qsTr("Musical Mode — stretch audio regions to match project tempo")
+      }
+    },
+    ToolSeparator {
+    },
     ToolBox {
       id: toolBox
 

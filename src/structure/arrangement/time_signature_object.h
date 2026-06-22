@@ -25,8 +25,8 @@ public:
   static constexpr int DEFAULT_DENOMINATOR = 4;
 
   TimeSignatureObject (
-    const dsp::TempoMap &tempo_map,
-    QObject *            parent = nullptr);
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
 
   // =========================================================
   // QML Interface

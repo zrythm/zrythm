@@ -13,11 +13,13 @@ Item {
   required property int contentHeight
   required property int contentWidth
   required property AudioRegion region
+  required property TempoMap tempoMap
 
   AudioRegionWaveformCanvas {
     height: root.contentHeight
     outlineColor: Qt.lighter(ZrythmTheme.regionContentColor, 1.4)
     region: root.region
+    tempoMap: root.tempoMap
     waveformColor: ZrythmTheme.regionContentColor
     width: root.contentWidth
   }

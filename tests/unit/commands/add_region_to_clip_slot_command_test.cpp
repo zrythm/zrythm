@@ -5,8 +5,11 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/scenes/clip_slot.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -19,12 +22,16 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+
+    app_settings = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
 
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map,
+        .tempo_map_ = *tempo_map_wrapper,
         .registry_ = object_registry,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -42,8 +49,10 @@ protected:
       std::make_unique<structure::scenes::ClipSlot> (object_registry, nullptr);
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  utils::ObjectRegistry          object_registry;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 object_registry;
+  std::unique_ptr<utils::AppSettings>   app_settings;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
   structure::arrangement::ArrangerObjectUuidReference test_region_ref{
     object_registry

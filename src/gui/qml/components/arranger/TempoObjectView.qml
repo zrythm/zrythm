@@ -132,6 +132,7 @@ ArrangerObjectBaseView {
           }
         ]
         textRole: "text"
+        valueRole: "value"
         Component.onCompleted: curveComboBox.currentIndex = root.tempoObject.curve === TempoEventWrapper.Linear ? 1 : 0
       }
     }

@@ -1,11 +1,15 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/track_lane.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
 #include <QObject>
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -194,9 +198,10 @@ TEST_F (TrackLaneTest, MidiRegionManagement)
   EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 0);
 
   // Create a MIDI region
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, tempo_map, *registry_);
+    *registry_, tempo_map_wrapper, *registry_);
 
   // Add region to lane
   midi_lane_->arrangement::ArrangerObjectOwner<
@@ -222,10 +227,12 @@ TEST_F (TrackLaneTest, AudioRegionManagement)
   EXPECT_EQ (audio_lane_->audioRegions ()->rowCount (), 0);
 
   // Create an audio region
-  auto          musical_mode_getter = [] { return false; };
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
+  auto app_settings = std::make_unique<utils::AppSettings> (
+    std::make_unique<test_helpers::InMemorySettingsBackend> ());
+  dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map, *registry_, musical_mode_getter);
+    *registry_, tempo_map_wrapper, *registry_, *app_settings);
 
   // Add region to lane
   audio_lane_->arrangement::ArrangerObjectOwner<
@@ -254,9 +261,10 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
   midi_lane_->setSoloed (false);
 
   // Add a MIDI region
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, tempo_map, *registry_);
+    *registry_, tempo_map_wrapper, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
     arrangement::MidiRegion>::add_object (midi_region_ref);
 
@@ -297,10 +305,12 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
   audio_lane_->setSoloed (true);
 
   // Add an audio region
-  auto          musical_mode_getter = [] { return false; };
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
+  auto app_settings = std::make_unique<utils::AppSettings> (
+    std::make_unique<test_helpers::InMemorySettingsBackend> ());
+  dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
   auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map, *registry_, musical_mode_getter);
+    *registry_, tempo_map_wrapper, *registry_, *app_settings);
   audio_lane_->arrangement::ArrangerObjectOwner<
     arrangement::AudioRegion>::add_object (audio_region_ref);
 
@@ -422,18 +432,20 @@ TEST_F (TrackLaneTest, PropertyChangeNotifications)
 TEST_F (TrackLaneTest, RegionTypeSeparation)
 {
   // Verify that MIDI and audio regions are managed separately
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
 
   // Add MIDI region to MIDI lane
   auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, tempo_map, *registry_);
+    *registry_, tempo_map_wrapper, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
     arrangement::MidiRegion>::add_object (midi_region_ref);
 
   // Add audio region to audio lane
-  auto musical_mode_getter = [] { return false; };
+  auto app_settings_2 = std::make_unique<utils::AppSettings> (
+    std::make_unique<test_helpers::InMemorySettingsBackend> ());
   auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map, *registry_, musical_mode_getter);
+    *registry_, tempo_map_wrapper, *registry_, *app_settings_2);
   audio_lane_->arrangement::ArrangerObjectOwner<
     arrangement::AudioRegion>::add_object (audio_region_ref);
 

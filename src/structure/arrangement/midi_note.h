@@ -32,7 +32,9 @@ class MidiNote : public ArrangerObject
   QML_UNCREATABLE ("")
 
 public:
-  MidiNote (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  MidiNote (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
   Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override;
 

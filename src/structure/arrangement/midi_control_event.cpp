@@ -9,9 +9,13 @@ namespace zrythm::structure::arrangement
 {
 
 MidiControlEvent::MidiControlEvent (
-  const dsp::TempoMap &tempo_map,
-  QObject *            parent)
-    : ArrangerObject (Type::MidiControlEvent, tempo_map, ArrangerObjectFeatures (), parent)
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  QObject *                   parent)
+    : ArrangerObject (
+        Type::MidiControlEvent,
+        tempo_map_wrapper,
+        ArrangerObjectFeatures (),
+        parent)
 {
   QObject::connect (
     this, &MidiControlEvent::controlTypeChanged, this,

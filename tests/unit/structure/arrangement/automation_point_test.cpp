@@ -6,6 +6,7 @@
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/automation_point.h"
 
 #include "helpers/mock_qobject.h"
@@ -22,15 +23,18 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
 
     // Create automation point
-    point = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+    point =
+      std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>   tempo_map;
-  std::unique_ptr<MockQObject>     parent;
-  std::unique_ptr<AutomationPoint> point;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<AutomationPoint>      point;
 };
 
 // Test initial state
@@ -98,7 +102,8 @@ TEST_F (AutomationPointTest, Serialization)
   to_json (j, *point);
 
   // Create new point
-  auto new_point = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+  auto new_point =
+    std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_point);
 
   // Verify state
@@ -114,7 +119,8 @@ TEST_F (AutomationPointTest, Copying)
   point->setValue (0.9f);
 
   // Create target
-  auto target = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+  auto target =
+    std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *point, utils::ObjectCloneType::Snapshot);

@@ -4,8 +4,11 @@
 #include "commands/relocate_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/automation_track.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -31,11 +34,14 @@ protected:
     target_at_ = std::make_unique<tracks::AutomationTrack> (
       tempo_map_wrapper_, registry_, param_ref);
 
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     factory_ = std::make_unique<arrangement::ArrangerObjectFactory> (
       arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = tempo_map_,
+        .tempo_map_ = tempo_map_wrapper_,
         .registry_ = registry_,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -63,9 +69,10 @@ protected:
     source_at_->add_object (automation_region_ref_);
   }
 
-  dsp::TempoMap         tempo_map_{ units::sample_rate (44100) };
-  dsp::TempoMapWrapper  tempo_map_wrapper_{ tempo_map_ };
-  utils::ObjectRegistry registry_;
+  dsp::TempoMap                       tempo_map_{ units::sample_rate (44100) };
+  dsp::TempoMapWrapper                tempo_map_wrapper_{ tempo_map_ };
+  utils::ObjectRegistry               registry_;
+  std::unique_ptr<utils::AppSettings> app_settings_;
   std::unique_ptr<arrangement::ArrangerObjectFactory> factory_;
 
   std::unique_ptr<tracks::AutomationTrack> source_at_;

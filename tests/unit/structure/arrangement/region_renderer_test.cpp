@@ -5,8 +5,11 @@
 #include <map>
 
 #include "structure/arrangement/region_renderer.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -19,9 +22,14 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    app_settings = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+    app_settings->set_musicalMode (true);
 
     // Set up MIDI region
-    midi_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+    midi_region =
+      std::make_unique<MidiRegion> (*tempo_map_wrapper, registry, nullptr);
     midi_region->position ()->setTicks (100);
     midi_region->bounds ()->length ()->setTicks (200);
     midi_region->loopRange ()->loopStartPosition ()->setTicks (50);
@@ -32,13 +40,14 @@ protected:
     setup_audio_region ();
 
     // Set up Automation region
-    automation_region =
-      std::make_unique<AutomationRegion> (*tempo_map, registry, nullptr);
+    automation_region = std::make_unique<AutomationRegion> (
+      *tempo_map_wrapper, registry, nullptr);
     automation_region->position ()->setTicks (100);
     automation_region->bounds ()->length ()->setTicks (200);
 
     // Set up Chord region (no looping)
-    chord_region = std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
+    chord_region =
+      std::make_unique<ChordRegion> (*tempo_map_wrapper, registry, nullptr);
     chord_region->position ()->setTicks (0);
     chord_region->bounds ()->length ()->setTicks (200);
     chord_region->loopRange ()->loopStartPosition ()->setTicks (0);
@@ -49,7 +58,8 @@ protected:
   void add_automation_point (float value, double position_ticks)
   {
     // Create AutomationPoint using registry
-    auto ap_ref = utils::create_object<AutomationPoint> (registry, *tempo_map);
+    auto ap_ref =
+      utils::create_object<AutomationPoint> (registry, *tempo_map_wrapper);
     auto * ap = ap_ref.get_object_as<AutomationPoint> ();
     ap->setValue (value);
     ap->position ()->setTicks (position_ticks);
@@ -65,7 +75,8 @@ protected:
     double length_ticks)
   {
     // Create MidiNote using registry
-    auto   note_ref = utils::create_object<MidiNote> (registry, *tempo_map);
+    auto note_ref =
+      utils::create_object<MidiNote> (registry, *tempo_map_wrapper);
     auto * note = note_ref.get_object_as<MidiNote> ();
     note->setPitch (pitch);
     note->setVelocity (velocity);
@@ -82,7 +93,7 @@ protected:
     double           position_ticks)
   {
     auto chord_ref = utils::create_object<ChordObject> (
-      registry, *tempo_map, chord_region.get ());
+      registry, *tempo_map_wrapper, chord_region.get ());
     auto * descr = chord_ref.get_object_as<ChordObject> ()->chordDescriptor ();
     descr->setRootNote (root);
     descr->setChordType (type);
@@ -98,7 +109,7 @@ protected:
 
     // Create audio region
     audio_region = std::make_unique<AudioRegion> (
-      *tempo_map, registry, [] () { return true; }, nullptr);
+      *tempo_map_wrapper, registry, *app_settings, nullptr);
 
     audio_region->set_source (audio_source_object_ref);
     audio_region->position ()->setSamples (1000);
@@ -136,7 +147,46 @@ protected:
       units::sample_rate (44100), 120.f, u8"SineTestSource");
 
     return utils::create_object<AudioSourceObject> (
-      registry, *tempo_map, registry, source_ref);
+      registry, *tempo_map_wrapper, registry, source_ref);
+  }
+
+  /// Creates a musical-mode AudioRegion with a sine source at the given BPM,
+  /// positioned at @p position_ticks on the timeline.  When @p amplitude_ramp
+  /// is true, the source carries a linear amplitude envelope (0→1) so that
+  /// stretched vs. truncated output can be distinguished by checking the
+  /// amplitude at known positions.
+  std::unique_ptr<AudioRegion> create_musical_test_region (
+    float   source_bpm = 100.f,
+    int64_t frames = 44100,
+    int     channels = 2,
+    double  position_ticks = 0.0,
+    bool    amplitude_ramp = false)
+  {
+    utils::audio::AudioBuffer src (channels, static_cast<int> (frames));
+    for (int c = 0; c < channels; ++c)
+      for (int64_t i = 0; i < frames; ++i)
+        {
+          const float amp =
+            amplitude_ramp
+              ? static_cast<float> (i) / static_cast<float> (frames)
+              : 1.0f;
+          src.setSample (
+            c, static_cast<int> (i),
+            amp
+              * static_cast<float> (std::sin (2.0 * M_PI * 441.0 * i / 44100.0)));
+        }
+
+    auto source_ref = utils::create_object<dsp::FileAudioSource> (
+      registry, src, utils::audio::BitDepth::BIT_DEPTH_32,
+      units::sample_rate (44100), source_bpm, u8"musical_src");
+    auto aso_ref = utils::create_object<AudioSourceObject> (
+      registry, *tempo_map_wrapper, registry, source_ref);
+
+    auto region = std::make_unique<AudioRegion> (
+      *tempo_map_wrapper, registry, *app_settings, nullptr);
+    region->set_source (aso_ref);
+    region->position ()->setTicks (position_ticks);
+    return region;
   }
 
   // Helper function to get expected sine wave value at a specific sample
@@ -156,13 +206,15 @@ protected:
     };
   }
 
-  std::unique_ptr<dsp::TempoMap>    tempo_map;
-  utils::ObjectRegistry             registry;
-  std::unique_ptr<MidiRegion>       midi_region;
-  std::unique_ptr<AudioRegion>      audio_region;
-  std::unique_ptr<AutomationRegion> automation_region;
-  std::unique_ptr<ChordRegion>      chord_region;
-  juce::AudioSampleBuffer           test_audio_buffer;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 registry;
+  std::unique_ptr<utils::AppSettings>   app_settings;
+  std::unique_ptr<MidiRegion>           midi_region;
+  std::unique_ptr<AudioRegion>          audio_region;
+  std::unique_ptr<AutomationRegion>     automation_region;
+  std::unique_ptr<ChordRegion>          chord_region;
+  juce::AudioSampleBuffer               test_audio_buffer;
 };
 
 // ========== MIDI Region Tests ==========
@@ -788,7 +840,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeIn)
   auto audio_source_object_ref = create_sine_wave_audio_source (5000);
 
   auto small_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, [] () { return true; }, nullptr);
+    *tempo_map_wrapper, registry, *app_settings, nullptr);
   small_region->set_source (audio_source_object_ref);
 
   // Set small region length (less than built-in fade frames)
@@ -819,7 +871,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionWithBuiltinFadeOut)
   auto audio_source_object_ref = create_sine_wave_audio_source (5000);
 
   auto fade_out_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, [] () { return true; }, nullptr);
+    *tempo_map_wrapper, registry, *app_settings, nullptr);
   fade_out_region->set_source (audio_source_object_ref);
 
   // Set region length to be just a bit more than built-in fade frames
@@ -970,7 +1022,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionBeyondSourceLength)
 
   // Create a region that extends beyond the source length
   auto large_region = std::make_unique<AudioRegion> (
-    *tempo_map, registry, [] () { return true; }, nullptr);
+    *tempo_map_wrapper, registry, *app_settings, nullptr);
   large_region->set_source (audio_source_object_ref);
   large_region->position ()->setSamples (0);
   large_region->bounds ()->length ()->setSamples (
@@ -1016,6 +1068,317 @@ TEST_F (RegionRendererTest, SerializeAudioRegionBeyondSourceLength)
       EXPECT_FLOAT_EQ (left_channel[i], 0.0f);
       EXPECT_FLOAT_EQ (right_channel[i], 0.0f);
     }
+}
+
+// Musical mode stretches the clip to follow the project tempo. With source_bpm
+// 100 and project tempo 120, a 1 s clip (44100 samples) is sped up to match 120
+// BPM: its musical length is 1600 ticks, which at 120 BPM is 0.833 s = 36750
+// samples. Non-musical mode plays at the native 1 s duration instead.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchesToTempo)
+{
+  // 1 s sine source at source_bpm 100 (≠ project tempo 120).
+  constexpr int             kFrames = 44100;
+  utils::audio::AudioBuffer src (2, kFrames);
+  for (int i = 0; i < kFrames; ++i)
+    {
+      const float v =
+        static_cast<float> (std::sin (2.0 * M_PI * 441.0 * i / 44100.0));
+      src.setSample (0, i, v);
+      src.setSample (1, i, v);
+    }
+  auto source_ref = utils::create_object<dsp::FileAudioSource> (
+    registry, src, utils::audio::BitDepth::BIT_DEPTH_32,
+    units::sample_rate (44100), 100.f, u8"src100");
+  auto aso_ref = utils::create_object<AudioSourceObject> (
+    registry, *tempo_map_wrapper, registry, source_ref);
+
+  auto region = std::make_unique<AudioRegion> (
+    *tempo_map_wrapper, registry, *app_settings, nullptr);
+  region->set_source (
+    aso_ref); // musical on + source_bpm 100 => length = 1600 ticks
+  region->position ()->setSamples (0);
+
+  // Musical mode: 1600 ticks @ 120 BPM = 36750 samples (sped up 100 -> 120).
+  juce::AudioSampleBuffer buffer;
+  RegionRenderer::serialize_to_buffer (*region, buffer);
+  EXPECT_EQ (buffer.getNumChannels (), 2);
+  EXPECT_EQ (buffer.getNumSamples (), 36750);
+  // Sped-up content should still carry energy (not silent).
+  EXPECT_GT (
+    std::abs (buffer.getSample (0, buffer.getNumSamples () / 2)), 0.01f);
+
+  // Non-musical mode: native duration (no stretch).
+  region->setMusicalMode (AudioRegion::MusicalMode::Off);
+  RegionRenderer::serialize_to_buffer (*region, buffer);
+  EXPECT_EQ (buffer.getNumSamples (), kFrames);
+}
+
+// A sub-range render (the path used for per-frame recording waveform updates)
+// must produce the same audio as the corresponding slice of a full render.
+// The fixture's region has source_bpm 120 == project tempo 120, so this
+// exercises the cheap O(range) no-stretch path.
+TEST_F (RegionRendererTest, SerializeAudioRegionRangeMatchesFullSlice)
+{
+  juce::AudioSampleBuffer full_buf;
+  RegionRenderer::serialize_to_buffer (*audio_region, full_buf);
+
+  const double rs = audio_region->position ()->ticks ();
+  const double re = rs + audio_region->bounds ()->length ()->ticks ();
+  juce::AudioSampleBuffer range_buf;
+  RegionRenderer::serialize_to_buffer (
+    *audio_region, range_buf,
+    std::make_pair (rs + (re - rs) * 0.25, rs + (re - rs) * 0.75));
+
+  ASSERT_EQ (range_buf.getNumChannels (), 2);
+  ASSERT_GT (range_buf.getNumSamples (), 0);
+
+  // Sample offset of the range within the region.
+  const auto region_start_sample =
+    tempo_map->tick_to_samples_rounded (units::ticks (rs));
+  const auto range_start_sample =
+    tempo_map->tick_to_samples_rounded (units::ticks (rs + (re - rs) * 0.25));
+  const int off = static_cast<int> (
+    (range_start_sample - region_start_sample).in (units::samples));
+
+  // Compare the interior (skip builtin-fade edges on both buffers).
+  const int fade = AudioRegion::BUILTIN_FADE_FRAMES;
+  const int j_end = std::min (
+    range_buf.getNumSamples () - fade, full_buf.getNumSamples () - off - fade);
+  for (int j = fade; j < j_end; ++j)
+    {
+      EXPECT_NEAR (
+        range_buf.getSample (0, j), full_buf.getSample (0, off + j), 1e-6f)
+        << "At range sample " << j;
+      EXPECT_NEAR (
+        range_buf.getSample (1, j), full_buf.getSample (1, off + j), 1e-6f)
+        << "At range sample " << j;
+    }
+}
+
+// A sub-range render of a MUSICAL (stretched) region must produce the same
+// audio as the corresponding slice of a full render.  The stretch path renders
+// the full region offline then slices, so the two must agree sample-for-sample.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeRangeMatchesFullSlice)
+{
+  auto region = create_musical_test_region (/*source_bpm=*/100.f);
+
+  // Full render: 1600 musical ticks @ 120 BPM = 36750 samples.
+  juce::AudioSampleBuffer full_buf;
+  RegionRenderer::serialize_to_buffer (*region, full_buf);
+  ASSERT_EQ (full_buf.getNumSamples (), 36750);
+
+  // Range render: middle 50 % of the region.
+  const double            rs = region->position ()->ticks ();
+  const double            re = rs + region->bounds ()->length ()->ticks ();
+  juce::AudioSampleBuffer range_buf;
+  RegionRenderer::serialize_to_buffer (
+    *region, range_buf,
+    std::make_pair (rs + (re - rs) * 0.25, rs + (re - rs) * 0.75));
+  ASSERT_GT (range_buf.getNumSamples (), 0);
+
+  // Expected offset of the range within the region (in output samples).
+  const auto region_start_sample =
+    tempo_map->tick_to_samples_rounded (units::ticks (rs));
+  const auto range_start_sample =
+    tempo_map->tick_to_samples_rounded (units::ticks (rs + (re - rs) * 0.25));
+  const int off = static_cast<int> (
+    (range_start_sample - region_start_sample).in (units::samples));
+
+  // Compare interior (skip builtin-fade edges on both buffers).
+  const int fade = AudioRegion::BUILTIN_FADE_FRAMES;
+  const int j_end = std::min (
+    range_buf.getNumSamples () - fade, full_buf.getNumSamples () - off - fade);
+  for (int j = fade; j < j_end; ++j)
+    {
+      EXPECT_NEAR (
+        range_buf.getSample (0, j), full_buf.getSample (0, off + j), 1e-6f)
+        << "At range sample " << j;
+      EXPECT_NEAR (
+        range_buf.getSample (1, j), full_buf.getSample (1, off + j), 1e-6f)
+        << "At range sample " << j;
+    }
+}
+
+// Looping + musical mode: a region extended beyond the clip via looping is
+// stretched to the correct output length and carries energy in the looped
+// portion (not silence).
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeWithLooping)
+{
+  auto region = create_musical_test_region (100.f);
+  // Default length after set_source: 1600 musical ticks (full clip).
+  // Extend to 2400 ticks with a loop at [800, 1200] ticks.
+  region->bounds ()->length ()->setTicks (2400); // tracking resets loop pts
+  region->loopRange ()->loopStartPosition ()->setTicks (800);
+  region->loopRange ()->loopEndPosition ()->setTicks (1200);
+
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (*region, buf);
+
+  // 2400 musical ticks @ 120 BPM => tick_to_samples(2400) output samples.
+  const int expected = static_cast<int> (
+    tempo_map->tick_to_samples_rounded (units::ticks (2400.0))
+      .in (units::samples));
+  EXPECT_EQ (buf.getNumSamples (), expected);
+  EXPECT_EQ (buf.getNumChannels (), 2);
+
+  // Energy in the second half (loops should fill it, not silence).
+  bool has_energy = false;
+  for (int i = buf.getNumSamples () / 2; i < buf.getNumSamples (); ++i)
+    {
+      if (std::abs (buf.getSample (0, i)) > 0.001f)
+        {
+          has_energy = true;
+          break;
+        }
+    }
+  EXPECT_TRUE (has_energy);
+}
+
+// A musical-mode region at a non-zero timeline position, rendered with a range
+// that starts before the region, must have leading silence followed by the
+// stretched audio at the correct offset.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeNonZeroPosition)
+{
+  // Region at bar 2 (1920 ticks @ 120 BPM).
+  constexpr double kPosTicks = 1920.0;
+  auto region = create_musical_test_region (100.f, 44100, 2, kPosTicks);
+
+  // Range covers [0, 3840] ticks (2 bars).
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (
+    *region, buf, std::make_pair (0.0, 3840.0));
+
+  const auto region_start_sample =
+    tempo_map->tick_to_samples_rounded (units::ticks (kPosTicks));
+  const int off = static_cast<int> (region_start_sample.in (units::samples));
+
+  // Leading silence before the region start.
+  for (int i = 0; i < off; ++i)
+    {
+      EXPECT_FLOAT_EQ (buf.getSample (0, i), 0.0f)
+        << "Expected silence before region at sample " << i;
+    }
+
+  // Stretched audio starts at 'off'.
+  // 1600 musical ticks @ 120 BPM = 36750 samples.
+  ASSERT_GE (buf.getNumSamples (), off + 36750 - 1);
+  // Check a sample well inside the region (past any fade).
+  EXPECT_GT (std::abs (buf.getSample (0, off + 100)), 0.001f);
+}
+
+// Custom object fades applied to a stretched buffer must align with the
+// stretched (output) dimensions, not the native (pre-stretch) dimensions.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeFades)
+{
+  auto region = create_musical_test_region (100.f);
+  region->fadeRange ()->startOffset ()->setSamples (500);
+  region->fadeRange ()->endOffset ()->setSamples (500);
+
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (*region, buf);
+
+  // Stretched length: 1600 ticks @ 120 BPM = 36750 samples.
+  EXPECT_EQ (buf.getNumSamples (), 36750);
+
+  // Fade-in region: first 500 samples should ramp up (not full amplitude).
+  EXPECT_LT (std::abs (buf.getSample (0, 50)), 0.3f);
+
+  // A sample just past the fade-in should be near full sine amplitude.
+  EXPECT_GT (std::abs (buf.getSample (0, 600)), 0.3f);
+
+  // Fade-out region: last sample should be very quiet.
+  const int last = buf.getNumSamples () - 1;
+  EXPECT_LT (std::abs (buf.getSample (0, last)), 0.1f);
+  // A sample just before the fade-out should have normal amplitude.
+  EXPECT_GT (std::abs (buf.getSample (0, last - 600)), 0.3f);
+}
+
+// Unknown source BPM (0): musical mode is inert — no stretch, no crash,
+// native duration.  With no DSP in the path the output is an exact copy of
+// the source sine, so we verify sample-level correctness.
+TEST_F (RegionRendererTest, SerializeAudioRegionUnknownSourceBpm)
+{
+  auto region = create_musical_test_region (/*source_bpm=*/0.f);
+
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (*region, buf);
+
+  // Native duration: 44100 samples (1 s @ 44.1 kHz), no stretch.
+  EXPECT_EQ (buf.getNumSamples (), 44100);
+  EXPECT_EQ (buf.getNumChannels (), 2);
+
+  // The source is a 441 Hz sine at 44100 Hz (100 samples/period, phase 0).
+  // With default fades (offset 0) the only modification is the 10-sample
+  // builtin fade-in/out at the buffer edges.  Verify exact values at peaks
+  // well clear of the fades.
+  // Sample 25:  sin(2*pi*0.25) = 1.0  (quarter period)
+  EXPECT_NEAR (buf.getSample (0, 25), 1.0f, 1e-5f);
+  // Sample 75:  sin(2*pi*0.75) = -1.0 (three-quarter period)
+  EXPECT_NEAR (buf.getSample (0, 75), -1.0f, 1e-5f);
+  // Sample 125: sin(2*pi*1.25) = 1.0  (next peak)
+  EXPECT_NEAR (buf.getSample (0, 125), 1.0f, 1e-5f);
+  // Sample 22075: sin(2*pi*220.75) = -1.0 (well past fades, ~halfway)
+  EXPECT_NEAR (buf.getSample (0, 22075), -1.0f, 1e-5f);
+}
+
+// Mono source + musical mode: stretch must handle mono input correctly.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeMono)
+{
+  auto region = create_musical_test_region (100.f, 44100, /*channels=*/1);
+
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (*region, buf);
+
+  // Stretched length: 1600 ticks @ 120 BPM = 36750 samples.
+  EXPECT_EQ (buf.getNumSamples (), 36750);
+  // Renderer always creates stereo output buffer.
+  EXPECT_EQ (buf.getNumChannels (), 2);
+  // Channel 0 should have stretched energy.
+  EXPECT_GT (std::abs (buf.getSample (0, buf.getNumSamples () / 2)), 0.01f);
+}
+
+// Verifies that a musical-mode stretch actually compresses the source content
+// — not just truncates it.  Uses a source with a linear amplitude ramp (0→1):
+// in a correct stretch (44100→36750, ratio 0.833), the amplitude at 75% of the
+// output corresponds to ~75% of the source ramp, whereas a truncation would
+// show only ~62.5%.
+TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchContent)
+{
+  // 441 Hz sine with linear amplitude ramp, source_bpm 100 (≠ project 120).
+  auto region =
+    create_musical_test_region (100.f, 44100, 2, 0.0, /*amplitude_ramp=*/true);
+
+  juce::AudioSampleBuffer buf;
+  RegionRenderer::serialize_to_buffer (*region, buf);
+  ASSERT_EQ (buf.getNumSamples (), 36750);
+
+  // Helper: find the peak amplitude in a ±half-period window around a
+  // position.  For 441 Hz at 44100 Hz the period is 100 samples.
+  const auto peak_around = [&] (int center) {
+    const int half = 50;
+    float     peak = 0.0f;
+    for (
+      int i = std::max (0, center - half);
+      i < std::min (buf.getNumSamples (), center + half); ++i)
+      peak = std::max (peak, std::abs (buf.getSample (0, i)));
+    return peak;
+  };
+
+  // At 75% of output (sample ~27562):
+  //   Stretched:  source maps to ~33075 → amplitude ≈ 0.75 → peak ≈ 0.75
+  //   Truncated:  sample 27562 → amplitude ≈ 0.625 → peak ≈ 0.625
+  // Threshold 0.69 separates the two cases.
+  const float peak_75 = peak_around (buf.getNumSamples () * 3 / 4);
+  EXPECT_GT (peak_75, 0.69f)
+    << "Amplitude at 75% too low — stretch likely didn't happen (truncated?)";
+
+  // At 25% of output (sample ~9187):
+  //   Stretched:  source maps to ~11025 → amplitude ≈ 0.25 → peak ≈ 0.25
+  //   Truncated:  sample 9187 → amplitude ≈ 0.208 → peak ≈ 0.208
+  // The gap is narrower, threshold 0.23 separates them.
+  const float peak_25 = peak_around (buf.getNumSamples () / 4);
+  EXPECT_GT (peak_25, 0.23f)
+    << "Amplitude at 25% too low — stretch likely didn't happen (truncated?)";
 }
 
 // ========== Automation Region Tests ==========
@@ -1769,7 +2132,8 @@ TEST_F (RegionRendererTest, SerializeAutomationRegionLoopStartMidCurve)
 
 TEST_F (RegionRendererTest, SerializeMidiControlChange)
 {
-  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto ev_ref =
+    utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
   auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
   ev->setControlType (MidiControlEvent::EventType::ControlChange);
   ev->setChannel (2);
@@ -1795,7 +2159,8 @@ TEST_F (RegionRendererTest, SerializeMidiControlChange)
 
 TEST_F (RegionRendererTest, SerializeMidiPitchBend)
 {
-  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto ev_ref =
+    utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
   auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
   ev->setControlType (MidiControlEvent::EventType::PitchBend);
   ev->setChannel (0);
@@ -1816,7 +2181,8 @@ TEST_F (RegionRendererTest, SerializeMidiPitchBend)
 
 TEST_F (RegionRendererTest, SerializeMidiChannelPressure)
 {
-  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto ev_ref =
+    utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
   auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
   ev->setControlType (MidiControlEvent::EventType::ChannelPressure);
   ev->setChannel (3);
@@ -1837,7 +2203,8 @@ TEST_F (RegionRendererTest, SerializeMidiChannelPressure)
 
 TEST_F (RegionRendererTest, SerializeMidiProgramChange)
 {
-  auto   ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto ev_ref =
+    utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
   auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
   ev->setControlType (MidiControlEvent::EventType::ProgramChange);
   ev->setChannel (0);
@@ -1860,7 +2227,8 @@ TEST_F (RegionRendererTest, SerializeMidiNotesAndControlEventsTogether)
 {
   add_midi_note (60, 90, 100, 50);
 
-  auto   cc_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+  auto cc_ref =
+    utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
   auto * cc = cc_ref.get_object_as<MidiControlEvent> ();
   cc->setControlType (MidiControlEvent::EventType::ControlChange);
   cc->setChannel (0);

@@ -33,7 +33,7 @@ protected:
   auto create_automation_region (int64_t timeline_pos_samples, int64_t length)
   {
     auto region_ref = utils::create_object<arrangement::AutomationRegion> (
-      *registry, *tempo_map, *registry, nullptr);
+      *registry, *tempo_map_wrapper, *registry, nullptr);
     region_ref.get_object_as<arrangement::AutomationRegion> ()
       ->position ()
       ->setSamples (static_cast<double> (timeline_pos_samples));
@@ -50,7 +50,7 @@ protected:
     double                          position_ticks)
   {
     auto point_ref = utils::create_object<arrangement::AutomationPoint> (
-      *registry, *tempo_map);
+      *registry, *tempo_map_wrapper);
     point_ref.get_object_as<arrangement::AutomationPoint> ()->setValue (
       static_cast<float> (value));
     point_ref.get_object_as<arrangement::AutomationPoint> ()

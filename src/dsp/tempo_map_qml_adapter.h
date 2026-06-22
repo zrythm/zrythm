@@ -243,7 +243,7 @@ private:
   {
     qDeleteAll (tempoEventWrappers_);
     tempoEventWrappers_.clear ();
-    for (const auto &event : tempo_map_.get_tempo_events ())
+    for (const auto &event : tempo_map_.tempo_events ())
       {
         tempoEventWrappers_.append (new TempoEventWrapper (event, this));
       }
@@ -253,7 +253,7 @@ private:
   {
     qDeleteAll (timeSigEventWrappers_);
     timeSigEventWrappers_.clear ();
-    for (const auto &event : tempo_map_.get_time_signature_events ())
+    for (const auto &event : tempo_map_.time_signature_events ())
       {
         timeSigEventWrappers_.append (
           new TimeSignatureEventWrapper (event, this));

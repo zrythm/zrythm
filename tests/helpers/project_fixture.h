@@ -7,9 +7,9 @@
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/mock_hardware_audio_interface_threaded.h"
 #include "helpers/mock_hardware_midi_interface.h"
-#include "helpers/mock_settings_backend.h"
 #include "helpers/scoped_juce_qapplication.h"
 
 #include <gtest/gtest.h>
@@ -37,14 +37,10 @@ protected:
     plugin_format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
     juce::addDefaultFormatsToManager (*plugin_format_manager_);
 
-    auto mock_backend = std::make_unique<MockSettingsBackend> ();
-    mock_backend_ptr_ = mock_backend.get ();
-
-    ON_CALL (*mock_backend_ptr_, value (testing::_, testing::_))
-      .WillByDefault (testing::Return (QVariant ()));
-
+    auto settings_backend = std::make_unique<InMemorySettingsBackend> ();
+    settings_backend->setValue ("musicalMode", true);
     app_settings_ =
-      std::make_unique<utils::AppSettings> (std::move (mock_backend));
+      std::make_unique<utils::AppSettings> (std::move (settings_backend));
 
     registry_ = std::make_unique<utils::ObjectRegistry> (nullptr);
     monitor_fader_ = utils::make_qobject_unique<dsp::Fader> (
@@ -100,7 +96,6 @@ protected:
   std::unique_ptr<dsp::IHardwareAudioInterface>   hw_interface_;
   test_helpers::MockHardwareMidiInterface         midi_interface_;
   std::shared_ptr<juce::AudioPluginFormatManager> plugin_format_manager_;
-  MockSettingsBackend *                           mock_backend_ptr_{};
   std::unique_ptr<utils::AppSettings>             app_settings_;
   std::unique_ptr<utils::ObjectRegistry>          registry_;
   utils::QObjectUniquePtr<dsp::Fader>             monitor_fader_;

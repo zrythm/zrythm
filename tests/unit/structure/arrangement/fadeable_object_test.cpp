@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
 
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/fadeable_object.h"
 
 #include "helpers/mock_qobject.h"
@@ -22,15 +23,24 @@ protected:
   void SetUp () override
   {
     time_conversion_funcs = dsp::basic_conversion_providers ();
+    start_position =
+      std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (tempo_map);
+    start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
+      *start_position, *tempo_map_wrapper, std::nullopt, parent.get ());
     range = std::make_unique<ArrangerObjectFadeRange> (
-      *time_conversion_funcs, parent.get ());
+      *start_position_adapter, *tempo_map_wrapper, parent.get ());
   }
 
+  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
   std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
-                                           time_conversion_funcs;
-  std::unique_ptr<MockQObject>             parent;
-  std::unique_ptr<ArrangerObjectFadeRange> range;
+                                                 time_conversion_funcs;
+  std::unique_ptr<dsp::AtomicPosition>           start_position;
+  std::unique_ptr<MockQObject>                   parent;
+  std::unique_ptr<dsp::TempoMapWrapper>          tempo_map_wrapper;
+  std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
+  std::unique_ptr<ArrangerObjectFadeRange>       range;
 };
 
 // Test initial state
@@ -182,8 +192,11 @@ TEST_F (ArrangerObjectFadeRangeTest, Serialization)
   to_json (j, *range);
 
   // Create new range
+  dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
+  dsp::AtomicPositionQmlAdapter new_start_adapter (
+    new_start_pos, *tempo_map_wrapper, std::nullopt, parent.get ());
   auto new_range = std::make_unique<ArrangerObjectFadeRange> (
-    *time_conversion_funcs, parent.get ());
+    new_start_adapter, *tempo_map_wrapper, parent.get ());
   from_json (j, *new_range);
 
   // Verify state

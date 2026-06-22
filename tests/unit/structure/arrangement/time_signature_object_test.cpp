@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/time_signature_object.h"
 
 #include <QSignalSpy>
@@ -21,14 +22,16 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
     time_sig_obj =
-      std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+      std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>       tempo_map;
-  std::unique_ptr<MockQObject>         parent;
-  std::unique_ptr<TimeSignatureObject> time_sig_obj;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<TimeSignatureObject>  time_sig_obj;
 };
 
 // Test initial state
@@ -140,7 +143,7 @@ TEST_F (TimeSignatureObjectTest, Serialization)
 
   // Create new object
   auto new_time_sig_obj =
-    std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+    std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_time_sig_obj);
 
   // Verify
@@ -159,7 +162,7 @@ TEST_F (TimeSignatureObjectTest, Copying)
 
   // Create target
   auto target =
-    std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+    std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *time_sig_obj, utils::ObjectCloneType::Snapshot);

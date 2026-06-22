@@ -4,11 +4,14 @@
 #include "controllers/recording_materializer.h"
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_fwd.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/actions/mock_undo_stack.h"
@@ -47,6 +50,9 @@ protected:
   {
     app_ = std::make_unique<zrythm::test_helpers::ScopedQCoreApplication> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
     coordinator_ = std::make_unique<RecordingCoordinator> ();
     undo_stack_ = zrythm::actions::create_mock_undo_stack ();
   }
@@ -60,6 +66,7 @@ protected:
     region_refs_.clear ();
     midi_region_refs_.clear ();
     tempo_map_.reset ();
+    tempo_map_wrapper_.reset ();
     app_.reset ();
   }
 
@@ -75,10 +82,10 @@ protected:
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (
-        registry_, *tempo_map_, registry_, clip_ref);
+        registry_, *tempo_map_wrapper_, registry_, clip_ref);
 
     auto region_ref = utils::create_object<structure::arrangement::AudioRegion> (
-      registry_, *tempo_map_, registry_, [] () { return true; });
+      registry_, *tempo_map_wrapper_, registry_, *app_settings_);
 
     auto * region = region_ref.get ();
     region->set_source (source_obj_ref);
@@ -131,7 +138,7 @@ protected:
           last_midi_lane_index_ = lane_index;
           auto region_ref =
             utils::create_object<structure::arrangement::MidiRegion> (
-              registry_, *tempo_map_, registry_);
+              registry_, *tempo_map_wrapper_, registry_);
           region_ref.get ()->position ()->setSamples (
             static_cast<double> (start_position.in (units::samples)));
           midi_region_refs_.push_back (region_ref);
@@ -211,11 +218,13 @@ protected:
 
   std::unique_ptr<zrythm::test_helpers::ScopedQCoreApplication> app_;
   std::unique_ptr<dsp::TempoMap>                                tempo_map_;
-  std::unique_ptr<RecordingCoordinator>                         coordinator_;
-  std::unique_ptr<undo::UndoStack>                              undo_stack_;
-  std::unique_ptr<RecordingMaterializer>                        materializer_;
+  std::unique_ptr<dsp::TempoMapWrapper>  tempo_map_wrapper_;
+  std::unique_ptr<RecordingCoordinator>  coordinator_;
+  std::unique_ptr<undo::UndoStack>       undo_stack_;
+  std::unique_ptr<RecordingMaterializer> materializer_;
 
-  utils::ObjectRegistry registry_;
+  utils::ObjectRegistry               registry_;
+  std::unique_ptr<utils::AppSettings> app_settings_;
 
   std::vector<structure::arrangement::ArrangerObjectUuidReference> region_refs_;
   std::vector<structure::arrangement::ArrangerObjectUuidReference>

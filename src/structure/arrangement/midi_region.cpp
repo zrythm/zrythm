@@ -7,12 +7,12 @@
 namespace zrythm::structure::arrangement
 {
 MidiRegion::MidiRegion (
-  const dsp::TempoMap    &tempo_map,
-  utils::IObjectRegistry &object_registry,
-  QObject *               parent)
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  utils::IObjectRegistry     &object_registry,
+  QObject *                   parent)
     : ArrangerObject (
         Type::MidiRegion,
-        tempo_map,
+        tempo_map_wrapper,
         ArrangerObjectFeatures::Region,
         parent),
       ArrangerObjectOwner<MidiNote> (object_registry, *this),

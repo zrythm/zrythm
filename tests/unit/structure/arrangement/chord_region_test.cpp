@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/object_registry.h"
 
@@ -15,7 +16,9 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    region = std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    region =
+      std::make_unique<ChordRegion> (*tempo_map_wrapper, registry, nullptr);
 
     // Set up region properties
     region->position ()->setTicks (100);
@@ -28,8 +31,8 @@ protected:
     dsp::ChordAccent accent = dsp::ChordAccent::None,
     int              inversion = 0)
   {
-    auto chord_ref =
-      utils::create_object<ChordObject> (registry, *tempo_map, region.get ());
+    auto chord_ref = utils::create_object<ChordObject> (
+      registry, *tempo_map_wrapper, region.get ());
     auto * descr = chord_ref.get_object_as<ChordObject> ()->chordDescriptor ();
     descr->setRootNote (root);
     descr->setChordType (type);
@@ -49,9 +52,10 @@ protected:
     region->add_object (chord_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  utils::ObjectRegistry          registry;
-  std::unique_ptr<ChordRegion>   region;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 registry;
+  std::unique_ptr<ChordRegion>          region;
 };
 
 TEST_F (ChordRegionTest, InitialState)
@@ -125,7 +129,7 @@ TEST_F (ChordRegionTest, Serialization)
   to_json (j, *region);
 
   auto new_region =
-    std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
+    std::make_unique<ChordRegion> (*tempo_map_wrapper, registry, nullptr);
   from_json (j, *new_region);
 
   EXPECT_EQ (new_region->get_children_vector ().size (), 1);
@@ -141,7 +145,7 @@ TEST_F (ChordRegionTest, ObjectCloning)
   add_chord_object (dsp::MusicalNote::E, dsp::ChordType::Minor, 200);
 
   auto cloned_region =
-    std::make_unique<ChordRegion> (*tempo_map, registry, nullptr);
+    std::make_unique<ChordRegion> (*tempo_map_wrapper, registry, nullptr);
   init_from (*cloned_region, *region, utils::ObjectCloneType::NewIdentity);
 
   EXPECT_EQ (cloned_region->get_children_vector ().size (), 1);

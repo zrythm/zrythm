@@ -6,6 +6,7 @@
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/bounded_object.h"
 #include "structure/arrangement/loopable_object.h"
 
@@ -29,14 +30,18 @@ protected:
     start_position =
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, std::nullopt, parent.get ());
+      *start_position, *tempo_map_wrapper, std::nullopt, parent.get ());
 
     // Create bounded object for loop range
-    bounds = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
+    bounds = std::make_unique<ArrangerObjectBounds> (
+      *start_position_adapter, *tempo_map_wrapper);
 
     // Create loop range with proper parenting
-    loop_range = std::make_unique<ArrangerObjectLoopRange> (*bounds);
+    loop_range =
+      std::make_unique<ArrangerObjectLoopRange> (*bounds, *tempo_map_wrapper);
 
     // Set position and length
     start_position_adapter->setSamples (1000);
@@ -47,6 +52,8 @@ protected:
                                                  time_conversion_funcs;
   std::unique_ptr<dsp::AtomicPosition>           start_position;
   std::unique_ptr<MockQObject>                   parent;
+  std::unique_ptr<dsp::TempoMap>                 tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>          tempo_map_wrapper;
   std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
   std::unique_ptr<ArrangerObjectBounds>          bounds;
   std::unique_ptr<ArrangerObjectLoopRange>       loop_range;
@@ -220,9 +227,9 @@ TEST_F (ArrangerObjectLoopRangeTest, Serialization)
   // Create new object from serialized data
   dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
   dsp::AtomicPositionQmlAdapter new_start_adapter (
-    new_start_pos, std::nullopt, parent.get ());
-  ArrangerObjectBounds    new_bounds (new_start_adapter);
-  ArrangerObjectLoopRange new_loop_range (new_bounds);
+    new_start_pos, *tempo_map_wrapper, std::nullopt, parent.get ());
+  ArrangerObjectBounds    new_bounds (new_start_adapter, *tempo_map_wrapper);
+  ArrangerObjectLoopRange new_loop_range (new_bounds, *tempo_map_wrapper);
   from_json (j, new_loop_range);
 
   // Verify state

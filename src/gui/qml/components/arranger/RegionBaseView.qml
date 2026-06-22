@@ -6,7 +6,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import ZrythmGui
 import ZrythmStyle
-import QtQuick.Controls.impl
 import QtQuick.Shapes
 
 ArrangerObjectBaseView {
@@ -15,11 +14,40 @@ ArrangerObjectBaseView {
   required property ClipEditor clipEditor   // FIXME: is this needed?
   readonly property real contentHeight: regionContentContainer.height
   readonly property real contentWidth: regionContentContainer.width
+  readonly property alias headerExtra: headerExtraContainer.data
   readonly property ArrangerObjectLoopRange loopRange: arrangerObject.loopRange
   readonly property alias regionContent: regionContent.data
   readonly property alias regionContentContainer: regionContent
   readonly property string regionName: arrangerObject.name.name
   readonly property real regionTicks: arrangerObject.bounds.length.ticks
+
+  // Progressive header disclosure: 0=full badge+loop, 1=symbol badge+loop,
+  // 2=loop only, 3=name only. Priority: name > loop > badge.
+  readonly property int headerDetailLevel: {
+    const minName = 24;
+    const leftPad = ZrythmTheme.buttonPadding;
+    const rightBase = ZrythmTheme.buttonPadding / 2;
+    const decorAvail = root.width - minName - leftPad - rightBase;
+    const fullBadge = 60;
+    const symbolBadge = 14;
+    const loopSpace = root.loopRange.looped ? 18 : 0;
+    if (decorAvail >= fullBadge + loopSpace)
+      return 0;
+    if (decorAvail >= symbolBadge + loopSpace)
+      return 1;
+    if (decorAvail >= loopSpace)
+      return 2;
+    return 3;
+  }
+
+  readonly property real _rightInset: {
+    let w = ZrythmTheme.buttonPadding / 2;
+    if (loopedIcon.visible)
+      w += loopedIcon.width + 4;
+    if (headerExtraContainer.childrenRect.width > 0)
+      w += headerExtraContainer.childrenRect.width + 4;
+    return w;
+  }
 
   clip: true
   implicitHeight: 10
@@ -37,21 +65,32 @@ ArrangerObjectBaseView {
     topRightRadius: ZrythmTheme.toolButtonRadius
     z: 3
 
-    IconImage {
+    Text {
       id: loopedIcon
 
-      readonly property real iconSize: 14
-
       color: root.palette.buttonText
-      fillMode: Image.PreserveAspectFit
-      source: ResourceManager.getIconUrl("gnome-icon-library", "loop-arrow-symbolic.svg")
-      sourceSize.height: iconSize
-      sourceSize.width: iconSize
-      visible: root.loopRange.looped
+      font.pixelSize: 10
+      text: "⭯"
+      visible: root.loopRange.looped && root.headerDetailLevel < 3
 
       anchors {
         right: parent.right
         rightMargin: ZrythmTheme.buttonPadding / 2
+        top: parent.top
+        topMargin: ZrythmTheme.buttonPadding / 2
+      }
+    }
+
+    Item {
+      id: headerExtraContainer
+
+      height: childrenRect.height
+      visible: headerExtraContainer.children.length > 0
+      width: childrenRect.width
+
+      anchors {
+        right: loopedIcon.visible ? loopedIcon.left : parent.right
+        rightMargin: loopedIcon.visible ? 4 : ZrythmTheme.buttonPadding / 2
         top: parent.top
         topMargin: ZrythmTheme.buttonPadding / 2
       }
@@ -89,41 +128,42 @@ ArrangerObjectBaseView {
 
         model: {
           if (!root.loopRange.looped) {
-            return []
+            return [];
           }
 
-          const loopPoints = []
+          const loopPoints = [];
 
           // Calculate loop length manually
-          const loopStartTicks = root.loopRange.loopStartPosition.ticks
-          const loopEndTicks = root.loopRange.loopEndPosition.ticks
-          const loopLengthTicks = Math.max(0.0, loopEndTicks - loopStartTicks)
+          const loopStartTicks = root.loopRange.loopStartPosition.ticks;
+          const loopEndTicks = root.loopRange.loopEndPosition.ticks;
+          const loopLengthTicks = Math.max(0.0, loopEndTicks - loopStartTicks);
 
           // If loop length is 0, no loop points
           if (loopLengthTicks <= 0) {
-            return []
+            return [];
           }
 
-          const clipStartTicks = root.loopRange.clipStartPosition.ticks
-          const regionLengthTicks = root.regionTicks
+          const clipStartTicks = root.loopRange.clipStartPosition.ticks;
+          const regionLengthTicks = root.regionTicks;
 
           // Calculate the first loop point (relative to region start)
-          const firstLoopPoint = loopEndTicks - clipStartTicks
+          const firstLoopPoint = loopEndTicks - clipStartTicks;
 
           // Add loop points until we reach the end of the region
-          let currentPoint = firstLoopPoint
+          let currentPoint = firstLoopPoint;
           while (currentPoint < regionLengthTicks) {
-            loopPoints.push(currentPoint)
-            currentPoint += loopLengthTicks
+            loopPoints.push(currentPoint);
+            currentPoint += loopLengthTicks;
           }
 
-          return loopPoints
+          return loopPoints;
         }
 
         delegate: LoopLine {
-          required property real modelData
-          readonly property real loopPointTicks: modelData
           id: loopLine
+
+          readonly property real loopPointTicks: modelData
+          required property real modelData
 
           x: (loopPointTicks / root.regionTicks) * root.width
         }
@@ -156,7 +196,7 @@ ArrangerObjectBaseView {
       font: root.font
       horizontalAlignment: Text.AlignLeft
       leftPadding: ZrythmTheme.buttonPadding
-      rightPadding: ZrythmTheme.buttonPadding
+      rightPadding: root._rightInset
       text: root.arrangerObject.name.name
       topPadding: ZrythmTheme.buttonPadding / 2
       verticalAlignment: Text.AlignVCenter

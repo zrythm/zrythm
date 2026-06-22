@@ -23,7 +23,9 @@ public:
   using MusicalScale = dsp::MusicalScale;
 
 public:
-  ScaleObject (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  ScaleObject (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
 
   // =========================================================
   // QML Interface

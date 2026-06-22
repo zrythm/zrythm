@@ -38,7 +38,7 @@ public:
    * @param parent
    */
   AudioSourceObject (
-    const dsp::TempoMap              &tempo_map,
+    const dsp::TempoMapWrapper       &tempo_map_wrapper,
     utils::IObjectRegistry           &registry,
     dsp::FileAudioSourceUuidReference source,
     QObject *                         parent = nullptr);
@@ -52,6 +52,14 @@ public:
   // ========================================================================
 
   juce::PositionableAudioSource &get_audio_source () const;
+
+  /**
+   * @brief Returns the underlying FileAudioSource.
+   *
+   * Carries the raw samples and the clip's permanent source BPM, which the
+   * region needs to compute its musical length and stretch ratios.
+   */
+  dsp::FileAudioSource &file_audio_source () const;
 
   dsp::FileAudioSourceUuidReference audio_source_ref () const;
 

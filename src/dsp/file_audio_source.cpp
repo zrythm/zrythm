@@ -34,18 +34,17 @@ FileAudioSource::FileAudioSource (QObject * parent)
 FileAudioSource::FileAudioSource (
   const std::filesystem::path &full_path,
   units::sample_rate_t         project_sample_rate,
-  bpm_t                        current_bpm,
   QObject *                    parent)
     : utils::UuidIdentifiableObject<FileAudioSource> (parent)
 {
-  init_from_file (full_path, project_sample_rate, current_bpm);
+  init_from_file (full_path, project_sample_rate, std::nullopt);
 }
 
 FileAudioSource::FileAudioSource (
   const utils::audio::AudioBuffer &buf,
   BitDepth                         bit_depth,
   units::sample_rate_t             project_sample_rate,
-  bpm_t                            current_bpm,
+  bpm_t                            source_bpm,
   const utils::Utf8String         &name,
   QObject *                        parent)
     : utils::UuidIdentifiableObject<FileAudioSource> (parent)
@@ -61,7 +60,7 @@ FileAudioSource::FileAudioSource (
   bit_depth_ = bit_depth;
   ch_frames_ = buf;
   convert_mono_to_stereo ();
-  bpm_ = current_bpm;
+  bpm_ = source_bpm;
 }
 
 void
@@ -102,7 +101,7 @@ FileAudioSource::init_from_file (
 
   name_ = utils::Utf8String::from_path (
     utils::io::path_get_basename_without_ext (full_path));
-  if (bpm_to_set.has_value ())
+  if (bpm_to_set.has_value () && bpm_to_set.value () > 0)
     {
       bpm_ = bpm_to_set.value ();
     }

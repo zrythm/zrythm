@@ -18,15 +18,17 @@ protected:
   void SetUp () override
   {
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
   }
 
-  std::unique_ptr<dsp::TempoMap>       tempo_map_;
-  test_helpers::ScopedQCoreApplication app_;
+  std::unique_ptr<dsp::TempoMap>        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+  test_helpers::ScopedQCoreApplication  app_;
 };
 
 TEST_F (MidiControlEventTest, Construction)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   EXPECT_EQ (ev.type (), ArrangerObject::Type::MidiControlEvent);
   EXPECT_EQ (ev.controlType (), MidiControlEvent::EventType::ControlChange);
   EXPECT_EQ (ev.channel (), 0);
@@ -36,7 +38,7 @@ TEST_F (MidiControlEventTest, Construction)
 
 TEST_F (MidiControlEventTest, PropertiesCC)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setControlType (MidiControlEvent::EventType::ControlChange);
   ev.setChannel (2);
   ev.setController (74);
@@ -50,7 +52,7 @@ TEST_F (MidiControlEventTest, PropertiesCC)
 
 TEST_F (MidiControlEventTest, PropertiesPitchBend)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setControlType (MidiControlEvent::EventType::PitchBend);
   ev.setChannel (0);
   ev.setValue (8192);
@@ -61,7 +63,7 @@ TEST_F (MidiControlEventTest, PropertiesPitchBend)
 
 TEST_F (MidiControlEventTest, ValueClampedForType)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setControlType (MidiControlEvent::EventType::ControlChange);
   ev.setValue (200);
   EXPECT_EQ (ev.midiValue (), 127);
@@ -73,7 +75,7 @@ TEST_F (MidiControlEventTest, ValueClampedForType)
 
 TEST_F (MidiControlEventTest, TypeChangeClampsValue)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setControlType (MidiControlEvent::EventType::PitchBend);
   ev.setValue (8192);
 
@@ -83,21 +85,21 @@ TEST_F (MidiControlEventTest, TypeChangeClampsValue)
 
 TEST_F (MidiControlEventTest, ChannelClamped)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setChannel (20);
   EXPECT_EQ (ev.midiChannel (), 15);
 }
 
 TEST_F (MidiControlEventTest, ControllerClamped)
 {
-  MidiControlEvent ev (*tempo_map_);
+  MidiControlEvent ev (*tempo_map_wrapper_);
   ev.setController (200);
   EXPECT_EQ (ev.midiController (), 127);
 }
 
 TEST_F (MidiControlEventTest, SerializationRoundTrip)
 {
-  MidiControlEvent original (*tempo_map_);
+  MidiControlEvent original (*tempo_map_wrapper_);
   original.position ()->setTicks (100.0);
   original.setControlType (MidiControlEvent::EventType::ChannelPressure);
   original.setChannel (3);
@@ -106,7 +108,7 @@ TEST_F (MidiControlEventTest, SerializationRoundTrip)
   nlohmann::json j;
   to_json (j, original);
 
-  MidiControlEvent deserialized (*tempo_map_);
+  MidiControlEvent deserialized (*tempo_map_wrapper_);
   from_json (j, deserialized);
 
   EXPECT_EQ (

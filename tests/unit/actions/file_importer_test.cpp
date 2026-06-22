@@ -8,11 +8,14 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 #include "utils/object_registry.h"
 
 #include <QTemporaryDir>
 #include <QTemporaryFile>
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
@@ -83,10 +86,13 @@ protected:
       tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 50.0; });
 
     // Create arranger object factory with proper dependencies
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{
-      .tempo_map_ = tempo_map_,
+      .tempo_map_ = tempo_map_wrapper_,
       .registry_ = registry_,
-      .musical_mode_getter_ = [] () { return true; },
+      .app_settings_ = *app_settings_,
       .last_timeline_obj_len_provider_ = [] () { return 100.0; },
       .last_editor_obj_len_provider_ = [] () { return 50.0; },
       .automation_curve_algorithm_provider_ =
@@ -259,6 +265,7 @@ protected:
   std::unique_ptr<undo::UndoStack>                    undo_stack_;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_timeline;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_editor;
+  std::unique_ptr<utils::AppSettings>                 app_settings_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
                                          arranger_object_factory;
   std::unique_ptr<TrackCreator>          track_creator_;

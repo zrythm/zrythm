@@ -7,6 +7,7 @@
 #include "structure/arrangement/arranger_object_owner.h"
 #include "structure/arrangement/audio_source_object.h"
 #include "structure/arrangement/fadeable_object.h"
+#include "utils/app_settings.h"
 
 #include <juce_audio_basics/juce_audio_basics.h>
 
@@ -24,6 +25,10 @@ class AudioRegion final
   Q_PROPERTY (
     AudioRegion::MusicalMode musicalMode READ musicalMode WRITE setMusicalMode
       NOTIFY musicalModeChanged)
+  Q_PROPERTY (float sourceBpm READ sourceBpm CONSTANT)
+  Q_PROPERTY (
+    bool effectivelyInMusicalMode READ effectivelyInMusicalMode NOTIFY
+      effectivelyInMusicalModeChanged)
   Q_PROPERTY (float gain READ gain WRITE setGain NOTIFY gainChanged)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     AudioRegion,
@@ -46,8 +51,6 @@ public:
     On,
   };
 
-  using GlobalMusicalModeGetter = std::function<bool ()>;
-
   /**
    * Number of frames for built-in fade (additional to object fades).
    */
@@ -55,26 +58,21 @@ public:
 
 public:
   AudioRegion (
-    const dsp::TempoMap    &tempo_map,
-    utils::IObjectRegistry &object_registry,
-    GlobalMusicalModeGetter musical_mode_getter,
-    QObject *               parent = nullptr) noexcept;
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    utils::IObjectRegistry     &object_registry,
+    utils::AppSettings         &app_settings,
+    QObject *                   parent = nullptr) noexcept;
 
   // ========================================================================
   // QML Interface
   // ========================================================================
 
-  MusicalMode      musicalMode () const { return musical_mode_; }
-  Q_INVOKABLE bool effectivelyInMusicalMode () const;
-  void             setMusicalMode (MusicalMode musical_mode)
-  {
-    if (musical_mode_ != musical_mode)
-      {
-        musical_mode_ = musical_mode;
-        Q_EMIT musicalModeChanged (musical_mode);
-      }
-  }
+  MusicalMode   musicalMode () const { return musical_mode_; }
+  bool          effectivelyInMusicalMode () const;
+  float         sourceBpm () const;
+  void          setMusicalMode (MusicalMode musical_mode);
   Q_SIGNAL void musicalModeChanged (MusicalMode musical_mode);
+  Q_SIGNAL void effectivelyInMusicalModeChanged ();
 
   float gain () const { return gain_.load (); }
   void  setGain (float gain)
@@ -115,6 +113,29 @@ private:
     const AudioRegion     &other,
     utils::ObjectCloneType clone_type);
 
+  /**
+   * @brief Sets the region length (and loop extent) to the clip's full
+   * duration, in the format for the current musical mode.
+   *
+   * Called from @ref set_source when the clip is attached.
+   */
+  void init_length_from_clip ();
+
+  /**
+   * @brief Switches the length and loop points between Musical (ticks) and
+   * Absolute (seconds) to match the effective musical mode.
+   *
+   * Converts via the clip's source BPM (stable), not the project tempo that
+   * AtomicPosition::setMode would use — so the clip's intrinsic musical length
+   * survives tempo changes (absolute sync) and values are preserved (loop-safe:
+   * a k-loop region stays k loops). Called from @ref setMusicalMode.
+   */
+  void update_time_format ();
+
+  /// Recomputes effective musical mode; calls update_time_format() and emits
+  /// effectivelyInMusicalModeChanged() if the effective state changed.
+  void reevaluate_effective_musical_mode ();
+
   static constexpr auto kGainKey = "gain"sv;
   static constexpr auto kMusicalModeKey = "musicalMode"sv;
   friend void           to_json (nlohmann::json &j, const AudioRegion &region);
@@ -127,7 +148,11 @@ private:
   /** Musical mode setting. */
   MusicalMode musical_mode_{};
 
-  GlobalMusicalModeGetter global_musical_mode_getter_;
+  /// Global app settings — source of the global musical mode toggle.
+  utils::AppSettings &app_settings_;
+
+  /// Cached result of effectivelyInMusicalMode() to detect transitions.
+  bool last_effective_musical_mode_ = false;
 
   BOOST_DESCRIBE_CLASS (
     AudioRegion,

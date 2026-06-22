@@ -59,8 +59,11 @@ target_sources(zrythm_dsp_lib
     port_observer.cpp
     processor_base.cpp
     snap_grid.cpp
-    stretcher.cpp
+    timestretch_engine.cpp
+    rubberband_timestretch_engine.cpp
     tempo_map.cpp
+    tempo_warp_map.cpp
+    time_warp_map.cpp
     tempo_map_qml_adapter.cpp
     timeline_data_cache.cpp
     transport.cpp
@@ -131,8 +134,11 @@ target_sources(zrythm_dsp_lib
       port_observer.h
       processor_base.h
       snap_grid.h
-      stretcher.h
+      timestretch_engine.h
+      rubberband_timestretch_engine.h
       tempo_map.h
+      tempo_warp_map.h
+      time_warp_map.h
       tempo_map_qml_adapter.h
       timeline_data_cache.h
       transport.h

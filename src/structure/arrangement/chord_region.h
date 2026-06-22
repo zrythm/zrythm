@@ -22,9 +22,9 @@ class ChordRegion final
 
 public:
   ChordRegion (
-    const dsp::TempoMap    &tempo_map,
-    utils::IObjectRegistry &registry,
-    QObject *               parent = nullptr);
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    utils::IObjectRegistry     &registry,
+    QObject *                   parent = nullptr);
 
   // ========================================================================
   // QML Interface

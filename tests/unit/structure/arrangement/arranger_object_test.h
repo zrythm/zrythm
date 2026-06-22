@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object.h"
 
 namespace zrythm
@@ -19,11 +19,11 @@ public:
     structure::arrangement::ArrangerObject::ArrangerObjectFeatures;
 
   MockArrangerObject (
-    Type                   type,
-    const dsp::TempoMap   &tempo_map,
-    ArrangerObjectFeatures features = ArrangerObjectFeatures::Bounds,
-    QObject *              parent = nullptr)
-      : ArrangerObject (type, tempo_map, features, parent)
+    Type                        type,
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    ArrangerObjectFeatures      features = ArrangerObjectFeatures::Bounds,
+    QObject *                   parent = nullptr)
+      : ArrangerObject (type, tempo_map_wrapper, features, parent)
   {
   }
 };

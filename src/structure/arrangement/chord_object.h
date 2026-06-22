@@ -25,7 +25,9 @@ class ChordObject final : public ArrangerObject
   QML_UNCREATABLE ("")
 
 public:
-  ChordObject (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  ChordObject (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
 
   // ========================================================================
   // QML Interface

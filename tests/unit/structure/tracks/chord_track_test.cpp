@@ -6,9 +6,11 @@
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/track_processor.h"
+#include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
@@ -139,11 +141,14 @@ protected:
     sample_rate_provider_ = [] () { return units::sample_rate (44100); };
     bpm_provider_ = [] () { return 120.0; };
 
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     factory_ = std::make_unique<arrangement::ArrangerObjectFactory> (
       arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map_,
+        .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = *registry_,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -161,6 +166,7 @@ protected:
   std::unique_ptr<ChordTrack>                            chord_track_;
   arrangement::ArrangerObjectFactory::SampleRateProvider sample_rate_provider_;
   arrangement::ArrangerObjectFactory::BpmProvider        bpm_provider_;
+  std::unique_ptr<utils::AppSettings>                    app_settings_;
   std::unique_ptr<arrangement::ArrangerObjectFactory>    factory_;
 };
 

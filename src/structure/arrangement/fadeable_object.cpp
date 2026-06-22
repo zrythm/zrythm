@@ -8,21 +8,27 @@
 namespace zrythm::structure::arrangement
 {
 ArrangerObjectFadeRange::ArrangerObjectFadeRange (
-  const dsp::AtomicPosition::TimeConversionFunctions &time_conversion_funcs,
-  QObject *                                           parent)
-    : QObject (parent), start_offset_ (time_conversion_funcs),
+  const dsp::AtomicPositionQmlAdapter &start_position,
+  const dsp::TempoMapWrapper          &tempo_map_wrapper,
+  QObject *                            parent)
+    : QObject (parent),
+      start_offset_ (start_position.position ().time_conversion_functions ()),
       start_offset_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           start_offset_,
+          tempo_map_wrapper,
+          start_position,
           // Fade offsets must be non-negative
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (0.0));
           },
           this)),
-      end_offset_ (time_conversion_funcs),
+      end_offset_ (start_position.position ().time_conversion_functions ()),
       end_offset_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           end_offset_,
+          tempo_map_wrapper,
+          start_position,
           // Fade offsets must be non-negative
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (0.0));

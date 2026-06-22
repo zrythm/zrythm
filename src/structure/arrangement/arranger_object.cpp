@@ -8,31 +8,35 @@ namespace zrythm::structure::arrangement
 {
 
 ArrangerObject::ArrangerObject (
-  Type                   type,
-  const dsp::TempoMap   &tempo_map,
-  ArrangerObjectFeatures features,
-  QObject *              parent) noexcept
+  Type                        type,
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  ArrangerObjectFeatures      features,
+  QObject *                   parent) noexcept
     : utils::UuidIdentifiableObject<ArrangerObject> (parent), type_ (type),
-      tempo_map_ (tempo_map),
+      tempo_map_wrapper_ (tempo_map_wrapper),
       time_conversion_funcs_ (
-        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_)),
+        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (
+          tempo_map_wrapper.get_tempo_map ())),
       position_ (*time_conversion_funcs_),
       position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (position_, std::nullopt, this))
+        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
+          position_,
+          tempo_map_wrapper,
+          std::nullopt,
+          this))
 {
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Bounds))
     {
-      bounds_ =
-        utils::make_qobject_unique<ArrangerObjectBounds> (*position (), this);
+      bounds_ = utils::make_qobject_unique<ArrangerObjectBounds> (
+        *position (), tempo_map_wrapper, this);
       QObject::connect (
         bounds ()->length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
         this, &ArrangerObject::propertiesChanged);
     }
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::LoopingBit))
     {
-      loop_range_ =
-        utils::make_qobject_unique<ArrangerObjectLoopRange> (*bounds (), this);
+      loop_range_ = utils::make_qobject_unique<ArrangerObjectLoopRange> (
+        *bounds (), tempo_map_wrapper, this);
       QObject::connect (
         loopRange (), &ArrangerObjectLoopRange::loopableObjectPropertiesChanged,
         this, &ArrangerObject::propertiesChanged);
@@ -64,7 +68,7 @@ ArrangerObject::ArrangerObject (
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Fading))
     {
       fade_range_ = utils::make_qobject_unique<ArrangerObjectFadeRange> (
-        *time_conversion_funcs_, this);
+        *position (), tempo_map_wrapper, this);
       QObject::connect (
         fadeRange (), &ArrangerObjectFadeRange::fadePropertiesChanged, this,
         &ArrangerObject::propertiesChanged);
@@ -76,6 +80,12 @@ ArrangerObject::ArrangerObject (
   QObject::connect (
     this, &ArrangerObject::parentObjectChanged, this,
     &ArrangerObject::propertiesChanged);
+}
+
+const dsp::TempoMap &
+ArrangerObject::get_tempo_map () const
+{
+  return tempo_map_wrapper_.get_tempo_map ();
 }
 
 // ========================================================================
@@ -96,27 +106,27 @@ ArrangerObject::setParentObject (ArrangerObject * object)
       // timeline position when making time conversions
       time_conversion_funcs_
         ->tick_to_seconds = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_seconds (
+        return get_tempo_map ().tick_to_seconds (
                  units::ticks (parent_object_->position ()->ticks ()) + ticks)
                - units::seconds (parent_object_->position ()->seconds ());
       };
       time_conversion_funcs_
         ->seconds_to_tick = [&] (units::precise_second_t seconds) {
-        return tempo_map_.seconds_to_tick (
+        return get_tempo_map ().seconds_to_tick (
                  units::seconds (parent_object_->position ()->seconds ()) + seconds)
                - units::ticks (parent_object_->position ()->ticks ());
       };
       time_conversion_funcs_
         ->tick_to_samples = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_samples (
+        return get_tempo_map ().tick_to_samples (
                  units::ticks (parent_object_->position ()->ticks ()) + ticks)
-               - tempo_map_.tick_to_samples (
+               - get_tempo_map ().tick_to_samples (
                  units::ticks (parent_object_->position ()->ticks ()));
       };
       time_conversion_funcs_
         ->samples_to_tick = [&] (units::precise_sample_t samples) {
-        return tempo_map_.samples_to_tick (
-                 tempo_map_.tick_to_samples (
+        return get_tempo_map ().samples_to_tick (
+                 get_tempo_map ().tick_to_samples (
                    units::ticks (parent_object_->position ()->ticks ()))
                  + samples)
                - units::ticks (parent_object_->position ()->ticks ());
@@ -126,7 +136,8 @@ ArrangerObject::setParentObject (ArrangerObject * object)
     {
       // otherwise use tempo map as-is (this is a timeline object)
       const auto time_conv_funcs =
-        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_);
+        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (
+          tempo_map_wrapper_.get_tempo_map ());
       time_conversion_funcs_->tick_to_seconds =
         std::move (time_conv_funcs->tick_to_seconds);
       time_conversion_funcs_->seconds_to_tick =

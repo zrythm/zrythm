@@ -9,12 +9,12 @@
 namespace zrythm::structure::arrangement
 {
 AutomationRegion::AutomationRegion (
-  const dsp::TempoMap    &tempo_map,
-  utils::IObjectRegistry &registry,
-  QObject *               parent)
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  utils::IObjectRegistry     &registry,
+  QObject *                   parent)
     : ArrangerObject (
         Type::AutomationRegion,
-        tempo_map,
+        tempo_map_wrapper,
         ArrangerObjectFeatures::Region,
         parent),
       ArrangerObjectOwner (registry, *this)

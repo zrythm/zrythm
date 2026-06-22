@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/marker.h"
 
 #include "helpers/mock_qobject.h"
@@ -20,14 +21,16 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
     marker = std::make_unique<Marker> (
-      *tempo_map, Marker::MarkerType::Custom, parent.get ());
+      *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<Marker>        marker;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<Marker>               marker;
 };
 
 // Test initial state
@@ -48,13 +51,13 @@ TEST_F (MarkerTest, MarkerTypes)
 
   // Test start marker
   auto start_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Start, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Start, parent.get ());
   EXPECT_TRUE (start_marker->isStartMarker ());
   EXPECT_FALSE (start_marker->isEndMarker ());
 
   // Test end marker
   auto end_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::End, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::End, parent.get ());
   EXPECT_FALSE (end_marker->isStartMarker ());
   EXPECT_TRUE (end_marker->isEndMarker ());
 }
@@ -72,7 +75,7 @@ TEST_F (MarkerTest, Serialization)
 
   // Create new marker
   auto new_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Custom, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
   from_json (j, *new_marker);
 
   // Verify state
@@ -89,7 +92,7 @@ TEST_F (MarkerTest, Copying)
 
   // Create target
   auto target = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Custom, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
 
   // Copy
   init_from (*target, *marker, utils::ObjectCloneType::Snapshot);

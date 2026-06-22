@@ -254,7 +254,7 @@ protected:
           midi_region_create_count_++;
           auto region_ref = utils::create_object<
             structure::arrangement::MidiRegion> (
-            project_->get_registry (), project_->tempo_map (),
+            project_->get_registry (), *project_->getTempoMap (),
             project_->get_registry ());
           region_ref.get ()->position ()->setSamples (
             static_cast<double> (start_position.in (units::samples)));
@@ -382,8 +382,8 @@ private:
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames)
   {
-    auto &registry = project_->get_registry ();
-    auto &tempo_map = project_->tempo_map ();
+    auto  &registry = project_->get_registry ();
+    auto * tempo_map = project_->getTempoMap ();
 
     auto clip_ref = utils::create_object<dsp::FileAudioSource> (
       registry, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
@@ -391,10 +391,10 @@ private:
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (
-        registry, tempo_map, registry, clip_ref);
+        registry, *tempo_map, registry, clip_ref);
 
     auto region_ref = utils::create_object<structure::arrangement::AudioRegion> (
-      registry, tempo_map, registry, [] () { return true; });
+      registry, *tempo_map, registry, *app_settings_);
 
     auto * region =
       region_ref.get_object_as<structure::arrangement::AudioRegion> ();

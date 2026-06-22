@@ -29,8 +29,9 @@ class ArrangerObjectFadeRange : public QObject
 
 public:
   ArrangerObjectFadeRange (
-    const dsp::AtomicPosition::TimeConversionFunctions &time_conversion_funcs,
-    QObject *                                           parent = nullptr);
+    const dsp::AtomicPositionQmlAdapter &start_position,
+    const dsp::TempoMapWrapper          &tempo_map_wrapper,
+    QObject *                            parent = nullptr);
 
   // ========================================================================
   // QML Interface

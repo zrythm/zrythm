@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/tempo_object_manager.h"
@@ -33,14 +34,15 @@ protected:
   // Helper to create a tempo object
   ArrangerObjectUuidReference create_tempo_object (double bpm = 120.0)
   {
-    return utils::create_object<TempoObject> (obj_registry, *tempo_map);
+    return utils::create_object<TempoObject> (obj_registry, *tempo_map_wrapper);
   }
 
   // Helper to create a time signature object
   ArrangerObjectUuidReference
   create_time_signature_object (int numerator = 4, int denominator = 4)
   {
-    return utils::create_object<TimeSignatureObject> (obj_registry, *tempo_map);
+    return utils::create_object<TimeSignatureObject> (
+      obj_registry, *tempo_map_wrapper);
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;

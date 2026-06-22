@@ -33,6 +33,8 @@ class AudioRegionWaveformCanvasItem : public WaveformCanvasItem
   QML_NAMED_ELEMENT (AudioRegionWaveformCanvas)
 
   Q_PROPERTY (QObject * region READ region WRITE setRegion NOTIFY regionChanged)
+  Q_PROPERTY (
+    QObject * tempoMap READ tempoMap WRITE setTempoMap NOTIFY tempoMapChanged)
 
 public:
   explicit AudioRegionWaveformCanvasItem (QQuickItem * parent = nullptr);
@@ -40,8 +42,12 @@ public:
   QObject * region () const { return region_; }
   void      setRegion (QObject * region);
 
+  QObject * tempoMap () const { return tempo_map_; }
+  void      setTempoMap (QObject * tempoMap);
+
 Q_SIGNALS:
   void regionChanged ();
+  void tempoMapChanged ();
 
 private:
   /**
@@ -66,11 +72,15 @@ private:
 
   RegionSnapshot take_snapshot () const;
 
+private Q_SLOTS:
   void handle_property_change ();
 
+private:
   QObject *                                     region_ = nullptr;
   QPointer<structure::arrangement::AudioRegion> audio_region_;
   std::vector<QMetaObject::Connection>          region_connections_;
+  QPointer<QObject>                             tempo_map_;
+  std::vector<QMetaObject::Connection>          tempo_map_connections_;
   RegionSnapshot                                last_snapshot_;
 };
 

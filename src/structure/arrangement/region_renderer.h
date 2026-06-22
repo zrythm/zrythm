@@ -4,6 +4,7 @@
 #pragma once
 
 #include "structure/arrangement/arranger_object_all.h"
+#include "utils/audio.h"
 #include "utils/units.h"
 
 #include <juce_audio_basics/juce_audio_basics.h>
@@ -230,6 +231,22 @@ private:
     std::vector<float>                                     &values,
     std::pair<units::precise_tick_t, units::precise_tick_t> virtual_range,
     units::precise_tick_t                                   absolute_start);
+
+  /**
+   * @brief Reads the clip's content for an output sample range, in playback
+   * (loop) order at the clip's native sample rate.
+   *
+   * @p out_start and @p out_end are output positions in native samples relative
+   * to the region start. The clip read position for @p out_start is computed
+   * directly in O(1) (modular arithmetic on the loop length), so requesting a
+   * sub-range never touches samples before @p out_start. This keeps
+   * incremental/range renders (e.g. per-frame recording waveform updates)
+   * O(range) instead of O(region).
+   */
+  static utils::audio::AudioBuffer build_native_looped_buffer (
+    const AudioRegion &region,
+    units::sample_t    out_start,
+    units::sample_t    out_end);
 
   /**
    * Applies gain to the entire audio buffer as a separate pass.

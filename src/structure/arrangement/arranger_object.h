@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "dsp/atomic_position_qml_adapter.h"
-#include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_fwd.h"
 #include "structure/arrangement/bounded_object.h"
 #include "structure/arrangement/colored_object.h"
@@ -133,7 +133,11 @@ public:
   // ========================================================================
 
   // Convenience getter
-  auto &get_tempo_map () const { return tempo_map_; }
+  const dsp::TempoMap        &get_tempo_map () const;
+  const dsp::TempoMapWrapper &get_tempo_map_wrapper () const
+  {
+    return tempo_map_wrapper_;
+  }
 
   virtual std::vector<ArrangerObjectListModel *> get_child_list_models () const
   {
@@ -164,10 +168,10 @@ protected:
    * QObjects created by this class.
    */
   ArrangerObject (
-    Type                   type,
-    const dsp::TempoMap   &tempo_map,
-    ArrangerObjectFeatures features,
-    QObject *              parent = nullptr) noexcept;
+    Type                        type,
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    ArrangerObjectFeatures      features,
+    QObject *                   parent = nullptr) noexcept;
 
   friend void init_from (
     ArrangerObject        &obj,
@@ -190,7 +194,7 @@ private:
 private:
   Type type_;
 
-  const dsp::TempoMap &tempo_map_;
+  const dsp::TempoMapWrapper &tempo_map_wrapper_;
 
   /**
    * @brief Time conversion functions to be used by positions.

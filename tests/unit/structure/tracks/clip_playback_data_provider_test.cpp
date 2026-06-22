@@ -3,14 +3,18 @@
 
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/tracks/clip_playback_data_provider.h"
+#include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/types.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -24,12 +28,15 @@ protected:
   {
     // Create a tempo map for testing
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
 
     // Create the provider
     provider_ = std::make_unique<ClipPlaybackDataProvider> (*tempo_map_);
 
     // Create an object registry
     registry_ = std::make_unique<utils::ObjectRegistry> ();
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
   }
 
   void TearDown () override
@@ -37,7 +44,9 @@ protected:
     region_refs.clear (); // Clear references first
     provider_.reset ();
     tempo_map_.reset ();
+    tempo_map_wrapper_.reset ();
     registry_.reset ();
+    app_settings_.reset ();
   }
 
   // Helper function to create a MIDI region with notes at specific sample
@@ -50,7 +59,7 @@ protected:
   {
     // Create a MIDI region
     auto region_ref = utils::create_object<arrangement::MidiRegion> (
-      *registry_, *tempo_map_, *registry_);
+      *registry_, *tempo_map_wrapper_, *registry_);
     auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
 
     // Set the region's position
@@ -60,8 +69,8 @@ protected:
     // Create MIDI notes
     for (const auto &[pitch, velocity, sample_pos] : notes)
       {
-        auto note_ref =
-          utils::create_object<arrangement::MidiNote> (*registry_, *tempo_map_);
+        auto note_ref = utils::create_object<arrangement::MidiNote> (
+          *registry_, *tempo_map_wrapper_);
         auto midi_note = note_ref.get_object_as<arrangement::MidiNote> ();
 
         // Set the note's properties
@@ -167,11 +176,11 @@ protected:
       units::sample_rate (44100), 120.f, u8"DummySource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
-        *registry_, *tempo_map_, *registry_, source_ref);
+        *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
     // Create the audio region
     auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_, *registry_, [] () { return true; });
+      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -208,11 +217,11 @@ protected:
       units::sample_rate (44100), 120.f, u8"ShortSource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
-        *registry_, *tempo_map_, *registry_, source_ref);
+        *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
     // Create the audio region
     auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_, *registry_, [] () { return true; });
+      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -258,11 +267,11 @@ protected:
       units::sample_rate (44100), 120.f, u8"SineSource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
-        *registry_, *tempo_map_, *registry_, source_ref);
+        *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
     // Create the audio region
     auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_, *registry_, [] () { return true; });
+      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
     auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
 
     region->set_source (audio_source_object_ref);
@@ -282,7 +291,9 @@ protected:
 
   std::unique_ptr<ClipPlaybackDataProvider> provider_;
   std::unique_ptr<dsp::TempoMap>            tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>     tempo_map_wrapper_;
   std::unique_ptr<utils::ObjectRegistry>    registry_;
+  std::unique_ptr<utils::AppSettings>       app_settings_;
   std::vector<arrangement::ArrangerObjectUuidReference>
     region_refs; // Keep references
 };

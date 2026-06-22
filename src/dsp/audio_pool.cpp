@@ -46,7 +46,7 @@ AudioPool::init_loaded ()
     const auto name = clip.get_name ();
     clip.init_from_file (
       get_clip_path (clip.get_uuid (), false), sample_rate_getter_ (),
-      clip.get_bpm ());
+      clip.source_bpm ());
     clip.set_name (name);
   });
 }
@@ -160,7 +160,7 @@ AudioPool::duplicate_clip (const FileAudioSource::Uuid &clip_id, bool write_file
 
   auto new_clip_ref = utils::create_object<FileAudioSource> (
     registry_, clip.get_samples (), clip.get_bit_depth (),
-    sample_rate_getter_ (), 140.f, clip.get_name ());
+    sample_rate_getter_ (), clip.source_bpm (), clip.get_name ());
 
   z_debug ("duplicating clip {} to {}...", clip.get_name (), new_clip_ref.id ());
 

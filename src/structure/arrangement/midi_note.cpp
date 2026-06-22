@@ -10,10 +10,12 @@
 
 namespace zrythm::structure::arrangement
 {
-MidiNote::MidiNote (const dsp::TempoMap &tempo_map, QObject * parent)
+MidiNote::MidiNote (
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  QObject *                   parent)
     : ArrangerObject (
         Type::MidiNote,
-        tempo_map,
+        tempo_map_wrapper,
         ArrangerObjectFeatures::Bounds | ArrangerObjectFeatures::Mute,
         parent)
 {

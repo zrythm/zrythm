@@ -6,11 +6,13 @@
 #include "gui/qquick/chord_region_segmenter.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/chord_region.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 
 #include <QAbstractItemModel>
 #include <QSignalSpy>
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gtest/gtest.h>
@@ -51,13 +53,16 @@ protected:
     app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
     registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     sample_rate_provider_ = [] () { return units::sample_rate (44100); };
     bpm_provider_ = [] () { return 120.0; };
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
     factory_ = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map_,
+        .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = *registry_,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -117,9 +122,11 @@ protected:
   std::unique_ptr<test_helpers::ScopedQCoreApplication> app_;
   std::unique_ptr<utils::ObjectRegistry>                registry_;
   std::unique_ptr<dsp::TempoMap>                        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>                 tempo_map_wrapper_;
   structure::arrangement::ArrangerObjectFactory::SampleRateProvider
     sample_rate_provider_;
   structure::arrangement::ArrangerObjectFactory::BpmProvider     bpm_provider_;
+  std::unique_ptr<utils::AppSettings>                            app_settings_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory_;
   std::unique_ptr<ChordRegionSegmenter>                          segmenter_;
 

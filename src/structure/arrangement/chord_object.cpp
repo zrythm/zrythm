@@ -8,8 +8,14 @@
 
 namespace zrythm::structure::arrangement
 {
-ChordObject::ChordObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : ArrangerObject (Type::ChordObject, tempo_map, ArrangerObjectFeatures::Mute, parent),
+ChordObject::ChordObject (
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  QObject *                   parent)
+    : ArrangerObject (
+        Type::ChordObject,
+        tempo_map_wrapper,
+        ArrangerObjectFeatures::Mute,
+        parent),
       chord_descriptor_ (utils::make_qobject_unique<dsp::ChordDescriptor> ())
 {
   QObject::connect (

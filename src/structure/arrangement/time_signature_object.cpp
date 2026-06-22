@@ -7,9 +7,13 @@
 namespace zrythm::structure::arrangement
 {
 TimeSignatureObject::TimeSignatureObject (
-  const dsp::TempoMap &tempo_map,
-  QObject *            parent)
-    : ArrangerObject (ArrangerObject::Type::TimeSignatureObject, tempo_map, {}, parent)
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  QObject *                   parent)
+    : ArrangerObject (
+        ArrangerObject::Type::TimeSignatureObject,
+        tempo_map_wrapper,
+        {},
+        parent)
 {
   QObject::connect (
     this, &TimeSignatureObject::numeratorChanged, this,

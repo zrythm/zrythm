@@ -3,15 +3,19 @@
 
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/chord_region.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/timeline_data_provider.h"
+#include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/types.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include "gtest/gtest.h"
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -31,9 +35,12 @@ protected:
 
     // Create a tempo map for testing
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
 
     // Create an object registry
     obj_registry_ = std::make_unique<utils::ObjectRegistry> ();
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
   }
 
   void TearDown () override
@@ -43,7 +50,9 @@ protected:
     audio_provider_.reset ();
     automation_provider_.reset ();
     tempo_map_.reset ();
+    tempo_map_wrapper_.reset ();
     obj_registry_.reset ();
+    app_settings_.reset ();
   }
 
   // Helper function to create a MIDI region
@@ -55,7 +64,7 @@ protected:
   {
     // Create a MIDI region
     auto region_ref = utils::create_object<MidiRegion> (
-      *obj_registry_, *tempo_map_, *obj_registry_);
+      *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
     auto region = region_ref.get_object_as<MidiRegion> ();
 
     // Set the region's position
@@ -63,7 +72,8 @@ protected:
     region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
 
     // Create a MIDI note
-    auto note_ref = utils::create_object<MidiNote> (*obj_registry_, *tempo_map_);
+    auto note_ref =
+      utils::create_object<MidiNote> (*obj_registry_, *tempo_map_wrapper_);
     auto midi_note = note_ref.get_object_as<MidiNote> ();
 
     // Set the note's properties
@@ -110,7 +120,7 @@ protected:
       units::sample_rate (44100), 120.f, u8"SineTestSource");
 
     return utils::create_object<AudioSourceObject> (
-      *obj_registry_, *tempo_map_, *obj_registry_, source_ref);
+      *obj_registry_, *tempo_map_wrapper_, *obj_registry_, source_ref);
   }
 
   // Helper function to create an audio region
@@ -124,7 +134,7 @@ protected:
 
     // Create the audio region
     auto region_ref = utils::create_object<AudioRegion> (
-      *obj_registry_, *tempo_map_, *obj_registry_, [] () { return true; });
+      *obj_registry_, *tempo_map_wrapper_, *obj_registry_, *app_settings_);
     auto region = region_ref.get_object_as<AudioRegion> ();
     region->set_source (audio_source_object_ref);
 
@@ -148,7 +158,7 @@ protected:
   {
     // Create an automation region
     auto region_ref = utils::create_object<AutomationRegion> (
-      *obj_registry_, *tempo_map_, *obj_registry_);
+      *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
     auto region = region_ref.get_object_as<AutomationRegion> ();
 
     // Set the region's position
@@ -156,14 +166,14 @@ protected:
     region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
 
     // Create automation points
-    auto start_point_ref =
-      utils::create_object<AutomationPoint> (*obj_registry_, *tempo_map_);
+    auto start_point_ref = utils::create_object<AutomationPoint> (
+      *obj_registry_, *tempo_map_wrapper_);
     auto start_point = start_point_ref.get_object_as<AutomationPoint> ();
     start_point->position ()->setTicks (0.0); // Relative to region start
     start_point->setValue (start_value);
 
-    auto end_point_ref =
-      utils::create_object<AutomationPoint> (*obj_registry_, *tempo_map_);
+    auto end_point_ref = utils::create_object<AutomationPoint> (
+      *obj_registry_, *tempo_map_wrapper_);
     auto end_point = end_point_ref.get_object_as<AutomationPoint> ();
     end_point->position ()->setTicks (
       end_pos_ticks - start_pos_ticks); // Relative to region start
@@ -200,7 +210,9 @@ protected:
   std::unique_ptr<AudioTimelineDataProvider>      audio_provider_;
   std::unique_ptr<AutomationTimelineDataProvider> automation_provider_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
   std::unique_ptr<utils::ObjectRegistry>          obj_registry_;
+  std::unique_ptr<utils::AppSettings>             app_settings_;
   std::vector<ArrangerObjectUuidReference> region_refs; // Keep references
 };
 
@@ -637,7 +649,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
 {
   // Create a region with zero length
   auto zero_length_region_ref = utils::create_object<MidiRegion> (
-    *obj_registry_, *tempo_map_, *obj_registry_);
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
   auto zero_length_region = zero_length_region_ref.get_object_as<MidiRegion> ();
   zero_length_region->position ()->setTicks (200.0);
   zero_length_region->bounds ()->length ()->setTicks (0.0);
@@ -1208,7 +1220,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
 {
   // Create a region with zero length
   auto zero_length_region_ref = utils::create_object<AudioRegion> (
-    *obj_registry_, *tempo_map_, *obj_registry_, [] () { return true; });
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_, *app_settings_);
   auto zero_length_region = zero_length_region_ref.get_object_as<AudioRegion> ();
 
   // Create and set an audio source for the zero-length region (required by
@@ -1577,7 +1589,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
 {
   // Create a chord region at tick 0
   auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
-    *obj_registry_, *tempo_map_, *obj_registry_);
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
   auto chord_region =
     chord_region_ref.get_object_as<arrangement::ChordRegion> ();
   chord_region->position ()->setTicks (0.0);
@@ -1619,7 +1631,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
 {
   // Create a chord region at tick 500
   auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
-    *obj_registry_, *tempo_map_, *obj_registry_);
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
   auto chord_region =
     chord_region_ref.get_object_as<arrangement::ChordRegion> ();
   chord_region->position ()->setTicks (500.0);
@@ -1715,7 +1727,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
 {
   // Create a chord region at tick 0
   auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
-    *obj_registry_, *tempo_map_, *obj_registry_);
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
   auto chord_region =
     chord_region_ref.get_object_as<arrangement::ChordRegion> ();
   chord_region->position ()->setTicks (0.0);
@@ -1753,7 +1765,8 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
   auto region = create_midi_region (0.0, 200.0, 60);
 
   // Add another note to the region
-  auto note_ref = utils::create_object<MidiNote> (*obj_registry_, *tempo_map_);
+  auto note_ref =
+    utils::create_object<MidiNote> (*obj_registry_, *tempo_map_wrapper_);
   auto midi_note = note_ref.get_object_as<MidiNote> ();
   midi_note->setPitch (64);
   midi_note->setVelocity (80);

@@ -13,6 +13,8 @@
 
 namespace zrythm::dsp
 {
+class TempoMapWrapper;
+
 class AtomicPositionQmlAdapter : public QObject
 {
   Q_OBJECT
@@ -34,6 +36,32 @@ public:
 
   explicit AtomicPositionQmlAdapter (
     AtomicPosition                   &atomicPos,
+    const TempoMapWrapper            &tempo_map_wrapper,
+    std::optional<ConstraintFunction> constraints = std::nullopt,
+    QObject *                         parent = nullptr);
+
+  /**
+   * @brief Constructor with anchor for durations/offsets.
+   *
+   * When an anchor is provided, the @ref ticks property in Absolute mode is
+   * computed as a delta relative to the anchor's timeline position, rather
+   * than by integrating tempo from timeline zero. This gives correct tick
+   * values for positions like region length, loop points, and fade offsets
+   * when tempo changes exist before the region on the timeline.
+   *
+   * In Musical mode, the anchor is ignored.
+   *
+   * @par Lifetime contract
+   * @p anchor must outlive this adapter. In practice both are QObjects sharing
+   * a common ancestor (e.g. an ArrangerObject owns both the position adapter
+   * used as anchor and the length/loop/fade adapters that anchor to it), so
+   * their lifetimes are tied and Qt's auto-disconnect tears down the signal
+   * link on either side's destruction.
+   */
+  explicit AtomicPositionQmlAdapter (
+    AtomicPosition                   &atomicPos,
+    const TempoMapWrapper            &tempo_map_wrapper,
+    const AtomicPositionQmlAdapter   &anchor,
     std::optional<ConstraintFunction> constraints = std::nullopt,
     QObject *                         parent = nullptr);
 
@@ -80,5 +108,9 @@ private:
    * If std::nullopt, no constraints are applied.
    */
   std::optional<ConstraintFunction> constraints_;
+
+  /// Anchor adapter for delta-relative tick computation (Absolute mode only).
+  /// Raw non-owning pointer; see the anchor-constructor's lifetime contract.
+  const AtomicPositionQmlAdapter * anchor_ = nullptr;
 };
 } // namespace zrythm::dsp

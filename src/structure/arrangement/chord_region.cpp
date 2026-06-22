@@ -7,12 +7,12 @@
 namespace zrythm::structure::arrangement
 {
 ChordRegion::ChordRegion (
-  const dsp::TempoMap    &tempo_map,
-  utils::IObjectRegistry &object_registry,
-  QObject *               parent)
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  utils::IObjectRegistry     &object_registry,
+  QObject *                   parent)
     : ArrangerObject (
         Type::ChordRegion,
-        tempo_map,
+        tempo_map_wrapper,
         ArrangerObjectFeatures::Region,
         parent),
       ArrangerObjectOwner (object_registry, *this)

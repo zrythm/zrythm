@@ -3,6 +3,7 @@
 
 #include "dsp/parameter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/tracks/automation_track.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "utils/object_registry.h"
@@ -248,7 +249,7 @@ TEST_F (AutomationTracklistTest, ClearObjects)
   }
   automation_tracklist->automation_track_at (0)->add_object (
     utils::create_object<arrangement::AutomationRegion> (
-      *registry, *tempo_map, *registry));
+      *registry, *tempo_map_wrapper, *registry));
 
   EXPECT_EQ (
     automation_tracklist->automation_track_at (0)->get_children_vector ().size (),
@@ -382,12 +383,12 @@ TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
   automation_tracklist->add_automation_track (std::move (at1));
 
   auto region_ref = utils::create_object<arrangement::AutomationRegion> (
-    *registry, *tempo_map, *registry);
+    *registry, *tempo_map_wrapper, *registry);
   auto * region = region_ref.get_object_as<arrangement::AutomationRegion> ();
   track_ptr->add_object (region_ref);
 
-  auto point_ref =
-    utils::create_object<arrangement::AutomationPoint> (*registry, *tempo_map);
+  auto point_ref = utils::create_object<arrangement::AutomationPoint> (
+    *registry, *tempo_map_wrapper);
   auto * point = point_ref.get_object_as<arrangement::AutomationPoint> ();
   point->setValue (0.75f);
   region->add_object (point_ref);

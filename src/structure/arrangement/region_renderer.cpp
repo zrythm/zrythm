@@ -1,7 +1,11 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "dsp/chord_descriptor.h"
+#include "dsp/tempo_warp_map.h"
+#include "dsp/timestretch_engine.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
 #include "structure/arrangement/chord_region.h"
@@ -620,6 +624,93 @@ RegionRenderer::serialize_to_automation_values (
  * Audio regions are always serialized as they would be played in the timeline
  * (with loops and clip start).
  */
+utils::audio::AudioBuffer
+RegionRenderer::build_native_looped_buffer (
+  const AudioRegion &region,
+  units::sample_t    out_start,
+  units::sample_t    out_end)
+{
+  auto        &fs = region.get_children_view ().front ()->file_audio_source ();
+  const auto  &clip = fs.get_samples ();
+  const int    channels = clip.getNumChannels ();
+  const auto   clip_frames = static_cast<int64_t> (clip.getNumSamples ());
+  const auto   source_bpm = fs.source_bpm ();
+  const double sr = region.get_tempo_map ().get_sample_rate ();
+  const double factor = (source_bpm / 60.0) * dsp::TempoMap::get_ppq ();
+
+  // Convert a clip-internal position to a native sample offset, using the
+  // clip's source BPM for musical ticks (not the project tempo).
+  const auto native_offset =
+    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
+    if (pos->mode () == dsp::AtomicPosition::TimeFormat::Absolute)
+      return static_cast<int64_t> (std::llround (pos->seconds () * sr));
+    return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
+  };
+
+  const auto * lr = region.loopRange ();
+  const auto   clip_start_s = std::clamp (
+    native_offset (lr->clipStartPosition ()), int64_t{ 0 }, clip_frames);
+  const auto loop_start_s = std::clamp (
+    native_offset (lr->loopStartPosition ()), int64_t{ 0 }, clip_frames);
+  const auto loop_end_raw = std::clamp (
+    native_offset (lr->loopEndPosition ()), int64_t{ 0 }, clip_frames);
+  const auto loop_end_s = std::max (loop_end_raw, loop_start_s + 1);
+  const bool do_loop = lr->looped ();
+
+  const auto out0 = std::max (int64_t{ 0 }, out_start.in (units::samples));
+  const auto out1 = std::max (out0, out_end.in (units::samples));
+  const auto out_len = out1 - out0;
+
+  utils::audio::AudioBuffer b1 (channels, static_cast<int> (out_len));
+  b1.clear ();
+
+  // Clip read position for an output position (native samples from region
+  // start), computed in O(1): the first leg plays clip_start -> loop_end;
+  // subsequent legs loop loop_start -> loop_end. This lets a sub-range request
+  // start reading at @p out_start directly instead of iterating from 0.
+  const auto clip_pos_at = [&] (int64_t out_pos) -> int64_t {
+    if (!do_loop)
+      return clip_start_s + out_pos;
+    const auto first_leg = loop_end_s - clip_start_s;
+    if (out_pos < first_leg)
+      return clip_start_s + out_pos;
+    const auto loop_len = std::max (int64_t{ 1 }, loop_end_s - loop_start_s);
+    return loop_start_s + ((out_pos - first_leg) % loop_len);
+  };
+
+  int64_t read_pos = clip_pos_at (out0);
+  int64_t write_pos = 0;
+  while (write_pos < out_len)
+    {
+      const auto this_end = std::min (
+        { loop_end_s, clip_frames, read_pos + (out_len - write_pos) });
+      const auto this_len = this_end - read_pos;
+      if (this_len <= 0)
+        {
+          if (do_loop && read_pos >= loop_end_s)
+            {
+              read_pos = loop_start_s;
+              continue;
+            }
+          break; // past clip / un-looped tail: leave silence
+        }
+      for (int c = 0; c < channels; ++c)
+        b1.copyFrom (
+          c, static_cast<int> (write_pos), clip, c, static_cast<int> (read_pos),
+          static_cast<int> (this_len));
+      write_pos += this_len;
+      read_pos += this_len;
+      if (read_pos >= loop_end_s)
+        {
+          if (do_loop)
+            read_pos = loop_start_s; // wrap to loop start
+          else
+            break; // un-looped region: stop, remainder stays silent
+        }
+    }
+  return b1;
+}
+
 void
 RegionRenderer::serialize_to_buffer (
   const AudioRegion                       &region,
@@ -653,65 +744,130 @@ RegionRenderer::serialize_to_buffer (
           units::ticks (region.position ()->ticks ())));
     }
 
-  // Calculate the total number of samples needed
-  units::precise_tick_t total_length_ticks;
+  // Check constraint overlap up front (before rendering) using tick bounds.
+  const auto &tempo_map = region.get_tempo_map ();
+  const auto  region_start_tick = units::ticks (region.position ()->ticks ());
+  const auto  region_end_tick = region_start_tick + loop_params.region_length;
   if (start_opt || end_opt)
     {
-      // When constraints are used, we need to check if there's any overlap
-      // with the region before creating the buffer
-      const auto region_start = units::ticks (region.position ()->ticks ());
-      const auto region_end = region_start + loop_params.region_length;
       const auto constraint_start = start_opt ? *start_opt : units::ticks (0.0);
       const auto constraint_end =
         end_opt ? *end_opt : units::ticks (std::numeric_limits<double>::max ());
-
-      // Check if there's any overlap
-      if (region_end <= constraint_start || region_start >= constraint_end)
+      if (
+        region_end_tick <= constraint_start
+        || region_start_tick >= constraint_end)
         {
-          // No overlap - create empty buffer
           buffer.setSize (2, 0);
           buffer.clear ();
           return;
         }
-
-      // When constraints are used, the buffer should represent the full
-      // constraint range, with silence where there's no overlap
-      total_length_ticks = constraint_end - constraint_start;
     }
-  else
+
+  // Source info + the region's native (B1) length, used both for the stretch
+  // decision and to map clip positions.
+  auto        &fs = region.get_children_view ().front ()->file_audio_source ();
+  const auto   source_bpm = fs.source_bpm ();
+  const double sr = tempo_map.get_sample_rate ();
+  const double factor = (source_bpm / 60.0) * dsp::TempoMap::get_ppq ();
+  const auto   native_offset =
+    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
+    if (pos->mode () == dsp::AtomicPosition::TimeFormat::Absolute)
+      return static_cast<int64_t> (std::llround (pos->seconds () * sr));
+    return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
+  };
+  const auto native_region_len =
+    std::max (int64_t{ 0 }, native_offset (region.bounds ()->length ()));
+
+  // Decide whether a (non-sample-exact) stretch pass is actually needed, and
+  // compute the timeline-space region length. Recording / non-musical / tempo-
+  // matched regions need no stretch — the cheap range-read path handles them.
+  bool             needs_stretch = false;
+  int64_t          timeline_region_len = native_region_len;
+  dsp::TimeWarpMap warp;
+  if (
+    region.effectivelyInMusicalMode () && source_bpm > 0.f
+    && native_region_len > 0)
     {
-      total_length_ticks = loop_params.region_length;
+      warp = dsp::compute_tempo_warp_map (
+        tempo_map, region_start_tick, source_bpm,
+        units::samples (native_region_len));
+      needs_stretch =
+        !std::ranges::all_of (warp.anchors, [] (const dsp::WarpAnchor &a) {
+          return a.source_frame == a.output_frame;
+        });
+      timeline_region_len = warp.output_length.in (units::samples);
     }
 
-  const auto total_length_samples =
-    region.get_tempo_map ().tick_to_samples (total_length_ticks);
-
-  // Prepare the buffer - no leading silence for audio regions
-  buffer.setSize (
-    2, static_cast<int> (total_length_samples.in (units::samples)));
+  // Size the output buffer and compute where the region's audio lands in it.
+  const auto region_start_sample =
+    tempo_map.tick_to_samples_rounded (region_start_tick);
+  int64_t buf_size = timeline_region_len;
+  int64_t region_buf_offset = 0; // buffer index where region_audio[0] goes
+  if (start_opt || end_opt)
+    {
+      const auto constraint_start = start_opt ? *start_opt : units::ticks (0.0);
+      const auto constraint_end =
+        end_opt ? *end_opt : units::ticks (std::numeric_limits<double>::max ());
+      const auto constraint_start_sample =
+        tempo_map.tick_to_samples_rounded (constraint_start);
+      const auto constraint_end_sample =
+        tempo_map.tick_to_samples_rounded (constraint_end);
+      buf_size =
+        (constraint_end_sample - constraint_start_sample).in (units::samples);
+      region_buf_offset =
+        region_start_sample.in (units::samples) -constraint_start_sample.in (
+          units::samples);
+    }
+  buffer.setSize (2, static_cast<int> (std::max (int64_t{ 0 }, buf_size)));
   buffer.clear ();
 
-  if constexpr (REGION_SERIALIZER_DEBUG)
+  // The region-audio indices that overlap the buffer.
+  const auto out0 = std::max (int64_t{ 0 }, -region_buf_offset);
+  const auto out1 = std::min (timeline_region_len, buf_size - region_buf_offset);
+  const auto dst_start = std::max (int64_t{ 0 }, region_buf_offset);
+  const auto copy_len = std::max (int64_t{ 0 }, out1 - out0);
+  if (copy_len > 0)
     {
-      z_debug (
-        "Buffer setup: total_length_ticks={}, total_length_samples={}",
-        total_length_ticks, total_length_samples);
+      utils::audio::AudioBuffer content;
+      if (needs_stretch)
+        {
+          // Genuine musical stretch: render the FULL region (offline RubberBand
+          // needs the whole input for a seamless result) then slice the range.
+          // Note: unlike the no-stretch branch below, this is O(full region)
+          // even for a sub-range request — unavoidable for offline quality.
+          auto full_b1 = build_native_looped_buffer (
+            region, units::samples (0), units::samples (native_region_len));
+          auto engine = dsp::create_default_timestretch_engine (
+            dsp::StretchOptions{},
+            units::sample_rate (static_cast<int> (std::round (sr))));
+          content = engine->stretch (full_b1, warp, dsp::StretchOptions{});
+          const int chans =
+            std::min (buffer.getNumChannels (), content.getNumChannels ());
+          for (int c = 0; c < chans; ++c)
+            buffer.copyFrom (
+              c, static_cast<int> (dst_start), content, c,
+              static_cast<int> (out0), static_cast<int> (copy_len));
+        }
+      else
+        {
+          // No stretch needed: read ONLY the requested range directly from the
+          // clip (O(range)) — this is the recording / incremental-update path.
+          content = build_native_looped_buffer (
+            region, units::samples (out0), units::samples (out1));
+          const int chans =
+            std::min (buffer.getNumChannels (), content.getNumChannels ());
+          for (int c = 0; c < chans; ++c)
+            buffer.copyFrom (
+              c, static_cast<int> (dst_start), content, c, 0,
+              static_cast<int> (copy_len));
+        }
     }
 
-  // Use the serialize_region template to handle the looping and audio data
-  serialize_region (region, buffer, timeline_range_ticks);
-
   if constexpr (REGION_SERIALIZER_DEBUG)
     {
       z_debug (
-        "After serialize_region: first sample L={}, R={}, last sample L={}, R={}",
-        buffer.getSample (0, 0), buffer.getSample (1, 0),
-        buffer.getNumSamples () > 0
-          ? buffer.getSample (0, buffer.getNumSamples () - 1)
-          : 0.0f,
-        buffer.getNumSamples () > 0
-          ? buffer.getSample (1, buffer.getNumSamples () - 1)
-          : 0.0f);
+        "Buffer setup: timeline_region_len={}, buffer samples={}, stretch={}",
+        timeline_region_len, buffer.getNumSamples (), needs_stretch);
     }
 
   // Second pass: apply gain to the entire buffer

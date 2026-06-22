@@ -25,7 +25,9 @@ public:
   static constexpr double DEFAULT_TEMPO = 120.0;
 
 public:
-  TempoObject (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  TempoObject (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
 
   // =========================================================
   // QML Interface

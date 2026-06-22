@@ -630,6 +630,7 @@ Arranger {
                     height: mainTrackRegionLoader.height
                     isSelected: mainTrackRegionLoader.selectionTracker.isSelected
                     lane: mainTrackLaneRegionsRepeater.trackLane
+                    tempoMap: root.tempoMap
                     track: trackDelegate.track
                     undoStack: root.undoStack
 
@@ -845,6 +846,7 @@ Arranger {
             clipEditor: root.clipEditor
             isSelected: laneRegionLoader.selectionTracker.isSelected
             lane: laneItem.trackLane
+            tempoMap: root.tempoMap
             track: laneItem.track
             undoStack: root.undoStack
 

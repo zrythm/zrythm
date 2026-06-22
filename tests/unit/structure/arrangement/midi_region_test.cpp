@@ -15,7 +15,9 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-    region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+    region =
+      std::make_unique<MidiRegion> (*tempo_map_wrapper, registry, nullptr);
 
     // Set up region properties
     region->position ()->setTicks (100);
@@ -32,7 +34,8 @@ protected:
     double length_ticks)
   {
     // Create MidiNote using registry
-    auto note_ref = utils::create_object<MidiNote> (registry, *tempo_map);
+    auto note_ref =
+      utils::create_object<MidiNote> (registry, *tempo_map_wrapper);
     note_ref.get_object_as<MidiNote> ()->setPitch (pitch);
     note_ref.get_object_as<MidiNote> ()->setVelocity (velocity);
     note_ref.get_object_as<MidiNote> ()->position ()->setTicks (position_ticks);
@@ -50,7 +53,8 @@ protected:
     int                         value,
     double                      position_ticks)
   {
-    auto ev_ref = utils::create_object<MidiControlEvent> (registry, *tempo_map);
+    auto ev_ref =
+      utils::create_object<MidiControlEvent> (registry, *tempo_map_wrapper);
     auto * ev = ev_ref.get_object_as<MidiControlEvent> ();
     ev->setControlType (type);
     ev->setChannel (channel);
@@ -60,9 +64,10 @@ protected:
     region->ArrangerObjectOwner<MidiControlEvent>::add_object (ev_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  utils::ObjectRegistry          registry;
-  std::unique_ptr<MidiRegion>    region;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 registry;
+  std::unique_ptr<MidiRegion>           region;
 };
 
 TEST_F (MidiRegionTest, InitialState)
@@ -90,7 +95,8 @@ TEST_F (MidiRegionTest, Serialization)
   to_json (j, *region);
 
   // Create new region
-  auto new_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+  auto new_region =
+    std::make_unique<MidiRegion> (*tempo_map_wrapper, registry, nullptr);
   from_json (j, *new_region);
 
   // Verify deserialization
@@ -115,7 +121,8 @@ TEST_F (MidiRegionTest, SerializationWithControlEvents)
   nlohmann::json j;
   to_json (j, *region);
 
-  auto new_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+  auto new_region =
+    std::make_unique<MidiRegion> (*tempo_map_wrapper, registry, nullptr);
   from_json (j, *new_region);
 
   EXPECT_EQ (
@@ -146,7 +153,8 @@ TEST_F (MidiRegionTest, SerializationWithBothNotesAndControlEvents)
   nlohmann::json j;
   to_json (j, *region);
 
-  auto new_region = std::make_unique<MidiRegion> (*tempo_map, registry, nullptr);
+  auto new_region =
+    std::make_unique<MidiRegion> (*tempo_map_wrapper, registry, nullptr);
   from_json (j, *new_region);
 
   EXPECT_EQ (

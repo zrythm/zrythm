@@ -28,6 +28,7 @@ protected:
   {
     registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     track_collection_ = std::make_unique<tracks::TrackCollection> (*registry_);
     clip_slot_ = std::make_unique<ClipSlot> (*registry_);
   }
@@ -37,6 +38,7 @@ protected:
     clip_slot_.reset ();
     region_refs_.clear ();
     track_collection_.reset ();
+    tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
     registry_.reset ();
   }
@@ -44,7 +46,7 @@ protected:
   arrangement::MidiRegion * create_midi_region ()
   {
     auto region_ref = utils::create_object<arrangement::MidiRegion> (
-      *registry_, *tempo_map_, *registry_);
+      *registry_, *tempo_map_wrapper_, *registry_);
     auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
 
     // Set basic properties
@@ -61,6 +63,7 @@ protected:
   std::unique_ptr<tracks::TrackCollection>              track_collection_;
   std::unique_ptr<utils::ObjectRegistry>                registry_;
   std::unique_ptr<dsp::TempoMap>                        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>                 tempo_map_wrapper_;
   std::vector<arrangement::ArrangerObjectUuidReference> region_refs_;
 };
 

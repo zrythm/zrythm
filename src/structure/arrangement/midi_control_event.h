@@ -36,7 +36,9 @@ public:
   };
   Q_ENUM (EventType)
 
-  MidiControlEvent (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  MidiControlEvent (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
   Q_DISABLE_COPY_MOVE (MidiControlEvent)
   ~MidiControlEvent () override;
 

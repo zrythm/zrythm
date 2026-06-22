@@ -35,9 +35,9 @@ class MidiRegion final
 
 public:
   MidiRegion (
-    const dsp::TempoMap    &tempo_map,
-    utils::IObjectRegistry &object_registry,
-    QObject *               parent = nullptr);
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    utils::IObjectRegistry     &object_registry,
+    QObject *                   parent = nullptr);
 
   // ========================================================================
   // QML Interface

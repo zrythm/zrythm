@@ -45,7 +45,7 @@ Project::Project (
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       transport_ (
         utils::make_qobject_unique<dsp::Transport> (
-          tempo_map_,
+          *tempo_map_wrapper_,
           dsp::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
               [this] () { return app_settings_.transportReturnToCue (); },
@@ -89,10 +89,9 @@ Project::Project (
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
           structure::arrangement::ArrangerObjectFactory::Dependencies{
-            .tempo_map_ = tempo_map (),
+            .tempo_map_ = *tempo_map_wrapper_,
             .registry_ = project_registry_,
-            .musical_mode_getter_ =
-              [this] () { return app_settings_.musicalMode (); },
+            .app_settings_ = app_settings_,
             .last_timeline_obj_len_provider_ =
               [this] () {
                 return app_settings_.timelineLastCreatedObjectLengthInTicks ();

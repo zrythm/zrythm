@@ -152,7 +152,7 @@ public:
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map (), obj.registry_,
+                  child->get_tempo_map_wrapper (), obj.registry_,
                   child->audio_source_ref ());
               }
             else if constexpr (RegionObject<ChildT>)
@@ -164,13 +164,13 @@ public:
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map (), child->markerType ());
+                  child->get_tempo_map_wrapper (), child->markerType ());
               }
             else
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map ());
+                  child->get_tempo_map_wrapper ());
               }
 
             if (clone_ref)

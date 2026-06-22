@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include <vector>
 
@@ -185,11 +186,31 @@ public:
   TimeSignatureEvent time_signature_at_tick (units::tick_t tick) const;
 
   /**
-   * @brief Get the tempo event active at the given tick.
+   * @brief Get the tempo (BPM) active at the given tick.
    * @param tick Position in ticks
    * @return Tempo (or default 120 BPM if none found)
    */
   double tempo_at_tick (units::tick_t tick) const;
+
+  /**
+   * @brief Read-only view of all tempo events, sorted ascending by tick.
+   *
+   * When empty, the default tempo (set via @ref set_default_bpm, 120 BPM by
+   * default) applies everywhere.
+   */
+  std::span<const TempoEvent> tempo_events () const noexcept { return events_; }
+
+  /**
+   * @brief Read-only view of all time signature events, sorted ascending by
+   * tick.
+   *
+   * When empty, the default time signature (set via @ref
+   * set_default_time_signature, 4/4 by default) applies everywhere.
+   */
+  std::span<const TimeSignatureEvent> time_signature_events () const noexcept
+  {
+    return time_sig_events_;
+  }
 
   /**
    * @brief Convert ticks to musical position (bar:beat:sixteenth:tick)
@@ -226,15 +247,6 @@ public:
   }
 
 private:
-  /// Get all tempo events
-  const std::vector<TempoEvent> &get_tempo_events () const { return events_; }
-
-  /// Get all time signature events
-  const std::vector<TimeSignatureEvent> &get_time_signature_events () const
-  {
-    return time_sig_events_;
-  }
-
   /// Rebuild cumulative time cache
   void rebuild_cumulative_times ();
 

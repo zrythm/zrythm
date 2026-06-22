@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/tempo_object.h"
 
 #include <QSignalSpy>
@@ -21,13 +22,16 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
-    tempo_obj = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+    tempo_obj =
+      std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<TempoObject>   tempo_obj;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<TempoObject>          tempo_obj;
 };
 
 // Test initial state
@@ -120,7 +124,8 @@ TEST_F (TempoObjectTest, Serialization)
   to_json (j, *tempo_obj);
 
   // Create new object
-  auto new_tempo_obj = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+  auto new_tempo_obj =
+    std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_tempo_obj);
 
   // Verify
@@ -138,7 +143,8 @@ TEST_F (TempoObjectTest, Copying)
   tempo_obj->setCurve (TempoObject::CurveType::Linear);
 
   // Create target
-  auto target = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+  auto target =
+    std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *tempo_obj, utils::ObjectCloneType::Snapshot);

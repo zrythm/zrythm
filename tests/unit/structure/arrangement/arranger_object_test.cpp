@@ -20,21 +20,23 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
 
     // Create objects with proper parenting
     obj = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::Marker, *tempo_map,
+      ArrangerObject::Type::Marker, *tempo_map_wrapper,
       MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
     obj2 = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::MidiNote, *tempo_map,
+      ArrangerObject::Type::MidiNote, *tempo_map_wrapper,
       MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>      tempo_map;
-  std::unique_ptr<MockQObject>        parent;
-  std::unique_ptr<MockArrangerObject> obj;
-  std::unique_ptr<MockArrangerObject> obj2;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<MockArrangerObject>   obj;
+  std::unique_ptr<MockArrangerObject>   obj2;
 };
 
 // Test initial state
@@ -151,7 +153,7 @@ TEST_F (ArrangerObjectTest, UuidFunctionality)
   // Test persistence through cloning
   const auto         original_uuid = obj->get_uuid ();
   MockArrangerObject temp (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   init_from (temp, *obj, utils::ObjectCloneType::Snapshot);
   EXPECT_EQ (temp.get_uuid (), original_uuid);
@@ -169,7 +171,7 @@ TEST_F (ArrangerObjectTest, Serialization)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   from_json (j, new_obj);
 
@@ -271,7 +273,7 @@ TEST_F (ArrangerObjectTest, SubcomponentCreation)
 {
   // Test with only bounds feature
   auto bounds_only_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
   EXPECT_NE (bounds_only_obj->bounds (), nullptr);
@@ -283,7 +285,7 @@ TEST_F (ArrangerObjectTest, SubcomponentCreation)
 
   // Test with region features (includes bounds, looping, name, color, mute)
   auto region_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region, parent.get ());
 
   EXPECT_NE (region_obj->bounds (), nullptr);
@@ -295,7 +297,7 @@ TEST_F (ArrangerObjectTest, SubcomponentCreation)
 
   // Test with all features
   auto all_features_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -313,7 +315,7 @@ TEST_F (ArrangerObjectTest, SignalConnections)
 {
   // Create object with all features to test signal connections
   auto signal_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -357,7 +359,7 @@ TEST_F (ArrangerObjectTest, ParentObjectSignals)
 {
   // Create object with all features to test signal connections
   auto signal_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
   // Setup signal spies
@@ -391,7 +393,7 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
 {
   // Create object with all features
   auto full_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -411,7 +413,7 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -443,7 +445,7 @@ TEST_F (ArrangerObjectTest, SerializationWithParentObject)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   from_json (j, new_obj);
 
@@ -460,7 +462,7 @@ TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
 {
   // Create object with all features
   auto source_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -476,7 +478,7 @@ TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
 
   // Create target object
   auto target_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Region
       | MockArrangerObject::ArrangerObjectFeatures::Fading,
     parent.get ());
@@ -506,7 +508,7 @@ TEST_F (ArrangerObjectTest, CopyingWithParentObject)
 
   // Create target object
   auto target_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
   // Copy - parent object should not be copied (runtime only)

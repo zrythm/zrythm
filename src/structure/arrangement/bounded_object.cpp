@@ -9,12 +9,15 @@ namespace zrythm::structure::arrangement
 {
 ArrangerObjectBounds::ArrangerObjectBounds (
   const dsp::AtomicPositionQmlAdapter &start_position,
+  const dsp::TempoMapWrapper          &tempo_map_wrapper,
   QObject *                            parent)
     : QObject (parent), position_ (start_position),
       length_ (start_position.position ().time_conversion_functions ()),
       length_adapter_ (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           length_,
+          tempo_map_wrapper,
+          start_position,
           // Length must be at least 1 tick
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (1.0));
@@ -26,11 +29,20 @@ ArrangerObjectBounds::ArrangerObjectBounds (
 units::sample_t
 ArrangerObjectBounds::get_end_position_samples (bool end_position_inclusive) const
 {
-  return au::round_as<int64_t> (
-           units::samples,
-           length_.time_conversion_functions ().tick_to_samples (
-             units::ticks (position ()->ticks ()) + length_.get_ticks ()))
-         + units::samples ((end_position_inclusive ? 0 : -1));
+  units::sample_t end_samples;
+  if (length_.get_current_mode () == dsp::AtomicPosition::TimeFormat::Absolute)
+    {
+      end_samples =
+        units::samples (position ()->samples ()) + length_.get_samples ();
+    }
+  else
+    {
+      end_samples = au::round_as<int64_t> (
+        units::samples,
+        length_.time_conversion_functions ().tick_to_samples (
+          units::ticks (position ()->ticks ()) + length_.get_ticks ()));
+    }
+  return end_samples + units::samples ((end_position_inclusive ? 0 : -1));
 }
 
 bool

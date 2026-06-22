@@ -5,6 +5,8 @@
 
 #include "dsp/atomic_position.h"
 #include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/bounded_object.h"
 
 #include "helpers/mock_qobject.h"
@@ -25,11 +27,14 @@ protected:
     start_position =
       std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
+    tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, std::nullopt, parent.get ());
+      *start_position, *tempo_map_wrapper, std::nullopt, parent.get ());
 
     // Create bounded object with proper parenting
-    obj = std::make_unique<ArrangerObjectBounds> (*start_position_adapter);
+    obj = std::make_unique<ArrangerObjectBounds> (
+      *start_position_adapter, *tempo_map_wrapper);
 
     // Set position and length
     start_position_adapter->setSamples (1000);
@@ -40,6 +45,8 @@ protected:
                                                  time_conversion_funcs;
   std::unique_ptr<dsp::AtomicPosition>           start_position;
   std::unique_ptr<MockQObject>                   parent;
+  std::unique_ptr<dsp::TempoMap>                 tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper>          tempo_map_wrapper;
   std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
   std::unique_ptr<ArrangerObjectBounds>          obj;
 };
@@ -143,8 +150,8 @@ TEST_F (ArrangerObjectBoundsTest, Serialization)
   // Create new object from serialized data
   dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
   dsp::AtomicPositionQmlAdapter new_start_adapter (
-    new_start_pos, std::nullopt, parent.get ());
-  ArrangerObjectBounds new_obj (new_start_adapter);
+    new_start_pos, *tempo_map_wrapper, std::nullopt, parent.get ());
+  ArrangerObjectBounds new_obj (new_start_adapter, *tempo_map_wrapper);
   from_json (j, new_obj);
 
   // Verify state
@@ -192,6 +199,49 @@ TEST_F (ArrangerObjectBoundsTest, EdgeCases)
   EXPECT_EQ (
     obj->get_end_position_samples (false),
     units::samples (static_cast<int64_t> (1e9 + 1000 - 1)));
+}
+
+// Test that Absolute-mode length is correctly added to position when tempo
+// changes exist before the region on the timeline.
+// Bug: seconds_to_tick(length) integrated tempo from tick 0, not from the
+// region's position, causing end_sample to be too small when tempo increased.
+TEST_F (ArrangerObjectBoundsTest, AbsoluteLengthEndPositionWithTempoChange)
+{
+  // Rebuild with a tempo-map-backed conversion so tempo events matter.
+  tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  // 120 BPM at tick 0, 240 BPM starting at tick 9600 (= 5 seconds at 120 BPM)
+  tempo_map->add_tempo_event (
+    units::ticks (0), 120.0, dsp::TempoMap::CurveType::Constant);
+  tempo_map->add_tempo_event (
+    units::ticks (9600), 240.0, dsp::TempoMap::CurveType::Constant);
+  tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+
+  // Conversion functions that actually reference the tempo map
+  auto tcf =
+    dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map);
+
+  // Position at 6 seconds (after the tempo change at 5 seconds)
+  dsp::AtomicPosition pos (*tcf);
+  pos.set_seconds (units::seconds (6.0));
+  dsp::AtomicPositionQmlAdapter pos_adapter (
+    pos, *tempo_map_wrapper, std::nullopt, parent.get ());
+  start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
+    pos, *tempo_map_wrapper, std::nullopt, parent.get ());
+
+  obj = std::make_unique<ArrangerObjectBounds> (
+    *start_position_adapter, *tempo_map_wrapper);
+
+  // Length = 4 seconds in Absolute mode
+  obj->length ()->setMode (dsp::AtomicPosition::TimeFormat::Absolute);
+  obj->length ()->setSeconds (4.0);
+
+  // Position should be 6 seconds = 264600 samples
+  const auto pos_samples = start_position_adapter->samples ();
+  EXPECT_EQ (pos_samples, 264600);
+
+  // End should be 10 seconds = 441000 samples
+  const auto end_samples = obj->get_end_position_samples (true);
+  EXPECT_EQ (end_samples, units::samples (441000));
 }
 
 } // namespace zrythm::structure::arrangement

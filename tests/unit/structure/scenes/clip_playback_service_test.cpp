@@ -70,7 +70,7 @@ protected:
   arrangement::MidiRegion * create_midi_region ()
   {
     auto region_ref = utils::create_object<arrangement::MidiRegion> (
-      *registry_, *tempo_map_, *registry_);
+      *registry_, *tempo_map_wrapper_, *registry_);
     auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
 
     // Set basic properties

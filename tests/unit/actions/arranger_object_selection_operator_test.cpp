@@ -7,9 +7,12 @@
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/variant_helpers.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include "unit/actions/arranger_object_selection_operator_test.h"
 #include <gmock/gmock.h>
@@ -24,15 +27,19 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
     sample_rate_provider = [] () { return units::sample_rate (44100); };
     bpm_provider = [] () { return 120.0; };
 
+    app_settings = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map,
+        .tempo_map_ = *tempo_map_wrapper,
         .registry_ = registry_,
-        .musical_mode_getter_ = [] () { return true; },
+        .app_settings_ = *app_settings,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -40,17 +47,19 @@ protected:
       sample_rate_provider, bpm_provider);
 
     marker_ref = utils::create_object<structure::arrangement::Marker> (
-      registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Custom);
+      registry_, *tempo_map_wrapper,
+      structure::arrangement::Marker::MarkerType::Custom);
     note_ref = utils::create_object<structure::arrangement::MidiNote> (
-      registry_, *tempo_map);
+      registry_, *tempo_map_wrapper);
     midi_region_ref = utils::create_object<structure::arrangement::MidiRegion> (
-      registry_, *tempo_map, registry_);
+      registry_, *tempo_map_wrapper, registry_);
     audio_region_ref = utils::create_object<structure::arrangement::AudioRegion> (
-      registry_, *tempo_map, registry_, [] () { return true; });
+      registry_, *tempo_map_wrapper, registry_, *app_settings);
     tempo_ref = utils::create_object<structure::arrangement::TempoObject> (
-      registry_, *tempo_map);
-    time_signature_ref = utils::create_object<
-      structure::arrangement::TimeSignatureObject> (registry_, *tempo_map);
+      registry_, *tempo_map_wrapper);
+    time_signature_ref =
+      utils::create_object<structure::arrangement::TimeSignatureObject> (
+        registry_, *tempo_map_wrapper);
 
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (marker_ref);
@@ -201,8 +210,9 @@ protected:
       *undo_stack_, *selection_model_, mock_owner_provider, *factory);
   }
 
-  std::unique_ptr<dsp::TempoMap>                               tempo_map;
-  utils::ObjectRegistry                                        registry_;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 registry_;
   structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
   std::vector<double>              original_positions_;
   std::unique_ptr<undo::UndoStack> undo_stack_;
@@ -215,6 +225,7 @@ protected:
     sample_rate_provider;
   structure::arrangement::ArrangerObjectFactory::BpmProvider     bpm_provider;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
+  std::unique_ptr<utils::AppSettings>                            app_settings;
   structure::arrangement::ArrangerObjectUuidReference note_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference marker_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference audio_region_ref{
@@ -479,7 +490,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
 {
   // Create an automation point for testing
   auto automation_point_ref = utils::create_object<
-    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map_wrapper);
 
   // Set initial value
   automation_point_ref
@@ -595,7 +606,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelt
 {
   // Create an automation point with value 0.9
   auto automation_point_ref = utils::create_object<
-    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map_wrapper);
 
   automation_point_ref
     .get_object_as<structure::arrangement::AutomationPoint> ()
@@ -627,7 +638,7 @@ TEST_F (
 {
   // Create an automation point with value 0.9
   auto automation_point_ref = utils::create_object<
-    structure::arrangement::AutomationPoint> (registry_, *tempo_map);
+    structure::arrangement::AutomationPoint> (registry_, *tempo_map_wrapper);
 
   automation_point_ref
     .get_object_as<structure::arrangement::AutomationPoint> ()
@@ -826,7 +837,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 { // Create a non-deletable marker (start marker)
   auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
-    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
 
   // Clear existing objects and add only non-deletable marker
   test_objects_.get<structure::arrangement::random_access_index> ().clear ();
@@ -854,7 +866,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 {
   // Create a non-deletable marker (start marker)
   auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
-    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
 
   // Add non-deletable marker to existing objects and to mock owner
   test_objects_.get<structure::arrangement::random_access_index> ().push_back (
@@ -1559,7 +1572,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
   // Create a non-deletable marker (start marker) - using same logic as
   // cloneable check
   auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
-    registry_, *tempo_map, structure::arrangement::Marker::MarkerType::Start);
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
 
   // Clear existing objects and add only uncloneable marker
   test_objects_.get<structure::arrangement::random_access_index> ().clear ();

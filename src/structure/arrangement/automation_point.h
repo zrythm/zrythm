@@ -21,7 +21,9 @@ class AutomationPoint final : public ArrangerObject
   QML_UNCREATABLE ("")
 
 public:
-  AutomationPoint (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  AutomationPoint (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
   Q_DISABLE_COPY_MOVE (AutomationPoint)
   ~AutomationPoint () override;
 
