@@ -85,7 +85,6 @@ target_sources(zrythm_utils_lib
       monotonic_time_provider.h
       mpmc_queue.h
       object_pool.h
-      optional_ref.h
       pcg_rand.h
       playback_cache_scheduler.h
       qsettings_backend.h

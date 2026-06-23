@@ -6,8 +6,9 @@
 #include <utility>
 
 #include "plugins/plugin_all.h"
-#include "utils/optional_ref.h"
 #include "utils/registry_utils.h"
+
+#include <type_safe/optional_ref.hpp>
 
 namespace zrythm::plugins
 {
@@ -72,7 +73,7 @@ private:
 
     Builder &with_setting (const PluginConfiguration &setting)
     {
-      setting_ = setting;
+      setting_ = type_safe::opt_ref (setting);
       return *this;
     }
 
@@ -129,7 +130,7 @@ private:
       if (setting_.has_value ())
         {
           obj_ref.template get_object_as<PluginT> ()->set_configuration (
-            *setting_);
+            setting_.value ());
         }
       else
         {
@@ -140,9 +141,9 @@ private:
     }
 
   private:
-    CommonFactoryDependencies                     dependencies_;
-    utils::OptionalRef<const PluginConfiguration> setting_;
-    std::optional<InstantiationFinishOptions>     instantiation_finish_options_;
+    CommonFactoryDependencies                          dependencies_;
+    type_safe::optional_ref<const PluginConfiguration> setting_;
+    std::optional<InstantiationFinishOptions> instantiation_finish_options_;
   };
 
   template <typename PluginT> auto get_builder () const
