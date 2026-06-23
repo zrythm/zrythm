@@ -173,7 +173,7 @@ protected:
     // Create a mock audio source
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
       *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"DummySource");
+      units::sample_rate (44100), units::bpm (120.0), u8"DummySource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);
@@ -214,7 +214,7 @@ protected:
     // Create a mock audio source
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
       *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"ShortSource");
+      units::sample_rate (44100), units::bpm (120.0), u8"ShortSource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);
@@ -264,7 +264,7 @@ protected:
     // Create a mock audio source
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
       *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"SineSource");
+      units::sample_rate (44100), units::bpm (120.0), u8"SineSource");
     auto audio_source_object_ref =
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);

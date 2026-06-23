@@ -31,7 +31,6 @@ public:
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
   using channels_t = uint_fast8_t;
-  using bpm_t = float;
 
 public:
   FileAudioSource (QObject * parent = nullptr);
@@ -63,7 +62,7 @@ public:
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     units::sample_rate_t             project_sample_rate,
-    bpm_t                            source_bpm,
+    units::bpm_t                     source_bpm,
     const utils::Utf8String         &name,
     QObject *                        parent = nullptr);
 
@@ -81,7 +80,7 @@ public:
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
     units::sample_rate_t           project_sample_rate,
-    bpm_t                          source_bpm,
+    units::bpm_t                   source_bpm,
     const utils::Utf8String       &name,
     QObject *                      parent = nullptr)
       : FileAudioSource (
@@ -185,7 +184,7 @@ public:
   void init_from_file (
     const std::filesystem::path &full_path,
     units::sample_rate_t         project_sample_rate,
-    std::optional<bpm_t>         bpm_to_set);
+    std::optional<units::bpm_t>  bpm_to_set);
 
 private:
   friend void init_from (
@@ -216,7 +215,7 @@ private:
    *
    * @see source_bpm()
    */
-  bpm_t bpm_{};
+  units::bpm_t bpm_{};
 
   /**
    * Samplerate of the clip, or samplerate when the clip was imported into the

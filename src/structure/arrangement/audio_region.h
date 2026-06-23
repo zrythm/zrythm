@@ -25,7 +25,7 @@ class AudioRegion final
   Q_PROPERTY (
     AudioRegion::MusicalMode musicalMode READ musicalMode WRITE setMusicalMode
       NOTIFY musicalModeChanged)
-  Q_PROPERTY (float sourceBpm READ sourceBpm CONSTANT)
+  Q_PROPERTY (double sourceBpm READ sourceBpm CONSTANT)
   Q_PROPERTY (
     bool effectivelyInMusicalMode READ effectivelyInMusicalMode NOTIFY
       effectivelyInMusicalModeChanged)
@@ -69,7 +69,7 @@ public:
 
   MusicalMode   musicalMode () const { return musical_mode_; }
   bool          effectivelyInMusicalMode () const;
-  float         sourceBpm () const;
+  double        sourceBpm () const;
   void          setMusicalMode (MusicalMode musical_mode);
   Q_SIGNAL void musicalModeChanged (MusicalMode musical_mode);
   Q_SIGNAL void effectivelyInMusicalModeChanged ();

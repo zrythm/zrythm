@@ -23,7 +23,7 @@ compute_grid_lines (
   result.clear ();
 
   constexpr float ticks_per_sixteenth =
-    static_cast<float> (dsp::TempoMap::get_ppq ()) / 4.0f;
+    static_cast<float> (dsp::TempoMap::get_ppq ().in (units::ticks)) / 4.0f;
   const float px_per_sixteenth = ticks_per_sixteenth * px_per_tick;
   const bool  show_sixteenths = px_per_sixteenth > detail_measure_px_threshold;
 

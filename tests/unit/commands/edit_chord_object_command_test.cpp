@@ -34,7 +34,8 @@ protected:
         .automation_curve_algorithm_provider_ =
           [] () { return dsp::CurveOptions::Algorithm::Exponent; },
       },
-      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+      [] () { return units::sample_rate (44100); },
+      [] () { return units::bpm (120.0); });
 
     // Create a chord object with C Major.
     auto ref =

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <au/au.hh>
+#include <au/units/minutes.hh>
 #include <fmt/format.h>
 
 namespace zrythm::units
@@ -62,12 +63,27 @@ using channel_count_t = au::Quantity<ChannelCount, uint8_t>;
 constexpr tick_t PPQ = ticks (960);
 
 // Define quarter_note unit as 960 ticks using unit expression
-struct QuarterNote : decltype (Tick{} * au::mag<960> ())
+struct QuarterNote : decltype (Tick{} * au::mag<PPQ.in (units::ticks)> ())
 {
   static constexpr const char label[] = "quarterNote";
 };
 constexpr auto quarter_note = au::SingularNameFor<QuarterNote>{};
 constexpr auto quarter_notes = au::QuantityMaker<QuarterNote>{};
+
+// Define BPM as quarter notes per minute (compound unit in TickDim × TimeDim⁻¹).
+//
+// In MIDI and virtually all DAWs, "BPM" means quarter notes per minute,
+// independent of time signature. The time signature's denominator only affects
+// the bar:beat grid (e.g. 4/4 → 4 quarter-note beats per bar, 6/8 → 2
+// dotted-quarter beats per bar) but never changes the wall-clock tempo. So a
+// single "quarter note" beat unit covers all practical cases without needing a
+// separate beat_type parameter.
+struct BPM : decltype (QuarterNote{} / au::Minutes{})
+{
+  static constexpr const char label[] = "bpm";
+};
+constexpr auto bpm = au::QuantityMaker<BPM>{};
+using bpm_t = au::QuantityD<BPM>;
 
 // Define sample rate as a compound unit (samples per second)
 using SampleRate = decltype (Sample{} / au::Seconds{});

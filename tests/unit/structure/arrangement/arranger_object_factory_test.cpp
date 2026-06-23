@@ -22,7 +22,7 @@ protected:
 
     // Setup providers
     sample_rate_provider = [] () { return units::sample_rate (44100); };
-    bpm_provider = [] () { return 120.0; };
+    bpm_provider = [] () { return units::bpm (120.0); };
 
     // Create factory
     app_settings = std::make_unique<utils::AppSettings> (
@@ -177,7 +177,7 @@ TEST_F (ArrangerObjectFactoryTest, ConvenienceMethods)
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
   auto source_ref = utils::create_object<dsp::FileAudioSource> (
     object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-    units::sample_rate (44100), 120.0, u8"TestSource");
+    units::sample_rate (44100), units::bpm (120.0), u8"TestSource");
 
   const double start_ticks = 100.0;
   auto         audio_region_ref = factory->create_audio_region_with_clip (
@@ -338,7 +338,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioRegion)
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
   auto source_ref = utils::create_object<dsp::FileAudioSource> (
     object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-    units::sample_rate (44100), 120.0, u8"TestSource");
+    units::sample_rate (44100), units::bpm (120.0), u8"TestSource");
 
   // Create audio region
   auto original_audio_region_ref =
@@ -416,7 +416,7 @@ TEST_F (ArrangerObjectFactoryTest, CloneNewObjectIdentityAudioSourceObject)
   auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
   auto source_ref = utils::create_object<dsp::FileAudioSource> (
     object_registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-    units::sample_rate (44100), 120.0, u8"TestSource");
+    units::sample_rate (44100), units::bpm (120.0), u8"TestSource");
 
   auto original_audio_source_obj_ref =
     factory->get_builder<AudioSourceObject> ().build_in_registry ();

@@ -21,7 +21,7 @@ protected:
   {
     tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
     tempo_map_->add_tempo_event (
-      units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+      units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
     tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
     auto tcf =
@@ -61,7 +61,7 @@ TEST_F (ContentTimeWarpTest, ProjectModeIdentity)
 
 TEST_F (ContentTimeWarpTest, ProjectModeWithSourceBpmGeneratesIdentityPoints)
 {
-  warp_->configure_as_project (120.0);
+  warp_->configure_as_project (units::bpm (120.0));
   // Identity warp points generated (not empty) for to_time_warp_map
   // compatibility.
   EXPECT_EQ (warp_->warpPoints ().size (), 2u);
@@ -70,7 +70,7 @@ TEST_F (ContentTimeWarpTest, ProjectModeWithSourceBpmGeneratesIdentityPoints)
 
 TEST_F (ContentTimeWarpTest, SourceModeSameBpm)
 {
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   EXPECT_NEAR (
     warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks),
     7680.0, 5.0);
@@ -80,7 +80,7 @@ TEST_F (ContentTimeWarpTest, SourceModeDoubleTempo)
 {
   tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (44100.0));
   tempo_map_->add_tempo_event (
-    units::ticks (0), 240.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (240.0), TempoMap::CurveType::Constant);
   tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
   auto tcf =
@@ -95,7 +95,7 @@ TEST_F (ContentTimeWarpTest, SourceModeDoubleTempo)
     *len_, *tempo_map_wrapper_, std::nullopt);
   warp_ = std::make_unique<ContentTimeWarp> (
     *tempo_map_wrapper_, pos_adapter_.get (), len_adapter_.get ());
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
 
   EXPECT_NEAR (
     warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks),
@@ -104,7 +104,7 @@ TEST_F (ContentTimeWarpTest, SourceModeDoubleTempo)
 
 TEST_F (ContentTimeWarpTest, ContentToTimelineSamplesAbsolute)
 {
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   EXPECT_NEAR (
     warp_->content_to_timeline_samples (units::ticks (7680.0))
       .in (units::samples),
@@ -114,7 +114,7 @@ TEST_F (ContentTimeWarpTest, ContentToTimelineSamplesAbsolute)
 TEST_F (ContentTimeWarpTest, SourceModeWithNonZeroPosition)
 {
   pos_->set_ticks (units::ticks (1920.0));
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   // pos=1920, source BPM=120, project BPM=120 -> identity delta
   // content_to_timeline_ticks(7680) = 1920 + 7680 = 9600
   EXPECT_NEAR (
@@ -124,7 +124,7 @@ TEST_F (ContentTimeWarpTest, SourceModeWithNonZeroPosition)
 
 TEST_F (ContentTimeWarpTest, TempoChangeTriggersRebuild)
 {
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   const auto before =
     warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks);
 
@@ -152,7 +152,7 @@ TEST_F (ContentTimeWarpTest, ProjectModeIgnoresTempoChange)
 
 TEST_F (ContentTimeWarpTest, LengthChangeTriggersRebuild)
 {
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   EXPECT_FALSE (warp_->warpPoints ().empty ());
   len_adapter_->setTicks (3840.0);
   EXPECT_FALSE (warp_->warpPoints ().empty ());
@@ -193,7 +193,7 @@ TEST_F (ContentTimeWarpTest, LinearRampProducesDenseWarpPoints)
   tempo_map_wrapper_->addTempoEvent (
     1920, 180.0, TempoEventWrapper::CurveType::Linear);
   len_adapter_->setTicks (7680.0);
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
 
   // With a Linear segment from tick 1920 to the next boundary,
   // rebuild() should produce dense warp points (~50ms cadence).
@@ -212,14 +212,14 @@ TEST_F (ContentTimeWarpTest, IsIdentityProjectMode)
 
 TEST_F (ContentTimeWarpTest, IsIdentitySameBpm)
 {
-  warp_->configure_as_source (120.0);
+  warp_->configure_as_source (units::bpm (120.0));
   // Source BPM == project BPM (120), constant tempo -> identity
   EXPECT_TRUE (warp_->is_identity ());
 }
 
 TEST_F (ContentTimeWarpTest, IsNotIdentityDifferentBpm)
 {
-  warp_->configure_as_source (60.0);
+  warp_->configure_as_source (units::bpm (60.0));
   // Source BPM 60 != project BPM 120 -> stretched
   EXPECT_FALSE (warp_->is_identity ());
 }
@@ -230,7 +230,7 @@ TEST_F (ContentTimeWarpTest, IsNotIdentityDifferentBpm)
 // invalidation (already handled by ArrangerObject's positionChanged).
 TEST_F (ContentTimeWarpTest, ProjectModeDoesNotEmitMapChangedOnPositionMove)
 {
-  warp_->configure_as_project (120.0);
+  warp_->configure_as_project (units::bpm (120.0));
   QSignalSpy spy (warp_.get (), &ContentTimeWarp::mapChanged);
   pos_adapter_->setTicks (1920.0);
   EXPECT_EQ (spy.count (), 0);
@@ -245,7 +245,7 @@ TEST_F (ContentTimeWarpTest, WarpedModeUsesUserMarkers)
     { units::ticks (0.0),    units::ticks (0.0)    },
     { units::ticks (3840.0), units::ticks (7680.0) },
   };
-  warp_->configure_as_warped (120.0, markers);
+  warp_->configure_as_warped (units::bpm (120.0), markers);
 
   // Terminal point at length=7680 with 2x slope: delta = 7680 + (7680-3840)*2 =
   // 15360
@@ -261,7 +261,7 @@ TEST_F (ContentTimeWarpTest, WarpedModePrependsOriginIfMissing)
   std::vector<ContentTimeWarp::WarpPoint> markers = {
     { units::ticks (1000.0), units::ticks (2000.0) },
   };
-  warp_->configure_as_warped (120.0, markers);
+  warp_->configure_as_warped (units::bpm (120.0), markers);
 
   const auto wp = warp_->warpPoints ();
   EXPECT_NEAR (wp.front ().content_ticks.in (units::ticks), 0.0, 0.5);
@@ -275,7 +275,7 @@ TEST_F (ContentTimeWarpTest, WarpedModeAppendsTerminalAtLength)
     { units::ticks (0.0),    units::ticks (0.0)    },
     { units::ticks (1000.0), units::ticks (2000.0) },
   };
-  warp_->configure_as_warped (120.0, markers);
+  warp_->configure_as_warped (units::bpm (120.0), markers);
 
   const auto wp = warp_->warpPoints ();
   EXPECT_NEAR (wp.back ().content_ticks.in (units::ticks), 7680.0, 0.5);
@@ -285,7 +285,7 @@ TEST_F (ContentTimeWarpTest, WarpedModeAppendsTerminalAtLength)
 
 TEST_F (ContentTimeWarpTest, WarpedModeEmptyMarkersIsIdentity)
 {
-  warp_->configure_as_warped (120.0, {});
+  warp_->configure_as_warped (units::bpm (120.0), {});
   const auto wp = warp_->warpPoints ();
   // Only {0,0} and {length, length}
   EXPECT_EQ (wp.size (), 2u);

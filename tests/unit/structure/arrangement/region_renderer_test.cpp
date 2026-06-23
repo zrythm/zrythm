@@ -144,7 +144,7 @@ protected:
 
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
       registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"SineTestSource");
+      units::sample_rate (44100), units::bpm (120.0), u8"SineTestSource");
 
     return utils::create_object<AudioSourceObject> (
       registry, *tempo_map_wrapper, registry, source_ref);
@@ -156,11 +156,11 @@ protected:
   /// stretched vs. truncated output can be distinguished by checking the
   /// amplitude at known positions.
   std::unique_ptr<AudioRegion> create_musical_test_region (
-    float   source_bpm = 100.f,
-    int64_t frames = 44100,
-    int     channels = 2,
-    double  position_ticks = 0.0,
-    bool    amplitude_ramp = false)
+    units::bpm_t source_bpm = units::bpm (100.0),
+    int64_t      frames = 44100,
+    int          channels = 2,
+    double       position_ticks = 0.0,
+    bool         amplitude_ramp = false)
   {
     utils::audio::AudioBuffer src (channels, static_cast<int> (frames));
     for (int c = 0; c < channels; ++c)
@@ -1088,7 +1088,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchesToTempo)
     }
   auto source_ref = utils::create_object<dsp::FileAudioSource> (
     registry, src, utils::audio::BitDepth::BIT_DEPTH_32,
-    units::sample_rate (44100), 100.f, u8"src100");
+    units::sample_rate (44100), units::bpm (100.0), u8"src100");
   auto aso_ref = utils::create_object<AudioSourceObject> (
     registry, *tempo_map_wrapper, registry, source_ref);
 
@@ -1160,7 +1160,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionRangeMatchesFullSlice)
 // the full region offline then slices, so the two must agree sample-for-sample.
 TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeRangeMatchesFullSlice)
 {
-  auto region = create_musical_test_region (/*source_bpm=*/100.f);
+  auto region = create_musical_test_region (units::bpm (100.0));
 
   // Full render: 1600 musical ticks @ 120 BPM = 36750 samples.
   juce::AudioSampleBuffer full_buf;
@@ -1204,7 +1204,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeRangeMatchesFullSlice
 // portion (not silence).
 TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeWithLooping)
 {
-  auto region = create_musical_test_region (100.f);
+  auto region = create_musical_test_region (units::bpm (100.0));
   // Default length after set_source: 1600 musical ticks (full clip).
   // Extend to 2400 ticks with a loop at [800, 1200] ticks.
   region->bounds ()->length ()->setTicks (2400); // tracking resets loop pts
@@ -1241,7 +1241,8 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeNonZeroPosition)
 {
   // Region at bar 2 (1920 ticks @ 120 BPM).
   constexpr double kPosTicks = 1920.0;
-  auto region = create_musical_test_region (100.f, 44100, 2, kPosTicks);
+  auto             region =
+    create_musical_test_region (units::bpm (100.0), 44100, 2, kPosTicks);
 
   // Range covers [0, 3840] ticks (2 bars).
   juce::AudioSampleBuffer buf;
@@ -1270,7 +1271,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeNonZeroPosition)
 // stretched (output) dimensions, not the native (pre-stretch) dimensions.
 TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeFades)
 {
-  auto region = create_musical_test_region (100.f);
+  auto region = create_musical_test_region (units::bpm (100.0));
   region->fadeRange ()->startOffset ()->setSamples (500);
   region->fadeRange ()->endOffset ()->setSamples (500);
 
@@ -1298,7 +1299,7 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeFades)
 // the source sine, so we verify sample-level correctness.
 TEST_F (RegionRendererTest, SerializeAudioRegionUnknownSourceBpm)
 {
-  auto region = create_musical_test_region (/*source_bpm=*/0.f);
+  auto region = create_musical_test_region (units::bpm (0.0));
 
   juce::AudioSampleBuffer buf;
   RegionRenderer::serialize_to_buffer (*region, buf);
@@ -1324,7 +1325,8 @@ TEST_F (RegionRendererTest, SerializeAudioRegionUnknownSourceBpm)
 // Mono source + musical mode: stretch must handle mono input correctly.
 TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeMono)
 {
-  auto region = create_musical_test_region (100.f, 44100, /*channels=*/1);
+  auto region =
+    create_musical_test_region (units::bpm (100.0), 44100, /*channels=*/1);
 
   juce::AudioSampleBuffer buf;
   RegionRenderer::serialize_to_buffer (*region, buf);
@@ -1345,8 +1347,8 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeMono)
 TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchContent)
 {
   // 441 Hz sine with linear amplitude ramp, source_bpm 100 (≠ project 120).
-  auto region =
-    create_musical_test_region (100.f, 44100, 2, 0.0, /*amplitude_ramp=*/true);
+  auto region = create_musical_test_region (
+    units::bpm (100.0), 44100, 2, 0.0, /*amplitude_ramp=*/true);
 
   juce::AudioSampleBuffer buf;
   RegionRenderer::serialize_to_buffer (*region, buf);
@@ -1388,7 +1390,8 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchContent)
 // waveform fast-path relies on.
 TEST_F (RegionRendererTest, SubRangeMatchesFullRenderAtNonZeroPosition)
 {
-  auto region = create_musical_test_region (120.f, 44100, 2, 1920.0);
+  auto region =
+    create_musical_test_region (units::bpm (120.0), 44100, 2, 1920.0);
   // Disable object fades so only the 10-sample builtin edges differ.
   region->fadeRange ()->startOffset ()->setSamples (0);
   region->fadeRange ()->endOffset ()->setSamples (0);
@@ -1431,10 +1434,11 @@ TEST_F (RegionRendererTest, SubRangeWithTempoChangesAtNonZeroPosition)
 {
   // Add a tempo change in the middle of the timeline.
   tempo_map->add_tempo_event (
-    units::ticks (3840), 240.0, dsp::TempoMap::CurveType::Constant);
+    units::ticks (3840), units::bpm (240.0), dsp::TempoMap::CurveType::Constant);
 
   // Region at tick 1920, source BPM 120, 1 second of audio.
-  auto region = create_musical_test_region (120.f, 44100, 2, 1920.0);
+  auto region =
+    create_musical_test_region (units::bpm (120.0), 44100, 2, 1920.0);
   region->fadeRange ()->startOffset ()->setSamples (0);
   region->fadeRange ()->endOffset ()->setSamples (0);
 
@@ -1472,7 +1476,8 @@ TEST_F (RegionRendererTest, SubRangeWithTempoChangesAtNonZeroPosition)
 TEST_F (RegionRendererTest, SubRangeGrownTailMatchesFullRender)
 {
   // Region at tick 9600 (well past tick 0), source BPM 120, 1s audio.
-  auto region = create_musical_test_region (120.f, 44100, 2, 9600.0);
+  auto region =
+    create_musical_test_region (units::bpm (120.0), 44100, 2, 9600.0);
   region->fadeRange ()->startOffset ()->setSamples (0);
   region->fadeRange ()->endOffset ()->setSamples (0);
 

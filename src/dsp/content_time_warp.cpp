@@ -42,7 +42,7 @@ ContentTimeWarp::content_to_timeline_samples (
 }
 
 void
-ContentTimeWarp::configure_as_project (double source_bpm)
+ContentTimeWarp::configure_as_project (units::bpm_t source_bpm)
 {
   mode_ = Mode::Project;
   source_bpm_ = source_bpm;
@@ -63,7 +63,7 @@ ContentTimeWarp::configure_as_project (double source_bpm)
 }
 
 void
-ContentTimeWarp::configure_as_source (double source_bpm)
+ContentTimeWarp::configure_as_source (units::bpm_t source_bpm)
 {
   mode_ = Mode::Source;
   source_bpm_ = source_bpm;
@@ -75,7 +75,7 @@ ContentTimeWarp::configure_as_source (double source_bpm)
 
 void
 ContentTimeWarp::configure_as_warped (
-  double                     source_bpm,
+  units::bpm_t               source_bpm,
   std::span<const WarpPoint> user_markers)
 {
   mode_ = Mode::Warped;
@@ -140,7 +140,7 @@ ContentTimeWarp::rebuild ()
 
   if (mode_ == Mode::Project)
     {
-      if (source_bpm_ > 0.0)
+      if (source_bpm_ > units::bpm (0.0))
         {
           // Identity warp: content ticks map 1:1 to delta ticks.
           // to_time_warp_map will derive the sample-space stretch from these
@@ -199,11 +199,10 @@ ContentTimeWarp::rebuild ()
       return;
     }
 
-  if (source_bpm_ <= 0.0)
+  if (source_bpm_ <= units::bpm (0.0))
     return;
 
   const auto &tempo_map = tempo_map_wrapper_.get_tempo_map ();
-  const auto  factor = (source_bpm_ / units::seconds (60.0)) * units::PPQ;
 
   const auto region_start_ticks = region_position_->position ().get_ticks ();
   const auto region_start_seconds =
@@ -212,7 +211,7 @@ ContentTimeWarp::rebuild ()
   // Helper: content ticks -> timeline delta ticks via seconds.
   auto delta_for_content =
     [&] (units::precise_tick_t ct) -> units::precise_tick_t {
-    const auto secs = region_start_seconds + ct / factor;
+    const auto secs = region_start_seconds + ct / source_bpm_;
     return tempo_map.seconds_to_tick (secs) - region_start_ticks;
   };
 
@@ -228,7 +227,7 @@ ContentTimeWarp::rebuild ()
   // (e.g., arbitrary warp markers), WarpPoint can be extended with a per-segment
   // curve tag and warp_lookup() upgraded to interpolate analytically.
   constexpr auto k_dense_cadence_secs = units::seconds (0.05);
-  const auto     dense_stride = k_dense_cadence_secs * factor;
+  const auto     dense_stride = k_dense_cadence_secs * source_bpm_;
 
   // Build segment boundaries with curve types.
   struct SegBoundary
@@ -256,7 +255,7 @@ ContentTimeWarp::rebuild ()
         continue;
 
       const auto ev_seconds = tempo_map.tick_to_seconds (event.tick);
-      const auto ct = (ev_seconds - region_start_seconds) * factor;
+      const auto ct = (ev_seconds - region_start_seconds) * source_bpm_;
       if (ct >= length_ticks)
         break;
 

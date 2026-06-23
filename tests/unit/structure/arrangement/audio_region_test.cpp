@@ -45,7 +45,7 @@ protected:
 
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
       registry, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"DummySource");
+      units::sample_rate (44100), units::bpm (120.0), u8"DummySource");
     auto audio_source_object_ref = utils::create_object<AudioSourceObject> (
       registry, *tempo_map_wrapper, registry, source_ref);
 
@@ -111,7 +111,7 @@ TEST_F (AudioRegionTest, MusicalModeProperty)
 TEST_F (AudioRegionTest, SourceBpmProperty)
 {
   // Source was created with 120 BPM in SetUp()
-  EXPECT_FLOAT_EQ (region->sourceBpm (), 120.f);
+  EXPECT_DOUBLE_EQ (region->sourceBpm (), 120.0);
 }
 
 // Test gain property
@@ -226,7 +226,7 @@ protected:
   /// Builds a full-clip AudioRegion whose clip has the given source BPM. The
   /// length is whatever init_length_from_clip() sets (not overridden), so the
   /// musical-mode format behaviour is observable.
-  std::unique_ptr<AudioRegion> make_region (float source_bpm)
+  std::unique_ptr<AudioRegion> make_region (units::bpm_t source_bpm)
   {
     utils::audio::AudioBuffer buf (2, static_cast<int> (kFrames));
     auto source_ref = utils::create_object<dsp::FileAudioSource> (
@@ -253,7 +253,7 @@ protected:
 TEST_F (AudioRegionMusicalModeLengthTest, MusicalOnUsesSourceBpmLength)
 {
   app_settings->set_musicalMode (true);
-  auto         region = make_region (100.f);
+  auto         region = make_region (units::bpm (100.0));
   const auto * len = region->bounds ()->length ();
   EXPECT_EQ (len->mode (), dsp::AtomicPosition::TimeFormat::Musical);
   EXPECT_NEAR (len->ticks (), 1600.0, 1.0);
@@ -265,7 +265,7 @@ TEST_F (AudioRegionMusicalModeLengthTest, MusicalOnUsesSourceBpmLength)
 TEST_F (AudioRegionMusicalModeLengthTest, ToggleRoundTripHasNoDrift)
 {
   app_settings->set_musicalMode (true);
-  auto region = make_region (100.f);
+  auto region = make_region (units::bpm (100.0));
   region->setMusicalMode (AudioRegion::MusicalMode::On);
   const double ticks_before = region->bounds ()->length ()->ticks ();
   ASSERT_NEAR (ticks_before, 1600.0, 1.0);
@@ -284,7 +284,7 @@ TEST_F (AudioRegionMusicalModeLengthTest, ToggleRoundTripHasNoDrift)
 TEST_F (AudioRegionMusicalModeLengthTest, UnknownSourceBpmFallsBackToProjectTempo)
 {
   app_settings->set_musicalMode (true);
-  auto region = make_region (0.f);
+  auto region = make_region (units::bpm (0.0));
   EXPECT_EQ (
     region->bounds ()->length ()->mode (),
     dsp::AtomicPosition::TimeFormat::Musical);
@@ -297,7 +297,7 @@ TEST_F (AudioRegionMusicalModeLengthTest, UnknownSourceBpmFallsBackToProjectTemp
 TEST_F (AudioRegionMusicalModeLengthTest, FullClipLoopEndAlwaysMusical)
 {
   app_settings->set_musicalMode (true);
-  auto   region = make_region (100.f);
+  auto   region = make_region (units::bpm (100.0));
   auto * loop_end = region->loopRange ()->loopEndPosition ();
   EXPECT_EQ (loop_end->mode (), dsp::AtomicPosition::TimeFormat::Musical);
   EXPECT_NEAR (loop_end->ticks (), 1600.0, 1.0);
@@ -312,7 +312,7 @@ TEST_F (AudioRegionMusicalModeLengthTest, FullClipLoopEndAlwaysMusical)
 TEST_F (AudioRegionMusicalModeLengthTest, DetachedLoopPointsPreservedOnToggle)
 {
   app_settings->set_musicalMode (true);
-  auto region = make_region (100.f);
+  auto region = make_region (units::bpm (100.0));
 
   // Detach loop points from the bounds and set a custom loop.
   region->loopRange ()->setTrackBounds (false);

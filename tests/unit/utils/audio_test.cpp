@@ -60,7 +60,7 @@ TEST (AudioTest, FramesSilent)
 TEST (AudioTest, BpmDetection)
 {
   std::vector<float> candidates;
-  float              bpm = detect_bpm (nullptr, 0, 44100, candidates);
+  double             bpm = detect_bpm (nullptr, 0, 44100, candidates);
   EXPECT_GE (bpm, 0.f);
 }
 #endif

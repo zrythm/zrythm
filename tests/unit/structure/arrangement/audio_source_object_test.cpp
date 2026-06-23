@@ -29,8 +29,8 @@ protected:
     // Create & register a dummy audio source
     source_ref = utils::create_object<dsp::FileAudioSource> (
       registry, utils::audio::AudioBuffer (2, 512),
-      utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
-      u8"Test Audio Source");
+      utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+      units::bpm (120.0), u8"Test Audio Source");
 
     // Create audio source object
     source_object = std::make_unique<AudioSourceObject> (
@@ -65,8 +65,8 @@ TEST_F (AudioSourceObjectTest, Serialization)
 
   auto dummy_source_ref = utils::create_object<dsp::FileAudioSource> (
     registry, utils::audio::AudioBuffer (2, 16),
-    utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
-    u8"Unused dummy Audio Source");
+    utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+    units::bpm (120.0), u8"Unused dummy Audio Source");
 
   // Create new object
   auto new_source_object = std::make_unique<AudioSourceObject> (

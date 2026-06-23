@@ -34,7 +34,8 @@ TEST_F (TempoWarpMapTest, IdentityWarpPointsProduceIdentityMap)
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), 120.0, units::samples (kFrames));
+    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
   EXPECT_EQ (twm.source_length, units::samples (kFrames));
@@ -57,7 +58,8 @@ TEST_F (TempoWarpMapTest, SourceBpmDoubleProducesDoubleOutput)
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), 240.0, units::samples (kFrames));
+    warp_points, *map_, units::ticks (0.0), units::bpm (240.0),
+    units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
   EXPECT_EQ (twm.output_length, units::samples (2 * kFrames));
@@ -77,7 +79,8 @@ TEST_F (TempoWarpMapTest, TempoDerivedWarpProducesIdentitySamples)
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), 120.0, units::samples (kFrames));
+    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
   bool all_identity = std::ranges::all_of (twm.anchors, [] (const WarpAnchor &a) {
@@ -96,7 +99,8 @@ TEST_F (TempoWarpMapTest, MultipleWarpPointsMapToOneToOne)
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), 120.0, units::samples (44100));
+    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    units::samples (44100));
 
   ASSERT_TRUE (twm.is_valid ());
   EXPECT_EQ (twm.anchors.size (), 3u);
@@ -113,7 +117,7 @@ TEST_F (TempoWarpMapTest, NonZeroRegionStartPreservesInvariants)
 
   const auto        start = units::ticks (1920.0); // region starts at bar 2
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, start, 120.0, units::samples (kFrames));
+    warp_points, *map_, start, units::bpm (120.0), units::samples (kFrames));
 
   EXPECT_TRUE (twm.is_valid ());
   // Output frames are relative to region start (subtract region start samples).
@@ -128,11 +132,11 @@ TEST_F (TempoWarpMapTest, NonPositiveSourceBpmThrows)
   };
   EXPECT_THROW (
     (void) to_time_warp_map (
-      wp, *map_, units::ticks (0.0), 0.0, units::samples (100)),
+      wp, *map_, units::ticks (0.0), units::bpm (0.0), units::samples (100)),
     std::invalid_argument);
   EXPECT_THROW (
     (void) to_time_warp_map (
-      wp, *map_, units::ticks (0.0), -10.0, units::samples (100)),
+      wp, *map_, units::ticks (0.0), units::bpm (-10.0), units::samples (100)),
     std::invalid_argument);
 }
 
@@ -179,7 +183,7 @@ TEST_F (TempoWarpMapTest, TerminalAnchorPreservedOnOutputTie)
   };
   constexpr int64_t kSourceFrames = 4594; // source_frame_for(200 ticks)
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), 120.0,
+    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
     units::samples (kSourceFrames));
 
   // The terminal anchor must survive and map source_length -> output_length.

@@ -16,7 +16,7 @@ class ArrangerObjectFactory
 {
 public:
   using SampleRateProvider = std::function<units::sample_rate_t ()>;
-  using BpmProvider = std::function<float ()>;
+  using BpmProvider = std::function<units::bpm_t ()>;
 
   struct Dependencies
   {
@@ -169,7 +169,7 @@ public:
           auto file_audio_source = utils::create_object<dsp::FileAudioSource> (
             dependencies_.registry_, dummy_buf,
             utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
-            120, u8"dummy");
+            units::bpm (120.0), u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.registry_,
             file_audio_source);

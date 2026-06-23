@@ -106,7 +106,8 @@ TEST_F (TempoMapWrapperTest, SampleRateChanges)
   wrapper_->setSampleRate (48000.0);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_DOUBLE_EQ (wrapper_->sampleRate (), 48000.0);
-  EXPECT_DOUBLE_EQ (tempo_map_->get_sample_rate (), 48000.0);
+  EXPECT_DOUBLE_EQ (
+    tempo_map_->get_sample_rate ().in (units::sample_rate), 48000.0);
 
   // No signal on same value
   wrapper_->setSampleRate (48000.0);
@@ -145,7 +146,7 @@ TEST_F (TempoMapWrapperTest, UnderlyingChanges)
   // Directly modify underlying map
   tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (1920), 140.0, TempoMap::CurveType::Constant);
+    units::ticks (1920), units::bpm (140.0), TempoMap::CurveType::Constant);
 
   // Manually trigger rebuild (normally done via signals in real app)
   wrapper_->rebuildWrappers ();

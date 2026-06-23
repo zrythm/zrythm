@@ -82,20 +82,20 @@ AudioRegion::update_warp_configuration ()
   auto * warp = contentWarp ();
   if (warp == nullptr)
     return;
-  const auto bpm = sourceBpm ();
-  if (effectivelyInMusicalMode () || bpm <= 0.f)
+  const auto bpm = units::bpm (static_cast<double> (sourceBpm ()));
+  if (effectivelyInMusicalMode () || bpm <= units::bpm (0.0))
     warp->configure_as_project (bpm);
   else
     warp->configure_as_source (bpm);
 }
 
-float
+double
 AudioRegion::sourceBpm () const
 {
   const auto &children = get_children_view ();
   if (children.empty ())
-    return 0.f;
-  return children.front ()->file_audio_source ().source_bpm ();
+    return 0.0;
+  return children.front ()->file_audio_source ().source_bpm ().in (units::bpm);
 }
 
 void
@@ -108,16 +108,16 @@ AudioRegion::init_length_from_clip ()
   const auto sr = get_tempo_map ().get_sample_rate ();
   auto *     len = bounds ()->length ();
 
-  const double bpm =
-    source_bpm > 0.f
-      ? static_cast<double> (source_bpm)
+  const auto bpm =
+    source_bpm > units::bpm (0.0)
+      ? source_bpm
       : get_tempo_map ().tempo_at_tick (
           units::ticks (static_cast<int64_t> (position ()->ticks ())));
-  const double musical_ticks =
-    (static_cast<double> (num_frames) / sr) * (bpm / 60.0)
-    * dsp::TempoMap::get_ppq ();
+  const auto musical_ticks =
+    ((units::samples (static_cast<double> (num_frames)) / sr) * bpm)
+      .as (units::ticks);
   len->setMode (dsp::AtomicPosition::TimeFormat::Musical);
-  len->setTicks (musical_ticks);
+  len->setTicks (musical_ticks.in (units::ticks));
 }
 
 void

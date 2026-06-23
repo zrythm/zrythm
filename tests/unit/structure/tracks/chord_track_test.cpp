@@ -139,7 +139,7 @@ protected:
     chord_track_ = std::make_unique<ChordTrack> (*final_deps_);
 
     sample_rate_provider_ = [] () { return units::sample_rate (44100); };
-    bpm_provider_ = [] () { return 120.0; };
+    bpm_provider_ = [] () { return units::bpm (120.0); };
 
     app_settings_ = std::make_unique<utils::AppSettings> (
       std::make_unique<test_helpers::InMemorySettingsBackend> ());

@@ -206,9 +206,9 @@ TEST_F (ArrangerObjectBoundsTest, EndPositionSpansTempoChange)
 {
   tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
   tempo_map->add_tempo_event (
-    units::ticks (0), 120.0, dsp::TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), dsp::TempoMap::CurveType::Constant);
   tempo_map->add_tempo_event (
-    units::ticks (9600), 240.0, dsp::TempoMap::CurveType::Constant);
+    units::ticks (9600), units::bpm (240.0), dsp::TempoMap::CurveType::Constant);
   tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
   auto tcf =

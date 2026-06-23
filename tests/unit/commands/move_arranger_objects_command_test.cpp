@@ -35,7 +35,8 @@ protected:
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
           [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
-      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+      [] () { return units::sample_rate (44100); },
+      [] () { return units::bpm (120.0); });
 
     // Create test objects
     auto marker_builder =

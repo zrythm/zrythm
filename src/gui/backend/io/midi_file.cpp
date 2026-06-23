@@ -220,13 +220,14 @@ MidiFile::export_midi_region_to_midi_file (
   sequence.addEvent (
     juce::MidiMessage::tempoMetaEvent (
       60'000'000
-      / static_cast<int> (tempo_map.tempo_at_tick (units::ticks (0)))));
+      / static_cast<int> (
+        tempo_map.tempo_at_tick (units::ticks (0)).in (units::bpm))));
 
   structure::arrangement::RegionRenderer::serialize_to_sequence (
     region, sequence);
 
   juce::MidiFile mf;
-  mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ());
+  mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ().in (units::ticks));
   mf.addTrack (sequence);
   const auto juce_file =
     utils::Utf8String::from_path (full_path).to_juce_file ();

@@ -631,65 +631,68 @@ RegionRenderer::build_native_looped_buffer (
   units::sample_t    out_start,
   units::sample_t    out_end)
 {
-  auto        &fs = region.get_children_view ().front ()->file_audio_source ();
-  const auto  &clip = fs.get_samples ();
-  const int    channels = clip.getNumChannels ();
-  const auto   clip_frames = static_cast<int64_t> (clip.getNumSamples ());
-  const auto   source_bpm = fs.source_bpm ();
-  const double sr = region.get_tempo_map ().get_sample_rate ();
-  const double effective_bpm =
-    source_bpm > 0.f
-      ? static_cast<double> (source_bpm)
+  auto       &fs = region.get_children_view ().front ()->file_audio_source ();
+  const auto &clip = fs.get_samples ();
+  const int   channels = clip.getNumChannels ();
+  const auto  clip_frames = units::samples (clip.getNumSamples ());
+  const auto  source_bpm = fs.source_bpm ();
+  const auto  sr = region.get_tempo_map ().get_sample_rate ();
+  const auto  effective_bpm =
+    source_bpm > units::bpm (0.0)
+      ? source_bpm
       : region.get_tempo_map ().tempo_at_tick (
           units::ticks (static_cast<int64_t> (region.position ()->ticks ())));
-  const double factor = (effective_bpm / 60.0) * dsp::TempoMap::get_ppq ();
 
   // Convert a clip-internal position (always Musical ticks) to a native sample
   // offset, using the clip's source BPM (or project tempo fallback).
   const auto native_offset =
-    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
-    return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
+    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> units::sample_t {
+    return au::round_as<int64_t> (
+      units::samples, (pos->position ().get_ticks () / effective_bpm * sr));
   };
 
   const auto * lr = region.loopRange ();
-  const auto   clip_start_s = std::clamp (
-    native_offset (lr->clipStartPosition ()), int64_t{ 0 }, clip_frames);
-  const auto loop_start_s = std::clamp (
-    native_offset (lr->loopStartPosition ()), int64_t{ 0 }, clip_frames);
-  const auto loop_end_raw = std::clamp (
-    native_offset (lr->loopEndPosition ()), int64_t{ 0 }, clip_frames);
-  const auto loop_end_s = std::max (loop_end_raw, loop_start_s + 1);
+  const auto   clip_start_s = clamp (
+    native_offset (lr->clipStartPosition ()), units::samples (0), clip_frames);
+  const auto loop_start_s = clamp (
+    native_offset (lr->loopStartPosition ()), units::samples (0), clip_frames);
+  const auto loop_end_raw = clamp (
+    native_offset (lr->loopEndPosition ()), units::samples (0), clip_frames);
+  const auto loop_end_s =
+    std::max (loop_end_raw, loop_start_s + units::samples (1));
   const bool do_loop = lr->looped ();
 
-  const auto out0 = std::max (int64_t{ 0 }, out_start.in (units::samples));
-  const auto out1 = std::max (out0, out_end.in (units::samples));
+  const auto out0 = max (units::samples (0), out_start);
+  const auto out1 = max (out0, out_end);
   const auto out_len = out1 - out0;
 
-  utils::audio::AudioBuffer b1 (channels, static_cast<int> (out_len));
+  utils::audio::AudioBuffer b1 (channels, out_len.in<int> (units::samples));
   b1.clear ();
 
   // Clip read position for an output position (native samples from region
   // start), computed in O(1): the first leg plays clip_start -> loop_end;
   // subsequent legs loop loop_start -> loop_end. This lets a sub-range request
   // start reading at @p out_start directly instead of iterating from 0.
-  const auto clip_pos_at = [&] (int64_t out_pos) -> int64_t {
+  const auto clip_pos_at = [&] (units::sample_t out_pos) -> units::sample_t {
     if (!do_loop)
       return clip_start_s + out_pos;
     const auto first_leg = loop_end_s - clip_start_s;
     if (out_pos < first_leg)
       return clip_start_s + out_pos;
-    const auto loop_len = std::max (int64_t{ 1 }, loop_end_s - loop_start_s);
+    const auto loop_len = max (units::samples (1), loop_end_s - loop_start_s);
     return loop_start_s + ((out_pos - first_leg) % loop_len);
   };
 
-  int64_t read_pos = clip_pos_at (out0);
-  int64_t write_pos = 0;
+  auto read_pos = clip_pos_at (out0);
+  auto write_pos = units::samples (0);
   while (write_pos < out_len)
     {
-      const auto this_end = std::min (
-        { loop_end_s, clip_frames, read_pos + (out_len - write_pos) });
+      // au does not support min() on a tuple/initializer list so we do double
+      // min()
+      const auto this_end =
+        min (min (loop_end_s, clip_frames), read_pos + (out_len - write_pos));
       const auto this_len = this_end - read_pos;
-      if (this_len <= 0)
+      if (this_len <= units::samples (0))
         {
           if (do_loop && read_pos >= loop_end_s)
             {
@@ -700,8 +703,8 @@ RegionRenderer::build_native_looped_buffer (
         }
       for (int c = 0; c < channels; ++c)
         b1.copyFrom (
-          c, static_cast<int> (write_pos), clip, c, static_cast<int> (read_pos),
-          static_cast<int> (this_len));
+          c, write_pos.in<int> (units::samples), clip, c,
+          read_pos.in<int> (units::samples), this_len.in<int> (units::samples));
       write_pos += this_len;
       read_pos += this_len;
       if (read_pos >= loop_end_s)
@@ -769,43 +772,44 @@ RegionRenderer::serialize_to_buffer (
 
   // Source info + the region's native (B1) length, used both for the stretch
   // decision and to map clip positions.
-  auto        &fs = region.get_children_view ().front ()->file_audio_source ();
-  const auto   source_bpm = fs.source_bpm ();
-  const double sr = tempo_map.get_sample_rate ();
-  const double effective_bpm =
-    source_bpm > 0.f
-      ? static_cast<double> (source_bpm)
+  auto      &fs = region.get_children_view ().front ()->file_audio_source ();
+  const auto source_bpm = fs.source_bpm ();
+  const auto effective_bpm =
+    source_bpm > units::bpm (0.0)
+      ? source_bpm
       : tempo_map.tempo_at_tick (
-          units::ticks (static_cast<int64_t> (region.position ()->ticks ())));
-  const double factor = (effective_bpm / 60.0) * dsp::TempoMap::get_ppq ();
-  const auto   native_offset =
-    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
-    return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
+          region.position ()->position ().get_ticks ().as<int64_t> (units::ticks));
+  const auto native_offset =
+    [&] (const dsp::AtomicPositionQmlAdapter * pos) -> units::sample_t {
+    return au::round_as<int64_t> (
+      units::samples,
+      pos->position ().get_ticks () / effective_bpm
+        * tempo_map.get_sample_rate ());
   };
   const auto native_region_len =
-    std::max (int64_t{ 0 }, native_offset (region.bounds ()->length ()));
+    max (units::samples (0), native_offset (region.bounds ()->length ()));
 
   // Compute the sample-space warp map from ContentTimeWarp's canonical warp
   // points. This unified path handles both musical-mode cases: identity warp
   // (musical ON → stretch to project tempo) and tempo-derived warp (musical
   // OFF → native speed). The stretch decision is based on sample-space anchors.
   bool             needs_stretch = false;
-  int64_t          timeline_region_len = native_region_len;
+  units::sample_t  timeline_region_len = native_region_len;
   dsp::TimeWarpMap warp;
-  if (source_bpm > 0.f && native_region_len > 0)
+  if (source_bpm > units::bpm (0.0) && native_region_len > units::samples (0))
     {
       auto warp_points = region.contentWarp ()->warpPoints ();
       warp = dsp::to_time_warp_map (
-        warp_points, tempo_map, region_start_tick,
-        static_cast<double> (source_bpm), units::samples (native_region_len));
+        warp_points, tempo_map, region_start_tick, source_bpm,
+        native_region_len);
       needs_stretch = !dsp::is_sample_space_identity (warp.anchors);
-      timeline_region_len = warp.output_length.in (units::samples);
+      timeline_region_len = warp.output_length;
     }
 
   // Size the output buffer and compute where the region's audio lands in it.
   const auto region_start_sample =
     tempo_map.tick_to_samples_rounded (region_start_tick);
-  int64_t buf_size = timeline_region_len;
+  int64_t buf_size = timeline_region_len.in<int64_t> (units::samples);
   int64_t region_buf_offset = 0; // buffer index where region_audio[0] goes
   if (start_opt || end_opt)
     {
@@ -827,7 +831,9 @@ RegionRenderer::serialize_to_buffer (
 
   // The region-audio indices that overlap the buffer.
   const auto out0 = std::max (int64_t{ 0 }, -region_buf_offset);
-  const auto out1 = std::min (timeline_region_len, buf_size - region_buf_offset);
+  const auto out1 = std::min (
+    timeline_region_len.in<int64_t> (units::samples),
+    buf_size - region_buf_offset);
   const auto dst_start = std::max (int64_t{ 0 }, region_buf_offset);
   const auto copy_len = std::max (int64_t{ 0 }, out1 - out0);
   if (copy_len > 0)
@@ -840,10 +846,10 @@ RegionRenderer::serialize_to_buffer (
           // Note: unlike the no-stretch branch below, this is O(full region)
           // even for a sub-range request — unavoidable for offline quality.
           auto full_b1 = build_native_looped_buffer (
-            region, units::samples (0), units::samples (native_region_len));
+            region, units::samples (0), native_region_len);
           auto engine = dsp::create_default_timestretch_engine (
             dsp::StretchOptions{},
-            units::sample_rate (static_cast<int> (std::round (sr))));
+            au::round_as<int> (units::sample_rate, tempo_map.get_sample_rate ()));
           content = engine->stretch (full_b1, warp, dsp::StretchOptions{});
           const int chans =
             std::min (buffer.getNumChannels (), content.getNumChannels ());

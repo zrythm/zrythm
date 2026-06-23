@@ -33,7 +33,7 @@ to_time_warp_map (
   std::span<const ContentTimeWarp::WarpPoint> warp_points,
   const TempoMap                             &tempo_map,
   units::precise_tick_t                       region_start_tick,
-  double                                      source_bpm,
+  units::bpm_t                                source_bpm,
   units::sample_t                             num_source_frames);
 
 } // namespace zrythm::dsp

@@ -573,7 +573,7 @@ TEST_F (ProjectSerializationTest, RoundTrip_AudioRegion_Validates)
     auto &file_registry = original_project->get_registry ();
     auto  audio_source_ref = utils::create_object<dsp::FileAudioSource> (
       file_registry, dummy_buf, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120, u8"test_audio.wav");
+      units::sample_rate (44100), units::bpm (120.0), u8"test_audio.wav");
 
     auto region_ref = factory.create_audio_region_with_clip (
       audio_source_ref, units::ticks (0));

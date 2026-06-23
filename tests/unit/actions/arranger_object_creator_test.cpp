@@ -101,7 +101,7 @@ protected:
     arranger_object_factory = std::make_unique<
       structure::arrangement::ArrangerObjectFactory> (
       obj_factory_deps, [] () { return units::sample_rate (44100); },
-      [] () { return 120.0; });
+      [] () { return units::bpm (120.0); });
 
     // Create the creator
     creator = std::make_unique<ArrangerObjectCreator> (

@@ -78,7 +78,7 @@ protected:
   {
     auto clip_ref = utils::create_object<dsp::FileAudioSource> (
       registry_, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
-      units::sample_rate (44100), 120.f, u8"RecordingClip");
+      units::sample_rate (44100), units::bpm (120.0), u8"RecordingClip");
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (

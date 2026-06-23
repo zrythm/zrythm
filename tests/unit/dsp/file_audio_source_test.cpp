@@ -86,7 +86,7 @@ protected:
     }
 
     project_sample_rate = units::sample_rate (44100);
-    current_bpm = 120.0;
+    current_bpm = units::bpm (120.0);
   }
 
   void TearDown () override
@@ -99,7 +99,7 @@ protected:
   std::filesystem::path          test_wav;
   std::filesystem::path          test_mono_wav;
   units::sample_rate_t           project_sample_rate;
-  FileAudioSource::bpm_t         current_bpm;
+  units::bpm_t                   current_bpm;
 };
 
 // Test constructors

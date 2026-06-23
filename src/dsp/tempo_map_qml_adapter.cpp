@@ -33,7 +33,7 @@ TempoMapWrapper::timeSignatureDenominatorAtTick (int64_t tick) const
 double
 TempoMapWrapper::tempoAtTick (int64_t tick) const
 {
-  return tempo_map_.tempo_at_tick (units::ticks (tick));
+  return tempo_map_.tempo_at_tick (units::ticks (tick)).in (units::bpm);
 }
 
 } // namespace zrythm::dsp

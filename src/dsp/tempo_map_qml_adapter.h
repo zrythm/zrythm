@@ -38,7 +38,7 @@ public:
   Q_ENUM (CurveType)
 
   qint64    tick () const { return event_.tick.in (units::ticks); }
-  double    bpm () const { return event_.bpm; }
+  double    bpm () const { return event_.bpm.in (units::bpm); }
   CurveType curve () const
   {
     return static_cast<CurveType> (std::to_underlying (event_.curve));
@@ -141,12 +141,20 @@ public:
   Q_INVOKABLE double tempoAtTick (int64_t tick) const;
 
   // this should be static but i don't know how to use it from QML then
-  Q_INVOKABLE int getPpq () const { return TempoMap::get_ppq (); }
-
-  double sampleRate () const { return tempo_map_.get_sample_rate (); }
-  void   setSampleRate (double sampleRate)
+  Q_INVOKABLE int getPpq () const
   {
-    if (qFuzzyCompare (sampleRate, tempo_map_.get_sample_rate ()))
+    return TempoMap::get_ppq ().in (units::ticks);
+  }
+
+  double sampleRate () const
+  {
+    return tempo_map_.get_sample_rate ().in (units::sample_rate);
+  }
+  void setSampleRate (double sampleRate)
+  {
+    if (
+      qFuzzyCompare (
+        sampleRate, tempo_map_.get_sample_rate ().in (units::sample_rate)))
       return;
     tempo_map_.set_sample_rate (units::sample_rate (sampleRate));
     Q_EMIT sampleRateChanged ();
@@ -156,7 +164,8 @@ public:
   addTempoEvent (qint64 tick, double bpm, TempoEventWrapper::CurveType curveType)
   {
     tempo_map_.add_tempo_event (
-      units::ticks (tick), bpm, static_cast<TempoMap::CurveType> (curveType));
+      units::ticks (tick), units::bpm (bpm),
+      static_cast<TempoMap::CurveType> (curveType));
     rebuildTempoWrappers ();
     Q_EMIT tempoEventsChanged ();
   }

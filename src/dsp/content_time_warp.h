@@ -81,10 +81,10 @@ public:
   /// @ref to_time_warp_map can derive the sample-space stretch mapping.
   /// When @p source_bpm == 0 (e.g. unknown BPM or MIDI regions), the warp
   /// point list stays empty — positioning works but no rendering is possible.
-  void configure_as_project (double source_bpm = 0.0);
-  void configure_as_source (double source_bpm);
+  void configure_as_project (units::bpm_t source_bpm = units::bpm (0.0));
+  void configure_as_source (units::bpm_t source_bpm);
   void configure_as_warped (
-    double                     source_bpm,
+    units::bpm_t               source_bpm,
     std::span<const WarpPoint> user_markers);
 
   /**
@@ -113,7 +113,7 @@ private:
   const TempoMapWrapper           &tempo_map_wrapper_;
   const AtomicPositionQmlAdapter * region_position_;
   const AtomicPositionQmlAdapter * region_length_;
-  double                           source_bpm_ = 0.0;
+  units::bpm_t                     source_bpm_ = units::bpm (0.0);
   Mode                             mode_ = Mode::Project;
   std::vector<WarpPoint>           user_markers_;
   std::vector<WarpPoint>           warp_points_;

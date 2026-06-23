@@ -131,7 +131,7 @@ audio_file_is_silent (const std::filesystem::path &filepath)
     { buf.getReadPointer (0), static_cast<size_t> (buf.getNumSamples ()) });
 }
 
-float
+double
 detect_bpm (
   const float *       src,
   size_t              num_frames,
@@ -139,7 +139,7 @@ detect_bpm (
   std::vector<float> &candidates)
 {
   // unimplemented
-  z_return_val_if_reached (140.f);
+  z_return_val_if_reached (140.0);
 #if 0
   ZVampPlugin * plugin =
     vamp_get_plugin (Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, static_cast<float>(samplerate));

@@ -94,7 +94,7 @@ frames_silent (std::span<const float> src);
  *
  * @return The BPM, or 0 if not found.
  */
-float
+double
 detect_bpm (
   const float *       src,
   size_t              num_frames,

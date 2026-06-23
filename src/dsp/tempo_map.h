@@ -50,7 +50,7 @@ public:
   struct TempoEvent
   {
     units::tick_t tick;    ///< Position in ticks
-    double        bpm{};   ///< Tempo in BPM
+    units::bpm_t  bpm{};   ///< Tempo
     CurveType     curve{}; ///< Curve type from this event to the next
 
     friend void to_json (nlohmann::json &j, const TempoEvent &e);
@@ -71,7 +71,7 @@ public:
 
     constexpr auto ticks_per_bar () const
     {
-      return units::ticks (quarters_per_bar () * FixedPpqTempoMap::get_ppq ());
+      return quarters_per_bar () * FixedPpqTempoMap::get_ppq ();
     }
 
     constexpr auto ticks_per_beat () const
@@ -120,7 +120,7 @@ public:
   /**
    * @brief Add a tempo event
    * @param tick Position in ticks
-   * @param bpm Tempo in BPM
+   * @param bpm Tempo
    * @param curve Curve type
    *
    * @warning Tempo events must only be added after all time signature events
@@ -128,7 +128,7 @@ public:
    *
    * @throws std::invalid_argument for invalid BPM or tick values
    */
-  void add_tempo_event (units::tick_t tick, double bpm, CurveType curve);
+  void add_tempo_event (units::tick_t tick, units::bpm_t bpm, CurveType curve);
 
   /// Remove a tempo event at the specified tick
   void remove_tempo_event (units::tick_t tick);
@@ -190,7 +190,7 @@ public:
    * @param tick Position in ticks
    * @return Tempo (or default 120 BPM if none found)
    */
-  double tempo_at_tick (units::tick_t tick) const;
+  units::bpm_t tempo_at_tick (units::tick_t tick) const;
 
   /**
    * @brief Read-only view of all tempo events, sorted ascending by tick.
@@ -231,15 +231,12 @@ public:
   units::tick_t musical_position_to_tick (const MusicalPosition &pos) const;
 
   /// Get pulses per quarter note
-  static consteval int get_ppq () { return from_nttp (PPQ).in (units::ticks); }
+  static consteval auto get_ppq () { return from_nttp (PPQ); }
 
   /// Get current sample rate
-  double get_sample_rate () const
-  {
-    return sample_rate_.in (units::sample_rate);
-  }
+  auto get_sample_rate () const { return sample_rate_; }
 
-  void set_default_bpm (double bpm) { default_tempo_.bpm = bpm; }
+  void set_default_bpm (units::bpm_t bpm) { default_tempo_.bpm = bpm; }
   void set_default_time_signature (int numerator, int denominator)
   {
     default_time_sig_.numerator = numerator;
@@ -280,8 +277,8 @@ private:
     from_nttp (PPQ) / 4; ///< Ticks per sixteenth note (PPQ/4)
 
   static constexpr auto DEFAULT_BPM_EVENT = TempoEvent{
-    units::ticks (0), 120.0, CurveType::Constant
-  }; ///< Default tempo in BPM
+    units::ticks (0), units::bpm (120.0), CurveType::Constant
+  }; ///< Default tempo
   static constexpr auto DEFAULT_TIME_SIG_EVENT =
     TimeSignatureEvent{ units::ticks (0), 4, 4 }; ///< Default time signature
   static constexpr auto DEFAULT_CUMULATIVE_SECONDS = units::seconds (0.0);
