@@ -201,47 +201,34 @@ TEST_F (ArrangerObjectBoundsTest, EdgeCases)
     units::samples (static_cast<int64_t> (1e9 + 1000 - 1)));
 }
 
-// Test that Absolute-mode length is correctly added to position when tempo
-// changes exist before the region on the timeline.
-// Bug: seconds_to_tick(length) integrated tempo from tick 0, not from the
-// region's position, causing end_sample to be too small when tempo increased.
-TEST_F (ArrangerObjectBoundsTest, AbsoluteLengthEndPositionWithTempoChange)
+// End position (Musical mode, fallback path) correctly spans a tempo change.
+TEST_F (ArrangerObjectBoundsTest, EndPositionSpansTempoChange)
 {
-  // Rebuild with a tempo-map-backed conversion so tempo events matter.
   tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  // 120 BPM at tick 0, 240 BPM starting at tick 9600 (= 5 seconds at 120 BPM)
   tempo_map->add_tempo_event (
     units::ticks (0), 120.0, dsp::TempoMap::CurveType::Constant);
   tempo_map->add_tempo_event (
     units::ticks (9600), 240.0, dsp::TempoMap::CurveType::Constant);
   tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
-  // Conversion functions that actually reference the tempo map
   auto tcf =
     dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map);
 
-  // Position at 6 seconds (after the tempo change at 5 seconds)
   dsp::AtomicPosition pos (*tcf);
-  pos.set_seconds (units::seconds (6.0));
-  dsp::AtomicPositionQmlAdapter pos_adapter (
-    pos, *tempo_map_wrapper, std::nullopt, parent.get ());
+  pos.set_ticks (units::ticks (0.0));
   start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
     pos, *tempo_map_wrapper, std::nullopt, parent.get ());
 
   obj = std::make_unique<ArrangerObjectBounds> (
     *start_position_adapter, *tempo_map_wrapper);
 
-  // Length = 4 seconds in Absolute mode
-  obj->length ()->setMode (dsp::AtomicPosition::TimeFormat::Absolute);
-  obj->length ()->setSeconds (4.0);
+  // Length spans across the tempo change at tick 9600.
+  obj->length ()->setTicks (19200.0);
 
-  // Position should be 6 seconds = 264600 samples
-  const auto pos_samples = start_position_adapter->samples ();
-  EXPECT_EQ (pos_samples, 264600);
-
-  // End should be 10 seconds = 441000 samples
-  const auto end_samples = obj->get_end_position_samples (true);
-  EXPECT_EQ (end_samples, units::samples (441000));
+  // 0-9600 ticks @ 120 BPM = 5 s = 220500 samples
+  // 9600-19200 ticks @ 240 BPM = 2.5 s = 110250 samples
+  // End = 330750 samples
+  EXPECT_EQ (obj->get_end_position_samples (true), units::samples (330750));
 }
 
 } // namespace zrythm::structure::arrangement

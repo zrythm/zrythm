@@ -17,7 +17,6 @@ ArrangerObjectFadeRange::ArrangerObjectFadeRange (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           start_offset_,
           tempo_map_wrapper,
-          start_position,
           // Fade offsets must be non-negative
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (0.0));
@@ -28,7 +27,6 @@ ArrangerObjectFadeRange::ArrangerObjectFadeRange (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           end_offset_,
           tempo_map_wrapper,
-          start_position,
           // Fade offsets must be non-negative
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (0.0));

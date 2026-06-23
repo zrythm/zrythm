@@ -1381,6 +1381,136 @@ TEST_F (RegionRendererTest, SerializeAudioRegionMusicalModeStretchContent)
     << "Amplitude at 25% too low — stretch likely didn't happen (truncated?)";
 }
 
+// ========== Sub-range rendering at non-zero position ==========
+
+// Sub-range render at a non-zero position must match the corresponding portion
+// of the full render (excluding builtin fade edges). This is the contract the
+// waveform fast-path relies on.
+TEST_F (RegionRendererTest, SubRangeMatchesFullRenderAtNonZeroPosition)
+{
+  auto region = create_musical_test_region (120.f, 44100, 2, 1920.0);
+  // Disable object fades so only the 10-sample builtin edges differ.
+  region->fadeRange ()->startOffset ()->setSamples (0);
+  region->fadeRange ()->endOffset ()->setSamples (0);
+
+  juce::AudioSampleBuffer full_buf;
+  RegionRenderer::serialize_to_buffer (*region, full_buf);
+  ASSERT_GT (full_buf.getNumSamples (), 0);
+
+  // Render only the second half via an absolute tick range.
+  const auto region_start_tick = region->position ()->ticks ();
+  const auto region_end_tick =
+    region_start_tick + region->bounds ()->length ()->ticks ();
+  const auto mid_tick = (region_start_tick + region_end_tick) / 2.0;
+
+  juce::AudioSampleBuffer half_buf;
+  RegionRenderer::serialize_to_buffer (
+    *region, half_buf, std::make_pair (mid_tick, region_end_tick));
+  ASSERT_GT (half_buf.getNumSamples (), 0);
+
+  // The sub-range should match the second half of the full render, skipping
+  // the builtin fade edges (first/last AudioRegion::BUILTIN_FADE_FRAMES).
+  constexpr int kSkip = AudioRegion::BUILTIN_FADE_FRAMES;
+  const int     offset = full_buf.getNumSamples () - half_buf.getNumSamples ();
+  ASSERT_GE (offset, 0);
+  for (int c = 0; c < 2; ++c)
+    {
+      for (int i = kSkip; i < half_buf.getNumSamples () - kSkip; ++i)
+        {
+          EXPECT_NEAR (
+            half_buf.getSample (c, i), full_buf.getSample (c, offset + i), 1e-4f)
+            << "Mismatch at channel " << c << " sample " << i;
+        }
+    }
+}
+
+// Sub-range render with BPM automation at a non-zero position. The tempo
+// change makes the tick→sample mapping non-linear, so absolute tick
+// computation is critical.
+TEST_F (RegionRendererTest, SubRangeWithTempoChangesAtNonZeroPosition)
+{
+  // Add a tempo change in the middle of the timeline.
+  tempo_map->add_tempo_event (
+    units::ticks (3840), 240.0, dsp::TempoMap::CurveType::Constant);
+
+  // Region at tick 1920, source BPM 120, 1 second of audio.
+  auto region = create_musical_test_region (120.f, 44100, 2, 1920.0);
+  region->fadeRange ()->startOffset ()->setSamples (0);
+  region->fadeRange ()->endOffset ()->setSamples (0);
+
+  juce::AudioSampleBuffer full_buf;
+  RegionRenderer::serialize_to_buffer (*region, full_buf);
+  ASSERT_GT (full_buf.getNumSamples (), 0);
+
+  // Render the second half via absolute ticks.
+  const auto region_start_tick = region->position ()->ticks ();
+  const auto region_end_tick =
+    region_start_tick + region->bounds ()->length ()->ticks ();
+  const auto mid_tick = (region_start_tick + region_end_tick) / 2.0;
+
+  juce::AudioSampleBuffer half_buf;
+  RegionRenderer::serialize_to_buffer (
+    *region, half_buf, std::make_pair (mid_tick, region_end_tick));
+  ASSERT_GT (half_buf.getNumSamples (), 0);
+
+  // Second half of full render should match sub-range render (skip edges).
+  constexpr int kSkip = AudioRegion::BUILTIN_FADE_FRAMES;
+  const int     offset = full_buf.getNumSamples () - half_buf.getNumSamples ();
+  ASSERT_GE (offset, 0);
+  for (int i = kSkip; i < half_buf.getNumSamples () - kSkip; ++i)
+    {
+      EXPECT_NEAR (
+        half_buf.getSample (0, i), full_buf.getSample (0, offset + i), 1e-4f)
+        << "Mismatch at sample " << i;
+    }
+}
+
+// Simulates the waveform fast-path: render the full region, then ask for only
+// the "grown tail" via an absolute tick range. The tail must match the
+// corresponding portion of the full render. This is the test that would have
+// caught the original bug (treating relative samples as absolute).
+TEST_F (RegionRendererTest, SubRangeGrownTailMatchesFullRender)
+{
+  // Region at tick 9600 (well past tick 0), source BPM 120, 1s audio.
+  auto region = create_musical_test_region (120.f, 44100, 2, 9600.0);
+  region->fadeRange ()->startOffset ()->setSamples (0);
+  region->fadeRange ()->endOffset ()->setSamples (0);
+
+  juce::AudioSampleBuffer full_buf;
+  RegionRenderer::serialize_to_buffer (*region, full_buf);
+  ASSERT_GT (full_buf.getNumSamples (), 0);
+
+  // Compute absolute ticks for the second half, as the waveform fast path
+  // should: region_start_samples + prev_samples → absolute tick.
+  const auto region_start_samples = region->position ()->samples ();
+  const auto half_samples = full_buf.getNumSamples () / 2;
+  const auto full_samples = full_buf.getNumSamples ();
+
+  const auto prev_end_tick = tempo_map->samples_to_tick (
+    units::precise_sample_t (
+      units::samples (region_start_samples + half_samples)));
+  const auto new_end_tick = tempo_map->samples_to_tick (
+    units::precise_sample_t (
+      units::samples (region_start_samples + full_samples)));
+
+  juce::AudioSampleBuffer tail_buf;
+  RegionRenderer::serialize_to_buffer (
+    *region, tail_buf,
+    std::make_pair (
+      prev_end_tick.in (units::ticks), new_end_tick.in (units::ticks)));
+  ASSERT_GT (tail_buf.getNumSamples (), 0);
+
+  // The tail should match the second half of the full render (skip edges).
+  constexpr int kSkip = AudioRegion::BUILTIN_FADE_FRAMES;
+  for (int i = kSkip; i < tail_buf.getNumSamples () - kSkip; ++i)
+    {
+      EXPECT_NEAR (
+        tail_buf.getSample (0, i), full_buf.getSample (0, half_samples + i),
+        1e-4f)
+        << "Mismatch at sample " << i;
+    }
+}
+
 // ========== Automation Region Tests ==========
 
 TEST_F (RegionRendererTest, SerializeAutomationRegionSimple)

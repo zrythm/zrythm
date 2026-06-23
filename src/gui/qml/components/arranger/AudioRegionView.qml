@@ -16,7 +16,7 @@ RegionBaseView {
   headerExtra: Item {
     id: badgeContainer
 
-    readonly property double endTick: startTick + root.region.bounds.length.ticks
+    readonly property double endTick: startTick + root.region.bounds.timelineLengthTicks
     property bool hasTempoChanges: false
     property bool isStretching: false
     readonly property double startTick: root.region.position.ticks

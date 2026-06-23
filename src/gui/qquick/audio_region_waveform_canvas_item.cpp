@@ -22,7 +22,11 @@ AudioRegionWaveformCanvasItem::take_snapshot () const -> RegionSnapshot
   if (audio_region_ == nullptr)
     return snap;
 
-  snap.length_samples = audio_region_->bounds ()->length ()->samples ();
+  snap.length_samples =
+    (audio_region_->bounds ()
+       ->get_end_position_samples (true)
+       .in (units::samples) -audio_region_->position ()
+       ->samples ());
   snap.gain = audio_region_->gain ();
 
   auto * loop_range = audio_region_->loopRange ();
@@ -71,24 +75,30 @@ AudioRegionWaveformCanvasItem::handle_property_change ()
     && current.fade_out_samples == last_snapshot_.fade_out_samples
     && current.gain == last_snapshot_.gain && new_samples > prev_samples)
     {
-      const auto  region_start_ticks = audio_region_->position ()->ticks ();
+      // Compute the absolute timeline tick positions at the old and new
+      // buffer ends. prev_samples/new_samples are relative to the region
+      // start, so we must add the region's absolute sample position before
+      // converting to ticks.
+      const auto  region_start_samples = audio_region_->position ()->samples ();
       const auto &tempo_map = audio_region_->get_tempo_map ();
-      const auto  prev_ticks = tempo_map.samples_to_tick (
-        units::precise_sample_t (units::samples (prev_samples)));
-      const auto new_ticks = tempo_map.samples_to_tick (
-        units::precise_sample_t (units::samples (new_samples)));
+      const auto  prev_end_tick = tempo_map.samples_to_tick (
+        units::precise_sample_t (
+          units::samples (region_start_samples + prev_samples)));
+      const auto new_end_tick = tempo_map.samples_to_tick (
+        units::precise_sample_t (
+          units::samples (region_start_samples + new_samples)));
 
       juce::AudioSampleBuffer new_data;
       structure::arrangement::RegionRenderer::serialize_to_buffer (
         *audio_region_, new_data,
         std::make_pair (
-          region_start_ticks + prev_ticks.in (units::ticks),
-          region_start_ticks + new_ticks.in (units::ticks)));
+          prev_end_tick.in (units::ticks), new_end_tick.in (units::ticks)));
 
       audio_buffer_.setSize (2, new_samples, true, true, false);
 
       const auto new_data_samples = new_data.getNumSamples ();
-      assert (new_data_samples > 0 && new_data_samples <= new_samples);
+      assert (
+        new_data_samples > 0 && prev_samples + new_data_samples <= new_samples);
       for (int ch = 0; ch < 2; ++ch)
         {
           audio_buffer_.copyFrom (

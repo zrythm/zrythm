@@ -211,6 +211,26 @@ TEST_F (ArrangerObjectLoopRangeTest, GetNumLoops)
   EXPECT_EQ (loop_range->get_num_loops (false), 3);
 }
 
+// fmod produces a tiny non-zero residue (≈1e-16) for values that are
+// mathematically exact multiples, because 0.3 and 0.9 are not exactly
+// representable in double. The exact != 0.0 check incorrectly counts
+// an extra loop.
+TEST_F (ArrangerObjectLoopRangeTest, GetNumLoopsFloatPrecision)
+{
+  loop_range->setTrackBounds (false);
+  loop_range->clipStartPosition ()->setTicks (0.0);
+  loop_range->loopStartPosition ()->setTicks (0.0);
+  loop_range->loopEndPosition ()->setTicks (2.3);
+  bounds->length ()->setTicks (6.9); // exactly 3 loops of 2.3 ticks
+
+  // 2.3 in double: 2.29999999999999982...
+  // 3 * 2.3 = 6.89999999999999946... (rounds down)
+  // 6.9 in double: 6.90000000000000035... (stored separately, rounds up)
+  // 6.9 / 2.3 in double = 2.9999... → floor = 2
+  // fmod(6.9, 2.3) ≈ 8.9e-16 (non-zero!) → add_one true → 2 + 1 = 3
+  EXPECT_EQ (loop_range->get_num_loops (true), 3);
+}
+
 // Test serialization/deserialization
 TEST_F (ArrangerObjectLoopRangeTest, Serialization)
 {

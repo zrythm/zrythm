@@ -13,6 +13,7 @@ add_executable(zrythm_dsp_unit_tests
   chord_descriptor_test.cpp
   chord_preset_test.cpp
   chord_suggestion_test.cpp
+  content_time_warp_test.cpp
   curve_test.cpp
   cv_port_test.cpp
   ditherer_test.cpp

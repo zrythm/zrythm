@@ -37,7 +37,7 @@ struct WarpAnchor
  * strictly increasing in @ref WarpAnchor::output_frame. The first anchor must
  * map `0 → 0` and the last must map `source_length → output_length`.
  *
- * @see compute_tempo_warp_map()
+ * @see to_time_warp_map()
  */
 struct TimeWarpMap
 {
@@ -61,5 +61,20 @@ struct TimeWarpMap
    */
   [[nodiscard]] bool is_valid () const noexcept;
 };
+
+/**
+ * @brief Returns true if all anchors map source→output within @p tolerance
+ * samples, i.e. the clip plays at approximately native speed.
+ *
+ * Used by the renderer to decide whether timestretching is needed.
+ * A ±2 sample tolerance absorbs the rounding asymmetry between
+ * @c to_time_warp_map's two conversion paths at non zero region starts.
+ *
+ * @param tolerance Maximum per-anchor sample difference (default 2 samples).
+ */
+[[nodiscard]] bool
+is_sample_space_identity (
+  std::span<const WarpAnchor> anchors,
+  units::sample_t             tolerance = units::samples (2));
 
 } // namespace zrythm::dsp

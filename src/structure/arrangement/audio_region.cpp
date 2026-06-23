@@ -35,6 +35,7 @@ AudioRegion::set_source (const ArrangerObjectUuidReference &source)
 {
   add_object (source);
   init_length_from_clip ();
+  update_warp_configuration ();
 }
 
 void
@@ -70,9 +71,22 @@ AudioRegion::reevaluate_effective_musical_mode ()
   if (now_effective != last_effective_musical_mode_)
     {
       last_effective_musical_mode_ = now_effective;
-      update_time_format ();
+      update_warp_configuration ();
       Q_EMIT effectivelyInMusicalModeChanged ();
     }
+}
+
+void
+AudioRegion::update_warp_configuration ()
+{
+  auto * warp = contentWarp ();
+  if (warp == nullptr)
+    return;
+  const auto bpm = sourceBpm ();
+  if (effectivelyInMusicalMode () || bpm <= 0.f)
+    warp->configure_as_project (bpm);
+  else
+    warp->configure_as_source (bpm);
 }
 
 float
@@ -94,68 +108,16 @@ AudioRegion::init_length_from_clip ()
   const auto sr = get_tempo_map ().get_sample_rate ();
   auto *     len = bounds ()->length ();
 
-  if (effectivelyInMusicalMode () && source_bpm > 0.f)
-    {
-      const double musical_ticks =
-        (static_cast<double> (num_frames) / sr) * (source_bpm / 60.0)
-        * dsp::TempoMap::get_ppq ();
-      len->setMode (dsp::AtomicPosition::TimeFormat::Musical);
-      len->setTicks (musical_ticks);
-    }
-  else
-    {
-      const double seconds = static_cast<double> (num_frames) / sr;
-      len->setMode (dsp::AtomicPosition::TimeFormat::Absolute);
-      len->setSeconds (seconds);
-    }
-}
-
-void
-AudioRegion::update_time_format ()
-{
-  z_return_if_fail (!get_children_view ().empty ());
-  auto      &file_source = get_children_view ().front ()->file_audio_source ();
-  const auto source_bpm = file_source.source_bpm ();
-  const bool want_musical = effectivelyInMusicalMode () && source_bpm > 0.f;
-  const auto target =
-    want_musical
-      ? dsp::AtomicPosition::TimeFormat::Musical
-      : dsp::AtomicPosition::TimeFormat::Absolute;
-  // Ticks-per-second at the clip's source tempo. Stable, unlike the project
-  // tempo that AtomicPosition::setMode would convert through.
-  const double factor =
-    (source_bpm / 60.0) * static_cast<double> (dsp::TempoMap::get_ppq ());
-
-  const auto convert = [&] (dsp::AtomicPositionQmlAdapter * pos) {
-    if (pos->mode () == target)
-      return;
-    if (want_musical)
-      {
-        // Currently Absolute: seconds -> ticks at the source tempo.
-        const double secs = pos->seconds ();
-        pos->setMode (dsp::AtomicPosition::TimeFormat::Musical);
-        pos->setTicks (secs * factor);
-      }
-    else
-      {
-        // Currently Musical: ticks -> seconds at the source tempo.
-        const double ticks = pos->ticks ();
-        pos->setMode (dsp::AtomicPosition::TimeFormat::Absolute);
-        pos->setSeconds (ticks / factor);
-      }
-  };
-
-  // Convert the loop points BEFORE the length: the trackBounds connection
-  // (loopable_object.cpp) sets loop_end = length via setTicks when the length
-  // changes, so loop_end must already be in the target format by then, or that
-  // setTick would convert through the project tempo and corrupt it.
-  convert (loopRange ()->loopEndPosition ());
-  if (!loopRange ()->trackBounds ())
-    {
-      convert (loopRange ()->clipStartPosition ());
-      convert (loopRange ()->loopStartPosition ());
-    }
-  convert (bounds ()->length ());
+  const double bpm =
+    source_bpm > 0.f
+      ? static_cast<double> (source_bpm)
+      : get_tempo_map ().tempo_at_tick (
+          units::ticks (static_cast<int64_t> (position ()->ticks ())));
+  const double musical_ticks =
+    (static_cast<double> (num_frames) / sr) * (bpm / 60.0)
+    * dsp::TempoMap::get_ppq ();
+  len->setMode (dsp::AtomicPosition::TimeFormat::Musical);
+  len->setTicks (musical_ticks);
 }
 
 void
@@ -174,6 +136,7 @@ init_from (
     static_cast<ArrangerObjectOwner<AudioSourceObject> &> (obj),
     static_cast<const ArrangerObjectOwner<AudioSourceObject> &> (other),
     clone_type);
+  obj.update_warp_configuration ();
 }
 
 juce::PositionableAudioSource &
@@ -203,6 +166,11 @@ from_json (const nlohmann::json &j, AudioRegion &region)
   j.at (AudioRegion::kGainKey).get_to (gain);
   region.gain_.store (gain);
   j.at (AudioRegion::kMusicalModeKey).get_to (region.musical_mode_);
+  // Reconfigure the warp for the loaded musical mode. The factory may have
+  // configured it for the default (Inherit) during Phase 1; now the saved
+  // mode is known, so the warp must be reconfigured.
+  region.last_effective_musical_mode_ = region.effectivelyInMusicalMode ();
+  region.update_warp_configuration ();
 }
 
 }

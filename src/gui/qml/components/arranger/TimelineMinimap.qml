@@ -162,7 +162,7 @@ Item {
 
                 if (region) {
                   const startX = region.position.ticks / totalTicks * width;
-                  const regionWidth = Math.max(2, region.bounds.length.ticks / totalTicks * width);
+                  const regionWidth = Math.max(2, region.bounds.timelineLengthTicks / totalTicks * width);
 
                   ctx.fillStyle = Qt.alpha(track.color, 0.6);
                   ctx.fillRect(startX, trackY, regionWidth, trackHeight);
@@ -179,7 +179,7 @@ Item {
 
                 if (region) {
                   const startX = region.position.ticks / totalTicks * width;
-                  const regionWidth = Math.max(2, region.bounds.length.ticks / totalTicks * width);
+                  const regionWidth = Math.max(2, region.bounds.timelineLengthTicks / totalTicks * width);
 
                   ctx.fillStyle = Qt.alpha(track.color, 0.6);
                   ctx.fillRect(startX, trackY, regionWidth, trackHeight);

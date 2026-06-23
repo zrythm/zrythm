@@ -161,7 +161,7 @@ Item {
           // Convert automation point position to pixel coordinate
           const apPos = ap.position.ticks;
           const regionPos = root.region.position.ticks;
-          const regionLength = root.region.bounds.length.ticks;
+          const regionLength = root.region.bounds.timelineLengthTicks;
           const relativePos = apPos - regionPos;
           const pixelX = (relativePos / regionLength) * width;
 

@@ -17,32 +17,53 @@ ArrangerObjectBounds::ArrangerObjectBounds (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           length_,
           tempo_map_wrapper,
-          start_position,
           // Length must be at least 1 tick
           [] (units::precise_tick_t ticks) {
             return std::max (ticks, units::ticks (1.0));
           },
           this))
 {
+  // Direct length -> timelineLengthTicksChanged: required for non-region
+  // bounded objects (e.g. MidiNote). For regions, ContentTimeWarp's
+  // mapChanged -> timelineLengthTicksChanged relay (set up in ArrangerObject)
+  // also fires on resize, so regions emit this signal twice. The overlap is
+  // benign — same value, and the redundant notification is coalesced downstream
+  // — and is kept rather than wiring the warp into this class's internals.
+  QObject::connect (
+    length_adapter_.get (), &dsp::AtomicPositionQmlAdapter::positionChanged,
+    this, &ArrangerObjectBounds::timelineLengthTicksChanged);
 }
 
 units::sample_t
 ArrangerObjectBounds::get_end_position_samples (bool end_position_inclusive) const
 {
-  units::sample_t end_samples;
-  if (length_.get_current_mode () == dsp::AtomicPosition::TimeFormat::Absolute)
+  if (content_warp_)
     {
-      end_samples =
-        units::samples (position ()->samples ()) + length_.get_samples ();
+      // content_to_timeline_samples returns ABSOLUTE samples — no +
+      // position_samples.
+      const auto end_samples =
+        content_warp_->content_to_timeline_samples (length_.get_ticks ());
+      return end_samples + units::samples ((end_position_inclusive ? 0 : -1));
     }
-  else
+  // Fallback: non-region objects (MidiNote, etc.) — always project ticks.
+  return au::round_as<int64_t> (
+           units::samples,
+           length_.time_conversion_functions ().tick_to_samples (
+             units::ticks (position ()->ticks ()) + length_.get_ticks ()))
+         + units::samples ((end_position_inclusive ? 0 : -1));
+}
+
+double
+ArrangerObjectBounds::timelineLengthTicks () const
+{
+  if (content_warp_)
     {
-      end_samples = au::round_as<int64_t> (
-        units::samples,
-        length_.time_conversion_functions ().tick_to_samples (
-          units::ticks (position ()->ticks ()) + length_.get_ticks ()));
+      const auto end_ticks =
+        content_warp_->content_to_timeline_ticks (length_.get_ticks ());
+      const auto start_ticks = position ()->position ().get_ticks ();
+      return (end_ticks - start_ticks).in (units::ticks);
     }
-  return end_samples + units::samples ((end_position_inclusive ? 0 : -1));
+  return length_adapter_->ticks ();
 }
 
 bool

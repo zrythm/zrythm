@@ -26,7 +26,7 @@ QtObject {
   function getObjectEndTicks(obj: ArrangerObject): real {
     let bounds = getObjectBounds(obj);
     if (bounds) {
-      return obj.position.ticks + bounds.length.ticks;
+      return obj.position.ticks + bounds.timelineLengthTicks;
     } else if (obj.type === ArrangerObject.ChordObject && obj.parentObject) {
       // Chord objects have no bounds — derive end from the next distinct
       // chord position in the region, or the region end if this is the last.
@@ -46,7 +46,7 @@ QtObject {
         return nextPos;
       const regionBounds = region.bounds;
       if (regionBounds)
-        return regionBounds.length.ticks;
+        return regionBounds.timelineLengthTicks;
       return myPos;
     } else {
       return obj.position.ticks;

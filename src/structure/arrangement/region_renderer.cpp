@@ -5,6 +5,7 @@
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/tempo_warp_map.h"
+#include "dsp/time_warp_map.h"
 #include "dsp/timestretch_engine.h"
 #include "structure/arrangement/audio_region.h"
 #include "structure/arrangement/automation_region.h"
@@ -636,14 +637,17 @@ RegionRenderer::build_native_looped_buffer (
   const auto   clip_frames = static_cast<int64_t> (clip.getNumSamples ());
   const auto   source_bpm = fs.source_bpm ();
   const double sr = region.get_tempo_map ().get_sample_rate ();
-  const double factor = (source_bpm / 60.0) * dsp::TempoMap::get_ppq ();
+  const double effective_bpm =
+    source_bpm > 0.f
+      ? static_cast<double> (source_bpm)
+      : region.get_tempo_map ().tempo_at_tick (
+          units::ticks (static_cast<int64_t> (region.position ()->ticks ())));
+  const double factor = (effective_bpm / 60.0) * dsp::TempoMap::get_ppq ();
 
-  // Convert a clip-internal position to a native sample offset, using the
-  // clip's source BPM for musical ticks (not the project tempo).
+  // Convert a clip-internal position (always Musical ticks) to a native sample
+  // offset, using the clip's source BPM (or project tempo fallback).
   const auto native_offset =
     [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
-    if (pos->mode () == dsp::AtomicPosition::TimeFormat::Absolute)
-      return static_cast<int64_t> (std::llround (pos->seconds () * sr));
     return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
   };
 
@@ -768,33 +772,33 @@ RegionRenderer::serialize_to_buffer (
   auto        &fs = region.get_children_view ().front ()->file_audio_source ();
   const auto   source_bpm = fs.source_bpm ();
   const double sr = tempo_map.get_sample_rate ();
-  const double factor = (source_bpm / 60.0) * dsp::TempoMap::get_ppq ();
+  const double effective_bpm =
+    source_bpm > 0.f
+      ? static_cast<double> (source_bpm)
+      : tempo_map.tempo_at_tick (
+          units::ticks (static_cast<int64_t> (region.position ()->ticks ())));
+  const double factor = (effective_bpm / 60.0) * dsp::TempoMap::get_ppq ();
   const auto   native_offset =
     [&] (const dsp::AtomicPositionQmlAdapter * pos) -> int64_t {
-    if (pos->mode () == dsp::AtomicPosition::TimeFormat::Absolute)
-      return static_cast<int64_t> (std::llround (pos->seconds () * sr));
     return static_cast<int64_t> (std::llround (pos->ticks () / factor * sr));
   };
   const auto native_region_len =
     std::max (int64_t{ 0 }, native_offset (region.bounds ()->length ()));
 
-  // Decide whether a (non-sample-exact) stretch pass is actually needed, and
-  // compute the timeline-space region length. Recording / non-musical / tempo-
-  // matched regions need no stretch — the cheap range-read path handles them.
+  // Compute the sample-space warp map from ContentTimeWarp's canonical warp
+  // points. This unified path handles both musical-mode cases: identity warp
+  // (musical ON → stretch to project tempo) and tempo-derived warp (musical
+  // OFF → native speed). The stretch decision is based on sample-space anchors.
   bool             needs_stretch = false;
   int64_t          timeline_region_len = native_region_len;
   dsp::TimeWarpMap warp;
-  if (
-    region.effectivelyInMusicalMode () && source_bpm > 0.f
-    && native_region_len > 0)
+  if (source_bpm > 0.f && native_region_len > 0)
     {
-      warp = dsp::compute_tempo_warp_map (
-        tempo_map, region_start_tick, source_bpm,
-        units::samples (native_region_len));
-      needs_stretch =
-        !std::ranges::all_of (warp.anchors, [] (const dsp::WarpAnchor &a) {
-          return a.source_frame == a.output_frame;
-        });
+      auto warp_points = region.contentWarp ()->warpPoints ();
+      warp = dsp::to_time_warp_map (
+        warp_points, tempo_map, region_start_tick,
+        static_cast<double> (source_bpm), units::samples (native_region_len));
+      needs_stretch = !dsp::is_sample_space_identity (warp.anchors);
       timeline_region_len = warp.output_length.in (units::samples);
     }
 
@@ -962,7 +966,15 @@ RegionRenderer::apply_region_fades_pass (
   const AudioRegion       &region,
   juce::AudioSampleBuffer &buffer)
 {
-  const auto region_length_in_frames = region.bounds ()->length ()->samples ();
+  // TODO: Fades are always in project ticks (follow tempo). For non-musical
+  // clips, a fade stored in beats will change in wall-clock time when tempo
+  // changes (e.g., 50ms at 120 BPM → ~43ms at 140 BPM). Consider adding a
+  // fadeTimeUnit="seconds" option for fixed-duration micro-fades.
+  const auto region_length_in_frames = static_cast<int> (
+    region.bounds ()
+      ->get_end_position_samples (true)
+      .in (units::samples) -region.position ()
+      ->samples ());
   const auto fade_in_pos_in_frames =
     region.fadeRange ()->startOffset ()->samples ();
   const auto fade_out_pos_in_frames =

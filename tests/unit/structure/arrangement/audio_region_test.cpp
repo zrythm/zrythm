@@ -259,20 +259,9 @@ TEST_F (AudioRegionMusicalModeLengthTest, MusicalOnUsesSourceBpmLength)
   EXPECT_NEAR (len->ticks (), 1600.0, 1.0);
 }
 
-// Musical mode off => length in absolute seconds (native duration), so the
-// region plays at original speed regardless of tempo.
-TEST_F (AudioRegionMusicalModeLengthTest, MusicalOffUsesAbsoluteSeconds)
-{
-  app_settings->set_musicalMode (false);
-  auto         region = make_region (100.f);
-  const auto * len = region->bounds ()->length ();
-  EXPECT_EQ (len->mode (), dsp::AtomicPosition::TimeFormat::Absolute);
-  EXPECT_NEAR (len->seconds (), 1.0, 1e-3);
-}
-
 // On -> Off -> On returns to the original musical length with no drift, even
-// though the project tempo (120) != source BPM (100). This is the property the
-// source_bpm-based conversion (rather than setMode) guarantees.
+// though the project tempo (120) != source BPM (100). All positions are always
+// Musical now; toggling only reconfigures the ContentTimeWarp.
 TEST_F (AudioRegionMusicalModeLengthTest, ToggleRoundTripHasNoDrift)
 {
   app_settings->set_musicalMode (true);
@@ -284,31 +273,28 @@ TEST_F (AudioRegionMusicalModeLengthTest, ToggleRoundTripHasNoDrift)
   region->setMusicalMode (AudioRegion::MusicalMode::Off);
   EXPECT_EQ (
     region->bounds ()->length ()->mode (),
-    dsp::AtomicPosition::TimeFormat::Absolute);
+    dsp::AtomicPosition::TimeFormat::Musical);
 
   region->setMusicalMode (AudioRegion::MusicalMode::On);
-  EXPECT_EQ (
-    region->bounds ()->length ()->mode (),
-    dsp::AtomicPosition::TimeFormat::Musical);
   EXPECT_NEAR (region->bounds ()->length ()->ticks (), ticks_before, 1.0);
 }
 
-// Unknown source BPM (0) => musical mode is inert; length stays absolute.
-TEST_F (AudioRegionMusicalModeLengthTest, UnknownSourceBpmStaysAbsolute)
+// Unknown source BPM (0) => falls back to project tempo (120) for tick
+// computation. Length is still Musical, ContentTimeWarp is Project mode.
+TEST_F (AudioRegionMusicalModeLengthTest, UnknownSourceBpmFallsBackToProjectTempo)
 {
   app_settings->set_musicalMode (true);
   auto region = make_region (0.f);
   EXPECT_EQ (
     region->bounds ()->length ()->mode (),
-    dsp::AtomicPosition::TimeFormat::Absolute);
-  EXPECT_NEAR (region->bounds ()->length ()->seconds (), 1.0, 1e-3);
+    dsp::AtomicPosition::TimeFormat::Musical);
+  // 1 s @ 120 BPM => 1920 ticks
+  EXPECT_NEAR (region->bounds ()->length ()->ticks (), 1920.0, 1.0);
 }
 
-// Full-clip: loop_end tracks the length, including its time format. So in
-// musical mode loop_end is Musical (== musical_ticks), and in non-musical mode
-// it is Absolute (== native duration) — not left behind in Musical ticks at the
-// project tempo (which would desync from the length on tempo changes).
-TEST_F (AudioRegionMusicalModeLengthTest, FullClipLoopEndTracksLengthFormat)
+// Full-clip: loop_end tracks the length. All positions are Musical ticks
+// derived from source BPM — no format switching on musical-mode toggle.
+TEST_F (AudioRegionMusicalModeLengthTest, FullClipLoopEndAlwaysMusical)
 {
   app_settings->set_musicalMode (true);
   auto   region = make_region (100.f);
@@ -317,37 +303,28 @@ TEST_F (AudioRegionMusicalModeLengthTest, FullClipLoopEndTracksLengthFormat)
   EXPECT_NEAR (loop_end->ticks (), 1600.0, 1.0);
 
   region->setMusicalMode (AudioRegion::MusicalMode::Off);
-  EXPECT_EQ (loop_end->mode (), dsp::AtomicPosition::TimeFormat::Absolute);
-  EXPECT_NEAR (loop_end->seconds (), 1.0, 1e-3);
+  EXPECT_EQ (loop_end->mode (), dsp::AtomicPosition::TimeFormat::Musical);
+  EXPECT_NEAR (loop_end->ticks (), 1600.0, 1.0);
 }
 
 // A custom (detached) loop range is preserved across a musical-mode toggle:
-// the loop points convert via source_bpm, so the loop's position within the
-// clip is unchanged (loop-safe), and On -> Off -> On returns to the original.
+// all positions are always Musical ticks, so no conversion happens.
 TEST_F (AudioRegionMusicalModeLengthTest, DetachedLoopPointsPreservedOnToggle)
 {
   app_settings->set_musicalMode (true);
   auto region = make_region (100.f);
 
-  // Detach loop points from the bounds and set a custom loop: from beat 400 to
-  // 1200 ticks (source-BPM ticks), clip_start at 0.
+  // Detach loop points from the bounds and set a custom loop.
   region->loopRange ()->setTrackBounds (false);
   region->loopRange ()->loopStartPosition ()->setTicks (400.0);
   region->loopRange ()->loopEndPosition ()->setTicks (1200.0);
 
-  // Toggle to non-musical: 400 ticks @ 100 BPM => 0.25 s; 1200 ticks => 0.75 s.
+  // Toggle to non-musical: ticks unchanged, format unchanged.
   region->setMusicalMode (AudioRegion::MusicalMode::Off);
-  EXPECT_EQ (
-    region->loopRange ()->loopStartPosition ()->mode (),
-    dsp::AtomicPosition::TimeFormat::Absolute);
-  EXPECT_EQ (
-    region->loopRange ()->loopEndPosition ()->mode (),
-    dsp::AtomicPosition::TimeFormat::Absolute);
-  EXPECT_NEAR (
-    region->loopRange ()->loopStartPosition ()->seconds (), 0.25, 1e-3);
-  EXPECT_NEAR (region->loopRange ()->loopEndPosition ()->seconds (), 0.75, 1e-3);
+  EXPECT_NEAR (region->loopRange ()->loopStartPosition ()->ticks (), 400.0, 1.0);
+  EXPECT_NEAR (region->loopRange ()->loopEndPosition ()->ticks (), 1200.0, 1.0);
 
-  // Toggle back to musical: no drift.
+  // Toggle back: still unchanged.
   region->setMusicalMode (AudioRegion::MusicalMode::On);
   EXPECT_NEAR (region->loopRange ()->loopStartPosition ()->ticks (), 400.0, 1.0);
   EXPECT_NEAR (region->loopRange ()->loopEndPosition ()->ticks (), 1200.0, 1.0);

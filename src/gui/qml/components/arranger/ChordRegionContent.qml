@@ -18,7 +18,7 @@ Item {
   required property int contentWidth
   readonly property real pxPerTick: root.contentWidth / root.regionTicks
   required property ChordRegion region
-  readonly property real regionTicks: root.region.bounds.length.ticks
+  readonly property real regionTicks: root.region.bounds.timelineLengthTicks
 
   function rootNoteToColor(rootNote) {
     return Qt.hsla(rootNote / 12.0, 0.7, 0.5, 0.6);

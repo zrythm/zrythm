@@ -244,7 +244,9 @@ Zrythm makes extensive use of modern C++ features:
 ### Unit Safety
 
 **Strong Unit Type Usage Guidelines:**
-- Prefer `au::max`, `au::min`, etc., over the `std` alternatives when the arguments are unit types
+- Use strong types (`units::sample_t`, `units::precise_tick_t`, etc.) everywhere — including struct members, function parameters, and local variables. Never extract to raw `int64_t`/`double` when the operation can be done directly on the strong type
+- Prefer `au` math functions (`abs`, `min`, `max`, `clamp`, etc.) over the `std` alternatives when the arguments are unit types. Use **unqualified** calls (e.g., `abs(q)`, not `au::abs(q)` or `std::abs(q.in(units::samples))`) — see [au math docs](https://aurora-opensource.github.io/au/main/reference/math/)
+- Never write patterns like `std::abs(a.source_frame.in(units::samples) - a.output_frame.in(units::samples)) <= tol.in(units::samples)` — instead write `abs(a.source_frame - a.output_frame) <= tol`
 
 ### Audio Processing
 

@@ -70,12 +70,7 @@ public:
   }
   Q_SIGNAL void trackBoundsChanged (bool track);
 
-  bool looped () const
-  {
-    return loopStartPosition ()->samples () > 0
-           || clipStartPosition ()->samples () > 0
-           || length ()->samples () != loopEndPosition ()->samples ();
-  }
+  bool          looped () const;
   Q_SIGNAL void loopedChanged ();
 
   Q_SIGNAL void loopableObjectPropertiesChanged ();

@@ -6,7 +6,10 @@
 #include <string_view>
 
 #include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/content_time_warp.h"
 #include "utils/icloneable.h"
+
+#include <QPointer>
 
 #include <boost/describe/class.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -31,6 +34,9 @@ class ArrangerObjectBounds : public QObject
   Q_OBJECT
   Q_PROPERTY (
     zrythm::dsp::AtomicPositionQmlAdapter * length READ length CONSTANT)
+  Q_PROPERTY (
+    double timelineLengthTicks READ timelineLengthTicks NOTIFY
+      timelineLengthTicksChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -62,8 +68,41 @@ public:
     length ()->setTicks (ticks);
   }
 
+  double        timelineLengthTicks () const;
+  Q_SIGNAL void timelineLengthTicksChanged ();
+
   // ========================================================================
 
+  /**
+   * @brief Sets the warp used for timeline position queries.
+   *
+   * ArrangerObjectBounds and ContentTimeWarp have a genuine circular
+   * dependency: ContentTimeWarp needs this object's length adapter (to listen
+   * for length changes and drive @c rebuild()), while this object needs
+   * ContentTimeWarp (to convert content ticks to timeline samples/ticks in
+   * @c get_end_position_samples() and @c timelineLengthTicks()).
+   *
+   * Neither can be fully constructed before the other, so the composition root
+   * (ArrangerObject) creates both, then calls this method to inject the warp.
+   * @c nullptr is valid — non-region objects (e.g. MidiNote) have no warp and
+   * fall back to direct @c tick_to_samples conversion.
+   */
+  void set_content_warp (dsp::ContentTimeWarp * warp) { content_warp_ = warp; }
+
+  /**
+   * @brief Returns the end position of this object in timeline samples.
+   *
+   * Uses ContentTimeWarp when available (regions), otherwise falls back to
+   * direct tick-to-samples conversion (MidiNote, etc.).
+   *
+   * @note Main-thread only. Reads ContentTimeWarp's warp points which are
+   * mutated by @c rebuild() on the main thread. All current callers are
+   * offline/cache-generation paths (e.g. @c serialize_to_buffer,
+   * waveform canvas, timeline data provider).
+   *
+   * @param end_position_inclusive If true, returns the exact end sample; if
+   * false, returns one sample before (for half-open interval queries).
+   */
   units::sample_t get_end_position_samples (bool end_position_inclusive) const;
 
   /**
@@ -74,7 +113,7 @@ public:
    * @param object_end_pos_inclusive Whether @ref end_pos_ is considered as part
    * of the object. This is probably always false.
    */
-  [[nodicard]] bool
+  [[nodiscard]] bool
   is_hit (const units::sample_t frames, bool object_end_pos_inclusive = false)
     const;
 
@@ -111,6 +150,11 @@ private:
   /// Length of the object.
   dsp::AtomicPosition                                    length_;
   utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> length_adapter_;
+
+  /// Warp for content→timeline conversion. Set by ArrangerObject after both
+  /// are constructed (circular dependency — see @ref set_content_warp).
+  /// Nullptr for non-region objects (MidiNote etc.).
+  QPointer<dsp::ContentTimeWarp> content_warp_;
 
   BOOST_DESCRIBE_CLASS (ArrangerObjectBounds, (), (), (), (length_))
 };

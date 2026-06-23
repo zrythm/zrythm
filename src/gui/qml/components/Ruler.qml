@@ -156,7 +156,7 @@ Item {
             color: root.region.color.useColor ? root.region.color.color : root.track.color
             height: 8
             opacity: 0.6
-            width: root.region.bounds.length.ticks * root.pxPerTick
+            width: root.region.bounds.timelineLengthTicks * root.pxPerTick
           }
 
           Rectangle {

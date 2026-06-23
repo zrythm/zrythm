@@ -17,7 +17,7 @@ Arranger {
   readonly property real fadeOutPx: root.region && root.region.fadeRange ? root.region.fadeRange.endOffset.ticks * root.ruler.pxPerTick : 0
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property AudioRegion region: clipEditor.region
-  readonly property real regionWidth: root.region && root.region.bounds ? root.region.bounds.length.ticks * root.ruler.pxPerTick : 0
+  readonly property real regionWidth: root.region && root.region.bounds ? root.region.bounds.timelineLengthTicks * root.ruler.pxPerTick : 0
   readonly property real regionX: root.region ? root.region.position.ticks * root.ruler.pxPerTick : 0
   readonly property Track track: clipEditor.track
 

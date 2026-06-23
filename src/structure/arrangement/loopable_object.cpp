@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cmath>
+
 #include "structure/arrangement/loopable_object.h"
 
+#include <au/math.hh>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::structure::arrangement
@@ -17,7 +20,6 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           clip_start_pos_,
           tempo_map_wrapper,
-          *bounds.position (),
           // Clip start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::min (
@@ -31,7 +33,6 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           loop_start_pos_,
           tempo_map_wrapper,
-          *bounds.position (),
           // Loop start must be before loop end and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (ticks, units::ticks (0.0));
@@ -45,7 +46,6 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
         utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
           loop_end_pos_,
           tempo_map_wrapper,
-          *bounds.position (),
           // Loop end must be after loop start and clip start and non-negative
           [this] (units::precise_tick_t ticks) {
             ticks = std::max (
@@ -65,21 +65,9 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
           track_bounds_connection_ = QObject::connect (
             bounds_.length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
             this, [this] () {
-              // Sync the loop points to the bounds length, preserving the
-              // length's time format (Musical ticks or Absolute seconds).
-              // Using setTicks() unconditionally would convert through the
-              // project tempo when the length is Absolute (e.g. an audio region
-              // in non-musical mode), desynchronising loop_end from the length.
-              const auto mode = length ()->mode ();
-              clipStartPosition ()->setMode (mode);
-              loopStartPosition ()->setMode (mode);
-              loopEndPosition ()->setMode (mode);
               clipStartPosition ()->setTicks (0.0);
               loopStartPosition ()->setTicks (0.0);
-              if (mode == dsp::AtomicPosition::TimeFormat::Absolute)
-                loopEndPosition ()->setSeconds (length ()->seconds ());
-              else
-                loopEndPosition ()->setTicks (length ()->ticks ());
+              loopEndPosition ()->setTicks (length ()->ticks ());
             });
 
           // also emit the signal to update all positions since we are
@@ -128,25 +116,35 @@ ArrangerObjectLoopRange::ArrangerObjectLoopRange (
 int
 ArrangerObjectLoopRange::get_num_loops (bool count_incomplete) const
 {
-  const auto full_size = units::samples (length ()->samples ());
-  const auto loop_start = units::samples (
-    loopStartPosition ()->samples () - clipStartPosition ()->samples ());
-  const auto loop_size = get_loop_length_in_frames ();
+  const auto full_size = length ()->position ().get_ticks ();
+  const auto loop_start =
+    loopStartPosition ()->position ().get_ticks ()
+    - clipStartPosition ()->position ().get_ticks ();
+  const auto loop_size = get_loop_length_in_ticks ();
+  if (loop_size.in (units::ticks) <= 0.0) [[unlikely]]
+    return 0;
+  const auto span = (full_size - loop_start).in (units::ticks);
+  const auto loop_size_d = loop_size.in (units::ticks);
+  const auto full_loops = static_cast<int> (std::floor (span / loop_size_d));
+  constexpr double epsilon = 1e-6;
+  const bool       add_one =
+    count_incomplete && std::fmod (span, loop_size_d) > epsilon;
+  return full_loops + (add_one ? 1 : 0);
+}
 
-  // Special case
-  if (loop_size == units::samples (0)) [[unlikely]]
-    {
-      return 0;
-    }
-
-  // Calculate the number of full loops using integer division
-  const auto full_loops = (full_size - loop_start) / loop_size;
-
-  // Add 1 if we want to count incomplete loops
-  const auto add_one =
-    (count_incomplete
-     && (full_size - loop_start) % loop_size != units::samples (0));
-  return static_cast<int> (full_loops) + (add_one ? 1 : 0);
+bool
+ArrangerObjectLoopRange::looped () const
+{
+  // Tick-space equality with a tolerance that absorbs floating-point
+  // residue from conversions (qFuzzyCompare is unreliable near zero, and
+  // length is guaranteed >= 1 tick by the bounds constraint).
+  constexpr auto epsilon = units::ticks (1e-6);
+  const auto     len = length ()->position ().get_ticks ();
+  const auto     loop_end = loopEndPosition ()->position ().get_ticks ();
+  const auto     loop_start = loopStartPosition ()->position ().get_ticks ();
+  const auto     clip_start = clipStartPosition ()->position ().get_ticks ();
+  return loop_start > units::ticks (0.0) || clip_start > units::ticks (0.0)
+         || abs (len - loop_end) > epsilon;
 }
 
 void

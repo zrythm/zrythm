@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/content_time_warp.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_fwd.h"
 #include "structure/arrangement/bounded_object.h"
@@ -121,6 +122,8 @@ public:
   ArrangerObjectMuteFunctionality * mute () const { return mute_.get (); }
   ArrangerObjectFadeRange * fadeRange () const { return fade_range_.get (); }
 
+  dsp::ContentTimeWarp * contentWarp () const { return content_warp_.get (); }
+
   /**
    * @brief Emitted when any of the properties of the object changed.
    */
@@ -216,6 +219,7 @@ private:
   utils::QObjectUniquePtr<ArrangerObjectColor>             color_;
   utils::QObjectUniquePtr<ArrangerObjectMuteFunctionality> mute_;
   utils::QObjectUniquePtr<ArrangerObjectFadeRange>         fade_range_;
+  utils::QObjectUniquePtr<dsp::ContentTimeWarp>            content_warp_;
 
   /**
    * @brief Parent object, if any (for example the owning clip).

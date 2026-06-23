@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <span>
+
+#include "dsp/content_time_warp.h"
 #include "dsp/tempo_map.h"
 #include "dsp/time_warp_map.h"
 #include "utils/units.h"
@@ -11,28 +14,26 @@ namespace zrythm::dsp
 {
 
 /**
- * @brief Produces a TimeWarpMap for musical-mode auto-timestretch.
+ * @brief Convert ContentTimeWarp's tick-space warp points to a sample-space
+ * TimeWarpMap for the timestretch engine.
  *
- * Derives the source→output sample mapping from the tempo map and the clip's
- * permanent source BPM. The clip's musical content is assumed to be at a
- * constant @p source_bpm. Tempo changes within the region's span — including
- * linear ramps — are followed exactly: an anchor is placed at every
- * tempo-event boundary, and additional anchors are densely placed inside
- * linear-curve segments so the mapping tracks the ramp to sub-sample accuracy
- * between anchors.
+ * Pure mechanical conversion — two linear scalings per warp point:
+ *   source_frame = content_ticks / ppq * (60 / source_bpm) * sr
+ *   output_frame = tick_to_samples(region_start + delta_ticks) -
+ * region_start_samples
  *
- * @param tempo_map Project tempo map.
- * @param region_start_tick Absolute tick position of the region start.
- * @param source_bpm The clip's permanent source BPM (must be > 0).
- * @param num_source_frames Number of source frames in the clip.
- * @return A validated TimeWarpMap.
+ * No tempo-event enumeration or curve-type logic — all curve information is
+ * already baked into the warp points (including dense sampling for Linear
+ * ramps). This is why drift between the two paths is structurally impossible.
+ *
  * @throws std::invalid_argument if @p source_bpm <= 0.
  */
 [[nodiscard]] TimeWarpMap
-compute_tempo_warp_map (
-  const TempoMap       &tempo_map,
-  units::precise_tick_t region_start_tick,
-  float                 source_bpm,
-  units::sample_t       num_source_frames);
+to_time_warp_map (
+  std::span<const ContentTimeWarp::WarpPoint> warp_points,
+  const TempoMap                             &tempo_map,
+  units::precise_tick_t                       region_start_tick,
+  double                                      source_bpm,
+  units::sample_t                             num_source_frames);
 
 } // namespace zrythm::dsp

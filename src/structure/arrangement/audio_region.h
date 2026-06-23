@@ -121,20 +121,12 @@ private:
    */
   void init_length_from_clip ();
 
-  /**
-   * @brief Switches the length and loop points between Musical (ticks) and
-   * Absolute (seconds) to match the effective musical mode.
-   *
-   * Converts via the clip's source BPM (stable), not the project tempo that
-   * AtomicPosition::setMode would use — so the clip's intrinsic musical length
-   * survives tempo changes (absolute sync) and values are preserved (loop-safe:
-   * a k-loop region stays k loops). Called from @ref setMusicalMode.
-   */
-  void update_time_format ();
-
-  /// Recomputes effective musical mode; calls update_time_format() and emits
-  /// effectivelyInMusicalModeChanged() if the effective state changed.
+  /// Recomputes effective musical mode; calls update_warp_configuration() and
+  /// emits effectivelyInMusicalModeChanged() if the effective state changed.
   void reevaluate_effective_musical_mode ();
+
+  /// Configures the ContentTimeWarp based on musical mode and source BPM.
+  void update_warp_configuration ();
 
   static constexpr auto kGainKey = "gain"sv;
   static constexpr auto kMusicalModeKey = "musicalMode"sv;

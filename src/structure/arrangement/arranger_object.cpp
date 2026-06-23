@@ -74,6 +74,23 @@ ArrangerObject::ArrangerObject (
         &ArrangerObject::propertiesChanged);
     }
 
+  if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Region))
+    {
+      content_warp_ = utils::make_qobject_unique<dsp::ContentTimeWarp> (
+        tempo_map_wrapper_, position_adapter_.get (),
+        bounds_ ? bounds_->length () : nullptr, this);
+      if (bounds_)
+        {
+          bounds_->set_content_warp (content_warp_.get ());
+          QObject::connect (
+            content_warp_.get (), &dsp::ContentTimeWarp::mapChanged,
+            bounds_.get (), &ArrangerObjectBounds::timelineLengthTicksChanged);
+        }
+      QObject::connect (
+        content_warp_.get (), &dsp::ContentTimeWarp::mapChanged, this,
+        &ArrangerObject::propertiesChanged);
+    }
+
   QObject::connect (
     position (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
     &ArrangerObject::propertiesChanged);

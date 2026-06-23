@@ -19,7 +19,7 @@ ArrangerObjectBaseView {
   readonly property alias regionContent: regionContent.data
   readonly property alias regionContentContainer: regionContent
   readonly property string regionName: arrangerObject.name.name
-  readonly property real regionTicks: arrangerObject.bounds.length.ticks
+  readonly property real regionTicks: arrangerObject.bounds.timelineLengthTicks
 
   // Progressive header disclosure: 0=full badge+loop, 1=symbol badge+loop,
   // 2=loop only, 3=name only. Priority: name > loop > badge.
