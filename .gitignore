@@ -192,3 +192,6 @@ out
 
 # Qt
 **/.qmlls.ini
+
+# Brainstorming/visual companion
+.superpowers/
