@@ -194,7 +194,7 @@ ArrangerObjectCreator::addMidiRegionFromChordDescriptor (
           .with_start_ticks (units::ticks (0))
           .with_end_ticks (units::ticks (mn_len_ticks))
           .build_in_registry ();
-      mr->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (mn);
+      mr->structure::arrangement::ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (mn);
     }
 
   return mr;

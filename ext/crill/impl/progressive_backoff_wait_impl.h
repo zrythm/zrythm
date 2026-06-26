@@ -82,7 +82,7 @@ progressive_backoff_wait_armv8 (Predicate &&pred)
           if (pred ())
             return;
 
-          __wfe ();
+          asm volatile ("wfe" ::: "memory");
         }
 
       // waiting longer than we should, let's give other threads a chance to
