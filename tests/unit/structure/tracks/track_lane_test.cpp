@@ -192,64 +192,64 @@ TEST_F (TrackLaneTest, EffectivelyMutedLogic)
   EXPECT_FALSE (midi_lane_->effectivelyMuted ());
 }
 
-TEST_F (TrackLaneTest, MidiRegionManagement)
+TEST_F (TrackLaneTest, MidiClipManagement)
 {
-  // Test adding MIDI regions
-  EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 0);
+  // Test adding MIDI clips
+  EXPECT_EQ (midi_lane_->midiClips ()->rowCount (), 0);
 
-  // Create a MIDI region
+  // Create a MIDI clip
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
-  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+  auto midi_clip_ref = utils::create_object<arrangement::MidiClip> (
     *registry_, tempo_map_wrapper, *registry_);
 
-  // Add region to lane
+  // Add clip to lane
   midi_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::MidiRegion>::add_object (midi_region_ref);
-  EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 1);
+    arrangement::MidiClip>::add_object (midi_clip_ref);
+  EXPECT_EQ (midi_lane_->midiClips ()->rowCount (), 1);
   EXPECT_EQ (
     midi_lane_
       ->arrangement::ArrangerObjectOwner<
-        arrangement::MidiRegion>::get_children_vector ()
+        arrangement::MidiClip>::get_children_vector ()
       .at (0)
       .id (),
-    midi_region_ref.id ());
+    midi_clip_ref.id ());
 
-  // Test removing MIDI regions
+  // Test removing MIDI clips
   midi_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::MidiRegion>::remove_object (midi_region_ref.id ());
-  EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 0);
+    arrangement::MidiClip>::remove_object (midi_clip_ref.id ());
+  EXPECT_EQ (midi_lane_->midiClips ()->rowCount (), 0);
 }
 
-TEST_F (TrackLaneTest, AudioRegionManagement)
+TEST_F (TrackLaneTest, AudioClipManagement)
 {
-  // Test adding audio regions
-  EXPECT_EQ (audio_lane_->audioRegions ()->rowCount (), 0);
+  // Test adding audio clips
+  EXPECT_EQ (audio_lane_->audioClips ()->rowCount (), 0);
 
-  // Create an audio region
+  // Create an audio clip
   auto app_settings = std::make_unique<utils::AppSettings> (
     std::make_unique<test_helpers::InMemorySettingsBackend> ());
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
-  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map_wrapper, *registry_, *app_settings);
+  auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
+    *registry_, tempo_map_wrapper, *registry_);
 
-  // Add region to lane
+  // Add clip to lane
   audio_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::AudioRegion>::add_object (audio_region_ref);
-  EXPECT_EQ (audio_lane_->audioRegions ()->rowCount (), 1);
+    arrangement::AudioClip>::add_object (audio_clip_ref);
+  EXPECT_EQ (audio_lane_->audioClips ()->rowCount (), 1);
   EXPECT_EQ (
     audio_lane_
       ->arrangement::ArrangerObjectOwner<
-        arrangement::AudioRegion>::get_children_vector ()
+        arrangement::AudioClip>::get_children_vector ()
       .at (0)
       .id (),
-    audio_region_ref.id ());
+    audio_clip_ref.id ());
 
-  // Test removing audio regions
+  // Test removing audio clips
   audio_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::AudioRegion>::remove_object (audio_region_ref.id ());
-  EXPECT_EQ (audio_lane_->audioRegions ()->rowCount (), 0);
+    arrangement::AudioClip>::remove_object (audio_clip_ref.id ());
+  EXPECT_EQ (audio_lane_->audioClips ()->rowCount (), 0);
 }
 
 TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
@@ -260,13 +260,13 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
   midi_lane_->setMuted (true);
   midi_lane_->setSoloed (false);
 
-  // Add a MIDI region
+  // Add a MIDI clip
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
-  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+  auto midi_clip_ref = utils::create_object<arrangement::MidiClip> (
     *registry_, tempo_map_wrapper, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::MidiRegion>::add_object (midi_region_ref);
+    arrangement::MidiClip>::add_object (midi_clip_ref);
 
   // Serialize to JSON
   nlohmann::json j = *midi_lane_;
@@ -286,14 +286,14 @@ TEST_F (TrackLaneTest, JsonSerializationRoundtrip)
   EXPECT_DOUBLE_EQ (deserialized_lane.height (), 64.0);
   EXPECT_TRUE (deserialized_lane.muted ());
   EXPECT_FALSE (deserialized_lane.soloed ());
-  EXPECT_EQ (deserialized_lane.midiRegions ()->rowCount (), 1);
+  EXPECT_EQ (deserialized_lane.midiClips ()->rowCount (), 1);
   EXPECT_EQ (
     deserialized_lane
       .arrangement::ArrangerObjectOwner<
-        arrangement::MidiRegion>::get_children_vector ()
+        arrangement::MidiClip>::get_children_vector ()
       .at (0)
       .id (),
-    midi_region_ref.id ());
+    midi_clip_ref.id ());
 }
 
 TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
@@ -304,15 +304,15 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
   audio_lane_->setMuted (false);
   audio_lane_->setSoloed (true);
 
-  // Add an audio region
+  // Add an audio clip
   auto app_settings = std::make_unique<utils::AppSettings> (
     std::make_unique<test_helpers::InMemorySettingsBackend> ());
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
-  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map_wrapper, *registry_, *app_settings);
+  auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
+    *registry_, tempo_map_wrapper, *registry_);
   audio_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::AudioRegion>::add_object (audio_region_ref);
+    arrangement::AudioClip>::add_object (audio_clip_ref);
 
   // Serialize to JSON
   nlohmann::json j = *audio_lane_;
@@ -332,14 +332,14 @@ TEST_F (TrackLaneTest, JsonSerializationAudioRoundtrip)
   EXPECT_DOUBLE_EQ (deserialized_lane.height (), 96.0);
   EXPECT_FALSE (deserialized_lane.muted ());
   EXPECT_TRUE (deserialized_lane.soloed ());
-  EXPECT_EQ (deserialized_lane.audioRegions ()->rowCount (), 1);
+  EXPECT_EQ (deserialized_lane.audioClips ()->rowCount (), 1);
   EXPECT_EQ (
     deserialized_lane
       .arrangement::ArrangerObjectOwner<
-        arrangement::AudioRegion>::get_children_vector ()
+        arrangement::AudioClip>::get_children_vector ()
       .at (0)
       .id (),
-    audio_region_ref.id ());
+    audio_clip_ref.id ());
 }
 
 TEST_F (TrackLaneTest, NameGeneration)
@@ -382,8 +382,8 @@ TEST_F (TrackLaneTest, EmptyLaneSerialization)
   EXPECT_DOUBLE_EQ (deserialized_lane.height (), TrackLane::DEFAULT_HEIGHT);
   EXPECT_FALSE (deserialized_lane.muted ());
   EXPECT_FALSE (deserialized_lane.soloed ());
-  EXPECT_EQ (deserialized_lane.midiRegions ()->rowCount (), 0);
-  EXPECT_EQ (deserialized_lane.audioRegions ()->rowCount (), 0);
+  EXPECT_EQ (deserialized_lane.midiClips ()->rowCount (), 0);
+  EXPECT_EQ (deserialized_lane.audioClips ()->rowCount (), 0);
 }
 
 TEST_F (TrackLaneTest, PropertyChangeNotifications)
@@ -429,32 +429,32 @@ TEST_F (TrackLaneTest, PropertyChangeNotifications)
   EXPECT_EQ (solo_changes, 1);
 }
 
-TEST_F (TrackLaneTest, RegionTypeSeparation)
+TEST_F (TrackLaneTest, ClipTypeSeparation)
 {
-  // Verify that MIDI and audio regions are managed separately
+  // Verify that MIDI and audio clips are managed separately
   dsp::TempoMap        tempo_map{ units::sample_rate (44100) };
   dsp::TempoMapWrapper tempo_map_wrapper{ tempo_map };
 
-  // Add MIDI region to MIDI lane
-  auto midi_region_ref = utils::create_object<arrangement::MidiRegion> (
+  // Add MIDI clip to MIDI lane
+  auto midi_clip_ref = utils::create_object<arrangement::MidiClip> (
     *registry_, tempo_map_wrapper, *registry_);
   midi_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::MidiRegion>::add_object (midi_region_ref);
+    arrangement::MidiClip>::add_object (midi_clip_ref);
 
-  // Add audio region to audio lane
+  // Add audio clip to audio lane
   auto app_settings_2 = std::make_unique<utils::AppSettings> (
     std::make_unique<test_helpers::InMemorySettingsBackend> ());
-  auto audio_region_ref = utils::create_object<arrangement::AudioRegion> (
-    *registry_, tempo_map_wrapper, *registry_, *app_settings_2);
+  auto audio_clip_ref = utils::create_object<arrangement::AudioClip> (
+    *registry_, tempo_map_wrapper, *registry_);
   audio_lane_->arrangement::ArrangerObjectOwner<
-    arrangement::AudioRegion>::add_object (audio_region_ref);
+    arrangement::AudioClip>::add_object (audio_clip_ref);
 
   // Verify separation
-  EXPECT_EQ (midi_lane_->midiRegions ()->rowCount (), 1);
-  EXPECT_EQ (midi_lane_->audioRegions ()->rowCount (), 0);
+  EXPECT_EQ (midi_lane_->midiClips ()->rowCount (), 1);
+  EXPECT_EQ (midi_lane_->audioClips ()->rowCount (), 0);
 
-  EXPECT_EQ (audio_lane_->audioRegions ()->rowCount (), 1);
-  EXPECT_EQ (audio_lane_->midiRegions ()->rowCount (), 0);
+  EXPECT_EQ (audio_lane_->audioClips ()->rowCount (), 1);
+  EXPECT_EQ (audio_lane_->midiClips ()->rowCount (), 0);
 }
 
 } // namespace zrythm::structure::tracks

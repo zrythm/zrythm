@@ -199,25 +199,25 @@ set(rel_qml_file_paths
   components/basic/ZrythmToolBar.qml
   components/dragndrop/DescriptorDragItem.qml
   components/dragndrop/PluginDragItem.qml
-  components/arranger/AudioRegionContent.qml
-  components/arranger/AudioRegionView.qml
+  components/arranger/AudioClipContent.qml
+  components/arranger/AudioClipView.qml
   components/arranger/AutomationArranger.qml
   components/arranger/AutomationPointView.qml
-  components/arranger/AutomationRegionContent.qml
-  components/arranger/AutomationRegionView.qml
+  components/arranger/AutomationClipContent.qml
+  components/arranger/AutomationClipView.qml
   components/arranger/Arranger.qml
   components/arranger/AudioArranger.qml
   components/arranger/ArrangerObjectBaseView.qml
   components/arranger/ArrangerObjectLoader.qml
   components/arranger/ArrangerObjectTemporaryView.qml
-  components/arranger/ChordRegionContent.qml
-  components/arranger/ChordRegionView.qml
+  components/arranger/ChordClipContent.qml
+  components/arranger/ChordClipView.qml
   components/arranger/MarkerView.qml
   components/arranger/MidiArranger.qml
   components/arranger/MidiNoteView.qml
-  components/arranger/MidiRegionContent.qml
-  components/arranger/MidiRegionView.qml
-  components/arranger/RegionBaseView.qml
+  components/arranger/MidiClipContent.qml
+  components/arranger/MidiClipView.qml
+  components/arranger/ClipBaseView.qml
   components/arranger/ScaleObjectView.qml
   components/arranger/TempoMapArranger.qml
   components/arranger/TempoObjectView.qml
@@ -289,7 +289,6 @@ set(rel_qml_file_paths
   components/WaveformViewer.qml
   Greeter.qml
   DemoView.qml
-  utils/ArrangerObjectHelpers.qml
   utils/DragUtils.qml
   utils/SelectionTracker.qml
   views/ExportDialog.qml
@@ -308,7 +307,6 @@ endforeach()
 # Singleton types defined in QML need to have this
 # see https://doc.qt.io/qt-6/cmake-source-file-property-qt-qml-singleton-type.html
 set_source_files_properties(
-  ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/ArrangerObjectHelpers.qml
   ${CMAKE_CURRENT_SOURCE_DIR}/qml/utils/DragUtils.qml
   PROPERTIES QT_QML_SINGLETON_TYPE TRUE
 )

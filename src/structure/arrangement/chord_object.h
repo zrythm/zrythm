@@ -12,7 +12,7 @@ namespace zrythm::structure::arrangement
 {
 
 /**
- * A chord placed inside a ChordRegion on the chord track.
+ * A chord placed inside a ChordClip on the chord track.
  *
  * Owns its ChordDescriptor inline.
  */
@@ -28,6 +28,11 @@ public:
   ChordObject (
     const dsp::TempoMapWrapper &tempo_map_wrapper,
     QObject *                   parent = nullptr);
+
+  dsp::ContentPosition * position () const override
+  {
+    return qobject_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
 
   // ========================================================================
   // QML Interface

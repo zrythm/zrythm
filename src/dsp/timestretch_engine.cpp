@@ -55,7 +55,7 @@ create_default_timestretch_engine (
         {
           auto engine =
             std::make_unique<RubberBandTimeStretchEngine> (sample_rate);
-          if (engine->supports (options.pitch_mode))
+          if (engine->supports (options.algorithm))
             return engine;
         }
     }

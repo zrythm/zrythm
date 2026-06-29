@@ -28,7 +28,6 @@ protected:
       structure::arrangement::ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = registry_,
-        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =

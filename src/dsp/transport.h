@@ -3,11 +3,14 @@
 
 #pragma once
 
-#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/itransport.h"
 #include "dsp/playhead_qml_adapter.h"
+#include "dsp/position.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "utils/icloneable.h"
 #include "utils/views.h"
+
+#include <farbot/RealtimeObject.hpp>
 
 namespace zrythm::dsp
 {
@@ -41,7 +44,7 @@ preroll_count_bars_enum_to_int (PrerollCountBars bars)
  * engine. It manages playback, recording, and other transport-related
  * functionality.
  */
-class Transport : public QObject, public dsp::ITransport
+class Transport : public QObject
 {
   Q_OBJECT
   QML_ELEMENT
@@ -59,19 +62,17 @@ class Transport : public QObject, public dsp::ITransport
       setPlayState NOTIFY playStateChanged)
   Q_PROPERTY (zrythm::dsp::PlayheadQmlWrapper * playhead READ playhead CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * cuePosition READ cuePosition CONSTANT)
+    zrythm::dsp::TimelinePosition * cuePosition READ cuePosition CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * loopStartPosition READ
-      loopStartPosition CONSTANT)
-  Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * loopEndPosition READ loopEndPosition
+    zrythm::dsp::TimelinePosition * loopStartPosition READ loopStartPosition
       CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * punchInPosition READ punchInPosition
-      CONSTANT)
+    zrythm::dsp::TimelinePosition * loopEndPosition READ loopEndPosition CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * punchOutPosition READ
-      punchOutPosition CONSTANT)
+    zrythm::dsp::TimelinePosition * punchInPosition READ punchInPosition CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::TimelinePosition * punchOutPosition READ punchOutPosition
+      CONSTANT)
   QML_UNCREATABLE ("")
 
   /** Millisec to allow moving further backward when very close to the
@@ -79,6 +80,7 @@ class Transport : public QObject, public dsp::ITransport
   static constexpr auto REPEATED_BACKWARD_MS = au::milli (units::seconds) (240);
 
 public:
+  using PlayState = dsp::ITransport::PlayState;
   Q_ENUM (PlayState)
 
   /**
@@ -101,7 +103,7 @@ public:
   enum class RecordingMode
   {
     /**
-     * Overwrite events in first recorded region.
+     * Overwrite events in first recorded clip.
      *
      * In the case of MIDI, this will remove existing MIDI notes during
      * recording.
@@ -112,7 +114,7 @@ public:
     OverwriteEvents,
 
     /**
-     * Merge events in existing region.
+     * Merge events in existing clip.
      *
      * In the case of MIDI, this will append MIDI notes.
      *
@@ -251,19 +253,19 @@ public:
   // QML Interface
   // ==================================================================
 
-  bool          loopEnabled () const { return loop_enabled (); }
+  bool          loopEnabled () const { return loop_; }
   void          setLoopEnabled (bool enabled);
   Q_SIGNAL void loopEnabledChanged (bool enabled);
 
-  bool          recordEnabled () const { return recording_enabled (); }
+  bool          recordEnabled () const { return recording_; }
   void          setRecordEnabled (bool enabled);
   Q_SIGNAL void recordEnabledChanged (bool enabled);
 
-  bool          punchEnabled () const { return punch_enabled (); }
+  bool          punchEnabled () const { return punch_mode_; }
   void          setPunchEnabled (bool enabled);
   Q_SIGNAL void punchEnabledChanged (bool enabled);
 
-  PlayState     getPlayState () const;
+  PlayState     getPlayState () const { return play_state_; }
   void          setPlayState (PlayState state);
   Q_SIGNAL void playStateChanged (PlayState state);
 
@@ -271,25 +273,22 @@ public:
   {
     return playhead_adapter_.get ();
   }
-  dsp::AtomicPositionQmlAdapter * cuePosition () const
+  dsp::TimelinePosition * cuePosition () const { return cue_position_.get (); }
+  dsp::TimelinePosition * loopStartPosition () const
   {
-    return cue_position_adapter_.get ();
+    return loop_start_position_.get ();
   }
-  dsp::AtomicPositionQmlAdapter * loopStartPosition () const
+  dsp::TimelinePosition * loopEndPosition () const
   {
-    return loop_start_position_adapter_.get ();
+    return loop_end_position_.get ();
   }
-  dsp::AtomicPositionQmlAdapter * loopEndPosition () const
+  dsp::TimelinePosition * punchInPosition () const
   {
-    return loop_end_position_adapter_.get ();
+    return punch_in_position_.get ();
   }
-  dsp::AtomicPositionQmlAdapter * punchInPosition () const
+  dsp::TimelinePosition * punchOutPosition () const
   {
-    return punch_in_position_adapter_.get ();
-  }
-  dsp::AtomicPositionQmlAdapter * punchOutPosition () const
-  {
-    return punch_out_position_adapter_.get ();
+    return punch_out_position_.get ();
   }
 
   /**
@@ -316,41 +315,13 @@ public:
   // ==================================================================
 
   // ==================================================================
-  // ITransport Interface
+  // Audio-thread-safe accessors
   // ==================================================================
 
   units::sample_t
-  get_playhead_position_in_audio_thread () const noexcept override
+  get_playhead_position_in_audio_thread () const noexcept [[clang::nonblocking]]
   {
     return playhead_.position_during_processing_rounded ();
-  }
-
-  std::pair<units::sample_t, units::sample_t>
-  get_loop_range_positions () const noexcept override
-  {
-    return std::make_pair (
-      loop_start_position_.get_samples (), loop_end_position_.get_samples ());
-  }
-
-  std::pair<units::sample_t, units::sample_t>
-  get_punch_range_positions () const noexcept override
-  {
-    return std::make_pair (
-      punch_in_position_.get_samples (), punch_out_position_.get_samples ());
-  }
-
-  PlayState get_play_state () const noexcept override { return play_state_; }
-
-  bool loop_enabled () const noexcept override { return loop_; }
-  bool punch_enabled () const noexcept override { return punch_mode_; }
-  bool recording_enabled () const noexcept override { return recording_; }
-  units::sample_t recording_preroll_frames_remaining () const noexcept override
-  {
-    return recording_preroll_frames_remaining_;
-  }
-  units::sample_t metronome_countin_frames_remaining () const noexcept override
-  {
-    return countin_frames_remaining_;
   }
 
   // ==================================================================
@@ -369,7 +340,9 @@ public:
    * Moves the playhead by the time corresponding to given samples, taking into
    * account the loop end point.
    */
-  void add_to_playhead_in_audio_thread (units::sample_t nframes);
+  void add_to_playhead_in_audio_thread (
+    const dsp::Transport::TransportSnapshot &transport_snapshot,
+    units::sample_t nframes) noexcept [[clang::nonblocking]];
 
   void set_play_state_rt_safe (PlayState state);
 
@@ -400,9 +373,9 @@ public:
     std::vector<units::precise_tick_t> marker_ticks;
     static_assert (__cpp_lib_containers_ranges >= 202202L);
     marker_ticks.append_range (extra_markers);
-    marker_ticks.emplace_back (cue_position_.get_ticks ());
-    marker_ticks.emplace_back (loop_start_position_.get_ticks ());
-    marker_ticks.emplace_back (loop_end_position_.get_ticks ());
+    marker_ticks.emplace_back (units::ticks (cue_position_->ticks ()));
+    marker_ticks.emplace_back (units::ticks (loop_start_position_->ticks ()));
+    marker_ticks.emplace_back (units::ticks (loop_end_position_->ticks ()));
     marker_ticks.emplace_back ();
     std::ranges::sort (marker_ticks);
 
@@ -418,8 +391,9 @@ public:
             if (
               isRolling () && index > 0
               && (playhead_.get_tempo_map ().tick_to_seconds (
-                    playhead_.position_ticks ())
-                  - playhead_.get_tempo_map ().tick_to_seconds (marker_tick))
+                    TimelineTick{ playhead_.position_ticks () })
+                  - playhead_.get_tempo_map ().tick_to_seconds (
+                    TimelineTick{ marker_tick }))
                    < REPEATED_BACKWARD_MS)
               {
                 continue;
@@ -431,7 +405,7 @@ public:
       }
     else
       {
-        for (auto &marker : marker_ticks)
+        for (const auto &marker : marker_ticks)
           {
             if (marker > playhead_.position_ticks ())
               {
@@ -442,7 +416,7 @@ public:
       }
   }
 
-  bool position_is_inside_punch_range (units::sample_t pos);
+  bool position_is_inside_punch_range (units::sample_t pos) const;
 
   auto playhead_ticks_before_pause () const [[clang::blocking]]
   {
@@ -471,18 +445,23 @@ public:
     recording_preroll_frames_remaining_ -= samples;
   }
 
-  auto get_snapshot () const
+  auto get_snapshot () const noexcept [[clang::nonblocking]]
   {
+    decltype (rt_markers_)::ScopedAccess<farbot::ThreadType::realtime> access{
+      rt_markers_
+    };
     return TransportSnapshot{
-      get_loop_range_positions (),
-      get_punch_range_positions (),
+      { units::samples (access->loop_start_samples),
+       units::samples (access->loop_end_samples)  },
+      { units::samples (access->punch_in_samples),
+       units::samples (access->punch_out_samples) },
       get_playhead_position_in_audio_thread (),
-      recording_preroll_frames_remaining (),
-      metronome_countin_frames_remaining (),
-      get_play_state (),
-      loop_enabled (),
-      punch_enabled (),
-      recording_enabled ()
+      recording_preroll_frames_remaining_,
+      countin_frames_remaining_,
+      play_state_,
+      loop_,
+      punch_mode_,
+      recording_
     };
   }
 
@@ -507,37 +486,47 @@ private:
    */
   bool can_user_move_playhead () const;
 
+  /** Pre-computed marker sample positions for lock-free audio-thread reads. */
+  struct MarkerSnapshot
+  {
+    int64_t loop_start_samples{};
+    int64_t loop_end_samples{};
+    int64_t punch_in_samples{};
+    int64_t punch_out_samples{};
+  };
+
+  void update_rt_marker_snapshot ();
+
 private:
   /** Playhead position. */
   dsp::Playhead                                    playhead_;
   utils::QObjectUniquePtr<dsp::PlayheadQmlWrapper> playhead_adapter_;
 
-  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
-    time_conversion_funcs_;
-
   /** Cue point position. */
-  dsp::AtomicPosition                                    cue_position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> cue_position_adapter_;
+  utils::QObjectUniquePtr<dsp::TimelinePosition> cue_position_;
 
   /** Loop start position. */
-  dsp::AtomicPosition loop_start_position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
-    loop_start_position_adapter_;
+  utils::QObjectUniquePtr<dsp::TimelinePosition> loop_start_position_;
 
   /** Loop end position. */
-  dsp::AtomicPosition loop_end_position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
-    loop_end_position_adapter_;
+  utils::QObjectUniquePtr<dsp::TimelinePosition> loop_end_position_;
 
   /** Punch in position. */
-  dsp::AtomicPosition punch_in_position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
-    punch_in_position_adapter_;
+  utils::QObjectUniquePtr<dsp::TimelinePosition> punch_in_position_;
 
   /** Punch out position. */
-  dsp::AtomicPosition punch_out_position_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter>
-    punch_out_position_adapter_;
+  utils::QObjectUniquePtr<dsp::TimelinePosition> punch_out_position_;
+
+  /**
+   * @brief Pre-computed marker sample positions for audio-thread access.
+   *
+   * Updated on the main thread whenever a position changes, read on the
+   * audio thread via get_snapshot().
+   */
+  mutable farbot::RealtimeObject<
+    MarkerSnapshot,
+    farbot::RealtimeObjectOptions::nonRealtimeMutatable>
+    rt_markers_;
 
   /** Looping or not. */
   bool loop_{ true };

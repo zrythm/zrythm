@@ -26,15 +26,15 @@ Tracklist::getTrackForTimelineObject (
 {
   switch (arrangerObject->type ())
     {
-    case arrangement::ArrangerObject::Type::ChordRegion:
+    case arrangement::ArrangerObject::Type::ChordClip:
       {
-        // Search through chord track for this chord region
+        // Search through chord track for this chord clip
         auto * chord_track = singleton_tracks_->chordTrack ();
         if (chord_track != nullptr)
           {
             if (
               chord_track->arrangement::
-                ArrangerObjectOwner<arrangement::ChordRegion>::contains_object (
+                ArrangerObjectOwner<arrangement::ChordClip>::contains_object (
                   arrangerObject->get_uuid ()))
               {
                 return chord_track;
@@ -73,10 +73,10 @@ Tracklist::getTrackForTimelineObject (
           }
         break;
       }
-    case arrangement::ArrangerObject::Type::MidiRegion:
-    case arrangement::ArrangerObject::Type::AudioRegion:
+    case arrangement::ArrangerObject::Type::MidiClip:
+    case arrangement::ArrangerObject::Type::AudioClip:
       {
-        // Search through all tracks with lanes for this region
+        // Search through all tracks with lanes for this clip
         for (const auto &track_ref : collection ()->tracks ())
           {
             auto * track = track_ref.get ();
@@ -84,18 +84,18 @@ Tracklist::getTrackForTimelineObject (
               {
                 for (auto * lane : track->lanes ()->lanes_view ())
                   {
-                    // Check MIDI regions
+                    // Check MIDI clips
                     if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::MidiRegion>::
+                        arrangement::MidiClip>::
                         contains_object (arrangerObject->get_uuid ()))
                       {
                         return track;
                       }
-                    // Check Audio regions
+                    // Check Audio clips
                     if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::AudioRegion>::
+                        arrangement::AudioClip>::
                         contains_object (arrangerObject->get_uuid ()))
                       {
                         return track;
@@ -105,9 +105,9 @@ Tracklist::getTrackForTimelineObject (
           }
         break;
       }
-    case arrangement::ArrangerObject::Type::AutomationRegion:
+    case arrangement::ArrangerObject::Type::AutomationClip:
       {
-        // Search through all tracks with automation tracklists for this region
+        // Search through all tracks with automation tracklists for this clip
         for (const auto &track_ref : collection ()->tracks ())
           {
             auto * track = track_ref.get ();
@@ -119,7 +119,7 @@ Tracklist::getTrackForTimelineObject (
                   {
                     if (
                       automation_track->arrangement::ArrangerObjectOwner<
-                        arrangement::AutomationRegion>::
+                        arrangement::AutomationClip>::
                         contains_object (arrangerObject->get_uuid ()))
                       {
                         return track;
@@ -131,28 +131,28 @@ Tracklist::getTrackForTimelineObject (
       }
     case arrangement::ArrangerObject::Type::MidiControlEvent:
       {
-        // MIDI control events are contained within MIDI regions
+        // MIDI control events are contained within MIDI clips
         break;
       }
     case arrangement::ArrangerObject::Type::MidiNote:
       {
-        // Midi notes are contained within MIDI regions, so we need to find
-        // the parent region first, then find the track that contains that
-        // region This is more complex and may require additional infrastructure
+        // Midi notes are contained within MIDI clips, so we need to find
+        // the parent clip first, then find the track that contains that
+        // clip This is more complex and may require additional infrastructure
         break;
       }
     case arrangement::ArrangerObject::Type::ChordObject:
       {
-        // Chord objects are contained within chord regions, so we need to find
-        // the parent region first, then find the chord track that contains that
-        // region This is more complex and may require additional infrastructure
+        // Chord objects are contained within chord clips, so we need to find
+        // the parent clip first, then find the chord track that contains that
+        // clip This is more complex and may require additional infrastructure
         break;
       }
     case arrangement::ArrangerObject::Type::AutomationPoint:
       {
-        // Automation points are contained within automation regions, so we need
-        // to find the parent region first, then find the track that contains
-        // that region This is more complex and may require additional
+        // Automation points are contained within automation clips, so we need
+        // to find the parent clip first, then find the track that contains
+        // that clip This is more complex and may require additional
         // infrastructure
         break;
       }
@@ -171,10 +171,10 @@ Tracklist::getTrackLaneForObject (
 {
   switch (timelineObject->type ())
     {
-    case arrangement::ArrangerObject::Type::MidiRegion:
-    case arrangement::ArrangerObject::Type::AudioRegion:
+    case arrangement::ArrangerObject::Type::MidiClip:
+    case arrangement::ArrangerObject::Type::AudioClip:
       {
-        // Search through all tracks with lanes for this region
+        // Search through all tracks with lanes for this clip
         for (const auto &track_ref : collection ()->tracks ())
           {
             auto * track = track_ref.get ();
@@ -182,18 +182,18 @@ Tracklist::getTrackLaneForObject (
               {
                 for (auto * lane : track->lanes ()->lanes_view ())
                   {
-                    // Check MIDI regions
+                    // Check MIDI clips
                     if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::MidiRegion>::
+                        arrangement::MidiClip>::
                         contains_object (timelineObject->get_uuid ()))
                       {
                         return lane;
                       }
-                    // Check Audio regions
+                    // Check Audio clips
                     if (
                       lane->arrangement::ArrangerObjectOwner<
-                        arrangement::AudioRegion>::
+                        arrangement::AudioClip>::
                         contains_object (timelineObject->get_uuid ()))
                       {
                         return lane;
@@ -238,7 +238,7 @@ void
 Tracklist::mark_track_for_bounce (
   TrackPtrVariant track_var,
   bool            bounce,
-  bool            mark_regions,
+  bool            mark_clips,
   bool            mark_children,
   bool            mark_parents)
 {
@@ -251,12 +251,12 @@ Tracklist::mark_track_for_bounce (
         return;
 
       z_debug (
-        "marking {} for bounce {}, mark regions {}", track->get_name (), bounce,
-        mark_regions);
+        "marking {} for bounce {}, mark clips {}", track->get_name (), bounce,
+        mark_clips);
 
       track->bounce_ = bounce;
 
-      if (mark_regions)
+      if (mark_clips)
         {
           if constexpr (std::derived_from<TrackT, LanedTrack>)
             {
@@ -264,20 +264,20 @@ Tracklist::mark_track_for_bounce (
                 {
                   using LaneT = TrackT::TrackLaneType;
                   auto lane = std::get<LaneT *> (lane_var);
-                  for (auto * region : lane->get_children_view ())
+                  for (auto * clip : lane->get_children_view ())
                     {
-                      region->bounce_ = bounce;
+                      clip->bounce_ = bounce;
                     }
                 }
             }
 
           if constexpr (std::is_same_v<TrackT, ChordTrack>)
             for (
-              auto * region :
+              auto * clip :
               track->arrangement::template ArrangerObjectOwner<
-                arrangement::ChordRegion>::get_children_view ())
+                arrangement::ChordClip>::get_children_view ())
               {
-                region->bounce_ = bounce;
+                clip->bounce_ = bounce;
               }
         }
 
@@ -309,7 +309,7 @@ Tracklist::mark_track_for_bounce (
                         [&] (auto &&c) {
                           c->bounce_to_master_ = track->bounce_to_master_;
                           mark_track_for_bounce (
-                            c, bounce, mark_regions, true, false);
+                            c, bounce, mark_clips, true, false);
                         },
                         *child_var);
                     }
@@ -423,90 +423,6 @@ Tracklist::get_visible_track_after_delta (Track::Uuid track_id, int delta) const
     return std::nullopt;
   return *(found);
 #endif
-}
-
-void
-Tracklist::clear_selections_for_object_siblings (
-  const ArrangerObject::Uuid &object_id)
-{
-// TODO
-#if 0
-  auto obj_var = PROJECT->find_arranger_object_by_id (object_id);
-  std::visit (
-    [&] (auto &&obj) {
-      using ObjT = utils::base_type<decltype (obj)>;
-      if constexpr (std::derived_from<ObjT, arrangement::RegionOwnedObject>)
-        {
-          auto region = obj->get_region ();
-          for (auto * child : region->get_children_view ())
-            {
-              auto selection_mgr =
-                arrangement::PROJECT->getArrangerObjectFactory ()
-                  ->get_selection_manager_for_object (*child);
-              selection_mgr.remove_from_selection (child->get_uuid ());
-            }
-        }
-      else
-        {
-          auto tl_objs = get_timeline_objects_in_range ();
-          for (const auto &tl_obj_var : tl_objs)
-            {
-              std::visit (
-                [&] (auto &&tl_obj) {
-                  auto selection_mgr =
-                    arrangement::PROJECT->getArrangerObjectFactory ()
-                      ->get_selection_manager_for_object (*tl_obj);
-                  selection_mgr.remove_from_selection (tl_obj->get_uuid ());
-                },
-                tl_obj_var);
-            }
-        }
-    },
-    *obj_var);
-#endif
-}
-
-std::vector<arrangement::ArrangerObjectPtrVariant>
-Tracklist::get_timeline_objects () const
-{
-  std::vector<ArrangerObjectPtrVariant> ret;
-// TODO
-#if 0
-  for (const auto &track : get_track_span ())
-    {
-      std::vector<ArrangerObjectPtrVariant> objs;
-      std::visit (
-        [&] (auto &&tr) {
-          tr->collect_timeline_objects (objs);
-
-          for (auto &obj_var : objs)
-            {
-              std::visit (
-                [&] (auto &&o) {
-                  using ObjT = utils::base_type<decltype (o)>;
-                  if constexpr (arrangement::BoundedObject<ObjT>)
-                    {
-                      if (arrangement::ArrangerObjectSpan::bounds_projection (o)
-                            ->is_hit_by_range (range->first, range->second))
-                        {
-                          ret.push_back (o);
-                        }
-                    }
-                  else
-                    {
-                      if (o->is_start_hit_by_range (range->first, range->second))
-                        {
-                          ret.push_back (o);
-                        }
-                    }
-                },
-                obj_var);
-            }
-        },
-        track);
-    }
-#endif
-  return ret;
 }
 
 void

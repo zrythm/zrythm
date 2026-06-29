@@ -29,6 +29,11 @@ public:
     const dsp::TempoMapWrapper &tempo_map_wrapper,
     QObject *                   parent = nullptr);
 
+  dsp::TimelinePosition * position () const override
+  {
+    return static_cast<dsp::TimelinePosition *> (ArrangerObject::position ());
+  }
+
   // =========================================================
   // QML Interface
   // =========================================================

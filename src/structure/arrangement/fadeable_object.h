@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/curve.h"
+#include "dsp/position.h"
 #include "utils/icloneable.h"
 
 #include <nlohmann/json_fwd.hpp>
@@ -14,10 +14,8 @@ namespace zrythm::structure::arrangement
 class ArrangerObjectFadeRange : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * startOffset READ startOffset CONSTANT)
-  Q_PROPERTY (
-    zrythm::dsp::AtomicPositionQmlAdapter * endOffset READ endOffset CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Position * startOffset READ startOffset CONSTANT)
+  Q_PROPERTY (zrythm::dsp::Position * endOffset READ endOffset CONSTANT)
   Q_PROPERTY (
     zrythm::dsp::CurveOptionsQmlAdapter * fadeInCurveOpts READ fadeInCurveOpts
       CONSTANT)
@@ -29,22 +27,16 @@ class ArrangerObjectFadeRange : public QObject
 
 public:
   ArrangerObjectFadeRange (
-    const dsp::AtomicPositionQmlAdapter &start_position,
-    const dsp::TempoMapWrapper          &tempo_map_wrapper,
-    QObject *                            parent = nullptr);
+    const dsp::Position        &start_position,
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
 
   // ========================================================================
   // QML Interface
   // ========================================================================
 
-  dsp::AtomicPositionQmlAdapter * startOffset () const
-  {
-    return start_offset_adapter_.get ();
-  }
-  dsp::AtomicPositionQmlAdapter * endOffset () const
-  {
-    return end_offset_adapter_.get ();
-  }
+  dsp::Position * startOffset () const { return start_offset_.get (); }
+  dsp::Position * endOffset () const { return end_offset_.get (); }
   dsp::CurveOptionsQmlAdapter * fadeInCurveOpts () const
   {
     return fade_in_opts_adapter_.get ();
@@ -80,8 +72,8 @@ protected:
     const ArrangerObjectFadeRange &other,
     utils::ObjectCloneType         clone_type)
   {
-    obj.start_offset_adapter_->setTicks (other.start_offset_adapter_->ticks ());
-    obj.end_offset_adapter_->setTicks (other.end_offset_adapter_->ticks ());
+    obj.start_offset_->setTicks (other.start_offset_->ticks ());
+    obj.end_offset_->setTicks (other.end_offset_->ticks ());
     obj.fade_in_opts_ = other.fade_in_opts_;
     obj.fade_out_opts_ = other.fade_out_opts_;
   }
@@ -104,15 +96,31 @@ private:
     (start_offset_, end_offset_, fade_in_opts_, fade_out_opts_))
 
 private:
-  /** Fade start position (offset from object's start). */
-  dsp::AtomicPosition                                    start_offset_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> start_offset_adapter_;
+  /**
+   * @brief Fade-in end position, as content ticks from the clip start.
+   *
+   * Unlike loop bounds and note positions, fade offsets are NOT warped through
+   * ContentTimeWarp. They represent plain project-tick offsets from the clip
+   * start, applied to the already-stretched output audio.
+   *
+   * @note Currently tick-based only. Future work may add a seconds-based mode
+   * (for real-time fade durations independent of tempo). The most natural
+   * extension would be to store @c units::precise_second_t internally and
+   * derive ticks for display via the tempo map — or a @c FadeDuration type
+   * wrapping a tick/second variant with a user-selectable mode. Plain
+   * @c Position today does not constrain either option.
+   */
+  utils::QObjectUniquePtr<dsp::Position> start_offset_;
 
   /**
-   * Fade end position (offset from the object's end).
+   * @brief Fade-out start position.
+   *
+   * @note Currently stored as ticks offset from the object's start. This may be
+   * redefined as an absolute content position (ticks from clip start) in a
+   * future change. Not a @c ContentPosition because fades are not warped —
+   * see @ref start_offset_ for details.
    */
-  dsp::AtomicPosition                                    end_offset_;
-  utils::QObjectUniquePtr<dsp::AtomicPositionQmlAdapter> end_offset_adapter_;
+  utils::QObjectUniquePtr<dsp::Position> end_offset_;
 
   /** Fade in curve options. */
   dsp::CurveOptions                                    fade_in_opts_;

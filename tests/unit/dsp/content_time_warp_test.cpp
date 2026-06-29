@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/atomic_position.h"
-#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/content_time_warp.h"
+#include "dsp/position.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "utils/units.h"
@@ -24,38 +23,30 @@ protected:
       units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
     tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
-    auto tcf =
-      AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map_);
-    pos_ = std::make_unique<AtomicPosition> (*tcf);
-    pos_->set_ticks (units::ticks (0.0));
-    pos_adapter_ = std::make_unique<AtomicPositionQmlAdapter> (
-      *pos_, *tempo_map_wrapper_, std::nullopt);
+    pos_ = std::make_unique<TimelinePosition> ();
+    pos_->setTicks (0.0);
 
-    len_ = std::make_unique<AtomicPosition> (*tcf);
-    len_->set_ticks (units::ticks (7680.0));
-    len_adapter_ = std::make_unique<AtomicPositionQmlAdapter> (
-      *len_, *tempo_map_wrapper_, std::nullopt);
+    len_ = std::make_unique<ContentPosition> ();
+    len_->setTicks (7680.0);
 
     warp_ = std::make_unique<ContentTimeWarp> (
-      *tempo_map_wrapper_, pos_adapter_.get (), len_adapter_.get ());
+      *tempo_map_wrapper_, pos_.get (), len_.get ());
   }
 
-  std::unique_ptr<TempoMap>                 tempo_map_;
-  std::unique_ptr<TempoMapWrapper>          tempo_map_wrapper_;
-  std::unique_ptr<AtomicPosition>           pos_;
-  std::unique_ptr<AtomicPositionQmlAdapter> pos_adapter_;
-  std::unique_ptr<AtomicPosition>           len_;
-  std::unique_ptr<AtomicPositionQmlAdapter> len_adapter_;
-  std::unique_ptr<ContentTimeWarp>          warp_;
+  std::unique_ptr<TempoMap>         tempo_map_;
+  std::unique_ptr<TempoMapWrapper>  tempo_map_wrapper_;
+  std::unique_ptr<TimelinePosition> pos_;
+  std::unique_ptr<ContentPosition>  len_;
+  std::unique_ptr<ContentTimeWarp>  warp_;
 };
 
 TEST_F (ContentTimeWarpTest, ProjectModeIdentity)
 {
   warp_->configure_as_project ();
   EXPECT_TRUE (warp_->warpPoints ().empty ());
-  pos_->set_ticks (units::ticks (1000.0));
+  pos_->setTicks (1000.0);
   EXPECT_NEAR (
-    warp_->content_to_timeline_ticks (units::ticks (500.0)).in (units::ticks),
+    warp_->contentToTimeline (ContentTick{ units::ticks (500.0) }).asDouble (),
     1500.0, 0.5);
 }
 
@@ -72,7 +63,7 @@ TEST_F (ContentTimeWarpTest, SourceModeSameBpm)
 {
   warp_->configure_as_source (units::bpm (120.0));
   EXPECT_NEAR (
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks),
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble (),
     7680.0, 5.0);
 }
 
@@ -83,22 +74,16 @@ TEST_F (ContentTimeWarpTest, SourceModeDoubleTempo)
     units::ticks (0), units::bpm (240.0), TempoMap::CurveType::Constant);
   tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
-  auto tcf =
-    AtomicPosition::TimeConversionFunctions::from_tempo_map (*tempo_map_);
-  pos_ = std::make_unique<AtomicPosition> (*tcf);
-  pos_->set_ticks (units::ticks (0.0));
-  pos_adapter_ = std::make_unique<AtomicPositionQmlAdapter> (
-    *pos_, *tempo_map_wrapper_, std::nullopt);
-  len_ = std::make_unique<AtomicPosition> (*tcf);
-  len_->set_ticks (units::ticks (7680.0));
-  len_adapter_ = std::make_unique<AtomicPositionQmlAdapter> (
-    *len_, *tempo_map_wrapper_, std::nullopt);
+  pos_ = std::make_unique<TimelinePosition> ();
+  pos_->setTicks (0.0);
+  len_ = std::make_unique<ContentPosition> ();
+  len_->setTicks (7680.0);
   warp_ = std::make_unique<ContentTimeWarp> (
-    *tempo_map_wrapper_, pos_adapter_.get (), len_adapter_.get ());
+    *tempo_map_wrapper_, pos_.get (), len_.get ());
   warp_->configure_as_source (units::bpm (120.0));
 
   EXPECT_NEAR (
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks),
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble (),
     15360.0, 5.0);
 }
 
@@ -106,19 +91,19 @@ TEST_F (ContentTimeWarpTest, ContentToTimelineSamplesAbsolute)
 {
   warp_->configure_as_source (units::bpm (120.0));
   EXPECT_NEAR (
-    warp_->content_to_timeline_samples (units::ticks (7680.0))
+    warp_->contentToTimelineSamples (ContentTick{ units::ticks (7680.0) })
       .in (units::samples),
     176400, 100);
 }
 
 TEST_F (ContentTimeWarpTest, SourceModeWithNonZeroPosition)
 {
-  pos_->set_ticks (units::ticks (1920.0));
+  pos_->setTicks (1920.0);
   warp_->configure_as_source (units::bpm (120.0));
   // pos=1920, source BPM=120, project BPM=120 -> identity delta
-  // content_to_timeline_ticks(7680) = 1920 + 7680 = 9600
+  // contentToTimeline(7680) = 1920 + 7680 = 9600
   EXPECT_NEAR (
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks),
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble (),
     9600.0, 5.0);
 }
 
@@ -126,73 +111,182 @@ TEST_F (ContentTimeWarpTest, TempoChangeTriggersRebuild)
 {
   warp_->configure_as_source (units::bpm (120.0));
   const auto before =
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks);
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble ();
 
   tempo_map_wrapper_->addTempoEvent (
     0, 240.0, TempoEventWrapper::CurveType::Constant);
 
   EXPECT_NE (
     before,
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks));
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble ());
 }
 
 TEST_F (ContentTimeWarpTest, ProjectModeIgnoresTempoChange)
 {
   warp_->configure_as_project ();
   const auto before =
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks);
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble ();
 
   tempo_map_wrapper_->addTempoEvent (
     0, 240.0, TempoEventWrapper::CurveType::Constant);
 
   EXPECT_EQ (
     before,
-    warp_->content_to_timeline_ticks (units::ticks (7680.0)).in (units::ticks));
+    warp_->contentToTimeline (ContentTick{ units::ticks (7680.0) }).asDouble ());
 }
 
 TEST_F (ContentTimeWarpTest, LengthChangeTriggersRebuild)
 {
   warp_->configure_as_source (units::bpm (120.0));
   EXPECT_FALSE (warp_->warpPoints ().empty ());
-  len_adapter_->setTicks (3840.0);
+  len_->setTicks (3840.0);
   EXPECT_FALSE (warp_->warpPoints ().empty ());
 }
 
 TEST (WarpLookupTest, EmptyIsIdentity)
 {
   EXPECT_DOUBLE_EQ (
-    warp_lookup ({}, units::ticks (1234.0)).in (units::ticks), 1234.0);
+    warp_lookup ({}, ContentTick{ units::ticks (1234.0) }).asDouble (), 1234.0);
 }
 
 TEST (WarpLookupTest, TwoWarpPointsLinear)
 {
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)     },
-    { units::ticks (7680.0), units::ticks (15360.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (7680.0) },
+     TimelineTick{ units::ticks (15360.0) }                                    }
   };
   EXPECT_NEAR (
-    warp_lookup (warp_points, units::ticks (3840.0)).in (units::ticks), 7680.0,
-    0.5);
+    warp_lookup (warp_points, ContentTick{ units::ticks (3840.0) }).asDouble (),
+    7680.0, 0.5);
 }
 
 TEST (WarpLookupTest, ExtrapolationUsesLastSegment)
 {
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),   units::ticks (0.0)   },
-    { units::ticks (100.0), units::ticks (200.0) },
-    { units::ticks (200.0), units::ticks (600.0) }
+    { ContentTick{ units::ticks (0.0) },   TimelineTick{ units::ticks (0.0) }   },
+    { ContentTick{ units::ticks (100.0) }, TimelineTick{ units::ticks (200.0) } },
+    { ContentTick{ units::ticks (200.0) }, TimelineTick{ units::ticks (600.0) } }
   };
   EXPECT_NEAR (
-    warp_lookup (warp_points, units::ticks (300.0)).in (units::ticks), 1000.0,
-    0.5);
+    warp_lookup (warp_points, ContentTick{ units::ticks (300.0) }).asDouble (),
+    1000.0, 0.5);
+}
+
+// --- Reverse warp lookup tests ---
+
+TEST (ReverseWarpLookupTest, EmptyIsIdentity)
+{
+  EXPECT_DOUBLE_EQ (
+    reverse_warp_lookup ({}, TimelineTick{ units::ticks (1234.0) }).asDouble (),
+    1234.0);
+}
+
+TEST (ReverseWarpLookupTest, TwoWarpPointsLinear)
+{
+  // Forward: content 3840 → timeline 7680 (2x stretch)
+  // Reverse: timeline 7680 → content 3840
+  std::vector<ContentTimeWarp::WarpPoint> warp_points = {
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (7680.0) },
+     TimelineTick{ units::ticks (15360.0) }                                    }
+  };
+  EXPECT_NEAR (
+    reverse_warp_lookup (warp_points, TimelineTick{ units::ticks (7680.0) })
+      .asDouble (),
+    3840.0, 0.5);
+}
+
+TEST (ReverseWarpLookupTest, ExtrapolationUsesLastSegment)
+{
+  // Forward: content 300 → timeline 1000 (slope 2 on last segment: 600→1000)
+  // Reverse: timeline 1000 → content 300
+  std::vector<ContentTimeWarp::WarpPoint> warp_points = {
+    { ContentTick{ units::ticks (0.0) },   TimelineTick{ units::ticks (0.0) }   },
+    { ContentTick{ units::ticks (100.0) }, TimelineTick{ units::ticks (200.0) } },
+    { ContentTick{ units::ticks (200.0) }, TimelineTick{ units::ticks (600.0) } }
+  };
+  EXPECT_NEAR (
+    reverse_warp_lookup (warp_points, TimelineTick{ units::ticks (1000.0) })
+      .asDouble (),
+    300.0, 0.5);
+}
+
+TEST (ReverseWarpLookupTest, ClampsBeforeFirstPoint)
+{
+  std::vector<ContentTimeWarp::WarpPoint> warp_points = {
+    { ContentTick{ units::ticks (100.0) }, TimelineTick{ units::ticks (50.0) }  },
+    { ContentTick{ units::ticks (200.0) }, TimelineTick{ units::ticks (100.0) } }
+  };
+  // Delta before first point's delta clamps to first content position
+  EXPECT_NEAR (
+    reverse_warp_lookup (warp_points, TimelineTick{ units::ticks (25.0) })
+      .asDouble (),
+    100.0, 0.5);
+}
+
+TEST (ReverseWarpLookupTest, MultiSegmentDifferentSlopes)
+{
+  // Segment 1: content 0-100, delta 0-200 (slope 2)
+  // Segment 2: content 100-200, delta 200-600 (slope 4)
+  // Timeline 400 is in segment 2: (400-200)/(600-200) = 0.5
+  // Content = 100 + 0.5 * (200-100) = 150
+  std::vector<ContentTimeWarp::WarpPoint> warp_points = {
+    { ContentTick{ units::ticks (0.0) },   TimelineTick{ units::ticks (0.0) }   },
+    { ContentTick{ units::ticks (100.0) }, TimelineTick{ units::ticks (200.0) } },
+    { ContentTick{ units::ticks (200.0) }, TimelineTick{ units::ticks (600.0) } }
+  };
+  EXPECT_NEAR (
+    reverse_warp_lookup (warp_points, TimelineTick{ units::ticks (400.0) })
+      .asDouble (),
+    150.0, 0.5);
+}
+
+TEST_F (ContentTimeWarpTest, TimelineToContentRoundtrip)
+{
+  warp_->configure_as_source (units::bpm (120.0));
+
+  // Roundtrip: content → timeline → content should return ~same value
+  for (const double ct : { 0.0, 100.0, 1000.0, 3840.0, 7680.0 })
+    {
+      const auto content = ContentTick{ units::ticks (ct) };
+      const auto timeline = warp_->contentToTimeline (content);
+      const auto recovered = warp_->timelineToContent (timeline);
+      EXPECT_NEAR (recovered.asDouble (), ct, 1.0)
+        << "Roundtrip failed for content tick " << ct;
+    }
+}
+
+TEST_F (ContentTimeWarpTest, TimelineToContentWithNonZeroPosition)
+{
+  pos_->setTicks (1920.0);
+  warp_->configure_as_source (units::bpm (120.0));
+
+  // A timeline position of clip_start + 3840 content ticks
+  // should map back to ~3840 content ticks.
+  const auto content = ContentTick{ units::ticks (3840.0) };
+  const auto timeline = warp_->contentToTimeline (content);
+  const auto recovered = warp_->timelineToContent (timeline);
+  EXPECT_NEAR (recovered.asDouble (), 3840.0, 5.0);
+}
+
+TEST_F (ContentTimeWarpTest, TimelineToContentProjectModeIdentity)
+{
+  pos_->setTicks (1920.0);
+  warp_->configure_as_project ();
+
+  // Identity warp: timeline position == content position + clip_start
+  const auto timeline = TimelineTick{ units::ticks (1920.0 + 500.0) };
+  const auto recovered = warp_->timelineToContent (timeline);
+  EXPECT_NEAR (recovered.asDouble (), 500.0, 0.5);
 }
 
 TEST_F (ContentTimeWarpTest, LinearRampProducesDenseWarpPoints)
 {
-  // Add a Linear tempo change within the region span.
+  // Add a Linear tempo change within the clip span.
   tempo_map_wrapper_->addTempoEvent (
     1920, 180.0, TempoEventWrapper::CurveType::Linear);
-  len_adapter_->setTicks (7680.0);
+  len_->setTicks (7680.0);
   warp_->configure_as_source (units::bpm (120.0));
 
   // With a Linear segment from tick 1920 to the next boundary,
@@ -225,14 +319,14 @@ TEST_F (ContentTimeWarpTest, IsNotIdentityDifferentBpm)
 }
 
 // In Project mode, timelineLengthTicks is position-independent
-// ((pos + identity(length)) - pos == length). Moving the region must NOT
+// ((pos + identity(length)) - pos == length). Moving the clip must NOT
 // emit mapChanged — it only causes redundant QML refreshes and cache
 // invalidation (already handled by ArrangerObject's positionChanged).
 TEST_F (ContentTimeWarpTest, ProjectModeDoesNotEmitMapChangedOnPositionMove)
 {
   warp_->configure_as_project (units::bpm (120.0));
   QSignalSpy spy (warp_.get (), &ContentTimeWarp::mapChanged);
-  pos_adapter_->setTicks (1920.0);
+  pos_->setTicks (1920.0);
   EXPECT_EQ (spy.count (), 0);
 }
 
@@ -242,8 +336,9 @@ TEST_F (ContentTimeWarpTest, WarpedModeUsesUserMarkers)
 {
   // User markers: content 0→0, content 3840→7680 (2x slope)
   std::vector<ContentTimeWarp::WarpPoint> markers = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (3840.0), units::ticks (7680.0) },
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (3840.0) },
+     TimelineTick{ units::ticks (7680.0) }                                     },
   };
   warp_->configure_as_warped (units::bpm (120.0), markers);
 
@@ -252,35 +347,37 @@ TEST_F (ContentTimeWarpTest, WarpedModeUsesUserMarkers)
   const auto wp = warp_->warpPoints ();
   EXPECT_GE (wp.size (), 3u);
   // Mid-point should match the user marker (not tempo-derived)
-  EXPECT_NEAR (wp[1].content_ticks.in (units::ticks), 3840.0, 0.5);
-  EXPECT_NEAR (wp[1].timeline_delta_ticks.in (units::ticks), 7680.0, 0.5);
+  EXPECT_NEAR (wp[1].content_ticks.asDouble (), 3840.0, 0.5);
+  EXPECT_NEAR (wp[1].timeline_delta_ticks.asDouble (), 7680.0, 0.5);
 }
 
 TEST_F (ContentTimeWarpTest, WarpedModePrependsOriginIfMissing)
 {
   std::vector<ContentTimeWarp::WarpPoint> markers = {
-    { units::ticks (1000.0), units::ticks (2000.0) },
+    { ContentTick{ units::ticks (1000.0) },
+     TimelineTick{ units::ticks (2000.0) } },
   };
   warp_->configure_as_warped (units::bpm (120.0), markers);
 
   const auto wp = warp_->warpPoints ();
-  EXPECT_NEAR (wp.front ().content_ticks.in (units::ticks), 0.0, 0.5);
-  EXPECT_NEAR (wp.front ().timeline_delta_ticks.in (units::ticks), 0.0, 0.5);
+  EXPECT_NEAR (wp.front ().content_ticks.asDouble (), 0.0, 0.5);
+  EXPECT_NEAR (wp.front ().timeline_delta_ticks.asDouble (), 0.0, 0.5);
 }
 
 TEST_F (ContentTimeWarpTest, WarpedModeAppendsTerminalAtLength)
 {
   // Length is 7680 (from fixture)
   std::vector<ContentTimeWarp::WarpPoint> markers = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (1000.0), units::ticks (2000.0) },
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (1000.0) },
+     TimelineTick{ units::ticks (2000.0) }                                     },
   };
   warp_->configure_as_warped (units::bpm (120.0), markers);
 
   const auto wp = warp_->warpPoints ();
-  EXPECT_NEAR (wp.back ().content_ticks.in (units::ticks), 7680.0, 0.5);
+  EXPECT_NEAR (wp.back ().content_ticks.asDouble (), 7680.0, 0.5);
   // Extrapolate from slope 2: delta = 2000 + (7680-1000)*2 = 15360
-  EXPECT_NEAR (wp.back ().timeline_delta_ticks.in (units::ticks), 15360.0, 0.5);
+  EXPECT_NEAR (wp.back ().timeline_delta_ticks.asDouble (), 15360.0, 0.5);
 }
 
 TEST_F (ContentTimeWarpTest, WarpedModeEmptyMarkersIsIdentity)

@@ -27,13 +27,13 @@ Arranger {
 
     const automationTrack = getAutomationTrackAtY(coordinates.y);
     if (automationTrack) {
-      console.log("Creating automation region");
-      let region = objectCreator.addEmptyAutomationRegion(track, automationTrack, tickPosition);
+      console.log("Creating automation clip");
+      let clip = objectCreator.addEmptyAutomationClip(track, automationTrack, tickPosition);
       root.currentAction = Arranger.CreatingResizingR;
-      const regionOwner = automationTrack.regions;
-      root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
+      const clipOwner = automationTrack.clips;
+      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
       CursorManager.setResizeEndCursor();
-      return region;
+      return clip;
     }
 
     const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
@@ -42,13 +42,13 @@ Arranger {
     switch (track.type) {
     case Track.Chord:
       {
-        console.log("creating chord region");
-        let region = objectCreator.addEmptyChordRegion(track, tickPosition);
+        console.log("creating chord clip");
+        let clip = objectCreator.addEmptyChordClip(track, tickPosition);
         root.currentAction = Arranger.CreatingResizingR;
-        const regionOwner = (track as ChordTrack).chordRegions;
-        root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
+        const clipOwner = (track as ChordTrack).chordClips;
+        root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
         CursorManager.setResizeEndCursor();
-        return region;
+        return clip;
       }
     case Track.Marker:
       console.log("creating marker", Track.Marker, ArrangerObject.Marker);
@@ -61,13 +61,13 @@ Arranger {
       return marker;
     case Track.Midi:
     case Track.Instrument:
-      console.log("creating midi region", track.lanes.getFirstLane());
-      let region = objectCreator.addEmptyMidiRegion(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
+      console.log("creating midi clip", track.lanes.getFirstLane());
+      let clip = objectCreator.addEmptyMidiClip(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
       root.currentAction = Arranger.CreatingResizingR;
-      const regionOwner = trackLane ? trackLane.midiRegions : track.lanes.getFirstLane().midiRegions;
-      root.selectSingleObject(regionOwner, regionOwner.rowCount() - 1);
+      const clipOwner = trackLane ? trackLane.midiClips : track.lanes.getFirstLane().midiClips;
+      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
       CursorManager.setResizeEndCursor();
-      return region;
+      return clip;
     default:
       return null;
     }
@@ -107,14 +107,14 @@ Arranger {
       return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
     } else if (obj.type === ArrangerObject.Marker) {
       return arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
-    } else if (obj.type === ArrangerObject.ChordRegion) {
-      // Chord regions use the main track height minus scale objects height
+    } else if (obj.type === ArrangerObject.ChordClip) {
+      // Chord clips use the main track height minus scale objects height
       const track = getTrackForObject(obj);
       if (track) {
         return track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
       }
-    } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
-      // For regions, check if lanes are visible
+    } else if (obj.type === ArrangerObject.MidiClip || obj.type === ArrangerObject.AudioClip) {
+      // For clips, check if lanes are visible
       const track = getTrackForObject(obj);
       if (track && track.lanes && track.lanes.lanesVisible) {
         // Use lane height if lanes are visible
@@ -127,7 +127,7 @@ Arranger {
       if (track) {
         return track.height;
       }
-      return 60; // Fallback region height
+      return 60; // Fallback clip height
     } else {
       return 20; // Fallback height
     }
@@ -157,10 +157,10 @@ Arranger {
     } else if (obj.type === ArrangerObject.Marker) {
       // Markers are at the top of the track
       relativeY = track.height - (arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding);
-    } else if (obj.type === ArrangerObject.ChordRegion) {
-      // Chord regions are in the main track area
+    } else if (obj.type === ArrangerObject.ChordClip) {
+      // Chord clips are in the main track area
       relativeY = 0;
-    } else if (obj.type === ArrangerObject.MidiRegion || obj.type === ArrangerObject.AudioRegion) {
+    } else if (obj.type === ArrangerObject.MidiClip || obj.type === ArrangerObject.AudioClip) {
       if (track.lanes && track.lanes.lanesVisible) {
         const lane = root.tracklist.getTrackLaneForObject(obj);
         const trackItem = getTrackItem(track);
@@ -212,9 +212,9 @@ Arranger {
     // Make y relative to trackItem
     const relativeY = y + tracksListView.contentY - trackItem.y;
 
-    // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
+    // Get ColumnLayout (trackSectionRows) and laneClipsLoader
     const columnLayout = trackItem.children[0];
-    const laneLoader = columnLayout.children[1]; // laneRegionsLoader is second child
+    const laneLoader = columnLayout.children[1]; // laneClipsLoader is second child
     if (!laneLoader?.item) {
       return null;
     }
@@ -247,9 +247,9 @@ Arranger {
   }
 
   function getTrackLanesListView(trackItem: Item): ListView {
-    // Get ColumnLayout (trackSectionRows) and laneRegionsLoader
+    // Get ColumnLayout (trackSectionRows) and laneClipsLoader
     const columnLayout = trackItem.children[0];
-    const laneLoader = columnLayout.children[1]; // laneRegionsLoader is second child
+    const laneLoader = columnLayout.children[1]; // laneClipsLoader is second child
     return laneLoader?.item as ListView;
   }
 
@@ -518,7 +518,7 @@ Arranger {
         }
 
         Loader {
-          id: chordRegionsLoader
+          id: chordClipsLoader
 
           active: trackDelegate.track.type === Track.Chord
           height: trackDelegate.track.height - scalesLoader.height
@@ -527,38 +527,38 @@ Arranger {
           y: 0
 
           sourceComponent: Repeater {
-            id: chordRegionsRepeater
+            id: chordClipsRepeater
 
             readonly property ChordTrack track: trackDelegate.track as ChordTrack
 
-            model: track.chordRegions
+            model: track.chordClips
 
             delegate: ArrangerObjectLoader {
-              id: chordRegionLoader
+              id: chordClipLoader
 
               arrangerSelectionModel: root.arrangerSelectionModel
-              model: chordRegionsRepeater.model
+              model: chordClipsRepeater.model
               pxPerTick: root.ruler.pxPerTick
               scrollViewWidth: root.scrollViewWidth
               scrollX: root.scrollX
               unifiedObjectsModel: root.unifiedObjectsModel
 
               sourceComponent: Component {
-                ChordRegionView {
-                  id: chordRegionItem
+                ChordClipView {
+                  id: chordClipItem
 
-                  arrangerObject: chordRegionLoader.arrangerObject
+                  arrangerObject: chordClipLoader.arrangerObject
                   clipEditor: root.clipEditor
-                  height: chordRegionsRepeater.height
-                  isSelected: chordRegionLoader.selectionTracker.isSelected
+                  height: chordClipsRepeater.height
+                  isSelected: chordClipLoader.selectionTracker.isSelected
                   track: trackDelegate.track
                   undoStack: root.undoStack
 
                   onHoveredChanged: {
-                    root.handleObjectHover(hovered, chordRegionItem);
+                    root.handleObjectHover(hovered, chordClipItem);
                   }
                   onSelectionRequested: function (mouse) {
-                    root.handleObjectSelection(chordRegionsRepeater.model, chordRegionLoader.index, mouse);
+                    root.handleObjectSelection(chordClipsRepeater.model, chordClipLoader.index, mouse);
                   }
                 }
               }
@@ -567,7 +567,7 @@ Arranger {
         }
 
         Loader {
-          id: mainTrackLanedRegionsLoader
+          id: mainTrackLanedClipsLoader
 
           active: trackDelegate.track.lanes !== null
           anchors.fill: parent
@@ -579,66 +579,66 @@ Arranger {
             model: trackDelegate.track.lanes
 
             delegate: Repeater {
-              id: mainTrackLaneRegionsRepeater
+              id: mainTrackLaneClipsRepeater
 
               required property TrackLane trackLane
 
-              model: trackDelegate.track.type === Track.Audio ? trackLane.audioRegions : trackLane.midiRegions
+              model: trackDelegate.track.type === Track.Audio ? trackLane.audioClips : trackLane.midiClips
 
               delegate: ArrangerObjectLoader {
-                id: mainTrackRegionLoader
+                id: mainTrackClipLoader
 
                 arrangerSelectionModel: root.arrangerSelectionModel
-                height: mainTrackLanedRegionsLoader.height
-                model: mainTrackLaneRegionsRepeater.model
+                height: mainTrackLanedClipsLoader.height
+                model: mainTrackLaneClipsRepeater.model
                 pxPerTick: root.ruler.pxPerTick
                 scrollViewWidth: root.scrollViewWidth
                 scrollX: root.scrollX
-                sourceComponent: mainTrackRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? midiRegionComponent : audioRegionComponent
+                sourceComponent: mainTrackClipLoader.arrangerObject.type === ArrangerObject.MidiClip ? midiClipComponent : audioClipComponent
                 unifiedObjectsModel: root.unifiedObjectsModel
 
                 Component {
-                  id: midiRegionComponent
+                  id: midiClipComponent
 
-                  MidiRegionView {
-                    id: mainMidiRegionItem
+                  MidiClipView {
+                    id: mainMidiClipItem
 
-                    arrangerObject: mainTrackRegionLoader.arrangerObject
+                    arrangerObject: mainTrackClipLoader.arrangerObject
                     clipEditor: root.clipEditor
-                    isSelected: mainTrackRegionLoader.selectionTracker.isSelected
-                    lane: mainTrackLaneRegionsRepeater.trackLane
+                    isSelected: mainTrackClipLoader.selectionTracker.isSelected
+                    lane: mainTrackLaneClipsRepeater.trackLane
                     track: trackDelegate.track
                     undoStack: root.undoStack
 
                     onHoveredChanged: {
-                      root.handleObjectHover(hovered, mainMidiRegionItem);
+                      root.handleObjectHover(hovered, mainMidiClipItem);
                     }
                     onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                      root.handleObjectSelection(mainTrackLaneClipsRepeater.model, mainTrackClipLoader.index, mouse);
                     }
                   }
                 }
 
                 Component {
-                  id: audioRegionComponent
+                  id: audioClipComponent
 
-                  AudioRegionView {
-                    id: mainAudioRegionItem
+                  AudioClipView {
+                    id: mainAudioClipItem
 
-                    arrangerObject: mainTrackRegionLoader.arrangerObject
+                    arrangerObject: mainTrackClipLoader.arrangerObject
                     clipEditor: root.clipEditor
-                    height: mainTrackRegionLoader.height
-                    isSelected: mainTrackRegionLoader.selectionTracker.isSelected
-                    lane: mainTrackLaneRegionsRepeater.trackLane
+                    height: mainTrackClipLoader.height
+                    isSelected: mainTrackClipLoader.selectionTracker.isSelected
+                    lane: mainTrackLaneClipsRepeater.trackLane
                     tempoMap: root.tempoMap
                     track: trackDelegate.track
                     undoStack: root.undoStack
 
                     onHoveredChanged: {
-                      root.handleObjectHover(hovered, mainAudioRegionItem);
+                      root.handleObjectHover(hovered, mainAudioClipItem);
                     }
                     onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(mainTrackLaneRegionsRepeater.model, mainTrackRegionLoader.index, mouse);
+                      root.handleObjectSelection(mainTrackLaneClipsRepeater.model, mainTrackClipLoader.index, mouse);
                     }
                   }
                 }
@@ -664,7 +664,7 @@ Arranger {
       }
 
       Loader {
-        id: laneRegionsLoader
+        id: laneClipsLoader
 
         Layout.fillWidth: true
         Layout.maximumHeight: Layout.preferredHeight
@@ -721,38 +721,38 @@ Arranger {
             width: automationTracksListView.width
 
             Repeater {
-              id: automationRegionsRepeater
+              id: automationClipsRepeater
 
               anchors.fill: parent
-              model: automationTrackItem.automationTrack.regions
+              model: automationTrackItem.automationTrack.clips
 
               delegate: ArrangerObjectLoader {
-                id: automationRegionLoader
+                id: automationClipLoader
 
                 arrangerSelectionModel: root.arrangerSelectionModel
                 height: automationTrackItem.height
-                model: automationRegionsRepeater.model
+                model: automationClipsRepeater.model
                 pxPerTick: root.ruler.pxPerTick
                 scrollViewWidth: root.scrollViewWidth
                 scrollX: root.scrollX
                 unifiedObjectsModel: root.unifiedObjectsModel
 
                 sourceComponent: Component {
-                  AutomationRegionView {
-                    id: automationRegionItem
+                  AutomationClipView {
+                    id: automationClipItem
 
-                    arrangerObject: automationRegionLoader.arrangerObject
+                    arrangerObject: automationClipLoader.arrangerObject
                     automationTrack: automationTrackItem.automationTrack
                     clipEditor: root.clipEditor
-                    isSelected: automationRegionLoader.selectionTracker.isSelected
+                    isSelected: automationClipLoader.selectionTracker.isSelected
                     track: trackDelegate.track
                     undoStack: root.undoStack
 
                     onHoveredChanged: {
-                      root.handleObjectHover(hovered, automationRegionItem);
+                      root.handleObjectHover(hovered, automationClipItem);
                     }
                     onSelectionRequested: function (mouse) {
-                      root.handleObjectSelection(automationRegionsRepeater.model, automationRegionLoader.index, mouse);
+                      root.handleObjectSelection(automationClipsRepeater.model, automationClipLoader.index, mouse);
                     }
                   }
                 }
@@ -800,61 +800,61 @@ Arranger {
     width: lanesListView.width
 
     Component {
-      id: laneRegionLoaderComponent
+      id: laneClipLoaderComponent
 
       ArrangerObjectLoader {
-        id: laneRegionLoader
+        id: laneClipLoader
 
         arrangerSelectionModel: root.arrangerSelectionModel
         height: laneItem.trackLane.height
-        model: arrangerObject.type === ArrangerObject.MidiRegion ? laneItem.trackLane.midiRegions : laneItem.trackLane.audioRegions
+        model: arrangerObject.type === ArrangerObject.MidiClip ? laneItem.trackLane.midiClips : laneItem.trackLane.audioClips
         pxPerTick: root.ruler.pxPerTick
         scrollViewWidth: root.scrollViewWidth
         scrollX: root.scrollX
-        sourceComponent: laneRegionLoader.arrangerObject.type === ArrangerObject.MidiRegion ? laneMidiRegionComponent : laneAudioRegionComponent
+        sourceComponent: laneClipLoader.arrangerObject.type === ArrangerObject.MidiClip ? laneMidiClipComponent : laneAudioClipComponent
         unifiedObjectsModel: root.unifiedObjectsModel
 
         Component {
-          id: laneMidiRegionComponent
+          id: laneMidiClipComponent
 
-          MidiRegionView {
-            id: laneMidiRegionItem
+          MidiClipView {
+            id: laneMidiClipItem
 
-            arrangerObject: laneRegionLoader.arrangerObject
+            arrangerObject: laneClipLoader.arrangerObject
             clipEditor: root.clipEditor
-            isSelected: laneRegionLoader.selectionTracker.isSelected
+            isSelected: laneClipLoader.selectionTracker.isSelected
             lane: laneItem.trackLane
             track: laneItem.track
             undoStack: root.undoStack
 
             onHoveredChanged: {
-              root.handleObjectHover(hovered, laneMidiRegionItem);
+              root.handleObjectHover(hovered, laneMidiClipItem);
             }
             onSelectionRequested: function (mouse) {
-              root.handleObjectSelection(laneMidiRegionsRepeater.model, laneRegionLoader.index, mouse);
+              root.handleObjectSelection(laneMidiClipsRepeater.model, laneClipLoader.index, mouse);
             }
           }
         }
 
         Component {
-          id: laneAudioRegionComponent
+          id: laneAudioClipComponent
 
-          AudioRegionView {
-            id: laneAudioRegionItem
+          AudioClipView {
+            id: laneAudioClipItem
 
-            arrangerObject: laneRegionLoader.arrangerObject
+            arrangerObject: laneClipLoader.arrangerObject
             clipEditor: root.clipEditor
-            isSelected: laneRegionLoader.selectionTracker.isSelected
+            isSelected: laneClipLoader.selectionTracker.isSelected
             lane: laneItem.trackLane
             tempoMap: root.tempoMap
             track: laneItem.track
             undoStack: root.undoStack
 
             onHoveredChanged: {
-              root.handleObjectHover(hovered, laneAudioRegionItem);
+              root.handleObjectHover(hovered, laneAudioClipItem);
             }
             onSelectionRequested: function (mouse) {
-              root.handleObjectSelection(laneAudioRegionsRepeater.model, laneRegionLoader.index, mouse);
+              root.handleObjectSelection(laneAudioClipsRepeater.model, laneClipLoader.index, mouse);
             }
           }
         }
@@ -862,19 +862,19 @@ Arranger {
     }
 
     Repeater {
-      id: laneMidiRegionsRepeater
+      id: laneMidiClipsRepeater
 
       anchors.fill: parent
-      delegate: laneRegionLoaderComponent
-      model: laneItem.trackLane.midiRegions
+      delegate: laneClipLoaderComponent
+      model: laneItem.trackLane.midiClips
     }
 
     Repeater {
-      id: laneAudioRegionsRepeater
+      id: laneAudioClipsRepeater
 
       anchors.fill: parent
-      delegate: laneRegionLoaderComponent
-      model: laneItem.trackLane.audioRegions
+      delegate: laneClipLoaderComponent
+      model: laneItem.trackLane.audioClips
     }
   }
   component TrackRoleData: QtObject {

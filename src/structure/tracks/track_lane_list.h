@@ -26,7 +26,10 @@ public:
   Q_ENUM (Roles)
 
 public:
-  TrackLaneList (utils::IObjectRegistry &registry, QObject * parent = nullptr);
+  TrackLaneList (
+    utils::IObjectRegistry &registry,
+    dsp::TimebaseProvider * timebase_provider,
+    QObject *               parent = nullptr);
   ~TrackLaneList () override;
   Q_DISABLE_COPY_MOVE (TrackLaneList)
 

@@ -29,12 +29,13 @@ TEST_F (TempoWarpMapTest, IdentityWarpPointsProduceIdentityMap)
 {
   constexpr int64_t                       kFrames = 44100;
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (1920.0), units::ticks (1920.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (1920.0) },
+     TimelineTick{ units::ticks (1920.0) }                                     }
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    warp_points, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (120.0),
     units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
@@ -53,12 +54,13 @@ TEST_F (TempoWarpMapTest, SourceBpmDoubleProducesDoubleOutput)
   constexpr int64_t kFrames = 44100;
   // 1 second @ 240 BPM = 3840 ticks. Identity delta = 3840.
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (3840.0), units::ticks (3840.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (3840.0) },
+     TimelineTick{ units::ticks (3840.0) }                                     }
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), units::bpm (240.0),
+    warp_points, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (240.0),
     units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
@@ -74,12 +76,13 @@ TEST_F (TempoWarpMapTest, TempoDerivedWarpProducesIdentitySamples)
   // Source BPM 120, project tempo 120. Content 1920 ticks.
   // Tempo-derived delta: 1920 (same at 120 BPM).
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (1920.0), units::ticks (1920.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (1920.0) },
+     TimelineTick{ units::ticks (1920.0) }                                     }
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    warp_points, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (120.0),
     units::samples (kFrames));
 
   ASSERT_TRUE (twm.is_valid ());
@@ -93,34 +96,36 @@ TEST_F (TempoWarpMapTest, TempoDerivedWarpProducesIdentitySamples)
 TEST_F (TempoWarpMapTest, MultipleWarpPointsMapToOneToOne)
 {
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (960.0),  units::ticks (960.0)  },
-    { units::ticks (1920.0), units::ticks (1920.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) }   },
+    { ContentTick{ units::ticks (960.0) },  TimelineTick{ units::ticks (960.0) } },
+    { ContentTick{ units::ticks (1920.0) },
+     TimelineTick{ units::ticks (1920.0) }                                       }
   };
 
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    warp_points, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (120.0),
     units::samples (44100));
 
   ASSERT_TRUE (twm.is_valid ());
   EXPECT_EQ (twm.anchors.size (), 3u);
 }
 
-// Non-zero region start: output frames are relative to region start.
-TEST_F (TempoWarpMapTest, NonZeroRegionStartPreservesInvariants)
+// Non-zero clip start: output frames are relative to clip start.
+TEST_F (TempoWarpMapTest, NonZeroClipStartPreservesInvariants)
 {
   constexpr int64_t                       kFrames = 44100;
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),    units::ticks (0.0)    },
-    { units::ticks (1920.0), units::ticks (1920.0) }
+    { ContentTick{ units::ticks (0.0) },    TimelineTick{ units::ticks (0.0) } },
+    { ContentTick{ units::ticks (1920.0) },
+     TimelineTick{ units::ticks (1920.0) }                                     }
   };
 
-  const auto        start = units::ticks (1920.0); // region starts at bar 2
-  const TimeWarpMap twm = to_time_warp_map (
+  const TimelineTick start{ units::ticks (1920.0) }; // clip starts at bar 2
+  const TimeWarpMap  twm = to_time_warp_map (
     warp_points, *map_, start, units::bpm (120.0), units::samples (kFrames));
 
   EXPECT_TRUE (twm.is_valid ());
-  // Output frames are relative to region start (subtract region start samples).
+  // Output frames are relative to clip start (subtract clip start samples).
   EXPECT_EQ (twm.anchors.front ().output_frame, units::samples (0));
 }
 
@@ -128,15 +133,17 @@ TEST_F (TempoWarpMapTest, NonZeroRegionStartPreservesInvariants)
 TEST_F (TempoWarpMapTest, NonPositiveSourceBpmThrows)
 {
   std::vector<ContentTimeWarp::WarpPoint> wp = {
-    { units::ticks (0.0), units::ticks (0.0) }
+    { ContentTick{ units::ticks (0.0) }, TimelineTick{ units::ticks (0.0) } }
   };
   EXPECT_THROW (
     (void) to_time_warp_map (
-      wp, *map_, units::ticks (0.0), units::bpm (0.0), units::samples (100)),
+      wp, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (0.0),
+      units::samples (100)),
     std::invalid_argument);
   EXPECT_THROW (
     (void) to_time_warp_map (
-      wp, *map_, units::ticks (0.0), units::bpm (-10.0), units::samples (100)),
+      wp, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (-10.0),
+      units::samples (100)),
     std::invalid_argument);
 }
 
@@ -177,13 +184,14 @@ TEST_F (TempoWarpMapTest, TerminalAnchorPreservedOnOutputTie)
   // source frames (2297 and 4594) differ. Without pinning the terminal, the
   // cleanup drops the {4594, 2297} anchor via the output_frame <= last check.
   std::vector<ContentTimeWarp::WarpPoint> warp_points = {
-    { units::ticks (0.0),   units::ticks (0.0)    },
-    { units::ticks (100.0), units::ticks (100.0)  },
-    { units::ticks (200.0), units::ticks (100.01) },
+    { ContentTick{ units::ticks (0.0) },   TimelineTick{ units::ticks (0.0) }   },
+    { ContentTick{ units::ticks (100.0) }, TimelineTick{ units::ticks (100.0) } },
+    { ContentTick{ units::ticks (200.0) },
+     TimelineTick{ units::ticks (100.01) }                                      },
   };
   constexpr int64_t kSourceFrames = 4594; // source_frame_for(200 ticks)
   const TimeWarpMap twm = to_time_warp_map (
-    warp_points, *map_, units::ticks (0.0), units::bpm (120.0),
+    warp_points, *map_, TimelineTick{ units::ticks (0.0) }, units::bpm (120.0),
     units::samples (kSourceFrames));
 
   // The terminal anchor must survive and map source_length -> output_length.

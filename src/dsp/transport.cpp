@@ -17,44 +17,15 @@ Transport::Transport (
   QObject *                   parent)
     : QObject (parent), playhead_ (tempo_map_wrapper.get_tempo_map ()),
       playhead_adapter_ (new dsp::PlayheadQmlWrapper (playhead_, this)),
-      time_conversion_funcs_ (
-        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (
-          playhead_.get_tempo_map ())),
-      cue_position_ (*time_conversion_funcs_),
-      cue_position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
-          cue_position_,
-          tempo_map_wrapper,
-          std::nullopt,
-          this)),
-      loop_start_position_ (*time_conversion_funcs_),
-      loop_start_position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
-          loop_start_position_,
-          tempo_map_wrapper,
-          std::nullopt,
-          this)),
-      loop_end_position_ (*time_conversion_funcs_),
-      loop_end_position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
-          loop_end_position_,
-          tempo_map_wrapper,
-          std::nullopt,
-          this)),
-      punch_in_position_ (*time_conversion_funcs_),
-      punch_in_position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
-          punch_in_position_,
-          tempo_map_wrapper,
-          std::nullopt,
-          this)),
-      punch_out_position_ (*time_conversion_funcs_),
-      punch_out_position_adapter_ (
-        utils::make_qobject_unique<dsp::AtomicPositionQmlAdapter> (
-          punch_out_position_,
-          tempo_map_wrapper,
-          std::nullopt,
-          this)),
+      cue_position_ (utils::make_qobject_unique<dsp::TimelinePosition> (this)),
+      loop_start_position_ (
+        utils::make_qobject_unique<dsp::TimelinePosition> (this)),
+      loop_end_position_ (
+        utils::make_qobject_unique<dsp::TimelinePosition> (this)),
+      punch_in_position_ (
+        utils::make_qobject_unique<dsp::TimelinePosition> (this)),
+      punch_out_position_ (
+        utils::make_qobject_unique<dsp::TimelinePosition> (this)),
       property_notification_timer_ (new QTimer (this)),
       config_provider_ (std::move (config_provider))
 {
@@ -69,20 +40,73 @@ Transport::Transport (
   });
   property_notification_timer_->start ();
 
+  // Recompute RT snapshot whenever any marker position changes
+  for (
+    auto * pos :
+    { cue_position_.get (), loop_start_position_.get (),
+      loop_end_position_.get (), punch_in_position_.get (),
+      punch_out_position_.get () })
+    {
+      QObject::connect (pos, &dsp::Position::positionChanged, this, [this] () {
+        update_rt_marker_snapshot ();
+      });
+    }
+
+  // Recompute RT snapshot when tempo changes (BPM, time signature, etc.)
+  // — tick values stay the same but sample positions change.
+  QObject::connect (
+    &tempo_map_wrapper, &dsp::TempoMapWrapper::tempoEventsChanged, this,
+    [this] () { update_rt_marker_snapshot (); });
+
+  // Recompute RT snapshot when the sample rate changes.
+  QObject::connect (
+    &tempo_map_wrapper, &dsp::TempoMapWrapper::sampleRateChanged, this,
+    [this] () { update_rt_marker_snapshot (); });
+
   if (parent == nullptr)
     {
+      update_rt_marker_snapshot ();
       return;
     }
 
-  loop_end_position_.set_ticks (
-    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
-      { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  punch_in_position_.set_ticks (
-    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
-      { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 }));
-  punch_out_position_.set_ticks (
-    tempo_map_wrapper.get_tempo_map ().musical_position_to_tick (
-      { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 }));
+  loop_end_position_->setTicks (
+    tempo_map_wrapper.get_tempo_map ()
+      .musical_position_to_tick (
+        { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 })
+      .asDouble ());
+  punch_in_position_->setTicks (
+    tempo_map_wrapper.get_tempo_map ()
+      .musical_position_to_tick (
+        { .bar = 3, .beat = 1, .sixteenth = 1, .tick = 0 })
+      .asDouble ());
+  punch_out_position_->setTicks (
+    tempo_map_wrapper.get_tempo_map ()
+      .musical_position_to_tick (
+        { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 })
+      .asDouble ());
+
+  update_rt_marker_snapshot ();
+}
+
+void
+Transport::update_rt_marker_snapshot ()
+{
+  const auto &tm = playhead_.get_tempo_map ();
+  rt_markers_.nonRealtimeReplace (
+    MarkerSnapshot{
+      .loop_start_samples =
+        tm.tick_to_samples_rounded (loop_start_position_->asTick ())
+          .in (units::samples),
+      .loop_end_samples =
+        tm.tick_to_samples_rounded (loop_end_position_->asTick ())
+          .in (units::samples),
+      .punch_in_samples =
+        tm.tick_to_samples_rounded (punch_in_position_->asTick ())
+          .in (units::samples),
+      .punch_out_samples =
+        tm.tick_to_samples_rounded (punch_out_position_->asTick ())
+          .in (units::samples),
+    });
 }
 
 void
@@ -119,12 +143,6 @@ Transport::setPunchEnabled (bool enabled)
   Q_EMIT punchEnabledChanged (enabled);
 }
 
-Transport::PlayState
-Transport::getPlayState () const
-{
-  return play_state_;
-}
-
 void
 Transport::setPlayState (PlayState state)
 {
@@ -149,12 +167,13 @@ init_from (
   const Transport       &other,
   utils::ObjectCloneType clone_type)
 {
-  obj.loop_start_position_.set_ticks (other.loop_start_position_.get_ticks ());
+  obj.loop_start_position_->setTicks (other.loop_start_position_->ticks ());
   obj.playhead_.set_position_ticks (other.playhead_.position_ticks ());
-  obj.loop_end_position_.set_ticks (other.loop_end_position_.get_ticks ());
-  obj.cue_position_.set_ticks (other.cue_position_.get_ticks ());
-  obj.punch_in_position_.set_ticks (other.punch_in_position_.get_ticks ());
-  obj.punch_out_position_.set_ticks (other.punch_out_position_.get_ticks ());
+  obj.loop_end_position_->setTicks (other.loop_end_position_->ticks ());
+  obj.cue_position_->setTicks (other.cue_position_->ticks ());
+  obj.punch_in_position_->setTicks (other.punch_in_position_->ticks ());
+  obj.punch_out_position_->setTicks (other.punch_out_position_->ticks ());
+  obj.update_rt_marker_snapshot ();
 }
 
 void
@@ -177,7 +196,7 @@ Transport::requestPause ()
   playhead_before_pause_ = playhead_.position_ticks ();
   if (config_provider_.return_to_cue_on_pause_ ())
     {
-      move_playhead (cue_position_.get_ticks (), false);
+      move_playhead (cue_position_->asTick ().asQuantity (), false);
     }
 }
 
@@ -189,7 +208,7 @@ Transport::requestRoll ()
     [this] (int num_bars) -> units::sample_t {
     if (num_bars <= 0)
       return playhead_.get_tempo_map ().tick_to_samples_rounded (
-        playhead_.position_ticks ());
+        TimelineTick{ playhead_.position_ticks () });
 
     // Get time signature at current position to calculate ticks per bar
     const auto time_sig = playhead_.get_tempo_map ().time_signature_at_tick (
@@ -200,14 +219,16 @@ Transport::requestRoll ()
     const auto target_ticks =
       playhead_.position_ticks () - units::ticks (num_bars * ticks_per_bar);
     return target_ticks < units::ticks (0.0)
-             ? -playhead_.get_tempo_map ().tick_to_samples_rounded (-target_ticks)
-             : playhead_.get_tempo_map ().tick_to_samples_rounded (target_ticks);
+             ? -playhead_.get_tempo_map ().tick_to_samples_rounded (
+                 TimelineTick{ -target_ticks })
+             : playhead_.get_tempo_map ().tick_to_samples_rounded (
+                 TimelineTick{ target_ticks });
   };
 
   // Get current position in samples for calculations
   const auto current_samples =
     playhead_.get_tempo_map ().tick_to_samples_rounded (
-      playhead_.position_ticks ());
+      TimelineTick{ playhead_.position_ticks () });
 
   /* handle countin */
   const auto countin_target_pos = calculate_target_position_for_n_bars_before (
@@ -226,20 +247,23 @@ Transport::requestRoll ()
       playhead_adapter_->setTicks (
         playhead_.get_tempo_map ()
           .samples_to_tick (preroll_target_pos)
-          .in (units::ticks));
+          .asDouble ());
     }
 
   setPlayState (PlayState::RollRequested);
 }
 
 void
-Transport::add_to_playhead_in_audio_thread (const units::sample_t nframes)
+Transport::add_to_playhead_in_audio_thread (
+  const dsp::Transport::TransportSnapshot &transport_snapshot,
+  const units::sample_t                    nframes) noexcept
 {
   const auto cur_pos = get_playhead_position_in_audio_thread ();
-  auto new_pos = get_playhead_position_after_adding_frames_in_audio_thread (
-    get_playhead_position_in_audio_thread (), nframes);
-  auto diff = new_pos - cur_pos;
-  playhead_.advance_processing (diff);
+  const auto new_pos = dsp::playhead_position_after_adding_frames (
+    cur_pos, nframes, transport_snapshot.loop_enabled (),
+    transport_snapshot.get_loop_range_positions ().first,
+    transport_snapshot.get_loop_range_positions ().second);
+  playhead_.advance_processing (new_pos - cur_pos);
 }
 
 bool
@@ -264,27 +288,28 @@ Transport::move_playhead (units::precise_tick_t target_ticks, bool set_cue_point
   if (set_cue_point)
     {
       /* move cue point */
-      cue_position_adapter_->setTicks (target_ticks.in (units::ticks));
+      cue_position_->setTicks (target_ticks.in (units::ticks));
     }
 }
 
 bool
-Transport::position_is_inside_punch_range (const units::sample_t pos)
+Transport::position_is_inside_punch_range (const units::sample_t pos) const
 {
-  return pos >= punch_in_position_.get_samples ()
-         && pos < punch_out_position_.get_samples ();
+  const auto &tm = playhead_.get_tempo_map ();
+  return pos >= tm.tick_to_samples_rounded (punch_in_position_->asTick ())
+         && pos < tm.tick_to_samples_rounded (punch_out_position_->asTick ());
 }
 
 void
 to_json (nlohmann::json &j, const Transport &transport)
 {
   j = nlohmann::json{
-    { Transport::kPlayheadKey,     transport.playhead_            },
-    { Transport::kCuePosKey,       transport.cue_position_        },
-    { Transport::kLoopStartPosKey, transport.loop_start_position_ },
-    { Transport::kLoopEndPosKey,   transport.loop_end_position_   },
-    { Transport::kPunchInPosKey,   transport.punch_in_position_   },
-    { Transport::kPunchOutPosKey,  transport.punch_out_position_  },
+    { Transport::kPlayheadKey,     transport.playhead_             },
+    { Transport::kCuePosKey,       *transport.cue_position_        },
+    { Transport::kLoopStartPosKey, *transport.loop_start_position_ },
+    { Transport::kLoopEndPosKey,   *transport.loop_end_position_   },
+    { Transport::kPunchInPosKey,   *transport.punch_in_position_   },
+    { Transport::kPunchOutPosKey,  *transport.punch_out_position_  },
   };
 }
 
@@ -300,23 +325,24 @@ from_json (const nlohmann::json &j, Transport &transport)
     }
   if (j.contains (Transport::kCuePosKey))
     {
-      j.at (Transport::kCuePosKey).get_to (transport.cue_position_);
+      j.at (Transport::kCuePosKey).get_to (*transport.cue_position_);
     }
   if (j.contains (Transport::kLoopStartPosKey))
     {
-      j.at (Transport::kLoopStartPosKey).get_to (transport.loop_start_position_);
+      j.at (Transport::kLoopStartPosKey).get_to (*transport.loop_start_position_);
     }
   if (j.contains (Transport::kLoopEndPosKey))
     {
-      j.at (Transport::kLoopEndPosKey).get_to (transport.loop_end_position_);
+      j.at (Transport::kLoopEndPosKey).get_to (*transport.loop_end_position_);
     }
   if (j.contains (Transport::kPunchInPosKey))
     {
-      j.at (Transport::kPunchInPosKey).get_to (transport.punch_in_position_);
+      j.at (Transport::kPunchInPosKey).get_to (*transport.punch_in_position_);
     }
   if (j.contains (Transport::kPunchOutPosKey))
     {
-      j.at (Transport::kPunchOutPosKey).get_to (transport.punch_out_position_);
+      j.at (Transport::kPunchOutPosKey).get_to (*transport.punch_out_position_);
     }
+  transport.update_rt_marker_snapshot ();
 }
 }

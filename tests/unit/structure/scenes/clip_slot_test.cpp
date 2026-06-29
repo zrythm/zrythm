@@ -5,7 +5,7 @@
 #include <chrono>
 #include <thread>
 
-#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/midi_clip.h"
 #include "structure/scenes/clip_slot.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/track_collection.h"
@@ -36,27 +36,27 @@ protected:
   void TearDown () override
   {
     clip_slot_.reset ();
-    region_refs_.clear ();
+    clip_refs_.clear ();
     track_collection_.reset ();
     tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
     registry_.reset ();
   }
 
-  arrangement::MidiRegion * create_midi_region ()
+  arrangement::MidiClip * create_midi_clip ()
   {
-    auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    auto clip_ref = utils::create_object<arrangement::MidiClip> (
       *registry_, *tempo_map_wrapper_, *registry_);
-    auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
+    auto clip = clip_ref.get_object_as<arrangement::MidiClip> ();
 
     // Set basic properties
-    region->position ()->setTicks (0.0);
-    region->bounds ()->length ()->setTicks (100.0);
+    clip->position ()->setTicks (0.0);
+    clip->length ()->setTicks (100.0);
 
-    // Keep a reference to the region
-    region_refs_.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs_.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
   std::unique_ptr<ClipSlot>                             clip_slot_;
@@ -64,7 +64,7 @@ protected:
   std::unique_ptr<utils::ObjectRegistry>                registry_;
   std::unique_ptr<dsp::TempoMap>                        tempo_map_;
   std::unique_ptr<dsp::TempoMapWrapper>                 tempo_map_wrapper_;
-  std::vector<arrangement::ArrangerObjectUuidReference> region_refs_;
+  std::vector<arrangement::ArrangerObjectUuidReference> clip_refs_;
 };
 
 TEST_F (ClipSlotTest, InitialState)
@@ -72,8 +72,8 @@ TEST_F (ClipSlotTest, InitialState)
   // Initial state should be Stopped
   EXPECT_EQ (clip_slot_->state (), ClipSlot::ClipState::Stopped);
 
-  // Should have no region initially
-  EXPECT_EQ (clip_slot_->region (), nullptr);
+  // Should have no clip initially
+  EXPECT_EQ (clip_slot_->clip (), nullptr);
 }
 
 TEST_F (ClipSlotTest, StateChanges)
@@ -126,58 +126,80 @@ TEST_F (ClipSlotTest, StateChangeToSameState)
   EXPECT_EQ (stateSpy.count (), 0);
 }
 
-TEST_F (ClipSlotTest, RegionManagement)
+TEST_F (ClipSlotTest, ClipManagement)
 {
-  // Test setting a region
-  auto       region = create_midi_region ();
-  QSignalSpy regionSpy (clip_slot_.get (), &ClipSlot::regionChanged);
+  // Test setting a clip
+  auto       clip = create_midi_clip ();
+  QSignalSpy clipSpy (clip_slot_.get (), &ClipSlot::clipObjectChanged);
 
-  clip_slot_->setRegion (region);
+  clip_slot_->setClip (clip);
 
-  EXPECT_EQ (clip_slot_->region (), region);
-  EXPECT_EQ (regionSpy.count (), 1);
+  EXPECT_EQ (clip_slot_->clip (), clip);
+  EXPECT_EQ (clipSpy.count (), 1);
   EXPECT_EQ (
-    regionSpy.at (0).at (0).value<arrangement::ArrangerObject *> (), region);
+    clipSpy.at (0).at (0).value<arrangement::ArrangerObject *> (), clip);
 }
 
-TEST_F (ClipSlotTest, RegionChangeToSameRegion)
+TEST_F (ClipSlotTest, ClipChangeToSameClip)
 {
-  // Setting the same region should not emit signal
-  auto region = create_midi_region ();
-  clip_slot_->setRegion (region);
+  // Setting the same clip should not emit signal
+  auto clip = create_midi_clip ();
+  clip_slot_->setClip (clip);
 
-  QSignalSpy regionSpy (clip_slot_.get (), &ClipSlot::regionChanged);
-  clip_slot_->setRegion (region);
+  QSignalSpy clipSpy (clip_slot_.get (), &ClipSlot::clipObjectChanged);
+  clip_slot_->setClip (clip);
 
-  EXPECT_EQ (clip_slot_->region (), region);
-  EXPECT_EQ (regionSpy.count (), 0);
+  EXPECT_EQ (clip_slot_->clip (), clip);
+  EXPECT_EQ (clipSpy.count (), 0);
 }
 
-TEST_F (ClipSlotTest, ClearRegion)
+TEST_F (ClipSlotTest, ClearClip)
 {
-  // Set a region first
-  auto region = create_midi_region ();
-  clip_slot_->setRegion (region);
-  EXPECT_EQ (clip_slot_->region (), region);
+  // Set a clip first
+  auto clip = create_midi_clip ();
+  clip_slot_->setClip (clip);
+  EXPECT_EQ (clip_slot_->clip (), clip);
 
-  // Clear the region
-  QSignalSpy regionSpy (clip_slot_.get (), &ClipSlot::regionChanged);
-  clip_slot_->clearRegion ();
+  // Clear the clip
+  QSignalSpy clipSpy (clip_slot_.get (), &ClipSlot::clipObjectChanged);
+  clip_slot_->clearClip ();
 
-  EXPECT_EQ (clip_slot_->region (), nullptr);
-  EXPECT_EQ (regionSpy.count (), 1);
+  EXPECT_EQ (clip_slot_->clip (), nullptr);
+  EXPECT_EQ (clipSpy.count (), 1);
   EXPECT_EQ (
-    regionSpy.at (0).at (0).value<arrangement::ArrangerObject *> (), nullptr);
+    clipSpy.at (0).at (0).value<arrangement::ArrangerObject *> (), nullptr);
 }
 
-TEST_F (ClipSlotTest, ClearRegionWhenEmpty)
+TEST_F (ClipSlotTest, ClearClipWhenEmpty)
 {
   // Clearing when already empty should not emit signal
-  QSignalSpy regionSpy (clip_slot_.get (), &ClipSlot::regionChanged);
-  clip_slot_->clearRegion ();
+  QSignalSpy clipSpy (clip_slot_.get (), &ClipSlot::clipObjectChanged);
+  clip_slot_->clearClip ();
 
-  EXPECT_EQ (clip_slot_->region (), nullptr);
-  EXPECT_EQ (regionSpy.count (), 0);
+  EXPECT_EQ (clip_slot_->clip (), nullptr);
+  EXPECT_EQ (clipSpy.count (), 0);
+}
+
+// Regression: replacing a clip must detach the previous clip's timebase
+// provider from the slot (clearClip detaches, setClip used not to).
+TEST_F (ClipSlotTest, SetClipDetachesPreviousClipTimebase)
+{
+  dsp::TimebaseProvider slot_provider;
+  slot_provider.setOverride (dsp::Timebase::Absolute);
+  clip_slot_->setTimebaseProvider (&slot_provider);
+
+  auto * clip_a = create_midi_clip ();
+  auto * clip_b = create_midi_clip ();
+
+  clip_slot_->setClip (clip_a);
+  ASSERT_EQ (
+    clip_a->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+
+  clip_slot_->setClip (clip_b);
+
+  // clip_a must no longer follow the slot's Absolute override.
+  EXPECT_NE (
+    clip_a->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
 }
 
 TEST_F (ClipSlotTest, AtomicStateAccess)
@@ -243,7 +265,7 @@ protected:
     for (int i = 0; i < 3; ++i)
       {
         tracks::FinalTrackDependencies deps{
-          *tempo_map_wrapper_, *registry_, *transport_, [] { return false; }, {}
+          *tempo_map_wrapper_, *registry_, [] { return false; }, {}
         };
 
         auto track_ref = utils::create_object<tracks::FolderTrack> (
@@ -295,7 +317,7 @@ TEST_F (ClipSlotListTest, DataAccess)
           .value<ClipSlot *> ();
       EXPECT_NE (clipSlot, nullptr);
       EXPECT_EQ (clipSlot->state (), ClipSlot::ClipState::Stopped);
-      EXPECT_EQ (clipSlot->region (), nullptr);
+      EXPECT_EQ (clipSlot->clip (), nullptr);
     }
 
   // Test accessing data at invalid indices

@@ -7,10 +7,10 @@
 
 #include "dsp/file_audio_source.h"
 #include "gui/qquick/qml_utils.h"
-#include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/audio_clip.h"
 #include "structure/arrangement/audio_source_object.h"
-#include "structure/arrangement/automation_region.h"
-#include "structure/arrangement/region_renderer.h"
+#include "structure/arrangement/automation_clip.h"
+#include "structure/arrangement/clip_renderer.h"
 #include "utils/io_utils.h"
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
@@ -152,38 +152,44 @@ QmlUtils::getTrackBackground (
 }
 
 QVector<float>
-QmlUtils::getAutomationRegionValues (QObject * automationRegion, int pixelWidth)
+QmlUtils::getAutomationClipValues (QObject * automationClip, int pixelWidth)
 {
   QVector<float> result;
 
-  if (automationRegion == nullptr || pixelWidth <= 0)
+  if (automationClip == nullptr || pixelWidth <= 0)
     {
       return result;
     }
 
-  // Cast to AutomationRegion
-  auto * region =
-    qobject_cast<structure::arrangement::AutomationRegion *> (automationRegion);
-  if (region == nullptr)
+  // Cast to AutomationClip
+  auto * clip =
+    qobject_cast<structure::arrangement::AutomationClip *> (automationClip);
+  if (clip == nullptr)
     {
       return result;
     }
 
   try
     {
-      // Calculate total length in samples
-      auto totalLengthSamples =
-        static_cast<uint64_t> (region->bounds ()->length ()->samples ());
+      // Calculate total length in samples (warp-aware via
+      // get_end_position_samples, which uses ContentTimeWarp for clips and
+      // direct tick→sample conversion otherwise).
+      const auto clip_start_samples =
+        clip->get_tempo_map ().tick_to_samples_rounded (
+          clip->position ()->asTick ());
+      auto totalLengthSamples = static_cast<uint64_t> (
+        (clip->get_end_position_samples (true) - clip_start_samples)
+          .in (units::samples));
 
       if (totalLengthSamples == 0)
         {
           return result;
         }
 
-      // Serialize the entire region to a vector of automation values
+      // Serialize the entire clip to a vector of automation values
       std::vector<float> automationValues;
-      structure::arrangement::RegionRenderer::serialize_to_automation_values (
-        *region, automationValues);
+      structure::arrangement::ClipRenderer::serialize_to_automation_values (
+        *clip, automationValues);
 
       const int numSamples = static_cast<int> (automationValues.size ());
 

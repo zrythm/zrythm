@@ -92,8 +92,8 @@ TEST (TimeStretchEngineFactoryTest, ListsAndCreatesRubberBand)
     TimeStretchEngineId::RubberBand, units::sample_rate (44100));
   ASSERT_NE (engine, nullptr);
   EXPECT_EQ (engine->id (), "rubberband");
-  EXPECT_TRUE (engine->supports (StretchOptions::PitchMode::Preserve));
-  EXPECT_FALSE (engine->supports (StretchOptions::PitchMode::Repitch));
+  EXPECT_TRUE (engine->supports (StretchOptions::Algorithm::Polyphonic));
+  EXPECT_FALSE (engine->supports (StretchOptions::Algorithm::Repitch));
 }
 
 TEST (RubberBandTimeStretchEngineTest, IdentityPreservesLengthAndEnergy)
@@ -166,7 +166,7 @@ TEST (RubberBandTimeStretchEngineTest, MonoInputWorks)
   EXPECT_NEAR (rms (out), rms (input), 0.05);
 }
 
-// Regression: when a region starts before a tempo change, the warp map has an
+// Regression: when a clip starts before a tempo change, the warp map has an
 // identity anchor at the boundary (source_frame == output_frame) followed by a
 // non-identity stretch anchor. RubberBand's updateRatioFromMap() computes the
 // initial ratio from the first keyframe — an identity keyframe yields ratio
@@ -176,7 +176,7 @@ TEST (RubberBandTimeStretchEngineTest, IdentityAnchorBeforeStretchNotSilenced)
   constexpr int64_t kFrames = 4410; // 0.1 s
   const auto        input = make_sine (2, kFrames, 440.0);
 
-  // Warp map emulating a region that starts ~23 samples before a tempo change:
+  // Warp map emulating a clip that starts ~23 samples before a tempo change:
   //   (0, 0)         — origin
   //   (23, 23)       — identity: tiny constant-tempo lead-in before the event
   //   (4410, 8820)   — 2× stretch for the remainder
@@ -255,9 +255,11 @@ TEST (RubberBandTimeStretchEngineTest, NviRejectsInvalidPreconditions)
     (void) engine->stretch (input, warp, StretchOptions{}),
     std::invalid_argument);
 
-  // Unsupported pitch mode.
+  // Repitch (varispeed) is not supported by RubberBand, which always
+  // preserves pitch. The NVI layer rejects it via supports() rather than
+  // silently producing pitch-preserved output.
   const auto     good_warp = make_constant_warp (kFrames, kFrames);
-  StretchOptions repitch{ .pitch_mode = StretchOptions::PitchMode::Repitch };
+  StretchOptions repitch{ .algorithm = StretchOptions::Algorithm::Repitch };
   EXPECT_THROW (
     (void) engine->stretch (input, good_warp, repitch), std::invalid_argument);
 }

@@ -208,6 +208,7 @@ public:
       .musical_position_to_tick (
         TempoMap::MusicalPosition{
           .bar = bar, .beat = beat, .sixteenth = sixteenth, .tick = tick })
+      .asQuantity ()
       .in (units::ticks);
   }
 

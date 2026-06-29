@@ -186,7 +186,7 @@ ChordPadBank::apply_preset (const ChordPreset &preset)
   for (const auto &descr : preset.descriptors ())
     {
       auto new_descr =
-        zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> ();
+        zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (this);
       new_descr->setRootNote (descr->rootNote ());
       new_descr->setChordType (descr->chordType ());
       new_descr->setChordAccent (descr->chordAccent ());
@@ -280,7 +280,8 @@ from_json (const nlohmann::json &j, ChordPadBank &bank)
       bank.chords_.clear ();
       for (const auto &chord_json : j[ChordPadBank::kChordsKey])
         {
-          auto ptr = zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> ();
+          auto ptr =
+            zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (&bank);
           from_json (chord_json, *ptr);
           bank.chords_.push_back (std::move (ptr));
         }

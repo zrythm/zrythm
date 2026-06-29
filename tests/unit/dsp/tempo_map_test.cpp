@@ -102,27 +102,30 @@ TEST_F (TempoMapTest, ConstantTempoConversions)
 
   // Test tick to seconds
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (0)).in (units::seconds), 0.0);
+    map->tick_to_seconds (TimelineTick{ units::ticks (0) }).in (units::seconds),
+    0.0);
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (960)).in (units::seconds), 0.5);
+    map->tick_to_seconds (TimelineTick{ units::ticks (960) }).in (units::seconds),
+    0.5);
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (1920)).in (units::seconds), 1.0);
+    map->tick_to_seconds (TimelineTick{ units::ticks (1920) })
+      .in (units::seconds),
+    1.0);
 
   // Test seconds to tick
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (0.0)).in (units::ticks), 0.0);
+    map->seconds_to_tick (units::seconds (0.0)).asDouble (), 0.0);
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (0.5)).in (units::ticks), 960.0);
+    map->seconds_to_tick (units::seconds (0.5)).asDouble (), 960.0);
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (1.0)).in (units::ticks), 1920.0);
+    map->seconds_to_tick (units::seconds (1.0)).asDouble (), 1920.0);
 
   // Test samples conversion
   EXPECT_DOUBLE_EQ (
-    map->tick_to_samples (units::ticks (960)).in (units::samples),
+    map->tick_to_samples (TimelineTick{ units::ticks (960) }).in (units::samples),
     0.5 * 44100.0);
   EXPECT_DOUBLE_EQ (
-    map->samples_to_tick (units::samples (0.5 * 44100.0)).in (units::ticks),
-    960.0);
+    map->samples_to_tick (units::samples (0.5 * 44100.0)).asDouble (), 960.0);
 }
 
 // Test linear tempo ramp conversions
@@ -149,11 +152,12 @@ TEST_F (TempoMapTest, LinearTempoRamp)
     * std::log (currentBpm / 120.0);
 
   EXPECT_NEAR (
-    map->tick_to_seconds (midTick).in (units::seconds), expectedTime, 1e-8);
+    map->tick_to_seconds (TimelineTick{ midTick }).in (units::seconds),
+    expectedTime, 1e-8);
 
   // Test reverse conversion
   EXPECT_NEAR (
-    map->seconds_to_tick (units::seconds (expectedTime)).in (units::ticks),
+    map->seconds_to_tick (units::seconds (expectedTime)).asDouble (),
     midTick.in (units::ticks), 1e-6);
 }
 
@@ -186,14 +190,10 @@ TEST_F (TempoMapTest, MusicalPositionConversion)
   EXPECT_EQ (pos.tick, 1);
 
   // Test reverse conversion
-  EXPECT_EQ (
-    map->musical_position_to_tick ({ 1, 1, 1, 0 }).in (units::ticks), 0);
-  EXPECT_EQ (
-    map->musical_position_to_tick ({ 1, 2, 1, 0 }).in (units::ticks), 960);
-  EXPECT_EQ (
-    map->musical_position_to_tick ({ 1, 1, 2, 0 }).in (units::ticks), 240);
-  EXPECT_EQ (
-    map->musical_position_to_tick ({ 1, 1, 2, 1 }).in (units::ticks), 241);
+  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 1, 0 }).asDouble (), 0);
+  EXPECT_EQ (map->musical_position_to_tick ({ 1, 2, 1, 0 }).asDouble (), 960);
+  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 2, 0 }).asDouble (), 240);
+  EXPECT_EQ (map->musical_position_to_tick ({ 1, 1, 2, 1 }).asDouble (), 241);
 }
 
 // Test time signature changes
@@ -257,13 +257,15 @@ TEST_F (TempoMapTest, TimeSignatureChanges)
   EXPECT_EQ (pos.tick, 1);
 
   // Test reverse conversions
-  EXPECT_EQ (map->musical_position_to_tick ({ 5, 1, 1, 0 }), bar5Start);
   EXPECT_EQ (
-    map->musical_position_to_tick ({ 5, 3, 1, 0 }),
+    map->musical_position_to_tick ({ 5, 1, 1, 0 }).asQuantity (), bar5Start);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 5, 3, 1, 0 }).asQuantity (),
     bar5Start + units::ticks (2 * 960));
-  EXPECT_EQ (map->musical_position_to_tick ({ 8, 1, 1, 0 }), bar8Start);
   EXPECT_EQ (
-    map->musical_position_to_tick ({ 8, 3, 2, 1 }),
+    map->musical_position_to_tick ({ 8, 1, 1, 0 }).asQuantity (), bar8Start);
+  EXPECT_EQ (
+    map->musical_position_to_tick ({ 8, 3, 2, 1 }).asQuantity (),
     bar8Start + units::ticks (960) + units::ticks (960 / 4) + units::ticks (1));
 }
 
@@ -278,20 +280,24 @@ TEST_F (TempoMapTest, MultiSegmentLinearRamp)
 
   // Test before ramp
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (480)).in (units::seconds), 0.25);
+    map->tick_to_seconds (TimelineTick{ units::ticks (480) }).in (units::seconds),
+    0.25);
 
   // Test start of ramp
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (960)).in (units::seconds), 0.5);
+    map->tick_to_seconds (TimelineTick{ units::ticks (960) }).in (units::seconds),
+    0.5);
 
   // Test midpoint of ramp (150 BPM)
-  const auto   midTime = map->tick_to_seconds (units::ticks (1440));
+  const auto midTime =
+    map->tick_to_seconds (TimelineTick{ units::ticks (1440) });
   const double expectedMidTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (150.0 / 120.0);
   EXPECT_NEAR (midTime.in (units::seconds), expectedMidTime, 1e-8);
 
   // Test end of ramp
-  const auto   endTime = map->tick_to_seconds (units::ticks (1920));
+  const auto endTime =
+    map->tick_to_seconds (TimelineTick{ units::ticks (1920) });
   const double expectedEndTime =
     0.5 + (60.0 * 960) / (960.0 * 60.0) * std::log (180.0 / 120.0);
   EXPECT_NEAR (endTime.in (units::seconds), expectedEndTime, 1e-8);
@@ -300,7 +306,8 @@ TEST_F (TempoMapTest, MultiSegmentLinearRamp)
   const double afterRampTime =
     endTime.in (units::seconds) + (480.0 / 960.0) * (60.0 / 180.0);
   EXPECT_NEAR (
-    map->tick_to_seconds (units::ticks (2400)).in (units::seconds),
+    map->tick_to_seconds (TimelineTick{ units::ticks (2400) })
+      .in (units::seconds),
     afterRampTime, 1e-8);
 }
 
@@ -349,11 +356,16 @@ TEST_F (TempoMapTest, LinearRampLastEvent)
 
   // Should be constant after 960 because no endpoint for ramp
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (960)).in (units::seconds), 0.5);
+    map->tick_to_seconds (TimelineTick{ units::ticks (960) }).in (units::seconds),
+    0.5);
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (1440)).in (units::seconds), 0.5 + 0.25);
+    map->tick_to_seconds (TimelineTick{ units::ticks (1440) })
+      .in (units::seconds),
+    0.5 + 0.25);
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (1920)).in (units::seconds), 0.5 + 0.5);
+    map->tick_to_seconds (TimelineTick{ units::ticks (1920) })
+      .in (units::seconds),
+    0.5 + 0.5);
 }
 
 // Test edge cases
@@ -361,15 +373,17 @@ TEST_F (TempoMapTest, EdgeCases)
 {
   // Zero and negative time
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (0.0)).in (units::ticks), 0.0);
+    map->seconds_to_tick (units::seconds (0.0)).asDouble (), 0.0);
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (-1.0)).in (units::ticks), 0.0);
+    map->seconds_to_tick (units::seconds (-1.0)).asDouble (), 0.0);
 
   // Empty tempo map - default value active
   TempoMap emptyMap (units::sample_rate (960));
   emptyMap.remove_tempo_event (units::ticks (0));
   EXPECT_DOUBLE_EQ (
-    emptyMap.tick_to_seconds (units::ticks (960)).in (units::seconds), 0.5);
+    emptyMap.tick_to_seconds (TimelineTick{ units::ticks (960) })
+      .in (units::seconds),
+    0.5);
 
   // Near-constant ramp
   map->add_tempo_event (
@@ -377,8 +391,9 @@ TEST_F (TempoMapTest, EdgeCases)
   map->add_tempo_event (
     units::ticks (1920), units::bpm (120.002), TempoMap::CurveType::Constant);
   EXPECT_NEAR (
-    map->tick_to_seconds (units::ticks (1440)).in (units::seconds), 0.5 + 0.25,
-    1e-5);
+    map->tick_to_seconds (TimelineTick{ units::ticks (1440) })
+      .in (units::seconds),
+    0.5 + 0.25, 1e-5);
 
   // Invalid positions
   EXPECT_THROW (
@@ -391,8 +406,7 @@ TEST_F (TempoMapTest, EdgeCases)
     map->musical_position_to_tick ({ 1, 1, 1, -1 }), std::invalid_argument);
 
   // Position beyond last time signature
-  EXPECT_GT (
-    map->musical_position_to_tick ({ 100, 1, 1, 0 }).in (units::ticks), 0);
+  EXPECT_GT (map->musical_position_to_tick ({ 100, 1, 1, 0 }).asDouble (), 0);
 }
 
 // Test fractional ticks
@@ -401,12 +415,12 @@ TEST_F (TempoMapTest, FractionalTicks)
   // Test constant tempo
   const auto expectedTime = units::seconds (480.5 * (0.5 / 960.0));
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (480.5)).in (units::seconds),
+    map->tick_to_seconds (TimelineTick{ units::ticks (480.5) })
+      .in (units::seconds),
     expectedTime.in (units::seconds));
 
   // Test reverse conversion
-  EXPECT_NEAR (
-    map->seconds_to_tick (expectedTime).in (units::ticks), 480.5, 1e-6);
+  EXPECT_NEAR (map->seconds_to_tick (expectedTime).asDouble (), 480.5, 1e-6);
 }
 
 // Test sample rate changes
@@ -416,11 +430,10 @@ TEST_F (TempoMapTest, SampleRateChanges)
   map->set_sample_rate (units::sample_rate (newRate));
 
   EXPECT_DOUBLE_EQ (
-    map->tick_to_samples (units::ticks (960)).in (units::samples),
+    map->tick_to_samples (TimelineTick{ units::ticks (960) }).in (units::samples),
     0.5 * newRate);
   EXPECT_DOUBLE_EQ (
-    map->samples_to_tick (units::samples (0.5 * newRate)).in (units::ticks),
-    960.0);
+    map->samples_to_tick (units::samples (0.5 * newRate)).asDouble (), 960.0);
 }
 
 // Test complex time signature with different beat units
@@ -528,7 +541,8 @@ TEST_F (TempoMapTest, TempoAndTimeSignatureInteraction)
   const double expectedTime = time1_2 + time3_4;
 
   EXPECT_NEAR (
-    map->tick_to_seconds (bar5Start).in (units::seconds), expectedTime, 1e-5);
+    map->tick_to_seconds (TimelineTick{ bar5Start }).in (units::seconds),
+    expectedTime, 1e-5);
 }
 
 // Test serialization/deserialization
@@ -568,11 +582,13 @@ TEST_F (TempoMapTest, Serialization)
 
   // Also test a conversion to be sure
   EXPECT_DOUBLE_EQ (
-    map->tick_to_seconds (units::ticks (2880)).in (units::seconds),
-    deserialized_map.tick_to_seconds (units::ticks (2880)).in (units::seconds));
+    map->tick_to_seconds (TimelineTick{ units::ticks (2880) })
+      .in (units::seconds),
+    deserialized_map.tick_to_seconds (TimelineTick{ units::ticks (2880) })
+      .in (units::seconds));
   EXPECT_DOUBLE_EQ (
-    map->seconds_to_tick (units::seconds (1.5)).in (units::ticks),
-    deserialized_map.seconds_to_tick (units::seconds (1.5)).in (units::ticks));
+    map->seconds_to_tick (units::seconds (1.5)).asDouble (),
+    deserialized_map.seconds_to_tick (units::seconds (1.5)).asDouble ());
 }
 
 // Test empty serialization

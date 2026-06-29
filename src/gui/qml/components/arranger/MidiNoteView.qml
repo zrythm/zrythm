@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Zrythm
+import ZrythmGui
 import ZrythmStyle
 
 ArrangerObjectBaseView {
@@ -21,7 +22,7 @@ ArrangerObjectBaseView {
       return;
     }
 
-    const timelineTicks = root.midiNote.position.ticks + (root.midiNote.parentObject ? root.midiNote.parentObject.position.ticks : 0);
+    const timelineTicks = ArrangerObjectHelper.timelineTicks(root.midiNote);
     const activeChord = root.chordTrack ? root.chordTrack.chordAtTicks(timelineTicks) : null;
     const activeScale = root.chordTrack ? root.chordTrack.scaleAtTicks(timelineTicks) : null;
 
@@ -45,7 +46,7 @@ ArrangerObjectBaseView {
       root._updateHighlight();
     }
 
-    target: root.chordTrack?.chordRegions ?? null
+    target: root.chordTrack?.chordClips ?? null
   }
 
   Connections {
@@ -65,7 +66,7 @@ ArrangerObjectBaseView {
     target: root.midiNote ?? null
   }
 
-  // React to parent region position changes (e.g. moving the region).
+  // React to parent clip position changes (e.g. moving the clip).
   Connections {
     function onPropertiesChanged() {
       root._updateHighlight();

@@ -7,7 +7,7 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
-#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/midi_clip.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -175,7 +175,7 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnInsert)
   auto * note_ptr = new_note_ref.get_object_as<MidiNote> ();
   note_ptr->setPitch (72);
   note_ptr->position ()->setTicks (100.0);
-  note_ptr->bounds ()->length ()->setTicks (50.0);
+  note_ptr->length ()->setTicks (50.0);
 
   // Insert the object
   model_->insertObject (
@@ -239,7 +239,7 @@ TEST_F (ArrangerObjectListModelTest, ContentChangedOnRemovalContainsRange)
   auto * obj_to_remove =
     objects_.get<random_access_index> ()[2].get_object_as<MidiNote> ();
   obj_to_remove->position ()->setTicks (200.0);
-  obj_to_remove->bounds ()->length ()->setTicks (100.0);
+  obj_to_remove->length ()->setTicks (100.0);
 
   QSignalSpy contentChangedSpy (
     model_.get (), &ArrangerObjectListModel::contentChanged);
@@ -264,7 +264,7 @@ TEST_F (ArrangerObjectListModelTest, ExpandableTickRangeCalculation)
     registry_, *tempo_map_wrapper, parent.get ());
   auto * test_note = test_note_ref.get_object_as<MidiNote> ();
   test_note->position ()->setTicks (200.0);
-  test_note->bounds ()->length ()->setTicks (100.0);
+  test_note->length ()->setTicks (100.0);
 
   // Test get_object_tick_range function
   auto range = get_object_tick_range (test_note);
@@ -275,34 +275,34 @@ TEST_F (ArrangerObjectListModelTest, ExpandableTickRangeCalculation)
 // Test nested object signal propagation (for ArrangerObjectOwner types)
 TEST_F (ArrangerObjectListModelTest, NestedObjectSignalPropagation)
 {
-  // Create a MIDI region (which is an ArrangerObjectOwner)
-  auto region_ref = utils::create_object<MidiRegion> (
+  // Create a MIDI clip (which is an ArrangerObjectOwner)
+  auto clip_ref = utils::create_object<MidiClip> (
     registry_, *tempo_map_wrapper, registry_, parent.get ());
-  auto * region = region_ref.get_object_as<MidiRegion> ();
+  auto * clip = clip_ref.get_object_as<MidiClip> ();
 
-  // Create a vector with the region
-  ArrangerObjectRefMultiIndexContainer region_objects;
-  region_objects.get<sequenced_index> ().emplace_back (std::move (region_ref));
+  // Create a vector with the clip
+  ArrangerObjectRefMultiIndexContainer clip_objects;
+  clip_objects.get<sequenced_index> ().emplace_back (std::move (clip_ref));
 
-  // Create model with the region
-  ArrangerObjectListModel region_model (region_objects, parent.get ());
+  // Create model with the clip
+  ArrangerObjectListModel clip_model (clip_objects, parent.get ());
 
   QSignalSpy contentChangedSpy (
-    &region_model, &ArrangerObjectListModel::contentChanged);
+    &clip_model, &ArrangerObjectListModel::contentChanged);
 
-  // Create a MIDI note to add to the region
+  // Create a MIDI note to add to the clip
   auto note_ref = utils::create_object<MidiNote> (
     registry_, *tempo_map_wrapper, parent.get ());
   auto * note = note_ref.get_object_as<MidiNote> ();
   note->position ()->setTicks (50.0);
-  note->bounds ()->length ()->setTicks (20.0);
+  note->length ()->setTicks (20.0);
 
-  // Add the note to the region - this should trigger the region's model to emit
+  // Add the note to the clip - this should trigger the clip's model to emit
   // contentChanged
-  region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
+  clip->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
-  // The region model should emit contentChanged when its children change
-  // This verifies the connection is established between the region's internal
+  // The clip model should emit contentChanged when its children change
+  // This verifies the connection is established between the clip's internal
   // model and the ArrangerObjectListModel
   EXPECT_GT (contentChangedSpy.count (), 0);
 }
@@ -333,10 +333,10 @@ TEST_F (ArrangerObjectListModelTest, SignalConnectionsAndDisconnections)
 // Test parent object functionality with ArrangerObjectListModel
 TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
 {
-  // Create a parent object (MIDI region)
-  auto parent_region_ref = utils::create_object<MidiRegion> (
+  // Create a parent object (MIDI clip)
+  auto parent_clip_ref = utils::create_object<MidiClip> (
     registry_, *tempo_map_wrapper, registry_, parent.get ());
-  auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
+  auto * parent_region = parent_clip_ref.get_object_as<MidiClip> ();
 
   // Create a new model with the parent arranger object
   ArrangerObjectRefMultiIndexContainer child_objects;
@@ -352,7 +352,7 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
   parent_model.insertObject (
     ArrangerObjectUuidReference (child_note->get_uuid (), registry_), 0);
 
-  // Verify that the child's parent object is set to the parent region
+  // Verify that the child's parent object is set to the parent clip
   EXPECT_EQ (child_note->parentObject (), parent_region);
 
   // Remove the child from the parent model
@@ -365,10 +365,10 @@ TEST_F (ArrangerObjectListModelTest, ParentObjectFunctionality)
 // Test parent object signal emissions
 TEST_F (ArrangerObjectListModelTest, ParentObjectSignalEmissions)
 {
-  // Create a parent object (MIDI region)
-  auto parent_region_ref = utils::create_object<MidiRegion> (
+  // Create a parent object (MIDI clip)
+  auto parent_clip_ref = utils::create_object<MidiClip> (
     registry_, *tempo_map_wrapper, registry_, parent.get ());
-  auto * parent_region = parent_region_ref.get_object_as<MidiRegion> ();
+  auto * parent_region = parent_clip_ref.get_object_as<MidiClip> ();
 
   // Create a new model with the parent arranger object
   ArrangerObjectRefMultiIndexContainer child_objects;
@@ -509,7 +509,7 @@ TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnMovement)
   auto * obj =
     objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
   obj->position ()->setTicks (100.0);
-  obj->bounds ()->length ()->setTicks (50.0);
+  obj->length ()->setTicks (50.0);
 
   // Clear any signals from initial setup
   contentChangedSpy.clear ();
@@ -539,13 +539,13 @@ TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnResize)
   auto * obj =
     objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
   obj->position ()->setTicks (100.0);
-  obj->bounds ()->length ()->setTicks (50.0);
+  obj->length ()->setTicks (50.0);
 
   // Clear any signals from initial setup
   contentChangedSpy.clear ();
 
   // Resize the object
-  obj->bounds ()->length ()->setTicks (100.0);
+  obj->length ()->setTicks (100.0);
 
   // Check that contentChanged signal was emitted
   EXPECT_EQ (contentChangedSpy.count (), 1);
@@ -569,7 +569,7 @@ TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnNonPositionalChange)
   auto * obj =
     objects_.get<random_access_index> ()[0].get_object_as<MidiNote> ();
   obj->position ()->setTicks (100.0);
-  obj->bounds ()->length ()->setTicks (50.0);
+  obj->length ()->setTicks (50.0);
 
   // Clear any signals from initial setup
   contentChangedSpy.clear ();

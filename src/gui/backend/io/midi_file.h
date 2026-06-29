@@ -14,7 +14,7 @@ namespace structure
 {
 namespace arrangement
 {
-class MidiRegion;
+class MidiClip;
 }
 namespace tracks
 {
@@ -77,33 +77,32 @@ public:
   int get_ppqn () const;
 
   /**
-   * @brief Reads the contents of the MIDI file into a region.
+   * @brief Reads the contents of the MIDI file into a clip.
    *
-   * @param region A freshly created region to fill.
+   * @param clip A freshly created clip to fill.
    * @param midi_track_idx The index of this track, starting from 0. This will
    * be sequential, ie, if idx 1 is requested and the MIDI file only has tracks
    * 5 and 7, it will use track 7.
    * @throw ZrythmException On error.
    */
   void
-  into_region (structure::arrangement::MidiRegion &region, int midi_track_idx)
-    const;
+  into_clip (structure::arrangement::MidiClip &clip, int midi_track_idx) const;
 
   /**
-   * Exports the Region to a specified MIDI file.
+   * Exports the Clip to a specified MIDI file.
    *
-   * FIXME: this needs refactoring. taken out of MidiRegion class.
+   * FIXME: this needs refactoring. taken out of MidiClip class.
    *
    * @param full_path Absolute path to the MIDI file.
    * @param export_full Traverse loops and export the MIDI file as it would be
-   * played inside Zrythm. If this is false, only the original region (from true
+   * played inside Zrythm. If this is false, only the original clip (from true
    * start to true end) is exported.
    */
-  static void export_midi_region_to_midi_file (
-    const structure::arrangement::MidiRegion &region,
-    const std::filesystem::path              &full_path,
-    int                                       midi_version,
-    bool                                      export_full);
+  static void export_midi_clip_to_midi_file (
+    const structure::arrangement::MidiClip &clip,
+    const std::filesystem::path            &full_path,
+    int                                     midi_version,
+    bool                                    export_full);
 
   // TODO
 #if 0
@@ -138,7 +137,7 @@ public:
    *   using track position.
    * @param lanes_as_tracks Export lanes as separate tracks (only possible with
    * MIDI type 1). This will calculate a unique MIDI track number for the
-   * region's lane.
+   * clip's lane.
    * @param use_track_or_lane_pos Whether to use the track/lane position in the
    * MIDI data. The MIDI track will be set to 1 if false.
    * @param start Events before this position will be skipped.

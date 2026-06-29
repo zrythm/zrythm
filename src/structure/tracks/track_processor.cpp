@@ -45,7 +45,7 @@ struct TrackProcessor::Impl
   /**
    * Output gain, if audio.
    *
-   * This is applied after regions are processed to @ref stereo_out_.
+   * This is applied after clips are processed to @ref stereo_out_.
    */
   std::optional<dsp::ProcessorParameter::Uuid> output_gain_id_;
 
@@ -496,7 +496,7 @@ TrackProcessor::Impl::handle_recording (
 
   // The graph (process_chunks_after_splitting_at_loop_points) already
   // splits at loop boundaries, so each process_block call covers a
-  // single non-loop-crossing region. We only handle punch splitting
+  // single non-loop-crossing clip. We only handle punch splitting
   // here.
 
   // split point + nframes pairs

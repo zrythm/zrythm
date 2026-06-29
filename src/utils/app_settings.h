@@ -126,7 +126,6 @@ class AppSettings : public QObject
     QStringList,
     monitorRightOutputDeviceList,
     QStringList ())
-  DEFINE_SETTING_PROPERTY (bool, musicalMode, false)
   DEFINE_SETTING_PROPERTY (QString, rtAudioAudioDeviceName, {})
   DEFINE_SETTING_PROPERTY (int, sampleRate, 3)         // 48000
   DEFINE_SETTING_PROPERTY (int, audioBufferSize, 5)    // 512

@@ -45,7 +45,7 @@ protected:
   {
     playback_service_.reset ();
     track_collection_.reset ();
-    region_refs_.clear ();
+    clip_refs_.clear ();
     scenes_.clear ();
     tempo_map_wrapper_.reset ();
     tempo_map_.reset ();
@@ -57,7 +57,7 @@ protected:
     for (int i = 0; i < 3; ++i)
       {
         tracks::FinalTrackDependencies deps{
-          *tempo_map_wrapper_, *registry_, *transport_, [] { return false; }, {}
+          *tempo_map_wrapper_, *registry_, [] { return false; }, {}
         };
 
         auto track_ref = utils::create_object<tracks::MidiTrack> (
@@ -66,21 +66,21 @@ protected:
       }
   }
 
-  // Helper to create a MIDI region
-  arrangement::MidiRegion * create_midi_region ()
+  // Helper to create a MIDI clip
+  arrangement::MidiClip * create_midi_clip ()
   {
-    auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    auto clip_ref = utils::create_object<arrangement::MidiClip> (
       *registry_, *tempo_map_wrapper_, *registry_);
-    auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
+    auto clip = clip_ref.get_object_as<arrangement::MidiClip> ();
 
     // Set basic properties
-    region->position ()->setTicks (0.0);
-    region->bounds ()->length ()->setTicks (100.0);
+    clip->position ()->setTicks (0.0);
+    clip->length ()->setTicks (100.0);
 
-    // Keep a reference to the region
-    region_refs_.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs_.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
   // Helper to create a scene with clips
@@ -89,7 +89,7 @@ protected:
     auto scene =
       utils::make_qobject_unique<Scene> (*registry_, *track_collection_);
 
-    // Add regions to clip slots
+    // Add clips to clip slots
     auto * clipSlotList = scene->clipSlots ();
     for (int i = 0; i < 3; ++i)
       {
@@ -97,8 +97,8 @@ protected:
         auto * clipSlot = clipSlotList->clipSlotForTrack (track);
         if (clipSlot != nullptr)
           {
-            auto * region = create_midi_region ();
-            clipSlot->setRegion (region);
+            auto * clip = create_midi_clip ();
+            clipSlot->setClip (clip);
           }
       }
 
@@ -113,7 +113,7 @@ protected:
   std::unique_ptr<dsp::TempoMap>                        tempo_map_;
   std::unique_ptr<dsp::TempoMapWrapper>                 tempo_map_wrapper_;
   std::unique_ptr<dsp::graph_test::MockTransport>       transport_;
-  std::vector<arrangement::ArrangerObjectUuidReference> region_refs_;
+  std::vector<arrangement::ArrangerObjectUuidReference> clip_refs_;
   std::vector<utils::QObjectUniquePtr<Scene>>           scenes_;
 };
 
@@ -125,11 +125,11 @@ TEST_F (ClipPlaybackServiceTest, InitialState)
 
 TEST_F (ClipPlaybackServiceTest, LaunchClip)
 {
-  // Get a track and create a clip slot with a region
+  // Get a track and create a clip slot with a clip
   auto * track = track_collection_->get_track_ref_at_index (0).get ();
   auto   clipSlot = utils::make_qobject_unique<ClipSlot> (*registry_);
-  auto * region = create_midi_region ();
-  clipSlot->setRegion (region);
+  auto * clip = create_midi_clip ();
+  clipSlot->setClip (clip);
 
   // Set up signal spy
   QSignalSpy launchedSpy (
@@ -164,9 +164,9 @@ TEST_F (ClipPlaybackServiceTest, LaunchClipWithNullParameters)
   SUCCEED ();
 }
 
-TEST_F (ClipPlaybackServiceTest, LaunchClipWithNoRegion)
+TEST_F (ClipPlaybackServiceTest, LaunchClipWithNoClip)
 {
-  // Get a track and create a clip slot without a region
+  // Get a track and create a clip slot without a clip
   auto * track = track_collection_->get_track_ref_at_index (0).get ();
   auto   clipSlot = utils::make_qobject_unique<ClipSlot> (*registry_);
 
@@ -180,11 +180,11 @@ TEST_F (ClipPlaybackServiceTest, LaunchClipWithNoRegion)
 
 TEST_F (ClipPlaybackServiceTest, StopClip)
 {
-  // Get a track and create a clip slot with a region
+  // Get a track and create a clip slot with a clip
   auto * track = track_collection_->get_track_ref_at_index (0).get ();
   auto   clipSlot = utils::make_qobject_unique<ClipSlot> (*registry_);
-  auto * region = create_midi_region ();
-  clipSlot->setRegion (region);
+  auto * clip = create_midi_clip ();
+  clipSlot->setClip (clip);
 
   // Set up signal spies
   QSignalSpy launchedSpy (
@@ -239,7 +239,7 @@ TEST_F (ClipPlaybackServiceTest, LaunchScene)
     {
       auto * track = track_collection_->get_track_ref_at_index (i).get ();
       auto * clipSlot = clipSlotList->clipSlotForTrack (track);
-      if ((clipSlot != nullptr) && (clipSlot->region () != nullptr))
+      if ((clipSlot != nullptr) && (clipSlot->clip () != nullptr))
         {
           EXPECT_EQ (clipSlot->state (), ClipSlot::ClipState::PlayQueued);
         }
@@ -285,7 +285,7 @@ TEST_F (ClipPlaybackServiceTest, StopAllClips)
     {
       auto * track = track_collection_->get_track_ref_at_index (i).get ();
       auto * clipSlot = clipSlotList->clipSlotForTrack (track);
-      if ((clipSlot != nullptr) && (clipSlot->region () != nullptr))
+      if ((clipSlot != nullptr) && (clipSlot->clip () != nullptr))
         {
           EXPECT_EQ (clipSlot->state (), ClipSlot::ClipState::StopQueued);
         }
@@ -371,11 +371,11 @@ TEST_F (ClipPlaybackServiceTest, SetTrackToTimelineMode)
 
 TEST_F (ClipPlaybackServiceTest, CancelPendingClipOperations)
 {
-  // Get a track and create a clip slot with a region
+  // Get a track and create a clip slot with a clip
   auto * track = track_collection_->get_track_ref_at_index (0).get ();
   auto   clipSlot = utils::make_qobject_unique<ClipSlot> (*registry_);
-  auto * region = create_midi_region ();
-  clipSlot->setRegion (region);
+  auto * clip = create_midi_clip ();
+  clipSlot->setClip (clip);
 
   // Launch the clip
   playback_service_->launchClip (

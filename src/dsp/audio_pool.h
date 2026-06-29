@@ -16,9 +16,9 @@ namespace zrythm::dsp
  * @brief A manager for a registry of FileAudioSource inside a project.
  *
  * An audio pool is a pool of audio files and their corresponding float arrays
- * in memory that are referenced by regions.
+ * in memory that are referenced by clips.
  *
- * Instead of associating audio files with regions, all audio files (and their
+ * Instead of associating audio files with clips, all audio files (and their
  * edited counterparts after some hard editing like stretching) are saved in
  * the pool.
  */

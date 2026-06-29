@@ -36,7 +36,7 @@ protected:
 TEST_F (ChordObjectTest, InitialState)
 {
   EXPECT_EQ (chord_obj->type (), ArrangerObject::Type::ChordObject);
-  EXPECT_EQ (chord_obj->position ()->samples (), 0);
+  EXPECT_EQ (chord_obj->position ()->ticks (), 0);
   EXPECT_NE (chord_obj->chordDescriptor (), nullptr);
   // Default ChordDescriptor is C / None
   EXPECT_EQ (chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::C);
@@ -67,7 +67,7 @@ TEST_F (ChordObjectTest, MuteFunctionality)
 // Test serialization/deserialization
 TEST_F (ChordObjectTest, Serialization)
 {
-  chord_obj->position ()->setSamples (1000);
+  chord_obj->position ()->setTicks (1000);
   chord_obj->chordDescriptor ()->setRootNote (dsp::MusicalNote::D);
   chord_obj->chordDescriptor ()->setChordType (dsp::ChordType::Major);
   chord_obj->chordDescriptor ()->setChordAccent (dsp::ChordAccent::Seventh);
@@ -80,7 +80,7 @@ TEST_F (ChordObjectTest, Serialization)
     std::make_unique<ChordObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_chord_obj);
 
-  EXPECT_EQ (new_chord_obj->position ()->samples (), 1000);
+  EXPECT_EQ (new_chord_obj->position ()->ticks (), 1000);
   EXPECT_EQ (
     new_chord_obj->chordDescriptor ()->rootNote (), dsp::MusicalNote::D);
   EXPECT_EQ (
@@ -94,7 +94,7 @@ TEST_F (ChordObjectTest, Serialization)
 // Test copying with init_from
 TEST_F (ChordObjectTest, Copying)
 {
-  chord_obj->position ()->setSamples (2000);
+  chord_obj->position ()->setTicks (2000);
   chord_obj->chordDescriptor ()->setRootNote (dsp::MusicalNote::E);
   chord_obj->chordDescriptor ()->setChordType (dsp::ChordType::Minor);
   chord_obj->chordDescriptor ()->setInversion (2);
@@ -105,7 +105,7 @@ TEST_F (ChordObjectTest, Copying)
 
   init_from (*target, *chord_obj, utils::ObjectCloneType::Snapshot);
 
-  EXPECT_EQ (target->position ()->samples (), 2000);
+  EXPECT_EQ (target->position ()->ticks (), 2000);
   EXPECT_EQ (target->chordDescriptor ()->rootNote (), dsp::MusicalNote::E);
   EXPECT_EQ (target->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
   EXPECT_EQ (target->chordDescriptor ()->inversion (), 2);
@@ -116,9 +116,8 @@ TEST_F (ChordObjectTest, Copying)
 TEST_F (ChordObjectTest, EdgeCases)
 {
   // Position at max value
-  chord_obj->position ()->setSamples (std::numeric_limits<int>::max ());
-  EXPECT_EQ (
-    chord_obj->position ()->samples (), std::numeric_limits<int>::max ());
+  chord_obj->position ()->setTicks (1e9);
+  EXPECT_DOUBLE_EQ (chord_obj->position ()->ticks (), 1e9);
 
   // Chord with bass note
   chord_obj->chordDescriptor ()->setBassNote (dsp::MusicalNote::G);

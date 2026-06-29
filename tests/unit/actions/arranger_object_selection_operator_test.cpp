@@ -39,7 +39,6 @@ protected:
       structure::arrangement::ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map_wrapper,
         .registry_ = registry_,
-        .app_settings_ = *app_settings,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -51,10 +50,10 @@ protected:
       structure::arrangement::Marker::MarkerType::Custom);
     note_ref = utils::create_object<structure::arrangement::MidiNote> (
       registry_, *tempo_map_wrapper);
-    midi_region_ref = utils::create_object<structure::arrangement::MidiRegion> (
+    midi_clip_ref = utils::create_object<structure::arrangement::MidiClip> (
       registry_, *tempo_map_wrapper, registry_);
-    audio_region_ref = utils::create_object<structure::arrangement::AudioRegion> (
-      registry_, *tempo_map_wrapper, registry_, *app_settings);
+    audio_clip_ref = utils::create_object<structure::arrangement::AudioClip> (
+      registry_, *tempo_map_wrapper, registry_);
     tempo_ref = utils::create_object<structure::arrangement::TempoObject> (
       registry_, *tempo_map_wrapper);
     time_signature_ref =
@@ -66,9 +65,9 @@ protected:
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (note_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
-      .push_back (midi_region_ref);
+      .push_back (midi_clip_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
-      .push_back (audio_region_ref);
+      .push_back (audio_clip_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
       .push_back (tempo_ref);
     test_objects_.get<structure::arrangement::random_access_index> ()
@@ -77,43 +76,36 @@ protected:
     // Store original positions and set initial values for testing
     marker_ref.get ()->position ()->setTicks (0.0);
     note_ref.get ()->position ()->setTicks (1000.0);
-    midi_region_ref.get ()->position ()->setTicks (2000.0);
-    audio_region_ref.get ()->position ()->setTicks (3000.0);
+    midi_clip_ref.get ()->position ()->setTicks (2000.0);
+    audio_clip_ref.get ()->position ()->setTicks (3000.0);
     tempo_ref.get ()->position ()->setTicks (4000.0);
     time_signature_ref.get ()->position ()->setTicks (5000.0);
 
     // Set initial length for resize tests
     note_ref.get_object_as<structure::arrangement::MidiNote> ()
-      ->bounds ()
       ->length ()
       ->setTicks (4000.0);
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
-      ->bounds ()
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
       ->length ()
       ->setTicks (4000.0);
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
-      ->loopRange ()
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
       ->clipStartPosition ()
       ->setTicks (500.0);
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
-      ->loopRange ()
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
       ->loopStartPosition ()
       ->setTicks (1000.0);
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ()
-      ->loopRange ()
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
       ->loopEndPosition ()
       ->setTicks (3000.0);
-    audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ()
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
       ->fadeRange ()
       ->endOffset ()
       ->setTicks (300.0);
 
     original_positions_.push_back (marker_ref.get ()->position ()->ticks ());
     original_positions_.push_back (note_ref.get ()->position ()->ticks ());
-    original_positions_.push_back (
-      midi_region_ref.get ()->position ()->ticks ());
-    original_positions_.push_back (
-      audio_region_ref.get ()->position ()->ticks ());
+    original_positions_.push_back (midi_clip_ref.get ()->position ()->ticks ());
+    original_positions_.push_back (audio_clip_ref.get ()->position ()->ticks ());
     original_positions_.push_back (tempo_ref.get ()->position ()->ticks ());
     original_positions_.push_back (
       time_signature_ref.get ()->position ()->ticks ());
@@ -139,9 +131,9 @@ protected:
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::MidiNote>::add_object (note_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
-      structure::arrangement::MidiRegion>::add_object (midi_region_ref);
+      structure::arrangement::MidiClip>::add_object (midi_clip_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
-      structure::arrangement::AudioRegion>::add_object (audio_region_ref);
+      structure::arrangement::AudioClip>::add_object (audio_clip_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TempoObject>::add_object (tempo_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
@@ -169,16 +161,16 @@ protected:
                 structure::arrangement::Marker> *> (mock_owner_.get ());
             }
           else if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::MidiRegion>)
+            std::is_same_v<ObjectT, structure::arrangement::MidiClip>)
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
-                structure::arrangement::MidiRegion> *> (mock_owner_.get ());
+                structure::arrangement::MidiClip> *> (mock_owner_.get ());
             }
           else if constexpr (
-            std::is_same_v<ObjectT, structure::arrangement::AudioRegion>)
+            std::is_same_v<ObjectT, structure::arrangement::AudioClip>)
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
-                structure::arrangement::AudioRegion> *> (mock_owner_.get ());
+                structure::arrangement::AudioClip> *> (mock_owner_.get ());
             }
           else if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
@@ -228,12 +220,10 @@ protected:
   std::unique_ptr<utils::AppSettings>                            app_settings;
   structure::arrangement::ArrangerObjectUuidReference note_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference marker_ref{ registry_ };
-  structure::arrangement::ArrangerObjectUuidReference audio_region_ref{
+  structure::arrangement::ArrangerObjectUuidReference audio_clip_ref{
     registry_
   };
-  structure::arrangement::ArrangerObjectUuidReference midi_region_ref{
-    registry_
-  };
+  structure::arrangement::ArrangerObjectUuidReference midi_clip_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference tempo_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference time_signature_ref{
     registry_
@@ -990,8 +980,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromEnd)
 
   // Verify objects were resized by checking the object directly
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
-  EXPECT_DOUBLE_EQ (
-    note_obj->bounds ()->length ()->ticks (), 4500.0); // 4000 + 500
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4500.0); // 4000 + 500
 }
 
 // Test resizeObjects with bounds resize from start
@@ -1015,8 +1004,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
   // Verify objects were resized by checking the object directly
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
   EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), 800.0); // 1000 - 200
-  EXPECT_DOUBLE_EQ (
-    note_obj->bounds ()->length ()->ticks (), 4200.0); // 4000 + 200
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4200.0);  // 4000 + 200
 }
 
 // Test resizeObjects with loop points resize from end
@@ -1028,7 +1016,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
   selection_model_->clear ();
   selection_model_->select (
     list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiRegion
+    QItemSelectionModel::Select); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromEnd, delta);
@@ -1038,11 +1026,10 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
   EXPECT_EQ (undo_stack_->index (), 1);
 
   // Just verify bounds - actual logic is tested by the command class
-  auto * midi_region_obj =
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  EXPECT_DOUBLE_EQ (
-    midi_region_obj->bounds ()->length ()->ticks (),
-    4100.0); // 4000 + 100
+  auto * midi_clip_obj =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (midi_clip_obj->length ()->ticks (),
+                    4100.0); // 4000 + 100
 }
 
 // Test resizeObjects with loop points resize from start
@@ -1054,7 +1041,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
   selection_model_->clear ();
   selection_model_->select (
     list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiRegion
+    QItemSelectionModel::Select); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
@@ -1065,13 +1052,11 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
   EXPECT_EQ (undo_stack_->index (), 1);
 
   // Just verify bounds - actual logic is tested by the command class
-  auto * midi_region_obj =
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  EXPECT_DOUBLE_EQ (
-    midi_region_obj->position ()->ticks (), 2100.0); // 2000 + 100
-  EXPECT_DOUBLE_EQ (
-    midi_region_obj->bounds ()->length ()->ticks (),
-    3900.0); // 4000 - 100
+  auto * midi_clip_obj =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (midi_clip_obj->position ()->ticks (), 2100.0); // 2000 + 100
+  EXPECT_DOUBLE_EQ (midi_clip_obj->length ()->ticks (),
+                    3900.0); // 4000 - 100
 }
 
 // Test resizeObjects with fades resize
@@ -1083,7 +1068,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
   selection_model_->clear ();
   selection_model_->select (
     list_model_.index (3, 0),
-    QItemSelectionModel::Select); // Select only AudioRegion
+    QItemSelectionModel::Select); // Select only AudioClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, delta);
@@ -1093,10 +1078,29 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
   EXPECT_EQ (undo_stack_->index (), 1);
 
   // Verify objects were resized by checking the object directly
-  auto * audio_region_obj =
-    audio_region_ref.get_object_as<structure::arrangement::AudioRegion> ();
+  auto * audio_clip_obj =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
   EXPECT_DOUBLE_EQ (
-    audio_region_obj->fadeRange ()->endOffset ()->ticks (), 350.0); // 300 + 50
+    audio_clip_obj->fadeRange ()->endOffset ()->ticks (), 350.0); // 300 + 50
+}
+
+// A fade resize that would drive the fade negative must be rejected.
+TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFadesRejectNegative)
+{
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0),
+    QItemSelectionModel::Select); // AudioClip (fadeOut = 300)
+
+  bool result = operator_->resizeObjects (
+    commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, -500.0);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0); // no command pushed
+
+  // Fade must be unchanged.
+  auto * audio_clip_obj =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  EXPECT_DOUBLE_EQ (audio_clip_obj->fadeRange ()->endOffset ()->ticks (), 300.0);
 }
 
 // Test resizeObjects with zero delta (no-op)
@@ -1147,24 +1151,21 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsUndoRedo)
 
   // Verify resize by checking the object directly
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
-  EXPECT_DOUBLE_EQ (
-    note_obj->bounds ()->length ()->ticks (), 4300.0); // 4000 + 300
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4300.0); // 4000 + 300
 
   // Undo
   undo_stack_->undo ();
   EXPECT_EQ (undo_stack_->index (), 0);
 
   // Verify undo
-  EXPECT_DOUBLE_EQ (
-    note_obj->bounds ()->length ()->ticks (), 4000.0); // Original restored
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4000.0); // Original restored
 
   // Redo
   undo_stack_->redo ();
   EXPECT_EQ (undo_stack_->index (), 1);
 
   // Verify redo
-  EXPECT_DOUBLE_EQ (
-    note_obj->bounds ()->length ()->ticks (), 4300.0); // Applied again
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4300.0); // Applied again
 }
 
 // Test that non-timeline objects (MIDI notes) can be resized to negative local
@@ -1201,8 +1202,7 @@ TEST_F (
     auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ())
     {
       EXPECT_DOUBLE_EQ (note_obj->position ()->ticks (), -10.0); // 10 - 20
-      EXPECT_DOUBLE_EQ (
-        note_obj->bounds ()->length ()->ticks (), 4020.0); // 4000 + 20
+      EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 4020.0);  // 4000 + 20
     }
 
   // Command should be pushed to undo stack
@@ -1222,7 +1222,7 @@ TEST_F (
 
   // Set initial length to 100 ticks
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
-  note_obj->bounds ()->length ()->setTicks (100.0);
+  note_obj->length ()->setTicks (100.0);
 
   // Try to resize by delta that would make length zero or negative
   const double delta = 150.0; // Would make length -50 (100 - 150)
@@ -1238,7 +1238,7 @@ TEST_F (
   EXPECT_EQ (undo_stack_->index (), 0);
 
   // Length should remain unchanged
-  EXPECT_DOUBLE_EQ (note_obj->bounds ()->length ()->ticks (), 100.0);
+  EXPECT_DOUBLE_EQ (note_obj->length ()->ticks (), 100.0);
 }
 
 // Test resizeObjects with loop points resize from start that would make length
@@ -1251,12 +1251,12 @@ TEST_F (
   selection_model_->clear ();
   selection_model_->select (
     list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiRegion
+    QItemSelectionModel::Select); // Select only MidiClip
 
   // Set initial length to 100 ticks
-  auto * midi_region_obj =
-    midi_region_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  midi_region_obj->bounds ()->length ()->setTicks (100.0);
+  auto * midi_clip_obj =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  midi_clip_obj->length ()->setTicks (100.0);
 
   // Try to resize by delta that would make length zero or negative
   const double delta = 150.0; // Would make length -50 (100 - 150)
@@ -1273,7 +1273,7 @@ TEST_F (
   EXPECT_EQ (undo_stack_->index (), 0);
 
   // Length should remain unchanged
-  EXPECT_DOUBLE_EQ (midi_region_obj->bounds ()->length ()->ticks (), 100.0);
+  EXPECT_DOUBLE_EQ (midi_clip_obj->length ()->ticks (), 100.0);
 }
 
 // Test moveByTicks with TempoObject - should create
@@ -1676,53 +1676,53 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUndoRedo)
     initial_note_count * 2);
 }
 
-// Test cloneObjects with audio region to verify audio source cloning
-TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioRegion)
+// Test cloneObjects with audio clip to verify audio source cloning
+TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
 {
-  // Select audio region for testing
+  // Select audio clip for testing
   selection_model_->clear ();
   selection_model_->select (
     list_model_.index (3, 0), QItemSelectionModel::Select);
 
   // Store initial counts
   const int  initial_undo_count = undo_stack_->count ();
-  const auto initial_audio_region_count =
+  const auto initial_audio_clip_count =
     mock_owner_
       ->structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AudioRegion>::get_children_vector ()
+        structure::arrangement::AudioClip>::get_children_vector ()
       .size ();
 
-  // Clone audio region
+  // Clone audio clip
   bool result = operator_->cloneObjects ();
   EXPECT_TRUE (result);
 
   // Verify command was pushed
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Verify audio region was cloned
+  // Verify audio clip was cloned
   EXPECT_EQ (
     mock_owner_
       ->structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AudioRegion>::get_children_vector ()
+        structure::arrangement::AudioClip>::get_children_vector ()
       .size (),
-    initial_audio_region_count * 2);
+    initial_audio_clip_count * 2);
 
   // Test undo/redo to ensure proper audio source handling
   undo_stack_->undo ();
   EXPECT_EQ (
     mock_owner_
       ->structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AudioRegion>::get_children_vector ()
+        structure::arrangement::AudioClip>::get_children_vector ()
       .size (),
-    initial_audio_region_count);
+    initial_audio_clip_count);
 
   undo_stack_->redo ();
   EXPECT_GT (
     mock_owner_
       ->structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AudioRegion>::get_children_vector ()
+        structure::arrangement::AudioClip>::get_children_vector ()
       .size (),
-    initial_audio_region_count);
+    initial_audio_clip_count);
 }
 
 // Test changeVelocities functionality
@@ -1820,13 +1820,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
-  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
 
   EXPECT_TRUE (note_ref.get ()->mute ()->muted ());
-  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_TRUE (midi_clip_ref.get ()->mute ()->muted ());
   EXPECT_EQ (undo_stack_->index (), 1);
 }
 
@@ -1834,7 +1834,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
 {
   note_ref.get ()->mute ()->setMuted (true);
-  midi_region_ref.get ()->mute ()->setMuted (true);
+  midi_clip_ref.get ()->mute ()->setMuted (true);
 
   selection_model_->clear ();
   selection_model_->select (
@@ -1846,7 +1846,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
   EXPECT_TRUE (result);
 
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
-  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
   EXPECT_EQ (undo_stack_->index (), 1);
 }
 
@@ -1867,16 +1867,16 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
   selection_model_->select (
     list_model_.index (2, 0), QItemSelectionModel::Select);
 
-  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
   operator_->toggleMute ();
-  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_TRUE (midi_clip_ref.get ()->mute ()->muted ());
 
   undo_stack_->undo ();
-  EXPECT_FALSE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
   undo_stack_->redo ();
-  EXPECT_TRUE (midi_region_ref.get ()->mute ()->muted ());
+  EXPECT_TRUE (midi_clip_ref.get ()->mute ()->muted ());
 }
 
 // Test toggleMute skips non-muteable objects (markers have no Mute feature)
@@ -1908,6 +1908,127 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteOnlyNonMuteableObjects)
   bool result = operator_->toggleMute ();
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test setStretchAlgorithm on a selected AudioClip
+TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmOnAudioClip)
+{
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  ASSERT_NE (clip, nullptr);
+  ASSERT_EQ (
+    clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Polyphonic);
+
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+
+  bool result =
+    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
+  EXPECT_TRUE (result);
+  EXPECT_EQ (clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Beats);
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Polyphonic);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Beats);
+}
+
+// Test setStretchAlgorithm skips non-audio clips
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  SetStretchAlgorithmSkipsNonAudioClips)
+{
+  selection_model_->clear ();
+  // Select marker (index 0) and audio clip (index 3)
+  selection_model_->select (
+    list_model_.index (0, 0), QItemSelectionModel::Select);
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+
+  bool result =
+    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Monophonic);
+  EXPECT_TRUE (result);
+
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  EXPECT_EQ (
+    clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Monophonic);
+}
+
+// Test setStretchAlgorithm with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmNoSelection)
+{
+  selection_model_->clear ();
+
+  bool result =
+    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test setTimebaseOverride on selected clips
+TEST_F (ArrangerObjectSelectionOperatorTest, SetTimebaseOverrideOnClip)
+{
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  ASSERT_NE (clip, nullptr);
+  ASSERT_NE (clip->timebaseProvider (), nullptr);
+  auto initial = clip->timebaseProvider ()->effectiveTimebase ();
+
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+
+  bool result = operator_->setTimebaseOverride (dsp::Timebase::Absolute);
+  EXPECT_TRUE (result);
+  EXPECT_EQ (
+    clip->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (clip->timebaseProvider ()->effectiveTimebase (), initial);
+
+  undo_stack_->redo ();
+  EXPECT_EQ (
+    clip->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+}
+
+// Test clearTimebaseOverride removes an existing override
+TEST_F (ArrangerObjectSelectionOperatorTest, ClearTimebaseOverrideOnClip)
+{
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+
+  selection_model_->clear ();
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+
+  operator_->setTimebaseOverride (dsp::Timebase::Absolute);
+  EXPECT_TRUE (clip->timebaseProvider ()->hasOverride ());
+
+  operator_->clearTimebaseOverride ();
+  EXPECT_FALSE (clip->timebaseProvider ()->hasOverride ());
+
+  // Undo clears, then redo clears again
+  undo_stack_->undo ();
+  EXPECT_TRUE (clip->timebaseProvider ()->hasOverride ());
+  undo_stack_->redo ();
+  EXPECT_FALSE (clip->timebaseProvider ()->hasOverride ());
+}
+
+// Test selectionHasTimebaseProviders
+TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
+{
+  selection_model_->clear ();
+  EXPECT_FALSE (operator_->selectionHasTimebaseProviders ());
+
+  // Audio clip (index 3) has a timebase provider
+  selection_model_->select (
+    list_model_.index (3, 0), QItemSelectionModel::Select);
+  EXPECT_TRUE (operator_->selectionHasTimebaseProviders ());
 }
 
 } // namespace zrythm::actions

@@ -117,7 +117,7 @@ TEST_F (ChordTrackTest, ChordPitchesSelfEquality)
 }
 
 // ========================================================================
-// Chord region cache tests
+// Chord clip cache tests
 // ========================================================================
 
 class ChordTrackCacheTest : public ::testing::Test
@@ -133,7 +133,7 @@ protected:
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     final_deps_ = std::make_unique<FinalTrackDependencies> (
-      *tempo_map_wrapper_, *registry_, *transport_, [] { return false; },
+      *tempo_map_wrapper_, *registry_, [] { return false; },
       TrackRecordingCallback{});
 
     chord_track_ = std::make_unique<ChordTrack> (*final_deps_);
@@ -148,7 +148,6 @@ protected:
       arrangement::ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = *registry_,
-        .app_settings_ = *app_settings_,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -180,23 +179,23 @@ TEST_F (ChordTrackCacheTest, EmptyTrackCacheIsNoOp)
   EXPECT_TRUE (events.empty ());
 }
 
-TEST_F (ChordTrackCacheTest, ChordRegionPopulatesMidiCache)
+TEST_F (ChordTrackCacheTest, ChordClipPopulatesMidiCache)
 {
-  auto region_ref =
-    factory_->get_builder<arrangement::ChordRegion> ()
+  auto clip_ref =
+    factory_->get_builder<arrangement::ChordClip> ()
       .with_start_ticks (units::ticks (0))
       .with_end_ticks (units::ticks (3840))
       .build_in_registry ();
   chord_track_->arrangement::ArrangerObjectOwner<
-    arrangement::ChordRegion>::add_object (region_ref);
-  auto * region = region_ref.get_object_as<arrangement::ChordRegion> ();
+    arrangement::ChordClip>::add_object (clip_ref);
+  auto * clip = clip_ref.get_object_as<arrangement::ChordClip> ();
 
   auto chord_ref =
     factory_->get_builder<arrangement::ChordObject> ()
       .with_start_ticks (units::ticks (0))
       .with_chord_descriptor (dsp::MusicalNote::C, dsp::ChordType::Major)
       .build_in_registry ();
-  region->add_object (chord_ref);
+  clip->add_object (chord_ref);
 
   chord_track_->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 3840.0) });

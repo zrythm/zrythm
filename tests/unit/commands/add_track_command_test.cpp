@@ -37,7 +37,10 @@ protected:
   utils::ObjectRegistry registry_;
 
   structure::tracks::FinalTrackDependencies dependencies_{
-    tempo_map_wrapper_, registry_, transport_, soloed_tracks_exist_getter_, {},
+    tempo_map_wrapper_,
+    registry_,
+    soloed_tracks_exist_getter_,
+    {},
   };
   structure::tracks::TrackUuidReference test_track_ref_{ registry_ };
   std::unique_ptr<structure::tracks::TrackCollection> collection_;

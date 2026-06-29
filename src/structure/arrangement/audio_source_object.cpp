@@ -11,7 +11,11 @@ AudioSourceObject::AudioSourceObject (
   utils::IObjectRegistry           &registry,
   dsp::FileAudioSourceUuidReference source,
   QObject *                         parent)
-    : ArrangerObject (Type::AudioSourceObject, tempo_map_wrapper, {}, parent),
+    : ArrangerObject (
+        Type::AudioSourceObject,
+        tempo_map_wrapper,
+        ArrangerObjectFeatures::ClipOwned,
+        parent),
       registry_ (registry), source_id_ (std::move (source))
 {
   generate_audio_source ();

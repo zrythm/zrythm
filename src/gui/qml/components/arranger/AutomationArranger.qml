@@ -13,18 +13,18 @@ Arranger {
   id: root
 
   required property AutomationEditor automationEditor
-  readonly property AutomationRegion region: clipEditor.region
+  readonly property AutomationClip automationClip: clipEditor.clipObject as AutomationClip
   readonly property Track track: clipEditor.track
 
   function beginObjectCreation(coordinates: point): AutomationPoint {
     const value = getNormalizedValueAtY(coordinates.y);
     console.log("Automation Arranger: beginObjectCreation", coordinates, value);
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - region.position.ticks;
+    const localTickPosition = tickPosition - root.automationClip.position.ticks;
 
-    let automationPoint = objectCreator.addAutomationPoint(region, localTickPosition, value);
+    let automationPoint = objectCreator.addAutomationPoint(root.automationClip, localTickPosition, value);
     root.currentAction = Arranger.CreatingMoving;
-    root.selectSingleObject(region.automationPoints, region.automationPoints.rowCount() - 1);
+    root.selectSingleObject(root.automationClip.automationPoints, root.automationClip.automationPoints.rowCount() - 1);
     CursorManager.setResizeEndCursor();
 
     return automationPoint;
@@ -76,7 +76,7 @@ Arranger {
     id: automationPointsRepeater
 
     anchors.fill: parent
-    model: root.region.automationPoints
+    model: root.automationClip.automationPoints
 
     delegate: ArrangerObjectLoader {
       id: automationPointLoader

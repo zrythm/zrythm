@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/arrangement/clip.h"
 #include "structure/scenes/clip_slot.h"
 
 #include <nlohmann/json.hpp>
@@ -13,18 +14,28 @@ ClipSlot::ClipSlot (utils::IObjectRegistry &registry, QObject * parent)
 }
 
 void
-ClipSlot::setRegion (arrangement::ArrangerObject * region)
+ClipSlot::setClip (arrangement::Clip * clip)
 {
-  assert (region);
+  assert (clip);
 
-  if (region_ref_.has_value () && region_ref_->id () == region->get_uuid ())
+  if (clip_ref_.has_value () && clip_ref_->id () == clip->get_uuid ())
     {
       return;
     }
 
-  region_ref_ =
-    arrangement::ArrangerObjectUuidReference{ region->get_uuid (), registry_ };
-  Q_EMIT regionChanged (region);
+  // Detach the previous occupant's timebase provider from this slot.
+  if (auto * old = this->clip ())
+    {
+      if (auto * tp = old->timebaseProvider ())
+        tp->setSource (nullptr);
+    }
+
+  if (auto * tp = clip->timebaseProvider ())
+    tp->setSource (timebase_provider_);
+
+  clip_ref_ =
+    arrangement::ArrangerObjectUuidReference{ clip->get_uuid (), registry_ };
+  Q_EMIT clipObjectChanged (clip);
 }
 
 void
@@ -48,8 +59,11 @@ ClipSlotList::ClipSlotList (
   // Initialize clip slots to match existing tracks
   for (size_t i = 0; i < track_collection.track_count (); ++i)
     {
-      clip_slots_.emplace_back (
-        utils::make_qobject_unique<ClipSlot> (registry_, this));
+      auto   slot = utils::make_qobject_unique<ClipSlot> (registry_, this);
+      auto * track = track_collection.get_track_at_index (i);
+      if (track != nullptr)
+        slot->setTimebaseProvider (track->timebaseProvider ());
+      clip_slots_.emplace_back (std::move (slot));
     }
 
   // Connect to track collection changes to keep clip slots synced
@@ -60,9 +74,12 @@ ClipSlotList::ClipSlotList (
       beginInsertRows (parentIndex, first, last);
       for (int i = first; i <= last; ++i)
         {
-          clip_slots_.insert (
-            clip_slots_.begin () + i,
-            utils::make_qobject_unique<ClipSlot> (registry_, this));
+          auto   slot = utils::make_qobject_unique<ClipSlot> (registry_, this);
+          auto * track =
+            track_collection_.get_track_at_index (static_cast<size_t> (i));
+          if (track != nullptr)
+            slot->setTimebaseProvider (track->timebaseProvider ());
+          clip_slots_.insert (clip_slots_.begin () + i, std::move (slot));
         }
       endInsertRows ();
     });
@@ -120,20 +137,20 @@ ClipSlotList::ClipSlotList (
 void
 to_json (nlohmann::json &j, const ClipSlot &slot)
 {
-  if (slot.region_ref_.has_value ())
+  if (slot.clip_ref_.has_value ())
     {
-      j[ClipSlot::kRegionIdKey] = slot.region_ref_->id ();
+      j[ClipSlot::kClipIdKey] = slot.clip_ref_->id ();
     }
 }
 
 void
 from_json (const nlohmann::json &j, ClipSlot &slot)
 {
-  if (j.contains (ClipSlot::kRegionIdKey))
+  if (j.contains (ClipSlot::kClipIdKey))
     {
-      arrangement::ArrangerObject::Uuid region_id;
-      j.at (ClipSlot::kRegionIdKey).get_to (region_id);
-      slot.region_ref_.emplace (region_id, slot.registry_);
+      arrangement::ArrangerObject::Uuid clip_id;
+      j.at (ClipSlot::kClipIdKey).get_to (clip_id);
+      slot.clip_ref_.emplace (clip_id, slot.registry_);
     }
 }
 

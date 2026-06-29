@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_gui_qquick_unit_tests
-  chord_region_segmenter_test.cpp
+  chord_clip_segmenter_test.cpp
   chord_row_list_model_test.cpp
+  timeline_position_tracker_test.cpp
 )
 
 set_target_properties(zrythm_gui_qquick_unit_tests PROPERTIES

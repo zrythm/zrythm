@@ -19,9 +19,9 @@ class MockArrangerObjectOwner
       public structure::arrangement::ArrangerObjectOwner<
         structure::arrangement::Marker>,
       public structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::MidiRegion>,
+        structure::arrangement::MidiClip>,
       public structure::arrangement::ArrangerObjectOwner<
-        structure::arrangement::AudioRegion>,
+        structure::arrangement::AudioClip>,
       public structure::arrangement::ArrangerObjectOwner<
         structure::arrangement::AutomationPoint>,
       public structure::arrangement::ArrangerObjectOwner<
@@ -40,12 +40,12 @@ class MockArrangerObjectOwner
     zrythm::structure::arrangement::Marker)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     MockArrangerObjectOwner,
-    midiRegions,
-    zrythm::structure::arrangement::MidiRegion)
+    midiClips,
+    zrythm::structure::arrangement::MidiClip)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     MockArrangerObjectOwner,
-    audioRegions,
-    zrythm::structure::arrangement::AudioRegion)
+    audioClips,
+    zrythm::structure::arrangement::AudioClip)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     MockArrangerObjectOwner,
     automationPoints,
@@ -66,8 +66,8 @@ public:
       : QObject (parent),
         ArrangerObjectOwner<structure::arrangement::MidiNote> (registry, *this),
         ArrangerObjectOwner<structure::arrangement::Marker> (registry, *this),
-        ArrangerObjectOwner<structure::arrangement::MidiRegion> (registry, *this),
-        ArrangerObjectOwner<structure::arrangement::AudioRegion> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::MidiClip> (registry, *this),
+        ArrangerObjectOwner<structure::arrangement::AudioClip> (registry, *this),
         ArrangerObjectOwner<
           structure::arrangement::AutomationPoint> (registry, *this),
         ArrangerObjectOwner<structure::arrangement::TempoObject> (registry, *this),
@@ -89,12 +89,12 @@ public:
   MOCK_METHOD (
     std::string,
     get_field_name_for_serialization,
-    (const structure::arrangement::AudioRegion * obj),
+    (const structure::arrangement::AudioClip * obj),
     (const override));
   MOCK_METHOD (
     std::string,
     get_field_name_for_serialization,
-    (const structure::arrangement::MidiRegion * obj),
+    (const structure::arrangement::MidiClip * obj),
     (const override));
   MOCK_METHOD (
     std::string,

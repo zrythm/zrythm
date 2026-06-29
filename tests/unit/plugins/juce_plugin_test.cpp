@@ -1138,8 +1138,8 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
         stereo_input.getSample (1, output_index), 1e-6f);
     }
 
-  // Verify that unprocessed regions remain unchanged (or zeroed, depending on
-  // implementation). The regions before and after the split should not be
+  // Verify that unprocessed clips remain unchanged (or zeroed, depending on
+  // implementation). The clips before and after the split should not be
   // modified
   for (size_t i = 0; i < split_offset; ++i)
     {

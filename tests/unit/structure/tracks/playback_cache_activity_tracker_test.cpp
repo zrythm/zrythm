@@ -46,7 +46,7 @@ protected:
   {
     return PlaybackCacheActivityTracker (
       scheduler_, *cache_, [this] (units::sample_t sample) {
-        return tempo_map_->samples_to_tick (sample).in (units::ticks);
+        return tempo_map_->samples_to_tick (sample).asDouble ();
       });
   }
 
@@ -236,9 +236,9 @@ TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesUpdatedOnFinalize)
   ASSERT_EQ (ranges.size (), 1);
 
   const auto expected_start_tick =
-    tempo_map_->samples_to_tick (units::samples (0)).in (units::ticks);
+    tempo_map_->samples_to_tick (units::samples (0)).asDouble ();
   const auto expected_end_tick =
-    tempo_map_->samples_to_tick (units::samples (100)).in (units::ticks);
+    tempo_map_->samples_to_tick (units::samples (100)).asDouble ();
   auto range = ranges.first ().value<CachedTickRange> ();
   EXPECT_DOUBLE_EQ (range.startTick, expected_start_tick);
   EXPECT_DOUBLE_EQ (range.endTick, expected_end_tick);

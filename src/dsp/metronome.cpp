@@ -195,11 +195,10 @@ Metronome::queue_metronome_countin (
 
   const auto frame_to_tick = [&tempo_map] (const auto frame) {
     return au::round_as<int64_t> (
-      units::ticks, tempo_map.samples_to_tick (frame));
+      units::ticks, tempo_map.samples_to_tick (frame).asQuantity ());
   };
-  const auto tick_to_frame = [&tempo_map] (const units::tick_t tick) {
-    return tempo_map.tick_to_samples_rounded (
-      static_cast<units::precise_tick_t> (tick));
+  const auto tick_to_frame = [&tempo_map] (const auto &tick) {
+    return tempo_map.tick_to_samples_rounded (tick);
   };
 
   units::sample_t frames_per_beat;

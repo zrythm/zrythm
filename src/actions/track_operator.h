@@ -69,6 +69,9 @@ public:
   Q_INVOKABLE void setComment (const QString &comment);
   Q_INVOKABLE void setOutputTrack (structure::tracks::Track * destination);
 
+  /// Sets the track's timebase (Musical or Absolute).
+  Q_INVOKABLE void setTimebase (dsp::Timebase timebase);
+
 private:
   structure::tracks::Track *        track_{};
   undo::UndoStack *                 undo_stack_{};

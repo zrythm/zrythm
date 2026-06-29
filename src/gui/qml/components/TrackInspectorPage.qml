@@ -121,6 +121,37 @@ ScrollView {
             }
           }
         }
+
+        Label {
+          text: qsTr("Timebase")
+          visible: root.track.type === Track.Audio
+        }
+
+        ComboBox {
+          id: timebaseCombo
+
+          function updateCurrentIndex(): void {
+            // 0 = Musical, 1 = Absolute (matches dsp::Timebase enum)
+            currentIndex = root.track.timebaseProvider ? root.track.timebaseProvider.effectiveTimebase : 0;
+          }
+
+          Layout.fillWidth: true
+          model: [qsTr("Musical"), qsTr("Absolute")]
+          visible: root.track.type === Track.Audio
+
+          Component.onCompleted: updateCurrentIndex()
+          onActivated: function (index: int): void {
+            trackOperator.setTimebase(index);
+          }
+
+          Connections {
+            function onEffectiveTimebaseChanged() {
+              timebaseCombo.updateCurrentIndex();
+            }
+
+            target: root.track.timebaseProvider
+          }
+        }
       }
     }
 

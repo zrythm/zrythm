@@ -167,13 +167,14 @@ FixedPpqTempoMap<PPQ>::remove_time_signature_event (units::tick_t tick)
 
 template <units::tick_t::NTTP PPQ>
 auto
-FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
+FixedPpqTempoMap<PPQ>::tick_to_seconds (TimelineTick tick) const
   -> units::precise_second_t
 {
+  const auto tick_q = tick.asQuantity ();
   const auto &[events, cumulative_seconds] = get_events_or_default ();
 
   // Find the last event <= target tick
-  auto it = std::ranges::upper_bound (events, tick, {}, &TempoEvent::tick);
+  auto it = std::ranges::upper_bound (events, tick_q, {}, &TempoEvent::tick);
 
   if (it == events.begin ())
     {
@@ -184,7 +185,7 @@ FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
   const auto         &startEvent = events[index];
   const units::tick_t segmentStart = startEvent.tick;
   const auto          ticksFromStart =
-    tick - static_cast<units::precise_tick_t> (segmentStart);
+    tick_q - static_cast<units::precise_tick_t> (segmentStart);
   const auto baseSeconds = cumulative_seconds[index];
 
   // Last event segment
@@ -224,66 +225,68 @@ FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
 }
 
 template <units::tick_t::NTTP PPQ>
-units::precise_tick_t
+TimelineTick
 FixedPpqTempoMap<PPQ>::seconds_to_tick (units::precise_second_t seconds) const
 {
-  if (seconds <= units::seconds (0.0))
-    return units::ticks (0.0);
+  return TimelineTick{ [&] () -> units::precise_tick_t {
+    if (seconds <= units::seconds (0.0))
+      return units::ticks (0.0);
 
-  const auto &[events, cumulative_seconds] = get_events_or_default ();
+    const auto &[events, cumulative_seconds] = get_events_or_default ();
 
-  // Find the segment containing the time
-  auto         it = std::ranges::upper_bound (cumulative_seconds, seconds);
-  const size_t index =
-    (it == cumulative_seconds.begin ())
-      ? 0
-      : std::distance (cumulative_seconds.begin (), it) - 1;
+    // Find the segment containing the time
+    auto         it = std::ranges::upper_bound (cumulative_seconds, seconds);
+    const size_t index =
+      (it == cumulative_seconds.begin ())
+        ? 0
+        : std::distance (cumulative_seconds.begin (), it) - 1;
 
-  const auto        baseSeconds = cumulative_seconds[index];
-  const auto        timeInSegment = seconds - baseSeconds;
-  const TempoEvent &startEvent = events[index];
+    const auto        baseSeconds = cumulative_seconds[index];
+    const auto        timeInSegment = seconds - baseSeconds;
+    const TempoEvent &startEvent = events[index];
 
-  // Last segment
-  if (index == events.size () - 1)
-    {
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + timeInSegment * startEvent.bpm;
-    }
+    // Last segment
+    if (index == events.size () - 1)
+      {
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + timeInSegment * startEvent.bpm;
+      }
 
-  const TempoEvent   &endEvent = events[index + 1];
-  const units::tick_t segmentTicks = endEvent.tick - startEvent.tick;
-  const auto dSegmentTicks = static_cast<units::precise_tick_t> (segmentTicks);
+    const TempoEvent   &endEvent = events[index + 1];
+    const units::tick_t segmentTicks = endEvent.tick - startEvent.tick;
+    const auto dSegmentTicks = static_cast<units::precise_tick_t> (segmentTicks);
 
-  // Constant tempo segment
-  if (startEvent.curve == CurveType::Constant)
-    {
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + timeInSegment * startEvent.bpm;
-    }
-  // Linear tempo ramp
-  else if (startEvent.curve == CurveType::Linear)
-    {
-      const auto bpm0 = startEvent.bpm;
-      const auto bpm1 = endEvent.bpm;
+    // Constant tempo segment
+    if (startEvent.curve == CurveType::Constant)
+      {
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + timeInSegment * startEvent.bpm;
+      }
+    // Linear tempo ramp
+    else if (startEvent.curve == CurveType::Linear)
+      {
+        const auto bpm0 = startEvent.bpm;
+        const auto bpm1 = endEvent.bpm;
 
-      if (abs (bpm1 - bpm0) < units::bpm (1e-5))
-        {
-          return static_cast<units::precise_tick_t> (startEvent.tick)
-                 + timeInSegment * bpm0;
-        }
+        if (abs (bpm1 - bpm0) < units::bpm (1e-5))
+          {
+            return static_cast<units::precise_tick_t> (startEvent.tick)
+                   + timeInSegment * bpm0;
+          }
 
-      // Coerce the mixed-unit product to plain ticks before dividing, so the
-      // ratio is unitless (magnitude 1) and usable directly with std::exp.
-      const auto exponent = au::as_raw_number (
-        (timeInSegment * (bpm1 - bpm0)).as (units::ticks) / dSegmentTicks);
-      const auto expVal = std::exp (exponent);
-      const auto f = (expVal - 1.0) * (bpm0 / (bpm1 - bpm0));
+        // Coerce the mixed-unit product to plain ticks before dividing, so the
+        // ratio is unitless (magnitude 1) and usable directly with std::exp.
+        const auto exponent = au::as_raw_number (
+          (timeInSegment * (bpm1 - bpm0)).as (units::ticks) / dSegmentTicks);
+        const auto expVal = std::exp (exponent);
+        const auto f = (expVal - 1.0) * (bpm0 / (bpm1 - bpm0));
 
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + f * dSegmentTicks;
-    }
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + f * dSegmentTicks;
+      }
 
-  return static_cast<units::precise_tick_t> (startEvent.tick);
+    return static_cast<units::precise_tick_t> (startEvent.tick);
+  }() };
 }
 
 template <units::tick_t::NTTP PPQ>
@@ -441,12 +444,13 @@ FixedPpqTempoMap<PPQ>::samples_to_musical_position (
   // be after the given samples
   const auto tick = au::floor_as<int64_t> (
     units::ticks,
-    samples_to_tick (static_cast<units::precise_sample_t> (samples)));
+    samples_to_tick (static_cast<units::precise_sample_t> (samples))
+      .asQuantity ());
   return tick_to_musical_position (tick);
 }
 
 template <units::tick_t::NTTP PPQ>
-units::tick_t
+TimelineTickI
 FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) const
 {
   const auto &time_sig_events = get_time_signature_events_or_default ();
@@ -491,13 +495,14 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
           const int64_t ticks_per_beat = ticks_per_bar / numerator;
 
           // Add beat and sub-beat components
-          return bar_ticks
-                 + units::ticks (
-                   static_cast<int64_t> (pos.beat - 1) * ticks_per_beat)
-                 + units::ticks (
-                   static_cast<int64_t> (pos.sixteenth - 1)
-                   * ticks_per_sixteenth_.in (units::ticks))
-                 + units::ticks (pos.tick);
+          return TimelineTickI{
+            bar_ticks
+            + units::ticks (static_cast<int64_t> (pos.beat - 1) * ticks_per_beat)
+            + units::ticks (
+              static_cast<int64_t> (pos.sixteenth - 1)
+              * ticks_per_sixteenth_.in (units::ticks))
+            + units::ticks (pos.tick)
+          };
         }
 
       // Move to next time signature segment
@@ -505,7 +510,7 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
       current_bar += bars_in_this_sig.in (units::ticks);
     }
 
-  return cumulative_ticks;
+  return TimelineTickI{ cumulative_ticks };
 }
 
 template <units::tick_t::NTTP PPQ>

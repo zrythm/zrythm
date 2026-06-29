@@ -33,7 +33,7 @@ ColumnLayout {
 
       Layout.fillHeight: true
       Layout.fillWidth: true
-      currentIndex: root.session.uiState.clipEditor.region ? 1 : 0
+      currentIndex: root.session.uiState.clipEditor.clipObject ? 1 : 0
 
       PlaceholderPage {
         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter

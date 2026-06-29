@@ -19,6 +19,8 @@ AudioTrack::AudioTrack (FinalTrackDependencies dependencies)
   icon_name_ = u8"view-media-visualization";
 
   processor_ = make_track_processor ();
+
+  timebaseProvider ()->setOverride (dsp::Timebase::Absolute);
 }
 
 void

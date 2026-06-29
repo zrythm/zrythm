@@ -13,10 +13,10 @@
 namespace zrythm::structure::arrangement
 {
 /**
- * Audio source for an AudioRegion.
+ * Audio source for an AudioClip.
  *
- * This is a separate class so that region linking can later be implemented more
- * easily via a delegate to ArrangerObjectOwner (since audio region is now also
+ * This is a separate class so that clip linking can later be implemented more
+ * easily via a delegate to ArrangerObjectOwner (since audio clip is now also
  * an ArrangerObjectOwner).
  */
 class AudioSourceObject final : public ArrangerObject
@@ -45,6 +45,11 @@ public:
   Q_DISABLE_COPY_MOVE (AudioSourceObject)
   ~AudioSourceObject () override;
 
+  dsp::ContentPosition * position () const override
+  {
+    return static_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
+
   // ========================================================================
   // QML Interface
   // ========================================================================
@@ -57,7 +62,7 @@ public:
    * @brief Returns the underlying FileAudioSource.
    *
    * Carries the raw samples and the clip's permanent source BPM, which the
-   * region needs to compute its musical length and stretch ratios.
+   * clip needs to compute its musical length and stretch ratios.
    */
   dsp::FileAudioSource &file_audio_source () const;
 

@@ -29,20 +29,21 @@ TransportController::moveBackward ()
 
   auto pos_ticks = units::ticks (
     snap_grid_.prevSnapPoint (playhead.position_ticks ().in (units::ticks)));
-  const auto pos_frames = tempo_map.tick_to_samples_rounded (pos_ticks);
+  const auto pos_frames =
+    tempo_map.tick_to_samples_rounded (dsp::TimelineTick{ pos_ticks });
 
   /* if prev snap point is exactly at the playhead or very close it, go back
    * more */
   const auto playhead_ticks = playhead.position_ticks ();
   const auto playhead_frames =
-    tempo_map.tick_to_samples_rounded (playhead_ticks);
+    tempo_map.tick_to_samples_rounded (dsp::TimelineTick{ playhead_ticks });
 
   if (
     pos_frames > units::samples (0)
     && (pos_frames == playhead_frames
         || (transport_.isRolling ()
-            && (tempo_map.tick_to_seconds (playhead_ticks)
-                  - tempo_map.tick_to_seconds (pos_ticks))
+            && (tempo_map.tick_to_seconds (dsp::TimelineTick{ playhead_ticks })
+                  - tempo_map.tick_to_seconds (dsp::TimelineTick{ pos_ticks }))
                  < REPEATED_BACKWARD_MS)))
     {
       pos_ticks = units::ticks (snap_grid_.prevSnapPoint (

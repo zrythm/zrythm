@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "dsp/rubberband_timestretch_engine.h"
+#include "utils/logger.h"
 
 #include <rubberband/RubberBandStretcher.h>
 
@@ -17,17 +18,49 @@ namespace
 {
 using RBS = RubberBand::RubberBandStretcher;
 
-/// Build the RubberBand option flags for an offline, pitch-preserving stretch.
+/// Build the RubberBand option flags for an offline stretch.
+/// Polyphonic/Repitch use the R3 (Finer) engine; Beats/Monophonic use the
+/// R2 (Standard) engine with material-appropriate detector and transient
+/// options.
 RBS::Options
 make_options (const StretchOptions &opts)
 {
-  // Offline mode + R3 (Finer) engine for highest quality. The R3 engine ignores
-  // the transients/detector/pitch flags (it has its own handling), so none of
-  // those are set here. Formant preservation is the only user-tunable flag.
-  auto o = static_cast<RBS::Options> (
-    RBS::OptionProcessOffline | RBS::OptionEngineFiner);
-  if (opts.preserve_formants)
+  RBS::Options o = RBS::OptionProcessOffline;
+
+  switch (opts.algorithm)
+    {
+    case StretchOptions::Algorithm::Beats:
+      // R2 engine with percussive detection and crisp transients.
+      o = static_cast<RBS::Options> (
+        o | RBS::OptionEngineFaster | RBS::OptionDetectorPercussive
+        | RBS::OptionTransientsCrisp);
+      break;
+    case StretchOptions::Algorithm::Monophonic:
+      // R2 engine with soft detection and smooth transients.
+      o = static_cast<RBS::Options> (
+        o | RBS::OptionEngineFaster | RBS::OptionDetectorSoft
+        | RBS::OptionTransientsSmooth);
+      break;
+    case StretchOptions::Algorithm::Polyphonic:
+      // R3 (Finer) engine — highest quality; ignores transient/detector flags.
+      o = static_cast<RBS::Options> (o | RBS::OptionEngineFiner);
+      break;
+    case StretchOptions::Algorithm::Repitch:
+      // Unreachable: supports() returns false for Repitch, so the NVI layer
+      // rejects it before stretch_impl() is entered. Kept defensively in case
+      // stretch_impl() is ever called directly; falls back to Polyphonic (R3).
+      z_warning (
+        "Repitch algorithm reached stretch_impl() despite being unsupported "
+        "by RubberBand; falling back to Polyphonic (R3)");
+      o = static_cast<RBS::Options> (o | RBS::OptionEngineFiner);
+      break;
+    }
+
+  if (
+    opts.preserve_formants
+    && opts.algorithm != StretchOptions::Algorithm::Repitch)
     o = static_cast<RBS::Options> (o | RBS::OptionFormantPreserved);
+
   return o;
 }
 } // namespace
@@ -47,9 +80,13 @@ RubberBandTimeStretchEngine::id () const
 }
 
 bool
-RubberBandTimeStretchEngine::supports (StretchOptions::PitchMode mode) const
+RubberBandTimeStretchEngine::supports (StretchOptions::Algorithm algorithm) const
 {
-  return mode == StretchOptions::PitchMode::Preserve;
+  // Repitch (varispeed) is not implementable with RubberBand, which always
+  // preserves pitch. Reject it so the NVI layer throws rather than silently
+  // producing pitch-preserved output. A future Resampler engine will provide
+  // true varispeed.
+  return algorithm != StretchOptions::Algorithm::Repitch;
 }
 
 utils::audio::AudioBuffer
@@ -59,11 +96,8 @@ RubberBandTimeStretchEngine::stretch_impl (
   const StretchOptions            &options)
 {
   // The NVI layer in ITimeStretchEngine::stretch() has already validated
-  // warp.is_valid(), the source-length match, and supports(); this engine only
-  // supports Preserve, so Repitch never reaches here in normal use.
-  if (options.pitch_mode == StretchOptions::PitchMode::Repitch)
-    throw std::invalid_argument (
-      "RubberBand engine does not support Repitch mode");
+  // warp.is_valid(), the source-length match, and supports(). Repitch is
+  // rejected by supports(), so only Beats/Monophonic/Polyphonic reach here.
 
   const int    channels = input.getNumChannels ();
   const size_t source_frames = static_cast<size_t> (input.getNumSamples ());

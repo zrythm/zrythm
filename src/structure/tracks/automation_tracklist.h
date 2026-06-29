@@ -36,6 +36,7 @@ public:
   {
     const dsp::TempoMapWrapper &tempo_map_;
     utils::IObjectRegistry     &registry_;
+    dsp::TimebaseProvider *     timebase_provider_ = nullptr;
   };
 
   AutomationTrackHolder (Dependencies dependencies, QObject * parent = nullptr)

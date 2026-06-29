@@ -5,8 +5,6 @@ qt_add_library(zrythm_dsp_lib STATIC)
 
 target_sources(zrythm_dsp_lib
   PRIVATE
-    atomic_position.cpp
-    atomic_position_qml_adapter.cpp
     audio_callback.cpp
     audio_input_selection.cpp
     audio_input_processor.cpp
@@ -58,9 +56,11 @@ target_sources(zrythm_dsp_lib
     port_connections_manager.cpp
     port_observation_manager.cpp
     port_observer.cpp
+    position.cpp
     processor_base.cpp
     snap_grid.cpp
     timestretch_engine.cpp
+    timebase.cpp
     rubberband_timestretch_engine.cpp
     tempo_map.cpp
     tempo_warp_map.cpp
@@ -73,8 +73,6 @@ target_sources(zrythm_dsp_lib
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
-      atomic_position.h
-      atomic_position_qml_adapter.h
       audio_callback.h
       audio_device_info.h
       audio_input_selection.h
@@ -134,10 +132,13 @@ target_sources(zrythm_dsp_lib
       port_observation_manager.h
       port_observation_token.h
       port_observer.h
+      position.h
       processor_base.h
       snap_grid.h
       timestretch_engine.h
+      timebase.h
       rubberband_timestretch_engine.h
+      tick_types.h
       tempo_map.h
       tempo_warp_map.h
       time_warp_map.h

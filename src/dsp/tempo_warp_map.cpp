@@ -14,7 +14,7 @@ TimeWarpMap
 to_time_warp_map (
   std::span<const ContentTimeWarp::WarpPoint> warp_points,
   const TempoMap                             &tempo_map,
-  units::precise_tick_t                       region_start_tick,
+  TimelineTick                                clip_start_tick,
   units::bpm_t                                source_bpm,
   units::sample_t                             num_source_frames)
 {
@@ -24,7 +24,7 @@ to_time_warp_map (
   const auto sr = tempo_map.get_sample_rate ();
 
   const auto start_samples =
-    tempo_map.tick_to_samples_rounded (region_start_tick);
+    tempo_map.tick_to_samples_rounded (TimelineTick{ clip_start_tick });
 
   const auto source_frame_for =
     [&] (units::precise_tick_t content_ticks) -> units::sample_t {
@@ -33,8 +33,8 @@ to_time_warp_map (
   };
 
   const auto output_frame_for =
-    [&] (units::precise_tick_t delta_ticks) -> units::sample_t {
-    const auto tick = region_start_tick + delta_ticks;
+    [&] (TimelineTick delta_ticks) -> units::sample_t {
+    const auto tick = clip_start_tick + delta_ticks;
     return tempo_map.tick_to_samples_rounded (tick) - start_samples;
   };
 
@@ -44,7 +44,7 @@ to_time_warp_map (
   for (const auto &wp : warp_points)
     {
       anchors.push_back (
-        { .source_frame = source_frame_for (wp.content_ticks),
+        { .source_frame = source_frame_for (wp.content_ticks.asQuantity ()),
           .output_frame = output_frame_for (wp.timeline_delta_ticks) });
     }
 

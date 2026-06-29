@@ -134,7 +134,7 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
               }
             for (auto &mn : new_midi_notes)
               {
-                auto * r = mn->get_region ();
+                auto * r = mn->get_clip ();
                 r->append_object (mn->get_uuid ());
                 /* clone again because the selections are supposed to hold
                  * clones */
@@ -173,9 +173,9 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
         int i = 0;
         for (auto * mn : copies)
           {
-            double ticks = mn->bounds ()->length ()->ticks ();
+            double ticks = mn->length ()->ticks ();
             mn->position ()->setTicks (poses[(copies.size () - i) - 1]);
-            mn->bounds ()->length ()->setTicks (ticks);
+            mn->length ()->setTicks (ticks);
             ++i;
           }
       }
@@ -191,7 +191,7 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
             auto * mn = *it;
             auto * next_mn = *(it + 1);
             /* 48 to make sure the note has a length */
-            mn->bounds ()->length ()->setTicks (
+            mn->length ()->setTicks (
               std::max (
                 48.0,
                 next_mn->position ()->ticks () - mn->position ()->ticks ()));
@@ -210,7 +210,7 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
           {
             auto * mn = *it;
             auto * next_mn = *(it + 1);
-            mn->bounds ()->length ()->setTicks (
+            mn->length ()->setTicks (
               std::max (
                 48.0,
                 (next_mn->position ()->ticks () - mn->position ()->ticks ())
@@ -222,7 +222,7 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
       {
         for (auto * mn : sel)
           {
-            mn->bounds ()->length ()->setTicks (48.0);
+            mn->length ()->setTicks (48.0);
           }
       }
       break;
@@ -251,8 +251,7 @@ MidiFunction::apply (std::span<MidiNote *> sel, Type type, Options opts)
               !opts.ascending_);
             double ms_to_add = ms_multiplier * opts.time_;
             z_trace ("multi {:f}, ms {:f}", ms_multiplier, ms_to_add);
-            [[maybe_unused]] double len_ticks =
-              mn->bounds ()->length ()->ticks ();
+            [[maybe_unused]] double len_ticks = mn->length ()->ticks ();
             mn->position ()->setTicks (first_mn->position ()->ticks ());
 // TODO
 #if 0

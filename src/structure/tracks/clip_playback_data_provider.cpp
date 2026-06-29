@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/region_renderer.h"
+#include "structure/arrangement/clip_renderer.h"
 #include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/float_ranges.h"
 
@@ -36,21 +36,21 @@ ClipPlaybackDataProvider::clear_active_buffers ()
 
 void
 ClipPlaybackDataProvider::generate_midi_events (
-  const arrangement::MidiRegion        &midi_region,
+  const arrangement::MidiClip          &midi_clip,
   structure::tracks::ClipQuantizeOption quantize_option)
 {
-  juce::MidiMessageSequence region_seq;
+  juce::MidiMessageSequence clip_seq;
 
-  // Serialize region (timings in ticks)
-  arrangement::RegionRenderer::serialize_to_sequence (midi_region, region_seq);
+  // Serialize clip (timings in ticks)
+  arrangement::ClipRenderer::serialize_to_sequence (midi_clip, clip_seq);
 
   // Convert JUCE sequence to native events with sample timestamps
   std::vector<dsp::SampleBasedMidiEvent> native_events;
-  native_events.reserve (region_seq.getNumEvents ());
-  for (const auto &event : region_seq)
+  native_events.reserve (clip_seq.getNumEvents ());
+  for (const auto &event : clip_seq)
     {
       const auto sample_time = tempo_map_.tick_to_samples_rounded (
-        units::ticks (event->message.getTimeStamp ()));
+        dsp::TimelineTick{ units::ticks (event->message.getTimeStamp ()) });
       const auto * raw = event->message.getRawData ();
       const auto   raw_size =
         static_cast<size_t> (event->message.getRawDataSize ());
@@ -64,25 +64,25 @@ ClipPlaybackDataProvider::generate_midi_events (
     rt_events{ active_midi_playback_sequence_ };
   *rt_events = MidiCache{
     std::move (native_events), quantize_option,
-    units::ticks (midi_region.bounds ()->length ()->ticks ())
+    units::ticks (midi_clip.length ()->ticks ())
   };
 }
 
 void
 ClipPlaybackDataProvider::generate_audio_events (
-  const arrangement::AudioRegion       &audio_region,
+  const arrangement::AudioClip         &audio_clip,
   structure::tracks::ClipQuantizeOption quantize_option)
 {
-  // Serialize region
+  // Serialize clip
   juce::AudioSampleBuffer audio_buffer;
-  arrangement::RegionRenderer::serialize_to_buffer (audio_region, audio_buffer);
+  arrangement::ClipRenderer::serialize_to_buffer (audio_clip, audio_buffer);
 
   decltype (active_audio_playback_buffer_)::ScopedAccess<
     farbot::ThreadType::nonRealtime>
     rt_audio{ active_audio_playback_buffer_ };
   *rt_audio = AudioCache{
     std::move (audio_buffer), quantize_option,
-    units::ticks (audio_region.bounds ()->length ()->ticks ())
+    units::ticks (audio_clip.length ()->ticks ())
   };
 }
 
@@ -115,14 +115,12 @@ ClipPlaybackDataProvider::process_midi_events (
       }
     const auto &cache = cache_opt->value ();
     const auto &midi_events = cache.midi_events_;
-    const auto  clip_loop_end_samples =
-      tempo_map_.tick_to_samples_rounded (cache.end_position_);
+    const auto  clip_loop_end_samples = tempo_map_.tick_to_samples_rounded (
+      dsp::TimelineTick{ cache.end_position_ });
 
     if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
       z_debug (
-        "Clip loop end: {} samples ({} ticks)",
-        clip_loop_end_samples.in (units::samples),
-        cache.end_position_.in (units::ticks));
+        "Clip loop end: {} ({})", clip_loop_end_samples, cache.end_position_);
 
     // Update playback position based on timeline changes
     update_playback_position (time_nfo, clip_loop_end_samples);
@@ -314,9 +312,11 @@ ClipPlaybackDataProvider::handle_quantization_and_start (
           // For other quantize options, do musical position calculations
           // Check if it's time to play yet based on quantize option
           const auto musical_pos_at_start = tempo_map_.tick_to_musical_position (
-            au::round_as<int64_t> (units::ticks, current_timeline_tick_position));
+            au::round_as<int64_t> (
+              units::ticks, current_timeline_tick_position.asQuantity ()));
           const auto musical_pos_at_end = tempo_map_.tick_to_musical_position (
-            au::round_as<int64_t> (units::ticks, timeline_end_tick_position));
+            au::round_as<int64_t> (
+              units::ticks, timeline_end_tick_position.asQuantity ()));
 
           bool                           should_start = false;
           dsp::TempoMap::MusicalPosition musical_pos_to_start_playing_at{};
@@ -513,14 +513,13 @@ ClipPlaybackDataProvider::process_audio_events (
         return;
       }
 
-    const auto clip_loop_end_samples =
-      tempo_map_.tick_to_samples_rounded (cache.end_position_);
+    const auto clip_loop_end_samples = tempo_map_.tick_to_samples_rounded (
+      dsp::TimelineTick{ cache.end_position_ });
 
     if constexpr (CLIP_LAUNCHER_EVENT_PROVIDER_DEBUG)
       z_debug (
-        "Audio clip loop end: {} samples ({} ticks)",
-        clip_loop_end_samples.in (units::samples),
-        cache.end_position_.in (units::ticks));
+        "Audio clip loop end: {} ({})", clip_loop_end_samples,
+        cache.end_position_);
 
     // Update playback position based on timeline changes
     update_playback_position (time_nfo, clip_loop_end_samples);

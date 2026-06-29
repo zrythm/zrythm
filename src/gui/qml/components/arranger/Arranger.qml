@@ -139,7 +139,11 @@ Item {
 
   function getObjectAtCurrentIndex(): ArrangerObject {
     const unifiedIndex = root.arrangerSelectionModel.currentIndex;
+    if (!unifiedIndex || !unifiedIndex.valid)
+      return null;
     const sourceIndex = root.unifiedObjectsModel.mapToSource(unifiedIndex);
+    if (!sourceIndex || !sourceIndex.valid)
+      return null;
     return sourceIndex.model.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
   }
 
@@ -218,7 +222,8 @@ Item {
   function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
     // Note: should probably check all selected objects if loopable
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
-    return object.arrangerObject.loopRange !== null && (object.arrangerObject.loopRange.looped || isObjectHoveredInBottomHalf);
+    const clipObject = object.arrangerObject as Clip;
+    return clipObject !== null && (clipObject.looped || isObjectHoveredInBottomHalf);
   }
 
   function updateCursor() {
@@ -359,8 +364,8 @@ Item {
       if (sourceModel) {
         // Get the object from the source model using the arrangerObject role
         const object = sourceModel.data(sourceIndex, ArrangerObjectListModel.ArrangerObjectPtrRole) as ArrangerObject;
-        const objectTimelineTicks = object.position.ticks + (object.parentObject ? object.parentObject.position.ticks : 0);
-        const objectTimelineEndTicks = ArrangerObjectHelpers.getObjectEndTicks(object) + (object.parentObject ? object.parentObject.position.ticks : 0);
+        const objectTimelineTicks = ArrangerObjectHelper.timelineTicks(object);
+        const objectTimelineEndTicks = ArrangerObjectHelper.timelineEndTicks(object);
         if (object) {
           // Create a temporary view that wraps the arranger object
           const tempView = tempViewComponent.createObject(arrangerContent, {
@@ -467,6 +472,8 @@ Item {
         Menu {
           id: arrangerContextMenu
 
+          property bool showTimebaseMenu: false
+
           onAboutToHide: {
             arrangerContent.arrangerIsActive = Qt.binding(function () {
               return arrangerContent.activeFocus;
@@ -474,6 +481,7 @@ Item {
           }
           onAboutToShow: {
             arrangerContent.arrangerIsActive = true;
+            arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders();
           }
 
           MenuItem {
@@ -497,6 +505,33 @@ Item {
 
           MenuItem {
             action: arrangerContent.appWindow.toggleMuteAction
+          }
+
+          MenuSeparator {
+            visible: arrangerContextMenu.showTimebaseMenu
+          }
+
+          Menu {
+            title: qsTr("Timebase")
+            visible: arrangerContextMenu.showTimebaseMenu
+
+            MenuItem {
+              text: qsTr("Inherit from Track")
+
+              onTriggered: root.selectionOperator.clearTimebaseOverride()
+            }
+
+            MenuItem {
+              text: qsTr("Musical")
+
+              onTriggered: root.selectionOperator.setTimebaseOverride(0)
+            }
+
+            MenuItem {
+              text: qsTr("Absolute")
+
+              onTriggered: root.selectionOperator.setTimebaseOverride(1)
+            }
           }
         }
 
@@ -615,7 +650,7 @@ Item {
 
           function calculateObjectMovementTicks() {
             const obj = root.getObjectAtCurrentIndex();
-            const objTimelineTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+            const objTimelineTicks = ArrangerObjectHelper.timelineTicks(obj);
             const ticksAlreadyMoved = objTimelineTicks - startTimelineTicks;
             const ticksToMove = calculateSnappedMovementTicks(startTimelineTicks) - ticksAlreadyMoved;
             return ticksToMove;
@@ -648,7 +683,7 @@ Item {
 
           function moveTemporaryObjectsX() {
             const obj = root.getObjectAtCurrentIndex();
-            const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj)) * root.ruler.pxPerTick;
+            const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelper.timelineTicks(obj)) * root.ruler.pxPerTick;
             root.tempQmlArrangerObjects.forEach(qmlObj => {
               qmlObj.x = qmlObj.coordinatesOnConstruction.x + xToMoveSinceStart;
             });
@@ -767,7 +802,7 @@ Item {
                 // Calculate delta based on the resize type
                 if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
                   // For bounds resize, delta is the difference in position ticks
-                  const originalPosTicks = ArrangerObjectHelpers.getObjectTimelinePositionInTicks(obj);
+                  const originalPosTicks = ArrangerObjectHelper.timelineTicks(obj);
                   delta = startTicks - originalPosTicks;
                 } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                   // For fades resize, delta is in ticks (will be converted internally)
@@ -786,8 +821,8 @@ Item {
                 const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
                 if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
                   const obj = root.getObjectAtCurrentIndex();
-                  if (ArrangerObjectHelpers.objectLengthFromTimelineEndTicks(obj, endTicks) > 0) {
-                    ArrangerObjectHelpers.setObjectEndFromTimelineTicks(obj, endTicks);
+                  if (endTicks > ArrangerObjectHelper.timelineTicks(obj)) {
+                    ArrangerObjectHelper.setEndFromTimelineTicks(obj, endTicks);
                   }
                 } else {
                   // Calculate delta in ticks based on the resize type and direction
@@ -805,7 +840,7 @@ Item {
                   // Calculate delta based on the resize type
                   if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
                     // For bounds resize, delta is the difference in ticks
-                    const originalEndTicks = ArrangerObjectHelpers.getObjectEndInTimelineTicks(obj);
+                    const originalEndTicks = ArrangerObjectHelper.timelineEndTicks(obj);
                     delta = endTicks - originalEndTicks;
                   } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                     // For fades resize, delta is in ticks (will be converted internally)

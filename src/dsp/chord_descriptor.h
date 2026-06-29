@@ -124,7 +124,7 @@ class ChordDescriptor : public QObject
 public:
   static constexpr std::uint8_t kDefaultBasePitch = 36; // C2
 
-  ChordDescriptor () = default;
+  explicit ChordDescriptor (QObject * parent = nullptr) : QObject (parent) { }
 
   ChordDescriptor (
     MusicalNote                root,

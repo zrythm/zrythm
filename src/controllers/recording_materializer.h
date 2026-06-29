@@ -21,16 +21,16 @@ namespace zrythm::controllers
 {
 
 /**
- * @brief Converts raw recording packets into arrangement regions.
+ * @brief Converts raw recording packets into arrangement clips.
  *
  * Subscribes to RecordingCoordinator::audioDataReady and midiDataReady to
- * create or expand regions for each track. For audio, the first packet for a
- * given continuous range creates a new AudioRegion via the RegionCreator
- * callback; subsequent packets append frames to the region's clip. For MIDI,
+ * create or expand clips for each track. For audio, the first packet for a
+ * given continuous range creates a new AudioClip via the ClipCreator
+ * callback; subsequent packets append frames to the clip's clip. For MIDI,
  * note-on/off pairs become MidiNote objects and CC/pitchbend/etc. become
- * MidiControlEvent objects inside a MidiRegion.
+ * MidiControlEvent objects inside a MidiClip.
  *
- * All region creations within a single recording take (transport rolling to
+ * All clip creations within a single recording take (transport rolling to
  * transport stopped) are wrapped in a single undo macro so the entire take
  * can be undone in one step. The macro is finalized when
  * RecordingCoordinator::recordingSessionEnded fires.
@@ -45,13 +45,13 @@ class RecordingMaterializer : public QObject
 public:
   using RecordingMode = recording::RecordingMode;
 
-  /** Returned by region creator callbacks on success. */
-  struct CreatedRegion
+  /** Returned by clip creator callbacks on success. */
+  struct CreatedClip
   {
-    structure::arrangement::ArrangerObjectUuidReference region;
+    structure::arrangement::ArrangerObjectUuidReference clip;
     size_t                                              actual_lane_index{};
   };
-  using RegionCreationResult = std::optional<CreatedRegion>;
+  using ClipCreationResult = std::optional<CreatedClip>;
 
   /** Called to query the current recording mode (Takes, TakesMuted, etc.). */
   using RecordingModeProvider = std::function<RecordingMode ()>;
@@ -60,38 +60,38 @@ public:
    * @brief Injected callbacks for creating arranger objects.
    *
    * Positions for MIDI callbacks (midi_note, midi_control_event) are
-   * region-relative sample positions.
+   * clip-relative sample positions.
    */
   struct ArrangerObjectCreators
   {
-    /** Creates an AudioRegion with initial audio frames. */
-    std::function<RegionCreationResult (
+    /** Creates an AudioClip with initial audio frames. */
+    std::function<ClipCreationResult (
       structure::tracks::TrackUuid     track_id,
       units::sample_t                  start_position,
       const utils::audio::AudioBuffer &initial_frames,
       size_t                           lane_index)>
-      audio_region;
+      audio_clip;
 
-    /** Creates an empty MidiRegion. */
-    std::function<RegionCreationResult (
+    /** Creates an empty MidiClip. */
+    std::function<ClipCreationResult (
       structure::tracks::TrackUuid track_id,
       units::sample_t              start_position,
       size_t                       lane_index)>
-      midi_region;
+      midi_clip;
 
-    /** Creates a MidiNote inside a region. */
+    /** Creates a MidiNote inside a clip. */
     std::function<void (
-      structure::arrangement::MidiRegion &region,
-      units::sample_t                     start_position,
-      units::sample_t                     end_position,
-      int                                 pitch,
-      int                                 velocity,
-      int                                 channel)>
+      structure::arrangement::MidiClip &clip,
+      units::sample_t                   start_position,
+      units::sample_t                   end_position,
+      int                               pitch,
+      int                               velocity,
+      int                               channel)>
       midi_note;
 
-    /** Creates a MidiControlEvent inside a region. */
+    /** Creates a MidiControlEvent inside a clip. */
     std::function<void (
-      structure::arrangement::MidiRegion                 &region,
+      structure::arrangement::MidiClip                   &clip,
       units::sample_t                                     position,
       structure::arrangement::MidiControlEvent::EventType type,
       int                                                 channel,
@@ -128,12 +128,12 @@ private:
       uint8_t         channel{};
     };
 
-    /** Currently active region (AudioRegion or MidiRegion). */
+    /** Currently active clip (AudioClip or MidiClip). */
     std::optional<structure::arrangement::ArrangerObjectUuidReference>
-      current_region;
+      current_clip;
     /** End sample of the last contiguous packet (used for gap detection). */
     std::optional<units::sample_t> last_end_position;
-    /** Lane index for the next region creation (increments on discontinuity). */
+    /** Lane index for the next clip creation (increments on discontinuity). */
     size_t current_lane_index = 0;
     /**
      * Notes with note-on received but no note-off yet.
@@ -148,25 +148,25 @@ private:
     structure::tracks::TrackUuid             track_id,
     const std::vector<RecordingAudioPacket> &packets);
 
-  /** Creates a new AudioRegion or returns the existing one for this track. */
+  /** Creates a new AudioClip or returns the existing one for this track. */
   std::optional<structure::arrangement::ArrangerObjectUuidReference>
-  get_or_create_region (
+  get_or_create_clip (
     TrackRecordingState             &state,
     structure::tracks::TrackUuid     track_id,
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames);
 
   static dsp::FileAudioSource *
-  get_clip_for_region (structure::arrangement::AudioRegion &region);
+  get_audio_source_for_clip (structure::arrangement::AudioClip &clip);
 
   /** Handles RecordingCoordinator::midiDataReady signal. */
   void on_midi_data_ready (
     structure::tracks::TrackUuid            track_id,
     const std::vector<RecordingMidiPacket> &packets);
 
-  /** Creates a MidiRegion if none exists for this track. Returns false on
+  /** Creates a MidiClip if none exists for this track. Returns false on
    * failure. */
-  bool ensure_midi_region (
+  bool ensure_midi_clip (
     TrackRecordingState         &state,
     structure::tracks::TrackUuid track_id,
     units::sample_t              start_position);
@@ -175,7 +175,7 @@ private:
    * @brief Called when a gap is detected between packets.
    *
    * Force-completes any pending MIDI notes, handles lane increment/muting
-   * based on recording mode, and resets the current region.
+   * based on recording mode, and resets the current clip.
    */
   void handle_discontinuity (TrackRecordingState &state);
 

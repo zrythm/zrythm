@@ -16,7 +16,8 @@ MidiNote::MidiNote (
     : ArrangerObject (
         Type::MidiNote,
         tempo_map_wrapper,
-        ArrangerObjectFeatures::Bounds | ArrangerObjectFeatures::Mute,
+        ArrangerObjectFeatures::Bounds | ArrangerObjectFeatures::Mute
+          | ArrangerObjectFeatures::ClipOwned,
         parent)
 {
   QObject::connect (
@@ -127,9 +128,9 @@ MidiNote::set_pitch (const uint8_t val)
     is_hit (TRANSPORT->get_playhead_position_in_gui_thread ().frames_)
     && TRANSPORT->isRolling ())
     {
-      auto region = dynamic_cast<MidiRegion *> (get_region ());
-      z_return_if_fail (region);
-      auto track_var = region->get_track ();
+      auto clip = dynamic_cast<MidiClip *> (get_clip ());
+      z_return_if_fail (clip);
+      auto track_var = clip->get_track ();
       std::visit (
         [&] (auto &&track) {
           using TrackT = utils::base_type<decltype (track)>;
@@ -138,7 +139,7 @@ MidiNote::set_pitch (const uint8_t val)
               auto &midi_events =
                 track->processor_->get_piano_roll_port ().buffer_;
 
-              uint8_t midi_ch = region->get_midi_ch ();
+              uint8_t midi_ch = clip->get_midi_ch ();
               midi_events.push_back (dsp::midi_event::make_note_off (midi_ch, pitch_, 0));
             }
         },

@@ -5,8 +5,8 @@
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/midi_clip.h"
 #include "structure/arrangement/midi_note.h"
-#include "structure/arrangement/midi_region.h"
 #include "structure/tracks/clip_playback_data_provider.h"
 #include "utils/app_settings.h"
 #include "utils/midi.h"
@@ -41,7 +41,7 @@ protected:
 
   void TearDown () override
   {
-    region_refs.clear (); // Clear references first
+    clip_refs.clear (); // Clear references first
     provider_.reset ();
     tempo_map_.reset ();
     tempo_map_wrapper_.reset ();
@@ -49,22 +49,22 @@ protected:
     app_settings_.reset ();
   }
 
-  // Helper function to create a MIDI region with notes at specific sample
+  // Helper function to create a MIDI clip with notes at specific sample
   // positions
-  arrangement::MidiRegion * create_midi_region_with_sampled_notes (
+  arrangement::MidiClip * create_midi_clip_with_sampled_notes (
     double                                        start_pos_ticks,
     double                                        end_pos_ticks,
     const std::vector<std::tuple<int, int, int>> &notes) // pitch, velocity,
                                                          // position in samples
   {
-    // Create a MIDI region
-    auto region_ref = utils::create_object<arrangement::MidiRegion> (
+    // Create a MIDI clip
+    auto clip_ref = utils::create_object<arrangement::MidiClip> (
       *registry_, *tempo_map_wrapper_, *registry_);
-    auto region = region_ref.get_object_as<arrangement::MidiRegion> ();
+    auto clip = clip_ref.get_object_as<arrangement::MidiClip> ();
 
-    // Set the region's position
-    region->position ()->setTicks (start_pos_ticks);
-    region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
+    // Set the clip's position
+    clip->position ()->setTicks (start_pos_ticks);
+    clip->length ()->setTicks (end_pos_ticks - start_pos_ticks);
 
     // Create MIDI notes
     for (const auto &[pitch, velocity, sample_pos] : notes)
@@ -78,34 +78,33 @@ protected:
         midi_note->setVelocity (velocity);
         // Convert sample position to ticks
         midi_note->position ()->setTicks (
-          tempo_map_->samples_to_tick (units::samples (sample_pos))
-            .in (units::ticks));
-        midi_note->bounds ()->length ()->setTicks (50.0); // Note duration
+          tempo_map_->samples_to_tick (units::samples (sample_pos)).asDouble ());
+        midi_note->length ()->setTicks (50.0); // Note duration
 
-        // Add the note to the region
-        region->ArrangerObjectOwner<
-          structure::arrangement::MidiNote>::add_object (note_ref);
+        // Add the note to the clip
+        clip->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
+          note_ref);
       }
 
-    // Keep a reference to the region
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
-  // Simplified helper for creating a region with a single note at position 0
-  arrangement::MidiRegion *
+  // Simplified helper for creating a clip with a single note at position 0
+  arrangement::MidiClip *
   create_simple_region (midi_byte_t pitch = 60, midi_byte_t velocity = 64)
   {
-    return create_midi_region_with_sampled_notes (
+    return create_midi_clip_with_sampled_notes (
       0.0, 400.0,
       {
         { pitch, velocity, 0 }
     });
   }
 
-  // Simplified helper for creating a region with multiple notes at position 0
-  arrangement::MidiRegion * create_multi_note_region (
+  // Simplified helper for creating a clip with multiple notes at position 0
+  arrangement::MidiClip * create_multi_note_region (
     const std::vector<std::pair<int, int>> &notes) // pitch, velocity pairs
   {
     std::vector<std::tuple<int, int, int>> sampled_notes;
@@ -113,7 +112,7 @@ protected:
       {
         sampled_notes.emplace_back (pitch, velocity, 0);
       }
-    return create_midi_region_with_sampled_notes (0.0, 400.0, sampled_notes);
+    return create_midi_clip_with_sampled_notes (0.0, 400.0, sampled_notes);
   }
 
   // Helper function to find events with specific pitch
@@ -157,8 +156,8 @@ protected:
     };
   }
 
-  // Helper function to create a simple audio region
-  arrangement::AudioRegion * create_simple_audio_region (float gain = 1.0f)
+  // Helper function to create a simple audio clip
+  arrangement::AudioClip * create_simple_audio_clip (float gain = 1.0f)
   {
     // Create a simple audio buffer with test data
     auto sample_buffer = std::make_unique<utils::audio::AudioBuffer> (2, 1024);
@@ -178,27 +177,27 @@ protected:
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
-    // Create the audio region
-    auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
-    auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
+    // Create the audio clip
+    auto clip_ref = utils::create_object<arrangement::AudioClip> (
+      *registry_, *tempo_map_wrapper_, *registry_);
+    auto clip = clip_ref.get_object_as<arrangement::AudioClip> ();
 
-    region->set_source (audio_source_object_ref);
-    region->setGain (gain);
+    clip->set_source (audio_source_object_ref);
+    clip->setGain (gain);
 
-    // Set the region's position
-    region->position ()->setTicks (0.0);
-    region->bounds ()->length ()->setTicks (400.0);
+    // Set the clip's position
+    clip->position ()->setTicks (0.0);
+    clip->length ()->setTicks (400.0);
 
-    // Keep a reference to the region
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
-  // Helper function to create a short audio region
-  arrangement::AudioRegion *
-  create_short_audio_region (int num_samples, float gain = 1.0f)
+  // Helper function to create a short audio clip
+  arrangement::AudioClip *
+  create_short_audio_clip (int num_samples, float gain = 1.0f)
   {
     // Create a short audio buffer with test data
     auto sample_buffer =
@@ -219,27 +218,27 @@ protected:
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
-    // Create the audio region
-    auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
-    auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
+    // Create the audio clip
+    auto clip_ref = utils::create_object<arrangement::AudioClip> (
+      *registry_, *tempo_map_wrapper_, *registry_);
+    auto clip = clip_ref.get_object_as<arrangement::AudioClip> ();
 
-    region->set_source (audio_source_object_ref);
-    region->setGain (gain);
+    clip->set_source (audio_source_object_ref);
+    clip->setGain (gain);
 
-    // Set the region's position
-    region->position ()->setTicks (0.0);
-    region->bounds ()->length ()->setTicks (1.0); // Very short region
+    // Set the clip's position
+    clip->position ()->setTicks (0.0);
+    clip->length ()->setTicks (1.0); // Very short clip
 
-    // Keep a reference to the region
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
-  // Helper function to create a sine wave audio region
-  arrangement::AudioRegion *
-  create_sine_wave_audio_region (int num_samples, float gain = 1.0f)
+  // Helper function to create a sine wave audio clip
+  arrangement::AudioClip *
+  create_sine_wave_audio_clip (int num_samples, float gain = 1.0f)
   {
     // Create a sine wave audio buffer
     auto sample_buffer =
@@ -269,33 +268,32 @@ protected:
       utils::create_object<arrangement::AudioSourceObject> (
         *registry_, *tempo_map_wrapper_, *registry_, source_ref);
 
-    // Create the audio region
-    auto region_ref = utils::create_object<arrangement::AudioRegion> (
-      *registry_, *tempo_map_wrapper_, *registry_, *app_settings_);
-    auto region = region_ref.get_object_as<arrangement::AudioRegion> ();
+    // Create the audio clip
+    auto clip_ref = utils::create_object<arrangement::AudioClip> (
+      *registry_, *tempo_map_wrapper_, *registry_);
+    auto clip = clip_ref.get_object_as<arrangement::AudioClip> ();
 
-    region->set_source (audio_source_object_ref);
-    region->setGain (gain);
+    clip->set_source (audio_source_object_ref);
+    clip->setGain (gain);
 
-    // Set the region's position
-    region->position ()->setTicks (0.0);
-    region->bounds ()->length ()->setTicks (
-      tempo_map_->samples_to_tick (units::samples (num_samples))
-        .in (units::ticks));
+    // Set the clip's position
+    clip->position ()->setTicks (0.0);
+    clip->length ()->setTicks (
+      tempo_map_->samples_to_tick (units::samples (num_samples)).asDouble ());
 
-    // Keep a reference to the region
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
-  std::unique_ptr<ClipPlaybackDataProvider> provider_;
-  std::unique_ptr<dsp::TempoMap>            tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>     tempo_map_wrapper_;
-  std::unique_ptr<utils::ObjectRegistry>    registry_;
-  std::unique_ptr<utils::AppSettings>       app_settings_;
-  std::vector<arrangement::ArrangerObjectUuidReference>
-    region_refs; // Keep references
+  std::unique_ptr<ClipPlaybackDataProvider>             provider_;
+  std::unique_ptr<dsp::TempoMap>                        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>                 tempo_map_wrapper_;
+  std::unique_ptr<utils::ObjectRegistry>                registry_;
+  std::unique_ptr<utils::AppSettings>                   app_settings_;
+  std::vector<arrangement::ArrangerObjectUuidReference> clip_refs; // Keep
+                                                                   // references
 };
 
 TEST_F (ClipPlaybackDataProviderTest, InitialState)
@@ -308,14 +306,14 @@ TEST_F (ClipPlaybackDataProviderTest, InitialState)
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiRegion)
+TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiClip)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events that should include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -341,12 +339,12 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMidiRegion)
 
 TEST_F (ClipPlaybackDataProviderTest, ClearEvents)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events - should have events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -367,8 +365,8 @@ TEST_F (ClipPlaybackDataProviderTest, ClearEvents)
 
 TEST_F (ClipPlaybackDataProviderTest, QuantizeOptions)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
   // Test different quantize options
   std::vector<ClipQuantizeOption> quantize_options = {
@@ -384,7 +382,7 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizeOptions)
   for (const auto &quantize_option : quantize_options)
     {
       // Generate events with the quantize option
-      provider_->generate_midi_events (*region, quantize_option);
+      provider_->generate_midi_events (*clip, quantize_option);
 
       // Test processing events
       auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -403,17 +401,17 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizeOptions)
 
 TEST_F (ClipPlaybackDataProviderTest, MultipleNotesInRegion)
 {
-  // Create a MIDI region with multiple notes
+  // Create a MIDI clip with multiple notes
   std::vector<std::pair<int, int>> notes = {
     { 60, 64  },
     { 64, 80  },
     { 67, 100 }
   };
-  auto region = create_multi_note_region (notes);
+  auto clip = create_multi_note_region (notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events that should include all notes
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -442,15 +440,15 @@ TEST_F (ClipPlaybackDataProviderTest, MultipleNotesInRegion)
 
 TEST_F (ClipPlaybackDataProviderTest, PreciseLoopingBehavior)
 {
-  // Create a very short MIDI region that will loop (approximately 23 samples)
+  // Create a very short MIDI clip that will loop (approximately 23 samples)
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 0 }  // Note at position 0
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 1.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 1.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process multiple buffers to trigger looping
   std::vector<std::vector<units::sample_u32_t>> loop_events;
@@ -503,17 +501,17 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseLoopingBehavior)
 
 TEST_F (ClipPlaybackDataProviderTest, PreciseEventTiming)
 {
-  // Create a MIDI region with notes at specific sample positions
+  // Create a MIDI clip with notes at specific sample positions
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64,  0    }, // Note at position 0
     { 62, 80,  1150 }, // Note at position ~1150 samples
     { 64, 100, 2295 }  // Note at position ~2295 samples
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 400.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 400.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -554,12 +552,12 @@ TEST_F (ClipPlaybackDataProviderTest, PreciseEventTiming)
 
 TEST_F (ClipPlaybackDataProviderTest, BarBoundaryQuantization)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
   // Generate events with NextBar quantization
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::NextBar);
+    *clip, structure::tracks::ClipQuantizeOption::NextBar);
 
   // Test processing events that should NOT include the note initially
   // because we're quantizing to the next bar
@@ -572,8 +570,8 @@ TEST_F (ClipPlaybackDataProviderTest, BarBoundaryQuantization)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Process events at the next bar boundary (1 bar = 4 beats = 3840 ticks)
-  const auto bar_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (3840.0));
+  const auto bar_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (3840.0) });
   dsp::graph::ProcessBlockInfo bar_time_info = create_time_info (
     static_cast<uint64_t> (bar_start_samples.in (units::sample)), 0, 256);
 
@@ -585,12 +583,12 @@ TEST_F (ClipPlaybackDataProviderTest, BarBoundaryQuantization)
 
 TEST_F (ClipPlaybackDataProviderTest, BeatBoundaryQuantization)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
   // Generate events with NextBeat quantization
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::NextBeat);
+    *clip, structure::tracks::ClipQuantizeOption::NextBeat);
 
   // Test processing events that should NOT include the note initially
   // because we're quantizing to the next beat
@@ -603,8 +601,8 @@ TEST_F (ClipPlaybackDataProviderTest, BeatBoundaryQuantization)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Process events at the next beat boundary (1 beat = 960 ticks)
-  const auto beat_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (960.0));
+  const auto beat_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (960.0) });
   dsp::graph::ProcessBlockInfo beat_time_info = create_time_info (
     static_cast<uint64_t> (beat_start_samples.in (units::sample)), 0, 256);
 
@@ -626,17 +624,17 @@ TEST_P (
 {
   const auto buffer_size = GetParam ();
 
-  // Create a MIDI region with notes spanning multiple buffer sizes
+  // Create a MIDI clip with notes spanning multiple buffer sizes
   std::vector<std::pair<int, int>> notes = {
     { 60, 64  }, // Note at position 0
     { 62, 80  }, // Note at position 0
     { 64, 100 }  // Note at position 0
   };
-  auto region = create_multi_note_region (notes);
+  auto clip = create_multi_note_region (notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events with the specific buffer size
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -677,12 +675,12 @@ INSTANTIATE_TEST_SUITE_P (
 
 TEST_F (ClipPlaybackDataProviderTest, ProcessEventsWithOffset)
 {
-  // Create a MIDI region with a note at position 0
-  auto region = create_simple_region ();
+  // Create a MIDI clip with a note at position 0
+  auto clip = create_simple_region ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events with a global offset
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -706,12 +704,12 @@ TEST_F (ClipPlaybackDataProviderTest, ProcessEventsWithOffset)
 
 TEST_F (ClipPlaybackDataProviderTest, QuantizationTimingAccuracy)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
   // Generate events with NextBeat quantization
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::NextBeat);
+    *clip, structure::tracks::ClipQuantizeOption::NextBeat);
 
   // Start processing from a position that's not on a beat boundary
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -723,8 +721,8 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizationTimingAccuracy)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Process events at the next beat boundary (1 beat = 960 ticks)
-  const auto beat_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (960.0));
+  const auto beat_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (960.0) });
   dsp::graph::ProcessBlockInfo beat_time_info = create_time_info (
     static_cast<uint64_t> (beat_start_samples.in (units::sample)), 0, 256);
 
@@ -748,16 +746,16 @@ TEST_F (ClipPlaybackDataProviderTest, QuantizationTimingAccuracy)
 
 TEST_F (ClipPlaybackDataProviderTest, StateManagementAcrossBuffers)
 {
-  // Create a MIDI region with notes at different positions
+  // Create a MIDI clip with notes at different positions
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 0    }, // Note at position 0
     { 62, 80, 1150 }  // Note at position ~1150 samples
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 400.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 400.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer
   auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
@@ -801,9 +799,9 @@ TEST_F (ClipPlaybackDataProviderTest, BasicFunctionality)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Test that generate_midi_events can be called without crashing
-  auto region = create_simple_region ();
+  auto clip = create_simple_region ();
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process again to ensure no crash
   provider_->process_midi_events (time_info, output_buffer);
@@ -812,20 +810,20 @@ TEST_F (ClipPlaybackDataProviderTest, BasicFunctionality)
 
 TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMutedNote)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
-  // Mute the note in our region
-  auto note_view = region->ArrangerObjectOwner<
+  // Mute the note in our clip
+  auto note_view = clip->ArrangerObjectOwner<
     structure::arrangement::MidiNote>::get_children_view ();
   if (!note_view.empty ())
     {
       note_view[0]->mute ()->setMuted (true);
     }
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -839,15 +837,15 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateEventsWithMutedNote)
 
 TEST_F (ClipPlaybackDataProviderTest, LoopingEdgeCases)
 {
-  // Create a very short MIDI region (23 samples) to test edge cases
+  // Create a very short MIDI clip (23 samples) to test edge cases
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 0 }  // Note at position 0
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 1.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 1.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process multiple buffers to verify looping
   std::vector<std::vector<units::sample_u32_t>> loop_events;
@@ -889,15 +887,15 @@ TEST_F (ClipPlaybackDataProviderTest, LoopingEdgeCases)
 
 TEST_F (ClipPlaybackDataProviderTest, EventsOnBufferBoundaries)
 {
-  // Create a MIDI region with a note exactly at a buffer boundary
+  // Create a MIDI clip with a note exactly at a buffer boundary
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 128 }  // Note exactly at buffer boundary
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 400.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 400.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer
   auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
@@ -926,16 +924,16 @@ TEST_F (ClipPlaybackDataProviderTest, EventsOnBufferBoundaries)
 
 TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
 {
-  // Create a MIDI region with notes at different positions
+  // Create a MIDI clip with notes at different positions
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 0    }, // Note at position 0
     { 62, 80, 1150 }  // Note at position ~1150 samples
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 400.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 400.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer starting at frame 0
   auto output_buffer1 = dsp::MidiEventBuffer::make_reserved ();
@@ -978,15 +976,15 @@ TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovement)
 
 TEST_F (ClipPlaybackDataProviderTest, BackwardPlayheadMovementWithLoop)
 {
-  // Create a very short MIDI region that will loop multiple times
+  // Create a very short MIDI clip that will loop multiple times
   std::vector<std::tuple<int, int, int>> notes = {
     { 60, 64, 0 }  // Note at position 0
   };
-  auto region = create_midi_region_with_sampled_notes (0.0, 1.0, notes);
+  auto clip = create_midi_clip_with_sampled_notes (0.0, 1.0, notes);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process several buffers to establish a playback position
   for (int i = 0; i < 3; ++i)
@@ -1037,16 +1035,16 @@ TEST_F (ClipPlaybackDataProviderTest, AudioInitialState)
     }
 }
 
-TEST_F (ClipPlaybackDataProviderTest, GenerateAudioEventsWithAudioRegion)
+TEST_F (ClipPlaybackDataProviderTest, GenerateAudioEventsWithAudioClip)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
-  // Test processing audio that should include the region
+  // Test processing audio that should include the clip
   std::vector<float>           output_left (256, 0.0f);
   std::vector<float>           output_right (256, 0.0f);
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
@@ -1070,12 +1068,12 @@ TEST_F (ClipPlaybackDataProviderTest, GenerateAudioEventsWithAudioRegion)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioClearEvents)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing audio - should have audio
   std::vector<float>           output_left (256, 0.0f);
@@ -1115,8 +1113,8 @@ TEST_F (ClipPlaybackDataProviderTest, AudioClearEvents)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioQuantizeOptions)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
   // Test different quantize options
   std::vector<ClipQuantizeOption> quantize_options = {
@@ -1132,7 +1130,7 @@ TEST_F (ClipPlaybackDataProviderTest, AudioQuantizeOptions)
   for (const auto &quantize_option : quantize_options)
     {
       // Generate events with the quantize option
-      provider_->generate_audio_events (*region, quantize_option);
+      provider_->generate_audio_events (*clip, quantize_option);
 
       // Test processing audio
       std::vector<float>           output_left (256, 0.0f);
@@ -1162,12 +1160,12 @@ TEST_F (ClipPlaybackDataProviderTest, AudioQuantizeOptions)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioPreciseLoopingBehavior)
 {
-  // Create a very short audio region that will loop
-  auto region = create_short_audio_region (23); // 23 samples
+  // Create a very short audio clip that will loop
+  auto clip = create_short_audio_clip (23); // 23 samples
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process multiple buffers to trigger looping
   std::vector<std::vector<float>> loop_audio_left;
@@ -1215,12 +1213,12 @@ TEST_F (ClipPlaybackDataProviderTest, AudioPreciseLoopingBehavior)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioPreciseEventTiming)
 {
-  // Create an audio region with specific content
-  auto region = create_sine_wave_audio_region (4410); // 0.1 seconds
+  // Create an audio clip with specific content
+  auto clip = create_sine_wave_audio_clip (4410); // 0.1 seconds
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process audio
   std::vector<float>           output_left (4096, 0.0f);
@@ -1249,21 +1247,20 @@ TEST_F (ClipPlaybackDataProviderTest, AudioPreciseEventTiming)
 
   // But we should have non-zero audio after the built-in fade in
   EXPECT_GT (
-    std::abs (output_left[arrangement::AudioRegion::BUILTIN_FADE_FRAMES]),
-    0.001f);
+    std::abs (output_left[arrangement::AudioClip::BUILTIN_FADE_FRAMES]), 0.001f);
   EXPECT_GT (
-    std::abs (output_right[arrangement::AudioRegion::BUILTIN_FADE_FRAMES]),
+    std::abs (output_right[arrangement::AudioClip::BUILTIN_FADE_FRAMES]),
     0.001f);
 }
 
 TEST_F (ClipPlaybackDataProviderTest, AudioBarBoundaryQuantization)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
   // Generate events with NextBar quantization
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::NextBar);
+    *clip, structure::tracks::ClipQuantizeOption::NextBar);
 
   // Test processing audio that should NOT include the audio initially
   // because we're quantizing to the next bar
@@ -1281,8 +1278,8 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBarBoundaryQuantization)
     }
 
   // Process audio at the next bar boundary (1 bar = 4 beats = 3840 ticks)
-  const auto bar_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (3840.0));
+  const auto bar_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (3840.0) });
   dsp::graph::ProcessBlockInfo bar_time_info = create_time_info (
     static_cast<uint64_t> (bar_start_samples.in (units::sample)), 0, 256);
 
@@ -1307,12 +1304,12 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBarBoundaryQuantization)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioBeatBoundaryQuantization)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
   // Generate events with NextBeat quantization
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::NextBeat);
+    *clip, structure::tracks::ClipQuantizeOption::NextBeat);
 
   // Test processing audio that should NOT include the audio initially
   // because we're quantizing to the next beat
@@ -1330,8 +1327,8 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBeatBoundaryQuantization)
     }
 
   // Process audio at the next beat boundary (1 beat = 960 ticks)
-  const auto beat_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (960.0));
+  const auto beat_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (960.0) });
   dsp::graph::ProcessBlockInfo beat_time_info = create_time_info (
     static_cast<uint64_t> (beat_start_samples.in (units::sample)), 0, 256);
 
@@ -1366,12 +1363,12 @@ TEST_P (
 {
   const auto buffer_size = GetParam ();
 
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing audio with the specific buffer size
   std::vector<float>           output_left (buffer_size, 0.0f);
@@ -1402,12 +1399,12 @@ INSTANTIATE_TEST_SUITE_P (
 
 TEST_F (ClipPlaybackDataProviderTest, ProcessAudioEventsWithOffset)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Test processing audio with a global offset
   std::vector<float>           output_left (256, 0.0f);
@@ -1455,12 +1452,12 @@ TEST_F (ClipPlaybackDataProviderTest, ProcessAudioEventsWithOffset)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioStateManagementAcrossBuffers)
 {
-  // Create a short audio region
-  auto region = create_short_audio_region (128);
+  // Create a short audio clip
+  auto clip = create_short_audio_clip (128);
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process first buffer
   std::vector<float>           output_left1 (128, 0.0f);
@@ -1525,9 +1522,9 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBasicFunctionality)
     }
 
   // Test that generate_audio_events can be called without crashing
-  auto region = create_simple_audio_region ();
+  auto clip = create_simple_audio_clip ();
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   // Process again to ensure no crash
   provider_->process_audio_events (time_info, output_left, output_right);
@@ -1551,12 +1548,12 @@ TEST_F (ClipPlaybackDataProviderTest, AudioBasicFunctionality)
 
 TEST_F (ClipPlaybackDataProviderTest, MidiAllNotesOffWhenClipStops)
 {
-  // Create a MIDI region
-  auto region = create_simple_region ();
+  // Create a MIDI clip
+  auto clip = create_simple_region ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_midi_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = create_time_info (0, 0, 256);
@@ -1599,12 +1596,12 @@ TEST_F (ClipPlaybackDataProviderTest, MidiAllNotesOffWhenClipStops)
 
 TEST_F (ClipPlaybackDataProviderTest, AudioDoesNotGetStuckAfterClear)
 {
-  // Create a simple audio region
-  auto region = create_simple_audio_region ();
+  // Create a simple audio clip
+  auto clip = create_simple_audio_clip ();
 
-  // Generate events for the region
+  // Generate events for the clip
   provider_->generate_audio_events (
-    *region, structure::tracks::ClipQuantizeOption::Immediate);
+    *clip, structure::tracks::ClipQuantizeOption::Immediate);
 
   std::vector<float>           output_left (256, 0.0f);
   std::vector<float>           output_right (256, 0.0f);

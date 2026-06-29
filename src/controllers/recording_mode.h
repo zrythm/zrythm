@@ -21,10 +21,10 @@ enum class RecordingMode : std::uint8_t
   ///< Unimplemented
   MergeEvents,
 
-  ///< New region when discontinuity detected.
+  ///< New clip when discontinuity detected.
   Takes,
 
-  ///< Same as Takes but mutes the previously recorded region when a new one
+  ///< Same as Takes but mutes the previously recorded clip when a new one
   ///< is created.
   TakesMuted,
 };

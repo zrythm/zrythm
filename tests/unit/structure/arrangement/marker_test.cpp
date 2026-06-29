@@ -37,7 +37,7 @@ protected:
 TEST_F (MarkerTest, InitialState)
 {
   EXPECT_EQ (marker->type (), ArrangerObject::Type::Marker);
-  EXPECT_EQ (marker->position ()->samples (), 0);
+  EXPECT_EQ (marker->position ()->ticks (), 0);
   EXPECT_EQ (marker->name ()->name (), "");
   EXPECT_EQ (marker->markerType (), Marker::MarkerType::Custom);
 }
@@ -66,7 +66,7 @@ TEST_F (MarkerTest, MarkerTypes)
 TEST_F (MarkerTest, Serialization)
 {
   // Set initial state
-  marker->position ()->setSamples (2000);
+  marker->position ()->setTicks (2000);
   marker->name ()->setName ("Chorus");
 
   // Serialize
@@ -79,7 +79,7 @@ TEST_F (MarkerTest, Serialization)
   from_json (j, *new_marker);
 
   // Verify state
-  EXPECT_EQ (new_marker->position ()->samples (), 2000);
+  EXPECT_EQ (new_marker->position ()->ticks (), 2000);
   EXPECT_EQ (new_marker->name ()->name (), "Chorus");
 }
 
@@ -87,7 +87,7 @@ TEST_F (MarkerTest, Serialization)
 TEST_F (MarkerTest, Copying)
 {
   // Set initial state
-  marker->position ()->setSamples (3000);
+  marker->position ()->setTicks (3000);
   marker->name ()->setName ("Outro");
 
   // Create target
@@ -98,7 +98,7 @@ TEST_F (MarkerTest, Copying)
   init_from (*target, *marker, utils::ObjectCloneType::Snapshot);
 
   // Verify state
-  EXPECT_EQ (target->position ()->samples (), 3000);
+  EXPECT_EQ (target->position ()->ticks (), 3000);
   EXPECT_EQ (target->name ()->name (), "Outro");
 }
 
@@ -120,9 +120,9 @@ TEST_F (MarkerTest, EdgeCases)
   marker->name ()->setName ("");
   EXPECT_EQ (marker->name ()->name (), "");
 
-  // Negative position
-  marker->position ()->setSamples (-1000);
-  EXPECT_GE (marker->position ()->samples (), 0); // Should clamp to 0
+  // Negative position (no constraint, stored as-is)
+  marker->position ()->setTicks (-1000.0);
+  EXPECT_DOUBLE_EQ (marker->position ()->ticks (), -1000.0);
 }
 
 } // namespace zrythm::structure::arrangement

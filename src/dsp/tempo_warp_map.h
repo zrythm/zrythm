@@ -7,6 +7,7 @@
 
 #include "dsp/content_time_warp.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tick_types.h"
 #include "dsp/time_warp_map.h"
 #include "utils/units.h"
 
@@ -19,8 +20,8 @@ namespace zrythm::dsp
  *
  * Pure mechanical conversion — two linear scalings per warp point:
  *   source_frame = content_ticks / ppq * (60 / source_bpm) * sr
- *   output_frame = tick_to_samples(region_start + delta_ticks) -
- * region_start_samples
+ *   output_frame = tick_to_samples(clip_start + delta_ticks) -
+ * clip_start_samples
  *
  * No tempo-event enumeration or curve-type logic — all curve information is
  * already baked into the warp points (including dense sampling for Linear
@@ -32,7 +33,7 @@ namespace zrythm::dsp
 to_time_warp_map (
   std::span<const ContentTimeWarp::WarpPoint> warp_points,
   const TempoMap                             &tempo_map,
-  units::precise_tick_t                       region_start_tick,
+  TimelineTick                                clip_start_tick,
   units::bpm_t                                source_bpm,
   units::sample_t                             num_source_frames);
 

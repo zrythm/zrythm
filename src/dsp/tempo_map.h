@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "dsp/tick_types.h"
 #include "utils/units.h"
 
 #include <nlohmann/json_fwd.hpp>
@@ -153,26 +154,25 @@ public:
   /// Remove a time signature event at the specified tick
   void remove_time_signature_event (units::tick_t tick);
 
-  /// Convert fractional ticks to seconds
-  auto
-  tick_to_seconds (units::precise_tick_t tick) const -> units::precise_second_t;
+  /// Convert timeline ticks to seconds
+  auto tick_to_seconds (TimelineTick tick) const -> units::precise_second_t;
 
-  /// Convert fractional ticks to samples
-  units::precise_sample_t tick_to_samples (units::precise_tick_t tick) const
+  /// Convert timeline ticks to samples
+  units::precise_sample_t tick_to_samples (TimelineTick tick) const
   {
     return tick_to_seconds (tick) * sample_rate_;
   }
 
-  units::sample_t tick_to_samples_rounded (units::precise_tick_t tick) const
+  units::sample_t tick_to_samples_rounded (TimelineTick tick) const
   {
     return au::round_as<int64_t> (units::samples, tick_to_samples (tick));
   }
 
-  /// Convert seconds to fractional ticks
-  units::precise_tick_t seconds_to_tick (units::precise_second_t seconds) const;
+  /// Convert seconds to timeline ticks
+  TimelineTick seconds_to_tick (units::precise_second_t seconds) const;
 
-  /// Convert samples to fractional ticks
-  units::precise_tick_t samples_to_tick (units::precise_sample_t samples) const
+  /// Convert samples to timeline ticks
+  TimelineTick samples_to_tick (units::precise_sample_t samples) const
   {
     const auto seconds = samples / sample_rate_;
     return seconds_to_tick (seconds);
@@ -228,7 +228,7 @@ public:
    *
    * @throws std::invalid_argument for invalid position
    */
-  units::tick_t musical_position_to_tick (const MusicalPosition &pos) const;
+  TimelineTickI musical_position_to_tick (const MusicalPosition &pos) const;
 
   /// Get pulses per quarter note
   static consteval auto get_ppq () { return from_nttp (PPQ); }

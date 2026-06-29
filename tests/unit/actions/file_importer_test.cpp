@@ -42,8 +42,10 @@ protected:
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,          registry_, transport_,
-      soloed_tracks_exist_getter_, {},
+      tempo_map_wrapper_,
+      registry_,
+      soloed_tracks_exist_getter_,
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -92,7 +94,6 @@ protected:
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{
       .tempo_map_ = tempo_map_wrapper_,
       .registry_ = registry_,
-      .app_settings_ = *app_settings_,
       .last_timeline_obj_len_provider_ = [] () { return 100.0; },
       .last_editor_obj_len_provider_ = [] () { return 50.0; },
       .automation_curve_algorithm_provider_ =
@@ -509,8 +510,8 @@ TEST_F (FileImporterTest, ImportFileToClipSlot)
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Clip slot should now have a region
-  EXPECT_NE (clip_slot->region (), nullptr);
+  // Clip slot should now have a clip
+  EXPECT_NE (clip_slot->clip (), nullptr);
 }
 
 // TODO: unimplememented
@@ -537,8 +538,8 @@ TEST_F (FileImporterTest, ImportMidiFileToClipSlot)
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Clip slot should now have a region
-  EXPECT_NE (clip_slot->region (), nullptr);
+  // Clip slot should now have a clip
+  EXPECT_NE (clip_slot->clip (), nullptr);
 }
 #endif
 
@@ -565,7 +566,7 @@ TEST_F (FileImporterTest, ImportUnsupportedFileToClipSlot)
   EXPECT_EQ (undo_stack_->count (), initial_undo_count);
 
   // Clip slot should still be empty
-  EXPECT_EQ (clip_slot->region (), nullptr);
+  EXPECT_EQ (clip_slot->clip (), nullptr);
 }
 
 // Test file type detection priority

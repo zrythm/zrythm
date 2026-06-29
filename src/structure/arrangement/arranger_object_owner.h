@@ -155,9 +155,9 @@ public:
                   child->get_tempo_map_wrapper (), obj.registry_,
                   child->audio_source_ref ());
               }
-            else if constexpr (RegionObject<ChildT>)
+            else if constexpr (ClipObject<ChildT>)
               {
-                z_warning ("RegionObject clone not implemented - skipping");
+                z_warning ("ClipObject clone not implemented - skipping");
                 continue;
               }
             else if constexpr (std::is_same_v<ChildT, Marker>)

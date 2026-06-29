@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_operator.h"
+#include "commands/change_timebase_override_command.h"
 #include "commands/change_track_color_command.h"
 #include "commands/change_track_comment_command.h"
 #include "commands/rename_track_command.h"
@@ -47,6 +48,17 @@ TrackOperator::setOutputTrack (structure::tracks::Track * destination)
 
   auto cmd = std::make_unique<commands::RouteTrackCommand> (
     *track_routing_, track_->get_uuid (), dest_id);
+  undo_stack_->push (cmd.release ());
+}
+
+void
+TrackOperator::setTimebase (dsp::Timebase timebase)
+{
+  if (track_ == nullptr || undo_stack_ == nullptr)
+    return;
+
+  auto cmd = std::make_unique<commands::ChangeTimebaseOverrideCommand> (
+    *track_->timebaseProvider (), timebase);
   undo_stack_->push (cmd.release ());
 }
 }

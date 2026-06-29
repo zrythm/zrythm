@@ -138,7 +138,7 @@ from_json (const nlohmann::json &j, ChordPreset &preset)
   preset.descr_.clear ();
   for (const auto &descr_json : j.at (ChordPreset::kDescriptorsKey))
     {
-      auto ptr = utils::make_qobject_unique<dsp::ChordDescriptor> ();
+      auto ptr = utils::make_qobject_unique<dsp::ChordDescriptor> (&preset);
       from_json (descr_json, *ptr);
       preset.descr_.push_back (std::move (ptr));
     }

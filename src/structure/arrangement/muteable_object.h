@@ -45,9 +45,9 @@ public:
 
 // TODO
 #if 0
-template <typename RegionT>
+template <typename ClipT>
 bool
-RegionImpl<RegionT>::get_muted (bool check_parent) const
+ClipImpl<ClipT>::get_muted (bool check_parent) const
 {
   if (check_parent)
     {

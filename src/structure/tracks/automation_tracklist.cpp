@@ -402,7 +402,8 @@ from_json (const nlohmann::json &j, AutomationTrackHolder &nfo)
   dsp::ProcessorParameterUuidReference param_ref{ nfo.dependencies_.registry_ };
   j.at (AutomationTrack::kParameterKey).get_to (param_ref);
   nfo.automation_track_ = utils::make_qobject_unique<AutomationTrack> (
-    nfo.dependencies_.tempo_map_, nfo.dependencies_.registry_, param_ref);
+    nfo.dependencies_.tempo_map_, nfo.dependencies_.registry_, param_ref,
+    nfo.dependencies_.timebase_provider_);
   from_json (j, *nfo.automation_track_);
 
   j.at (AutomationTrackHolder::kCreatedByUserKey).get_to (nfo.created_by_user_);

@@ -14,23 +14,22 @@ target_sources(zrythm_arrangement_lib
   PRIVATE
     arranger_object.cpp
     arranger_object_list_model.cpp
-    audio_region.cpp
+    audio_clip.cpp
     audio_source_object.cpp
     automation_point.cpp
-    automation_region.cpp
-    bounded_object.cpp
+    automation_clip.cpp
     chord_object.cpp
-    chord_region.cpp
+    chord_clip.cpp
+    clip.cpp
     colored_object.cpp
     fadeable_object.cpp
-    loopable_object.cpp
     marker.cpp
     midi_control_event.cpp
     midi_note.cpp
-    midi_region.cpp
+    midi_clip.cpp
     muteable_object.cpp
     named_object.cpp
-    region_renderer.cpp
+    clip_renderer.cpp
     scale_object.cpp
     tempo_object.cpp
     tempo_object_manager.cpp
@@ -46,23 +45,22 @@ target_sources(zrythm_arrangement_lib
       arranger_object_fwd.h
       arranger_object_list_model.h
       arranger_object_owner.h
-      audio_region.h
+      audio_clip.h
       audio_source_object.h
       automation_point.h
-      automation_region.h
-      bounded_object.h
+      automation_clip.h
       chord_object.h
-      chord_region.h
+      chord_clip.h
+      clip.h
       colored_object.h
       fadeable_object.h
-      loopable_object.h
       marker.h
       midi_control_event.h
       midi_note.h
-      midi_region.h
+      midi_clip.h
       muteable_object.h
       named_object.h
-      region_renderer.h
+      clip_renderer.h
       scale_object.h
       tempo_object.h
       tempo_object_manager.h

@@ -23,14 +23,14 @@ FadeOverlayCanvasRenderer::synchronize (QCanvasPainterItem * item)
   canvas_height_ = static_cast<float> (fade_item->height ());
 
   // Compute curve Y values on the main thread (render thread is blocked).
-  // This avoids accessing the live AudioRegion/FadeRange from paint().
+  // This avoids accessing the live AudioClip/FadeRange from paint().
   cached_curve_y_.clear ();
   has_valid_fade_ = false;
 
-  auto * audio_region = fade_item->audioRegion ();
-  if (audio_region != nullptr)
+  auto * audio_clip = fade_item->audioClip ();
+  if (audio_clip != nullptr)
     {
-      auto * fade_range = audio_region->fadeRange ();
+      auto * fade_range = audio_clip->fadeRange ();
       if (fade_range != nullptr)
         {
           const bool fade_in = (fade_type_ == FadeOverlayCanvasItem::FadeIn);

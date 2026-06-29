@@ -13,7 +13,7 @@ Control {
   required property ClipPlaybackService clipPlaybackService
   required property ClipSlot clipSlot
   required property ArrangerObjectCreator objectCreator
-  readonly property ArrangerObject region: clipSlot.region
+  readonly property ArrangerObject clipObject: clipSlot.clipObject
   required property Scene scene
   required property Track track
 
@@ -26,32 +26,32 @@ Control {
     anchors.fill: parent
     clip: true
     color: {
-      let c = root.clipSlot.region ? root.track.color : palette.button;
+      let c = root.clipSlot.clipObject ? root.track.color : palette.button;
       return ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(c, root.hovered, root.activeFocus, tapHandler.pressed);
     }
     radius: ZrythmTheme.textFieldRadius
 
     Loader {
-      active: root.clipSlot.region !== null && root.clipSlot.region.type === ArrangerObject.MidiRegion
+      active: root.clipSlot.clipObject !== null && root.clipSlot.clipObject.type === ArrangerObject.MidiClip
       anchors.fill: parent
       visible: active
 
-      sourceComponent: MidiRegionContent {
+      sourceComponent: MidiClipContent {
         contentHeight: parent.height
         contentWidth: parent.width
-        region: root.clipSlot.region as MidiRegion
+        midiClip: root.clipSlot.clipObject as MidiClip
       }
     }
 
     Loader {
-      active: root.clipSlot.region !== null && root.clipSlot.region.type === ArrangerObject.AudioRegion
+      active: root.clipSlot.clipObject !== null && root.clipSlot.clipObject.type === ArrangerObject.AudioClip
       anchors.fill: parent
       visible: active
 
-      sourceComponent: AudioRegionContent {
+      sourceComponent: AudioClipContent {
         contentHeight: parent.height
         contentWidth: parent.width
-        region: root.clipSlot.region as AudioRegion
+        audioClip: root.clipSlot.clipObject as AudioClip
       }
     }
 
@@ -60,7 +60,7 @@ Control {
 
       clipPlaybackService: root.clipPlaybackService
       clipSlot: root.clipSlot
-      enabled: root.region !== null
+      enabled: root.clipObject !== null
       track: root.track
 
       anchors {
@@ -103,7 +103,7 @@ Control {
 
       onDoubleTapped: {
         console.log("double tapped");
-        let midiRegion = root.objectCreator.addEmptyMidiRegionToClip(root.track, root.clipSlot) as MidiRegion;
+        let midiRegion = root.objectCreator.addEmptyMidiClipToClip(root.track, root.clipSlot) as MidiClip;
         root.objectCreator.addMidiNote(midiRegion, 0, 64);
         root.objectCreator.addMidiNote(midiRegion, 120, 68);
       }

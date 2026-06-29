@@ -264,9 +264,9 @@ ColumnLayout {
             onCurrentChanged: (current, previous) => {
               if (current) {
                 const arrangerObject = getObjectFromUnifiedIndex(current);
-                if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
-                  console.log("current region changed, setting clip editor region to ", arrangerObject.name.name);
-                  root.session.uiState.clipEditor.setRegion(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
+                if (ArrangerObjectHelper.isClip(arrangerObject)) {
+                  console.log("current clip changed, setting clip editor clip to ", arrangerObject.name.name);
+                  root.session.uiState.clipEditor.setClip(arrangerObject, root.project.tracklist.getTrackForTimelineObject(arrangerObject));
                 }
               }
             }
@@ -280,9 +280,9 @@ ColumnLayout {
               if (deselected.length > 0) {
                 deselected.forEach(deselectedRange => {
                   const arrangerObject = getObjectFromUnifiedIndex(deselectedRange.topLeft);
-                  if (ArrangerObjectHelpers.isRegion(arrangerObject)) {
-                    console.log("previous region changed, unsetting clip editor region");
-                    root.session.uiState.clipEditor.unsetRegion();
+                  if (ArrangerObjectHelper.isClip(arrangerObject)) {
+                    console.log("previous clip changed, unsetting clip editor clip");
+                    root.session.uiState.clipEditor.unsetClip();
                   }
                 });
               }

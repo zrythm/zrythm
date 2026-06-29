@@ -7,33 +7,36 @@ target_sources(zrythm_gui_lib
     FILES
       arranger_grid_canvas_item.h
       arranger_grid_canvas_renderer.h
-      audio_region_waveform_canvas_item.h
+      arranger_object_helper.h
+      audio_clip_waveform_canvas_item.h
+      chord_clip_segmenter.h
       chord_highlighter.h
-      chord_region_segmenter.h
       chord_row_list_model.h
       chord_suggestion_provider.h
       fade_overlay_canvas_item.h
       fade_overlay_canvas_renderer.h
       grid_line_computer.h
+      live_waveform_canvas_item.h
       meter_processor.h
-      midi_region_canvas_item.h
-      midi_region_canvas_renderer.h
-      qfuture_qml_wrapper.h
+      midi_clip_canvas_item.h
+      midi_clip_canvas_renderer.h
       plugin_inspector_controller.h
+      qfuture_qml_wrapper.h
       qml_utils.h
       ruler_grid_canvas_item.h
       ruler_grid_canvas_renderer.h
       spectrum_analyzer_canvas_item.h
       spectrum_analyzer_canvas_renderer.h
-      live_waveform_canvas_item.h
+      timeline_position_tracker.h
       waveform_canvas_item.h
       waveform_canvas_renderer.h
   PRIVATE
     arranger_grid_canvas_item.cpp
     arranger_grid_canvas_renderer.cpp
-    audio_region_waveform_canvas_item.cpp
+    arranger_object_helper.cpp
+    audio_clip_waveform_canvas_item.cpp
+    chord_clip_segmenter.cpp
     chord_highlighter.cpp
-    chord_region_segmenter.cpp
     chord_row_list_model.cpp
     chord_suggestion_provider.cpp
     fade_overlay_canvas_item.cpp
@@ -41,14 +44,15 @@ target_sources(zrythm_gui_lib
     grid_line_computer.cpp
     live_waveform_canvas_item.cpp
     meter_processor.cpp
-    midi_region_canvas_item.cpp
-    midi_region_canvas_renderer.cpp
+    midi_clip_canvas_item.cpp
+    midi_clip_canvas_renderer.cpp
     plugin_inspector_controller.cpp
     qml_utils.cpp
     ruler_grid_canvas_item.cpp
     ruler_grid_canvas_renderer.cpp
     spectrum_analyzer_canvas_item.cpp
     spectrum_analyzer_canvas_renderer.cpp
+    timeline_position_tracker.cpp
     waveform_canvas_item.cpp
     waveform_canvas_renderer.cpp
 )

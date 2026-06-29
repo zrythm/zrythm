@@ -14,7 +14,7 @@ MidiControlEvent::MidiControlEvent (
     : ArrangerObject (
         Type::MidiControlEvent,
         tempo_map_wrapper,
-        ArrangerObjectFeatures (),
+        ArrangerObjectFeatures::ClipOwned,
         parent)
 {
   QObject::connect (

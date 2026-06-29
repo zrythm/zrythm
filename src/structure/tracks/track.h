@@ -4,6 +4,7 @@
 #pragma once
 
 #include "dsp/modulator_macro_processor.h"
+#include "dsp/timebase.h"
 #include "structure/tracks/automation_tracklist.h"
 #include "structure/tracks/channel.h"
 #include "structure/tracks/piano_roll_track.h"
@@ -40,7 +41,6 @@ struct BaseTrackDependencies
 {
   const dsp::TempoMapWrapper &tempo_map_;
   utils::IObjectRegistry     &registry_;
-  const dsp::ITransport      &transport_;
   SoloedTracksExistGetter     soloed_tracks_exist_getter_;
   TrackRecordingCallback      track_recording_callback;
 };
@@ -89,6 +89,9 @@ class Track : public utils::UuidIdentifiableObject<Track>
   Q_PROPERTY (
     bool clipLauncherMode READ clipLauncherMode WRITE setClipLauncherMode NOTIFY
       clipLauncherModeChanged)
+  Q_PROPERTY (
+    zrythm::dsp::TimebaseProvider * timebaseProvider READ timebaseProvider
+      CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::PlaybackCacheActivityTracker *
       playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
@@ -175,20 +178,20 @@ public:
   static constexpr int DEF_HEIGHT = 52;
 
   static bool
-  type_can_have_region_type (Type type, ArrangerObject::Type region_type)
+  type_can_have_clip_type (Type type, ArrangerObject::Type clip_type)
   {
-    switch (region_type)
+    switch (clip_type)
       {
-      case ArrangerObject::Type::AudioRegion:
+      case ArrangerObject::Type::AudioClip:
         return type == Type::Audio;
-      case ArrangerObject::Type::MidiRegion:
+      case ArrangerObject::Type::MidiClip:
         return type == Type::Midi || type == Type::Instrument;
-      case ArrangerObject::Type::ChordRegion:
+      case ArrangerObject::Type::ChordClip:
         return type == Type::Chord;
-      case ArrangerObject::Type::AutomationRegion:
+      case ArrangerObject::Type::AutomationClip:
         return true;
       default:
-        throw std::runtime_error ("Invalid region type");
+        throw std::runtime_error ("Invalid clip type");
       }
   }
 
@@ -221,7 +224,7 @@ public:
   }
 
   /**
-   * Returns if regions in tracks from @p type1 can be moved to @p type2.
+   * Returns if clips in tracks from @p type1 can be moved to @p type2.
    */
   static constexpr bool
   type_is_compatible_for_moving (const Type type1, const Type type2)
@@ -459,6 +462,11 @@ public:
   void          setClipLauncherMode (bool mode);
   Q_SIGNAL void clipLauncherModeChanged (bool mode);
 
+  dsp::TimebaseProvider * timebaseProvider ()
+  {
+    return timebase_provider_.get ();
+  }
+
   // cache activity tracking
   [[nodiscard]] PlaybackCacheActivityTracker *
   playbackCacheActivityTracker () const
@@ -500,13 +508,13 @@ public:
    */
   void set_default_name ();
 
-  template <arrangement::RegionObject RegionT>
-  auto generate_name_for_region (
-    const RegionT    &region,
+  template <arrangement::ClipObject ClipT>
+  auto generate_name_for_clip (
+    const ClipT      &clip,
     AutomationTrack * automation_track = nullptr)
   {
     auto ret = get_name ();
-    if constexpr (std::is_same_v<RegionT, arrangement::AutomationRegion>)
+    if constexpr (std::is_same_v<ClipT, arrangement::AutomationClip>)
       {
         assert (automation_track != nullptr);
         ret = utils::Utf8String::from_utf8_encoded_string (
@@ -533,10 +541,10 @@ public:
   auto output_signal_type () const { return out_signal_type_; }
 
   /**
-   * Returns the MIDI channel that this region should be played on, starting
+   * Returns the MIDI channel that this clip should be played on, starting
    * from 1.
    */
-  uint8_t get_midi_ch (const arrangement::MidiRegion &midi_region) const;
+  uint8_t get_midi_ch (const arrangement::MidiClip &midi_clip) const;
 
   /**
    * Fills in the given array with all plugins in the track.
@@ -584,7 +592,7 @@ protected:
   {
     structure::tracks::generate_automation_tracks_for_processor (
       ats, processor, base_dependencies_.tempo_map_,
-      base_dependencies_.registry_);
+      base_dependencies_.registry_, timebaseProvider ());
   }
 
   /**
@@ -626,6 +634,7 @@ private:
     "modulatorMacroProcessors"sv;
   static constexpr auto kPianoRollKey = "pianoRoll"sv;
   static constexpr auto kClipLauncherModeKey = "clipLauncherMode"sv;
+  static constexpr auto kTimebaseKey = "timebase"sv;
   friend void           to_json (nlohmann::json &j, const Track &track);
   friend void           from_json (const nlohmann::json &j, Track &track);
 
@@ -750,6 +759,8 @@ protected:
   utils::QObjectUniquePtr<PlaybackCacheActivityTracker>
     playback_cache_activity_tracker_;
 
+  utils::QObjectUniquePtr<dsp::TimebaseProvider> timebase_provider_;
+
   BOOST_DESCRIBE_CLASS (
     Track,
     (utils::UuidIdentifiableObject<Track>),
@@ -781,13 +792,11 @@ struct FinalTrackDependencies : public BaseTrackDependencies
   FinalTrackDependencies (
     const dsp::TempoMapWrapper &tempo_map,
     utils::IObjectRegistry     &registry,
-    const dsp::ITransport      &transport,
     SoloedTracksExistGetter     soloed_tracks_exist_getter,
     TrackRecordingCallback      recording_callback)
       : BaseTrackDependencies (
           tempo_map,
           registry,
-          transport,
           std::move (soloed_tracks_exist_getter),
           std::move (recording_callback))
   {

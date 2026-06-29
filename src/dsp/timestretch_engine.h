@@ -13,6 +13,8 @@
 #include "utils/audio.h"
 #include "utils/units.h"
 
+#include <QObject>
+
 namespace zrythm::dsp
 {
 
@@ -21,17 +23,35 @@ namespace zrythm::dsp
  */
 struct StretchOptions
 {
-  /** How pitch is handled while time-stretching. */
-  enum class PitchMode : std::uint8_t
+  Q_GADGET
+
+public:
+  /**
+   * @brief Material-aware timestretch algorithm.
+   *
+   * - Beats:      rhythmic content (drums, percussion). Uses R2 engine with
+   *               percussive detection and crisp transients.
+   * - Monophonic: solo voice / single melody. Uses R2 engine with soft
+   *               detection and smooth transients.
+   * - Polyphonic: complex mixtures (default). Uses R3 (Finer) engine for
+   *               highest quality.
+   * - Repitch:    varispeed — pitch follows tempo (tape-style). Not yet
+   *               implemented; RubberBand reports it as unsupported, so the
+   *               NVI layer rejects requests for it. It will be provided by
+   *               a future Resampler engine (@ref
+   * TimeStretchEngineId::Resampler).
+   */
+  enum class Algorithm : std::uint8_t
   {
-    /** Preserve pitch (phase-vocoder time-stretch). */
-    Preserve,
-    /** Re-pitch: varispeed resampling, so pitch follows tempo (tape-style). */
+    Beats,
+    Monophonic,
+    Polyphonic,
     Repitch,
   };
+  Q_ENUM (Algorithm)
 
-  PitchMode pitch_mode{ PitchMode::Preserve };
-  /** Preserve formants (only meaningful when @ref pitch_mode is Preserve). */
+  Algorithm algorithm{ Algorithm::Polyphonic };
+  /** Preserve formants (only meaningful when algorithm is not Repitch). */
   bool preserve_formants{ false };
 };
 
@@ -56,10 +76,10 @@ public:
   [[nodiscard]] virtual std::string_view id () const = 0;
 
   /**
-   * @brief Whether this engine supports the given pitch mode.
+   * @brief Whether this engine supports the given algorithm.
    */
   [[nodiscard]] virtual bool
-  supports (StretchOptions::PitchMode mode) const = 0;
+  supports (StretchOptions::Algorithm algorithm) const = 0;
 
   /**
    * @brief Stretch @p input according to @p warp (Non-Virtual Interface).
@@ -68,7 +88,7 @@ public:
    *
    * @pre @p warp.is_valid()
    * @pre @p warp.source_length == input.getNumSamples()
-   * @pre supports(@p options.pitch_mode)
+   * @pre supports(@p options.algorithm)
    * @return A new buffer with exactly @c warp.output_length frames.
    *
    * @throws std::invalid_argument if any precondition is violated.
@@ -83,9 +103,9 @@ public:
     if (warp.source_length != units::samples (input.getNumSamples ()))
       throw std::invalid_argument (
         "TimeWarpMap source_length does not match input frame count");
-    if (!supports (options.pitch_mode))
+    if (!supports (options.algorithm))
       throw std::invalid_argument (
-        "engine does not support the requested pitch mode");
+        "engine does not support the requested algorithm");
     return stretch_impl (input, warp, options);
   }
 
@@ -153,3 +173,5 @@ create_default_timestretch_engine (
   units::sample_rate_t  sample_rate);
 
 } // namespace zrythm::dsp
+
+Q_DECLARE_METATYPE (zrythm::dsp::StretchOptions::Algorithm)

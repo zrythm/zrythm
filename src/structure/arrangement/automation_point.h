@@ -27,6 +27,11 @@ public:
   Q_DISABLE_COPY_MOVE (AutomationPoint)
   ~AutomationPoint () override;
 
+  dsp::ContentPosition * position () const override
+  {
+    return qobject_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
+
   // ========================================================================
   // QML Interface
   // ========================================================================

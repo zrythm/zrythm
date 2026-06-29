@@ -12,14 +12,10 @@ namespace zrythm::dsp
 /**
  * @brief RubberBand v4 time-stretch engine (offline, pitch-preserving).
  *
- * Uses the RubberBand C++ API in Offline mode with the R3 (Finer) engine and
- * setKeyFrameMap() seeded from the TimeWarpMap anchors, producing
- * high-quality variable-ratio stretching that follows tempo curves including
- * linear ramps. Exact output duration is guaranteed by offline
- * padding/delay compensation plus setExpectedInputDuration().
- *
- * Only @ref StretchOptions::PitchMode::Preserve is supported; a future
- * resampler-based engine will handle Repitch mode.
+ * Uses the RubberBand C++ API in Offline mode. Polyphonic (the default)
+ * uses the R3 (Finer) engine for highest quality. Beats and Monophonic
+ * switch to the R2 (Standard) engine with material-appropriate detector and
+ * transient options. Repitch is not implemented and falls back to Polyphonic.
  */
 class RubberBandTimeStretchEngine final : public ITimeStretchEngine
 {
@@ -31,7 +27,8 @@ public:
   ~RubberBandTimeStretchEngine () override;
 
   [[nodiscard]] std::string_view id () const override;
-  [[nodiscard]] bool supports (StretchOptions::PitchMode mode) const override;
+  [[nodiscard]] bool
+  supports (StretchOptions::Algorithm algorithm) const override;
 
 private:
   [[nodiscard]] utils::audio::AudioBuffer stretch_impl (

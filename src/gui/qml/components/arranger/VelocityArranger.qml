@@ -55,7 +55,7 @@ Arranger {
     id: midiNotesRepeater
 
     anchors.fill: parent
-    model: root.clipEditor.region.midiNotes
+    model: (root.clipEditor.clipObject as MidiClip).midiNotes
 
     delegate: ArrangerObjectLoader {
       id: velocityLoader

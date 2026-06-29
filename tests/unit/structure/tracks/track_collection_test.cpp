@@ -36,7 +36,10 @@ protected:
   TrackUuidReference create_folder_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
+      *tempo_map_wrapper,
+      *registry_,
+      [] { return false; },
+      {},
     };
 
     return utils::create_object<FolderTrack> (*registry_, std::move (deps));
@@ -46,7 +49,7 @@ protected:
   TrackUuidReference create_audio_bus_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, [] { return false; }, {}
     };
 
     return utils::create_object<AudioBusTrack> (*registry_, std::move (deps));
@@ -55,7 +58,10 @@ protected:
   TrackUuidReference create_audio_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
+      *tempo_map_wrapper,
+      *registry_,
+      [] { return false; },
+      {},
     };
     return utils::create_object<AudioTrack> (*registry_, std::move (deps));
   }

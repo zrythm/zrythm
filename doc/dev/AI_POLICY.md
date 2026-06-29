@@ -29,5 +29,5 @@ The human submitter is responsible for:
 AI-assisted contributions should include an `Assisted-by` tag in the git commit message, specifying the AI model used. For example:
 
 ```
-Assisted-by: Kimi K2.6
+Assisted-by: GLM-5.2
 ```

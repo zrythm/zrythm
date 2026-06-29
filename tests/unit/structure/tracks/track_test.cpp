@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/timebase.h"
 #include "structure/tracks/track.h"
 
 #include <QSignalSpy>
@@ -93,23 +94,23 @@ TEST_F (TrackTest, TrackTypeProperties)
 TEST_F (TrackTest, TrackTypeCompatibility)
 {
   EXPECT_TRUE (
-    Track::type_can_have_region_type (
-      Track::Type::Audio, arrangement::ArrangerObject::Type::AudioRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Audio, arrangement::ArrangerObject::Type::AudioClip));
   EXPECT_FALSE (
-    Track::type_can_have_region_type (
-      Track::Type::Midi, arrangement::ArrangerObject::Type::AudioRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Midi, arrangement::ArrangerObject::Type::AudioClip));
   EXPECT_TRUE (
-    Track::type_can_have_region_type (
-      Track::Type::Midi, arrangement::ArrangerObject::Type::MidiRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Midi, arrangement::ArrangerObject::Type::MidiClip));
   EXPECT_TRUE (
-    Track::type_can_have_region_type (
-      Track::Type::Instrument, arrangement::ArrangerObject::Type::MidiRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Instrument, arrangement::ArrangerObject::Type::MidiClip));
   EXPECT_TRUE (
-    Track::type_can_have_region_type (
-      Track::Type::Chord, arrangement::ArrangerObject::Type::ChordRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Chord, arrangement::ArrangerObject::Type::ChordClip));
   EXPECT_TRUE (
-    Track::type_can_have_region_type (
-      Track::Type::Audio, arrangement::ArrangerObject::Type::AutomationRegion));
+    Track::type_can_have_clip_type (
+      Track::Type::Audio, arrangement::ArrangerObject::Type::AutomationClip));
 
   EXPECT_TRUE (
     Track::type_is_compatible_for_moving (
@@ -372,5 +373,25 @@ TEST_F (TrackTest, PluginDescriptorValidation)
       descriptor, plugins::PluginSlotType::Instrument, Track::Type::Audio));
 }
 #endif
+
+TEST_F (TrackTest, TimebaseProviderDefaultsToMusical)
+{
+  auto track = createMockTrack (Track::Type::Midi);
+  ASSERT_NE (track->timebaseProvider (), nullptr);
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+}
+
+TEST_F (TrackTest, TimebaseProviderEmitsOnSet)
+{
+  auto       track = createMockTrack (Track::Type::Midi);
+  QSignalSpy spy (
+    track->timebaseProvider (),
+    &dsp::TimebaseProvider::effectiveTimebaseChanged);
+  track->timebaseProvider ()->setOverride (dsp::Timebase::Absolute);
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+}
 
 } // namespace zrythm::structure::tracks

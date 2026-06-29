@@ -28,12 +28,12 @@ class RecordingMaterializerTest : public ::testing::Test
 protected:
   struct MidiNoteCreation
   {
-    units::sample_t                      start_position;
-    units::sample_t                      end_position;
-    int                                  pitch;
-    int                                  velocity;
-    int                                  channel;
-    structure::arrangement::MidiRegion * region;
+    units::sample_t                    start_position;
+    units::sample_t                    end_position;
+    int                                pitch;
+    int                                velocity;
+    int                                channel;
+    structure::arrangement::MidiClip * clip;
   };
 
   struct MidiControlEventCreation
@@ -43,7 +43,7 @@ protected:
     int                                                 channel;
     int                                                 controller;
     int                                                 value;
-    structure::arrangement::MidiRegion *                region;
+    structure::arrangement::MidiClip *                  clip;
   };
 
   void SetUp () override
@@ -63,105 +63,107 @@ protected:
     coordinator_.reset ();
     undo_stack_.reset ();
     source_obj_refs_.clear ();
-    region_refs_.clear ();
-    midi_region_refs_.clear ();
+    clip_refs_.clear ();
+    midi_clip_refs_.clear ();
     tempo_map_.reset ();
     tempo_map_wrapper_.reset ();
     app_.reset ();
   }
 
   std::optional<structure::arrangement::ArrangerObjectUuidReference>
-  create_recording_region (
+  create_recording_clip (
     TrackUuid                        track_id,
     units::sample_t                  start_position,
     const utils::audio::AudioBuffer &initial_frames)
   {
-    auto clip_ref = utils::create_object<dsp::FileAudioSource> (
+    auto audio_source_ref = utils::create_object<dsp::FileAudioSource> (
       registry_, initial_frames, utils::audio::BitDepth::BIT_DEPTH_32,
       units::sample_rate (44100), units::bpm (120.0), u8"RecordingClip");
 
     auto source_obj_ref =
       utils::create_object<structure::arrangement::AudioSourceObject> (
-        registry_, *tempo_map_wrapper_, registry_, clip_ref);
+        registry_, *tempo_map_wrapper_, registry_, audio_source_ref);
 
-    auto region_ref = utils::create_object<structure::arrangement::AudioRegion> (
-      registry_, *tempo_map_wrapper_, registry_, *app_settings_);
+    auto clip_ref = utils::create_object<structure::arrangement::AudioClip> (
+      registry_, *tempo_map_wrapper_, registry_);
 
-    auto * region = region_ref.get ();
-    region->set_source (source_obj_ref);
+    auto * clip = clip_ref.get ();
+    clip->set_source (source_obj_ref);
+    clip->position ()->setTicks (
+      tempo_map_->samples_to_tick (start_position).asDouble ());
 
     source_obj_refs_.push_back (std::move (source_obj_ref));
-    region_refs_.push_back (region_ref);
+    clip_refs_.push_back (clip_ref);
 
-    return region_ref;
+    return clip_ref;
   }
 
   void create_materializer (
     controllers::recording::RecordingMode mode =
       controllers::recording::RecordingMode::Takes)
   {
-    region_create_count_ = 0;
+    clip_create_count_ = 0;
     last_track_id_ = TrackUuid ();
     last_start_position_ = units::samples (0);
     last_lane_index_ = 0;
-    midi_region_create_count_ = 0;
+    midi_clip_create_count_ = 0;
     midi_note_creations_.clear ();
     midi_control_event_creations_.clear ();
 
     materializer_ = std::make_unique<RecordingMaterializer> (
       *coordinator_, *undo_stack_,
       RecordingMaterializer::ArrangerObjectCreators{
-        .audio_region =
+        .audio_clip =
           [this] (
             TrackUuid track_id, units::sample_t start_position,
             const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
-          -> RecordingMaterializer::RegionCreationResult {
-          region_create_count_++;
+          -> RecordingMaterializer::ClipCreationResult {
+          clip_create_count_++;
           last_track_id_ = track_id;
           last_start_position_ = start_position;
           last_lane_index_ = lane_index;
-          auto region_ref_opt =
-            create_recording_region (track_id, start_position, initial_frames);
-          if (!region_ref_opt.has_value ())
+          auto clip_ref_opt =
+            create_recording_clip (track_id, start_position, initial_frames);
+          if (!clip_ref_opt.has_value ())
             return std::nullopt;
-          return RecordingMaterializer::CreatedRegion{
-            std::move (*region_ref_opt), lane_index
+          return RecordingMaterializer::CreatedClip{
+            std::move (*clip_ref_opt), lane_index
           };
         },
-        .midi_region =
+        .midi_clip =
           [this] (
             TrackUuid track_id, units::sample_t start_position,
-            size_t lane_index) -> RecordingMaterializer::RegionCreationResult {
-          midi_region_create_count_++;
+            size_t lane_index) -> RecordingMaterializer::ClipCreationResult {
+          midi_clip_create_count_++;
           last_midi_track_id_ = track_id;
           last_midi_start_position_ = start_position;
           last_midi_lane_index_ = lane_index;
-          auto region_ref =
-            utils::create_object<structure::arrangement::MidiRegion> (
-              registry_, *tempo_map_wrapper_, registry_);
-          region_ref.get ()->position ()->setSamples (
-            static_cast<double> (start_position.in (units::samples)));
-          midi_region_refs_.push_back (region_ref);
-          return RecordingMaterializer::CreatedRegion{
-            std::move (region_ref), lane_index
+          auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+            registry_, *tempo_map_wrapper_, registry_);
+          clip_ref.get ()->position ()->setTicks (
+            tempo_map_
+              ->samples_to_tick (
+                units::samples (start_position.in (units::samples)))
+              .asDouble ());
+          midi_clip_refs_.push_back (clip_ref);
+          return RecordingMaterializer::CreatedClip{
+            std::move (clip_ref), lane_index
           };
         },
         .midi_note =
           [this] (
-            structure::arrangement::MidiRegion &region,
-            units::sample_t start_position, units::sample_t end_position,
-            int pitch, int velocity, int channel) {
+            structure::arrangement::MidiClip &clip, units::sample_t start_position,
+            units::sample_t end_position, int pitch, int velocity, int channel) {
             midi_note_creations_.push_back (
-              { start_position, end_position, pitch, velocity, channel,
-                &region });
+              { start_position, end_position, pitch, velocity, channel, &clip });
           },
         .midi_control_event =
           [this] (
-            structure::arrangement::MidiRegion &region, units::sample_t position,
+            structure::arrangement::MidiClip &clip, units::sample_t position,
             structure::arrangement::MidiControlEvent::EventType type,
             int channel, int controller, int value) {
             midi_control_event_creations_.push_back (
-              { position, type, channel, controller, value, &region });
+              { position, type, channel, controller, value, &clip });
           },
       },
       [mode] () { return mode; });
@@ -196,20 +198,19 @@ protected:
     coordinator_->process_pending ();
   }
 
-  structure::arrangement::AudioRegion * get_last_created_region () const
+  structure::arrangement::AudioClip * get_last_created_clip () const
   {
-    if (region_refs_.empty ())
+    if (clip_refs_.empty ())
       return nullptr;
-    return region_refs_.back ()
-      .get_object_as<structure::arrangement::AudioRegion> ();
+    return clip_refs_.back ().get_object_as<structure::arrangement::AudioClip> ();
   }
 
   static dsp::FileAudioSource *
-  get_clip_for_region (structure::arrangement::AudioRegion * region)
+  get_audio_source_for_clip (structure::arrangement::AudioClip * clip)
   {
-    if (region == nullptr)
+    if (clip == nullptr)
       return nullptr;
-    auto children = region->get_children_view ();
+    auto children = clip->get_children_view ();
     if (children.empty ())
       return nullptr;
     auto clip_ref = children.front ()->audio_source_ref ();
@@ -226,18 +227,18 @@ protected:
   utils::ObjectRegistry               registry_;
   std::unique_ptr<utils::AppSettings> app_settings_;
 
-  std::vector<structure::arrangement::ArrangerObjectUuidReference> region_refs_;
+  std::vector<structure::arrangement::ArrangerObjectUuidReference> clip_refs_;
   std::vector<structure::arrangement::ArrangerObjectUuidReference>
     source_obj_refs_;
   std::vector<structure::arrangement::ArrangerObjectUuidReference>
-    midi_region_refs_;
+    midi_clip_refs_;
 
-  int             region_create_count_ = 0;
+  int             clip_create_count_ = 0;
   TrackUuid       last_track_id_;
   units::sample_t last_start_position_;
   size_t          last_lane_index_ = 0;
 
-  int                                   midi_region_create_count_ = 0;
+  int                                   midi_clip_create_count_ = 0;
   TrackUuid                             last_midi_track_id_;
   units::sample_t                       last_midi_start_position_;
   size_t                                last_midi_lane_index_ = 0;
@@ -254,10 +255,10 @@ TEST_F (RecordingMaterializerTest, TransportRecordingFalseDiscardsData)
 
   write_and_drain (track_id, units::samples (0), false);
 
-  EXPECT_EQ (region_create_count_, 0);
+  EXPECT_EQ (clip_create_count_, 0);
 }
 
-TEST_F (RecordingMaterializerTest, SingleRegionCreatedOnFirstPacket)
+TEST_F (RecordingMaterializerTest, SingleClipCreatedOnFirstPacket)
 {
   create_materializer ();
 
@@ -266,22 +267,50 @@ TEST_F (RecordingMaterializerTest, SingleRegionCreatedOnFirstPacket)
 
   write_and_drain (track_id, units::samples (0), true);
 
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
   EXPECT_EQ (last_track_id_, track_id);
   EXPECT_EQ (last_start_position_.in (units::samples), 0);
 
-  auto * region = get_last_created_region ();
-  ASSERT_NE (region, nullptr);
-  auto * clip = get_clip_for_region (region);
+  auto * clip = get_last_created_clip ();
   ASSERT_NE (clip, nullptr);
-  EXPECT_EQ (clip->get_num_frames (), 256);
+  auto * source = get_audio_source_for_clip (clip);
+  ASSERT_NE (source, nullptr);
+  EXPECT_EQ (source->get_num_frames (), 256);
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (256.0));
-  EXPECT_DOUBLE_EQ (
-    region->bounds ()->length ()->ticks (), expected_ticks.in (units::ticks));
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), expected_ticks.asDouble ());
 }
 
-TEST_F (RecordingMaterializerTest, ContinuousPacketsSameRegion)
+TEST_F (RecordingMaterializerTest, AudioClipLengthWithTempoChangeBeforePosition)
+{
+  // Tempo: 120 BPM (0..1 s) then 240 BPM afterwards. The clip is recorded
+  // entirely within the 240 BPM region, so its length in ticks must be computed
+  // at 240 BPM. Treating the frame count as an absolute position from the
+  // origin (the old code) converts it through the 120 BPM region instead.
+  tempo_map_->add_tempo_event (
+    units::ticks (1920), units::bpm (240.0), dsp::TempoMap::CurveType::Constant);
+  create_materializer ();
+
+  auto track_id = TrackUuid (QUuid::createUuid ());
+  coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
+
+  // Record 256 frames starting at 2 s (88200 samples) — inside 240 BPM.
+  write_and_drain (track_id, units::samples (88200), true);
+
+  auto * clip = get_last_created_clip ();
+  ASSERT_NE (clip, nullptr);
+  auto * source = get_audio_source_for_clip (clip);
+  ASSERT_NE (source, nullptr);
+  EXPECT_EQ (source->get_num_frames (), 256);
+
+  // Correct length: tick span of [88200, 88456] at the recording tempo.
+  const auto correct_length =
+    tempo_map_->samples_to_tick (units::samples (88456.0))
+    - tempo_map_->samples_to_tick (units::samples (88200.0));
+  EXPECT_NEAR (clip->length ()->ticks (), correct_length.asDouble (), 1.0);
+}
+
+TEST_F (RecordingMaterializerTest, ContinuousPacketsSameClip)
 {
   create_materializer ();
 
@@ -289,26 +318,25 @@ TEST_F (RecordingMaterializerTest, ContinuousPacketsSameRegion)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
   write_and_drain (track_id, units::samples (256), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
   write_and_drain (track_id, units::samples (512), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
-  auto * region = get_last_created_region ();
-  ASSERT_NE (region, nullptr);
-  auto * clip = get_clip_for_region (region);
+  auto * clip = get_last_created_clip ();
   ASSERT_NE (clip, nullptr);
-  EXPECT_EQ (clip->get_num_frames (), 768);
+  auto * source = get_audio_source_for_clip (clip);
+  ASSERT_NE (source, nullptr);
+  EXPECT_EQ (source->get_num_frames (), 768);
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (768.0));
-  EXPECT_DOUBLE_EQ (
-    region->bounds ()->length ()->ticks (), expected_ticks.in (units::ticks));
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), expected_ticks.asDouble ());
 }
 
-TEST_F (RecordingMaterializerTest, DiscontinuityCreatesNewRegion)
+TEST_F (RecordingMaterializerTest, DiscontinuityCreatesNewClip)
 {
   create_materializer ();
 
@@ -316,28 +344,27 @@ TEST_F (RecordingMaterializerTest, DiscontinuityCreatesNewRegion)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
-  auto * first_region = get_last_created_region ();
-  ASSERT_NE (first_region, nullptr);
-  auto * first_clip = get_clip_for_region (first_region);
+  auto * first_clip = get_last_created_clip ();
   ASSERT_NE (first_clip, nullptr);
-  EXPECT_EQ (first_clip->get_num_frames (), 256);
+  auto * first_source = get_audio_source_for_clip (first_clip);
+  ASSERT_NE (first_source, nullptr);
+  EXPECT_EQ (first_source->get_num_frames (), 256);
 
   write_and_drain (track_id, units::samples (1000), true);
-  EXPECT_EQ (region_create_count_, 2);
+  EXPECT_EQ (clip_create_count_, 2);
   EXPECT_EQ (last_start_position_.in (units::samples), 1000);
 
-  auto * second_region = get_last_created_region ();
-  ASSERT_NE (second_region, nullptr);
-  auto * second_clip = get_clip_for_region (second_region);
+  auto * second_clip = get_last_created_clip ();
   ASSERT_NE (second_clip, nullptr);
-  EXPECT_EQ (second_clip->get_num_frames (), 256);
+  auto * second_source = get_audio_source_for_clip (second_clip);
+  ASSERT_NE (second_source, nullptr);
+  EXPECT_EQ (second_source->get_num_frames (), 256);
   const auto expected_ticks =
     tempo_map_->samples_to_tick (units::samples (256.0));
   EXPECT_DOUBLE_EQ (
-    second_region->bounds ()->length ()->ticks (),
-    expected_ticks.in (units::ticks));
+    second_clip->length ()->ticks (), expected_ticks.asDouble ());
 }
 
 TEST_F (RecordingMaterializerTest, TransportStopFinalizesMacro)
@@ -348,7 +375,7 @@ TEST_F (RecordingMaterializerTest, TransportStopFinalizesMacro)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
   EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
 
@@ -369,10 +396,10 @@ TEST_F (RecordingMaterializerTest, MultipleTracksSameMacro)
   coordinator_->arm_track (track_b, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_a, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
   write_and_drain (track_b, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 2);
+  EXPECT_EQ (clip_create_count_, 2);
 
   EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
 
@@ -382,12 +409,12 @@ TEST_F (RecordingMaterializerTest, MultipleTracksSameMacro)
     << "Macro should remain open while track_b is still recording";
 
   write_and_drain (track_b, units::samples (256), true);
-  EXPECT_EQ (region_create_count_, 2)
-    << "Continuous write should extend existing region";
+  EXPECT_EQ (clip_create_count_, 2)
+    << "Continuous write should extend existing clip";
 
   write_and_drain (track_b, units::samples (1000), true);
-  EXPECT_EQ (region_create_count_, 3)
-    << "Discontinuous write should create new region";
+  EXPECT_EQ (clip_create_count_, 3)
+    << "Discontinuous write should create new clip";
 
   coordinator_->disarm_track (track_b);
   coordinator_->process_pending ();
@@ -396,25 +423,25 @@ TEST_F (RecordingMaterializerTest, MultipleTracksSameMacro)
     << "Macro should be finalized only when all tracks done";
 }
 
-TEST_F (RecordingMaterializerTest, NullRegionCreatorDoesNotCorruptState)
+TEST_F (RecordingMaterializerTest, NullClipCreatorDoesNotCorruptState)
 {
-  region_create_count_ = 0;
+  clip_create_count_ = 0;
 
   materializer_ = std::make_unique<RecordingMaterializer> (
     *coordinator_, *undo_stack_,
     RecordingMaterializer::ArrangerObjectCreators{
-      .audio_region =
+      .audio_clip =
         [] (TrackUuid, units::sample_t, const utils::audio::AudioBuffer &, size_t)
-        -> RecordingMaterializer::RegionCreationResult { return std::nullopt; },
-      .midi_region = [] (TrackUuid, units::sample_t, size_t)
-        -> RecordingMaterializer::RegionCreationResult { return std::nullopt; },
+        -> RecordingMaterializer::ClipCreationResult { return std::nullopt; },
+      .midi_clip = [] (TrackUuid, units::sample_t, size_t)
+        -> RecordingMaterializer::ClipCreationResult { return std::nullopt; },
       .midi_note =
         [] (
-          structure::arrangement::MidiRegion &, units::sample_t,
-          units::sample_t, int, int, int) { },
+          structure::arrangement::MidiClip &, units::sample_t, units::sample_t,
+          int, int, int) { },
       .midi_control_event =
         [] (
-          structure::arrangement::MidiRegion &, units::sample_t,
+          structure::arrangement::MidiClip &, units::sample_t,
           structure::arrangement::MidiControlEvent::EventType, int, int, int) { },
     },
     [] () { return controllers::recording::RecordingMode::Takes; });
@@ -423,10 +450,10 @@ TEST_F (RecordingMaterializerTest, NullRegionCreatorDoesNotCorruptState)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 0);
+  EXPECT_EQ (clip_create_count_, 0);
 
   write_and_drain (track_id, units::samples (256), true);
-  EXPECT_EQ (region_create_count_, 0);
+  EXPECT_EQ (clip_create_count_, 0);
 }
 
 TEST_F (RecordingMaterializerTest, DisarmFinalizesMacro)
@@ -437,7 +464,7 @@ TEST_F (RecordingMaterializerTest, DisarmFinalizesMacro)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
   EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
 
@@ -497,21 +524,21 @@ TEST_F (RecordingMaterializerTest, TakesMutedModeMutesPrevious)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
-  auto * first_region = get_last_created_region ();
-  ASSERT_NE (first_region, nullptr);
-  EXPECT_FALSE (first_region->mute ()->muted ());
+  auto * first_clip = get_last_created_clip ();
+  ASSERT_NE (first_clip, nullptr);
+  EXPECT_FALSE (first_clip->mute ()->muted ());
 
   write_and_drain (track_id, units::samples (1000), true);
-  EXPECT_EQ (region_create_count_, 2);
+  EXPECT_EQ (clip_create_count_, 2);
 
-  EXPECT_TRUE (first_region->mute ()->muted ())
-    << "Previous region should be muted in TakesMuted mode";
+  EXPECT_TRUE (first_clip->mute ()->muted ())
+    << "Previous clip should be muted in TakesMuted mode";
 
-  auto * second_region = get_last_created_region ();
-  ASSERT_NE (second_region, nullptr);
-  EXPECT_FALSE (second_region->mute ()->muted ());
+  auto * second_clip = get_last_created_clip ();
+  ASSERT_NE (second_clip, nullptr);
+  EXPECT_FALSE (second_clip->mute ()->muted ());
 }
 
 TEST_F (RecordingMaterializerTest, TakesModeDoesNotMutePrevious)
@@ -522,16 +549,16 @@ TEST_F (RecordingMaterializerTest, TakesModeDoesNotMutePrevious)
   coordinator_->arm_track (track_id, units::samples (256), SessionType::Audio);
 
   write_and_drain (track_id, units::samples (0), true);
-  EXPECT_EQ (region_create_count_, 1);
+  EXPECT_EQ (clip_create_count_, 1);
 
-  auto * first_region = get_last_created_region ();
-  ASSERT_NE (first_region, nullptr);
+  auto * first_clip = get_last_created_clip ();
+  ASSERT_NE (first_clip, nullptr);
 
   write_and_drain (track_id, units::samples (1000), true);
-  EXPECT_EQ (region_create_count_, 2);
+  EXPECT_EQ (clip_create_count_, 2);
 
-  EXPECT_FALSE (first_region->mute ()->muted ())
-    << "Previous region should NOT be muted in Takes mode";
+  EXPECT_FALSE (first_clip->mute ()->muted ())
+    << "Previous clip should NOT be muted in Takes mode";
 }
 
 TEST_F (RecordingMaterializerTest, MultipleLoopBacksMuteAllPrevious)
@@ -546,29 +573,29 @@ TEST_F (RecordingMaterializerTest, MultipleLoopBacksMuteAllPrevious)
   write_and_drain (track_id, units::samples (0), true);
   write_and_drain (track_id, units::samples (1000), true);
 
-  EXPECT_EQ (region_create_count_, 4);
+  EXPECT_EQ (clip_create_count_, 4);
 
   EXPECT_TRUE (
-    region_refs_[0]
-      .get_object_as<structure::arrangement::AudioRegion> ()
+    clip_refs_[0]
+      .get_object_as<structure::arrangement::AudioClip> ()
       ->mute ()
       ->muted ());
   EXPECT_TRUE (
-    region_refs_[1]
-      .get_object_as<structure::arrangement::AudioRegion> ()
+    clip_refs_[1]
+      .get_object_as<structure::arrangement::AudioClip> ()
       ->mute ()
       ->muted ());
   EXPECT_TRUE (
-    region_refs_[2]
-      .get_object_as<structure::arrangement::AudioRegion> ()
+    clip_refs_[2]
+      .get_object_as<structure::arrangement::AudioClip> ()
       ->mute ()
       ->muted ());
   EXPECT_FALSE (
-    region_refs_[3]
-      .get_object_as<structure::arrangement::AudioRegion> ()
+    clip_refs_[3]
+      .get_object_as<structure::arrangement::AudioClip> ()
       ->mute ()
       ->muted ())
-    << "Latest region should not be muted";
+    << "Latest clip should not be muted";
 }
 
 TEST_F (RecordingMaterializerTest, SessionResetClearsLaneIndex)
@@ -613,7 +640,7 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffCreatesNote)
   }
   write_midi_and_drain (track_id, units::samples (0), true, note_on);
 
-  EXPECT_EQ (midi_region_create_count_, 1) << "Region created on note-on";
+  EXPECT_EQ (midi_clip_create_count_, 1) << "Clip created on note-on";
 
   auto note_off = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -627,7 +654,7 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffCreatesNote)
   EXPECT_EQ (midi_note_creations_[0].pitch, 60);
   EXPECT_EQ (midi_note_creations_[0].velocity, 100);
   EXPECT_EQ (midi_note_creations_[0].start_position, units::samples (0));
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
   EXPECT_EQ (last_midi_track_id_, track_id);
 }
 
@@ -655,7 +682,7 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffInSamePacket)
   EXPECT_EQ (midi_note_creations_[0].pitch, 64);
   EXPECT_EQ (midi_note_creations_[0].velocity, 80);
   EXPECT_EQ (midi_note_creations_[0].start_position, units::samples (0));
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 }
 
 TEST_F (RecordingMaterializerTest, MidiMultipleNotesCreateMultipleNotes)
@@ -696,8 +723,8 @@ TEST_F (RecordingMaterializerTest, MidiMultipleNotesCreateMultipleNotes)
   EXPECT_EQ (midi_note_creations_[0].velocity, 100);
   EXPECT_EQ (midi_note_creations_[1].pitch, 64);
   EXPECT_EQ (midi_note_creations_[1].velocity, 90);
-  EXPECT_EQ (midi_region_create_count_, 1)
-    << "All notes in same contiguous block share one region";
+  EXPECT_EQ (midi_clip_create_count_, 1)
+    << "All notes in same contiguous block share one clip";
 }
 
 TEST_F (RecordingMaterializerTest, MidiNoteOnWithoutOff_ForceCompletedAtDisarm)
@@ -772,7 +799,7 @@ TEST_F (RecordingMaterializerTest, MidiCCCreatesControlEvent)
   EXPECT_EQ (midi_control_event_creations_[0].channel, 0);
   EXPECT_EQ (midi_control_event_creations_[0].controller, 1);
   EXPECT_EQ (midi_control_event_creations_[0].value, 64);
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 }
 
 TEST_F (RecordingMaterializerTest, MidiPitchBendCreatesControlEvent)
@@ -821,7 +848,7 @@ TEST_F (RecordingMaterializerTest, MidiChannelPressureCreatesControlEvent)
   EXPECT_EQ (midi_control_event_creations_[0].channel, 0);
   EXPECT_EQ (midi_control_event_creations_[0].controller, 0);
   EXPECT_EQ (midi_control_event_creations_[0].value, 96);
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 }
 
 TEST_F (RecordingMaterializerTest, MidiPolyAftertouchCreatesControlEvent)
@@ -891,10 +918,10 @@ TEST_F (RecordingMaterializerTest, MidiTransportRecordingFalseDiscardsEvents)
   write_midi_and_drain (track_id, units::samples (0), false, events);
 
   EXPECT_TRUE (midi_note_creations_.empty ());
-  EXPECT_EQ (midi_region_create_count_, 0);
+  EXPECT_EQ (midi_clip_create_count_, 0);
 }
 
-TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewRegion)
+TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewClip)
 {
   create_materializer ();
 
@@ -913,7 +940,7 @@ TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewRegion)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -927,7 +954,7 @@ TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewRegion)
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
-  EXPECT_EQ (midi_region_create_count_, 2);
+  EXPECT_EQ (midi_clip_create_count_, 2);
   EXPECT_EQ (midi_note_creations_.size (), 2u);
 }
 
@@ -950,12 +977,12 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  ASSERT_EQ (midi_region_create_count_, 1);
+  ASSERT_EQ (midi_clip_create_count_, 1);
 
-  auto * first_region =
-    midi_region_refs_[0].get_object_as<structure::arrangement::MidiRegion> ();
-  ASSERT_NE (first_region, nullptr);
-  EXPECT_FALSE (first_region->mute ()->muted ());
+  auto * first_clip =
+    midi_clip_refs_[0].get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (first_clip, nullptr);
+  EXPECT_FALSE (first_clip->mute ()->muted ());
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -969,13 +996,13 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
-  EXPECT_EQ (midi_region_create_count_, 2);
+  EXPECT_EQ (midi_clip_create_count_, 2);
 
-  EXPECT_TRUE (first_region->mute ()->muted ())
-    << "Previous MIDI region should be muted in TakesMuted mode";
+  EXPECT_TRUE (first_clip->mute ()->muted ())
+    << "Previous MIDI clip should be muted in TakesMuted mode";
 }
 
-TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewRegion)
+TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewClip)
 {
   create_materializer ();
 
@@ -1011,7 +1038,7 @@ TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewRegion)
   EXPECT_EQ (last_midi_lane_index_, 1u);
 }
 
-TEST_F (RecordingMaterializerTest, MidiNoteAndCCShareRegion)
+TEST_F (RecordingMaterializerTest, MidiNoteAndCCShareClip)
 {
   create_materializer ();
 
@@ -1036,16 +1063,16 @@ TEST_F (RecordingMaterializerTest, MidiNoteAndCCShareRegion)
   }
   write_midi_and_drain (track_id, units::samples (0), true, events);
 
-  EXPECT_EQ (midi_region_create_count_, 1)
-    << "Note and CC in same contiguous block share one region";
+  EXPECT_EQ (midi_clip_create_count_, 1)
+    << "Note and CC in same contiguous block share one clip";
   EXPECT_EQ (last_midi_start_position_, units::samples (0))
-    << "Region should be created at note-on position, not CC position";
+    << "Clip should be created at note-on position, not CC position";
   ASSERT_EQ (midi_note_creations_.size (), 1u);
   EXPECT_GE (midi_note_creations_[0].start_position.in (units::samples), 0)
-    << "Note start should not be negative relative to region";
+    << "Note start should not be negative relative to clip";
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
   EXPECT_EQ (
-    midi_note_creations_[0].region, midi_control_event_creations_[0].region);
+    midi_note_creations_[0].clip, midi_control_event_creations_[0].clip);
 }
 
 TEST_F (RecordingMaterializerTest, MidiNotePositionsRecordedAsSamples)
@@ -1149,7 +1176,7 @@ TEST_F (RecordingMaterializerTest, MidiHighBitDataBytesMasked)
     << "High bit of velocity byte should be masked";
 }
 
-TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameRegion)
+TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameClip)
 {
   create_materializer ();
 
@@ -1173,7 +1200,7 @@ TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameRegion)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -1188,8 +1215,8 @@ TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameRegion)
   }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
 
-  EXPECT_EQ (midi_region_create_count_, 1)
-    << "Contiguous MIDI packets should share one region";
+  EXPECT_EQ (midi_clip_create_count_, 1)
+    << "Contiguous MIDI packets should share one clip";
   EXPECT_EQ (midi_note_creations_.size (), 2u);
   EXPECT_EQ (midi_control_event_creations_.size (), 1u);
 }
@@ -1213,7 +1240,7 @@ TEST_F (RecordingMaterializerTest, MidiEmptyPacketsMaintainContiguity)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 
   auto empty_events = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (256), true, empty_events);
@@ -1231,12 +1258,12 @@ TEST_F (RecordingMaterializerTest, MidiEmptyPacketsMaintainContiguity)
   }
   write_midi_and_drain (track_id, units::samples (512), true, events2);
 
-  EXPECT_EQ (midi_region_create_count_, 1)
+  EXPECT_EQ (midi_clip_create_count_, 1)
     << "Empty MIDI packets should not break contiguity";
   EXPECT_EQ (midi_note_creations_.size (), 2u);
 }
 
-TEST_F (RecordingMaterializerTest, MidiNotePositionsAreRegionRelative)
+TEST_F (RecordingMaterializerTest, MidiNotePositionsAreClipRelative)
 {
   create_materializer ();
 
@@ -1287,15 +1314,15 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsAreRegionRelative)
 
   ASSERT_EQ (midi_note_creations_.size (), 3u);
   EXPECT_EQ (midi_note_creations_[1].start_position, units::samples (10))
-    << "First note in second region starts at 1010 relative to region start (1000)";
+    << "First note in second clip starts at 1010 relative to clip start (1000)";
   EXPECT_EQ (midi_note_creations_[1].end_position, units::samples (356));
   EXPECT_EQ (midi_note_creations_[2].start_position, units::samples (50))
-    << "Second note start (1050) relative to region start (1000)";
+    << "Second note start (1050) relative to clip start (1000)";
   EXPECT_EQ (midi_note_creations_[2].end_position, units::samples (456))
-    << "Second note end (1456) relative to region start (1000)";
+    << "Second note end (1456) relative to clip start (1000)";
 }
 
-TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
+TEST_F (RecordingMaterializerTest, MidiCCPositionIsClipRelative)
 {
   create_materializer ();
 
@@ -1314,7 +1341,7 @@ TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  ASSERT_EQ (midi_region_create_count_, 1);
+  ASSERT_EQ (midi_clip_create_count_, 1);
   ASSERT_EQ (midi_control_event_creations_.size (), 0u);
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
@@ -1324,10 +1351,10 @@ TEST_F (RecordingMaterializerTest, MidiCCPositionIsRegionRelative)
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
-  ASSERT_EQ (midi_region_create_count_, 2);
+  ASSERT_EQ (midi_clip_create_count_, 2);
   ASSERT_EQ (midi_control_event_creations_.size (), 1u);
   EXPECT_EQ (midi_control_event_creations_[0].position, units::samples (50))
-    << "CC at 1050 relative to region start (1000)";
+    << "CC at 1050 relative to clip start (1000)";
 }
 
 TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
@@ -1374,7 +1401,7 @@ TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
   EXPECT_EQ (midi_note_creations_[1].pitch, 64);
 }
 
-TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvents)
+TEST_F (RecordingMaterializerTest, MidiClipCreatedOnFirstPacketEvenWithNoEvents)
 {
   create_materializer ();
 
@@ -1384,16 +1411,18 @@ TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvent
   auto empty_events = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (0), true, empty_events);
 
-  EXPECT_EQ (midi_region_create_count_, 1)
-    << "MIDI region should be created on first packet, even with no events";
+  EXPECT_EQ (midi_clip_create_count_, 1)
+    << "MIDI clip should be created on first packet, even with no events";
   EXPECT_EQ (last_midi_start_position_, units::samples (0));
   EXPECT_EQ (last_midi_track_id_, track_id);
 
-  auto * region =
-    midi_region_refs_[0].get_object_as<structure::arrangement::MidiRegion> ();
-  ASSERT_NE (region, nullptr);
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0)
-    << "Region end should match packet end after first empty packet";
+  auto * clip =
+    midi_clip_refs_[0].get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (256.0)).asDouble ())
+    << "Clip end should match packet end after first empty packet";
 
   auto events = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -1403,13 +1432,15 @@ TEST_F (RecordingMaterializerTest, MidiRegionCreatedOnFirstPacketEvenWithNoEvent
   }
   write_midi_and_drain (track_id, units::samples (256), true, events);
 
-  EXPECT_EQ (midi_region_create_count_, 1)
-    << "Same region should be reused for contiguous packets";
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 512.0)
-    << "Region end should extend to cover second packet";
+  EXPECT_EQ (midi_clip_create_count_, 1)
+    << "Same clip should be reused for contiguous packets";
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (512.0)).asDouble ())
+    << "Clip end should extend to cover second packet";
 }
 
-TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
+TEST_F (RecordingMaterializerTest, MidiClipExtendsWithEveryContiguousPacket)
 {
   create_materializer ();
 
@@ -1423,21 +1454,27 @@ TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
-  ASSERT_EQ (midi_region_create_count_, 1);
+  ASSERT_EQ (midi_clip_create_count_, 1);
 
-  auto * region =
-    midi_region_refs_[0].get_object_as<structure::arrangement::MidiRegion> ();
-  ASSERT_NE (region, nullptr);
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 256.0);
+  auto * clip =
+    midi_clip_refs_[0].get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (256.0)).asDouble ());
 
   auto empty = dsp::MidiEventBuffer::make_reserved ();
   write_midi_and_drain (track_id, units::samples (256), true, empty);
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 512.0)
-    << "Region end should extend even for empty packets";
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (512.0)).asDouble ())
+    << "Clip end should extend even for empty packets";
 
   write_midi_and_drain (track_id, units::samples (512), true, empty);
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 768.0)
-    << "Region end should keep extending with contiguous empty packets";
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (768.0)).asDouble ())
+    << "Clip end should keep extending with contiguous empty packets";
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
@@ -1446,9 +1483,11 @@ TEST_F (RecordingMaterializerTest, MidiRegionExtendsWithEveryContiguousPacket)
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (768), true, events2);
-  EXPECT_DOUBLE_EQ (region->bounds ()->length ()->samples (), 1024.0)
-    << "Region end should extend to cover note-off packet";
-  EXPECT_EQ (midi_region_create_count_, 1) << "Still one region throughout";
+  EXPECT_DOUBLE_EQ (
+    clip->length ()->ticks (),
+    tempo_map_->samples_to_tick (units::samples (1024.0)).asDouble ())
+    << "Clip end should extend to cover note-off packet";
+  EXPECT_EQ (midi_clip_create_count_, 1) << "Still one clip throughout";
 }
 
 TEST_F (
@@ -1497,7 +1536,7 @@ TEST_F (
   EXPECT_EQ (midi_note_creations_[1].start_position, units::samples (100));
   EXPECT_EQ (midi_note_creations_[1].end_position, units::samples (256 + 150))
     << "Second note ends at second note-off";
-  EXPECT_EQ (midi_region_create_count_, 1);
+  EXPECT_EQ (midi_clip_create_count_, 1);
 }
 
 }

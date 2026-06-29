@@ -29,10 +29,10 @@ ClipPlaybackService::launchClip (
       return;
     }
 
-  auto * region = clipSlot->region ();
-  if (region == nullptr)
+  auto * clip = clipSlot->clip ();
+  if (clip == nullptr)
     {
-      z_warning ("No region in clip slot");
+      z_warning ("No clip in clip slot");
       return;
     }
 
@@ -75,11 +75,11 @@ ClipPlaybackService::launchScene (
       return;
     }
 
-  // Launch each clip that has a region
+  // Launch each clip that has a clip
   for (const auto &track : track_collection_.tracks ())
     {
       auto * clipSlot = clipSlotList->clipSlotForTrack (track.get ());
-      if ((clipSlot != nullptr) && (clipSlot->region () != nullptr))
+      if ((clipSlot != nullptr) && (clipSlot->clip () != nullptr))
         {
           launchClip (track.get (), clipSlot, quantize);
         }
@@ -171,19 +171,20 @@ ClipPlaybackService::getClipPlaybackPosition (ClipSlot * clipSlot) const
             processor->clip_playback_data_provider ()
               .current_playback_position_in_clip ();
 
-          // Get the region to determine its length
-          auto * region = clipSlot->region ();
-          if (region == nullptr)
+          // Get the clip to determine its length
+          auto * clip = clipSlot->clip ();
+          if (clip == nullptr)
             return -1.0;
 
-          // Convert the region length to samples
-          auto region_length_samples = region->bounds ()->length ()->samples ();
+          // Clip duration in samples (warp-aware).
+          auto clip_length_samples = clip->get_sample_duration ();
 
           // Calculate the position as a percentage
-          if (region_length_samples > 0)
+          if (clip_length_samples > units::samples (0))
             {
               return static_cast<double> (internal_position.in (units::samples))
-                     / static_cast<double> (region_length_samples);
+                     / static_cast<double> (
+                       clip_length_samples.in (units::samples));
             }
 
           return 0.0;
@@ -250,8 +251,8 @@ ClipPlaybackService::scheduleClipLaunch (
   if ((track == nullptr) || (clipSlot == nullptr))
     return;
 
-  auto * region = clipSlot->region ();
-  if (region == nullptr)
+  auto * clip = clipSlot->clip ();
+  if (clip == nullptr)
     return;
 
   // Update clip slot state to queued
@@ -262,14 +263,13 @@ ClipPlaybackService::scheduleClipLaunch (
 
   // Generate events using the clip launcher event provider
   // The provider handles quantization internally
-  if (auto * midi_region = dynamic_cast<arrangement::MidiRegion *> (region))
+  if (auto * midi_clip = dynamic_cast<arrangement::MidiClip *> (clip))
     {
-      generateClipEvents (track, *midi_region, quantize);
+      generateClipEvents (track, *midi_clip, quantize);
     }
-  else if (
-    auto * audio_region = dynamic_cast<arrangement::AudioRegion *> (region))
+  else if (auto * audio_clip = dynamic_cast<arrangement::AudioClip *> (clip))
     {
-      generateClipEvents (track, *audio_region, quantize);
+      generateClipEvents (track, *audio_clip, quantize);
     }
 
   // Track the playing clip

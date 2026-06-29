@@ -7,7 +7,7 @@
 #include "dsp/itransport.h"
 #include "dsp/midi_event_buffer.h"
 #include "dsp/timeline_data_cache.h"
-#include "structure/arrangement/region_renderer.h"
+#include "structure/arrangement/clip_renderer.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/qt.h"
 
@@ -41,19 +41,19 @@ public:
    *
    * To be called as needed from the UI thread when a new cache is requested.
    *
-   * @tparam RegionType Either MidiRegion, AudioRegion, ChordRegion, or
-   * AutomationRegion
+   * @tparam ClipType Either MidiClip, AudioClip, ChordClip, or
+   * AutomationClip
    * @param self The derived class instance (explicit this parameter)
    * @param tempo_map The tempo map for timing conversion.
-   * @param regions The regions to process.
+   * @param clips The clips to process.
    * @param affected_range The range of ticks to process.
    */
-  template <RegionObject RegionType>
+  template <ClipObject ClipType>
   void generate_events (
-    this auto                              &self,
-    const dsp::TempoMap                    &tempo_map,
-    utils::RangeOf<const RegionType *> auto regions,
-    utils::ExpandableTickRange              affected_range)
+    this auto                            &self,
+    const dsp::TempoMap                  &tempo_map,
+    utils::RangeOf<const ClipType *> auto clips,
+    utils::ExpandableTickRange            affected_range)
   {
     // Convert tick range to sample range
     const auto sample_interval = [&affected_range, &tempo_map] ()
@@ -62,8 +62,10 @@ public:
         {
           const auto tick_range = affected_range.range ().value ();
           return std::make_pair (
-            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.first)),
-            tempo_map.tick_to_samples_rounded (units::ticks (tick_range.second)));
+            tempo_map.tick_to_samples_rounded (
+              dsp::TimelineTick{ units::ticks (tick_range.first) }),
+            tempo_map.tick_to_samples_rounded (
+              dsp::TimelineTick{ units::ticks (tick_range.second) }));
         }
       return std::make_pair (
         units::samples (static_cast<int64_t> (0)),
@@ -83,40 +85,38 @@ public:
           sample_interval);
       }
 
-    const auto regions_inside_interval_filter_func =
-      [&affected_range, sample_interval] (const auto &region) {
+    const auto clips_inside_interval_filter_func =
+      [&affected_range, sample_interval] (const auto &clip) {
         if (affected_range.is_full_content ())
           return true;
 
-        return region->bounds ()->is_hit_by_range (sample_interval);
+        return clip->is_hit_by_range (sample_interval);
       };
 
-    const auto cache_region = [&] (const auto * r) {
-      // Skip muted regions
+    const auto cache_clip = [&] (const auto * r) {
+      // Skip muted clips
       if (r->mute ()->muted ())
         return;
 
       if constexpr (
-        std::is_same_v<RegionType, arrangement::MidiRegion>
-        || std::is_same_v<RegionType, arrangement::ChordRegion>)
+        std::is_same_v<ClipType, arrangement::MidiClip>
+        || std::is_same_v<ClipType, arrangement::ChordClip>)
         {
-          self.cache_midi_region (*r, tempo_map);
+          self.cache_midi_clip (*r, tempo_map);
         }
-      else if constexpr (std::is_same_v<RegionType, arrangement::AudioRegion>)
+      else if constexpr (std::is_same_v<ClipType, arrangement::AudioClip>)
         {
-          self.cache_audio_region (*r);
+          self.cache_audio_clip (*r);
         }
-      else if constexpr (
-        std::is_same_v<RegionType, arrangement::AutomationRegion>)
+      else if constexpr (std::is_same_v<ClipType, arrangement::AutomationClip>)
         {
-          self.cache_automation_region (*r, tempo_map);
+          self.cache_automation_clip (*r, tempo_map);
         }
     };
 
-    // Go through each region and add a cache
+    // Go through each clip and add a cache
     std::ranges::for_each (
-      std::views::filter (regions, regions_inside_interval_filter_func),
-      cache_region);
+      std::views::filter (clips, clips_inside_interval_filter_func), cache_clip);
 
     // Finalize
     self.get_base_cache ()->finalize_changes ();
@@ -178,16 +178,16 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    *
    * @param tempo_map The tempo map for timing conversion.
-   * @param midi_regions The MIDI regions to process.
+   * @param midi_clips The MIDI clips to process.
    * @param affected_range The range of ticks to process.
    */
   void generate_midi_events (
-    const dsp::TempoMap                                 &tempo_map,
-    utils::RangeOf<const arrangement::MidiRegion *> auto midi_regions,
-    utils::ExpandableTickRange                           affected_range)
+    const dsp::TempoMap                               &tempo_map,
+    utils::RangeOf<const arrangement::MidiClip *> auto midi_clips,
+    utils::ExpandableTickRange                         affected_range)
   {
-    generate_events<arrangement::MidiRegion> (
-      tempo_map, midi_regions, affected_range);
+    generate_events<arrangement::MidiClip> (
+      tempo_map, midi_clips, affected_range);
     set_midi_events (midi_cache_->midi_events ());
   }
 
@@ -198,16 +198,16 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    *
    * @param tempo_map The tempo map for timing conversion.
-   * @param chord_regions The Chord regions to process.
+   * @param chord_clips The Chord clips to process.
    * @param affected_range The range of ticks to process.
    */
   void generate_midi_events (
-    const dsp::TempoMap                                  &tempo_map,
-    utils::RangeOf<const arrangement::ChordRegion *> auto chord_regions,
-    utils::ExpandableTickRange                            affected_range)
+    const dsp::TempoMap                                &tempo_map,
+    utils::RangeOf<const arrangement::ChordClip *> auto chord_clips,
+    utils::ExpandableTickRange                          affected_range)
   {
-    generate_events<arrangement::ChordRegion> (
-      tempo_map, chord_regions, affected_range);
+    generate_events<arrangement::ChordClip> (
+      tempo_map, chord_clips, affected_range);
     set_midi_events (midi_cache_->midi_events ());
   }
 
@@ -219,26 +219,26 @@ protected:
 
 private:
   /**
-   * Caches a MIDI-like region (MidiRegion or ChordRegion) to the MIDI cache.
+   * Caches a MIDI-like clip (MidiClip or ChordClip) to the MIDI cache.
    */
-  template <typename MidiRegionType>
+  template <typename MidiClipType>
   void
-  cache_midi_region (const MidiRegionType &region, const dsp::TempoMap &tempo_map)
+  cache_midi_clip (const MidiClipType &clip, const dsp::TempoMap &tempo_map)
   {
-    // MIDI region processing
-    juce::MidiMessageSequence region_seq;
+    // MIDI clip processing
+    juce::MidiMessageSequence clip_seq;
 
-    // Serialize region (timings in timeline ticks)
-    arrangement::RegionRenderer::serialize_to_sequence (region, region_seq);
-    region_seq.addTimeToMessages (region.position ()->ticks ());
+    // Serialize clip (timings in timeline ticks)
+    arrangement::ClipRenderer::serialize_to_sequence (clip, clip_seq);
+    clip_seq.addTimeToMessages (clip.position ()->ticks ());
 
     // Convert JUCE sequence to native events with sample timestamps
     std::vector<dsp::SampleBasedMidiEvent> native_events;
-    native_events.reserve (region_seq.getNumEvents ());
-    for (const auto &event : region_seq)
+    native_events.reserve (clip_seq.getNumEvents ());
+    for (const auto &event : clip_seq)
       {
         const auto sample_time = tempo_map.tick_to_samples_rounded (
-          units::ticks (event->message.getTimeStamp ()));
+          dsp::TimelineTick{ units::ticks (event->message.getTimeStamp ()) });
         const auto * raw = event->message.getRawData ();
         const auto   raw_size =
           static_cast<size_t> (event->message.getRawDataSize ());
@@ -250,8 +250,8 @@ private:
     // Add to cache
     midi_cache_->add_midi_sequence (
       std::make_pair (
-        units::samples (region.position ()->samples ()),
-        region.bounds ()->get_end_position_samples (true)),
+        tempo_map.tick_to_samples_rounded (clip.position ()->asTick ()),
+        clip.get_end_position_samples (true)),
       native_events);
   }
 
@@ -273,7 +273,7 @@ private:
 /**
  * @brief Audio-specific timeline data provider.
  *
- * Handles caching of audio regions with thread-safe access and
+ * Handles caching of audio clips with thread-safe access and
  * range-based updates.
  */
 class AudioTimelineDataProvider : public TimelineDataProvider
@@ -301,8 +301,8 @@ public:
   void remove_sequences_matching_interval_from_all_caches (
     IntervalType interval) override;
 
-  std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry>
-  audio_regions () const;
+  std::span<const dsp::AudioTimelineDataCache::AudioClipEntry>
+  audio_clips () const;
 
   /**
    * @brief Generate the audio event sequence to be used during realtime
@@ -311,17 +311,17 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    *
    * @param tempo_map The tempo map for timing conversion.
-   * @param audio_regions The audio regions to process.
+   * @param audio_clips The audio clips to process.
    * @param affected_range The range of ticks to process.
    */
   void generate_audio_events (
-    const dsp::TempoMap                                  &tempo_map,
-    utils::RangeOf<const arrangement::AudioRegion *> auto audio_regions,
-    utils::ExpandableTickRange                            affected_range)
+    const dsp::TempoMap                                &tempo_map,
+    utils::RangeOf<const arrangement::AudioClip *> auto audio_clips,
+    utils::ExpandableTickRange                          affected_range)
   {
-    generate_events<arrangement::AudioRegion> (
-      tempo_map, audio_regions, affected_range);
-    set_audio_regions (audio_cache_->audio_regions ());
+    generate_events<arrangement::AudioClip> (
+      tempo_map, audio_clips, affected_range);
+    set_audio_clips (audio_cache_->audio_clips ());
   }
 
 protected:
@@ -332,24 +332,24 @@ protected:
 
 private:
   /**
-   * Caches an AudioRegion to the audio cache.
+   * Caches an AudioClip to the audio cache.
    */
-  void cache_audio_region (const arrangement::AudioRegion &region);
+  void cache_audio_clip (const arrangement::AudioClip &clip);
 
   /**
-   * @brief Set the audio regions for realtime access.
+   * @brief Set the audio clips for realtime access.
    *
-   * @param regions The audio region entries.
+   * @param clips The audio clip entries.
    */
-  void set_audio_regions (
-    std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry> regions);
+  void set_audio_clips (
+    std::span<const dsp::AudioTimelineDataCache::AudioClipEntry> clips);
 
   utils::QObjectUniquePtr<dsp::AudioTimelineDataCache> audio_cache_;
 
   farbot::RealtimeObject<
-    std::vector<dsp::AudioTimelineDataCache::AudioRegionEntry>,
+    std::vector<dsp::AudioTimelineDataCache::AudioClipEntry>,
     farbot::RealtimeObjectOptions::nonRealtimeMutatable>
-    active_audio_regions_;
+    active_audio_clips_;
 };
 
 /**
@@ -402,16 +402,16 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    *
    * @param tempo_map The tempo map for timing conversion.
-   * @param automation_regions The automation regions to process.
+   * @param automation_clips The automation clips to process.
    * @param affected_range The range of ticks to process.
    */
   void generate_automation_events (
-    const dsp::TempoMap &tempo_map,
-    utils::RangeOf<const arrangement::AutomationRegion *> auto automation_regions,
-    utils::ExpandableTickRange affected_range)
+    const dsp::TempoMap                                     &tempo_map,
+    utils::RangeOf<const arrangement::AutomationClip *> auto automation_clips,
+    utils::ExpandableTickRange                               affected_range)
   {
-    generate_events<arrangement::AutomationRegion> (
-      tempo_map, automation_regions, affected_range);
+    generate_events<arrangement::AutomationClip> (
+      tempo_map, automation_clips, affected_range);
     set_automation_sequences (automation_cache_->automation_sequences ());
   }
 
@@ -423,11 +423,11 @@ protected:
 
 private:
   /**
-   * Caches an AutomationRegion to the automation cache.
+   * Caches an AutomationClip to the automation cache.
    */
-  void cache_automation_region (
-    const arrangement::AutomationRegion &region,
-    const dsp::TempoMap                 &tempo_map);
+  void cache_automation_clip (
+    const arrangement::AutomationClip &clip,
+    const dsp::TempoMap               &tempo_map);
 
   /**
    * @brief Set the automation sequences for realtime access.

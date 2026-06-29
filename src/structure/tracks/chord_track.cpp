@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "structure/arrangement/clip.h"
 #include "structure/tracks/chord_track.h"
 
 namespace zrythm::structure::tracks
@@ -71,7 +72,7 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
         PortType::Midi,
         TrackFeatures::Automation | TrackFeatures::Recording,
         dependencies.to_base_dependencies ()),
-      arrangement::ArrangerObjectOwner<ChordRegion> (dependencies.registry_, *this),
+      arrangement::ArrangerObjectOwner<ChordClip> (dependencies.registry_, *this),
       arrangement::ArrangerObjectOwner<ScaleObject> (dependencies.registry_, *this)
 {
   color_ = Color (QColor ("#1C8FFB"));
@@ -93,10 +94,25 @@ ChordTrack::ChordTrack (FinalTrackDependencies dependencies)
           time_nfo.buffer_offset_, time_nfo.buffer_offset_ + time_nfo.nframes_ });
     });
 
-  preview_timer_ = utils::make_qobject_unique<QTimer> ();
+  preview_timer_ = utils::make_qobject_unique<QTimer> (this);
   preview_timer_->setSingleShot (true);
   QObject::connect (
     preview_timer_.get (), &QTimer::timeout, this, &ChordTrack::stopPreview);
+
+  QObject::connect (
+    chordClips (), &arrangement::ArrangerObjectListModel::rowsInserted, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          auto * clip_obj =
+            qobject_cast<arrangement::Clip *> (chordClips ()->object_at (i));
+          if (clip_obj != nullptr)
+            {
+              if (auto * tp = clip_obj->timebaseProvider ())
+                tp->setSource (this->timebaseProvider ());
+            }
+        }
+    });
 }
 
 void
@@ -108,10 +124,9 @@ init_from (
   init_from (
     static_cast<Track &> (obj), static_cast<const Track &> (other), clone_type);
   init_from (
-    static_cast<arrangement::ArrangerObjectOwner<arrangement::ChordRegion> &> (
-      obj),
-    static_cast<const arrangement::ArrangerObjectOwner<
-      arrangement::ChordRegion> &> (other),
+    static_cast<arrangement::ArrangerObjectOwner<arrangement::ChordClip> &> (obj),
+    static_cast<
+      const arrangement::ArrangerObjectOwner<arrangement::ChordClip> &> (other),
     clone_type);
   init_from (
     static_cast<arrangement::ArrangerObjectOwner<arrangement::ScaleObject> &> (
@@ -146,27 +161,32 @@ ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
 {
   const auto timeline_frames =
     base_dependencies_.tempo_map_.get_tempo_map ().tick_to_samples_rounded (
-      timeline_ticks);
+      dsp::TimelineTick{ timeline_ticks });
 
-  auto chord_regions_view = arrangement::ArrangerObjectOwner<
-    arrangement::ChordRegion>::get_children_view ();
-  auto region_var = std::ranges::find_if (
-    chord_regions_view, [timeline_frames] (const auto &chord_region) {
-      return chord_region->bounds ()->is_hit (timeline_frames, false);
+  auto chord_clips_view = arrangement::ArrangerObjectOwner<
+    arrangement::ChordClip>::get_children_view ();
+  auto clip_var = std::ranges::find_if (
+    chord_clips_view, [timeline_frames] (const auto &chord_clip) {
+      return chord_clip->is_hit (timeline_frames, false);
     });
-  if (region_var == chord_regions_view.end ())
+  if (clip_var == chord_clips_view.end ())
     return nullptr;
 
-  const auto * region = *region_var;
+  const auto * clip = *clip_var;
 
   const auto local_frames =
-    timeline_frames_to_local (*region, timeline_frames, true);
+    timeline_frames_to_local (*clip, timeline_frames, true);
 
-  auto chord_objects_view = region->get_children_view () | std::views::reverse;
-  auto it =
-    std::ranges::find_if (chord_objects_view, [local_frames] (const auto &co) {
-      return units::samples (co->position ()->samples ()) <= local_frames;
-    });
+  auto chord_objects_view = clip->get_children_view () | std::views::reverse;
+  const auto &co_tempo_map = clip->get_tempo_map ();
+  const auto  co_clip_start =
+    co_tempo_map.tick_to_samples_rounded (clip->position ()->asTick ());
+  auto it = std::ranges::find_if (chord_objects_view, [&] (const auto &co) {
+    return clip->contentWarp ()->contentToTimelineSamples (
+             co->position ()->asTick ())
+             - co_clip_start
+           <= local_frames;
+  });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;
 }

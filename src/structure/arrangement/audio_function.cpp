@@ -286,7 +286,7 @@ apply_plugin (
 
 void
 audio_function_apply (
-  ArrangerObject::Uuid                                    region_id,
+  ArrangerObject::Uuid                                    clip_id,
   std::pair<units::precise_tick_t, units::precise_tick_t> selected_range,
   AudioFunctionType                                       type,
   AudioFunctionOpts                                       opts,
@@ -294,11 +294,11 @@ audio_function_apply (
 {
 // TODO
 #if 0
-  using Position = AudioRegion::Position;
+  using Position = AudioClip::Position;
   z_debug ("applying {}...", AudioFunctionType_to_string (type));
 
   auto * r =
-    std::get<AudioRegion *> (*PROJECT->find_arranger_object_by_id (region_id));
+    std::get<AudioClip *> (*PROJECT->find_arranger_object_by_id (clip_id));
   z_return_if_fail (r);
   auto tr = std::get<structure::tracks::AudioTrack *> (r->get_track ());
   z_return_if_fail (tr);
@@ -585,7 +585,7 @@ audio_function_apply (
 
   if (type != AudioFunctionType::Invalid)
     {
-      /* replace the frames in the region */
+      /* replace the frames in the clip */
       r->replace_frames (dest_frames, start.frames_);
     }
 

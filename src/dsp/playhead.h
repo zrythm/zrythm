@@ -165,7 +165,8 @@ public:
     std::lock_guard lock (position_mutex_);
     position_ticks_ = ticks;
     position_samples_.store (
-      tempo_map_.tick_to_samples (ticks), std::memory_order_release);
+      tempo_map_.tick_to_samples (TimelineTick{ ticks }),
+      std::memory_order_release);
   }
 
   /**
@@ -189,8 +190,10 @@ public:
   void update_ticks_from_samples () [[clang::blocking]]
   {
     std::lock_guard lock (position_mutex_);
-    position_ticks_ = tempo_map_.samples_to_tick (
-      position_samples_.load (std::memory_order_acquire));
+    position_ticks_ =
+      tempo_map_
+        .samples_to_tick (position_samples_.load (std::memory_order_acquire))
+        .asQuantity ();
   }
 
   const auto &get_tempo_map () const { return tempo_map_; }
@@ -205,8 +208,8 @@ public:
   }
 
 private:
-  // These just mimic what AtomicPosition does so we don't invent another
-  // position type in the project schema
+  // Serialization keys — Playhead stores its own mode + value rather than
+  // reusing a generic position type in the project schema.
   static constexpr auto kMode = "mode"sv;
   static constexpr auto kValue = "value"sv;
   friend void           to_json (nlohmann::json &j, const Playhead &pos);

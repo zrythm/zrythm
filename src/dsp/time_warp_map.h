@@ -21,7 +21,7 @@ struct WarpAnchor
 {
   /** Frame index in the source (clip) audio. */
   units::sample_t source_frame;
-  /** Frame index in the output (stretched) audio, relative to region start. */
+  /** Frame index in the output (stretched) audio, relative to clip start. */
   units::sample_t output_frame;
 };
 
@@ -68,7 +68,7 @@ struct TimeWarpMap
  *
  * Used by the renderer to decide whether timestretching is needed.
  * A ±2 sample tolerance absorbs the rounding asymmetry between
- * @c to_time_warp_map's two conversion paths at non zero region starts.
+ * @c to_time_warp_map's two conversion paths at non zero clip starts.
  *
  * @param tolerance Maximum per-anchor sample difference (default 2 samples).
  */

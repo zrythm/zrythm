@@ -3,14 +3,13 @@
 
 #include <memory>
 
-#include "dsp/atomic_position_qml_adapter.h"
+#include "dsp/position.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/fadeable_object.h"
 
 #include "helpers/mock_qobject.h"
 
-#include "unit/dsp/atomic_position_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -22,32 +21,25 @@ class ArrangerObjectFadeRangeTest : public ::testing::Test
 protected:
   void SetUp () override
   {
-    time_conversion_funcs = dsp::basic_conversion_providers ();
-    start_position =
-      std::make_unique<dsp::AtomicPosition> (*time_conversion_funcs);
     parent = std::make_unique<MockQObject> ();
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (tempo_map);
-    start_position_adapter = std::make_unique<dsp::AtomicPositionQmlAdapter> (
-      *start_position, *tempo_map_wrapper, std::nullopt, parent.get ());
+    start_position = std::make_unique<dsp::Position> ();
     range = std::make_unique<ArrangerObjectFadeRange> (
-      *start_position_adapter, *tempo_map_wrapper, parent.get ());
+      *start_position, *tempo_map_wrapper, parent.get ());
   }
 
-  dsp::TempoMap tempo_map{ units::sample_rate (44100) };
-  std::unique_ptr<dsp::AtomicPosition::TimeConversionFunctions>
-                                                 time_conversion_funcs;
-  std::unique_ptr<dsp::AtomicPosition>           start_position;
-  std::unique_ptr<MockQObject>                   parent;
-  std::unique_ptr<dsp::TempoMapWrapper>          tempo_map_wrapper;
-  std::unique_ptr<dsp::AtomicPositionQmlAdapter> start_position_adapter;
-  std::unique_ptr<ArrangerObjectFadeRange>       range;
+  dsp::TempoMap                         tempo_map{ units::sample_rate (44100) };
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<dsp::Position>        start_position;
+  std::unique_ptr<ArrangerObjectFadeRange> range;
 };
 
 // Test initial state
 TEST_F (ArrangerObjectFadeRangeTest, InitialState)
 {
-  EXPECT_EQ (range->startOffset ()->samples (), 0);
-  EXPECT_EQ (range->endOffset ()->samples (), 0);
+  EXPECT_EQ (range->startOffset ()->ticks (), 0);
+  EXPECT_EQ (range->endOffset ()->ticks (), 0);
 
   // Test curve options defaults
   EXPECT_DOUBLE_EQ (range->fadeInCurveOpts ()->curviness (), 0.0);
@@ -63,36 +55,36 @@ TEST_F (ArrangerObjectFadeRangeTest, InitialState)
 // Test setting offsets
 TEST_F (ArrangerObjectFadeRangeTest, SetOffsets)
 {
-  range->startOffset ()->setSamples (1000);
-  range->endOffset ()->setSamples (2000);
+  range->startOffset ()->setTicks (1000);
+  range->endOffset ()->setTicks (2000);
 
-  EXPECT_EQ (range->startOffset ()->samples (), 1000);
-  EXPECT_EQ (range->endOffset ()->samples (), 2000);
+  EXPECT_EQ (range->startOffset ()->ticks (), 1000);
+  EXPECT_EQ (range->endOffset ()->ticks (), 2000);
 }
 
 // Test non-negative constraint
 TEST_F (ArrangerObjectFadeRangeTest, NonNegativeConstraint)
 {
   // Test that negative values are clamped to 0
-  range->startOffset ()->setSamples (-100);
-  EXPECT_EQ (range->startOffset ()->samples (), 0);
+  range->startOffset ()->setTicks (-100);
+  EXPECT_EQ (range->startOffset ()->ticks (), 0);
 
-  range->endOffset ()->setSamples (-200);
-  EXPECT_EQ (range->endOffset ()->samples (), 0);
+  range->endOffset ()->setTicks (-200);
+  EXPECT_EQ (range->endOffset ()->ticks (), 0);
 
   // Test that positive values work normally
-  range->startOffset ()->setSamples (500);
-  EXPECT_EQ (range->startOffset ()->samples (), 500);
+  range->startOffset ()->setTicks (500);
+  EXPECT_EQ (range->startOffset ()->ticks (), 500);
 
-  range->endOffset ()->setSamples (1000);
-  EXPECT_EQ (range->endOffset ()->samples (), 1000);
+  range->endOffset ()->setTicks (1000);
+  EXPECT_EQ (range->endOffset ()->ticks (), 1000);
 
   // Test with different units
-  range->startOffset ()->setSeconds (-1.0);
-  EXPECT_EQ (range->startOffset ()->samples (), 0);
+  range->startOffset ()->setTicks (-1.0);
+  EXPECT_EQ (range->startOffset ()->ticks (), 0);
 
   range->endOffset ()->setTicks (-480.0);
-  EXPECT_EQ (range->endOffset ()->samples (), 0);
+  EXPECT_EQ (range->endOffset ()->ticks (), 0);
 }
 
 // Test curve options
@@ -176,8 +168,8 @@ TEST_F (ArrangerObjectFadeRangeTest, CurveOptionsSignals)
 TEST_F (ArrangerObjectFadeRangeTest, Serialization)
 {
   // Set initial state
-  range->startOffset ()->setSamples (1000);
-  range->endOffset ()->setSamples (2000);
+  range->startOffset ()->setTicks (1000);
+  range->endOffset ()->setTicks (2000);
 
   // Set curve options
   range->fadeInCurveOpts ()->setCurviness (0.7);
@@ -192,16 +184,14 @@ TEST_F (ArrangerObjectFadeRangeTest, Serialization)
   to_json (j, *range);
 
   // Create new range
-  dsp::AtomicPosition           new_start_pos (*time_conversion_funcs);
-  dsp::AtomicPositionQmlAdapter new_start_adapter (
-    new_start_pos, *tempo_map_wrapper, std::nullopt, parent.get ());
-  auto new_range = std::make_unique<ArrangerObjectFadeRange> (
-    new_start_adapter, *tempo_map_wrapper, parent.get ());
+  dsp::Position new_start_pos;
+  auto          new_range = std::make_unique<ArrangerObjectFadeRange> (
+    new_start_pos, *tempo_map_wrapper, parent.get ());
   from_json (j, *new_range);
 
   // Verify state
-  EXPECT_EQ (new_range->startOffset ()->samples (), 1000);
-  EXPECT_EQ (new_range->endOffset ()->samples (), 2000);
+  EXPECT_EQ (new_range->startOffset ()->ticks (), 1000);
+  EXPECT_EQ (new_range->endOffset ()->ticks (), 2000);
   EXPECT_DOUBLE_EQ (new_range->fadeInCurveOpts ()->curviness (), 0.7);
   EXPECT_EQ (
     new_range->fadeInCurveOpts ()->algorithm (),

@@ -38,7 +38,6 @@ protected:
     juce::addDefaultFormatsToManager (*plugin_format_manager_);
 
     auto settings_backend = std::make_unique<InMemorySettingsBackend> ();
-    settings_backend->setValue ("musicalMode", true);
     app_settings_ =
       std::make_unique<utils::AppSettings> (std::move (settings_backend));
 

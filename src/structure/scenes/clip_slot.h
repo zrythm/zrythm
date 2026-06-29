@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include "dsp/timebase.h"
 #include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/clip.h"
 #include "structure/tracks/track_collection.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -17,8 +19,8 @@ class ClipSlot : public QObject
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::structure::arrangement::ArrangerObject * region READ region WRITE
-      setRegion NOTIFY regionChanged)
+    zrythm::structure::arrangement::Clip * clipObject READ clip WRITE setClip
+      NOTIFY clipObjectChanged)
   Q_PROPERTY (ClipState state READ state WRITE setState NOTIFY stateChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
@@ -36,41 +38,57 @@ public:
 
   ClipSlot (utils::IObjectRegistry &registry, QObject * parent = nullptr);
 
-  arrangement::ArrangerObject * region () const
+  arrangement::Clip * clip () const
   {
-    if (region_ref_.has_value ())
+    if (clip_ref_.has_value ())
       {
-        return region_ref_->get ();
+        return qobject_cast<arrangement::Clip *> (clip_ref_->get ());
       }
     return nullptr;
   }
-  void          setRegion (arrangement::ArrangerObject * region);
-  Q_SIGNAL void regionChanged (arrangement::ArrangerObject * region);
-
-  // Region management
-  Q_INVOKABLE void clearRegion ()
+  /// Returns a copy of the current clip reference (nullopt if empty).
+  std::optional<arrangement::ArrangerObjectUuidReference> clipReference () const
   {
-    if (!region_ref_.has_value ())
+    return clip_ref_;
+  }
+  void          setClip (arrangement::Clip * clip);
+  Q_SIGNAL void clipObjectChanged (arrangement::Clip * clip);
+
+  // Clip management
+  Q_INVOKABLE void clearClip ()
+  {
+    if (!clip_ref_.has_value ())
       {
         return;
       }
 
-    region_ref_.reset ();
-    Q_EMIT regionChanged (nullptr);
+    if (auto * clip = this->clip ())
+      {
+        if (auto * tp = clip->timebaseProvider ())
+          tp->setSource (nullptr);
+      }
+    clip_ref_.reset ();
+    Q_EMIT clipObjectChanged (nullptr);
   }
 
   ClipState     state () const { return state_.load (); }
   void          setState (ClipState state);
   Q_SIGNAL void stateChanged (ClipState state);
 
+  void setTimebaseProvider (dsp::TimebaseProvider * provider)
+  {
+    timebase_provider_ = provider;
+  }
+
 private:
-  static constexpr auto kRegionIdKey = "regionId"sv;
+  static constexpr auto kClipIdKey = "clipId"sv;
   friend void           to_json (nlohmann::json &j, const ClipSlot &slot);
   friend void           from_json (const nlohmann::json &j, ClipSlot &slot);
 
 private:
-  std::optional<arrangement::ArrangerObjectUuidReference> region_ref_;
+  std::optional<arrangement::ArrangerObjectUuidReference> clip_ref_;
   utils::IObjectRegistry                                 &registry_;
+  QPointer<dsp::TimebaseProvider>                         timebase_provider_;
   std::atomic<ClipState> state_{ ClipState::Stopped };
 };
 

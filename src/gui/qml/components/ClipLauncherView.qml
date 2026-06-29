@@ -269,7 +269,7 @@ Item {
               onDoubleTapped: {
                 const newScene = root.clipLauncher.addScene();
                 const newClipSlot = newScene.clipSlots.clipSlotForTrack(phantomClipSlot.track);
-                let midiRegion = root.objectCreator.addEmptyMidiRegionToClip(phantomClipSlot.track, newClipSlot) as MidiRegion;
+                let midiRegion = root.objectCreator.addEmptyMidiClipToClip(phantomClipSlot.track, newClipSlot) as MidiClip;
                 root.objectCreator.addMidiNote(midiRegion, 0, 64);
                 root.objectCreator.addMidiNote(midiRegion, 120, 68);
               }

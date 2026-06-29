@@ -30,7 +30,7 @@ BootstrapTimelineFixture::SetUp ()
     }
   P_MASTER_TRACK->clear_objects ();
 
-  /* Create and add a MidiRegion with a MidiNote */
+  /* Create and add a MidiClip with a MidiNote */
   p1_.set_to_bar (2);
   p2_.set_to_bar (4);
   {
@@ -40,38 +40,38 @@ BootstrapTimelineFixture::SetUp ()
     ASSERT_NONEMPTY (midi_track->name_);
     const auto midi_track_name_hash = midi_track->get_name_hash ();
     ASSERT_NE (midi_track_name_hash, 0);
-    auto mr = std::make_shared<MidiRegion> (
-      p1_, p2_, midi_track_name_hash, MIDI_REGION_LANE, 0);
+    auto mr = std::make_shared<MidiClip> (
+      p1_, p2_, midi_track_name_hash, MIDI_CLIP_LANE, 0);
     ASSERT_NO_THROW (
-      midi_track->add_region (mr, nullptr, MIDI_REGION_LANE, true, false));
-    mr->set_name (MIDI_REGION_NAME, false);
+      midi_track->add_clip (mr, nullptr, MIDI_CLIP_LANE, true, false));
+    mr->set_name (MIDI_CLIP_NAME, false);
     ASSERT_EQ (mr->id_.track_name_hash_, midi_track_name_hash);
-    ASSERT_EQ (mr->id_.lane_pos_, MIDI_REGION_LANE);
-    ASSERT_EQ (mr->id_.type_, RegionType::Midi);
+    ASSERT_EQ (mr->id_.lane_pos_, MIDI_CLIP_LANE);
+    ASSERT_EQ (mr->id_.type_, ClipType::Midi);
     TL_SELECTIONS->add_object_ref (mr);
 
-    /* add a midi note to the region */
+    /* add a midi note to the clip */
     auto mn = std::make_shared<MidiNote> (mr->id_, p1_, p2_, MN_VAL, MN_VEL);
     mr->append_object (mn);
-    ASSERT_EQ (mn->region_id_, mr->id_);
+    ASSERT_EQ (mn->clip_id_, mr->id_);
     MIDI_SELECTIONS->add_object_ref (mn);
   }
 
   {
-    /* Create and add an automation region with 2 AutomationPoint's */
+    /* Create and add an automation clip with 2 AutomationPoint's */
     auto at = P_MASTER_TRACK->channel_->get_automation_track (
       PortIdentifier::Flags::StereoBalance);
     const auto master_track_name_hash = P_MASTER_TRACK->get_name_hash ();
-    auto       automation_r = std::make_shared<AutomationRegion> (
+    auto       automation_r = std::make_shared<AutomationClip> (
       p1_, p2_, master_track_name_hash, at->index_, 0);
     ASSERT_NO_THROW (
-      P_MASTER_TRACK->add_region (automation_r, at, 0, true, false));
+      P_MASTER_TRACK->add_clip (automation_r, at, 0, true, false));
     ASSERT_EQ (automation_r->id_.track_name_hash_, master_track_name_hash);
     ASSERT_EQ (automation_r->id_.at_idx_, at->index_);
-    ASSERT_EQ (automation_r->id_.type_, RegionType::Automation);
+    ASSERT_EQ (automation_r->id_.type_, ClipType::Automation);
     TL_SELECTIONS->add_object_ref (automation_r);
 
-    /* add 2 automation points to the region */
+    /* add 2 automation points to the clip */
     auto ap = std::make_shared<AutomationPoint> (AP_VAL1, AP_VAL1, p1_);
     automation_r->append_object (ap);
     AUTOMATION_SELECTIONS->add_object_ref (ap);
@@ -81,13 +81,13 @@ BootstrapTimelineFixture::SetUp ()
   }
 
   {
-    /* Create and add a chord region with 2 Chord's */
-    auto chord_r = std::make_shared<ChordRegion> (p1_, p2_, 0);
+    /* Create and add a chord clip with 2 Chord's */
+    auto chord_r = std::make_shared<ChordClip> (p1_, p2_, 0);
     ASSERT_NO_THROW (
-      P_CHORD_TRACK->Track::add_region (chord_r, nullptr, 0, true, false));
+      P_CHORD_TRACK->Track::add_clip (chord_r, nullptr, 0, true, false));
     TL_SELECTIONS->add_object_ref (chord_r);
 
-    /* add 2 chords to the region */
+    /* add 2 chords to the clip */
     auto co = std::make_shared<ChordObject> (chord_r->id_, 0, 1);
     chord_r->append_object (co);
     co->position_setter_validated (&p1_);
@@ -117,7 +117,7 @@ BootstrapTimelineFixture::SetUp ()
   }
 
   {
-    /* Create and add an audio region */
+    /* Create and add an audio clip */
     p1_.set_to_bar (2);
     auto audio_track = TRACKLIST->append_track (
       *AudioTrack::create_unique (
@@ -125,21 +125,21 @@ BootstrapTimelineFixture::SetUp ()
       false, false);
     ASSERT_SIZE_EQ (P_MASTER_TRACK->children_, 1);
     auto audio_file_path = std::filesystem::path (TESTS_SRCDIR) / "test.wav";
-    const auto track_name_hash = audio_track->get_name_hash ();
-    std::shared_ptr<AudioRegion> r;
+    const auto                 track_name_hash = audio_track->get_name_hash ();
+    std::shared_ptr<AudioClip> r;
     ASSERT_NO_THROW (
-      r = std::make_shared<AudioRegion> (
+      r = std::make_shared<AudioClip> (
         -1, audio_file_path.string (), true, nullptr, 0, std::nullopt, 0,
-        (BitDepth) 0, p1_, track_name_hash, AUDIO_REGION_LANE, 0));
+        (BitDepth) 0, p1_, track_name_hash, AUDIO_CLIP_LANE, 0));
     auto clip = r->get_clip ();
     ASSERT_GT (clip->num_frames_, 151000);
     ASSERT_LT (clip->num_frames_, 152000);
     ASSERT_NO_THROW (
-      audio_track->add_region (r, nullptr, AUDIO_REGION_LANE, true, false));
-    r->set_name (AUDIO_REGION_NAME, false);
+      audio_track->add_clip (r, nullptr, AUDIO_CLIP_LANE, true, false));
+    r->set_name (AUDIO_CLIP_NAME, false);
     ASSERT_EQ (r->id_.track_name_hash_, track_name_hash);
-    ASSERT_EQ (r->id_.lane_pos_, AUDIO_REGION_LANE);
-    ASSERT_EQ (r->id_.type_, RegionType::Audio);
+    ASSERT_EQ (r->id_.lane_pos_, AUDIO_CLIP_LANE);
+    ASSERT_EQ (r->id_.type_, ClipType::Audio);
     TL_SELECTIONS->add_object_ref (r);
   }
 
@@ -194,10 +194,10 @@ check_vs_orig_state:
   p1_before_move.add_ticks (-MOVE_TICKS);
   p2_before_move.add_ticks (-MOVE_TICKS);
 
-  { /* check midi region */
-    ASSERT_SIZE_EQ (midi_track->lanes_, MIDI_REGION_LANE + 2);
-    ASSERT_SIZE_EQ (midi_track->lanes_.at (MIDI_REGION_LANE)->regions_, 1);
-    const auto &r = midi_track->lanes_.at (MIDI_REGION_LANE)->regions_.front ();
+  { /* check midi clip */
+    ASSERT_SIZE_EQ (midi_track->lanes_, MIDI_CLIP_LANE + 2);
+    ASSERT_SIZE_EQ (midi_track->lanes_.at (MIDI_CLIP_LANE)->clips_, 1);
+    const auto &r = midi_track->lanes_.at (MIDI_CLIP_LANE)->clips_.front ();
     ASSERT_POSITION_EQ (r->pos_, p1_);
     ASSERT_POSITION_EQ (r->end_pos_, p2_);
     ASSERT_SIZE_EQ (r->midi_notes_, 1);
@@ -206,23 +206,23 @@ check_vs_orig_state:
     ASSERT_EQ (mn->vel_->vel_, MN_VEL);
     ASSERT_POSITION_EQ (mn->pos_, p1_);
     ASSERT_POSITION_EQ (mn->end_pos_, p2_);
-    ASSERT_EQ (mn->region_id_, r->id_);
+    ASSERT_EQ (mn->clip_id_, r->id_);
   }
 
   {
-    /* check audio region */
-    ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_REGION_LANE]->regions_, 1);
-    auto r = audio_track->lanes_[AUDIO_REGION_LANE]->regions_[0];
+    /* check audio clip */
+    ASSERT_SIZE_EQ (audio_track->lanes_[AUDIO_CLIP_LANE]->clips_, 1);
+    auto r = audio_track->lanes_[AUDIO_CLIP_LANE]->clips_[0];
     ASSERT_POSITION_EQ (r->pos_, p1_);
   }
 
   {
-    /* check automation region */
+    /* check automation clip */
     const auto * at = P_MASTER_TRACK->channel_->get_automation_track (
       PortIdentifier::Flags::StereoBalance);
     ASSERT_NONNULL (at);
-    ASSERT_SIZE_EQ (at->regions_, 1);
-    const auto &r = at->regions_.at (0);
+    ASSERT_SIZE_EQ (at->clips_, 1);
+    const auto &r = at->clips_.at (0);
     ASSERT_POSITION_EQ (r->pos_, p1_);
     ASSERT_POSITION_EQ (r->end_pos_, p2_);
     ASSERT_SIZE_EQ (r->aps_, 2);

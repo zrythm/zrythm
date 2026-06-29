@@ -26,7 +26,7 @@ struct GridLine
 };
 
 /**
- * @brief Pre-computed sets of grid lines for a visible region.
+ * @brief Pre-computed sets of grid lines for a visible clip.
  */
 struct ComputedGridLines
 {

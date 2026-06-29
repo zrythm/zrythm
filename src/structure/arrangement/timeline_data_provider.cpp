@@ -106,38 +106,37 @@ MidiTimelineDataProvider::process_midi_events (
 // ========== AudioTimelineDataProvider Implementation ==========
 
 void
-AudioTimelineDataProvider::set_audio_regions (
-  std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry> regions)
+AudioTimelineDataProvider::set_audio_clips (
+  std::span<const dsp::AudioTimelineDataCache::AudioClipEntry> clips)
 {
-  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
-    rt_regions{ active_audio_regions_ };
-  rt_regions->assign (regions.begin (), regions.end ());
+  decltype (active_audio_clips_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    rt_clips{ active_audio_clips_ };
+  rt_clips->assign (clips.begin (), clips.end ());
 }
 
 void
 AudioTimelineDataProvider::clear_all_caches ()
 {
   audio_cache_->clear ();
-  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::nonRealtime>
-    rt_regions{ active_audio_regions_ };
-  rt_regions->clear ();
+  decltype (active_audio_clips_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    rt_clips{ active_audio_clips_ };
+  rt_clips->clear ();
 }
 
 void
-AudioTimelineDataProvider::cache_audio_region (
-  const arrangement::AudioRegion &region)
+AudioTimelineDataProvider::cache_audio_clip (const arrangement::AudioClip &clip)
 {
-  // Audio region processing
+  // Audio clip processing
   auto audio_buffer = std::make_unique<juce::AudioSampleBuffer> ();
 
-  // Serialize the audio region
-  arrangement::RegionRenderer::serialize_to_buffer (region, *audio_buffer);
+  // Serialize the audio clip
+  arrangement::ClipRenderer::serialize_to_buffer (clip, *audio_buffer);
 
   // Add to cache with proper timing
-  audio_cache_->add_audio_region (
+  audio_cache_->add_audio_clip (
     std::make_pair (
-      units::samples (region.position ()->samples ()),
-      region.bounds ()->get_end_position_samples (true)),
+      clip.get_tempo_map ().tick_to_samples_rounded (clip.position ()->asTick ()),
+      clip.get_end_position_samples (true)),
     *audio_buffer);
 }
 
@@ -148,10 +147,10 @@ AudioTimelineDataProvider::remove_sequences_matching_interval_from_all_caches (
   audio_cache_->remove_sequences_matching_interval (interval);
 }
 
-std::span<const dsp::AudioTimelineDataCache::AudioRegionEntry>
-AudioTimelineDataProvider::audio_regions () const
+std::span<const dsp::AudioTimelineDataCache::AudioClipEntry>
+AudioTimelineDataProvider::audio_clips () const
 {
-  return audio_cache_->audio_regions ();
+  return audio_cache_->audio_clips ();
 }
 
 void
@@ -177,8 +176,8 @@ AudioTimelineDataProvider::process_audio_events (
       return;
     }
 
-  decltype (active_audio_regions_)::ScopedAccess<farbot::ThreadType::realtime>
-    audio_regions{ active_audio_regions_ };
+  decltype (active_audio_clips_)::ScopedAccess<farbot::ThreadType::realtime>
+    audio_clips{ active_audio_clips_ };
 
   const auto start_frame = time_nfo.transport_position_;
   const auto end_frame = start_frame + time_nfo.nframes_;
@@ -188,31 +187,31 @@ AudioTimelineDataProvider::process_audio_events (
       z_debug (
         "process_audio_events: start_frame={}, end_frame={}, nframes_={}",
         start_frame, end_frame, time_nfo.nframes_);
-      z_debug ("Processing {} audio regions", audio_regions->size ());
+      z_debug ("Processing {} audio clips", audio_clips->size ());
     }
 
-  // Process each audio region that overlaps with the current time range
-  for (const auto &region : *audio_regions)
+  // Process each audio clip that overlaps with the current time range
+  for (const auto &clip : *audio_clips)
     {
       if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
         {
           z_debug (
-            "Region: start_sample={}, end_sample={}, buffer_size={}",
-            region.start_sample, region.end_sample,
-            region.audio_buffer.getNumSamples ());
+            "Clip: start_sample={}, end_sample={}, buffer_size={}",
+            clip.start_sample, clip.end_sample,
+            clip.audio_buffer.getNumSamples ());
         }
 
-      // Check if region overlaps with current time range
-      if (region.end_sample <= start_frame || region.start_sample >= end_frame)
+      // Check if clip overlaps with current time range
+      if (clip.end_sample <= start_frame || clip.start_sample >= end_frame)
         {
           if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
-            z_debug ("Region does not overlap with time range, skipping");
+            z_debug ("Clip does not overlap with time range, skipping");
           continue;
         }
 
       // Calculate the overlap range
-      const auto overlap_start = au::max (region.start_sample, start_frame);
-      const auto overlap_end = au::min (region.end_sample, end_frame);
+      const auto overlap_start = au::max (clip.start_sample, start_frame);
+      const auto overlap_end = au::min (clip.end_sample, end_frame);
       const auto overlap_length = overlap_end - overlap_start;
 
       if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
@@ -230,7 +229,7 @@ AudioTimelineDataProvider::process_audio_events (
         }
 
       // Calculate the offset into the audio buffer
-      const auto buffer_offset = overlap_start - region.start_sample;
+      const auto buffer_offset = overlap_start - clip.start_sample;
       const auto output_offset = overlap_start - start_frame;
 
       if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
@@ -240,8 +239,8 @@ AudioTimelineDataProvider::process_audio_events (
             output_offset);
         }
 
-      // Get the audio buffer from the region
-      const auto &audio_buffer = region.audio_buffer;
+      // Get the audio buffer from the clip
+      const auto &audio_buffer = clip.audio_buffer;
       if (audio_buffer.getNumSamples () == 0)
         {
           if constexpr (TIMELINE_DATA_PROVIDER_DEBUG)
@@ -502,20 +501,21 @@ AutomationTimelineDataProvider::AutomationTimelineDataProvider (QObject * parent
 // ========== AutomationTimelineDataProvider Private Methods ==========
 
 void
-AutomationTimelineDataProvider::cache_automation_region (
-  const arrangement::AutomationRegion &region,
-  const dsp::TempoMap                 &tempo_map)
+AutomationTimelineDataProvider::cache_automation_clip (
+  const arrangement::AutomationClip &clip,
+  const dsp::TempoMap               &tempo_map)
 {
   // Calculate number of samples needed
-  const auto start_sample = units::samples (region.position ()->samples ());
-  const auto end_sample = region.bounds ()->get_end_position_samples (true);
+  const auto start_sample =
+    tempo_map.tick_to_samples_rounded (clip.position ()->asTick ());
+  const auto end_sample = clip.get_end_position_samples (true);
   const auto num_samples = end_sample - start_sample;
 
   std::vector<float> automation_values (num_samples.in (units::samples));
 
-  // Serialize automation region to sample-accurate values
-  arrangement::RegionRenderer::serialize_to_automation_values (
-    region, automation_values);
+  // Serialize automation clip to sample-accurate values
+  arrangement::ClipRenderer::serialize_to_automation_values (
+    clip, automation_values);
 
   automation_cache_->add_automation_sequence (
     std::make_pair (start_sample, end_sample), automation_values);

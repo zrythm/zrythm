@@ -44,6 +44,8 @@ ctest --test-dir builddir_cmake -N
 
 When investigating a test failure, run the failing test alone with `--output-on-failure` and **do not clip the output** — the full output (including ASan stack traces, assertion messages, and gtest logs) is often needed to diagnose the root cause. Use `-R "<TestName>"` to isolate a single test.
 
+**All tests are assumed to pass at each commit.** If a test fails after uncommitted changes, it is almost always those changes' fault — do not waste time checking whether the test was already broken.
+
 ```bash
 ctest --test-dir builddir_cmake -R "TestName" --output-on-failure
 ```
@@ -217,6 +219,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 ### General
 
 - **Never use the Write tool on existing files.** Always use the Edit tool to make targeted changes, preserving all existing comments, blank lines, and formatting. The Write tool may only be used for new files that don't exist yet.
+- **Never assume our own code is immutable.** This is our codebase — we can and should modify any part of it (including base classes, utility types, build config, existing APIs) when it leads to a better design. When a constraint in existing code blocks the ideal solution, propose changing the code rather than working around it. Do not rationalize why a workaround is necessary; offer to fix the root cause instead.
 
 ### C++23
 

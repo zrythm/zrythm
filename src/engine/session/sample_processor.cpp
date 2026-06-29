@@ -14,7 +14,7 @@
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/plugin_manager.h"
 #include "plugins/plugin.h"
-#include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/audio_clip.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
 #include "structure/tracks/tracklist.h"
@@ -369,14 +369,14 @@ SampleProcessor::queue_file_or_chord_preset (
         audio_track_ref, static_cast<int> (tracklist_->track_count ()),
         *AUDIO_ENGINE, false, false);
 
-      /* create an audio region & add to track */
+      /* create an audio clip & add to track */
       try
         {
 // TODO
 #  if 0
           auto * ar =
             PROJECT->getArrangerObjectFactory ()
-              ->addAudioRegionFromFile (
+              ->addAudioClipFromFile (
                 &audio_track->get_lane_at (0),
                 utils::Utf8String::from_path (file->abs_path_).to_qstring (),
                 start_pos.ticks_);
@@ -385,7 +385,7 @@ SampleProcessor::queue_file_or_chord_preset (
         }
       catch (const ZrythmException &e)
         {
-          e.handle ("Failed to create/add audio region for sample processor");
+          e.handle ("Failed to create/add audio clip for sample processor");
           return;
         }
     }
@@ -450,12 +450,12 @@ SampleProcessor::queue_file_or_chord_preset (
 
               if (file != nullptr)
                 {
-                  /* create a MIDI region from the MIDI file & add to track */
+                  /* create a MIDI clip from the MIDI file & add to track */
                   try
                     {
                       auto mr =
                         PROJECT->getArrangerObjectFactory ()
-                          ->addMidiRegionFromMidiFile (
+                          ->addMidiClipFromMidiFile (
                             &midi_track->get_lane_at (0),
                             utils::Utf8String::from_path (file->abs_path_)
                               .to_qstring (),
@@ -467,7 +467,7 @@ SampleProcessor::queue_file_or_chord_preset (
                     {
                       throw ZrythmException (
                         fmt::format (
-                          "Failed to create MIDI region from file {}",
+                          "Failed to create MIDI clip from file {}",
                           file->abs_path_));
                     }
                 }
@@ -475,7 +475,7 @@ SampleProcessor::queue_file_or_chord_preset (
                 {
                   try
                     {
-                      /* create a MIDI region from the chord preset and add to
+                      /* create a MIDI clip from the chord preset and add to
                        * track
                        */
                       Position end_pos;
@@ -485,7 +485,7 @@ SampleProcessor::queue_file_or_chord_preset (
                       auto mr =
                         structure::arrangement::ArrangerObjectFactory::
                           get_instance ()
-                            ->addEmptyMidiRegion (
+                            ->addEmptyMidiClip (
                               &midi_track->get_lane_at (0), start_pos.ticks_);
                       mr->set_end_pos_full_size (
                         end_pos, AUDIO_ENGINE->frames_per_tick_);
@@ -527,7 +527,7 @@ SampleProcessor::queue_file_or_chord_preset (
                     }
                   catch (const ZrythmException &e)
                     {
-                      throw ZrythmException ("Failed to add region to track");
+                      throw ZrythmException ("Failed to add clip to track");
                     }
                 }
             }

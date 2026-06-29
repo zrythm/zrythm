@@ -251,29 +251,29 @@ TEST_F (ArrangerObjectOwnerTest, ObjectCloning)
 namespace
 {
 
-// Helper trait to get child type for a region type
-template <typename RegionT> struct ChildTypeForRegion;
+// Helper trait to get child type for a clip type
+template <typename ClipT> struct ChildTypeForRegion;
 
-template <> struct ChildTypeForRegion<MidiRegion>
+template <> struct ChildTypeForRegion<MidiClip>
 {
   using Type = MidiNote;
 };
-template <> struct ChildTypeForRegion<AutomationRegion>
+template <> struct ChildTypeForRegion<AutomationClip>
 {
   using Type = AutomationPoint;
 };
-template <> struct ChildTypeForRegion<ChordRegion>
+template <> struct ChildTypeForRegion<ChordClip>
 {
   using Type = ChordObject;
 };
 
 } // namespace
 
-template <typename RegionT>
+template <typename ClipT>
 class ArrangerObjectOwnerParentTest : public ::testing::Test
 {
 protected:
-  using ChildT = typename ChildTypeForRegion<RegionT>::Type;
+  using ChildT = typename ChildTypeForRegion<ClipT>::Type;
 
   void SetUp () override
   {
@@ -287,7 +287,6 @@ protected:
       ArrangerObjectFactory::Dependencies{
         .tempo_map_ = *tempo_map_wrapper,
         .registry_ = registry,
-        .app_settings_ = *app_settings,
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -295,23 +294,23 @@ protected:
       [] () { return units::sample_rate (44100); },
       [] () { return units::bpm (120.0); });
 
-    // Create region
-    region_ref = std::make_unique<ArrangerObjectUuidReference> (
-      factory->template get_builder<RegionT> ()
+    // Create clip
+    clip_ref = std::make_unique<ArrangerObjectUuidReference> (
+      factory->template get_builder<ClipT> ()
         .with_start_ticks (units::ticks (0.0))
         .with_end_ticks (units::ticks (1920.0))
         .build_in_registry ());
   }
 
-  // Helper to create a child object and add it to the region
+  // Helper to create a child object and add it to the clip
   ArrangerObjectUuidReference create_and_add_child (double start_ticks = 100.0)
   {
     auto child_ref =
       factory->template get_builder<ChildT> ()
         .with_start_ticks (units::ticks (start_ticks))
         .build_in_registry ();
-    region_ref->get_object_as<RegionT> ()
-      ->ArrangerObjectOwner<ChildT>::add_object (child_ref);
+    clip_ref->get_object_as<ClipT> ()->ArrangerObjectOwner<ChildT>::add_object (
+      child_ref);
     return child_ref;
   }
 
@@ -320,27 +319,27 @@ protected:
   utils::ObjectRegistry                        registry;
   std::unique_ptr<utils::AppSettings>          app_settings;
   std::unique_ptr<ArrangerObjectFactory>       factory;
-  std::unique_ptr<ArrangerObjectUuidReference> region_ref;
+  std::unique_ptr<ArrangerObjectUuidReference> clip_ref;
 };
 
-// Test only the region types that inherit from ArrangerObjectOwner and
-// ArrangerObject (AudioRegion excluded - its child AudioSourceObject has
+// Test only the clip types that inherit from ArrangerObjectOwner and
+// ArrangerObject (AudioClip excluded - its child AudioSourceObject has
 // different construction requirements)
-using RegionTypes = ::testing::Types<MidiRegion, AutomationRegion, ChordRegion>;
-TYPED_TEST_SUITE (ArrangerObjectOwnerParentTest, RegionTypes);
+using ClipTypes = ::testing::Types<MidiClip, AutomationClip, ChordClip>;
+TYPED_TEST_SUITE (ArrangerObjectOwnerParentTest, ClipTypes);
 
 TYPED_TEST (ArrangerObjectOwnerParentTest, AddObjectSetsParentObject)
 {
   // Create and add a child via add_object() - this should set parentObject
   auto child_ref = this->create_and_add_child ();
 
-  auto * region = this->region_ref->template get_object_as<TypeParam> ();
+  auto * clip = this->clip_ref->template get_object_as<TypeParam> ();
   auto * child =
     child_ref.template get_object_as<typename TestFixture::ChildT> ();
 
   // Verify parentObject is set when added via add_object()
-  EXPECT_EQ (child->parentObject (), region)
-    << "Child added via add_object() should have parentObject set to region";
+  EXPECT_EQ (child->parentObject (), clip)
+    << "Child added via add_object() should have parentObject set to clip";
 }
 
 TYPED_TEST (ArrangerObjectOwnerParentTest, CloneSetsParentObjectOnChildren)
@@ -348,8 +347,7 @@ TYPED_TEST (ArrangerObjectOwnerParentTest, CloneSetsParentObjectOnChildren)
   // Create and add a child via add_object() - this correctly sets parentObject
   auto original_child_ref = this->create_and_add_child ();
 
-  auto * original_region =
-    this->region_ref->template get_object_as<TypeParam> ();
+  auto * original_region = this->clip_ref->template get_object_as<TypeParam> ();
   auto * original_child =
     original_child_ref.template get_object_as<typename TestFixture::ChildT> ();
 
@@ -357,26 +355,26 @@ TYPED_TEST (ArrangerObjectOwnerParentTest, CloneSetsParentObjectOnChildren)
   ASSERT_EQ (original_child->parentObject (), original_region)
     << "Original child should have parentObject set";
 
-  // Clone the region using the factory (this is how copy-move works)
-  auto cloned_region_ref =
+  // Clone the clip using the factory (this is how copy-move works)
+  auto cloned_clip_ref =
     this->factory->clone_new_object_identity (*original_region);
-  auto * cloned_region = cloned_region_ref.template get_object_as<TypeParam> ();
+  auto * cloned_clip = cloned_clip_ref.template get_object_as<TypeParam> ();
 
-  // Verify the cloned region has children
+  // Verify the cloned clip has children
   ASSERT_EQ (
-    cloned_region
+    cloned_clip
       ->ArrangerObjectOwner<typename TestFixture::ChildT>::get_children_vector ()
       .size (),
     1)
-    << "Cloned region should have the same number of children as original";
+    << "Cloned clip should have the same number of children as original";
 
   // Get the cloned child
-  auto * cloned_child = cloned_region->ArrangerObjectOwner<
+  auto * cloned_child = cloned_clip->ArrangerObjectOwner<
     typename TestFixture::ChildT>::get_children_view ()[0];
 
   // Verify parentObject is set on cloned children
-  EXPECT_EQ (cloned_child->parentObject (), cloned_region)
-    << "Cloned child should have parentObject pointing to cloned region";
+  EXPECT_EQ (cloned_child->parentObject (), cloned_clip)
+    << "Cloned child should have parentObject pointing to cloned clip";
 }
 
 TYPED_TEST (
@@ -386,8 +384,7 @@ TYPED_TEST (
   // Create and add a child via add_object()
   auto original_child_ref = this->create_and_add_child ();
 
-  auto * original_region =
-    this->region_ref->template get_object_as<TypeParam> ();
+  auto * original_region = this->clip_ref->template get_object_as<TypeParam> ();
   auto * original_child =
     original_child_ref.template get_object_as<typename TestFixture::ChildT> ();
 
@@ -395,31 +392,31 @@ TYPED_TEST (
   ASSERT_EQ (original_child->parentObject (), original_region)
     << "Original child should have parentObject set";
 
-  // Serialize the region
+  // Serialize the clip
   nlohmann::json j;
   to_json (j, *original_region);
 
-  // Create a new region and deserialize into it
-  auto new_region_ref =
+  // Create a new clip and deserialize into it
+  auto new_clip_ref =
     this->factory->template get_builder<TypeParam> ().build_in_registry ();
-  auto * new_region = new_region_ref.template get_object_as<TypeParam> ();
-  from_json (j, *new_region);
+  auto * new_clip = new_clip_ref.template get_object_as<TypeParam> ();
+  from_json (j, *new_clip);
 
-  // Verify the deserialized region has children
+  // Verify the deserialized clip has children
   ASSERT_EQ (
-    new_region
+    new_clip
       ->ArrangerObjectOwner<typename TestFixture::ChildT>::get_children_vector ()
       .size (),
     1)
-    << "Deserialized region should have the same number of children";
+    << "Deserialized clip should have the same number of children";
 
   // Get the deserialized child
-  auto * deserialized_child = new_region->ArrangerObjectOwner<
+  auto * deserialized_child = new_clip->ArrangerObjectOwner<
     typename TestFixture::ChildT>::get_children_view ()[0];
 
   // Verify parentObject is set on deserialized children
-  EXPECT_EQ (deserialized_child->parentObject (), new_region)
-    << "Deserialized child should have parentObject pointing to its region";
+  EXPECT_EQ (deserialized_child->parentObject (), new_clip)
+    << "Deserialized child should have parentObject pointing to its clip";
 }
 
 } // namespace zrythm::structure::arrangement

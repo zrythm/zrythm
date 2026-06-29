@@ -7,10 +7,12 @@
 
 #include "dsp/processor_base.h"
 #include "dsp/tempo_map_qml_adapter.h"
+#include "dsp/timebase.h"
 #include "structure/arrangement/arranger_object_owner.h"
-#include "structure/arrangement/automation_region.h"
+#include "structure/arrangement/automation_clip.h"
 #include "structure/arrangement/timeline_data_provider.h"
 #include "structure/tracks/playback_cache_activity_tracker.h"
+#include "utils/enum_utils.h"
 #include "utils/playback_cache_scheduler.h"
 #include "utils/units.h"
 
@@ -20,7 +22,7 @@ namespace zrythm::structure::tracks
 {
 class AutomationTrack
     : public QObject,
-      public arrangement::ArrangerObjectOwner<arrangement::AutomationRegion>
+      public arrangement::ArrangerObjectOwner<arrangement::AutomationClip>
 {
   Q_OBJECT
   QML_ELEMENT
@@ -34,15 +36,15 @@ class AutomationTrack
       NOTIFY recordModeChanged)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     AutomationTrack,
-    regions,
-    arrangement::AutomationRegion)
+    clips,
+    arrangement::AutomationClip)
   Q_PROPERTY (
     zrythm::structure::tracks::PlaybackCacheActivityTracker *
       playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
   QML_UNCREATABLE ("")
 
 public:
-  using AutomationRegion = arrangement::AutomationRegion;
+  using AutomationClip = arrangement::AutomationClip;
   using AutomationPoint = arrangement::AutomationPoint;
 
   /** Release time in ms when in touch record mode. */
@@ -69,6 +71,7 @@ public:
     const dsp::TempoMapWrapper          &tempo_map,
     utils::IObjectRegistry              &registry,
     dsp::ProcessorParameterUuidReference param_id,
+    dsp::TimebaseProvider *              timebase_provider = nullptr,
     QObject *                            parent = nullptr);
 
 public:
@@ -125,9 +128,9 @@ public:
    *
    * @param record_aps If set to true, this function will return whether we
    *   should be recording automation point data. If set to false, this
-   *   function will return whether we should be recording a region (eg, if an
+   *   function will return whether we should be recording a clip (eg, if an
    *   automation point was already created before and we are still recording
-   *   inside a region regardless of whether we should create/edit automation
+   *   inside a clip regardless of whether we should create/edit automation
    *   points or not.
    */
   [[gnu::hot]] bool should_be_recording (bool record_aps) const;
@@ -149,47 +152,47 @@ public:
   /**
    * Returns the last automation point before the given timeline position.
    *
-   * This first finds the relevant automation regio nusing get_region_before(),
+   * This first finds the relevant automation clip using get_clip_before(),
    * then finds the last point located before the position (converted to
-   * region-local coordinates).
+   * clip-local coordinates).
    *
-   * @see get_region_before().
+   * @see get_clip_before().
    */
   AutomationPoint * get_automation_point_before (
     units::sample_t timeline_position,
-    bool            search_only_regions_enclosing_position) const;
+    bool            search_only_clips_enclosing_position) const;
 
   /**
-   * Returns the active region at a given position, if any.
+   * Returns the active clip at a given position, if any.
    *
-   * @param search_only_regions_enclosing_position Whether to only check in
-   * regions that span the given position. If this is false, positions that end
+   * @param search_only_clips_enclosing_position Whether to only check in
+   * clips that span the given position. If this is false, positions that end
    * before the position are also considered. When this is true and multiple
-   * regions exist that meet the requirements, the behavior is not defined - any
-   * region could be picked.
+   * clips exist that meet the requirements, the behavior is not defined - any
+   * clip could be picked.
    */
-  auto get_region_before (
+  auto get_clip_before (
     units::sample_t pos_samples,
-    bool search_only_regions_enclosing_position) const -> AutomationRegion *;
+    bool search_only_clips_enclosing_position) const -> AutomationClip *;
 
   /**
    * Returns the normalized parameter value at the given timeline position.
    *
-   * @param search_only_regions_enclosing_position @see get_region_before().
+   * @param search_only_clips_enclosing_position @see get_clip_before().
    *
    * @return The normalized parameter value, or std::nullopt if there is no
    * automation point/curve at the position.
    */
   std::optional<float> get_normalized_value (
     units::sample_t timeline_frames,
-    bool            search_only_regions_enclosing_position) const;
+    bool            search_only_clips_enclosing_position) const;
 
   bool contains_automation () const { return !get_children_vector ().empty (); }
 
   std::string
-  get_field_name_for_serialization (const AutomationRegion *) const override
+  get_field_name_for_serialization (const AutomationClip *) const override
   {
-    return "regions";
+    return "clips";
   }
 
 public:
@@ -212,6 +215,7 @@ private:
 
   /** Parameter this AutomationTrack is for. */
   dsp::ProcessorParameterUuidReference param_id_;
+  QPointer<dsp::TimebaseProvider>      timebase_provider_;
 
   /** Automation mode. */
   std::atomic<AutomationMode> automation_mode_{ AutomationMode::Read };
@@ -243,7 +247,8 @@ generate_automation_tracks_for_processor (
   std::vector<utils::QObjectUniquePtr<AutomationTrack>> &ret,
   const dsp::ProcessorBase                              &processor,
   const dsp::TempoMapWrapper                            &tempo_map,
-  utils::IObjectRegistry                                &registry)
+  utils::IObjectRegistry                                &registry,
+  dsp::TimebaseProvider *                                timebase_provider)
 {
   z_debug ("generating automation tracks for {}...", processor.get_node_name ());
   for (const auto &param_ref : processor.get_parameters ())
@@ -254,7 +259,7 @@ generate_automation_tracks_for_processor (
 
       ret.emplace_back (
         utils::make_qobject_unique<AutomationTrack> (
-          tempo_map, registry, param_ref));
+          tempo_map, registry, param_ref, timebase_provider));
     }
 }
 }

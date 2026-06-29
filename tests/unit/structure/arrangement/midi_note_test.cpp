@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/midi_note.h"
@@ -39,11 +38,11 @@ protected:
 TEST_F (MidiNoteTest, InitialState)
 {
   EXPECT_EQ (note->type (), ArrangerObject::Type::MidiNote);
-  EXPECT_EQ (note->position ()->samples (), 0);
+  EXPECT_EQ (note->position ()->ticks (), 0);
   EXPECT_EQ (note->pitch (), 60);      // Default pitch is C4
   EXPECT_EQ (note->velocity (), 90);   // Default velocity
   EXPECT_EQ (note->midiChannel (), 0); // Default channel
-  EXPECT_NE (note->bounds (), nullptr);
+  EXPECT_NE (note->length (), nullptr);
   EXPECT_NE (note->mute (), nullptr);
 }
 
@@ -187,12 +186,12 @@ TEST_F (MidiNoteTest, PitchToString)
 TEST_F (MidiNoteTest, BoundsFunctionality)
 {
   // Set length
-  note->bounds ()->length ()->setSamples (500);
-  EXPECT_EQ (note->bounds ()->length ()->samples (), 500);
+  note->length ()->setTicks (500);
+  EXPECT_EQ (note->length ()->ticks (), 500);
 
   // Set position
-  note->position ()->setSamples (1000);
-  EXPECT_EQ (note->position ()->samples (), 1000);
+  note->position ()->setTicks (1000);
+  EXPECT_EQ (note->position ()->ticks (), 1000);
 }
 
 // Test mute functionality
@@ -212,19 +211,19 @@ TEST_F (MidiNoteTest, FriendFunctions)
 {
   // Create multiple notes with different properties
   auto note1 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
-  note1->position ()->setSamples (1000);
-  note1->bounds ()->length ()->setSamples (500); // End at 1500
-  note1->setPitch (60);                          // C4
+  note1->position ()->setTicks (1000);
+  note1->length ()->setTicks (500); // End at 1500
+  note1->setPitch (60);             // C4
 
   auto note2 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
-  note2->position ()->setSamples (2000);
-  note2->bounds ()->length ()->setSamples (300); // End at 2300
-  note2->setPitch (72);                          // C5
+  note2->position ()->setTicks (2000);
+  note2->length ()->setTicks (300); // End at 2300
+  note2->setPitch (72);             // C5
 
   auto note3 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
-  note3->position ()->setSamples (500);
-  note3->bounds ()->length ()->setSamples (1000); // End at 1500
-  note3->setPitch (48);                           // C3
+  note3->position ()->setTicks (500);
+  note3->length ()->setTicks (1000); // End at 1500
+  note3->setPitch (48);              // C3
 
   // Create a vector of notes
   std::vector<MidiNote *> notes = { note1.get (), note2.get (), note3.get () };
@@ -232,13 +231,12 @@ TEST_F (MidiNoteTest, FriendFunctions)
   // Test get_first_midi_note
   MidiNote * first = get_first_midi_note (notes);
   EXPECT_EQ (first, note3.get ());
-  EXPECT_EQ (first->position ()->samples (), 500);
+  EXPECT_EQ (first->position ()->ticks (), 500);
 
   // Test get_last_midi_note
   MidiNote * last = get_last_midi_note (notes);
   EXPECT_EQ (last, note2.get ());
-  EXPECT_EQ (
-    last->bounds ()->get_end_position_samples (false), units::samples (2299));
+  EXPECT_EQ (last->position ()->ticks () + last->length ()->ticks (), 2300);
 
   // Test get_pitch_range
   auto pitch_range = get_pitch_range (notes);
@@ -268,13 +266,13 @@ TEST_F (MidiNoteTest, FriendFunctionsEdgeCases)
 {
   // Create notes with same positions
   auto note1 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
-  note1->position ()->setSamples (1000);
-  note1->bounds ()->length ()->setSamples (500);
+  note1->position ()->setTicks (1000);
+  note1->length ()->setTicks (500);
   note1->setPitch (60);
 
   auto note2 = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
-  note2->position ()->setSamples (1000);
-  note2->bounds ()->length ()->setSamples (500);
+  note2->position ()->setTicks (1000);
+  note2->length ()->setTicks (500);
   note2->setPitch (72);
 
   std::vector<MidiNote *> notes = { note1.get (), note2.get () };
@@ -316,11 +314,11 @@ TEST_F (MidiNoteTest, FriendFunctionsEdgeCases)
 TEST_F (MidiNoteTest, Serialization)
 {
   // Set initial state
-  note->position ()->setSamples (2000);
+  note->position ()->setTicks (2000);
   note->setPitch (72);
   note->setVelocity (110);
   note->setMidiChannel (3);
-  note->bounds ()->length ()->setSamples (1000);
+  note->length ()->setTicks (1000);
 
   // Serialize
   nlohmann::json j;
@@ -331,22 +329,22 @@ TEST_F (MidiNoteTest, Serialization)
   from_json (j, *new_note);
 
   // Verify state
-  EXPECT_EQ (new_note->position ()->samples (), 2000);
+  EXPECT_EQ (new_note->position ()->ticks (), 2000);
   EXPECT_EQ (new_note->pitch (), 72);
   EXPECT_EQ (new_note->velocity (), 110);
   EXPECT_EQ (new_note->midiChannel (), 3);
-  EXPECT_EQ (new_note->bounds ()->length ()->samples (), 1000);
+  EXPECT_EQ (new_note->length ()->ticks (), 1000);
 }
 
 // Test copying
 TEST_F (MidiNoteTest, Copying)
 {
   // Set initial state
-  note->position ()->setSamples (3000);
+  note->position ()->setTicks (3000);
   note->setPitch (65);
   note->setVelocity (95);
   note->setMidiChannel (10);
-  note->bounds ()->length ()->setSamples (1500);
+  note->length ()->setTicks (1500);
 
   // Create target
   auto target = std::make_unique<MidiNote> (*tempo_map_wrapper, parent.get ());
@@ -355,11 +353,11 @@ TEST_F (MidiNoteTest, Copying)
   init_from (*target, *note, utils::ObjectCloneType::Snapshot);
 
   // Verify state
-  EXPECT_EQ (target->position ()->samples (), 3000);
+  EXPECT_EQ (target->position ()->ticks (), 3000);
   EXPECT_EQ (target->pitch (), 65);
   EXPECT_EQ (target->velocity (), 95);
   EXPECT_EQ (target->midiChannel (), 10);
-  EXPECT_EQ (target->bounds ()->length ()->samples (), 1500);
+  EXPECT_EQ (target->length ()->ticks (), 1500);
 }
 
 } // namespace zrythm::structure::arrangement

@@ -41,6 +41,11 @@ public:
     MarkerType                  type,
     QObject *                   parent = nullptr);
 
+  dsp::TimelinePosition * position () const override
+  {
+    return static_cast<dsp::TimelinePosition *> (ArrangerObject::position ());
+  }
+
   // ========================================================================
   // QML Interface
   // ========================================================================

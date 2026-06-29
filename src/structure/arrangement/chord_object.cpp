@@ -14,9 +14,9 @@ ChordObject::ChordObject (
     : ArrangerObject (
         Type::ChordObject,
         tempo_map_wrapper,
-        ArrangerObjectFeatures::Mute,
+        ArrangerObjectFeatures::Mute | ArrangerObjectFeatures::ClipOwned,
         parent),
-      chord_descriptor_ (utils::make_qobject_unique<dsp::ChordDescriptor> ())
+      chord_descriptor_ (utils::make_qobject_unique<dsp::ChordDescriptor> (this))
 {
   QObject::connect (
     chord_descriptor_.get (), &dsp::ChordDescriptor::changed, this,

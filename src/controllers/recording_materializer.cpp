@@ -76,15 +76,15 @@ RecordingMaterializer::on_audio_data_ready (
       scratch_buf_.copyFrom (1, 0, packet.r_frames.data (), num_frames);
 
       bool newly_created = false;
-      if (!state.current_region.has_value ())
+      if (!state.current_clip.has_value ())
         {
-          state.current_region = get_or_create_region (
+          state.current_clip = get_or_create_clip (
             state, track_id, packet.timeline_position, scratch_buf_);
 
-          if (!state.current_region.has_value ())
+          if (!state.current_clip.has_value ())
             {
               z_warning (
-                "Failed to create region for track {} at position {} — "
+                "Failed to create clip for track {} at position {} — "
                 "dropping {} frames",
                 track_id, packet.timeline_position,
                 packet.nframes.in (units::samples));
@@ -94,17 +94,26 @@ RecordingMaterializer::on_audio_data_ready (
           newly_created = true;
         }
 
-      auto * region = state.current_region->get_object_as<
-        structure::arrangement::AudioRegion> ();
-      auto * clip = get_clip_for_region (*region);
+      auto * clip =
+        state.current_clip->get_object_as<structure::arrangement::AudioClip> ();
+      auto * source = get_audio_source_for_clip (*clip);
 
       if (!newly_created)
         {
-          clip->expand_with_frames (scratch_buf_);
+          source->expand_with_frames (scratch_buf_);
         }
 
-      region->bounds ()->length ()->setSamples (
-        static_cast<double> (clip->get_num_frames ()));
+      // Length is the tick span of the recorded audio at its timeline
+      // position
+      const auto &tm = clip->get_tempo_map ();
+      const auto  clip_start_samples =
+        tm.tick_to_samples_rounded (clip->position ()->asTick ());
+      const auto clip_end_samples =
+        clip_start_samples
+        + units::samples (static_cast<int64_t> (source->get_num_frames ()));
+      clip->length ()->setTicks (
+        (tm.samples_to_tick (clip_end_samples) - clip->position ()->asTick ())
+          .asDouble ());
 
       state.last_end_position =
         packet.timeline_position
@@ -113,7 +122,7 @@ RecordingMaterializer::on_audio_data_ready (
 }
 
 std::optional<structure::arrangement::ArrangerObjectUuidReference>
-RecordingMaterializer::get_or_create_region (
+RecordingMaterializer::get_or_create_clip (
   TrackRecordingState             &state,
   structure::tracks::TrackUuid     track_id,
   units::sample_t                  start_position,
@@ -121,19 +130,19 @@ RecordingMaterializer::get_or_create_region (
 {
   ensure_recording_macro ();
 
-  auto result = creators_.audio_region (
+  auto result = creators_.audio_clip (
     track_id, start_position, initial_frames, state.current_lane_index);
   if (!result.has_value ())
     return std::nullopt;
   state.current_lane_index = result->actual_lane_index;
-  return result->region;
+  return result->clip;
 }
 
 dsp::FileAudioSource *
-RecordingMaterializer::get_clip_for_region (
-  structure::arrangement::AudioRegion &region)
+RecordingMaterializer::get_audio_source_for_clip (
+  structure::arrangement::AudioClip &clip)
 {
-  auto children = region.get_children_view ();
+  auto children = clip.get_children_view ();
   assert (!children.empty ());
   auto * source_obj = children.front ();
   auto   clip_ref = source_obj->audio_source_ref ();
@@ -178,7 +187,7 @@ RecordingMaterializer::handle_discontinuity (TrackRecordingState &state)
   force_complete_pending_notes (state);
   state.unended_notes.clear ();
 
-  if (!state.current_region.has_value ())
+  if (!state.current_clip.has_value ())
     return;
 
   const auto mode = recording_mode_provider_ ();
@@ -186,7 +195,7 @@ RecordingMaterializer::handle_discontinuity (TrackRecordingState &state)
     {
     case RecordingMode::TakesMuted:
       {
-        auto * prev_obj = state.current_region->get ();
+        auto * prev_obj = state.current_clip->get ();
         if (prev_obj != nullptr)
           {
             prev_obj->mute ()->setMuted (true);
@@ -204,26 +213,26 @@ RecordingMaterializer::handle_discontinuity (TrackRecordingState &state)
       state.current_lane_index++;
       break;
     }
-  state.current_region.reset ();
+  state.current_clip.reset ();
 }
 
 bool
-RecordingMaterializer::ensure_midi_region (
+RecordingMaterializer::ensure_midi_clip (
   TrackRecordingState         &state,
   structure::tracks::TrackUuid track_id,
   units::sample_t              start_position)
 {
-  if (state.current_region.has_value ())
+  if (state.current_clip.has_value ())
     return true;
 
   ensure_recording_macro ();
 
   auto result =
-    creators_.midi_region (track_id, start_position, state.current_lane_index);
+    creators_.midi_clip (track_id, start_position, state.current_lane_index);
   if (!result.has_value ())
     return false;
   state.current_lane_index = result->actual_lane_index;
-  state.current_region = std::move (result->region);
+  state.current_clip = std::move (result->clip);
   return true;
 }
 
@@ -231,16 +240,17 @@ void
 RecordingMaterializer::force_complete_pending_notes (TrackRecordingState &state)
 {
   if (
-    state.unended_notes.empty () || !state.current_region.has_value ()
+    state.unended_notes.empty () || !state.current_clip.has_value ()
     || !state.last_end_position.has_value ())
     return;
 
-  auto * region =
-    state.current_region->get_object_as<structure::arrangement::MidiRegion> ();
-  if (region == nullptr)
+  auto * clip =
+    state.current_clip->get_object_as<structure::arrangement::MidiClip> ();
+  if (clip == nullptr)
     return;
 
-  const auto region_start = units::samples (region->position ()->samples ());
+  const auto clip_start = clip->get_tempo_map ().tick_to_samples_rounded (
+    clip->position ()->asTick ());
 
   for (const auto &[key, pending_deque] : state.unended_notes)
     {
@@ -248,8 +258,8 @@ RecordingMaterializer::force_complete_pending_notes (TrackRecordingState &state)
       for (const auto &pending : pending_deque)
         {
           creators_.midi_note (
-            *region, pending.start_position - region_start,
-            *state.last_end_position - region_start, pitch, pending.velocity,
+            *clip, pending.start_position - clip_start,
+            *state.last_end_position - clip_start, pitch, pending.velocity,
             pending.channel);
         }
     }
@@ -274,22 +284,22 @@ RecordingMaterializer::on_midi_data_ready (
           handle_discontinuity (state);
         }
 
-      ensure_midi_region (state, track_id, packet.timeline_position);
+      ensure_midi_clip (state, track_id, packet.timeline_position);
 
       const auto packet_end = packet.timeline_position + packet.nframes;
 
-      const auto get_midi_region_and_offset = [&] (units::sample_t pos)
+      const auto get_midi_clip_and_offset = [&] (units::sample_t pos)
         -> std::optional<
-          std::pair<structure::arrangement::MidiRegion *, units::sample_t>> {
-        if (!ensure_midi_region (state, track_id, pos))
+          std::pair<structure::arrangement::MidiClip *, units::sample_t>> {
+        if (!ensure_midi_clip (state, track_id, pos))
           return std::nullopt;
-        auto * region = state.current_region->get_object_as<
-          structure::arrangement::MidiRegion> ();
-        if (region == nullptr)
+        auto * clip =
+          state.current_clip->get_object_as<structure::arrangement::MidiClip> ();
+        if (clip == nullptr)
           return std::nullopt;
-        const auto region_start =
-          units::samples (region->position ()->samples ());
-        return std::pair{ region, region_start };
+        const auto clip_start = clip->get_tempo_map ().tick_to_samples_rounded (
+          clip->position ()->asTick ());
+        return std::pair{ clip, clip_start };
       };
 
       for (const auto &ev : packet.midi_events)
@@ -318,10 +328,10 @@ RecordingMaterializer::on_midi_data_ready (
 
           if (type == utils::midi::MIDI_CH1_NOTE_ON && d2 > 0)
             {
-              if (!ensure_midi_region (state, track_id, event_sample_pos))
+              if (!ensure_midi_clip (state, track_id, event_sample_pos))
                 {
                   z_warning (
-                    "Failed to create MIDI region for note-on (pitch={}, "
+                    "Failed to create MIDI clip for note-on (pitch={}, "
                     "ch={}) at position {} — dropping note",
                     d1, channel, event_sample_pos);
                   continue;
@@ -342,11 +352,11 @@ RecordingMaterializer::on_midi_data_ready (
                 note_it != state.unended_notes.end ()
                 && !note_it->second.empty ())
                 {
-                  if (!state.current_region.has_value ())
+                  if (!state.current_clip.has_value ())
                     {
                       z_warning (
                         "Note-off (pitch={}, ch={}) at position {} has no "
-                        "active region — stale note dropped",
+                        "active clip — stale note dropped",
                         d1, channel, event_sample_pos);
                       note_it->second.pop_front ();
                       if (note_it->second.empty ())
@@ -354,16 +364,17 @@ RecordingMaterializer::on_midi_data_ready (
                       continue;
                     }
 
-                  auto * region = state.current_region->get_object_as<
-                    structure::arrangement::MidiRegion> ();
-                  if (region != nullptr)
+                  auto * clip = state.current_clip->get_object_as<
+                    structure::arrangement::MidiClip> ();
+                  if (clip != nullptr)
                     {
                       const auto &pending = note_it->second.front ();
-                      const auto  region_start =
-                        units::samples (region->position ()->samples ());
+                      const auto  clip_start =
+                        clip->get_tempo_map ().tick_to_samples_rounded (
+                          clip->position ()->asTick ());
                       creators_.midi_note (
-                        *region, pending.start_position - region_start,
-                        event_sample_pos - region_start, d1, pending.velocity,
+                        *clip, pending.start_position - clip_start,
+                        event_sample_pos - clip_start, d1, pending.velocity,
                         pending.channel);
                     }
 
@@ -374,12 +385,12 @@ RecordingMaterializer::on_midi_data_ready (
             }
           else if (type == utils::midi::MIDI_CH1_CTRL_CHANGE)
             {
-              auto r = get_midi_region_and_offset (event_sample_pos);
+              auto r = get_midi_clip_and_offset (event_sample_pos);
               if (r.has_value ())
                 {
-                  auto [region, region_start] = *r;
+                  auto [clip, clip_start] = *r;
                   creators_.midi_control_event (
-                    *region, event_sample_pos - region_start,
+                    *clip, event_sample_pos - clip_start,
                     structure::arrangement::MidiControlEvent::EventType::
                       ControlChange,
                     channel, d1, d2);
@@ -387,25 +398,25 @@ RecordingMaterializer::on_midi_data_ready (
             }
           else if (type == utils::midi::MIDI_CH1_PITCH_WHEEL_RANGE)
             {
-              auto r = get_midi_region_and_offset (event_sample_pos);
+              auto r = get_midi_clip_and_offset (event_sample_pos);
               if (r.has_value ())
                 {
-                  auto [region, region_start] = *r;
+                  auto [clip, clip_start] = *r;
                   const auto pb_value = (d2 << 7) | d1;
                   creators_.midi_control_event (
-                    *region, event_sample_pos - region_start,
+                    *clip, event_sample_pos - clip_start,
                     structure::arrangement::MidiControlEvent::EventType::PitchBend,
                     channel, 0, pb_value);
                 }
             }
           else if (type == utils::midi::MIDI_CH1_CHAN_AFTERTOUCH)
             {
-              auto r = get_midi_region_and_offset (event_sample_pos);
+              auto r = get_midi_clip_and_offset (event_sample_pos);
               if (r.has_value ())
                 {
-                  auto [region, region_start] = *r;
+                  auto [clip, clip_start] = *r;
                   creators_.midi_control_event (
-                    *region, event_sample_pos - region_start,
+                    *clip, event_sample_pos - clip_start,
                     structure::arrangement::MidiControlEvent::EventType::
                       ChannelPressure,
                     channel, 0, d1);
@@ -413,12 +424,12 @@ RecordingMaterializer::on_midi_data_ready (
             }
           else if (type == utils::midi::MIDI_CH1_POLY_AFTERTOUCH)
             {
-              auto r = get_midi_region_and_offset (event_sample_pos);
+              auto r = get_midi_clip_and_offset (event_sample_pos);
               if (r.has_value ())
                 {
-                  auto [region, region_start] = *r;
+                  auto [clip, clip_start] = *r;
                   creators_.midi_control_event (
-                    *region, event_sample_pos - region_start,
+                    *clip, event_sample_pos - clip_start,
                     structure::arrangement::MidiControlEvent::EventType::
                       PolyKeyPressure,
                     channel, d1, d2);
@@ -426,12 +437,12 @@ RecordingMaterializer::on_midi_data_ready (
             }
           else if (type == utils::midi::MIDI_CH1_PROG_CHANGE)
             {
-              auto r = get_midi_region_and_offset (event_sample_pos);
+              auto r = get_midi_clip_and_offset (event_sample_pos);
               if (r.has_value ())
                 {
-                  auto [region, region_start] = *r;
+                  auto [clip, clip_start] = *r;
                   creators_.midi_control_event (
-                    *region, event_sample_pos - region_start,
+                    *clip, event_sample_pos - clip_start,
                     structure::arrangement::MidiControlEvent::EventType::
                       ProgramChange,
                     channel, 0, d1);
@@ -439,23 +450,28 @@ RecordingMaterializer::on_midi_data_ready (
             }
         }
 
-      if (state.current_region.has_value ())
+      if (state.current_clip.has_value ())
         {
-          auto * region = state.current_region->get_object_as<
-            structure::arrangement::MidiRegion> ();
-          if (region != nullptr)
+          auto * clip = state.current_clip->get_object_as<
+            structure::arrangement::MidiClip> ();
+          if (clip != nullptr)
             {
-              const auto region_start =
-                units::samples (region->position ()->samples ());
-              const auto new_length = packet_end - region_start;
-              if (new_length < units::samples (0))
+              const auto clip_start =
+                clip->get_tempo_map ().tick_to_samples_rounded (
+                  clip->position ()->asTick ());
+              if (packet_end < clip_start)
                 {
                   throw std::runtime_error (
                     fmt::format (
-                      "Computed negative MIDI region length: {}", new_length));
+                      "Computed negative MIDI clip length: {}",
+                      packet_end - clip_start));
                 }
-              region->bounds ()->length ()->setSamples (
-                static_cast<double> (new_length.in (units::samples)));
+              // Length is the tick span of [clip_start, packet_end] at the
+              // recording tempo
+              const auto length_tick =
+                clip->get_tempo_map ().samples_to_tick (packet_end)
+                - clip->position ()->asTick ();
+              clip->length ()->setTicks (length_tick.asDouble ());
             }
         }
 

@@ -7,6 +7,7 @@
 
 #include "dsp/port.h"
 #include "dsp/processor_base.h"
+#include "utils/enum_utils.h"
 #include "utils/icloneable.h"
 
 namespace zrythm::structure::arrangement
@@ -42,9 +43,9 @@ public:
   /**
    * @brief Function called during processing to fill events.
    *
-   * For regions, a helper method is provided for filling events from a single
-   * region. Implementations of this are supposed to call that for all their
-   * regions (including muted/disabled/etc.).
+   * For clips, a helper method is provided for filling events from a single
+   * clip. Implementations of this are supposed to call that for all their
+   * clips (including muted/disabled/etc.).
    */
   using FillEventsCallback = std::function<void (
     const dsp::ITransport              &transport,
@@ -174,12 +175,12 @@ public:
    *
    * This function performs the following:
    * - produce output audio/MIDI into stereo out or midi out, based on any
-   *   audio/MIDI regions, if has piano roll or is audio track
+   *   audio/MIDI clips, if has piano roll or is audio track
    * - produce additional output MIDI events based on any MIDI CC automation
-   *   regions, if applicable
+   *   clips, if applicable
    * - change MIDI CC control port values based on any MIDI input, if recording
    *   --- at this point the output is ready ---
-   * - handle recording (create events in regions and automation, including
+   * - handle recording (create events in clips and automation, including
    *   MIDI CC automation, based on the MIDI CC control ports)
    */
   void custom_process_block (
@@ -242,7 +243,7 @@ public:
 
   /**
    * MIDI input for receiving MIDI signals from the piano roll (i.e.,
-   * MIDI notes inside regions) or other sources.
+   * MIDI notes inside clips) or other sources.
    *
    * This bypasses any MIDI transformations by @ref transform_midi_inputs_func_.
    */

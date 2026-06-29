@@ -26,7 +26,10 @@ protected:
 
     // Create factory dependencies
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
+      *tempo_map_wrapper,
+      *registry_,
+      [] { return false; },
+      {},
     };
 
     // Create factory

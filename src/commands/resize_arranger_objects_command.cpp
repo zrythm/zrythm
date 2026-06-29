@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "commands/resize_arranger_objects_command.h"
+#include "dsp/content_time_warp.h"
+#include "dsp/position.h"
+#include "dsp/tick_types.h"
 #include "utils/math_utils.h"
 
 namespace zrythm::commands
@@ -28,26 +31,25 @@ ResizeArrangerObjectsCommand::ResizeArrangerObjectsCommand (
           // Always store position
           state.position = units::ticks (obj->position ()->ticks ());
 
-          // Store bounds if available
-          if (obj->bounds () != nullptr)
+          // Store length if this object type has Bounds
+          if constexpr (structure::arrangement::BoundedObject<ObjectT>)
             {
-              state.length = units::ticks (obj->bounds ()->length ()->ticks ());
+              state.length = units::ticks (obj->length ()->ticks ());
             }
 
-          // Store loop points if available
-          if (obj->loopRange () != nullptr)
+          // Store loop points if this is a Clip
+          if constexpr (structure::arrangement::ClipObject<ObjectT>)
             {
-              state.clipStart = units::ticks (
-                obj->loopRange ()->clipStartPosition ()->ticks ());
-              state.loopStart = units::ticks (
-                obj->loopRange ()->loopStartPosition ()->ticks ());
-              state.loopEnd =
-                units::ticks (obj->loopRange ()->loopEndPosition ()->ticks ());
-              state.boundsTracked = obj->loopRange ()->trackBounds ();
+              state.clipStart =
+                units::ticks (obj->clipStartPosition ()->ticks ());
+              state.loopStart =
+                units::ticks (obj->loopStartPosition ()->ticks ());
+              state.loopEnd = units::ticks (obj->loopEndPosition ()->ticks ());
+              state.boundsTracked = obj->trackBounds ();
             }
 
-          // Store fade offsets if available
-          if (obj->fadeRange () != nullptr)
+          // Store fade offsets if this is an AudioClip
+          if constexpr (structure::arrangement::FadeableObject<ObjectT>)
             {
               state.fadeInOffset =
                 units::ticks (obj->fadeRange ()->startOffset ()->ticks ());
@@ -89,29 +91,30 @@ ResizeArrangerObjectsCommand::undo ()
           // Restore position
           obj->position ()->setTicks (original_state.position.in (units::ticks));
 
-          // Restore loop points
-          if (obj->loopRange () != nullptr)
+          // Restore loop points if this is a Clip
+          if constexpr (structure::arrangement::ClipObject<ObjectT>)
             {
-              obj->loopRange ()->setTrackBounds (original_state.boundsTracked);
-              obj->loopRange ()->clipStartPosition ()->setTicks (
+              obj->setTrackBounds (original_state.boundsTracked);
+              obj->clipStartPosition ()->setTicks (
                 original_state.clipStart.in (units::ticks));
-              obj->loopRange ()->loopStartPosition ()->setTicks (
+              obj->loopStartPosition ()->setTicks (
                 original_state.loopStart.in (units::ticks));
-              obj->loopRange ()->loopEndPosition ()->setTicks (
+              obj->loopEndPosition ()->setTicks (
                 original_state.loopEnd.in (units::ticks));
             }
 
-          // Restore bounds
-          if (
-            obj->bounds () != nullptr
-            && original_state.length.in (units::ticks) > 0)
+          // Restore length if this object type has Bounds
+          if constexpr (structure::arrangement::BoundedObject<ObjectT>)
             {
-              obj->bounds ()->length ()->setTicks (
-                original_state.length.in (units::ticks));
+              if (original_state.length.in (units::ticks) > 0)
+                {
+                  obj->length ()->setTicks (
+                    original_state.length.in (units::ticks));
+                }
             }
 
-          // Restore fade offsets
-          if (obj->fadeRange () != nullptr)
+          // Restore fade offsets if this is an AudioClip
+          if constexpr (structure::arrangement::FadeableObject<ObjectT>)
             {
               obj->fadeRange ()->startOffset ()->setTicks (
                 original_state.fadeInOffset.in (units::ticks));
@@ -124,13 +127,11 @@ ResizeArrangerObjectsCommand::undo ()
             utils::is_derived_from_template_v<
               structure::arrangement::ArrangerObjectOwner, ObjectT>)
             {
-              if (
-                !utils::math::floats_near (
-                  original_state.firstChildTicks.in (units::ticks), 0.0, 0.001))
+              if (original_state.firstChildTicks.has_value ())
                 {
                   auto       children = obj->get_children_view ();
                   const auto child_delta =
-                    original_state.firstChildTicks.in (units::ticks)
+                    original_state.firstChildTicks->in (units::ticks)
                     - (*children.begin ())->position ()->ticks ();
                   for (const auto &child : children)
                     {
@@ -155,17 +156,54 @@ ResizeArrangerObjectsCommand::redo ()
       std::visit (
         [&] (auto &&obj) {
           using ObjectT = utils::base_type<decltype (obj)>;
+
+          // Delta_ arrives in timeline ticks (from the QML ruler). Position
+          // is also in timeline ticks, but length and loop positions are in
+          // content ticks. Convert using the warp map's reverse lookup so
+          // the conversion is accurate even when tempo varies across the clip.
+          const dsp::TimelineTick tl_delta{ units::ticks (delta_) };
+          dsp::ContentTick        content_delta{ units::ticks (delta_) };
+          if constexpr (structure::arrangement::ClipObject<ObjectT>)
+            {
+              auto * warp = obj->contentWarp ();
+              if (!warp->is_identity ())
+                {
+                  const auto clip_start = obj->position ()->asTick ();
+                  const dsp::ContentTick old_content_len =
+                    obj->length ()->asTick ();
+
+                  if (direction_ == ResizeDirection::FromEnd)
+                    {
+                      const dsp::TimelineTick old_tl_end =
+                        warp->contentToTimeline (old_content_len);
+                      const dsp::ContentTick new_content_len =
+                        warp->timelineToContent (old_tl_end + tl_delta);
+                      content_delta = new_content_len - old_content_len;
+                    }
+                  else
+                    {
+                      content_delta =
+                        warp->timelineToContent (clip_start + tl_delta)
+                        - warp->timelineToContent (clip_start);
+                    }
+                }
+            }
+          const double content_delta_val = content_delta.asDouble ();
+
           switch (type_)
             {
             case ResizeType::Bounds:
               {
-                if (obj->bounds () != nullptr)
+                if constexpr (structure::arrangement::BoundedObject<ObjectT>)
                   {
                     // If normal-resizing and not already looped, force track
                     // bounds
-                    if (obj->loopRange () && !obj->loopRange ()->looped ())
+                    if constexpr (structure::arrangement::ClipObject<ObjectT>)
                       {
-                        obj->loopRange ()->setTrackBounds (true);
+                        if (!obj->looped ())
+                          {
+                            obj->setTrackBounds (true);
+                          }
                       }
 
                     if (direction_ == ResizeDirection::FromStart)
@@ -174,9 +212,11 @@ ResizeArrangerObjectsCommand::redo ()
                         const double new_position =
                           original_state.position.in (units::ticks) + delta_;
                         const double new_length = std::max (
-                          original_state.length.in (units::ticks) -delta_, 1.0);
+                          original_state.length.in (
+                            units::ticks) -content_delta_val,
+                          1.0);
                         obj->position ()->setTicks (new_position);
-                        obj->bounds ()->length ()->setTicks (new_length);
+                        obj->length ()->setTicks (new_length);
 
                         // Adjust children positions accordingly
                         if constexpr (
@@ -185,7 +225,8 @@ ResizeArrangerObjectsCommand::redo ()
                           {
                             for (const auto &child : obj->get_children_view ())
                               {
-                                child->position ()->addTicks (-delta_);
+                                child->position ()->addTicks (
+                                  -content_delta_val);
                               }
                           }
                       }
@@ -193,26 +234,29 @@ ResizeArrangerObjectsCommand::redo ()
                       {
                         // Adjust length
                         const double new_length = std::max (
-                          original_state.length.in (units::ticks) + delta_, 1.0);
-                        obj->bounds ()->length ()->setTicks (new_length);
+                          original_state.length.in (units::ticks)
+                            + content_delta_val,
+                          1.0);
+                        obj->length ()->setTicks (new_length);
                       }
 
                     // Automatically re-track bounds
-                    if (
-                      obj->loopRange () != nullptr
-                      && !obj->loopRange ()->looped ())
+                    if constexpr (structure::arrangement::ClipObject<ObjectT>)
                       {
-                        obj->loopRange ()->setTrackBounds (true);
+                        if (!obj->looped ())
+                          {
+                            obj->setTrackBounds (true);
+                          }
                       }
                   }
                 break;
               }
             case ResizeType::LoopPoints:
               {
-                if (obj->bounds () != nullptr && obj->loopRange () != nullptr)
+                if constexpr (structure::arrangement::ClipObject<ObjectT>)
                   {
                     // If loop-resizing, don't track bounds
-                    obj->loopRange ()->setTrackBounds (false);
+                    obj->setTrackBounds (false);
 
                     if (direction_ == ResizeDirection::FromStart)
                       {
@@ -220,25 +264,25 @@ ResizeArrangerObjectsCommand::redo ()
                         const double new_position =
                           original_state.position.in (units::ticks) + delta_;
                         const double new_length = std::max (
-                          original_state.length.in (units::ticks) -delta_, 1.0);
+                          original_state.length.in (
+                            units::ticks) -content_delta_val,
+                          1.0);
                         obj->position ()->setTicks (new_position);
-                        obj->bounds ()->length ()->setTicks (new_length);
+                        obj->length ()->setTicks (new_length);
 
-                        auto *     loop_range = obj->loopRange ();
                         const auto loop_len =
-                          loop_range->get_loop_length_in_ticks ().in (
-                            units::ticks);
+                          obj->get_loop_length_in_ticks ().asDouble ();
 
                         // We only need to adjust Clip Start
                         auto new_clip_start_pos =
-                          loop_range->clipStartPosition ()->ticks ();
-                        new_clip_start_pos += delta_;
+                          obj->clipStartPosition ()->ticks ();
+                        new_clip_start_pos += content_delta_val;
 
                         // make sure clip start goes back to loop start
                         // if it exceeds loop end
                         while (
                           new_clip_start_pos
-                          >= loop_range->loopEndPosition ()->ticks ())
+                          >= obj->loopEndPosition ()->ticks ())
                           {
                             new_clip_start_pos -= loop_len;
                           }
@@ -247,20 +291,20 @@ ResizeArrangerObjectsCommand::redo ()
                         // and now we're before the loop start, just keep
                         // looping backwards
                         if (
-                          loop_range->clipStartPosition ()->ticks ()
-                            >= loop_range->loopStartPosition ()->ticks ()
+                          obj->clipStartPosition ()->ticks ()
+                            >= obj->loopStartPosition ()->ticks ()
                           && new_clip_start_pos
-                               < loop_range->loopStartPosition ()->ticks ())
+                               < obj->loopStartPosition ()->ticks ())
                           {
                             while (
                               new_clip_start_pos
-                              < loop_range->loopStartPosition ()->ticks ())
+                              < obj->loopStartPosition ()->ticks ())
                               {
                                 new_clip_start_pos += loop_len;
                               }
                           }
                         // Otherwise special case (clip start was already before
-                        // the looped part): expand the region backwards while
+                        // the looped part): expand the clip backwards while
                         // keeping the rest of the contents in place
                         else if (new_clip_start_pos < 0.0)
                           {
@@ -277,29 +321,30 @@ ResizeArrangerObjectsCommand::redo ()
                                   }
                               }
 
-                            loop_range->loopStartPosition ()->addTicks (
+                            obj->loopStartPosition ()->addTicks (
                               -new_clip_start_pos);
-                            loop_range->loopEndPosition ()->addTicks (
+                            obj->loopEndPosition ()->addTicks (
                               -new_clip_start_pos);
                             new_clip_start_pos = 0.f;
                           }
 
-                        loop_range->clipStartPosition ()->setTicks (
-                          new_clip_start_pos);
+                        obj->clipStartPosition ()->setTicks (new_clip_start_pos);
                       }
                     else // FromEnd
                       {
                         // Adjust length
                         const double new_length = std::max (
-                          original_state.length.in (units::ticks) + delta_, 1.0);
-                        obj->bounds ()->length ()->setTicks (new_length);
+                          original_state.length.in (units::ticks)
+                            + content_delta_val,
+                          1.0);
+                        obj->length ()->setTicks (new_length);
                       }
                   }
                 break;
               }
             case ResizeType::Fades:
               {
-                if (obj->fadeRange () != nullptr)
+                if constexpr (structure::arrangement::FadeableObject<ObjectT>)
                   {
                     if (direction_ == ResizeDirection::FromStart)
                       {

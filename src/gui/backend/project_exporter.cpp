@@ -54,8 +54,10 @@ ProjectExporter::exportAudio (
       QMetaObject::invokeMethod (context, func, Qt::BlockingQueuedConnection);
     },
     std::make_pair (
-      units::samples (marker_track->get_start_marker ()->position ()->samples ()),
-      units::samples (marker_track->get_end_marker ()->position ()->samples ())),
+      project->tempo_map ().tick_to_samples_rounded (
+        marker_track->get_start_marker ()->position ()->asTick ()),
+      project->tempo_map ().tick_to_samples_rounded (
+        marker_track->get_end_marker ()->position ()->asTick ())),
     project->tempo_map ());
 
   auto combined_future =

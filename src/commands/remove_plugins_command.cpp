@@ -54,7 +54,7 @@ RemovePluginsCommand::redo ()
     sorted_infos, std::ranges::greater (), &PluginRemoveInfo::index_in_source);
 
   // Remove all plugins (descending order)
-  for (auto &info : sorted_infos)
+  for (const auto &info : sorted_infos)
     {
       info.source_group->remove_plugin (info.plugin_ref.id ());
     }
@@ -89,7 +89,7 @@ RemovePluginsCommand::undo ()
     sorted_infos, std::ranges::less{}, &PluginRemoveInfo::index_in_source);
 
   // Reinsert plugins at their original positions
-  for (auto &info : sorted_infos)
+  for (const auto &info : sorted_infos)
     {
       info.source_group->insert_plugin (info.plugin_ref, info.index_in_source);
     }
@@ -118,7 +118,7 @@ RemovePluginsCommand::remove_plugin_automation (
     }
 
   // Store removed tracks for undo
-  RemovedAutomation removed{ .atl = &atl };
+  RemovedAutomation removed{ .atl = &atl, .tracks = {} };
   for (auto * at : tracks_to_remove)
     {
       removed.tracks.push_back (atl.remove_automation_track (*at));

@@ -8,7 +8,7 @@
 namespace zrythm::structure::tracks
 {
 /**
- * @brief Track containing AudioRegion's.
+ * @brief Track containing AudioClip's.
  */
 class AudioTrack : public Track
 {
@@ -17,7 +17,7 @@ class AudioTrack : public Track
   QML_UNCREATABLE ("")
 
 public:
-  using AudioRegion = arrangement::AudioRegion;
+  using AudioClip = arrangement::AudioClip;
 
   AudioTrack (FinalTrackDependencies dependencies);
 

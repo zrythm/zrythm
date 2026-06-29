@@ -42,6 +42,11 @@ public:
   Q_DISABLE_COPY_MOVE (MidiControlEvent)
   ~MidiControlEvent () override;
 
+  dsp::ContentPosition * position () const override
+  {
+    return qobject_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
+
   static constexpr int kMaxChannel = 15;
   static constexpr int kMaxController = 127;
   static constexpr int kMaxValue7Bit = 127;

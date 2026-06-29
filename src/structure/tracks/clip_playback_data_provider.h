@@ -69,7 +69,7 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    */
   void generate_midi_events (
-    const arrangement::MidiRegion        &midi_region,
+    const arrangement::MidiClip          &midi_clip,
     structure::tracks::ClipQuantizeOption quantize_option);
 
   /**
@@ -78,7 +78,7 @@ public:
    * To be called as needed from the UI thread when a new cache is requested.
    */
   void generate_audio_events (
-    const arrangement::AudioRegion       &audio_region,
+    const arrangement::AudioClip         &audio_clip,
     structure::tracks::ClipQuantizeOption quantize_option);
 
   /**

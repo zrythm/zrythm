@@ -8,14 +8,19 @@
 
 namespace zrythm::structure::tracks
 {
-TrackLaneList::TrackLaneList (utils::IObjectRegistry &registry, QObject * parent)
+TrackLaneList::TrackLaneList (
+  utils::IObjectRegistry &registry,
+  dsp::TimebaseProvider * timebase_provider,
+  QObject *               parent)
     : QAbstractListModel (parent),
       dependencies_ (
         TrackLane::TrackLaneDependencies{
           .registry_ = registry,
-          .soloed_lanes_exist_func_ = [this] () {
-            return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
-          } })
+          .soloed_lanes_exist_func_ =
+            [this] () {
+              return std::ranges::any_of (lanes_view (), &TrackLane::soloed);
+            },
+          .timebase_provider_ = timebase_provider })
 {
   QObject::connect (
     this, &TrackLaneList::rowsInserted, this,
@@ -25,12 +30,12 @@ TrackLaneList::TrackLaneList (utils::IObjectRegistry &registry, QObject * parent
           const auto &lane = lanes ().at (i);
           QObject::connect (
             lane->arrangement::ArrangerObjectOwner<
-              arrangement::MidiRegion>::get_model (),
+              arrangement::MidiClip>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
           QObject::connect (
             lane->arrangement::ArrangerObjectOwner<
-              arrangement::AudioRegion>::get_model (),
+              arrangement::AudioClip>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache, Qt::QueuedConnection);
           QObject::connect (
@@ -47,12 +52,12 @@ TrackLaneList::TrackLaneList (utils::IObjectRegistry &registry, QObject * parent
           const auto &lane = lanes ().at (i);
           QObject::disconnect (
             lane->arrangement::ArrangerObjectOwner<
-              arrangement::MidiRegion>::get_model (),
+              arrangement::MidiClip>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache);
           QObject::disconnect (
             lane->arrangement::ArrangerObjectOwner<
-              arrangement::AudioRegion>::get_model (),
+              arrangement::AudioClip>::get_model (),
             &arrangement::ArrangerObjectListModel::contentChanged, this,
             &TrackLaneList::laneObjectsNeedRecache);
           QObject::disconnect (
@@ -183,7 +188,10 @@ TrackLaneList::remove_empty_last_lanes ()
     return;
 
   const auto empty_pred = [] (const auto &lane) {
-    return lane->midiRegions ()->rowCount () == 0;
+    // Both lists: lanes use only one in practice, so checking just MIDI
+    // would erase audio lanes.
+    return lane->midiClips ()->rowCount () == 0
+           && lane->audioClips ()->rowCount () == 0;
   };
   // Find the last non-matching element from the end
   auto last_non_matching =

@@ -4,18 +4,15 @@
 #include "dsp/midi_event.h"
 #include "dsp/tempo_map.h"
 #include "dsp/tempo_map_qml_adapter.h"
-#include "structure/arrangement/audio_region.h"
-#include "structure/arrangement/chord_region.h"
+#include "structure/arrangement/audio_clip.h"
+#include "structure/arrangement/chord_clip.h"
+#include "structure/arrangement/midi_clip.h"
 #include "structure/arrangement/midi_note.h"
-#include "structure/arrangement/midi_region.h"
 #include "structure/arrangement/timeline_data_provider.h"
-#include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/types.h"
-
-#include "helpers/in_memory_settings_backend.h"
 
 #include "gtest/gtest.h"
 #include <juce_audio_formats/juce_audio_formats.h>
@@ -39,37 +36,34 @@ protected:
 
     // Create an object registry
     obj_registry_ = std::make_unique<utils::ObjectRegistry> ();
-    app_settings_ = std::make_unique<utils::AppSettings> (
-      std::make_unique<test_helpers::InMemorySettingsBackend> ());
   }
 
   void TearDown () override
   {
-    region_refs.clear (); // Clear references first
+    clip_refs.clear (); // Clear references first
     midi_provider_.reset ();
     audio_provider_.reset ();
     automation_provider_.reset ();
     tempo_map_.reset ();
     tempo_map_wrapper_.reset ();
     obj_registry_.reset ();
-    app_settings_.reset ();
   }
 
-  // Helper function to create a MIDI region
-  MidiRegion * create_midi_region (
+  // Helper function to create a MIDI clip
+  MidiClip * create_midi_clip (
     double      start_pos_ticks,
     double      end_pos_ticks,
     midi_byte_t note = 60,
     midi_byte_t velocity = 64)
   {
-    // Create a MIDI region
-    auto region_ref = utils::create_object<MidiRegion> (
+    // Create a MIDI clip
+    auto clip_ref = utils::create_object<MidiClip> (
       *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-    auto region = region_ref.get_object_as<MidiRegion> ();
+    auto clip = clip_ref.get_object_as<MidiClip> ();
 
-    // Set the region's position
-    region->position ()->setTicks (start_pos_ticks);
-    region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
+    // Set the clip's position
+    clip->position ()->setTicks (start_pos_ticks);
+    clip->length ()->setTicks (end_pos_ticks - start_pos_ticks);
 
     // Create a MIDI note
     auto note_ref =
@@ -79,17 +73,17 @@ protected:
     // Set the note's properties
     midi_note->setPitch (note);
     midi_note->setVelocity (velocity);
-    // Note position is relative to the region
+    // Note position is relative to the clip
     midi_note->position ()->setTicks (0.0);
-    midi_note->bounds ()->length ()->setTicks (50.0); // Note duration
+    midi_note->length ()->setTicks (50.0); // Note duration
 
-    // Add the note to the region
-    region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
+    // Add the note to the clip
+    clip->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
-    // Keep a reference to the region to prevent it from being deleted
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip to prevent it from being deleted
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
   // Helper function to create a sine wave audio source
@@ -123,8 +117,8 @@ protected:
       *obj_registry_, *tempo_map_wrapper_, *obj_registry_, source_ref);
   }
 
-  // Helper function to create an audio region
-  AudioRegion * create_audio_region (
+  // Helper function to create an audio clip
+  AudioClip * create_audio_clip (
     double start_pos_ticks,
     double end_pos_ticks,
     float  gain = 1.0f)
@@ -132,61 +126,61 @@ protected:
     // Create a sine wave audio source
     auto audio_source_object_ref = create_sine_wave_audio_source (4096);
 
-    // Create the audio region
-    auto region_ref = utils::create_object<AudioRegion> (
-      *obj_registry_, *tempo_map_wrapper_, *obj_registry_, *app_settings_);
-    auto region = region_ref.get_object_as<AudioRegion> ();
-    region->set_source (audio_source_object_ref);
+    // Create the audio clip
+    auto clip_ref = utils::create_object<AudioClip> (
+      *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
+    auto clip = clip_ref.get_object_as<AudioClip> ();
+    clip->set_source (audio_source_object_ref);
 
-    // Set the region's position and length
-    region->position ()->setTicks (start_pos_ticks);
-    region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
-    region->setGain (gain);
+    // Set the clip's position and length
+    clip->position ()->setTicks (start_pos_ticks);
+    clip->length ()->setTicks (end_pos_ticks - start_pos_ticks);
+    clip->setGain (gain);
 
-    // Keep a reference to the region to prevent it from being deleted
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip to prevent it from being deleted
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
-  // Helper function to create an automation region
-  AutomationRegion * create_automation_region (
+  // Helper function to create an automation clip
+  AutomationClip * create_automation_clip (
     double start_pos_ticks,
     double end_pos_ticks,
     float  start_value = 0.0f,
     float  end_value = 1.0f)
   {
-    // Create an automation region
-    auto region_ref = utils::create_object<AutomationRegion> (
+    // Create an automation clip
+    auto clip_ref = utils::create_object<AutomationClip> (
       *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-    auto region = region_ref.get_object_as<AutomationRegion> ();
+    auto clip = clip_ref.get_object_as<AutomationClip> ();
 
-    // Set the region's position
-    region->position ()->setTicks (start_pos_ticks);
-    region->bounds ()->length ()->setTicks (end_pos_ticks - start_pos_ticks);
+    // Set the clip's position
+    clip->position ()->setTicks (start_pos_ticks);
+    clip->length ()->setTicks (end_pos_ticks - start_pos_ticks);
 
     // Create automation points
     auto start_point_ref = utils::create_object<AutomationPoint> (
       *obj_registry_, *tempo_map_wrapper_);
     auto start_point = start_point_ref.get_object_as<AutomationPoint> ();
-    start_point->position ()->setTicks (0.0); // Relative to region start
+    start_point->position ()->setTicks (0.0); // Relative to clip start
     start_point->setValue (start_value);
 
     auto end_point_ref = utils::create_object<AutomationPoint> (
       *obj_registry_, *tempo_map_wrapper_);
     auto end_point = end_point_ref.get_object_as<AutomationPoint> ();
     end_point->position ()->setTicks (
-      end_pos_ticks - start_pos_ticks); // Relative to region start
+      end_pos_ticks - start_pos_ticks); // Relative to clip start
     end_point->setValue (end_value);
 
-    // Add points to the region
-    region->add_object (start_point_ref);
-    region->add_object (end_point_ref);
+    // Add points to the clip
+    clip->add_object (start_point_ref);
+    clip->add_object (end_point_ref);
 
-    // Keep a reference to the region to prevent it from being deleted
-    region_refs.push_back (std::move (region_ref));
+    // Keep a reference to the clip to prevent it from being deleted
+    clip_refs.push_back (std::move (clip_ref));
 
-    return region;
+    return clip;
   }
 
   // Helper function to get expected sine wave value at a specific sample
@@ -212,8 +206,7 @@ protected:
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
   std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
   std::unique_ptr<utils::ObjectRegistry>          obj_registry_;
-  std::unique_ptr<utils::AppSettings>             app_settings_;
-  std::vector<ArrangerObjectUuidReference> region_refs; // Keep references
+  std::vector<ArrangerObjectUuidReference>        clip_refs; // Keep references
 };
 
 // ========== MIDI Provider Tests ==========
@@ -242,14 +235,14 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithNoEvents)
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
+TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyClips)
 {
-  // Test generating events with empty region list
-  std::vector<const MidiRegion *> empty_regions;
-  utils::ExpandableTickRange      range (
+  // Test generating events with empty clip list
+  std::vector<const MidiClip *> empty_clips;
+  utils::ExpandableTickRange    range (
     std::pair (0.0, 960.0)); // One bar at 120 BPM
 
-  midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, empty_clips, range);
 
   // Verify no events are generated
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -261,18 +254,18 @@ TEST_F (TimelineDataProviderTest, GenerateEventsWithEmptyRegions)
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
+TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiClip)
 {
-  // Create a MIDI region at tick 0 (start of timeline)
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0 (start of timeline)
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events that should include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -300,16 +293,16 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithMidiRegion)
 
 TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
 {
-  // Create a MIDI region at tick 500
-  auto region = create_midi_region (500.0, 700.0);
+  // Create a MIDI clip at tick 500
+  auto clip = create_midi_clip (500.0, 700.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events that should NOT include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -325,16 +318,16 @@ TEST_F (TimelineDataProviderTest, ProcessEventsOutsideTimeRange)
 
 TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events with a global offset that's far from the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -355,35 +348,34 @@ TEST_F (TimelineDataProviderTest, ProcessEventsWithOffset)
 
 TEST_F (TimelineDataProviderTest, MultipleEventsInSequence)
 {
-  // Create multiple MIDI regions at the beginning of the timeline
+  // Create multiple MIDI clips at the beginning of the timeline
   // with notes at different positions
-  auto region1 = create_midi_region (0.0, 200.0, 60);
-  auto region2 = create_midi_region (50.0, 250.0, 64);
-  auto region3 = create_midi_region (100.0, 300.0, 67);
+  auto clip1 = create_midi_clip (0.0, 200.0, 60);
+  auto clip2 = create_midi_clip (50.0, 250.0, 64);
+  auto clip3 = create_midi_clip (100.0, 300.0, 67);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region1);
-  regions.push_back (region2);
-  regions.push_back (region3);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip1);
+  clips.push_back (clip2);
+  clips.push_back (clip3);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Convert tick positions to sample positions for precise testing
-  const auto region1_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
-  const auto region3_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
+  const auto clip1_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (0.0) });
+  const auto clip3_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (100.0) });
 
   // Test processing events that should include all notes
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = {
-    .transport_position_ = region1_start_samples,
+    .transport_position_ = clip1_start_samples,
     .buffer_offset_ = units::samples (0),
-    .nframes_ =
-      (region3_start_samples - region1_start_samples) + units::samples (256)
+    .nframes_ = (clip3_start_samples - clip1_start_samples) + units::samples (256)
   };
 
   midi_provider_->process_midi_events (
@@ -423,10 +415,10 @@ TEST_F (TimelineDataProviderTest, MidiBasicFunctionality)
   EXPECT_EQ (output_buffer.size (), 0);
 
   // Test that generate_midi_events can be called without crashing
-  std::vector<const MidiRegion *> empty_regions;
-  utils::ExpandableTickRange      range (std::pair (0.0, 960.0));
+  std::vector<const MidiClip *> empty_clips;
+  utils::ExpandableTickRange    range (std::pair (0.0, 960.0));
 
-  midi_provider_->generate_midi_events (*tempo_map_, empty_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, empty_clips, range);
 
   // Process again to ensure no crash
   midi_provider_->process_midi_events (
@@ -437,19 +429,19 @@ TEST_F (TimelineDataProviderTest, MidiBasicFunctionality)
 // Tests from PlaybackCacheBuilder that are unique and test specific concerns
 TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate cache with affected range that includes our region
+  // Generate cache with affected range that includes our clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events that should include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -459,14 +451,14 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have events from the MIDI region
+  // Should have events from the MIDI clip
   EXPECT_GE (output_buffer.size (), 1);
 
   // Convert affected range to samples for verification
-  const auto sample_start =
-    tempo_map_->tick_to_samples_rounded (units::ticks (affected_start));
-  const auto sample_end =
-    tempo_map_->tick_to_samples_rounded (units::ticks (affected_end));
+  const auto sample_start = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (affected_start) });
+  const auto sample_end = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (affected_end) });
 
   // All events should be within the sample interval
   for (const auto &event : output_buffer)
@@ -483,19 +475,19 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithAffectedRange)
 
 TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
 {
-  // Create a MIDI region at tick 500
-  auto region = create_midi_region (500.0, 700.0);
+  // Create a MIDI clip at tick 500
+  auto clip = create_midi_clip (500.0, 700.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate cache with affected range that doesn't include our region
+  // Generate cache with affected range that doesn't include our clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events that should NOT include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -505,31 +497,31 @@ TEST_F (TimelineDataProviderTest, GenerateCacheOutsideAffectedRange)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have no events since region is outside affected range
+  // Should have no events since clip is outside affected range
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
 TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
 {
-  // Create a MIDI region at tick 0
-  auto region1 = create_midi_region (0.0, 200.0, 60);
+  // Create a MIDI clip at tick 0
+  auto clip1 = create_midi_clip (0.0, 200.0, 60);
 
-  // Create a second MIDI region that partially overlaps with affected range
-  auto region2 = create_midi_region (400.0, 500.0, 64);
+  // Create a second MIDI clip that partially overlaps with affected range
+  auto clip2 = create_midi_clip (400.0, 500.0, 64);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region1);
-  regions.push_back (region2);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip1);
+  clips.push_back (clip2);
 
-  // Generate cache with affected range that overlaps with first region
+  // Generate cache with affected range that overlaps with first clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
-  // Test processing events that should include only the first region
+  // Test processing events that should include only the first clip
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (512));
@@ -537,10 +529,10 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have events only from the first region
+  // Should have events only from the first clip
   EXPECT_GT (output_buffer.size (), 0);
 
-  // All events should be from the first region (pitch 60)
+  // All events should be from the first clip (pitch 60)
   for (const auto &event : output_buffer)
     {
       if (utils::midi::midi_is_note_on (event.data ()))
@@ -552,23 +544,23 @@ TEST_F (TimelineDataProviderTest, GenerateCachePartialOverlap)
 
 TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Mute the note in our region
-  auto note_view = region->ArrangerObjectOwner<MidiNote>::get_children_view ();
+  // Mute the note in our clip
+  auto note_view = clip->ArrangerObjectOwner<MidiNote>::get_children_view ();
   if (!note_view.empty ())
     {
       note_view[0]->mute ()->setMuted (true);
     }
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
   // Generate cache
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -584,48 +576,47 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithMutedNote)
 
 TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
 {
-  // Create multiple regions with different pitches at the beginning of the
+  // Create multiple clips with different pitches at the beginning of the
   // timeline
-  std::vector<int>          pitches = { 60, 64, 67 };
-  std::vector<MidiRegion *> additional_regions;
+  std::vector<int>        pitches = { 60, 64, 67 };
+  std::vector<MidiClip *> additional_regions;
 
   for (int i = 0; i < 3; ++i)
     {
-      auto region =
-        create_midi_region (i * 50.0, (i + 1) * 50.0 + 150.0, pitches[i]);
-      additional_regions.push_back (region);
+      auto clip =
+        create_midi_clip (i * 50.0, (i + 1) * 50.0 + 150.0, pitches[i]);
+      additional_regions.push_back (clip);
     }
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  for (const auto &region : additional_regions)
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  for (const auto &clip : additional_regions)
     {
-      regions.push_back (region);
+      clips.push_back (clip);
     }
 
-  // Generate cache with all regions
+  // Generate cache with all clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Convert tick positions to sample positions for precise testing
-  const auto region1_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
-  const auto region3_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
+  const auto clip1_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (0.0) });
+  const auto clip3_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (100.0) });
 
   // Test processing events that should include all notes
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   dsp::graph::ProcessBlockInfo time_info = {
-    .transport_position_ = region1_start_samples,
+    .transport_position_ = clip1_start_samples,
     .buffer_offset_ = units::samples (0),
-    .nframes_ =
-      (region3_start_samples - region1_start_samples) + units::samples (256)
+    .nframes_ = (clip3_start_samples - clip1_start_samples) + units::samples (256)
   };
 
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have events from all regions
+  // Should have events from all clips
   EXPECT_GE (output_buffer.size (), 3);
 
   // Should have all pitches including duplicates
@@ -647,27 +638,27 @@ TEST_F (TimelineDataProviderTest, GenerateCacheMultipleRegions)
 
 TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
 {
-  // Create a region with zero length
-  auto zero_length_region_ref = utils::create_object<MidiRegion> (
+  // Create a clip with zero length
+  auto zero_length_clip_ref = utils::create_object<MidiClip> (
     *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-  auto zero_length_region = zero_length_region_ref.get_object_as<MidiRegion> ();
+  auto zero_length_region = zero_length_clip_ref.get_object_as<MidiClip> ();
   zero_length_region->position ()->setTicks (200.0);
-  zero_length_region->bounds ()->length ()->setTicks (0.0);
+  zero_length_region->length ()->setTicks (0.0);
 
-  // Create a normal region at the beginning
-  auto normal_region = create_midi_region (0.0, 200.0, 60);
+  // Create a normal clip at the beginning
+  auto normal_region = create_midi_clip (0.0, 200.0, 60);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (normal_region);
-  regions.push_back (zero_length_region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (normal_region);
+  clips.push_back (zero_length_region);
 
-  // Keep a reference to the zero-length region
-  region_refs.push_back (std::move (zero_length_region_ref));
+  // Keep a reference to the zero-length clip
+  clip_refs.push_back (std::move (zero_length_clip_ref));
 
-  // Generate cache with both regions
+  // Generate cache with both clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -677,10 +668,10 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should still have events from the original region, not the zero-length one
+  // Should still have events from the original clip, not the zero-length one
   EXPECT_GT (output_buffer.size (), 0);
 
-  // All events should be from the original region (pitch 60)
+  // All events should be from the original clip (pitch 60)
   for (const auto &event : output_buffer)
     {
       if (utils::midi::midi_is_note_on (event.data ()))
@@ -690,39 +681,39 @@ TEST_F (TimelineDataProviderTest, GenerateCacheEdgeCaseZeroLengthRegion)
     }
 }
 
-// Reproduces gitlab issue #5240: duplicating an adjacent region causes the
-// preceding region's cache to be evicted and not regenerated.
+// Reproduces gitlab issue #5240: duplicating an adjacent clip causes the
+// preceding clip's cache to be evicted and not regenerated.
 //
 // Scenario:
-// - R1 at ticks [0, 960), R2 at ticks [960, 1920) (adjacent regions)
-// - Generate cache for both regions
+// - R1 at ticks [0, 960), R2 at ticks [960, 1920) (adjacent clips)
+// - Generate cache for both clips
 // - Regenerate cache for R2's range only (as would happen when R2 is
 //   duplicated)
 // - Verify R1's cache is still intact (it was adjacent, not overlapping)
 TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
 {
-  // Create two adjacent MIDI regions (R1 and R2)
+  // Create two adjacent MIDI clips (R1 and R2)
   const double r1_start = 0.0;
   const double r1_end = 960.0;   // 1 bar at 120 BPM
   const double r2_start = 960.0; // Exactly adjacent
   const double r2_end = 1920.0;
 
-  auto r1 = create_midi_region (r1_start, r1_end, 60);
-  auto r2 = create_midi_region (r2_start, r2_end, 64);
+  auto r1 = create_midi_clip (r1_start, r1_end, 60);
+  auto r2 = create_midi_clip (r2_start, r2_end, 64);
 
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (r1);
-  regions.push_back (r2);
+  std::vector<const MidiClip *> clips;
+  clips.push_back (r1);
+  clips.push_back (r2);
 
-  // Generate initial cache for both regions
+  // Generate initial cache for both clips
   utils::ExpandableTickRange full_range (std::pair (0.0, 1920.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, full_range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, full_range);
 
   // Verify R1 produces events at its position
-  const auto r1_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (r1_start));
-  const auto r1_end_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (r1_end));
+  const auto r1_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (r1_start) });
+  const auto r1_end_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (r1_end) });
 
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -737,7 +728,7 @@ TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
   // generate_events is called with only R2's affected range
   // (as would be emitted by the cache scheduler)
   utils::ExpandableTickRange r2_range (std::make_pair (r2_start, r2_end));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, r2_range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, r2_range);
 
   // Verify R1's cache is still intact after regenerating R2's range.
   // The provider may emit all-notes-off events due to detecting a transport
@@ -758,16 +749,16 @@ TEST_F (TimelineDataProviderTest, AdjacentRegionCachePreservedOnDuplicate)
 
 TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
   // First generate cache normally
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -784,7 +775,7 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange affected_range (
     std::make_pair (affected_start, affected_end));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, affected_range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, affected_range);
 
   // Test processing events again
   output_buffer.clear ();
@@ -799,32 +790,31 @@ TEST_F (TimelineDataProviderTest, GenerateCacheWithExistingCache)
 
 TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
 {
-  // Create a MIDI region at a specific tick position
-  const double region_start_ticks = 240.0; // 1 beat at 120 BPM
-  auto         region =
-    create_midi_region (region_start_ticks, region_start_ticks + 200.0);
+  // Create a MIDI clip at a specific tick position
+  const double clip_start_ticks = 240.0; // 1 beat at 120 BPM
+  auto clip = create_midi_clip (clip_start_ticks, clip_start_ticks + 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
-  // Convert region start to samples
-  const auto region_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (region_start_ticks));
+  // Convert clip start to samples
+  const auto clip_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (clip_start_ticks) });
 
   // Test processing events that should include the note
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
-    region_start_samples, units::samples (256));
+    clip_start_samples, units::samples (256));
 
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have events from the MIDI region
+  // Should have events from the MIDI clip
   EXPECT_GE (output_buffer.size (), 1);
 
   // Verify the event timing is correct
@@ -833,7 +823,7 @@ TEST_F (TimelineDataProviderTest, PreciseTimingVerification)
       const auto &event = output_buffer.front ();
 
       // The event should be at the beginning of our processing block
-      // since the note is at the start of the region
+      // since the note is at the start of the clip
       EXPECT_LT (event.time (), time_info.nframes_);
       // Verify it's a note on event with the correct pitch
       EXPECT_TRUE (utils::midi::midi_is_note_on (event.data ()));
@@ -862,14 +852,14 @@ TEST_F (TimelineDataProviderTest, AudioInitialState)
     }
 }
 
-TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
+TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyClips)
 {
-  // Test generating audio events with empty region list
-  std::vector<const AudioRegion *> empty_regions;
-  utils::ExpandableTickRange       range (
+  // Test generating audio events with empty clip list
+  std::vector<const AudioClip *> empty_clips;
+  utils::ExpandableTickRange     range (
     std::pair (0.0, 960.0)); // One bar at 120 BPM
 
-  audio_provider_->generate_audio_events (*tempo_map_, empty_regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, empty_clips, range);
 
   // Verify no audio is generated
   std::vector<float> output_left (256, 0.0f);
@@ -888,20 +878,20 @@ TEST_F (TimelineDataProviderTest, GenerateAudioEventsWithEmptyRegions)
     }
 }
 
-TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
+TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioClip)
 {
-  // Create an audio region at tick 0 (start of timeline)
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0 (start of timeline)
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio that should include the region
+  // Test processing audio that should include the clip
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -927,18 +917,18 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithAudioRegion)
 
 TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
 {
-  // Create an audio region at tick 500
-  auto region = create_audio_region (500.0, 700.0);
+  // Create an audio clip at tick 500
+  auto clip = create_audio_clip (500.0, 700.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio that should NOT include the region
+  // Test processing audio that should NOT include the clip
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -947,7 +937,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have no audio since the region is outside the time range
+  // Should have no audio since the clip is outside the time range
   for (size_t i = 0; i < output_left.size (); ++i)
     {
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
@@ -957,18 +947,18 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsOutsideTimeRange)
 
 TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio with a global offset that's far from the region
+  // Test processing audio with a global offset that's far from the clip
   std::vector<float>           output_left (256, 0.0f);
   std::vector<float>           output_right (256, 0.0f);
   dsp::graph::ProcessBlockInfo time_info = {
@@ -981,7 +971,7 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have no audio since the region is at tick 0
+  // Should have no audio since the clip is at tick 0
   // and we're processing frames 10100-10356
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -990,43 +980,42 @@ TEST_F (TimelineDataProviderTest, ProcessAudioEventsWithOffset)
     }
 }
 
-TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
+TEST_F (TimelineDataProviderTest, MultipleAudioClipsInSequence)
 {
-  // Create multiple audio regions at the beginning of the timeline
-  auto region1 = create_audio_region (0.0, 100.0, 0.5f);
-  auto region2 = create_audio_region (50.0, 150.0, 0.7f);
-  auto region3 = create_audio_region (100.0, 200.0, 0.3f);
+  // Create multiple audio clips at the beginning of the timeline
+  auto clip1 = create_audio_clip (0.0, 100.0, 0.5f);
+  auto clip2 = create_audio_clip (50.0, 150.0, 0.7f);
+  auto clip3 = create_audio_clip (100.0, 200.0, 0.3f);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region1);
-  regions.push_back (region2);
-  regions.push_back (region3);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip1);
+  clips.push_back (clip2);
+  clips.push_back (clip3);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   // Convert tick positions to sample positions for precise testing
-  const auto region1_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
-  const auto region3_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
+  const auto clip1_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (0.0) });
+  const auto clip3_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (100.0) });
 
-  // Test processing audio that should include all regions
+  // Test processing audio that should include all clips
   std::vector<float>           output_left (1024, 0.0f);
   std::vector<float>           output_right (1024, 0.0f);
   dsp::graph::ProcessBlockInfo time_info = {
-    .transport_position_ = region1_start_samples,
+    .transport_position_ = clip1_start_samples,
     .buffer_offset_ = units::samples (0),
-    .nframes_ =
-      (region3_start_samples - region1_start_samples) + units::samples (256)
+    .nframes_ = (clip3_start_samples - clip1_start_samples) + units::samples (256)
   };
 
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have some audio output from overlapping regions
+  // Should have some audio output from overlapping clips
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1043,21 +1032,21 @@ TEST_F (TimelineDataProviderTest, MultipleAudioRegionsInSequence)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate cache with affected range that includes our region
+  // Generate cache with affected range that includes our clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio that should include the region
+  // Test processing audio that should include the clip
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -1066,7 +1055,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have audio from the audio region
+  // Should have audio from the audio clip
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1083,21 +1072,21 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithAffectedRange)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
 {
-  // Create an audio region at tick 500
-  auto region = create_audio_region (500.0, 700.0);
+  // Create an audio clip at tick 500
+  auto clip = create_audio_clip (500.0, 700.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate cache with affected range that doesn't include our region
+  // Generate cache with affected range that doesn't include our clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio that should NOT include the region
+  // Test processing audio that should NOT include the clip
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -1106,7 +1095,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have no audio since region is outside affected range
+  // Should have no audio since clip is outside affected range
   for (size_t i = 0; i < output_left.size (); ++i)
     {
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
@@ -1116,25 +1105,25 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheOutsideAffectedRange)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
 {
-  // Create an audio region at tick 0
-  auto region1 = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip1 = create_audio_clip (0.0, 200.0);
 
-  // Create a second audio region that partially overlaps with affected range
-  auto region2 = create_audio_region (400.0, 500.0);
+  // Create a second audio clip that partially overlaps with affected range
+  auto clip2 = create_audio_clip (400.0, 500.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region1);
-  regions.push_back (region2);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip1);
+  clips.push_back (clip2);
 
-  // Generate cache with affected range that overlaps with first region
+  // Generate cache with affected range that overlaps with first clip
   const double               affected_start = 0.0;
   const double               affected_end = 200.0;
   utils::ExpandableTickRange range (
     std::make_pair (affected_start, affected_end));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Test processing audio that should include only the first region
+  // Test processing audio that should include only the first clip
   std::vector<float> output_left (512, 0.0f);
   std::vector<float> output_right (512, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -1143,7 +1132,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have audio only from the first region
+  // Should have audio only from the first clip
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1160,48 +1149,46 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCachePartialOverlap)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
 {
-  // Create multiple regions with different gains at the beginning of the timeline
-  std::vector<float>         gains = { 0.5f, 0.7f, 0.3f };
-  std::vector<AudioRegion *> additional_regions;
+  // Create multiple clips with different gains at the beginning of the timeline
+  std::vector<float>       gains = { 0.5f, 0.7f, 0.3f };
+  std::vector<AudioClip *> additional_regions;
 
   for (int i = 0; i < 3; ++i)
     {
-      auto region =
-        create_audio_region (i * 50.0, (i + 1) * 50.0 + 150.0, gains[i]);
-      additional_regions.push_back (region);
+      auto clip = create_audio_clip (i * 50.0, (i + 1) * 50.0 + 150.0, gains[i]);
+      additional_regions.push_back (clip);
     }
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  for (const auto &region : additional_regions)
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  for (const auto &clip : additional_regions)
     {
-      regions.push_back (region);
+      clips.push_back (clip);
     }
 
-  // Generate cache with all regions
+  // Generate cache with all clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   // Convert tick positions to sample positions for precise testing
-  const auto region1_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
-  const auto region3_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (100.0));
+  const auto clip1_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (0.0) });
+  const auto clip3_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (100.0) });
 
-  // Test processing audio that should include all regions
+  // Test processing audio that should include all clips
   std::vector<float>           output_left (1024, 0.0f);
   std::vector<float>           output_right (1024, 0.0f);
   dsp::graph::ProcessBlockInfo time_info = {
-    .transport_position_ = region1_start_samples,
+    .transport_position_ = clip1_start_samples,
     .buffer_offset_ = units::samples (0),
-    .nframes_ =
-      (region3_start_samples - region1_start_samples) + units::samples (256)
+    .nframes_ = (clip3_start_samples - clip1_start_samples) + units::samples (256)
   };
 
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have audio from all regions
+  // Should have audio from all clips
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1218,33 +1205,33 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheMultipleRegions)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
 {
-  // Create a region with zero length
-  auto zero_length_region_ref = utils::create_object<AudioRegion> (
-    *obj_registry_, *tempo_map_wrapper_, *obj_registry_, *app_settings_);
-  auto zero_length_region = zero_length_region_ref.get_object_as<AudioRegion> ();
+  // Create a clip with zero length
+  auto zero_length_clip_ref = utils::create_object<AudioClip> (
+    *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
+  auto zero_length_region = zero_length_clip_ref.get_object_as<AudioClip> ();
 
-  // Create and set an audio source for the zero-length region (required by
-  // AudioRegion contract)
+  // Create and set an audio source for the zero-length clip (required by
+  // AudioClip contract)
   auto audio_source_object_ref = create_sine_wave_audio_source (4096);
   zero_length_region->set_source (audio_source_object_ref);
 
   zero_length_region->position ()->setTicks (200.0);
-  zero_length_region->bounds ()->length ()->setTicks (0.0);
+  zero_length_region->length ()->setTicks (0.0);
 
-  // Create a normal region at the beginning
-  auto normal_region = create_audio_region (0.0, 200.0, 0.6f);
+  // Create a normal clip at the beginning
+  auto normal_region = create_audio_clip (0.0, 200.0, 0.6f);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (normal_region);
-  regions.push_back (zero_length_region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (normal_region);
+  clips.push_back (zero_length_region);
 
-  // Keep a reference to the zero-length region
-  region_refs.push_back (std::move (zero_length_region_ref));
+  // Keep a reference to the zero-length clip
+  clip_refs.push_back (std::move (zero_length_clip_ref));
 
-  // Generate cache with both regions
+  // Generate cache with both clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   // Test processing audio
   std::vector<float> output_left (256, 0.0f);
@@ -1255,7 +1242,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should still have audio from the original region, not the zero-length one
+  // Should still have audio from the original clip, not the zero-length one
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1272,16 +1259,16 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheEdgeCaseZeroLengthRegion)
 
 TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
   // First generate cache normally
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   // Test processing audio
   std::vector<float> output_left (256, 0.0f);
@@ -1311,7 +1298,7 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
   const double               affected_end = 200.0;
   utils::ExpandableTickRange affected_range (
     std::make_pair (affected_start, affected_end));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, affected_range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, affected_range);
 
   // Test processing audio again
   std::fill (output_left.begin (), output_left.end (), 0.0f);
@@ -1336,33 +1323,32 @@ TEST_F (TimelineDataProviderTest, GenerateAudioCacheWithExistingCache)
 
 TEST_F (TimelineDataProviderTest, AudioPreciseTimingVerification)
 {
-  // Create an audio region at a specific tick position
-  const double region_start_ticks = 240.0; // 1 beat at 120 BPM
-  auto         region =
-    create_audio_region (region_start_ticks, region_start_ticks + 200.0);
+  // Create an audio clip at a specific tick position
+  const double clip_start_ticks = 240.0; // 1 beat at 120 BPM
+  auto clip = create_audio_clip (clip_start_ticks, clip_start_ticks + 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
-  // Convert region start to samples
-  const auto region_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (region_start_ticks));
+  // Convert clip start to samples
+  const auto clip_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (clip_start_ticks) });
 
-  // Test processing audio that should include the region
+  // Test processing audio that should include the clip
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
-    region_start_samples, units::samples (256));
+    clip_start_samples, units::samples (256));
 
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have audio from the audio region
+  // Should have audio from the audio clip
   bool has_audio = false;
   for (size_t i = 0; i < output_left.size (); ++i)
     {
@@ -1399,10 +1385,10 @@ TEST_F (TimelineDataProviderTest, AudioBasicFunctionality)
     }
 
   // Test that generate_audio_events can be called without crashing
-  std::vector<const AudioRegion *> empty_regions;
-  utils::ExpandableTickRange       range (std::pair (0.0, 960.0));
+  std::vector<const AudioClip *> empty_clips;
+  utils::ExpandableTickRange     range (std::pair (0.0, 960.0));
 
-  audio_provider_->generate_audio_events (*tempo_map_, empty_regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, empty_clips, range);
 
   // Process again to ensure no crash
   audio_provider_->process_audio_events (
@@ -1435,17 +1421,15 @@ TEST_F (TimelineDataProviderTest, AutomationProviderInitialState)
     }
 }
 
-TEST_F (
-  TimelineDataProviderTest,
-  AutomationProviderGenerateEventsWithEmptyRegions)
+TEST_F (TimelineDataProviderTest, AutomationProviderGenerateEventsWithEmptyClips)
 {
-  // Test generating automation events with empty region list
-  std::vector<const AutomationRegion *> empty_regions;
-  utils::ExpandableTickRange            range (
+  // Test generating automation events with empty clip list
+  std::vector<const AutomationClip *> empty_clips;
+  utils::ExpandableTickRange          range (
     std::pair (0.0, 960.0)); // One bar at 120 BPM
 
   automation_provider_->generate_automation_events (
-    *tempo_map_, empty_regions, range);
+    *tempo_map_, empty_clips, range);
 
   // Verify no automation is generated
   std::vector<float> output_values (256, 0.0f);
@@ -1464,20 +1448,20 @@ TEST_F (
 
 TEST_F (
   TimelineDataProviderTest,
-  AutomationProviderProcessEventsWithAutomationRegion)
+  AutomationProviderProcessEventsWithAutomationClip)
 {
-  // Create an automation region at tick 0 (start of timeline)
-  auto region = create_automation_region (0.0, 200.0, 0.0f, 1.0f);
+  // Create an automation clip at tick 0 (start of timeline)
+  auto clip = create_automation_clip (0.0, 200.0, 0.0f, 1.0f);
 
-  // Create a vector of regions
-  std::vector<const AutomationRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AutomationClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+  automation_provider_->generate_automation_events (*tempo_map_, clips, range);
 
-  // Test processing automation that should include the region
+  // Test processing automation that should include the clip
   std::vector<float> output_values (256, 0.0f);
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
@@ -1500,39 +1484,39 @@ TEST_F (
 
 TEST_F (TimelineDataProviderTest, AutomationProviderGetValueAtSpecificPosition)
 {
-  // Create an automation region with linear ramp from 0.0 to 1.0
-  auto region = create_automation_region (0.0, 200.0, 0.0f, 1.0f);
+  // Create an automation clip with linear ramp from 0.0 to 1.0
+  auto clip = create_automation_clip (0.0, 200.0, 0.0f, 1.0f);
 
-  // Create a vector of regions
-  std::vector<const AutomationRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AutomationClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+  automation_provider_->generate_automation_events (*tempo_map_, clips, range);
 
-  // Convert region start to samples
-  const auto region_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (0.0));
-  const auto region_end_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (200.0));
+  // Convert clip start to samples
+  const auto clip_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (0.0) });
+  const auto clip_end_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (200.0) });
 
-  // Test getting automation value at start of region (should be 0.0)
+  // Test getting automation value at start of clip (should be 0.0)
   auto value_at_start_opt =
-    automation_provider_->get_automation_value_rt (region_start_samples);
+    automation_provider_->get_automation_value_rt (clip_start_samples);
   ASSERT_TRUE (value_at_start_opt.has_value ());
   EXPECT_FLOAT_EQ (value_at_start_opt.value (), 0.0f);
 
-  // Test getting automation value at end of region (should be near 1.0)
+  // Test getting automation value at end of clip (should be near 1.0)
   auto value_at_end_opt = automation_provider_->get_automation_value_rt (
-    region_end_samples - units::samples (1)); // Just before end
+    clip_end_samples - units::samples (1)); // Just before end
   ASSERT_TRUE (value_at_end_opt.has_value ());
   EXPECT_NEAR (value_at_end_opt.value (), 1.0f, 0.001f);
 
-  // Test getting automation value outside region (should be 1.0 - last known
+  // Test getting automation value outside clip (should be 1.0 - last known
   // value)
   auto value_outside_opt = automation_provider_->get_automation_value_rt (
-    region_end_samples + units::samples (100));
+    clip_end_samples + units::samples (100));
   ASSERT_TRUE (value_outside_opt.has_value ());
   // FIXME: this should be exactly 1.0f but it's not a big issue for
   // now
@@ -1543,37 +1527,37 @@ TEST_F (
   TimelineDataProviderTest,
   AutomationProviderGetValueBeforeFirstAutomationPoint)
 {
-  // Create an automation region that starts later in the timeline (not at 0)
-  auto region = create_automation_region (1000.0, 1200.0, 0.0f, 1.0f);
+  // Create an automation clip that starts later in the timeline (not at 0)
+  auto clip = create_automation_clip (1000.0, 1200.0, 0.0f, 1.0f);
 
-  // Create a vector of regions
-  std::vector<const AutomationRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AutomationClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 2000.0));
-  automation_provider_->generate_automation_events (*tempo_map_, regions, range);
+  automation_provider_->generate_automation_events (*tempo_map_, clips, range);
 
-  // Convert region start to samples
-  const auto region_start_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (1000.0));
+  // Convert clip start to samples
+  const auto clip_start_samples = tempo_map_->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (1000.0) });
 
   // Test getting automation value before the first automation point (should be
   // std::nullopt)
   auto value_before_opt = automation_provider_->get_automation_value_rt (
-    region_start_samples - units::samples (100));
+    clip_start_samples - units::samples (100));
   EXPECT_FALSE (value_before_opt.has_value ());
 
   // Test getting automation value at the first automation point (should be 0.0)
   auto value_at_start_opt =
-    automation_provider_->get_automation_value_rt (region_start_samples);
+    automation_provider_->get_automation_value_rt (clip_start_samples);
   ASSERT_TRUE (value_at_start_opt.has_value ());
   EXPECT_FLOAT_EQ (value_at_start_opt.value (), 0.0f);
 }
 
-// ========== Chord Region Tests ==========
+// ========== Chord Clip Tests ==========
 
-TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
+TEST_F (TimelineDataProviderTest, ChordClipInitialState)
 {
   // Provider should start with no chord events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1585,26 +1569,25 @@ TEST_F (TimelineDataProviderTest, ChordRegionInitialState)
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-TEST_F (TimelineDataProviderTest, ProcessChordRegion)
+TEST_F (TimelineDataProviderTest, ProcessChordClip)
 {
-  // Create a chord region at tick 0
-  auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
+  // Create a chord clip at tick 0
+  auto chord_clip_ref = utils::create_object<arrangement::ChordClip> (
     *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-  auto chord_region =
-    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
-  chord_region->position ()->setTicks (0.0);
-  chord_region->bounds ()->length ()->setTicks (200.0);
+  auto chord_clip = chord_clip_ref.get_object_as<arrangement::ChordClip> ();
+  chord_clip->position ()->setTicks (0.0);
+  chord_clip->length ()->setTicks (200.0);
 
-  // Keep a reference to the chord region
-  region_refs.push_back (std::move (chord_region_ref));
+  // Keep a reference to the chord clip
+  clip_refs.push_back (std::move (chord_clip_ref));
 
-  // Create a vector of chord regions
-  std::vector<const arrangement::ChordRegion *> chord_regions;
-  chord_regions.push_back (chord_region);
+  // Create a vector of chord clips
+  std::vector<const arrangement::ChordClip *> chord_clips;
+  chord_clips.push_back (chord_clip);
 
-  // Generate events for the chord regions
+  // Generate events for the chord clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_clips, range);
 
   // Test processing events that should include chord events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1614,7 +1597,7 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have some events from the chord region
+  // Should have some events from the chord clip
   EXPECT_GE (output_buffer.size (), 0);
 
   // Verify events are valid MIDI events
@@ -1627,26 +1610,25 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegion)
     }
 }
 
-TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
+TEST_F (TimelineDataProviderTest, ProcessChordClipOutsideRange)
 {
-  // Create a chord region at tick 500
-  auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
+  // Create a chord clip at tick 500
+  auto chord_clip_ref = utils::create_object<arrangement::ChordClip> (
     *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-  auto chord_region =
-    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
-  chord_region->position ()->setTicks (500.0);
-  chord_region->bounds ()->length ()->setTicks (200.0);
+  auto chord_clip = chord_clip_ref.get_object_as<arrangement::ChordClip> ();
+  chord_clip->position ()->setTicks (500.0);
+  chord_clip->length ()->setTicks (200.0);
 
-  // Keep a reference to the chord region
-  region_refs.push_back (std::move (chord_region_ref));
+  // Keep a reference to the chord clip
+  clip_refs.push_back (std::move (chord_clip_ref));
 
-  // Create a vector of chord regions
-  std::vector<const arrangement::ChordRegion *> chord_regions;
-  chord_regions.push_back (chord_region);
+  // Create a vector of chord clips
+  std::vector<const arrangement::ChordClip *> chord_clips;
+  chord_clips.push_back (chord_clip);
 
-  // Generate events for the chord regions
+  // Generate events for the chord clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_clips, range);
 
   // Test processing events that should NOT include the chord
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1656,27 +1638,27 @@ TEST_F (TimelineDataProviderTest, ProcessChordRegionOutsideRange)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have no events since the chord region is outside the time range
+  // Should have no events since the chord clip is outside the time range
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-// ========== Muted Region Tests ==========
+// ========== Muted Clip Tests ==========
 
-TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
+TEST_F (TimelineDataProviderTest, ProcessMutedMidiClip)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Mute the entire region
-  region->mute ()->setMuted (true);
+  // Mute the entire clip
+  clip->mute ()->setMuted (true);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1686,25 +1668,25 @@ TEST_F (TimelineDataProviderTest, ProcessMutedMidiRegion)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have no events since the entire region is muted
+  // Should have no events since the entire clip is muted
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
-TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
+TEST_F (TimelineDataProviderTest, ProcessMutedAudioClip)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Mute the entire region
-  region->mute ()->setMuted (true);
+  // Mute the entire clip
+  clip->mute ()->setMuted (true);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   // Test processing audio
   std::vector<float> output_left (256, 0.0f);
@@ -1715,7 +1697,7 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
   audio_provider_->process_audio_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_left, output_right);
 
-  // Should have no audio since the entire region is muted
+  // Should have no audio since the entire clip is muted
   for (size_t i = 0; i < output_left.size (); ++i)
     {
       EXPECT_FLOAT_EQ (output_left[i], 0.0f);
@@ -1723,29 +1705,28 @@ TEST_F (TimelineDataProviderTest, ProcessMutedAudioRegion)
     }
 }
 
-TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
+TEST_F (TimelineDataProviderTest, ProcessMutedChordClip)
 {
-  // Create a chord region at tick 0
-  auto chord_region_ref = utils::create_object<arrangement::ChordRegion> (
+  // Create a chord clip at tick 0
+  auto chord_clip_ref = utils::create_object<arrangement::ChordClip> (
     *obj_registry_, *tempo_map_wrapper_, *obj_registry_);
-  auto chord_region =
-    chord_region_ref.get_object_as<arrangement::ChordRegion> ();
-  chord_region->position ()->setTicks (0.0);
-  chord_region->bounds ()->length ()->setTicks (200.0);
+  auto chord_clip = chord_clip_ref.get_object_as<arrangement::ChordClip> ();
+  chord_clip->position ()->setTicks (0.0);
+  chord_clip->length ()->setTicks (200.0);
 
-  // Mute the entire chord region
-  chord_region->mute ()->setMuted (true);
+  // Mute the entire chord clip
+  chord_clip->mute ()->setMuted (true);
 
-  // Keep a reference to the chord region
-  region_refs.push_back (std::move (chord_region_ref));
+  // Keep a reference to the chord clip
+  clip_refs.push_back (std::move (chord_clip_ref));
 
-  // Create a vector of chord regions
-  std::vector<const arrangement::ChordRegion *> chord_regions;
-  chord_regions.push_back (chord_region);
+  // Create a vector of chord clips
+  std::vector<const arrangement::ChordClip *> chord_clips;
+  chord_clips.push_back (chord_clip);
 
-  // Generate events for the chord regions
+  // Generate events for the chord clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, chord_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, chord_clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1755,36 +1736,38 @@ TEST_F (TimelineDataProviderTest, ProcessMutedChordRegion)
   midi_provider_->process_midi_events (
     time_info, dsp::ITransport::PlayState::Rolling, output_buffer);
 
-  // Should have no events since the entire chord region is muted
+  // Should have no events since the entire chord clip is muted
   EXPECT_EQ (output_buffer.size (), 0);
 }
 
 TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
 {
-  // Create a MIDI region at tick 0 with multiple notes
-  auto region = create_midi_region (0.0, 200.0, 60);
+  // Create a MIDI clip at tick 0 with multiple notes
+  auto clip = create_midi_clip (0.0, 200.0, 60);
 
-  // Add another note to the region
+  // Add another note to the clip
   auto note_ref =
     utils::create_object<MidiNote> (*obj_registry_, *tempo_map_wrapper_);
   auto midi_note = note_ref.get_object_as<MidiNote> ();
   midi_note->setPitch (64);
   midi_note->setVelocity (80);
-  midi_note->position ()->setSamples (25);
-  midi_note->bounds ()->length ()->setSamples (50);
-  region->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
+  midi_note->position ()->setTicks (
+    tempo_map_->samples_to_tick (units::samples (25)).asDouble ());
+  midi_note->length ()->setTicks (
+    tempo_map_->samples_to_tick (units::samples (50)).asDouble ());
+  clip->ArrangerObjectOwner<MidiNote>::add_object (note_ref);
 
-  // Mute only the first note (pitch 60), not the entire region
-  auto note_view = region->ArrangerObjectOwner<MidiNote>::get_children_view ();
+  // Mute only the first note (pitch 60), not the entire clip
+  auto note_view = clip->ArrangerObjectOwner<MidiNote>::get_children_view ();
   note_view[0]->mute ()->setMuted (true);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // Test processing events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1825,16 +1808,16 @@ TEST_F (TimelineDataProviderTest, ProcessPartiallyMutedRegion)
 
 TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   // First, process with transport rolling - should generate MIDI events
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
@@ -1862,16 +1845,16 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportStops)
 
 TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
@@ -1914,16 +1897,16 @@ TEST_F (TimelineDataProviderTest, AudioBuffersClearedWhenTransportStops)
 
 TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
@@ -1958,16 +1941,16 @@ TEST_F (TimelineDataProviderTest, MidiBuffersClearedWhenTransportJumps)
 
 TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 400.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 400.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
 
@@ -2003,16 +1986,16 @@ TEST_F (TimelineDataProviderTest, ContinuousTransportPositionWorks)
 
 TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
 {
-  // Create a MIDI region at tick 0
-  auto region = create_midi_region (0.0, 200.0);
+  // Create a MIDI clip at tick 0
+  auto clip = create_midi_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const MidiRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const MidiClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  midi_provider_->generate_midi_events (*tempo_map_, regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, clips, range);
 
   auto output_buffer = dsp::MidiEventBuffer::make_reserved ();
   auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -2028,16 +2011,16 @@ TEST_F (TimelineDataProviderTest, NoEventsWhenTransportStopped)
 
 TEST_F (TimelineDataProviderTest, NoAudioWhenTransportStopped)
 {
-  // Create an audio region at tick 0
-  auto region = create_audio_region (0.0, 200.0);
+  // Create an audio clip at tick 0
+  auto clip = create_audio_clip (0.0, 200.0);
 
-  // Create a vector of regions
-  std::vector<const AudioRegion *> regions;
-  regions.push_back (region);
+  // Create a vector of clips
+  std::vector<const AudioClip *> clips;
+  clips.push_back (clip);
 
-  // Generate events for the regions
+  // Generate events for the clips
   utils::ExpandableTickRange range (std::pair (0.0, 960.0));
-  audio_provider_->generate_audio_events (*tempo_map_, regions, range);
+  audio_provider_->generate_audio_events (*tempo_map_, clips, range);
 
   std::vector<float> output_left (256, 0.0f);
   std::vector<float> output_right (256, 0.0f);
@@ -2084,16 +2067,15 @@ TEST_F (TimelineDataProviderTest, BasicFunctionality)
     time_info, dsp::ITransport::PlayState::Paused, automation_values);
 
   // Test that generate methods can be called without crashing
-  std::vector<const MidiRegion *>       empty_midi_regions;
-  std::vector<const AudioRegion *>      empty_audio_regions;
-  std::vector<const AutomationRegion *> empty_automation_regions;
-  utils::ExpandableTickRange            range (std::pair (0.0, 960.0));
+  std::vector<const MidiClip *>       empty_midi_clips;
+  std::vector<const AudioClip *>      empty_audio_clips;
+  std::vector<const AutomationClip *> empty_automation_clips;
+  utils::ExpandableTickRange          range (std::pair (0.0, 960.0));
 
-  midi_provider_->generate_midi_events (*tempo_map_, empty_midi_regions, range);
-  audio_provider_->generate_audio_events (
-    *tempo_map_, empty_audio_regions, range);
+  midi_provider_->generate_midi_events (*tempo_map_, empty_midi_clips, range);
+  audio_provider_->generate_audio_events (*tempo_map_, empty_audio_clips, range);
   automation_provider_->generate_automation_events (
-    *tempo_map_, empty_automation_regions, range);
+    *tempo_map_, empty_automation_clips, range);
 }
 
 } // namespace zrythm::structure::arrangement

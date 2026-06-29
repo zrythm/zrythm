@@ -42,7 +42,7 @@ Item {
   readonly property real pxPerBar: pxPerSixteenth * 16
   readonly property real pxPerSixteenth: ticksPerSixteenth * pxPerTick
   readonly property real pxPerTick: defaultPxPerTick * (editorSettings?.horizontalZoomLevel ?? 1)
-  property ArrangerObject region: null
+  property Clip clipObject: null
   property bool shiftHeld: false
   readonly property bool shouldSnap: !root.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
   readonly property real sixteenthLineOpacity: 0.4
@@ -141,22 +141,62 @@ Item {
       Loader {
         id: regionMarkersLoader
 
-        active: root.region !== null
+        active: root.clipObject !== null
         anchors.fill: parent
         enabled: active
         visible: active
 
         sourceComponent: Item {
-          x: root.region.position.ticks * root.pxPerTick
+          x: root.clipObject.position.ticks * root.pxPerTick
+
+          property real clipStartX: 0
+          property real loopStartX: 0
+          property real loopEndX: 0
+
+          function updateLoopMarkerPositions() {
+            const warp = root.clipObject.contentWarp
+            if (warp) {
+              clipStartX = warp.contentToTimelineTicksRelative(root.clipObject.clipStartPosition.ticks) * root.pxPerTick
+              loopStartX = warp.contentToTimelineTicksRelative(root.clipObject.loopStartPosition.ticks) * root.pxPerTick
+              loopEndX = warp.contentToTimelineTicksRelative(root.clipObject.loopEndPosition.ticks) * root.pxPerTick
+            } else {
+              clipStartX = root.clipObject.clipStartPosition.ticks * root.pxPerTick
+              loopStartX = root.clipObject.loopStartPosition.ticks * root.pxPerTick
+              loopEndX = root.clipObject.loopEndPosition.ticks * root.pxPerTick
+            }
+          }
+
+          Connections {
+            target: root.clipObject.contentWarp
+            function onMapChanged() { updateLoopMarkerPositions() }
+          }
+          Connections {
+            target: root
+            function onPxPerTickChanged() { updateLoopMarkerPositions() }
+          }
+          Connections {
+            target: root.clipObject.clipStartPosition
+            function onPositionChanged() { updateLoopMarkerPositions() }
+          }
+          Connections {
+            target: root.clipObject.loopStartPosition
+            function onPositionChanged() { updateLoopMarkerPositions() }
+          }
+          Connections {
+            target: root.clipObject.loopEndPosition
+            function onPositionChanged() { updateLoopMarkerPositions() }
+          }
+
+          Component.onCompleted: updateLoopMarkerPositions()
 
           Rectangle {
             id: regionBackground
 
             anchors.bottom: parent.bottom
-            color: root.region.color.useColor ? root.region.color.color : root.track.color
+            color: root.clipObject.color.useColor ? root.clipObject.color.color : root.track.color
             height: 8
             opacity: 0.6
-            width: root.region.bounds.timelineLengthTicks * root.pxPerTick
+            width: root.clipObject.timelineLengthTicks * root.pxPerTick
           }
 
           Rectangle {
@@ -166,7 +206,7 @@ Item {
             color: "red"
             height: 12
             width: 2
-            x: root.region.loopRange.clipStartPosition.ticks * root.pxPerTick - width / 2
+            x: parent.clipStartX - width / 2
           }
 
           Rectangle {
@@ -176,7 +216,7 @@ Item {
             color: "green"
             height: 12
             width: 2
-            x: root.region.loopRange.loopStartPosition.ticks * root.pxPerTick - width / 2
+            x: parent.loopStartX - width / 2
           }
 
           Rectangle {
@@ -186,7 +226,7 @@ Item {
             color: "green"
             height: 12
             width: 2
-            x: root.region.loopRange.loopEndPosition.ticks * root.pxPerTick - width / 2
+            x: parent.loopEndX - width / 2
           }
         }
       }

@@ -248,7 +248,7 @@ TEST_F (AutomationTracklistTest, ClearObjects)
     automation_tracklist->add_automation_track (std::move (at));
   }
   automation_tracklist->automation_track_at (0)->add_object (
-    utils::create_object<arrangement::AutomationRegion> (
+    utils::create_object<arrangement::AutomationClip> (
       *registry, *tempo_map_wrapper, *registry));
 
   EXPECT_EQ (
@@ -257,7 +257,7 @@ TEST_F (AutomationTracklistTest, ClearObjects)
 
   automation_tracklist->clear_arranger_objects ();
 
-  // Clearing should remove all automation regions
+  // Clearing should remove all automation clips
   EXPECT_EQ (
     automation_tracklist->automation_track_at (0)->get_children_vector ().size (),
     0);
@@ -377,21 +377,21 @@ TEST_F (AutomationTracklistTest, Serialization)
 
 TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
 {
-  // Create an automation track with a region containing a point
+  // Create an automation track with a clip containing a point
   auto   at1 = create_automation_track (*param_id1);
   auto * track_ptr = at1.get ();
   automation_tracklist->add_automation_track (std::move (at1));
 
-  auto region_ref = utils::create_object<arrangement::AutomationRegion> (
+  auto clip_ref = utils::create_object<arrangement::AutomationClip> (
     *registry, *tempo_map_wrapper, *registry);
-  auto * region = region_ref.get_object_as<arrangement::AutomationRegion> ();
-  track_ptr->add_object (region_ref);
+  auto * clip = clip_ref.get_object_as<arrangement::AutomationClip> ();
+  track_ptr->add_object (clip_ref);
 
   auto point_ref = utils::create_object<arrangement::AutomationPoint> (
     *registry, *tempo_map_wrapper);
   auto * point = point_ref.get_object_as<arrangement::AutomationPoint> ();
   point->setValue (0.75f);
-  region->add_object (point_ref);
+  clip->add_object (point_ref);
 
   ASSERT_EQ (track_ptr->get_children_vector ().size (), 1);
 
@@ -405,11 +405,11 @@ TEST_F (AutomationTracklistTest, SerializationPreservesRegions)
       .tempo_map_ = *tempo_map_wrapper, .registry_ = *registry });
   from_json (j, *tracklist2);
 
-  // Verify the automation track retained its region
+  // Verify the automation track retained its clip
   auto * deserialized_at = tracklist2->automation_track_at (0);
   ASSERT_NE (deserialized_at, nullptr);
   EXPECT_EQ (deserialized_at->get_children_vector ().size (), 1)
-    << "Automation track lost its regions during serialization round-trip";
+    << "Automation track lost its clips during serialization round-trip";
 }
 
 } // namespace zrythm::structure::tracks
