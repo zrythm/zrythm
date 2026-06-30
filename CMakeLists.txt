@@ -1064,7 +1064,6 @@ list(APPEND zrythm_link_libs
   magic_enum::magic_enum
   zrythm::juce_libs
   backward_cpp::backward_cpp
-  crill::crill
   fmt::fmt
   scn::scn
   zrythm::spdlog

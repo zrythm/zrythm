@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_subdirectory(backward-cpp)
-add_subdirectory(crill)
 add_subdirectory(dirent)
 add_subdirectory(lv2)
 add_subdirectory(moodycamel)
