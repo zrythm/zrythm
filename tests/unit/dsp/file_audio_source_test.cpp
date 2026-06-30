@@ -86,7 +86,7 @@ protected:
     }
 
     project_sample_rate = units::sample_rate (44100);
-    current_bpm = 120.0;
+    current_bpm = units::bpm (120.0);
   }
 
   void TearDown () override
@@ -99,14 +99,14 @@ protected:
   std::filesystem::path          test_wav;
   std::filesystem::path          test_mono_wav;
   units::sample_rate_t           project_sample_rate;
-  FileAudioSource::bpm_t         current_bpm;
+  units::bpm_t                   current_bpm;
 };
 
 // Test constructors
 TEST_F (FileAudioSourceTest, CreateFromFile)
 {
   ASSERT_NO_THROW ({
-    FileAudioSource src (test_wav, project_sample_rate, current_bpm, nullptr);
+    FileAudioSource src (test_wav, project_sample_rate, nullptr);
     EXPECT_EQ (src.get_num_channels (), 2);
     EXPECT_EQ (src.get_num_frames (), 44100);
     EXPECT_EQ (src.get_bit_depth (), FileAudioSource::BitDepth::BIT_DEPTH_16);
@@ -157,7 +157,7 @@ TEST_F (FileAudioSourceTest, MonoBufferConvertedToStereo)
 
 TEST_F (FileAudioSourceTest, MonoFileConvertedToStereo)
 {
-  FileAudioSource src (test_mono_wav, project_sample_rate, current_bpm, nullptr);
+  FileAudioSource src (test_mono_wav, project_sample_rate, nullptr);
 
   EXPECT_EQ (src.get_num_channels (), 2);
   EXPECT_EQ (src.get_num_frames (), 44100);
@@ -230,7 +230,7 @@ TEST_F (FileAudioSourceTest, ClearFrames)
 // Test property accessors
 TEST_F (FileAudioSourceTest, PropertyAccess)
 {
-  FileAudioSource src (test_wav, project_sample_rate, current_bpm, nullptr);
+  FileAudioSource src (test_wav, project_sample_rate, nullptr);
 
   src.set_name (u8"new_name");
   EXPECT_EQ (src.get_name (), "new_name");
@@ -272,10 +272,7 @@ TEST_F (FileAudioSourceTest, ExpandWithFramesMultipleExpansionsPreserveData)
 TEST_F (FileAudioSourceTest, InvalidFile)
 {
   ASSERT_THROW (
-    {
-      FileAudioSource src (
-        u8"nonexistent.wav", project_sample_rate, current_bpm, nullptr);
-    },
+    { FileAudioSource src (u8"nonexistent.wav", project_sample_rate, nullptr); },
     ZrythmException);
 }
 
@@ -294,7 +291,7 @@ TEST_F (FileAudioSourceTest, EmptyBuffer)
 // Test serialization/deserialization
 TEST_F (FileAudioSourceTest, Serialization)
 {
-  FileAudioSource src (test_wav, project_sample_rate, current_bpm, nullptr);
+  FileAudioSource src (test_wav, project_sample_rate, nullptr);
   src.set_name (u8"serial_test");
 
   // Serialize to JSON
@@ -314,7 +311,7 @@ TEST_F (FileAudioSourceTest, InitFromFileEmitsSamplesChanged)
 {
   test_helpers::ScopedQCoreApplication app;
 
-  FileAudioSource src (test_wav, project_sample_rate, current_bpm, nullptr);
+  FileAudioSource src (test_wav, project_sample_rate, nullptr);
   ASSERT_GT (src.get_num_frames (), 0);
 
   QSignalSpy spy (&src, &FileAudioSource::samplesChanged);

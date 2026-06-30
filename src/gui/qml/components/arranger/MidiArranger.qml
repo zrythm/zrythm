@@ -15,18 +15,18 @@ Arranger {
   property ChordTrack chordTrack: null
   property int highlightMode: 0
   required property MidiEditor midiEditor
-  readonly property MidiRegion region: clipEditor.region
+  readonly property MidiClip midiClip: clipEditor.clipObject as MidiClip
   readonly property Track track: clipEditor.track
 
   function beginObjectCreation(coordinates: point): MidiNote {
     const pitch = getPitchAtY(coordinates.y);
     console.log("Midi Arranger: beginObjectCreation", coordinates, pitch);
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - region.position.ticks;
+    const localTickPosition = tickPosition - root.midiClip.position.ticks;
 
-    let midiNote = objectCreator.addMidiNote(region, localTickPosition, pitch);
+    let midiNote = objectCreator.addMidiNote(root.midiClip, localTickPosition, pitch);
     root.currentAction = Arranger.CreatingResizingMovingR;
-    root.selectSingleObject(region.midiNotes, region.midiNotes.rowCount() - 1);
+    root.selectSingleObject(root.midiClip.midiNotes, root.midiClip.midiNotes.rowCount() - 1);
     CursorManager.setResizeEndCursor();
 
     return midiNote;
@@ -81,7 +81,7 @@ Arranger {
     id: midiNotesRepeater
 
     anchors.fill: parent
-    model: root.region.midiNotes
+    model: root.midiClip.midiNotes
 
     delegate: ArrangerObjectLoader {
       id: midiNoteLoader

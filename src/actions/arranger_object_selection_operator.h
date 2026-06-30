@@ -57,6 +57,21 @@ public:
 
   Q_INVOKABLE bool toggleMute ();
 
+  /// Sets the timestretch algorithm on all selected AudioClips.
+  Q_INVOKABLE bool
+  setStretchAlgorithm (dsp::StretchOptions::Algorithm algorithm);
+
+  /// Sets a per-clip timebase override on all selected clips.
+  Q_INVOKABLE bool setTimebaseOverride (dsp::Timebase timebase);
+
+  /// Clears the per-clip timebase override on all selected clips
+  /// (inherit from parent provider).
+  Q_INVOKABLE bool clearTimebaseOverride ();
+
+  /// Returns true if any selected object has a timebase provider (i.e., is a
+  /// clip).
+  Q_INVOKABLE bool selectionHasTimebaseProviders () const;
+
 private:
   auto extractSelectedObjects () const -> SelectedObjectsVector;
 
@@ -75,9 +90,9 @@ private:
     commands::ResizeDirection                        direction,
     double                                           delta);
   static bool validateFadesResize (
-    const structure::arrangement::ArrangerObject &obj,
-    commands::ResizeDirection                     direction,
-    double                                        delta);
+    structure::arrangement::ArrangerObjectPtrVariant obj_var,
+    commands::ResizeDirection                        direction,
+    double                                           delta);
 
   bool process_vertical_move (double delta);
 

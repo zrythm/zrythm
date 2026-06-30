@@ -13,12 +13,12 @@ Arranger {
   id: root
 
   required property AudioClipEditor audioEditor
-  readonly property real fadeInPx: root.region && root.region.fadeRange ? root.region.fadeRange.startOffset.ticks * root.ruler.pxPerTick : 0
-  readonly property real fadeOutPx: root.region && root.region.fadeRange ? root.region.fadeRange.endOffset.ticks * root.ruler.pxPerTick : 0
+  readonly property real fadeInPx: root.audioClip && root.audioClip.fadeRange ? root.audioClip.fadeRange.startOffset.ticks * root.ruler.pxPerTick : 0
+  readonly property real fadeOutPx: root.audioClip && root.audioClip.fadeRange ? root.audioClip.fadeRange.endOffset.ticks * root.ruler.pxPerTick : 0
   property QObjectPropertyOperator fadePropertyOperator: null
-  readonly property AudioRegion region: clipEditor.region
-  readonly property real regionWidth: root.region && root.region.bounds ? root.region.bounds.length.ticks * root.ruler.pxPerTick : 0
-  readonly property real regionX: root.region ? root.region.position.ticks * root.ruler.pxPerTick : 0
+  readonly property AudioClip audioClip: clipEditor.clipObject as AudioClip
+  readonly property real clipWidth: root.audioClip ? root.audioClip.timelineLengthTicks * root.ruler.pxPerTick : 0
+  readonly property real clipX: root.audioClip ? root.audioClip.position.ticks * root.ruler.pxPerTick : 0
   readonly property Track track: clipEditor.track
 
   function beginObjectCreation(coordinates: point): var {
@@ -51,7 +51,7 @@ Arranger {
 
     anchors.fill: parent
 
-    AudioRegionWaveformCanvas {
+    AudioClipWaveformCanvas {
       id: waveformCanvas
 
       height: contentItem.height
@@ -59,32 +59,32 @@ Arranger {
         const lighter = Qt.lighter(root.track.color, 1.4);
         return Qt.rgba(lighter.r, lighter.g, lighter.b, 200 / 255);
       }
-      region: root.region
+      audioClip: root.audioClip
       waveformColor: Qt.rgba(root.track.color.r, root.track.color.g, root.track.color.b, 80 / 255)
-      width: root.regionWidth
-      x: root.regionX
+      width: root.clipWidth
+      x: root.clipX
       y: 0
     }
 
     FadeOverlayControl {
-      curveOptsObj: root.region ? root.region.fadeRange.fadeInCurveOpts : null
+      curveOptsObj: root.audioClip ? root.audioClip.fadeRange.fadeInCurveOpts : null
       curvinessAction: Arranger.ResizingUpFadeIn
       fadePx: fadeInPx
       fadeType: FadeOverlayCanvas.FadeIn
       offsetAction: Arranger.ResizingLFade
-      offsetObj: root.region ? root.region.fadeRange.startOffset : null
-      x: root.regionX
+      offsetObj: root.audioClip ? root.audioClip.fadeRange.startOffset : null
+      x: root.clipX
       y: 0
     }
 
     FadeOverlayControl {
-      curveOptsObj: root.region ? root.region.fadeRange.fadeOutCurveOpts : null
+      curveOptsObj: root.audioClip ? root.audioClip.fadeRange.fadeOutCurveOpts : null
       curvinessAction: Arranger.ResizingUpFadeOut
       fadePx: fadeOutPx
       fadeType: FadeOverlayCanvas.FadeOut
       offsetAction: Arranger.ResizingRFade
-      offsetObj: root.region ? root.region.fadeRange.endOffset : null
-      x: root.regionX + root.regionWidth - fadeOutPx
+      offsetObj: root.audioClip ? root.audioClip.fadeRange.endOffset : null
+      x: root.clipX + root.clipWidth - fadeOutPx
       y: 0
     }
 
@@ -92,12 +92,12 @@ Arranger {
     Item {
       id: gainLine
 
-      readonly property real gainY: root.region ? (1.0 - root.region.gain / 2.0) * height : 0
+      readonly property real gainY: root.audioClip ? (1.0 - root.audioClip.gain / 2.0) * height : 0
 
       height: parent.height
-      visible: root.region != null
-      width: root.regionWidth
-      x: root.regionX
+      visible: root.audioClip != null
+      width: root.clipWidth
+      x: root.clipX
       y: 0
 
       Rectangle {
@@ -109,7 +109,7 @@ Arranger {
         Label {
           color: palette.text
           font.pixelSize: 10
-          text: (20 * Math.log10(root.region ? root.region.gain : 1.0)).toFixed(1) + " dB"
+          text: (20 * Math.log10(root.audioClip ? root.audioClip.gain : 1.0)).toFixed(1) + " dB"
           y: -height - 2
         }
       }
@@ -124,7 +124,7 @@ Arranger {
     required property real fadePx
     required property int fadeType
     required property int offsetAction
-    required property AtomicPosition offsetObj
+    required property Position offsetObj
 
     height: contentItem.height
     width: Math.max(fadePx, 20)
@@ -136,7 +136,7 @@ Arranger {
       hovered: curvinessMouseArea.containsMouse || curvinessMouseArea.pressed || offsetMouseArea.containsMouse || offsetMouseArea.pressed
       overlayColor: contentItem.fadeOverlayColor
       pxPerTick: root.ruler.pxPerTick
-      region: root.region
+      audioClip: root.audioClip
       visible: fadeOverlayControl.fadePx > 0
       width: fadeOverlayControl.fadePx
       x: 0

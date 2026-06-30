@@ -6,8 +6,10 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/actions/mock_undo_stack.h"
@@ -39,8 +41,10 @@ protected:
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,          registry_, transport_,
-      soloed_tracks_exist_getter_, {},
+      tempo_map_wrapper_,
+      registry_,
+      soloed_tracks_exist_getter_,
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -83,10 +87,12 @@ protected:
       tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 50.0; });
 
     // Create arranger object factory with proper dependencies
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{
-      .tempo_map_ = tempo_map_,
+      .tempo_map_ = tempo_map_wrapper_,
       .registry_ = registry_,
-      .musical_mode_getter_ = [] () { return true; },
       .last_timeline_obj_len_provider_ = [] () { return 100.0; },
       .last_editor_obj_len_provider_ = [] () { return 50.0; },
       .automation_curve_algorithm_provider_ =
@@ -96,7 +102,7 @@ protected:
     arranger_object_factory = std::make_unique<
       structure::arrangement::ArrangerObjectFactory> (
       obj_factory_deps, [] () { return units::sample_rate (44100); },
-      [] () { return 120.0; });
+      [] () { return units::bpm (120.0); });
 
     // Create the creator
     creator = std::make_unique<ArrangerObjectCreator> (
@@ -121,6 +127,7 @@ protected:
   std::unique_ptr<undo::UndoStack>                    undo_stack_;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_timeline;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_editor;
+  std::unique_ptr<utils::AppSettings>                 app_settings_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
                                          arranger_object_factory;
   std::unique_ptr<ArrangerObjectCreator> creator;
@@ -152,24 +159,24 @@ TEST_F (ArrangerObjectCreatorTest, AddMarker)
   }));
 }
 
-// Test empty chord region creation
-TEST_F (ArrangerObjectCreatorTest, AddEmptyChordRegion)
+// Test empty chord clip creation
+TEST_F (ArrangerObjectCreatorTest, AddEmptyChordClip)
 {
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
   const double start_ticks = 300.0;
 
-  auto * region = creator->addEmptyChordRegion (chord_track, start_ticks);
+  auto * clip = creator->addEmptyChordClip (chord_track, start_ticks);
 
-  ASSERT_NE (region, nullptr);
-  EXPECT_DOUBLE_EQ (region->position ()->ticks (), start_ticks);
+  ASSERT_NE (clip, nullptr);
+  EXPECT_DOUBLE_EQ (clip->position ()->ticks (), start_ticks);
 
-  // Verify region was added to track
-  auto regions = chord_track->structure::arrangement::ArrangerObjectOwner<
-    structure::arrangement::ChordRegion>::get_children_view ();
-  EXPECT_TRUE (std::ranges::any_of (regions, [&] (auto * r) {
-    return r == region;
+  // Verify clip was added to track
+  auto clips = chord_track->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::ChordClip>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (clips, [&] (auto * r) {
+    return r == clip;
   }));
 }
 
@@ -210,7 +217,7 @@ TEST_F (ArrangerObjectCreatorTest, UndoStackIntegration)
   }));
 }
 
-TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecording)
+TEST_F (ArrangerObjectCreatorTest, AddMidiClipForRecording)
 {
   auto track_ref =
     track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
@@ -226,22 +233,21 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecording)
   ASSERT_NE (lane, nullptr);
 
   const double start_ticks = 480.0;
-  auto         region_ref = creator->add_midi_region_for_recording (
+  auto         clip_ref = creator->add_midi_clip_for_recording (
     *midi_track, *lane, units::ticks (start_ticks));
 
-  auto * region =
-    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  ASSERT_NE (region, nullptr);
-  EXPECT_DOUBLE_EQ (region->position ()->ticks (), start_ticks);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+  EXPECT_DOUBLE_EQ (clip->position ()->ticks (), start_ticks);
 
-  auto midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
-    structure::arrangement::MidiRegion>::get_children_view ();
-  EXPECT_TRUE (std::ranges::any_of (midi_regions, [&] (auto * r) {
-    return r == region;
+  auto midi_clips = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (midi_clips, [&] (auto * r) {
+    return r == clip;
   }));
 }
 
-TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecordingUndoRedo)
+TEST_F (ArrangerObjectCreatorTest, AddMidiClipForRecordingUndoRedo)
 {
   auto track_ref =
     track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
@@ -253,25 +259,24 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiRegionForRecordingUndoRedo)
   auto * lane = lanes->at (0);
 
   const int initial_count = undo_stack_->count ();
-  auto      region_ref = creator->add_midi_region_for_recording (
+  auto      clip_ref = creator->add_midi_clip_for_recording (
     *midi_track, *lane, units::ticks (100.0));
   EXPECT_GT (undo_stack_->count (), initial_count);
 
-  auto * region =
-    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
 
   undo_stack_->undo ();
-  auto midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
-    structure::arrangement::MidiRegion>::get_children_view ();
-  EXPECT_FALSE (std::ranges::any_of (midi_regions, [&] (auto * r) {
-    return r == region;
+  auto midi_clips = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_view ();
+  EXPECT_FALSE (std::ranges::any_of (midi_clips, [&] (auto * r) {
+    return r == clip;
   }));
 
   undo_stack_->redo ();
-  midi_regions = lane->structure::arrangement::ArrangerObjectOwner<
-    structure::arrangement::MidiRegion>::get_children_view ();
-  EXPECT_TRUE (std::ranges::any_of (midi_regions, [&] (auto * r) {
-    return r == region;
+  midi_clips = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_view ();
+  EXPECT_TRUE (std::ranges::any_of (midi_clips, [&] (auto * r) {
+    return r == clip;
   }));
 }
 
@@ -286,15 +291,14 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiControlEvent)
   lanes->create_missing_lanes (0);
   auto * lane = lanes->at (0);
 
-  auto region_ref = creator->add_midi_region_for_recording (
+  auto clip_ref = creator->add_midi_clip_for_recording (
     *midi_track, *lane, units::ticks (0.0));
-  auto * region =
-    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
-  ASSERT_NE (region, nullptr);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
 
   using EventType = structure::arrangement::MidiControlEvent::EventType;
   auto * ev = creator->add_midi_control_event (
-    *region, units::ticks (200.0), EventType::ControlChange, 0, 1, 64);
+    *clip, units::ticks (200.0), EventType::ControlChange, 0, 1, 64);
   ASSERT_NE (ev, nullptr);
   EXPECT_EQ (ev->controlType (), EventType::ControlChange);
   EXPECT_EQ (ev->channel (), 0);
@@ -302,7 +306,7 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiControlEvent)
   EXPECT_EQ (ev->value (), 64);
   EXPECT_DOUBLE_EQ (ev->position ()->ticks (), 200.0);
 
-  auto control_events = region->structure::arrangement::ArrangerObjectOwner<
+  auto control_events = clip->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiControlEvent>::get_children_view ();
   EXPECT_TRUE (std::ranges::any_of (control_events, [&] (auto * e) {
     return e == ev;
@@ -320,14 +324,13 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiControlEventPitchBend)
   lanes->create_missing_lanes (0);
   auto * lane = lanes->at (0);
 
-  auto region_ref = creator->add_midi_region_for_recording (
+  auto clip_ref = creator->add_midi_clip_for_recording (
     *midi_track, *lane, units::ticks (0.0));
-  auto * region =
-    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
 
   using EventType = structure::arrangement::MidiControlEvent::EventType;
   auto * ev = creator->add_midi_control_event (
-    *region, units::ticks (500.0), EventType::PitchBend, 2, 0, 8192);
+    *clip, units::ticks (500.0), EventType::PitchBend, 2, 0, 8192);
   ASSERT_NE (ev, nullptr);
   EXPECT_EQ (ev->controlType (), EventType::PitchBend);
   EXPECT_EQ (ev->channel (), 2);
@@ -345,28 +348,27 @@ TEST_F (ArrangerObjectCreatorTest, AddMidiControlEventUndoRedo)
   lanes->create_missing_lanes (0);
   auto * lane = lanes->at (0);
 
-  auto region_ref = creator->add_midi_region_for_recording (
+  auto clip_ref = creator->add_midi_clip_for_recording (
     *midi_track, *lane, units::ticks (0.0));
-  auto * region =
-    region_ref.get_object_as<structure::arrangement::MidiRegion> ();
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
 
   using EventType = structure::arrangement::MidiControlEvent::EventType;
   const int initial_count = undo_stack_->count ();
   creator->add_midi_control_event (
-    *region, units::ticks (100.0), EventType::ControlChange, 0, 7, 127);
+    *clip, units::ticks (100.0), EventType::ControlChange, 0, 7, 127);
   EXPECT_GT (undo_stack_->count (), initial_count);
 
-  auto control_events = region->structure::arrangement::ArrangerObjectOwner<
+  auto control_events = clip->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiControlEvent>::get_children_view ();
   EXPECT_FALSE (control_events.empty ());
 
   undo_stack_->undo ();
-  control_events = region->structure::arrangement::ArrangerObjectOwner<
+  control_events = clip->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiControlEvent>::get_children_view ();
   EXPECT_TRUE (control_events.empty ());
 
   undo_stack_->redo ();
-  control_events = region->structure::arrangement::ArrangerObjectOwner<
+  control_events = clip->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiControlEvent>::get_children_view ();
   EXPECT_FALSE (control_events.empty ());
 }
@@ -378,13 +380,13 @@ TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromFields)
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
-  // Create a chord region.
-  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
-  ASSERT_NE (region, nullptr);
+  // Create a chord clip.
+  auto * clip = creator->addEmptyChordClip (chord_track, 0.0);
+  ASSERT_NE (clip, nullptr);
 
   // Add a D Minor 7 chord with bass note A.
   auto * co = creator->addChordObjectFromFields (
-    region, 0.0, dsp::MusicalNote::D, dsp::ChordType::Minor,
+    clip, 0.0, dsp::MusicalNote::D, dsp::ChordType::Minor,
     dsp::ChordAccent::Seventh, true, dsp::MusicalNote::A, 1);
   ASSERT_NE (co, nullptr);
 
@@ -398,11 +400,11 @@ TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromFields)
 
   // Undo removes the chord object.
   undo_stack_->undo ();
-  EXPECT_EQ (region->chordObjects ()->rowCount (), 0);
+  EXPECT_EQ (clip->chordObjects ()->rowCount (), 0);
 
   // Redo re-adds it.
   undo_stack_->redo ();
-  EXPECT_EQ (region->chordObjects ()->rowCount (), 1);
+  EXPECT_EQ (clip->chordObjects ()->rowCount (), 1);
 }
 
 TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromDescriptor)
@@ -410,14 +412,14 @@ TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromDescriptor)
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
-  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+  auto * clip = creator->addEmptyChordClip (chord_track, 0.0);
 
   // Build a source descriptor.
   dsp::ChordDescriptor src (
     dsp::MusicalNote::E, dsp::ChordType::Diminished, dsp::ChordAccent::Ninth, 2,
     dsp::MusicalNote::B);
 
-  auto * co = creator->addChordObjectFromDescriptor (region, 480.0, &src);
+  auto * co = creator->addChordObjectFromDescriptor (clip, 480.0, &src);
   ASSERT_NE (co, nullptr);
   EXPECT_EQ (co->chordDescriptor ()->rootNote (), dsp::MusicalNote::E);
   EXPECT_EQ (co->chordDescriptor ()->chordType (), dsp::ChordType::Diminished);
@@ -432,9 +434,9 @@ TEST_F (ArrangerObjectCreatorTest, AddChordObjectFromDescriptorNullReturnsNull)
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
-  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+  auto * clip = creator->addEmptyChordClip (chord_track, 0.0);
 
-  auto * co = creator->addChordObjectFromDescriptor (region, 0.0, nullptr);
+  auto * co = creator->addChordObjectFromDescriptor (clip, 0.0, nullptr);
   EXPECT_EQ (co, nullptr);
 }
 
@@ -443,14 +445,14 @@ TEST_F (ArrangerObjectCreatorTest, EditChordObjectsDescriptor)
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
-  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+  auto * clip = creator->addEmptyChordClip (chord_track, 0.0);
 
   // Add two C Major chord objects.
   auto * co1 = creator->addChordObjectFromFields (
-    region, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    clip, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
     dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
   auto * co2 = creator->addChordObjectFromFields (
-    region, 480.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    clip, 480.0, dsp::MusicalNote::C, dsp::ChordType::Major,
     dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
 
   // Batch-edit both to D Minor 7.
@@ -485,13 +487,13 @@ TEST_F (ArrangerObjectCreatorTest, EditChordObjectsDescriptorIsOneUndoStep)
   auto * chord_track = singleton_tracks_->chordTrack ();
   ASSERT_NE (chord_track, nullptr);
 
-  auto * region = creator->addEmptyChordRegion (chord_track, 0.0);
+  auto * clip = creator->addEmptyChordClip (chord_track, 0.0);
 
   auto * co1 = creator->addChordObjectFromFields (
-    region, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
+    clip, 0.0, dsp::MusicalNote::C, dsp::ChordType::Major,
     dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
   auto * co2 = creator->addChordObjectFromFields (
-    region, 480.0, dsp::MusicalNote::G, dsp::ChordType::Major,
+    clip, 480.0, dsp::MusicalNote::G, dsp::ChordType::Major,
     dsp::ChordAccent::None, false, dsp::MusicalNote::C, 0);
 
   const int count_before = undo_stack_->count ();

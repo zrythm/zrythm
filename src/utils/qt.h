@@ -45,6 +45,14 @@ public:
   QObjectUniquePtr (QObjectUniquePtr &&other) noexcept : ptr_ (other.release ())
   {
   }
+
+  // Allow converting move from a derived type
+  template <typename U>
+  QObjectUniquePtr (QObjectUniquePtr<U> &&other) noexcept
+    requires std::derived_from<U, T>
+      : ptr_ (other.release ())
+  {
+  }
   QObjectUniquePtr &operator= (QObjectUniquePtr &&other) noexcept
   {
     if (this != &other)

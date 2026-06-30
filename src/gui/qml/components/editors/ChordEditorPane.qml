@@ -16,9 +16,9 @@ GridLayout {
 
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  required property ChordRegion region
+  required property ChordClip chordClip
   required property ProjectSession session
-  readonly property Track track: root.project.tracklist.getTrackForTimelineObject (root.region)
+  readonly property Track track: root.project.tracklist.getTrackForTimelineObject (root.chordClip)
   readonly property ChordTrack chordTrack: root.project.tracklist.singletonTracks.chordTrack ?? null
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator (arrangerSelectionModel)
 
@@ -51,7 +51,7 @@ GridLayout {
     id: ruler
     Layout.fillWidth: true
     editorSettings: root.clipEditor.chordEditor
-    region: root.region
+    clipObject: root.chordClip
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
     track: root.track
@@ -112,7 +112,7 @@ GridLayout {
 
   ChordRowListModel {
     id: chordRowModel
-    region: root.region
+    chordClip: root.chordClip
   }
 
   UnifiedProxyModel {
@@ -190,7 +190,7 @@ GridLayout {
 
       onAccepted: {
         root.session.arrangerObjectCreator.addChordObjectFromFields (
-          root.region, createDialog._createTicks,
+          root.chordClip, createDialog._createTicks,
           createDialog.tempRootNote, createDialog.tempChordType,
           createDialog.tempChordAccent, createDialog.tempHasBass,
           createDialog.tempHasBass ? createDialog.tempBassNote : MusicalScale.MusicalNote.C,

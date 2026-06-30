@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/clip.h"
 #include "structure/tracks/automation_track.h"
 
 #include <magic_enum.hpp>
@@ -11,12 +13,13 @@ AutomationTrack::AutomationTrack (
   const dsp::TempoMapWrapper          &tempo_map,
   utils::IObjectRegistry              &registry,
   dsp::ProcessorParameterUuidReference param_id,
+  dsp::TimebaseProvider *              timebase_provider,
   QObject *                            parent)
     : QObject (parent),
       arrangement::ArrangerObjectOwner<
-        arrangement::AutomationRegion> (registry, *this),
+        arrangement::AutomationClip> (registry, *this),
       tempo_map_ (tempo_map), registry_ (registry),
-      param_id_ (std::move (param_id)),
+      param_id_ (std::move (param_id)), timebase_provider_ (timebase_provider),
       automation_data_provider_ (
         utils::make_qobject_unique<arrangement::AutomationTimelineDataProvider> (
           this)),
@@ -29,7 +32,22 @@ AutomationTrack::AutomationTrack (
              : std::nullopt;
   });
 
-  // Connect signals for children region changes
+  QObject::connect (
+    get_model (), &arrangement::ArrangerObjectListModel::rowsInserted, this,
+    [this] (const QModelIndex &, int first, int last) {
+      for (int i = first; i <= last; ++i)
+        {
+          auto * clip_obj =
+            qobject_cast<arrangement::Clip *> (get_model ()->object_at (i));
+          if (clip_obj != nullptr)
+            {
+              if (auto * tp = clip_obj->timebaseProvider ())
+                tp->setSource (timebase_provider_);
+            }
+        }
+    });
+
+  // Connect signals for children clip changes
   QObject::connect (
     get_model (), &arrangement::ArrangerObjectListModel::contentChanged, this,
     &AutomationTrack::automationObjectsNeedRecache, Qt::QueuedConnection);
@@ -57,7 +75,7 @@ AutomationTrack::AutomationTrack (
     automation_cache_request_debouncer_.get (),
     *std::as_const (*automation_data_provider_).get_base_cache (),
     [&tm] (units::sample_t sample) {
-      return tm.samples_to_tick (sample).in (units::ticks);
+      return tm.samples_to_tick (sample).asDouble ();
     },
     this);
 }
@@ -109,43 +127,44 @@ AutomationTrack::regeneratePlaybackCaches (
 // ========================================================================
 
 auto
-AutomationTrack::get_region_before (
+AutomationTrack::get_clip_before (
   units::sample_t pos_samples,
-  bool search_only_regions_enclosing_position) const -> AutomationRegion *
+  bool search_only_clips_enclosing_position) const -> AutomationClip *
 {
-  auto process_regions = [=] (const auto &regions) {
-    if (search_only_regions_enclosing_position)
+  auto process_clips = [=] (const auto &clips) {
+    if (search_only_clips_enclosing_position)
       {
-        for (const auto &region : std::views::reverse (regions))
+        for (const auto &clip : std::views::reverse (clips))
           {
-            if (get_object_bounds (*region)->is_hit (pos_samples))
-              return region;
+            if (clip->is_hit (pos_samples))
+              return clip;
           }
       }
     else
       {
-        AutomationRegion * latest_r{};
-        auto               latest_distance =
+        AutomationClip * latest_r{};
+        auto             latest_distance =
           units::samples (std::numeric_limits<int64_t>::min ());
-        for (const auto &region : std::views::reverse (regions))
+        for (const auto &clip : std::views::reverse (clips))
           {
             auto distance_from_r_end =
-              get_object_bounds (*region)->get_end_position_samples (true)
-              - pos_samples;
+              clip->get_end_position_samples (true) - pos_samples;
             if (
-              units::samples (region->position ()->samples ()) <= pos_samples
+              clip->get_tempo_map ().tick_to_samples_rounded (
+                clip->position ()->asTick ())
+                <= pos_samples
               && distance_from_r_end > latest_distance)
               {
                 latest_distance = distance_from_r_end;
-                latest_r = region;
+                latest_r = clip;
               }
           }
         return latest_r;
       }
-    return static_cast<AutomationRegion *> (nullptr);
+    return static_cast<AutomationClip *> (nullptr);
   };
 
-  return process_regions (get_children_view ());
+  return process_clips (get_children_view ());
 }
 
 structure::arrangement::AutomationPoint *
@@ -155,12 +174,13 @@ AutomationTrack::get_automation_point_around (
   bool                        search_only_backwards)
 {
   const auto &tempo_map = tempo_map_;
-  auto        pos_frames =
-    tempo_map.get_tempo_map ().tick_to_samples_rounded (position_ticks);
+  auto        pos_frames = tempo_map.get_tempo_map ().tick_to_samples_rounded (
+    dsp::TimelineTick{ position_ticks });
   AutomationPoint * ap = get_automation_point_before (pos_frames, true);
   if (
     (ap != nullptr)
-    && position_ticks - units::ticks (ap->position ()->ticks ()) <= delta_ticks)
+    && position_ticks - arrangement::timeline_ticks (*ap).asQuantity ()
+         <= delta_ticks)
     {
       return ap;
     }
@@ -171,12 +191,12 @@ AutomationTrack::get_automation_point_around (
     }
 
   pos_frames = tempo_map.get_tempo_map ().tick_to_samples_rounded (
-    position_ticks + delta_ticks);
+    dsp::TimelineTick{ position_ticks + delta_ticks });
   ap = get_automation_point_before (pos_frames, true);
   if (ap != nullptr)
     {
       const auto diff =
-        units::ticks (ap->position ()->ticks ()) - position_ticks;
+        arrangement::timeline_ticks (*ap).asQuantity () - position_ticks;
       if (diff >= units::ticks (0.0))
         return ap;
     }
@@ -189,26 +209,32 @@ AutomationTrack::get_automation_point_before (
   units::sample_t timeline_position,
   bool            search_only_backwards) const -> AutomationPoint *
 {
-  auto * r = get_region_before (timeline_position, search_only_backwards);
+  auto * r = get_clip_before (timeline_position, search_only_backwards);
 
   if ((r == nullptr) || r->mute ()->muted ())
     {
       return nullptr;
     }
 
-  const auto region_end_frames = r->bounds ()->get_end_position_samples (true);
+  const auto clip_end_frames = r->get_end_position_samples (true);
 
-  /* if region ends before pos, assume pos is the region's end pos */
+  /* if clip ends before pos, assume pos is the clip's end pos */
   auto local_pos = timeline_frames_to_local (
     *r,
-    !search_only_backwards && (region_end_frames < timeline_position)
-      ? region_end_frames - units::samples (1)
+    !search_only_backwards && (clip_end_frames < timeline_position)
+      ? clip_end_frames - units::samples (1)
       : timeline_position,
     true);
 
+  const auto &ap_tempo_map = r->get_tempo_map ();
+  const auto  ap_clip_start =
+    ap_tempo_map.tick_to_samples_rounded (r->position ()->asTick ());
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
-      if (units::samples (ap->position ()->samples ()) <= local_pos)
+      if (
+        r->contentWarp ()->contentToTimelineSamples (ap->position ()->asTick ())
+          - ap_clip_start
+        <= local_pos)
         {
           return ap;
         }
@@ -297,10 +323,10 @@ AutomationTrack::should_be_recording (bool record_aps) const
 std::optional<float>
 AutomationTrack::get_normalized_value (
   units::sample_t timeline_frames,
-  bool            search_only_regions_enclosing_position) const
+  bool            search_only_clips_enclosing_position) const
 {
   auto ap = get_automation_point_before (
-    timeline_frames, search_only_regions_enclosing_position);
+    timeline_frames, search_only_clips_enclosing_position);
 
   /* no automation points yet, return negative (no change) */
   if (ap == nullptr)
@@ -308,22 +334,20 @@ AutomationTrack::get_normalized_value (
       return std::nullopt;
     }
 
-  auto region =
-    get_region_before (timeline_frames, search_only_regions_enclosing_position);
-  z_return_val_if_fail (region, 0.f);
+  auto clip =
+    get_clip_before (timeline_frames, search_only_clips_enclosing_position);
+  z_return_val_if_fail (clip, 0.f);
 
-  /* if region ends before pos, assume pos is the region's end pos */
-  const auto region_end_position =
-    region->bounds ()->get_end_position_samples (true);
-  auto localp = timeline_frames_to_local (
-    *region,
-    !search_only_regions_enclosing_position
-        && (region_end_position < timeline_frames)
-      ? region_end_position - units::samples (1)
+  /* if clip ends before pos, assume pos is the clip's end pos */
+  const auto clip_end_position = clip->get_end_position_samples (true);
+  auto       localp = timeline_frames_to_local (
+    *clip,
+    !search_only_clips_enclosing_position && (clip_end_position < timeline_frames)
+      ? clip_end_position - units::samples (1)
       : timeline_frames,
     true);
 
-  auto next_ap = region->get_next_ap (*ap, false);
+  auto next_ap = clip->get_next_ap (*ap, false);
 
   /* return value at last ap */
   if (next_ap == nullptr)
@@ -335,8 +359,16 @@ AutomationTrack::get_normalized_value (
   float cur_next_diff = std::abs (ap->value () - next_ap->value ());
 
   /* ratio of how far in we are in the curve */
-  auto   ap_frames = units::samples (ap->position ()->samples ());
-  auto   next_ap_frames = units::samples (next_ap->position ()->samples ());
+  const auto &val_tempo_map = clip->get_tempo_map ();
+  const auto  val_clip_start =
+    val_tempo_map.tick_to_samples_rounded (clip->position ()->asTick ());
+  auto ap_frames =
+    clip->contentWarp ()->contentToTimelineSamples (ap->position ()->asTick ())
+    - val_clip_start;
+  auto next_ap_frames =
+    clip->contentWarp ()->contentToTimelineSamples (
+      next_ap->position ()->asTick ())
+    - val_clip_start;
   double ratio = 1.0;
   auto   numerator = localp - ap_frames;
   auto   denominator = next_ap_frames - ap_frames;
@@ -358,7 +390,7 @@ AutomationTrack::get_normalized_value (
   z_return_val_if_fail (ratio >= 0, 0.f);
 
   auto result =
-    static_cast<float> (region->get_normalized_value_in_curve (*ap, ratio));
+    static_cast<float> (clip->get_normalized_value_in_curve (*ap, ratio));
   result = result * cur_next_diff;
   if (prev_ap_lower)
     result += ap->value ();

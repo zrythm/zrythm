@@ -412,7 +412,7 @@
             },
             "arrangerObjects": {
               "type": "array",
-              "description": "All arranger objects (regions, notes, automation, markers, etc.)",
+              "description": "All arranger objects (clips, notes, automation, markers, etc.)",
               "items": {
                 "$ref": "#/definitions/knownArrangerObject"
               }
@@ -1070,9 +1070,9 @@
                         "$ref": "#/definitions/uuid",
                         "description": "UUID reference to parameter in registry.parameters"
                       },
-                      "regions": {
+                      "clips": {
                         "$ref": "#/definitions/uuidArray",
-                        "description": "UUID references to AutomationRegion objects in registry.arrangerObjects"
+                        "description": "UUID references to AutomationClip objects in registry.arrangerObjects"
                       },
                       "createdByUser": {
                         "type": "boolean",
@@ -1147,6 +1147,12 @@
             "clipLauncherMode": {
               "type": "boolean",
               "description": "Whether the track is in clip launcher mode"
+            },
+            "timebase": {
+              "type": "integer",
+              "description": "Per-track timebase override: 0 = Musical, 1 = Absolute (omitted means \"inherit\" from project default)",
+              "minimum": 0,
+              "maximum": 1
             },
             "pianoRoll": {
               "type": "object",
@@ -1256,9 +1262,9 @@
             "type": {
               "const": 3
             },
-            "regions": {
+            "clips": {
               "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to ChordRegion objects in registry.arrangerObjects"
+              "description": "UUID references to ChordClip objects in registry.arrangerObjects"
             },
             "scales": {
               "$ref": "#/definitions/uuidArray",
@@ -1400,6 +1406,12 @@
             },
             "muted": {
               "type": "boolean"
+            },
+            "timebase": {
+              "type": "integer",
+              "description": "Per-object timebase override: 0 = Musical, 1 = Absolute (omitted means \"inherit\" from parent provider)",
+              "minimum": 0,
+              "maximum": 1
             }
           },
           "required": [
@@ -1409,8 +1421,8 @@
         }
       ]
     },
-    "regionBase": {
-      "$comment": "Base class for regions (derives from arrangerObjectBase)",
+    "clipBase": {
+      "$comment": "Base class for clips (derives from arrangerObjectBase)",
       "allOf": [
         {
           "$ref": "#/definitions/arrangerObjectBase"
@@ -1522,11 +1534,11 @@
         }
       ]
     },
-    "midiRegion": {
-      "$comment": "MIDI region (derives from regionBase)",
+    "midiClip": {
+      "$comment": "MIDI clip (derives from clipBase)",
       "allOf": [
         {
-          "$ref": "#/definitions/regionBase"
+          "$ref": "#/definitions/clipBase"
         },
         {
           "properties": {
@@ -1540,16 +1552,22 @@
             "midiControlEvents": {
               "$ref": "#/definitions/uuidArray",
               "description": "UUID references to midiControlEvent objects in registry.arrangerObjects"
+            },
+            "sourceBpm": {
+              "type": "number",
+              "minimum": 0,
+              "default": 0,
+              "description": "Source tempo for Absolute timebase anchor. 0 = unknown (Absolute is no-op)."
             }
           }
         }
       ]
     },
-    "audioRegion": {
-      "$comment": "Audio region (derives from regionBase)",
+    "audioClip": {
+      "$comment": "Audio clip (derives from clipBase)",
       "allOf": [
         {
-          "$ref": "#/definitions/regionBase"
+          "$ref": "#/definitions/clipBase"
         },
         {
           "properties": {
@@ -1567,20 +1585,20 @@
               "default": 1.0,
               "description": "Gain multiplier (0.0-2.0)"
             },
-            "musicalMode": {
+            "stretchAlgorithm": {
               "type": "integer",
               "minimum": 0,
-              "maximum": 2,
-              "default": 0,
-              "description": "Musical mode: 0=Inherit, 1=Off, 2=On"
+              "maximum": 3,
+              "default": 2,
+              "description": "Timestretch algorithm: 0=Beats, 1=Monophonic, 2=Polyphonic, 3=Repitch"
             },
             "fadeInOffset": {
               "$ref": "#/definitions/position",
-              "description": "Fade in duration (offset from region start)"
+              "description": "Fade in duration (offset from clip start)"
             },
             "fadeOutOffset": {
               "$ref": "#/definitions/position",
-              "description": "Fade out duration (offset from region end)"
+              "description": "Fade out duration (offset from clip end)"
             },
             "fadeInOpts": {
               "$ref": "#/definitions/curveOptions",
@@ -1616,11 +1634,11 @@
         }
       ]
     },
-    "automationRegion": {
-      "$comment": "Automation region (derives from regionBase)",
+    "automationClip": {
+      "$comment": "Automation clip (derives from clipBase)",
       "allOf": [
         {
-          "$ref": "#/definitions/regionBase"
+          "$ref": "#/definitions/clipBase"
         },
         {
           "properties": {
@@ -1663,11 +1681,11 @@
         }
       ]
     },
-    "chordRegion": {
-      "$comment": "Chord region (derives from regionBase)",
+    "chordClip": {
+      "$comment": "Chord clip (derives from clipBase)",
       "allOf": [
         {
-          "$ref": "#/definitions/regionBase"
+          "$ref": "#/definitions/clipBase"
         },
         {
           "properties": {
@@ -1807,22 +1825,22 @@
           "$ref": "#/definitions/midiNote"
         },
         {
-          "$ref": "#/definitions/midiRegion"
+          "$ref": "#/definitions/midiClip"
         },
         {
-          "$ref": "#/definitions/audioRegion"
+          "$ref": "#/definitions/audioClip"
         },
         {
           "$ref": "#/definitions/audioSourceObject"
         },
         {
-          "$ref": "#/definitions/automationRegion"
+          "$ref": "#/definitions/automationClip"
         },
         {
           "$ref": "#/definitions/automationPoint"
         },
         {
-          "$ref": "#/definitions/chordRegion"
+          "$ref": "#/definitions/chordClip"
         },
         {
           "$ref": "#/definitions/chordObject"
@@ -1898,12 +1916,12 @@
       ]
     },
     "clipSlot": {
-      "type": "object",
-      "description": "A clip slot in the clip launcher that can contain a region/clip",
+      "type": ["object", "null"],
+      "description": "A clip slot in the clip launcher (null when empty, object with clipId when a clip is assigned)",
       "properties": {
-        "regionId": {
+        "clipId": {
           "$ref": "#/definitions/uuid",
-          "description": "UUID reference to a region in registry.arrangerObjects (MidiRegion, AudioRegion, etc.)"
+          "description": "UUID reference to a clip in registry.arrangerObjects (MidiClip, AudioClip, etc.)"
         }
       }
     },

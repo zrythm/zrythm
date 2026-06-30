@@ -14,10 +14,10 @@ GridLayout {
   required property ClipEditor clipEditor
   required property MidiEditor midiEditor
   readonly property Project project: session.project
-  required property MidiRegion region
+  required property MidiClip midiClip
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
   required property ProjectSession session
-  readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.region)
+  readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.midiClip)
 
   readonly property ChordTrack chordTrack: root.project.tracklist.singletonTracks.chordTrack ?? null
   readonly property int highlightMode: GlobalState.application.appSettings.pianoRollHighlight
@@ -58,7 +58,7 @@ GridLayout {
       root._updateActiveChordAndScale();
     }
 
-    target: root.chordTrack?.chordRegions ?? null
+    target: root.chordTrack?.chordClips ?? null
   }
   Connections {
     function onContentChanged() {
@@ -107,10 +107,10 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.midiEditor
-    region: root.region
+    clipObject: root.midiClip
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
-    track: root.project.tracklist.getTrackForTimelineObject(root.region)
+    track: root.project.tracklist.getTrackForTimelineObject(root.midiClip)
     transport: root.project.transport
   }
 

@@ -6,8 +6,10 @@
 
 namespace zrythm::structure::arrangement
 {
-TempoObject::TempoObject (const dsp::TempoMap &tempo_map, QObject * parent)
-    : ArrangerObject (ArrangerObject::Type::TempoObject, tempo_map, {}, parent)
+TempoObject::TempoObject (
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  QObject *                   parent)
+    : ArrangerObject (ArrangerObject::Type::TempoObject, tempo_map_wrapper, {}, parent)
 {
   QObject::connect (
     this, &TempoObject::tempoChanged, this, &ArrangerObject::propertiesChanged);

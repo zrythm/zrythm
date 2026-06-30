@@ -7,11 +7,15 @@
 namespace zrythm::structure::arrangement
 {
 AudioSourceObject::AudioSourceObject (
-  const dsp::TempoMap              &tempo_map,
+  const dsp::TempoMapWrapper       &tempo_map_wrapper,
   utils::IObjectRegistry           &registry,
   dsp::FileAudioSourceUuidReference source,
   QObject *                         parent)
-    : ArrangerObject (Type::AudioSourceObject, tempo_map, {}, parent),
+    : ArrangerObject (
+        Type::AudioSourceObject,
+        tempo_map_wrapper,
+        ArrangerObjectFeatures::ClipOwned,
+        parent),
       registry_ (registry), source_id_ (std::move (source))
 {
   generate_audio_source ();
@@ -22,6 +26,12 @@ juce::PositionableAudioSource &
 AudioSourceObject::get_audio_source () const
 {
   return *source_;
+}
+
+dsp::FileAudioSource &
+AudioSourceObject::file_audio_source () const
+{
+  return *source_id_.get_object_as<dsp::FileAudioSource> ();
 }
 
 dsp::FileAudioSourceUuidReference

@@ -5,7 +5,7 @@
 
 #include "dsp/chord_audition_state.h"
 #include "structure/arrangement/arranger_object_owner.h"
-#include "structure/arrangement/chord_region.h"
+#include "structure/arrangement/chord_clip.h"
 #include "structure/arrangement/scale_object.h"
 #include "structure/tracks/track.h"
 #include "utils/qt.h"
@@ -20,7 +20,7 @@ namespace zrythm::structure::tracks
  */
 class ChordTrack
     : public Track,
-      public arrangement::ArrangerObjectOwner<arrangement::ChordRegion>,
+      public arrangement::ArrangerObjectOwner<arrangement::ChordClip>,
       public arrangement::ArrangerObjectOwner<arrangement::ScaleObject>
 {
   Q_OBJECT
@@ -28,8 +28,8 @@ class ChordTrack
   QML_UNCREATABLE ("")
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     ChordTrack,
-    chordRegions,
-    zrythm::structure::arrangement::ChordRegion)
+    chordClips,
+    zrythm::structure::arrangement::ChordClip)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     ChordTrack,
     scaleObjects,
@@ -37,7 +37,7 @@ class ChordTrack
 
 public:
   using ScaleObject = arrangement::ScaleObject;
-  using ChordRegion = arrangement::ChordRegion;
+  using ChordClip = arrangement::ChordClip;
   using ChordObject = arrangement::ChordObject;
   using ScaleObjectPtr = ScaleObject *;
   using NotePitchToPitchesFunc = std::function<
@@ -136,9 +136,9 @@ public:
     utils::ObjectCloneType clone_type);
 
   std::string
-  get_field_name_for_serialization (const ChordRegion *) const override
+  get_field_name_for_serialization (const ChordClip *) const override
   {
-    return "regions";
+    return "clips";
   }
   std::string
   get_field_name_for_serialization (const ScaleObject *) const override
@@ -150,13 +150,13 @@ private:
   friend void to_json (nlohmann::json &j, const ChordTrack &track)
   {
     to_json (j, static_cast<const Track &> (track));
-    to_json (j, static_cast<const ArrangerObjectOwner<ChordRegion> &> (track));
+    to_json (j, static_cast<const ArrangerObjectOwner<ChordClip> &> (track));
     to_json (j, static_cast<const ArrangerObjectOwner<ScaleObject> &> (track));
   }
   friend void from_json (const nlohmann::json &j, ChordTrack &track)
   {
     from_json (j, static_cast<Track &> (track));
-    from_json (j, static_cast<ArrangerObjectOwner<ChordRegion> &> (track));
+    from_json (j, static_cast<ArrangerObjectOwner<ChordClip> &> (track));
     from_json (j, static_cast<ArrangerObjectOwner<ScaleObject> &> (track));
   }
 

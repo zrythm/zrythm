@@ -181,7 +181,7 @@ private:
 /**
  * @brief Audio-specific timeline data cache.
  *
- * Handles caching of audio regions with thread-safe access and
+ * Handles caching of audio clips with thread-safe access and
  * range-based updates.
  */
 class AudioTimelineDataCache : public TimelineDataCache
@@ -193,13 +193,13 @@ public:
   }
 
   /**
-   * @brief Audio region entry for caching.
+   * @brief Audio clip entry for caching.
    *
-   * Contains all the information needed to process an audio region during
-   * playback without accessing the region object directly in the real-time
+   * Contains all the information needed to process an audio clip during
+   * playback without accessing the clip object directly in the real-time
    * thread.
    */
-  struct AudioRegionEntry
+  struct AudioClipEntry
   {
     /** Copy of the audio sample buffer. */
     juce::AudioSampleBuffer audio_buffer;
@@ -212,24 +212,21 @@ public:
   };
 
   /**
-   * @brief Adds an audio region for the given interval.
+   * @brief Adds an audio clip for the given interval.
    *
    * @param interval The time interval (in samples).
    * @param audio_buffer The audio sample buffer to copy.
    */
-  void add_audio_region (
+  void add_audio_clip (
     IntervalType                   interval,
     const juce::AudioSampleBuffer &audio_buffer);
 
   /**
-   * @brief Gets the cached audio regions.
+   * @brief Gets the cached audio clips.
    *
-   * @return Reference to the vector of audio region entries.
+   * @return Reference to the vector of audio clip entries.
    */
-  std::span<const AudioRegionEntry> audio_regions () const
-  {
-    return audio_regions_;
-  }
+  std::span<const AudioClipEntry> audio_clips () const { return audio_clips_; }
 
   void remove_sequences_matching_interval (IntervalType interval) override;
   bool has_content () const override;
@@ -239,12 +236,12 @@ private:
   void                      finalize_changes_impl () override;
   std::vector<IntervalType> compute_cached_sample_ranges () const override;
   /**
-   * @brief Audio region entries for playback.
+   * @brief Audio clip entries for playback.
    *
    * These are stored in a vector and sorted by start position during
    * finalization for efficient processing.
    */
-  std::vector<AudioRegionEntry> audio_regions_;
+  std::vector<AudioClipEntry> audio_clips_;
 };
 
 /**

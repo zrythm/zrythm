@@ -14,7 +14,7 @@ GridLayout {
   required property ClipEditor clipEditor
   readonly property Project project: session.project
   required property ProjectSession session
-  required property AutomationRegion region
+  required property AutomationClip automationClip
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
 
   columnSpacing: 0
@@ -43,10 +43,10 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.automationEditor
-    region: root.region
+    clipObject: root.automationClip
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
-    track: root.project.tracklist.getTrackForTimelineObject(root.region)
+    track: root.project.tracklist.getTrackForTimelineObject(root.automationClip)
     transport: root.project.transport
   }
 

@@ -55,23 +55,22 @@ public:
                 int                                          denominator,
                 double                                       startTicks);
 
-  Q_INVOKABLE structure::arrangement::MidiRegion * addEmptyMidiRegion (
+  Q_INVOKABLE structure::arrangement::MidiClip * addEmptyMidiClip (
     structure::tracks::Track *     track,
     structure::tracks::TrackLane * lane,
     double                         startTicks);
 
-  Q_INVOKABLE structure::arrangement::MidiRegion * addEmptyMidiRegionToClip (
+  Q_INVOKABLE structure::arrangement::MidiClip * addEmptyMidiClipToClip (
     structure::tracks::Track *    track,
     structure::scenes::ClipSlot * clipSlot);
 
-  Q_INVOKABLE structure::arrangement::ChordRegion *
-  addEmptyChordRegion (structure::tracks::ChordTrack * track, double startTicks);
+  Q_INVOKABLE structure::arrangement::ChordClip *
+  addEmptyChordClip (structure::tracks::ChordTrack * track, double startTicks);
 
-  Q_INVOKABLE structure::arrangement::AutomationRegion *
-              addEmptyAutomationRegion (
-                structure::tracks::Track *           track,
-                structure::tracks::AutomationTrack * automationTrack,
-                double                               startTicks);
+  Q_INVOKABLE structure::arrangement::AutomationClip * addEmptyAutomationClip (
+    structure::tracks::Track *           track,
+    structure::tracks::AutomationTrack * automationTrack,
+    double                               startTicks);
 
   /**
    * @brief
@@ -79,9 +78,9 @@ public:
    * @param lane
    * @param clip_id
    * @param start_ticks
-   * @return AudioRegion*
+   * @return AudioClip*
    */
-  structure::arrangement::AudioRegion * add_audio_region_with_clip (
+  structure::arrangement::AudioClip * add_audio_clip_with_clip (
     structure::tracks::Track         &track,
     structure::tracks::TrackLane     &lane,
     dsp::FileAudioSourceUuidReference clip_id,
@@ -93,7 +92,7 @@ public:
     units::precise_tick_t                      start_ticks);
 
   structure::arrangement::ArrangerObjectUuidReference
-  add_audio_region_for_recording (
+  add_audio_clip_for_recording (
     structure::tracks::Track        &track,
     structure::tracks::TrackLane    &lane,
     const utils::audio::AudioBuffer &initial_frames,
@@ -101,56 +100,55 @@ public:
     units::precise_tick_t            start_ticks);
 
   structure::arrangement::ArrangerObjectUuidReference
-  add_midi_region_for_recording (
+  add_midi_clip_for_recording (
     structure::tracks::Track     &track,
     structure::tracks::TrackLane &lane,
     units::precise_tick_t         start_ticks);
 
   structure::arrangement::MidiControlEvent * add_midi_control_event (
-    structure::arrangement::MidiRegion                 &region,
+    structure::arrangement::MidiClip                   &clip,
     units::precise_tick_t                               startTicks,
     structure::arrangement::MidiControlEvent::EventType type,
     int                                                 channel,
     int                                                 controller,
     int                                                 value);
 
-  Q_INVOKABLE structure::arrangement::AudioRegion * addAudioRegionFromFile (
+  Q_INVOKABLE structure::arrangement::AudioClip * addAudioClipFromFile (
     structure::tracks::Track *     track,
     structure::tracks::TrackLane * lane,
     const QString                 &absPath,
     double                         startTicks);
 
-  Q_INVOKABLE structure::arrangement::AudioRegion *
-              addAudioRegionToClipSlotFromFile (
+  Q_INVOKABLE structure::arrangement::AudioClip *
+              addAudioClipToClipSlotFromFile (
                 structure::tracks::Track *    track,
                 structure::scenes::ClipSlot * clipSlot,
                 const QString                &absPath);
-  Q_INVOKABLE structure::arrangement::AudioRegion *
-              addMidiRegionToClipSlotFromFile (
-                structure::tracks::Track *    track,
-                structure::scenes::ClipSlot * clipSlot,
-                const QString                &absPath);
+  Q_INVOKABLE structure::arrangement::MidiClip * addMidiClipToClipSlotFromFile (
+    structure::tracks::Track *    track,
+    structure::scenes::ClipSlot * clipSlot,
+    const QString                &absPath);
 
   /**
-   * @brief Creates a MIDI region at @p lane from the given @p descr
+   * @brief Creates a MIDI clip at @p lane from the given @p descr
    * starting at @p startTicks.
    */
-  Q_INVOKABLE structure::arrangement::MidiRegion *
-              addMidiRegionFromChordDescriptor (
+  Q_INVOKABLE structure::arrangement::MidiClip *
+              addMidiClipFromChordDescriptor (
                 structure::tracks::Track *     track,
                 structure::tracks::TrackLane * lane,
                 const dsp::ChordDescriptor    &descr,
                 double                         startTicks);
 
   /**
-   * @brief Creates a MIDI region at @p lane from MIDI file path @p abs_path
+   * @brief Creates a MIDI clip at @p lane from MIDI file path @p abs_path
    * starting at @p startTicks.
    *
    * @param midi_track_idx The index of this track, starting from 0. This
    * will be sequential, ie, if idx 1 is requested and the MIDI file only
    * has tracks 5 and 7, it will use track 7.
    */
-  Q_INVOKABLE structure::arrangement::MidiRegion * addMidiRegionFromMidiFile (
+  Q_INVOKABLE structure::arrangement::MidiClip * addMidiClipFromMidiFile (
     structure::tracks::Track *     track,
     structure::tracks::TrackLane * lane,
     const QString                 &absolutePath,
@@ -158,35 +156,35 @@ public:
     int                            midiTrackIndex);
 
   Q_INVOKABLE structure::arrangement::MidiNote * addMidiNote (
-    structure::arrangement::MidiRegion * region,
-    double                               startTicks,
-    int                                  pitch);
+    structure::arrangement::MidiClip * clip,
+    double                             startTicks,
+    int                                pitch);
 
   Q_INVOKABLE structure::arrangement::AutomationPoint * addAutomationPoint (
-    structure::arrangement::AutomationRegion * region,
-    double                                     startTicks,
-    double                                     value);
+    structure::arrangement::AutomationClip * clip,
+    double                                   startTicks,
+    double                                   value);
 
   Q_INVOKABLE structure::arrangement::ChordObject * addChordObject (
-    structure::arrangement::ChordRegion * region,
-    double                                startTicks,
-    const int                             chordIndex);
+    structure::arrangement::ChordClip * clip,
+    double                              startTicks,
+    const int                           chordIndex);
 
   Q_INVOKABLE structure::arrangement::ChordObject * addChordObjectFromFields (
-    structure::arrangement::ChordRegion * region,
-    double                                startTicks,
-    dsp::MusicalNote                      rootNote,
-    dsp::ChordType                        chordType,
-    dsp::ChordAccent                      chordAccent,
-    bool                                  hasBass,
-    dsp::MusicalNote                      bassNote,
-    int                                   inversion);
+    structure::arrangement::ChordClip * clip,
+    double                              startTicks,
+    dsp::MusicalNote                    rootNote,
+    dsp::ChordType                      chordType,
+    dsp::ChordAccent                    chordAccent,
+    bool                                hasBass,
+    dsp::MusicalNote                    bassNote,
+    int                                 inversion);
 
   Q_INVOKABLE structure::arrangement::ChordObject *
               addChordObjectFromDescriptor (
-                structure::arrangement::ChordRegion * region,
-                double                                startTicks,
-                zrythm::dsp::ChordDescriptor *        descriptor);
+                structure::arrangement::ChordClip * clip,
+                double                              startTicks,
+                zrythm::dsp::ChordDescriptor *      descriptor);
 
   /**
    * @brief Sets the descriptor of one or more chord objects to the given fields.
@@ -205,7 +203,7 @@ public:
 
 private:
   /**
-   * @brief Used for MIDI/Audio regions.
+   * @brief Used for MIDI/Audio clips.
    */
   void add_laned_object (
     structure::tracks::Track                           &track,
@@ -220,21 +218,21 @@ private:
   /**
    * @brief Used to create and add editor objects.
    *
-   * @param region Clip editor region.
+   * @param clip Clip editor clip.
    * @param startTicks Start position of the object in ticks.
    * @param value Either pitch (int), automation point value (double) or chord
    * ID.
    */
   template <structure::arrangement::EditorObject ChildT>
   auto add_editor_object (
-    structure::arrangement::RegionObject auto &region,
-    units::precise_tick_t                      startTicks,
-    std::variant<int, double>                  value) -> ChildT *
+    structure::arrangement::ClipObject auto &clip,
+    units::precise_tick_t                    startTicks,
+    std::variant<int, double>                value) -> ChildT *
   {
     auto obj_ref =
       arranger_object_factory_.create_editor_object<ChildT> (startTicks, value);
     undo_stack_.push (
-      new commands::AddArrangerObjectCommand<ChildT> (region, obj_ref));
+      new commands::AddArrangerObjectCommand<ChildT> (clip, obj_ref));
     auto obj = obj_ref.template get_object_as<ChildT> ();
     return obj;
   }

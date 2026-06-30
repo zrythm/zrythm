@@ -7,10 +7,13 @@
 
 namespace zrythm::structure::arrangement
 {
-Marker::Marker (const dsp::TempoMap &tempo_map, MarkerType type, QObject * parent)
+Marker::Marker (
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  MarkerType                  type,
+  QObject *                   parent)
     : ArrangerObject (
         ArrangerObject::Type::Marker,
-        tempo_map,
+        tempo_map_wrapper,
         ArrangerObjectFeatures::Name,
         parent),
       marker_type_ (type)

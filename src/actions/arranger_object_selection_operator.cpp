@@ -3,9 +3,14 @@
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/add_arranger_object_command.h"
+#include "commands/change_timebase_override_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
+#include "dsp/timebase.h"
+#include "dsp/timestretch_engine.h"
+#include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/audio_clip.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
 #include "utils/logger.h"
@@ -291,6 +296,120 @@ ArrangerObjectSelectionOperator::toggleMute ()
 }
 
 bool
+ArrangerObjectSelectionOperator::setStretchAlgorithm (
+  dsp::StretchOptions::Algorithm algorithm)
+{
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected for algorithm change");
+      return false;
+    }
+
+  std::vector<structure::arrangement::AudioClip *> targets;
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto * clip = obj_ref.get_object_as<structure::arrangement::AudioClip> ();
+      if (clip != nullptr)
+        targets.push_back (clip);
+    }
+
+  if (targets.empty ())
+    {
+      z_debug ("No audio clips selected");
+      return false;
+    }
+
+  undo_stack_.beginMacro (
+    QObject::tr ("Change Timestretch Algorithm on %1 Clip(s)")
+      .arg (targets.size ()));
+  for (auto * clip : targets)
+    {
+      undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
+        *clip, "stretchAlgorithm", QVariant::fromValue (algorithm)));
+    }
+  undo_stack_.endMacro ();
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::setTimebaseOverride (dsp::Timebase timebase)
+{
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected for timebase override");
+      return false;
+    }
+
+  undo_stack_.beginMacro (QObject::tr ("Set Timebase Override"));
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      std::visit (
+        [&] (const auto &obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (structure::arrangement::ClipObject<ObjectT>)
+            {
+              undo_stack_.push (new commands::ChangeTimebaseOverrideCommand (
+                *obj->timebaseProvider (), timebase));
+            }
+        },
+        obj_var);
+    }
+  undo_stack_.endMacro ();
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::clearTimebaseOverride ()
+{
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected for timebase clear");
+      return false;
+    }
+
+  undo_stack_.beginMacro (QObject::tr ("Clear Timebase Override"));
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      std::visit (
+        [&] (const auto &obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (structure::arrangement::ClipObject<ObjectT>)
+            {
+              undo_stack_.push (new commands::ChangeTimebaseOverrideCommand (
+                *obj->timebaseProvider (), std::nullopt));
+            }
+        },
+        obj_var);
+    }
+  undo_stack_.endMacro ();
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::selectionHasTimebaseProviders () const
+{
+  auto selected_objects = extractSelectedObjects ();
+  return std::ranges::any_of (selected_objects, [] (const auto &obj_ref) {
+    auto obj_var = utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+    return std::visit (
+      [] (const auto &obj) {
+        using ObjectT = utils::base_type<decltype (obj)>;
+        return structure::arrangement::ClipObject<ObjectT>;
+      },
+      obj_var);
+  });
+}
+
+bool
 ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
 {
   return process_vertical_move (delta);
@@ -401,23 +520,17 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
     return std::visit (
       [&] (auto &&obj) {
         using ObjectT = utils::base_type<decltype (obj)>;
-        const double new_position = obj->position ()->ticks () + tick_delta;
-        const auto   timeline_position = [&] () {
-          const auto * parent_obj = obj->parentObject ();
-          if (parent_obj != nullptr)
-            {
-              return new_position + parent_obj->position ()->ticks ();
-            }
-          return new_position;
-        }();
+        const auto current_timeline =
+          structure::arrangement::timeline_ticks (*obj);
+        const auto new_timeline =
+          current_timeline + dsp::TimelineTick{ units::ticks (tick_delta) };
         if constexpr (
           std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
           {
             // Time Signature objects are only allowed at bar boundaries
             const auto &tempo_map = obj->get_tempo_map ();
             const auto  musical_pos = tempo_map.tick_to_musical_position (
-              au::round_as<int64_t> (
-                units::ticks, units::ticks (timeline_position)));
+              au::round_as<int64_t> (units::ticks, new_timeline.asQuantity ()));
             if (
               musical_pos.beat != 1 || musical_pos.sixteenth != 1
               || musical_pos.tick != 0)
@@ -425,7 +538,7 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
                 return false;
               }
           }
-        return timeline_position >= 0.0;
+        return new_timeline.asDouble () >= 0.0;
       },
       obj_var);
   });
@@ -487,7 +600,10 @@ ArrangerObjectSelectionOperator::validateResize (
               structure::arrangement::ArrangerObjectPtrVariant> (obj),
             direction, delta);
         case commands::ResizeType::Fades:
-          return validateFadesResize (*obj, direction, delta);
+          return validateFadesResize (
+            utils::convert_to_variant_qobj<
+              structure::arrangement::ArrangerObjectPtrVariant> (obj),
+            direction, delta);
         default:
           return false;
         }
@@ -503,7 +619,7 @@ ArrangerObjectSelectionOperator::validateBoundsResize (
   return std::visit (
     [&] (const auto &obj) {
       using ObjectT = utils::base_type<decltype (obj)>;
-      if (obj->bounds () == nullptr)
+      if constexpr (!structure::arrangement::BoundedObject<ObjectT>)
         return false; // Object doesn't support bounds
 
       if (direction == commands::ResizeDirection::FromStart)
@@ -518,7 +634,7 @@ ArrangerObjectSelectionOperator::validateBoundsResize (
         }
 
       // Check that new length won't be less than minimum (1 tick)
-      const double current_length = obj->bounds ()->length ()->ticks ();
+      const double current_length = obj->length ()->ticks ();
       const double new_length =
         (direction == commands::ResizeDirection::FromStart)
           ? current_length - delta
@@ -531,34 +647,39 @@ ArrangerObjectSelectionOperator::validateBoundsResize (
 
 bool
 ArrangerObjectSelectionOperator::validateFadesResize (
-  const structure::arrangement::ArrangerObject &obj,
-  commands::ResizeDirection                     direction,
-  double                                        delta)
+  structure::arrangement::ArrangerObjectPtrVariant obj_var,
+  commands::ResizeDirection                        direction,
+  double                                           delta)
 {
-  if (obj.fadeRange () == nullptr)
-    return false; // Object doesn't support fades
+  return std::visit (
+    [&] (const auto &obj) {
+      using ObjectT = utils::base_type<decltype (obj)>;
+      if constexpr (!structure::arrangement::FadeableObject<ObjectT>)
+        {
+          return false; // Object doesn't support fades
+        }
+      else
+        {
+          const double fade_in = obj->fadeRange ()->startOffset ()->ticks ();
+          const double fade_out = obj->fadeRange ()->endOffset ()->ticks ();
 
-  const double fade_in = obj.fadeRange ()->startOffset ()->ticks ();
-  const double fade_out = obj.fadeRange ()->endOffset ()->ticks ();
+          if (direction == commands::ResizeDirection::FromStart)
+            {
+              // Reject drags that would drive the fade-in offset negative.
+              if (fade_in + delta < 0.0)
+                return false;
+            }
+          else // FromEnd
+            {
+              // Reject drags that would drive the fade-out offset negative.
+              if (fade_out + delta < 0.0)
+                return false;
+            }
 
-  if (direction == commands::ResizeDirection::FromStart)
-    {
-      // Check that new fade-in offset won't be negative
-      const double new_fade_in = std::max (fade_in + delta, 0.0);
-
-      if (new_fade_in < 0.0)
-        return false;
-    }
-  else // FromEnd
-    {
-      // Check that new fade-out offset won't be negative
-      const double new_fade_out = std::max (fade_out + delta, 0.0);
-
-      if (new_fade_out < 0.0)
-        return false;
-    }
-
-  return true;
+          return true;
+        }
+    },
+    obj_var);
 }
 
 } // namespace zrythm::actions

@@ -40,6 +40,9 @@ Track::Track (
 {
   z_debug ("creating {} track", type);
 
+  timebase_provider_ = utils::make_qobject_unique<dsp::TimebaseProvider> (this);
+  timebase_provider_->setOverride (dsp::Timebase::Musical);
+
   if (
     out_signal_type == dsp::PortType::Audio
     || out_signal_type == dsp::PortType::Midi)
@@ -86,6 +89,9 @@ init_from (Track &obj, const Track &other, utils::ObjectCloneType clone_type)
   obj.out_signal_type_ = other.out_signal_type_;
   obj.comment_ = other.comment_;
   obj.frozen_clip_id_ = other.frozen_clip_id_;
+  if (other.timebase_provider_->hasOverride ())
+    obj.timebase_provider_->setOverride (
+      *other.timebase_provider_->overrideValue ());
   init_from (*obj.processor_, *other.processor_, clone_type);
   init_from (
     *obj.automation_tracklist_, *other.automation_tracklist_, clone_type);
@@ -113,7 +119,7 @@ Track::type_get_from_plugin_descriptor (
 }
 
 uint8_t
-Track::get_midi_ch (const arrangement::MidiRegion &midi_region) const
+Track::get_midi_ch (const arrangement::MidiClip &midi_clip) const
 {
   assert (lanes_);
   assert (piano_roll_track_mixin_);
@@ -121,10 +127,10 @@ Track::get_midi_ch (const arrangement::MidiRegion &midi_region) const
   // return lane MIDI channel if set
   for (const auto &lane : lanes_->lanes_view ())
     {
-      auto midi_regions = lane->arrangement::ArrangerObjectOwner<
-        arrangement::MidiRegion>::get_children_view ();
-      auto it = std::ranges::find (midi_regions, &midi_region);
-      if (it != midi_regions.end () && lane->midiChannel () > 0)
+      auto midi_clips = lane->arrangement::ArrangerObjectOwner<
+        arrangement::MidiClip>::get_children_view ();
+      auto it = std::ranges::find (midi_clips, &midi_clip);
+      if (it != midi_clips.end () && lane->midiChannel () > 0)
         {
           return lane->midiChannel ();
         }
@@ -202,7 +208,8 @@ Track::make_automation_tracklist ()
   auto atl = utils::make_qobject_unique<AutomationTracklist> (
     AutomationTrackHolder::Dependencies{
       .tempo_map_ = base_dependencies_.tempo_map_,
-      .registry_ = base_dependencies_.registry_ },
+      .registry_ = base_dependencies_.registry_,
+      .timebase_provider_ = timebaseProvider () },
     this);
 
   // Listen to automation visibility and data changes
@@ -251,7 +258,7 @@ utils::QObjectUniquePtr<TrackLaneList>
 Track::make_lanes ()
 {
   auto ret = utils::make_qobject_unique<TrackLaneList> (
-    base_dependencies_.registry_, this);
+    base_dependencies_.registry_, timebaseProvider (), this);
 
   QObject::connect (
     ret.get (), &TrackLaneList::totalHeightChanged, this,
@@ -280,7 +287,7 @@ Track::init_cache_scheduler ()
 
   if (
     auto * chord_owner = dynamic_cast<
-      arrangement::ArrangerObjectOwner<arrangement::ChordRegion> *> (this))
+      arrangement::ArrangerObjectOwner<arrangement::ChordClip> *> (this))
     {
       QObject::connect (
         chord_owner->get_model (),
@@ -327,7 +334,7 @@ Track::init_playback_cache_activity_tracker (TrackProcessor &proc)
         PlaybackCacheActivityTracker> (
         playable_content_cache_request_debouncer_.get (), *cache,
         [&tm] (units::sample_t sample) {
-          return tm.samples_to_tick (sample).in (units::ticks);
+          return tm.samples_to_tick (sample).asDouble ();
         },
         this);
     }
@@ -504,57 +511,56 @@ void
 Track::regeneratePlaybackCaches (utils::ExpandableTickRange affectedRange)
 {
   ZoneScoped;
-  const auto generate_events_for_region_type =
-    [&]<arrangement::RegionObject RegionT> () {
-      z_debug (
-        "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
-        name (), affectedRange);
+  const auto generate_events_for_clip_type = [&]<arrangement::ClipObject ClipT> () {
+    z_debug (
+      "Arranger object contents changed for track '{}' - regenerating caches for range [{}]",
+      name (), affectedRange);
 
-      auto get_all_lane_regions = [this] () {
-        return lanes_->lanes ()
-               | std::views::transform ([] (auto &uptr) -> const TrackLane * {
-                   return uptr.get ();
-                 })
-               | std::views::transform ([] (const TrackLane * lane) {
-                   return lane->arrangement::ArrangerObjectOwner<
-                     RegionT>::get_children_view ();
-                 })
-               | std::views::join;
-      };
-
-      if constexpr (std::is_same_v<RegionT, arrangement::MidiRegion>)
-        {
-          if (processor_->is_midi () && lanes_)
-            {
-              auto all_regions = get_all_lane_regions ();
-              processor_->timeline_midi_data_provider ().generate_midi_events (
-                base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
-                affectedRange);
-            }
-        }
-      else if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
-        {
-          if (processor_->is_audio () && lanes_)
-            {
-              auto all_regions = get_all_lane_regions ();
-              processor_->timeline_audio_data_provider ().generate_audio_events (
-                base_dependencies_.tempo_map_.get_tempo_map (), all_regions,
-                affectedRange);
-            }
-        }
+    auto get_all_lane_clips = [this] () {
+      return lanes_->lanes ()
+             | std::views::transform ([] (auto &uptr) -> const TrackLane * {
+                 return uptr.get ();
+               })
+             | std::views::transform ([] (const TrackLane * lane) {
+                 return lane->arrangement::ArrangerObjectOwner<
+                   ClipT>::get_children_view ();
+               })
+             | std::views::join;
     };
-  generate_events_for_region_type.operator()<arrangement::MidiRegion> ();
-  generate_events_for_region_type.operator()<arrangement::AudioRegion> ();
+
+    if constexpr (std::is_same_v<ClipT, arrangement::MidiClip>)
+      {
+        if (processor_->is_midi () && lanes_)
+          {
+            auto all_clips = get_all_lane_clips ();
+            processor_->timeline_midi_data_provider ().generate_midi_events (
+              base_dependencies_.tempo_map_.get_tempo_map (), all_clips,
+              affectedRange);
+          }
+      }
+    else if constexpr (std::is_same_v<ClipT, arrangement::AudioClip>)
+      {
+        if (processor_->is_audio () && lanes_)
+          {
+            auto all_clips = get_all_lane_clips ();
+            processor_->timeline_audio_data_provider ().generate_audio_events (
+              base_dependencies_.tempo_map_.get_tempo_map (), all_clips,
+              affectedRange);
+          }
+      }
+  };
+  generate_events_for_clip_type.operator()<arrangement::MidiClip> ();
+  generate_events_for_clip_type.operator()<arrangement::AudioClip> ();
 
   if (
     auto * chord_owner = dynamic_cast<
-      arrangement::ArrangerObjectOwner<arrangement::ChordRegion> *> (this))
+      arrangement::ArrangerObjectOwner<arrangement::ChordClip> *> (this))
     {
       if (processor_->is_midi ())
         {
-          auto chord_regions = chord_owner->get_children_view ();
+          auto chord_clips = chord_owner->get_children_view ();
           processor_->timeline_midi_data_provider ().generate_midi_events (
-            base_dependencies_.tempo_map_.get_tempo_map (), chord_regions,
+            base_dependencies_.tempo_map_.get_tempo_map (), chord_clips,
             affectedRange);
         }
     }
@@ -671,6 +677,10 @@ to_json (nlohmann::json &j, const Track &track)
       j[Track::kPianoRollKey] = track.piano_roll_track_mixin_;
     }
   j[Track::kClipLauncherModeKey] = track.clip_launcher_mode_;
+  if (track.timebase_provider_->hasOverride ())
+    {
+      j[Track::kTimebaseKey] = *track.timebase_provider_->overrideValue ();
+    }
 }
 
 void
@@ -721,6 +731,12 @@ from_json (const nlohmann::json &j, Track &track)
   if (track.piano_roll_track_mixin_)
     {
       j.at (Track::kPianoRollKey).get_to (*track.piano_roll_track_mixin_);
+    }
+  if (j.contains (Track::kTimebaseKey))
+    {
+      dsp::Timebase tb{};
+      j.at (Track::kTimebaseKey).get_to (tb);
+      track.timebase_provider_->setOverride (tb);
     }
 }
 

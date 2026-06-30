@@ -29,7 +29,7 @@ protected:
     clip_id_ref = utils::create_object<FileAudioSource> (
       registry, utils::audio::AudioBuffer (2, 100),
       FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
-      120.0, u8"test_clip", nullptr);
+      units::bpm (120.0), u8"test_clip", nullptr);
     clip_id = clip_id_ref->id ();
 
     // Setup AudioPool
@@ -117,8 +117,8 @@ TEST_F (AudioPoolTest, RemoveUnused)
   std::optional<FileAudioSourceUuidReference> unused_clip = utils::create_object<
     FileAudioSource> (
     registry, utils::audio::AudioBuffer (2, 50),
-    FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100), 120.0,
-    u8"unused_clip", nullptr);
+    FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
+    units::bpm (120.0), u8"unused_clip", nullptr);
   auto unused_path = audio_pool->get_clip_path (unused_clip->id (), false);
 
   // Write both clips
@@ -165,7 +165,7 @@ TEST_F (AudioPoolTest, WriteToDisk)
       auto clip = utils::create_object<FileAudioSource> (
         registry, utils::audio::AudioBuffer (2, 100 + i * 10),
         FileAudioSource::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
-        120.0,
+        units::bpm (120.0),
         utils::Utf8String::from_utf8_encoded_string (fmt::format ("clip_{}", i)),
         nullptr);
       clip_ids.emplace_back (std::move (clip));

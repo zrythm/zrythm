@@ -29,7 +29,7 @@ namespace zrythm::structure::project
  *
  * Contains UI-related state that should be persisted between sessions:
  * - Currently selected arranger tool
- * - Clip editor state (selected region, etc.)
+ * - Clip editor state (selected clip, etc.)
  * - Timeline state
  * - Snap/grid settings for timeline and editor
  *
@@ -112,7 +112,7 @@ private:
   /** Currently selected arranger tool. */
   utils::QObjectUniquePtr<structure::project::ArrangerTool> tool_;
 
-  /** Clip editor state (selected region, etc.). */
+  /** Clip editor state (selected clip, etc.). */
   utils::QObjectUniquePtr<structure::project::ClipEditor> clip_editor_;
 
   /** Chord pad bank (variable-length chord descriptors for the pad panel). */

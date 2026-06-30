@@ -132,7 +132,7 @@ public:
   /**
    * Returns a filename-safe version of the given string.
    *
-   * Example: "MIDI Region #1" -> "MIDI_Region_1".
+   * Example: "MIDI Clip #1" -> "MIDI_Clip_1".
    */
   Utf8String convert_to_filename () const;
 

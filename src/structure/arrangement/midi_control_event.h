@@ -36,9 +36,16 @@ public:
   };
   Q_ENUM (EventType)
 
-  MidiControlEvent (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  MidiControlEvent (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
   Q_DISABLE_COPY_MOVE (MidiControlEvent)
   ~MidiControlEvent () override;
+
+  dsp::ContentPosition * position () const override
+  {
+    return qobject_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
 
   static constexpr int kMaxChannel = 15;
   static constexpr int kMaxController = 127;

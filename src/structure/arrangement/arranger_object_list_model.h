@@ -122,6 +122,11 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+  ArrangerObject * object_at (size_t row) const
+  {
+    return objects_.get<random_access_index> ().at (row).get ();
+  }
+
   void clear ();
 
   bool insertObject (const ArrangerObjectUuidReference &object, int index);

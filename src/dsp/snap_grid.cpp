@@ -49,13 +49,13 @@ SnapGrid::defaultTicks (int64_t ticks) const
     }
 
   auto time_sig = tempo_map_.time_signature_at_tick (units::ticks (ticks));
-  int  ticks_per_bar =
+  const auto ticks_per_bar =
     (time_sig.numerator * TempoMap::get_ppq () * 4) / time_sig.denominator;
-  int ticks_per_beat = ticks_per_bar / time_sig.numerator;
+  const auto ticks_per_beat = ticks_per_bar / time_sig.numerator;
 
   return get_ticks_from_length_and_type (
-    default_note_length_, dsp::notes::NoteType::Normal, ticks_per_bar,
-    ticks_per_beat);
+    default_note_length_, dsp::notes::NoteType::Normal,
+    ticks_per_bar.in (units::ticks), ticks_per_beat.in (units::ticks));
 }
 
 static auto

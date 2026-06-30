@@ -25,8 +25,10 @@ protected:
       std::make_unique<structure::tracks::TrackCollection> (registry_);
 
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,          registry_, transport_,
-      soloed_tracks_exist_getter_, {},
+      tempo_map_wrapper_,
+      registry_,
+      soloed_tracks_exist_getter_,
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/tempo_object.h"
 
 #include <QSignalSpy>
@@ -21,20 +22,23 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
-    tempo_obj = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+    tempo_obj =
+      std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<TempoObject>   tempo_obj;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<TempoObject>          tempo_obj;
 };
 
 // Test initial state
 TEST_F (TempoObjectTest, InitialState)
 {
   EXPECT_EQ (tempo_obj->type (), ArrangerObject::Type::TempoObject);
-  EXPECT_EQ (tempo_obj->position ()->samples (), 0);
+  EXPECT_EQ (tempo_obj->position ()->ticks (), 0);
   EXPECT_DOUBLE_EQ (tempo_obj->tempo (), TempoObject::DEFAULT_TEMPO);
   EXPECT_EQ (tempo_obj->curve (), TempoObject::CurveType::Constant);
 }
@@ -111,7 +115,7 @@ TEST_F (TempoObjectTest, CurveChangedSignal)
 TEST_F (TempoObjectTest, Serialization)
 {
   // Set initial state
-  tempo_obj->position ()->setSamples (1000);
+  tempo_obj->position ()->setTicks (1000);
   tempo_obj->setTempo (150.0);
   tempo_obj->setCurve (TempoObject::CurveType::Linear);
 
@@ -120,11 +124,12 @@ TEST_F (TempoObjectTest, Serialization)
   to_json (j, *tempo_obj);
 
   // Create new object
-  auto new_tempo_obj = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+  auto new_tempo_obj =
+    std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_tempo_obj);
 
   // Verify
-  EXPECT_EQ (new_tempo_obj->position ()->samples (), 1000);
+  EXPECT_EQ (new_tempo_obj->position ()->ticks (), 1000);
   EXPECT_DOUBLE_EQ (new_tempo_obj->tempo (), 150.0);
   EXPECT_EQ (new_tempo_obj->curve (), TempoObject::CurveType::Linear);
 }
@@ -133,18 +138,19 @@ TEST_F (TempoObjectTest, Serialization)
 TEST_F (TempoObjectTest, Copying)
 {
   // Set initial state
-  tempo_obj->position ()->setSamples (2000);
+  tempo_obj->position ()->setTicks (2000);
   tempo_obj->setTempo (180.0);
   tempo_obj->setCurve (TempoObject::CurveType::Linear);
 
   // Create target
-  auto target = std::make_unique<TempoObject> (*tempo_map, parent.get ());
+  auto target =
+    std::make_unique<TempoObject> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *tempo_obj, utils::ObjectCloneType::Snapshot);
 
   // Verify
-  EXPECT_EQ (target->position ()->samples (), 2000);
+  EXPECT_EQ (target->position ()->ticks (), 2000);
   EXPECT_DOUBLE_EQ (target->tempo (), 180.0);
   EXPECT_EQ (target->curve (), TempoObject::CurveType::Linear);
 }
@@ -169,9 +175,8 @@ TEST_F (TempoObjectTest, EdgeCases)
   EXPECT_DOUBLE_EQ (tempo_obj->tempo (), 1.0);
 
   // Position at max value
-  tempo_obj->position ()->setSamples (std::numeric_limits<int>::max ());
-  EXPECT_EQ (
-    tempo_obj->position ()->samples (), std::numeric_limits<int>::max ());
+  tempo_obj->position ()->setTicks (1e9);
+  EXPECT_DOUBLE_EQ (tempo_obj->position ()->ticks (), 1e9);
 }
 
 // Test tempo precision

@@ -4,8 +4,11 @@
 #include "commands/remove_arranger_object_command.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_factory.h"
+#include "utils/app_settings.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include <gtest/gtest.h>
 
@@ -45,17 +48,21 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+
+    app_settings = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
 
     factory = std::make_unique<structure::arrangement::ArrangerObjectFactory> (
       structure::arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map,
+        .tempo_map_ = *tempo_map_wrapper,
         .registry_ = object_registry,
-        .musical_mode_getter_ = [] () { return true; },
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
           [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
-      [] () { return units::sample_rate (44100); }, [] () { return 120.0; });
+      [] () { return units::sample_rate (44100); },
+      [] () { return units::bpm (120.0); });
 
     // Create a test MidiNote
     auto note_builder =
@@ -71,8 +78,10 @@ protected:
     mock_owner->add_object (test_object_ref);
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  utils::ObjectRegistry          object_registry;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  utils::ObjectRegistry                 object_registry;
+  std::unique_ptr<utils::AppSettings>   app_settings;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
   structure::arrangement::ArrangerObjectUuidReference test_object_ref{
     object_registry

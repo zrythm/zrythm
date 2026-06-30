@@ -4,8 +4,8 @@
 #pragma once
 
 #include "dsp/chord_descriptor.h"
+#include "structure/arrangement/chord_clip.h"
 #include "structure/arrangement/chord_object.h"
-#include "structure/arrangement/chord_region.h"
 
 #include <QAbstractListModel>
 #include <QPointer>
@@ -16,7 +16,7 @@ namespace zrythm::gui::qquick
 
 /**
  * @brief Derived QAbstractListModel that lists the unique chords used in a
- * ChordRegion, grouped by ChordDescriptor::isEquivalent.
+ * ChordClip, grouped by ChordDescriptor::isEquivalent.
  *
  * Each row represents one unique chord. Rows are sorted alphabetically by
  * display name.
@@ -25,8 +25,8 @@ class ChordRowListModel : public QAbstractListModel
 {
   Q_OBJECT
   Q_PROPERTY (
-    zrythm::structure::arrangement::ChordRegion * region READ region WRITE
-      setRegion NOTIFY regionChanged)
+    zrythm::structure::arrangement::ChordClip * chordClip READ chordClip WRITE
+      setChordClip NOTIFY chordClipChanged)
   QML_ELEMENT
 
 public:
@@ -40,8 +40,8 @@ public:
 
   explicit ChordRowListModel (QObject * parent = nullptr);
 
-  structure::arrangement::ChordRegion * region () const { return region_; }
-  void setRegion (structure::arrangement::ChordRegion * region);
+  structure::arrangement::ChordClip * chordClip () const { return clip_; }
+  void setChordClip (structure::arrangement::ChordClip * clip);
 
   QHash<int, QByteArray> roleNames () const override;
   int rowCount (const QModelIndex &parent = QModelIndex ()) const override;
@@ -65,7 +65,7 @@ public:
    */
   Q_INVOKABLE QVariantList chordObjectsAtRow (int row) const;
 
-  Q_SIGNAL void regionChanged ();
+  Q_SIGNAL void chordClipChanged ();
 
   /**
    * @brief Emitted after every rebuild (when chord objects are added, removed,
@@ -82,14 +82,14 @@ private:
   };
 
   void rebuild ();
-  void connect_to_region_model ();
-  void disconnect_from_region_model ();
+  void connect_to_clip_model ();
+  void disconnect_from_clip_model ();
   void connect_descriptor_signals ();
   void disconnect_descriptor_signals ();
 
-  QPointer<structure::arrangement::ChordRegion> region_;
-  std::vector<Row>                              rows_;
-  std::vector<QMetaObject::Connection>          descriptor_connections_;
+  QPointer<structure::arrangement::ChordClip> clip_;
+  std::vector<Row>                            rows_;
+  std::vector<QMetaObject::Connection>        descriptor_connections_;
 };
 
 } // namespace zrythm::gui::qquick

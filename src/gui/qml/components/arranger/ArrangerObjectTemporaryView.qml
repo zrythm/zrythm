@@ -9,6 +9,7 @@ Rectangle {
 
   required property ArrangerObject arrangerObject
   required property point coordinatesOnConstruction
+  required property real originalWidth
 
   color: palette.accent
   height: 16
@@ -16,9 +17,6 @@ Rectangle {
   width: 100
 
   Text {
-    text: {
-      const nameObj = ArrangerObjectHelpers.getObjectName(root.arrangerObject);
-      return nameObj ? nameObj.name : "";
-    }
+    text: root.arrangerObject?.name?.name ?? ""
   }
 }

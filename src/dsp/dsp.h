@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "./atomic_position_qml_adapter.h"
 #include "./chord_descriptor.h"
 #include "./curve.h"
 #include "./file_audio_source.h"

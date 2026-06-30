@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/time_signature_object.h"
 
 #include <QSignalSpy>
@@ -21,21 +22,23 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
     time_sig_obj =
-      std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+      std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>       tempo_map;
-  std::unique_ptr<MockQObject>         parent;
-  std::unique_ptr<TimeSignatureObject> time_sig_obj;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<TimeSignatureObject>  time_sig_obj;
 };
 
 // Test initial state
 TEST_F (TimeSignatureObjectTest, InitialState)
 {
   EXPECT_EQ (time_sig_obj->type (), ArrangerObject::Type::TimeSignatureObject);
-  EXPECT_EQ (time_sig_obj->position ()->samples (), 0);
+  EXPECT_EQ (time_sig_obj->position ()->ticks (), 0);
   EXPECT_EQ (time_sig_obj->numerator (), TimeSignatureObject::DEFAULT_NUMERATOR);
   EXPECT_EQ (
     time_sig_obj->denominator (), TimeSignatureObject::DEFAULT_DENOMINATOR);
@@ -130,7 +133,7 @@ TEST_F (TimeSignatureObjectTest, BothPropertiesChanging)
 TEST_F (TimeSignatureObjectTest, Serialization)
 {
   // Set initial state
-  time_sig_obj->position ()->setSamples (1000);
+  time_sig_obj->position ()->setTicks (1000);
   time_sig_obj->setNumerator (7);
   time_sig_obj->setDenominator (8);
 
@@ -140,11 +143,11 @@ TEST_F (TimeSignatureObjectTest, Serialization)
 
   // Create new object
   auto new_time_sig_obj =
-    std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+    std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_time_sig_obj);
 
   // Verify
-  EXPECT_EQ (new_time_sig_obj->position ()->samples (), 1000);
+  EXPECT_EQ (new_time_sig_obj->position ()->ticks (), 1000);
   EXPECT_EQ (new_time_sig_obj->numerator (), 7);
   EXPECT_EQ (new_time_sig_obj->denominator (), 8);
 }
@@ -153,19 +156,19 @@ TEST_F (TimeSignatureObjectTest, Serialization)
 TEST_F (TimeSignatureObjectTest, Copying)
 {
   // Set initial state
-  time_sig_obj->position ()->setSamples (2000);
+  time_sig_obj->position ()->setTicks (2000);
   time_sig_obj->setNumerator (9);
   time_sig_obj->setDenominator (16);
 
   // Create target
   auto target =
-    std::make_unique<TimeSignatureObject> (*tempo_map, parent.get ());
+    std::make_unique<TimeSignatureObject> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *time_sig_obj, utils::ObjectCloneType::Snapshot);
 
   // Verify
-  EXPECT_EQ (target->position ()->samples (), 2000);
+  EXPECT_EQ (target->position ()->ticks (), 2000);
   EXPECT_EQ (target->numerator (), 9);
   EXPECT_EQ (target->denominator (), 16);
 }
@@ -196,9 +199,8 @@ TEST_F (TimeSignatureObjectTest, EdgeCases)
   EXPECT_EQ (time_sig_obj->denominator (), 2000);
 
   // Position at max value
-  time_sig_obj->position ()->setSamples (std::numeric_limits<int>::max ());
-  EXPECT_EQ (
-    time_sig_obj->position ()->samples (), std::numeric_limits<int>::max ());
+  time_sig_obj->position ()->setTicks (1e9);
+  EXPECT_DOUBLE_EQ (time_sig_obj->position ()->ticks (), 1e9);
 }
 
 // Test common time signatures

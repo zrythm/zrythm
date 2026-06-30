@@ -136,7 +136,7 @@ Item {
       if (totalTrackHeight === 0)
         return;
 
-      // Draw regions for each track
+      // Draw clips for each track
       let currentY = 0;
       for (const track of tracks) {
         const trackHeightRatio = track.height / totalTrackHeight;
@@ -153,36 +153,36 @@ Item {
             if (!lane)
               continue;
 
-            // Draw MIDI regions
-            if (lane.midiRegions) {
-              const regionCount = lane.midiRegions.rowCount();
-              for (let r = 0; r < regionCount; r++) {
-                const regionIndex = lane.midiRegions.index(r, 0);
-                const region = lane.midiRegions.data(regionIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
+            // Draw MIDI clips
+            if (lane.midiClips) {
+              const clipCount = lane.midiClips.rowCount();
+              for (let r = 0; r < clipCount; r++) {
+                const clipIndex = lane.midiClips.index(r, 0);
+                const clip = lane.midiClips.data(clipIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
 
-                if (region) {
-                  const startX = region.position.ticks / totalTicks * width;
-                  const regionWidth = Math.max(2, region.bounds.length.ticks / totalTicks * width);
+                if (clip) {
+                  const startX = clip.position.ticks / totalTicks * width;
+                  const clipWidth = Math.max(2, clip.timelineLengthTicks / totalTicks * width);
 
                   ctx.fillStyle = Qt.alpha(track.color, 0.6);
-                  ctx.fillRect(startX, trackY, regionWidth, trackHeight);
+                  ctx.fillRect(startX, trackY, clipWidth, trackHeight);
                 }
               }
             }
 
-            // Draw audio regions
-            if (lane.audioRegions) {
-              const regionCount = lane.audioRegions.rowCount();
-              for (let r = 0; r < regionCount; r++) {
-                const regionIndex = lane.audioRegions.index(r, 0);
-                const region = lane.audioRegions.data(regionIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
+            // Draw audio clips
+            if (lane.audioClips) {
+              const clipCount = lane.audioClips.rowCount();
+              for (let r = 0; r < clipCount; r++) {
+                const clipIndex = lane.audioClips.index(r, 0);
+                const clip = lane.audioClips.data(clipIndex, ArrangerObjectListModel.ArrangerObjectPtrRole);
 
-                if (region) {
-                  const startX = region.position.ticks / totalTicks * width;
-                  const regionWidth = Math.max(2, region.bounds.length.ticks / totalTicks * width);
+                if (clip) {
+                  const startX = clip.position.ticks / totalTicks * width;
+                  const clipWidth = Math.max(2, clip.timelineLengthTicks / totalTicks * width);
 
                   ctx.fillStyle = Qt.alpha(track.color, 0.6);
-                  ctx.fillRect(startX, trackY, regionWidth, trackHeight);
+                  ctx.fillRect(startX, trackY, clipWidth, trackHeight);
                 }
               }
             }

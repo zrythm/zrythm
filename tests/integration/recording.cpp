@@ -108,8 +108,8 @@ do_takes_no_loop_no_punch (
   z_info ("process 1 ended");
 
   /* assert that MIDI events are created */
-  ASSERT_SIZE_EQ (ins_track->lanes_[0]->regions_, 1);
-  auto     mr = ins_track->lanes_[0]->regions_[0];
+  ASSERT_SIZE_EQ (ins_track->lanes_[0]->clips_, 1);
+  auto     mr = ins_track->lanes_[0]->clips_[0];
   Position pos;
   pos = TRANSPORT->playhead_pos_;
   ASSERT_POSITION_EQ (pos, mr->end_pos_);

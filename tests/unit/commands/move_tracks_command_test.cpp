@@ -28,7 +28,10 @@ protected:
   structure::tracks::FinalTrackDependencies make_deps ()
   {
     return structure::tracks::FinalTrackDependencies{
-      *tempo_map_wrapper_, registry_, transport_, [] { return false; }, {},
+      *tempo_map_wrapper_,
+      registry_,
+      [] { return false; },
+      {},
     };
   }
 

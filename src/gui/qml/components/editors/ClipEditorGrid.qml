@@ -14,7 +14,7 @@ GridLayout {
 
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  readonly property var region: clipEditor.region
+  readonly property var clipObject: clipEditor.clipObject
   required property ProjectSession session
   readonly property var track: clipEditor.track
 
@@ -30,7 +30,7 @@ GridLayout {
     Rectangle {
       Layout.fillHeight: true
       Layout.preferredWidth: 5
-      color: root.region.color.useColor ? root.region.color.color : root.track.color
+      color: root.clipObject.color.useColor ? root.clipObject.color.color : root.track.color
     }
 
     RotatedLabel {
@@ -38,7 +38,7 @@ GridLayout {
 
       Layout.fillHeight: true
       font: ZrythmTheme.normalTextFont
-      text: root.region.name.name
+      text: root.clipObject.name.name
     }
   }
 
@@ -52,7 +52,7 @@ GridLayout {
         snapGrid: root.session.uiState.snapGridEditor
       },
       RowLayout {
-        visible: root.region.type === ArrangerObject.MidiRegion
+        visible: root.clipObject.type === ArrangerObject.MidiClip
 
         Label {
           Layout.alignment: Qt.AlignVCenter
@@ -103,14 +103,14 @@ GridLayout {
     id: editorSpecializedStack
 
     currentIndex: {
-      switch (root.region.type) {
-      case ArrangerObject.MidiRegion:
+      switch (root.clipObject.type) {
+      case ArrangerObject.MidiClip:
         return 0;
-      case ArrangerObject.AudioRegion:
+      case ArrangerObject.AudioClip:
         return 1;
-      case ArrangerObject.ChordRegion:
+      case ArrangerObject.ChordClip:
         return 3;
-      case ArrangerObject.AutomationRegion:
+      case ArrangerObject.AutomationClip:
         return 2;
       default:
         return 0;
@@ -124,8 +124,8 @@ GridLayout {
 
       sourceComponent: MidiEditorPane {
         clipEditor: root.clipEditor
+        midiClip: root.clipObject as MidiClip
         midiEditor: root.clipEditor.midiEditor
-        region: root.region
         session: root.session
       }
     }
@@ -136,8 +136,8 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 1
 
       sourceComponent: AudioEditorPane {
+        audioClip: root.clipObject as AudioClip
         clipEditor: root.clipEditor
-        region: root.region
         session: root.session
       }
     }
@@ -148,9 +148,9 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 2
 
       sourceComponent: AutomationEditorPane {
+        automationClip: root.clipObject as AutomationClip
         automationEditor: root.clipEditor.automationEditor
         clipEditor: root.clipEditor
-        region: root.region
         session: root.session
       }
     }
@@ -161,8 +161,8 @@ GridLayout {
       active: editorSpecializedStack.currentIndex === 3
 
       sourceComponent: ChordEditorPane {
+        chordClip: root.clipObject as ChordClip
         clipEditor: root.clipEditor
-        region: root.region
         session: root.session
       }
     }

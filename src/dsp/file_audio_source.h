@@ -31,7 +31,6 @@ public:
   using BitDepth = zrythm::utils::audio::BitDepth;
   using AudioFile = zrythm::utils::audio::AudioFile;
   using channels_t = uint_fast8_t;
-  using bpm_t = float;
 
 public:
   FileAudioSource (QObject * parent = nullptr);
@@ -39,30 +38,31 @@ public:
   /**
    * Creates an audio clip from a file.
    *
-   * The basename of the file will be used as the name of the clip.
-   *
-   * @param current_bpm Current BPM from TempoTrack. @ref bpm_ will be set to
-   * this. FIXME: should this be optional? does "current" BPM make sense?
+   * The clip's source BPM (@ref bpm_) is read from the file's metadata; if the
+   * file carries no BPM metadata it is left as 0 (unknown) and musical mode
+   * cannot be applied until the BPM is supplied. The basename of the file is
+   * used as the clip name.
    *
    * @throw ZrythmException on error.
    */
   FileAudioSource (
     const std::filesystem::path &full_path,
     units::sample_rate_t         project_sample_rate,
-    bpm_t                        current_bpm,
     QObject *                    parent = nullptr);
 
   /**
    * Creates an audio clip by copying the given buffer.
    *
-   * @param buf Buffer to copy.
+   * @param source_bpm The clip's permanent source BPM. For material captured
+   *                   in-project (e.g. recording) this is the project tempo at
+   *                   capture time; for duplicated clips, the original's BPM.
    * @param name A name for this clip.
    */
   FileAudioSource (
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     units::sample_rate_t             project_sample_rate,
-    bpm_t                            current_bpm,
+    units::bpm_t                     source_bpm,
     const utils::Utf8String         &name,
     QObject *                        parent = nullptr);
 
@@ -80,7 +80,7 @@ public:
     channels_t                     channels,
     zrythm::utils::audio::BitDepth bit_depth,
     units::sample_rate_t           project_sample_rate,
-    bpm_t                          current_bpm,
+    units::bpm_t                   source_bpm,
     const utils::Utf8String       &name,
     QObject *                      parent = nullptr)
       : FileAudioSource (
@@ -88,7 +88,7 @@ public:
             from_interleaved (arr, nframes.in (units::samples), channels),
           bit_depth,
           project_sample_rate,
-          current_bpm,
+          source_bpm,
           name,
           parent)
   {
@@ -105,9 +105,17 @@ public:
 
   // ========================================================================
 
-  auto        get_bit_depth () const { return bit_depth_; }
-  auto        get_name () const { return name_; }
-  auto        get_bpm () const { return bpm_; }
+  auto get_bit_depth () const { return bit_depth_; }
+  auto get_name () const { return name_; }
+  /**
+   * @brief The clip's permanent source BPM (its intrinsic musical tempo).
+   *
+   * Set once at construction: from file metadata for file-loaded clips, or
+   * from the value supplied by the caller (e.g. the project tempo at recording
+   * time) for buffer-backed clips. Used to compute musical-mode stretch
+   * ratios. A value of 0 means "unknown" — musical mode cannot be applied.
+   */
+  auto        source_bpm () const { return bpm_; }
   const auto &get_samples () const { return ch_frames_; }
   auto        get_samplerate () const { return samplerate_; }
 
@@ -165,15 +173,18 @@ public:
    * @brief Initializes members from an audio file.
    *
    * @param full_path Path to the file.
-   * @param bpm_to_set BPM of the clip to set (File BPM or 0 will be used if
-   * nullopt).
+   * @param bpm_to_set Optional source BPM to use instead of the file's metadata
+   *                   BPM. Used when reloading a project to preserve the
+   *                   previously stored value. If nullopt (or <= 0), the BPM
+   *                   read from file metadata is kept (0 if the file carries
+   *                   none).
    *
    * @throw ZrythmException on I/O error.
    */
   void init_from_file (
     const std::filesystem::path &full_path,
     units::sample_rate_t         project_sample_rate,
-    std::optional<bpm_t>         bpm_to_set);
+    std::optional<units::bpm_t>  bpm_to_set);
 
 private:
   friend void init_from (
@@ -196,9 +207,15 @@ private:
   utils::audio::AudioBuffer ch_frames_;
 
   /**
-   * BPM of the clip, or BPM of the project when the clip was first loaded.
+   * The clip's permanent source BPM — its intrinsic musical tempo.
+   *
+   * For file-loaded clips this comes from the file's metadata (0 if none).
+   * For buffer-backed clips (recording, duplication) it is supplied by the
+   * caller. Used to compute musical-mode stretch ratios; 0 means "unknown".
+   *
+   * @see source_bpm()
    */
-  bpm_t bpm_{};
+  units::bpm_t bpm_{};
 
   /**
    * Samplerate of the clip, or samplerate when the clip was imported into the

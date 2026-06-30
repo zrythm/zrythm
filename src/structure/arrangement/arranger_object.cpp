@@ -7,35 +7,40 @@
 namespace zrythm::structure::arrangement
 {
 
+namespace
+{
+
+utils::QObjectUniquePtr<dsp::Position>
+make_position (bool clip_owned, QObject * parent)
+{
+  if (clip_owned)
+    return utils::make_qobject_unique<dsp::ContentPosition> (parent);
+  return utils::make_qobject_unique<dsp::TimelinePosition> (parent);
+}
+
+} // namespace
+
 ArrangerObject::ArrangerObject (
-  Type                   type,
-  const dsp::TempoMap   &tempo_map,
-  ArrangerObjectFeatures features,
-  QObject *              parent) noexcept
+  Type                        type,
+  const dsp::TempoMapWrapper &tempo_map_wrapper,
+  ArrangerObjectFeatures      features,
+  QObject *                   parent) noexcept
     : utils::UuidIdentifiableObject<ArrangerObject> (parent), type_ (type),
-      tempo_map_ (tempo_map),
-      time_conversion_funcs_ (
-        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_)),
-      position_ (*time_conversion_funcs_),
-      position_adapter_ (
-        utils::make_qobject_unique<
-          dsp::AtomicPositionQmlAdapter> (position_, std::nullopt, this))
+      tempo_map_wrapper_ (tempo_map_wrapper),
+      position_ (make_position (
+        ENUM_BITSET_TEST (features, ArrangerObjectFeatures::ClipOwned),
+        this))
 {
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Bounds))
     {
-      bounds_ =
-        utils::make_qobject_unique<ArrangerObjectBounds> (*position (), this);
+      length_ = utils::make_qobject_unique<dsp::ContentPosition> (
+        [] (units::precise_tick_t ticks) {
+          return max (ticks, units::ticks (1.0));
+        },
+        this);
       QObject::connect (
-        bounds ()->length (), &dsp::AtomicPositionQmlAdapter::positionChanged,
-        this, &ArrangerObject::propertiesChanged);
-    }
-  if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::LoopingBit))
-    {
-      loop_range_ =
-        utils::make_qobject_unique<ArrangerObjectLoopRange> (*bounds (), this);
-      QObject::connect (
-        loopRange (), &ArrangerObjectLoopRange::loopableObjectPropertiesChanged,
-        this, &ArrangerObject::propertiesChanged);
+        length_.get (), &dsp::Position::positionChanged, this,
+        &ArrangerObject::propertiesChanged);
     }
   if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Name))
     {
@@ -61,21 +66,19 @@ ArrangerObject::ArrangerObject (
         mute (), &ArrangerObjectMuteFunctionality::mutedChanged, this,
         &ArrangerObject::propertiesChanged);
     }
-  if (ENUM_BITSET_TEST (features, ArrangerObjectFeatures::Fading))
-    {
-      fade_range_ = utils::make_qobject_unique<ArrangerObjectFadeRange> (
-        *time_conversion_funcs_, this);
-      QObject::connect (
-        fadeRange (), &ArrangerObjectFadeRange::fadePropertiesChanged, this,
-        &ArrangerObject::propertiesChanged);
-    }
 
   QObject::connect (
-    position (), &dsp::AtomicPositionQmlAdapter::positionChanged, this,
+    position (), &dsp::Position::positionChanged, this,
     &ArrangerObject::propertiesChanged);
   QObject::connect (
     this, &ArrangerObject::parentObjectChanged, this,
     &ArrangerObject::propertiesChanged);
+}
+
+const dsp::TempoMap &
+ArrangerObject::get_tempo_map () const
+{
+  return tempo_map_wrapper_.get_tempo_map ();
 }
 
 // ========================================================================
@@ -89,54 +92,6 @@ ArrangerObject::setParentObject (ArrangerObject * object)
     return;
 
   parent_object_ = object;
-
-  if (parent_object_)
-    {
-      // if there is a parent object, use the tempo map with the child object's
-      // timeline position when making time conversions
-      time_conversion_funcs_
-        ->tick_to_seconds = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_seconds (
-                 units::ticks (parent_object_->position ()->ticks ()) + ticks)
-               - units::seconds (parent_object_->position ()->seconds ());
-      };
-      time_conversion_funcs_
-        ->seconds_to_tick = [&] (units::precise_second_t seconds) {
-        return tempo_map_.seconds_to_tick (
-                 units::seconds (parent_object_->position ()->seconds ()) + seconds)
-               - units::ticks (parent_object_->position ()->ticks ());
-      };
-      time_conversion_funcs_
-        ->tick_to_samples = [&] (units::precise_tick_t ticks) {
-        return tempo_map_.tick_to_samples (
-                 units::ticks (parent_object_->position ()->ticks ()) + ticks)
-               - tempo_map_.tick_to_samples (
-                 units::ticks (parent_object_->position ()->ticks ()));
-      };
-      time_conversion_funcs_
-        ->samples_to_tick = [&] (units::precise_sample_t samples) {
-        return tempo_map_.samples_to_tick (
-                 tempo_map_.tick_to_samples (
-                   units::ticks (parent_object_->position ()->ticks ()))
-                 + samples)
-               - units::ticks (parent_object_->position ()->ticks ());
-      };
-    }
-  else
-    {
-      // otherwise use tempo map as-is (this is a timeline object)
-      const auto time_conv_funcs =
-        dsp::AtomicPosition::TimeConversionFunctions::from_tempo_map (tempo_map_);
-      time_conversion_funcs_->tick_to_seconds =
-        std::move (time_conv_funcs->tick_to_seconds);
-      time_conversion_funcs_->seconds_to_tick =
-        std::move (time_conv_funcs->seconds_to_tick);
-      time_conversion_funcs_->tick_to_samples =
-        std::move (time_conv_funcs->tick_to_samples);
-      time_conversion_funcs_->samples_to_tick =
-        std::move (time_conv_funcs->samples_to_tick);
-    }
-
   Q_EMIT parentObjectChanged (parent_object_);
 }
 
@@ -152,21 +107,15 @@ init_from (
     static_cast<ArrangerObject::UuidIdentifiableObject &> (obj),
     static_cast<const ArrangerObject::UuidIdentifiableObject &> (other),
     clone_type);
-  obj.position_.set_ticks (other.position_.get_ticks ());
-  if (other.bounds_)
-    {
-      init_from (*obj.bounds_, *other.bounds_, clone_type);
-    }
-  if (other.loop_range_)
-    init_from (*obj.loop_range_, *other.loop_range_, clone_type);
+  obj.position_->setTicks (other.position_->ticks ());
+  if (other.length_)
+    obj.length_->setTicks (other.length_->ticks ());
   if (other.name_)
     init_from (*obj.name_, *other.name_, clone_type);
   if (other.color_)
     init_from (*obj.color_, *other.color_, clone_type);
   if (other.mute_)
     init_from (*obj.mute_, *other.mute_, clone_type);
-  if (other.fade_range_)
-    init_from (*obj.fade_range_, *other.fade_range_, clone_type);
 }
 
 void
@@ -176,13 +125,9 @@ to_json (nlohmann::json &j, const ArrangerObject &arranger_object)
     j,
     static_cast<const ArrangerObject::UuidIdentifiableObject &> (
       arranger_object));
-  j[ArrangerObject::kPositionKey] = arranger_object.position_;
-  if (arranger_object.bounds_)
-    to_json (j, *arranger_object.bounds_);
-  if (arranger_object.loop_range_)
-    to_json (j, *arranger_object.loop_range_);
-  if (arranger_object.fade_range_)
-    to_json (j, *arranger_object.fade_range_);
+  j[ArrangerObject::kPositionKey] = *arranger_object.position_;
+  if (arranger_object.length_)
+    j[ArrangerObject::kLengthKey] = *arranger_object.length_;
   if (arranger_object.name_)
     j[ArrangerObject::kNameKey] = *arranger_object.name_;
   if (arranger_object.color_ && arranger_object.color ()->useColor ())
@@ -196,21 +141,15 @@ from_json (const nlohmann::json &j, ArrangerObject &arranger_object)
 {
   from_json (
     j, static_cast<ArrangerObject::UuidIdentifiableObject &> (arranger_object));
-  j.at (ArrangerObject::kPositionKey).get_to (arranger_object.position_);
-  if (arranger_object.bounds_)
-    {
-      from_json (j, *arranger_object.bounds_);
-    }
-  if (arranger_object.loop_range_)
-    from_json (j, *arranger_object.loop_range_);
+  j.at (ArrangerObject::kPositionKey).get_to (*arranger_object.position_);
+  if (arranger_object.length_)
+    j.at (ArrangerObject::kLengthKey).get_to (*arranger_object.length_);
   if (arranger_object.name_)
     j.at (ArrangerObject::kNameKey).get_to (*arranger_object.name_);
   if (arranger_object.color_ && j.contains (ArrangerObject::kColorKey))
     from_json (j, *arranger_object.color_);
   if (arranger_object.mute_)
     from_json (j, *arranger_object.mute_);
-  if (arranger_object.fade_range_)
-    from_json (j, *arranger_object.fade_range_);
 }
 
 ArrangerObject::~ArrangerObject () noexcept = default;

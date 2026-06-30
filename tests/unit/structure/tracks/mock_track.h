@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -6,7 +6,6 @@
 #include "structure/tracks/track.h"
 #include "utils/object_registry.h"
 
-#include "unit/dsp/graph_helpers.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -43,10 +42,9 @@ public:
     registry_ = std::make_unique<utils::ObjectRegistry> ();
     tempo_map_ = std::make_unique<dsp::TempoMap> (sample_rate_);
     tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
-    transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     base_dependencies_ = std::make_unique<BaseTrackDependencies> (
-      *tempo_map_wrapper_, *registry_, *transport_, [] { return false; },
+      *tempo_map_wrapper_, *registry_, [] { return false; },
       TrackRecordingCallback{});
   }
 
@@ -63,11 +61,10 @@ public:
       type, in_type, out_type, features, *base_dependencies_);
   }
 
-  std::unique_ptr<utils::ObjectRegistry>          registry_;
-  std::unique_ptr<dsp::TempoMap>                  tempo_map_;
-  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
-  std::unique_ptr<dsp::graph_test::MockTransport> transport_;
-  std::unique_ptr<BaseTrackDependencies>          base_dependencies_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<dsp::TempoMap>         tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>  tempo_map_wrapper_;
+  std::unique_ptr<BaseTrackDependencies> base_dependencies_;
 
   units::sample_rate_t sample_rate_{ units::sample_rate (48000) };
 };

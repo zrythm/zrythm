@@ -16,19 +16,17 @@ class ArrangerObjectFactory
 {
 public:
   using SampleRateProvider = std::function<units::sample_rate_t ()>;
-  using BpmProvider = std::function<float ()>;
+  using BpmProvider = std::function<units::bpm_t ()>;
 
   struct Dependencies
   {
-    using MusicalModeGetter = std::function<bool ()>;
     using LastTimelineObjectLengthProvider = std::function<double ()>;
     using LastEditorObjectLengthProvider = std::function<double ()>;
     using AutomationCurveAlgorithmProvider =
       std::function<dsp::CurveOptions::Algorithm ()>;
 
-    const dsp::TempoMap             &tempo_map_;
+    const dsp::TempoMapWrapper      &tempo_map_;
     utils::IObjectRegistry          &registry_;
-    MusicalModeGetter                musical_mode_getter_;
     LastTimelineObjectLengthProvider last_timeline_obj_len_provider_;
     LastEditorObjectLengthProvider   last_editor_obj_len_provider_;
     AutomationCurveAlgorithmProvider automation_curve_algorithm_provider_;
@@ -56,7 +54,7 @@ public:
     }
 
     Builder &with_clip (dsp::FileAudioSourceUuidReference clip_id)
-      requires (std::is_same_v<ObjT, AudioRegion>)
+      requires (std::is_same_v<ObjT, AudioClip>)
     {
       clip_id_.emplace (std::move (clip_id));
       return *this;
@@ -146,13 +144,7 @@ public:
     std::unique_ptr<ObjT> build_empty () const
     {
       std::unique_ptr<ObjT> ret;
-      if constexpr (std::is_same_v<ObjT, AudioRegion>)
-        {
-          ret = std::make_unique<ObjT> (
-            dependencies_.tempo_map_, dependencies_.registry_,
-            dependencies_.musical_mode_getter_);
-        }
-      else if constexpr (RegionObject<ObjT>)
+      if constexpr (ClipObject<ObjT>)
         {
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.registry_);
@@ -170,7 +162,7 @@ public:
           auto file_audio_source = utils::create_object<dsp::FileAudioSource> (
             dependencies_.registry_, dummy_buf,
             utils::audio::BitDepth::BIT_DEPTH_32, units::sample_rate (44100),
-            120, u8"dummy");
+            units::bpm (120.0), u8"dummy");
           ret = std::make_unique<ObjT> (
             dependencies_.tempo_map_, dependencies_.registry_,
             file_audio_source);
@@ -187,7 +179,7 @@ public:
       auto obj_ref = [&] () {
         auto obj_unique_ptr = build_empty ();
         dependencies_.registry_.register_object (*obj_unique_ptr);
-        structure::arrangement::ArrangerObjectUuidReference ret_ref{
+        utils::TypedUuidReference<ObjT> ret_ref{
           obj_unique_ptr->get_uuid (), dependencies_.registry_
         };
         obj_unique_ptr.release ();
@@ -196,9 +188,9 @@ public:
 
       auto * obj = obj_ref.template get_object_as<ObjT> ();
 
-      if constexpr (RegionObject<ObjT>)
+      if constexpr (ClipObject<ObjT>)
         {
-          obj->loopRange ()->setTrackBounds (true);
+          obj->setTrackBounds (true);
         }
 
       if (start_ticks_)
@@ -217,7 +209,7 @@ public:
                     {
                       len_ticks = dependencies_.last_editor_obj_len_provider_ ();
                     }
-                  get_object_bounds (*obj)->length ()->setTicks (len_ticks);
+                  obj->length ()->setTicks (len_ticks);
                 }
             }
           obj->position ()->setTicks ((*start_ticks_).in (units::ticks));
@@ -225,16 +217,15 @@ public:
 
       if (clip_id_)
         {
-          if constexpr (std::is_same_v<ObjT, AudioRegion>)
+          if constexpr (std::is_same_v<ObjT, AudioClip>)
             {
               auto source_object = utils::create_object<AudioSourceObject> (
                 dependencies_.registry_, dependencies_.tempo_map_,
                 dependencies_.registry_, clip_id_.value ());
               obj->set_source (source_object);
-              obj->bounds ()->length ()->setSamples (
-                clip_id_.value ()
-                  .template get_object_as<dsp::FileAudioSource> ()
-                  ->get_num_frames ());
+              // set_source() calls init_length_from_clip(), which sets the
+              // clip length to the clip's full duration in the format for the
+              // effective musical mode.
             }
         }
 
@@ -242,8 +233,8 @@ public:
         {
           if constexpr (BoundedObject<ObjT>)
             {
-              get_object_bounds (*obj)->length ()->setTicks (
-                (*end_ticks_).in (units::ticks) -obj->position ()->ticks ());
+              set_end_from_timeline_ticks (
+                *obj, dsp::TimelineTick{ *end_ticks_ });
             }
         }
 
@@ -251,7 +242,7 @@ public:
         {
           if constexpr (NamedObject<ObjT>)
             {
-              if constexpr (RegionObject<ObjT>)
+              if constexpr (ClipObject<ObjT>)
                 {
                   obj->name ()->setName (*name_);
                 }
@@ -353,35 +344,35 @@ public:
   /**
    * @brief To be used by the backend.
    */
-  auto create_audio_region_with_clip (
+  auto create_audio_clip_with_clip (
     dsp::FileAudioSourceUuidReference clip_id,
     units::precise_tick_t             startTicks) const
   {
     auto obj =
-      get_builder<structure::arrangement::AudioRegion> ()
+      get_builder<structure::arrangement::AudioClip> ()
         .with_start_ticks (startTicks)
         .with_clip (std::move (clip_id))
         .build_in_registry ();
     return obj;
   }
 
-  auto create_audio_region_from_file (
+  auto create_audio_clip_from_file (
     const QString        &absPath,
     units::precise_tick_t startTicks)
   {
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, utils::Utf8String::from_qstring (absPath),
-      sample_rate_provider_ (), bpm_provider_ ());
-    return create_audio_region_with_clip (std::move (clip), startTicks);
+      sample_rate_provider_ ());
+    return create_audio_clip_with_clip (std::move (clip), startTicks);
   }
 
   /**
    * @brief Creates and registers a new AudioClip and then creates and returns
-   * an AudioRegion from it.
+   * an AudioClip from it.
    *
-   * Possible use cases: splitting audio regions, audio functions, recording.
+   * Possible use cases: splitting audio clips, audio functions, recording.
    */
-  auto create_audio_region_from_audio_buffer (
+  auto create_audio_clip_from_audio_buffer (
     const utils::audio::AudioBuffer &buf,
     utils::audio::BitDepth           bit_depth,
     const utils::Utf8String         &clip_name,
@@ -390,7 +381,7 @@ public:
     auto clip = utils::create_object<dsp::FileAudioSource> (
       dependencies_.registry_, buf, bit_depth, sample_rate_provider_ (),
       bpm_provider_ (), clip_name);
-    return create_audio_region_with_clip (std::move (clip), start_ticks);
+    return create_audio_clip_with_clip (std::move (clip), start_ticks);
   }
 
   /**
@@ -430,14 +421,7 @@ public:
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
   auto clone_new_object_identity (const ObjT &other) const
   {
-    if constexpr (std::is_same_v<ObjT, AudioRegion>)
-      {
-        return utils::clone_object (
-          other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
-          dependencies_.tempo_map_, dependencies_.registry_,
-          dependencies_.musical_mode_getter_);
-      }
-    else if constexpr (RegionObject<ObjT>)
+    if constexpr (ClipObject<ObjT>)
       {
         return utils::clone_object (
           other, dependencies_.registry_, utils::ObjectCloneType::NewIdentity,
@@ -470,7 +454,7 @@ public:
   auto clone_object_snapshot (const ObjT &other, QObject &owner) const
   {
     ObjT * new_obj{};
-    if constexpr (std::is_same_v<ObjT, AudioRegion>)
+    if constexpr (std::is_same_v<ObjT, AudioClip>)
       {
         // TODO
         new_obj = utils::clone_qobject (

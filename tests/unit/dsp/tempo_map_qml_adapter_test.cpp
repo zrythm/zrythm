@@ -106,7 +106,8 @@ TEST_F (TempoMapWrapperTest, SampleRateChanges)
   wrapper_->setSampleRate (48000.0);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_DOUBLE_EQ (wrapper_->sampleRate (), 48000.0);
-  EXPECT_DOUBLE_EQ (tempo_map_->get_sample_rate (), 48000.0);
+  EXPECT_DOUBLE_EQ (
+    tempo_map_->get_sample_rate ().in (units::sample_rate), 48000.0);
 
   // No signal on same value
   wrapper_->setSampleRate (48000.0);
@@ -145,7 +146,7 @@ TEST_F (TempoMapWrapperTest, UnderlyingChanges)
   // Directly modify underlying map
   tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (1920), 140.0, TempoMap::CurveType::Constant);
+    units::ticks (1920), units::bpm (140.0), TempoMap::CurveType::Constant);
 
   // Manually trigger rebuild (normally done via signals in real app)
   wrapper_->rebuildWrappers ();
@@ -216,14 +217,14 @@ TEST_F (TempoMapWrapperTest, TickFromMusicalPosition)
   auto                      tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos1.bar, pos1.beat, pos1.sixteenth, pos1.tick);
   auto tickDirect = tempo_map_->musical_position_to_tick (pos1);
-  EXPECT_EQ (tickWrapper, tickDirect.in (units::ticks));
+  EXPECT_EQ (tickWrapper, tickDirect.asDouble ());
 
   // Test beat position
   TempoMap::MusicalPosition pos2{ 1, 2, 1, 0 };
   tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos2.bar, pos2.beat, pos2.sixteenth, pos2.tick);
   tickDirect = tempo_map_->musical_position_to_tick (pos2);
-  EXPECT_EQ (tickWrapper, tickDirect.in (units::ticks));
+  EXPECT_EQ (tickWrapper, tickDirect.asDouble ());
 
   // Add time signature change and test
   tempo_map_->add_time_signature_event (units::ticks (1920), 3, 4);
@@ -231,7 +232,7 @@ TEST_F (TempoMapWrapperTest, TickFromMusicalPosition)
   tickWrapper = wrapper_->getTickFromMusicalPosition (
     pos3.bar, pos3.beat, pos3.sixteenth, pos3.tick);
   tickDirect = tempo_map_->musical_position_to_tick (pos3);
-  EXPECT_EQ (tickWrapper, tickDirect.in (units::ticks));
+  EXPECT_EQ (tickWrapper, tickDirect.asDouble ());
 }
 
 // Test clearing tempo events via wrapper

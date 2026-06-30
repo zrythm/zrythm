@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/tracks/track_lane_list.h"
 #include "utils/object_registry.h"
@@ -28,7 +29,7 @@ protected:
 
     registry_ = std::make_unique<utils::ObjectRegistry> ();
 
-    lane_list_ = std::make_unique<TrackLaneList> (*registry_);
+    lane_list_ = std::make_unique<TrackLaneList> (*registry_, nullptr);
   }
 
   void TearDown () override { lane_list_.reset (); }
@@ -215,7 +216,7 @@ TEST_F (TrackLaneListTest, JsonSerializationRoundtrip)
   nlohmann::json j = *lane_list_;
 
   // Create new list from JSON
-  TrackLaneList deserialized_list (*registry_);
+  TrackLaneList deserialized_list (*registry_, nullptr);
 
   // Deserialize from JSON
   from_json (j, deserialized_list);
@@ -242,7 +243,7 @@ TEST_F (TrackLaneListTest, EmptyListSerialization)
 
   nlohmann::json j = *lane_list_;
 
-  TrackLaneList deserialized_list (*registry_);
+  TrackLaneList deserialized_list (*registry_, nullptr);
 
   from_json (j, deserialized_list);
 
@@ -435,7 +436,7 @@ TEST_F (TrackLaneListTest, RemoveEmptyLastLanes)
   lane_list_->remove_empty_last_lanes ();
   EXPECT_EQ (lane_list_->size (), 0);
 
-  // Add lanes with no regions (all empty)
+  // Add lanes with no clips (all empty)
   lane_list_->addLane ();
   lane_list_->addLane ();
   lane_list_->addLane ();
@@ -464,15 +465,16 @@ TEST_F (TrackLaneListTest, LaneObjectsNeedRecacheSignal)
   QSignalSpy recacheSpy (
     lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
 
-  // Create a MIDI region and add it to the lane
+  // Create a MIDI clip and add it to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+  auto clip_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane);
 
-  // Add the region to the lane - this should trigger the signal
-  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
-    region_ref);
+  // Add the clip to the lane - this should trigger the signal
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
+    clip_ref);
 
   // Wait for queued connections to process
   QCoreApplication::processEvents ();
@@ -493,14 +495,15 @@ TEST_F (TrackLaneListTest, SignalConnectionsOnLaneOperations)
   // Clear any signals from lane addition
   recacheSpy.clear ();
 
-  // Create and add a MIDI region to the lane
+  // Create and add a MIDI clip to the lane
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+  auto clip_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane);
 
-  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
-    region_ref);
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
+    clip_ref);
 
   // Wait for queued connections to process
   QCoreApplication::processEvents ();
@@ -526,18 +529,19 @@ TEST_F (TrackLaneListTest, ExpandableTickRangeInLaneContext)
   QSignalSpy recacheSpy (
     lane_list_.get (), &TrackLaneList::laneObjectsNeedRecache);
 
-  // Create a MIDI region with specific position and bounds
+  // Create a MIDI clip with specific position and bounds
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
-  auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
-  region->position ()->setTicks (100.0);
-  region->bounds ()->setLengthTicks (50.0);
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+  auto clip_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane);
+  auto * clip = clip_ref.get_object_as<arrangement::MidiClip> ();
+  clip->position ()->setTicks (100.0);
+  clip->setLengthTicks (50.0);
 
-  // Add the region to the lane
-  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
-    region_ref);
+  // Add the clip to the lane
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
+    clip_ref);
 
   // Wait for queued connections to process
   QCoreApplication::processEvents ();
@@ -576,17 +580,18 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   // Add objects to both lanes
   auto tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
   // Add to first lane
-  auto region1_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane1);
-  lane1->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+  auto region1_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane1);
+  lane1->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
     region1_ref);
 
   // Add to second lane
-  auto region2_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane2);
-  lane2->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
+  auto region2_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane2);
+  lane2->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
     region2_ref);
 
   // Wait for queued connections to process
@@ -600,10 +605,10 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
   lane_list_->removeLane (0);
 
   // Only the remaining lane should trigger signals
-  auto region3_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane_list_->at (0));
-  lane_list_->at (0)->arrangement::
-    ArrangerObjectOwner<arrangement::MidiRegion>::add_object (region3_ref);
+  auto region3_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane_list_->at (0));
+  lane_list_->at (0)->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::
+    add_object (region3_ref);
 
   QCoreApplication::processEvents ();
 
@@ -613,38 +618,39 @@ TEST_F (TrackLaneListTest, SignalConnectionManagement)
 
 TEST_F (TrackLaneListTest, DeserializedLanesPropagateContentChanged)
 {
-  // 1. Build a TrackLaneList with a lane and a MIDI region
+  // 1. Build a TrackLaneList with a lane and a MIDI clip
   auto * lane = lane_list_->addLane ();
   auto   tempo_map =
     std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
-  auto region_ref = utils::create_object<arrangement::MidiRegion> (
-    *registry_, *tempo_map, *registry_, lane);
-  auto * region = region_ref.get_object_as<arrangement::MidiRegion> ();
-  region->position ()->setTicks (100.0);
-  region->bounds ()->setLengthTicks (50.0);
-  lane->arrangement::ArrangerObjectOwner<arrangement::MidiRegion>::add_object (
-    region_ref);
+  auto tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
+  auto clip_ref = utils::create_object<arrangement::MidiClip> (
+    *registry_, *tempo_map_wrapper, *registry_, lane);
+  auto * clip = clip_ref.get_object_as<arrangement::MidiClip> ();
+  clip->position ()->setTicks (100.0);
+  clip->setLengthTicks (50.0);
+  lane->arrangement::ArrangerObjectOwner<arrangement::MidiClip>::add_object (
+    clip_ref);
   lane_list_->setLanesVisible (true);
 
   // 2. Serialize to JSON
   nlohmann::json j = *lane_list_;
 
   // 3. Deserialize into a fresh TrackLaneList
-  auto deserialized = std::make_unique<TrackLaneList> (*registry_);
+  auto deserialized = std::make_unique<TrackLaneList> (*registry_, nullptr);
   from_json (j, *deserialized);
 
   ASSERT_EQ (deserialized->size (), 1);
 
   // 4. Verify signal connections work after deserialization:
-  // changing a region's position should trigger laneObjectsNeedRecache.
+  // changing a clip's position should trigger laneObjectsNeedRecache.
   QSignalSpy recacheSpy (
     deserialized.get (), &TrackLaneList::laneObjectsNeedRecache);
   ASSERT_TRUE (recacheSpy.isValid ());
 
-  // Get the deserialized region and modify it
+  // Get the deserialized clip and modify it
   auto * deser_lane = deserialized->at (0);
   auto   deser_regions = deser_lane->arrangement::ArrangerObjectOwner<
-    arrangement::MidiRegion>::get_children_view ();
+    arrangement::MidiClip>::get_children_view ();
   ASSERT_EQ (deser_regions.size (), 1);
   auto * deser_region = deser_regions.front ();
   deser_region->position ()->setTicks (200.0);

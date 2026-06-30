@@ -72,7 +72,7 @@ Control {
   Loader {
     id: edgeHandlesLoader
 
-    active: root.arrangerObject.bounds !== null
+    active: root.arrangerObject.length !== null
     anchors.fill: parent
     enabled: active
     visible: active

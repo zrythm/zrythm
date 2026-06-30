@@ -4,7 +4,7 @@
 #include "gui/qquick/fade_overlay_canvas_item.h"
 #include "gui/qquick/fade_overlay_canvas_renderer.h"
 #include "structure/arrangement/arranger_object_all.h"
-#include "structure/arrangement/audio_region.h"
+#include "structure/arrangement/audio_clip.h"
 #include "structure/arrangement/fadeable_object.h"
 
 namespace zrythm::gui::qquick
@@ -24,26 +24,23 @@ FadeOverlayCanvasItem::createItemRenderer () const
 }
 
 void
-FadeOverlayCanvasItem::setRegion (QObject * region)
+FadeOverlayCanvasItem::setAudioClip (structure::arrangement::AudioClip * clip)
 {
-  if (region_ == region)
+  if (audio_clip_ == clip)
     return;
-  region_ = region;
+  audio_clip_ = clip;
 
-  audio_region_ =
-    qobject_cast<zrythm::structure::arrangement::AudioRegion *> (region);
-
-  // Disconnect old signal connections from previous region
-  for (const auto &connection : region_connections_)
+  // Disconnect old signal connections from previous clip
+  for (const auto &connection : clip_connections_)
     QObject::disconnect (connection);
-  region_connections_.clear ();
+  clip_connections_.clear ();
 
-  if (audio_region_ != nullptr)
+  if (audio_clip_ != nullptr)
     {
-      auto * fade_range = audio_region_->fadeRange ();
+      auto * fade_range = audio_clip_->fadeRange ();
       if (fade_range != nullptr)
         {
-          region_connections_.push_back (
+          clip_connections_.push_back (
             QObject::connect (
               fade_range,
               &structure::arrangement::ArrangerObjectFadeRange::
@@ -53,7 +50,7 @@ FadeOverlayCanvasItem::setRegion (QObject * region)
         }
     }
 
-  Q_EMIT regionChanged ();
+  Q_EMIT audioClipChanged ();
   update ();
 }
 

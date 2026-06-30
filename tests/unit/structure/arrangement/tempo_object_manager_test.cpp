@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/tempo_object.h"
 #include "structure/arrangement/tempo_object_manager.h"
@@ -33,14 +34,15 @@ protected:
   // Helper to create a tempo object
   ArrangerObjectUuidReference create_tempo_object (double bpm = 120.0)
   {
-    return utils::create_object<TempoObject> (obj_registry, *tempo_map);
+    return utils::create_object<TempoObject> (obj_registry, *tempo_map_wrapper);
   }
 
   // Helper to create a time signature object
   ArrangerObjectUuidReference
   create_time_signature_object (int numerator = 4, int denominator = 4)
   {
-    return utils::create_object<TimeSignatureObject> (obj_registry, *tempo_map);
+    return utils::create_object<TimeSignatureObject> (
+      obj_registry, *tempo_map_wrapper);
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -206,7 +208,7 @@ TEST_F (TempoObjectManagerTest, PositionChangesFireContentChanged)
     tempo_manager->tempoObjects (), &ArrangerObjectListModel::contentChanged);
 
   // Change position
-  tempo_obj_ptr->position ()->setSamples (1000);
+  tempo_obj_ptr->position ()->setTicks (1000);
 
   // Verify contentChanged was fired
   EXPECT_GT (tempoSpy.count (), 0);
@@ -274,9 +276,9 @@ TEST_F (TempoObjectManagerTest, Serialization)
   // Set properties on objects
   auto tempo_ptr = tempo_obj.get_object_as<TempoObject> ();
   auto time_sig_ptr = time_sig_obj.get_object_as<TimeSignatureObject> ();
-  tempo_ptr->position ()->setSamples (1000);
+  tempo_ptr->position ()->setTicks (1000);
   tempo_ptr->setTempo (160.0);
-  time_sig_ptr->position ()->setSamples (2000);
+  time_sig_ptr->position ()->setTicks (2000);
   time_sig_ptr->setNumerator (7);
   time_sig_ptr->setDenominator (16);
 
@@ -302,9 +304,9 @@ TEST_F (TempoObjectManagerTest, Serialization)
   auto new_time_sig_ptr =
     new_time_sig_obj_ref.get_object_as<TimeSignatureObject> ();
 
-  EXPECT_EQ (new_tempo_ptr->position ()->samples (), 1000);
+  EXPECT_EQ (new_tempo_ptr->position ()->ticks (), 1000);
   EXPECT_DOUBLE_EQ (new_tempo_ptr->tempo (), 160.0);
-  EXPECT_EQ (new_time_sig_ptr->position ()->samples (), 2000);
+  EXPECT_EQ (new_time_sig_ptr->position ()->ticks (), 2000);
   EXPECT_EQ (new_time_sig_ptr->numerator (), 7);
   EXPECT_EQ (new_time_sig_ptr->denominator (), 16);
 }
@@ -322,9 +324,9 @@ TEST_F (TempoObjectManagerTest, Copying)
   // Set properties on objects
   auto tempo_ptr = tempo_obj.get_object_as<TempoObject> ();
   auto time_sig_ptr = time_sig_obj.get_object_as<TimeSignatureObject> ();
-  tempo_ptr->position ()->setSamples (1000);
+  tempo_ptr->position ()->setTicks (1000);
   tempo_ptr->setTempo (160.0);
-  time_sig_ptr->position ()->setSamples (2000);
+  time_sig_ptr->position ()->setTicks (2000);
   time_sig_ptr->setNumerator (7);
   time_sig_ptr->setDenominator (16);
 
@@ -349,9 +351,9 @@ TEST_F (TempoObjectManagerTest, Copying)
   auto * copied_time_sig_ptr =
     copied_time_sig_obj_ref.get_object_as<TimeSignatureObject> ();
 
-  EXPECT_EQ (copied_tempo_ptr->position ()->samples (), 1000);
+  EXPECT_EQ (copied_tempo_ptr->position ()->ticks (), 1000);
   EXPECT_DOUBLE_EQ (copied_tempo_ptr->tempo (), 160.0);
-  EXPECT_EQ (copied_time_sig_ptr->position ()->samples (), 2000);
+  EXPECT_EQ (copied_time_sig_ptr->position ()->ticks (), 2000);
   EXPECT_EQ (copied_time_sig_ptr->numerator (), 7);
   EXPECT_EQ (copied_time_sig_ptr->denominator (), 16);
 }

@@ -45,7 +45,7 @@ Project::Project (
       port_connections_manager_ (new dsp::PortConnectionsManager (this)),
       transport_ (
         utils::make_qobject_unique<dsp::Transport> (
-          tempo_map_,
+          *tempo_map_wrapper_,
           dsp::Transport::ConfigProvider{
             .return_to_cue_on_pause_ =
               [this] () { return app_settings_.transportReturnToCue (); },
@@ -89,10 +89,8 @@ Project::Project (
       arranger_object_factory_ (
         std::make_unique<structure::arrangement::ArrangerObjectFactory> (
           structure::arrangement::ArrangerObjectFactory::Dependencies{
-            .tempo_map_ = tempo_map (),
+            .tempo_map_ = *tempo_map_wrapper_,
             .registry_ = project_registry_,
-            .musical_mode_getter_ =
-              [this] () { return app_settings_.musicalMode (); },
             .last_timeline_obj_len_provider_ =
               [this] () {
                 return app_settings_.timelineLastCreatedObjectLengthInTicks ();
@@ -287,7 +285,7 @@ Project::get_final_track_dependencies ()
         "Recording callback not installed — call install_recording_callback() first");
     }
   return structure::tracks::FinalTrackDependencies{
-    *tempo_map_wrapper_, project_registry_, *transport_,
+    *tempo_map_wrapper_, project_registry_,
     [this] () {
       return std::ranges::any_of (tracks_rt_, [] (const auto * track) {
         const auto * ch = track->channel ();
@@ -368,7 +366,7 @@ Project::add_default_tracks ()
           { .bar = 129, .beat = 1, .sixteenth = 1, .tick = 0 });
         auto marker_ref =
           factory->template get_builder<structure::arrangement::Marker> ()
-            .with_start_ticks (pos)
+            .with_start_ticks (pos.asQuantity ())
             .with_name (
               utils::Utf8String::from_utf8_encoded_string (marker_name)
                 .to_qstring ())
@@ -468,8 +466,8 @@ to_json (nlohmann::json &j, const Project &project)
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioPoolKey] = project.pool_;
   j[Project::kTracklistKey] = project.tracklist_;
-  // j[Project::kRegionLinkGroupManagerKey] =
-  // project.region_link_group_manager_;
+  // j[Project::kClipLinkGroupManagerKey] =
+  // project.clip_link_group_manager_;
   j[Project::kPortConnectionsManagerKey] = project.port_connections_manager_;
   j[Project::kTempoObjectManagerKey] = project.tempo_object_manager_;
   j[Project::kClipLauncherKey] = project.clip_launcher_;
@@ -503,8 +501,8 @@ from_json (const nlohmann::json &j, Project &project)
   j.at (Project::kTracklistKey).get_to (*project.tracklist_);
 
   // Optional fields
-  // j.at (Project::kRegionLinkGroupManagerKey)
-  //   .get_to (project.region_link_group_manager_);
+  // j.at (Project::kClipLinkGroupManagerKey)
+  //   .get_to (project.clip_link_group_manager_);
   if (j.contains (Project::kPortConnectionsManagerKey))
     {
       j.at (Project::kPortConnectionsManagerKey)

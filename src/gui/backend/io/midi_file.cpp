@@ -4,9 +4,10 @@
 #include <fmt/std.h>
 
 #include "gui/backend/io/midi_file.h"
+#include "structure/arrangement/arranger_object_all.h"
+#include "structure/arrangement/clip_renderer.h"
+#include "structure/arrangement/midi_clip.h"
 #include "structure/arrangement/midi_note.h"
-#include "structure/arrangement/midi_region.h"
-#include "structure/arrangement/region_renderer.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
 
@@ -92,15 +93,15 @@ MidiFile::get_ppqn () const
 }
 
 void
-MidiFile::into_region (
-  structure::arrangement::MidiRegion &region,
-  const int                           midi_track_idx) const
+MidiFile::into_clip (
+  structure::arrangement::MidiClip &clip,
+  const int                         midi_track_idx) const
 {
 // TODO
 #if 0
   const int   num_tracks = midi_file_.getNumTracks ();
   const auto  ppqn = static_cast<double> (get_ppqn ());
-  const auto &tempo_map = region.get_tempo_map ();
+  const auto &tempo_map = clip.get_tempo_map ();
 
   int actual_iter = 0;
 
@@ -124,7 +125,7 @@ MidiFile::into_region (
         }
 
       // set a temp name
-      region.name ()->setName (
+      clip.name ()->setName (
         format_qstr (QObject::tr ("Untitled Track {}"), i));
 
       const auto * track = midi_file_.getTrack (i);
@@ -139,8 +140,6 @@ MidiFile::into_region (
           };
 
           double ticks = get_msg_time_in_ticks (msg.getTimeStamp ());
-          auto   global_pos = region.position ()->ticks ();
-          global_pos += ticks;
           z_trace ("event at {}: {} ", ticks, msg.getDescription ());
 
           if (msg.isNoteOff (true))
@@ -161,14 +160,14 @@ MidiFile::into_region (
                   .with_pitch (msg.getNoteNumber ())
                   .with_velocity (msg.getVelocity ())
                   .build_in_registry ();
-              region.add_object (mn);
+              clip.add_object (mn);
             }
           else if (msg.isTrackNameEvent ())
             {
               auto name = msg.getTextFromTextMetaEvent ();
               if (!name.isEmpty ())
                 {
-                  region.name ()->setName (
+                  clip.name ()->setName (
                     utils::Utf8String::from_juce_string (name).to_qstring ());
                 }
             }
@@ -183,33 +182,33 @@ MidiFile::into_region (
 // rest TODO
 #  if 0
   // set end position to last event
-  region.bounds ()->length ()->setTicks (
-    structure::arrangement::get_last_midi_note (region.get_children_view ())
+  clip.length ()->setTicks (
+    structure::arrangement::get_last_midi_note (clip.get_children_view ())
       ->get_end_position_ticks ());
 
-  if (region.get_children_view ().empty ())
+  if (clip.get_children_view ().empty ())
     {
-      throw ZrythmException ("No events in MIDI region");
+      throw ZrythmException ("No events in MIDI clip");
     }
   Position loop_end_pos_to_set (
-    region.end_pos_->ticks_ - region.get_position ().ticks_,
+    clip.end_pos_->ticks_ - clip.get_position ().ticks_,
     AUDIO_ENGINE->frames_per_tick_);
-  region.loop_end_position_setter_validated (
+  clip.loop_end_position_setter_validated (
     loop_end_pos_to_set, AUDIO_ENGINE->ticks_per_frame_);
 #  endif
 #endif
 }
 
 void
-MidiFile::export_midi_region_to_midi_file (
-  const structure::arrangement::MidiRegion &region,
-  const std::filesystem::path              &full_path,
-  int                                       midi_version,
-  const bool                                export_full)
+MidiFile::export_midi_clip_to_midi_file (
+  const structure::arrangement::MidiClip &clip,
+  const std::filesystem::path            &full_path,
+  int                                     midi_version,
+  const bool                              export_full)
 {
   juce::MidiMessageSequence sequence;
 
-  const auto &tempo_map = region.get_tempo_map ();
+  const auto &tempo_map = clip.get_tempo_map ();
 
   // Write tempo/time signature information
   // FIXME: doesn't take into account tempo/time signature changes
@@ -220,13 +219,13 @@ MidiFile::export_midi_region_to_midi_file (
   sequence.addEvent (
     juce::MidiMessage::tempoMetaEvent (
       60'000'000
-      / static_cast<int> (tempo_map.tempo_at_tick (units::ticks (0)))));
+      / static_cast<int> (
+        tempo_map.tempo_at_tick (units::ticks (0)).in (units::bpm))));
 
-  structure::arrangement::RegionRenderer::serialize_to_sequence (
-    region, sequence);
+  structure::arrangement::ClipRenderer::serialize_to_sequence (clip, sequence);
 
   juce::MidiFile mf;
-  mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ());
+  mf.setTicksPerQuarterNote (dsp::TempoMap::get_ppq ().in (units::ticks));
   mf.addTrack (sequence);
   const auto juce_file =
     utils::Utf8String::from_path (full_path).to_juce_file ();
@@ -306,26 +305,25 @@ MidiFile::export_midi_lane_to_sequence (
     }
 
   for (
-    auto * region :
+    auto * clip :
     lane.structure::arrangement::ArrangerObjectOwner<
-      structure::arrangement::MidiRegion>::get_children_view ())
+      structure::arrangement::MidiClip>::get_children_view ())
     {
-      /* skip regions not inside the given range */
+      /* skip clips not inside the given range */
       if (start)
         {
           if (
-            (region->position ()->ticks ()
-             + region->bounds ()->length ()->ticks ())
+            structure::arrangement::timeline_end_ticks (*clip).asDouble ()
             < *start)
             continue;
         }
       if (end)
         {
-          if (region->position ()->ticks () > *end)
+          if (clip->position ()->ticks () > *end)
             continue;
         }
 
-      region->add_midi_region_events (
+      clip->add_midi_clip_events (
         own_events ? *own_events : *events, start, end, true, true);
     }
 

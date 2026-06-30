@@ -56,7 +56,8 @@ TEST_F (PlayheadTest, SetPositionFromGUI)
 {
   const double testTicks = 1920.0; // 2 beats at 120 BPM
   const double expectedStartSamples =
-    tempo_map_->tick_to_samples (units::ticks (testTicks)).in (units::sample);
+    tempo_map_->tick_to_samples (TimelineTick{ units::ticks (testTicks) })
+      .in (units::sample);
   playhead_->set_position_ticks (units::ticks (testTicks));
 
   // Verify GUI thread access
@@ -77,7 +78,8 @@ TEST_F (PlayheadTest, AudioProcessingAdvance)
 {
   const uint32_t blockSize = 512;
   const double   startPos =
-    tempo_map_->tick_to_samples (units::ticks (0)).in (units::sample);
+    tempo_map_->tick_to_samples (TimelineTick{ units::ticks (0) })
+      .in (units::sample);
   double lastPos = -1.0;
 
   simulateAudioProcessing (blockSize, [&] (uint32_t frame, double pos) {
@@ -104,7 +106,7 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
 {
   const double testSamples = 22050.0; // 0.5 seconds at 44.1kHz
   playhead_->set_position_ticks (
-    tempo_map_->samples_to_tick (units::samples (testSamples)));
+    tempo_map_->samples_to_tick (units::samples (testSamples)).asQuantity ());
 
   // Modify samples directly (simulate audio thread advance)
   simulateAudioProcessing (100);
@@ -114,7 +116,7 @@ TEST_F (PlayheadTest, UpdateTicksFromSamples)
 
   const double expectedTicks =
     tempo_map_->samples_to_tick (playhead_->position_samples_FOR_TESTING ())
-      .in (units::tick);
+      .asDouble ();
   EXPECT_NEAR (
     playhead_->position_ticks ().in (units::ticks), expectedTicks, 1e-6);
 }

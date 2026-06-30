@@ -193,12 +193,12 @@ private:
     structure::tracks::ClipQuantizeOption quantize);
 
   /**
-   * @brief Generate events for a clip (region).
+   * @brief Generate events for a clip (clip).
    */
-  template <arrangement::RegionObject RegionT>
+  template <arrangement::ClipObject ClipT>
   void generateClipEvents (
     tracks::Track *                       track,
-    const RegionT                        &region,
+    const ClipT                          &clip,
     structure::tracks::ClipQuantizeOption quantize)
   {
     if (track == nullptr)
@@ -209,15 +209,15 @@ private:
       return;
 
     // Generate events using the clip launcher event provider
-    if constexpr (std::is_same_v<RegionT, arrangement::MidiRegion>)
+    if constexpr (std::is_same_v<ClipT, arrangement::MidiClip>)
       {
         processor->clip_playback_data_provider ().generate_midi_events (
-          region, quantize);
+          clip, quantize);
       }
-    else if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
+    else if constexpr (std::is_same_v<ClipT, arrangement::AudioClip>)
       {
         processor->clip_playback_data_provider ().generate_audio_events (
-          region, quantize);
+          clip, quantize);
       }
   }
 

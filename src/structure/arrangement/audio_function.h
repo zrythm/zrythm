@@ -76,7 +76,7 @@ audio_function_get_icon_name_for_type (AudioFunctionType type);
  */
 void
 audio_function_apply (
-  ArrangerObject::Uuid                                    region_id,
+  ArrangerObject::Uuid                                    clip_id,
   std::pair<units::precise_tick_t, units::precise_tick_t> selected_range,
   AudioFunctionType                                       type,
   AudioFunctionOpts                                       opts,

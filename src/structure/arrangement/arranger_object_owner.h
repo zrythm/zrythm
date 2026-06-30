@@ -72,7 +72,7 @@ public:
   {
     for (auto * child : get_children_view ())
       {
-        child->position ()->setTicks (child->position ()->ticks () + ticks);
+        child->position ()->addTicks (ticks);
       }
   }
 
@@ -152,25 +152,25 @@ public:
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map (), obj.registry_,
+                  child->get_tempo_map_wrapper (), obj.registry_,
                   child->audio_source_ref ());
               }
-            else if constexpr (RegionObject<ChildT>)
+            else if constexpr (ClipObject<ChildT>)
               {
-                z_warning ("RegionObject clone not implemented - skipping");
+                z_warning ("ClipObject clone not implemented - skipping");
                 continue;
               }
             else if constexpr (std::is_same_v<ChildT, Marker>)
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map (), child->markerType ());
+                  child->get_tempo_map_wrapper (), child->markerType ());
               }
             else
               {
                 clone_ref = utils::clone_object (
                   *child, obj.registry_, utils::ObjectCloneType::NewIdentity,
-                  child->get_tempo_map ());
+                  child->get_tempo_map_wrapper ());
               }
 
             if (clone_ref)

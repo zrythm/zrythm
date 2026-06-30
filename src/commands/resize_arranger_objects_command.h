@@ -4,6 +4,7 @@
 #pragma once
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 #include <vector>
 
@@ -48,7 +49,9 @@ public:
     bool                  boundsTracked{};
     units::precise_tick_t fadeInOffset = units::ticks (0);
     units::precise_tick_t fadeOutOffset = units::ticks (0);
-    units::precise_tick_t firstChildTicks = units::ticks (0);
+    // First child's original position (nullopt when the object has no
+    // children). Used to restore child positions on undo.
+    std::optional<units::precise_tick_t> firstChildTicks;
   };
 
   ResizeArrangerObjectsCommand (

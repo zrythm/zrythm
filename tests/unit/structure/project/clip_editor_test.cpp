@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "structure/arrangement/midi_region.h"
+#include "structure/arrangement/midi_clip.h"
 #include "structure/project/clip_editor.h"
 #include "utils/object_registry.h"
 
@@ -44,22 +44,22 @@ protected:
 TEST_F (ClipEditorTest, Construction)
 {
   EXPECT_NE (clip_editor_, nullptr);
-  EXPECT_FALSE (clip_editor_->has_region ());
+  EXPECT_FALSE (clip_editor_->has_clip ());
 }
 
 // ============================================================================
-// Region Tests
+// Clip Tests
 // ============================================================================
 
 TEST_F (ClipEditorTest, HasRegionInitiallyFalse)
 {
-  EXPECT_FALSE (clip_editor_->has_region ());
+  EXPECT_FALSE (clip_editor_->has_clip ());
 }
 
 TEST_F (ClipEditorTest, RegionInitiallyNull)
 {
-  auto region = clip_editor_->region ();
-  EXPECT_TRUE (region.isNull ());
+  auto * clip = clip_editor_->clip ();
+  EXPECT_TRUE (clip == nullptr);
 }
 
 TEST_F (ClipEditorTest, TrackInitiallyNull)
@@ -110,65 +110,65 @@ TEST_F (ClipEditorTest, InitLoadedDoesNotThrow)
 // Serialization Tests
 // ============================================================================
 
-TEST_F (ClipEditorTest, JsonSerializationNoRegion)
+TEST_F (ClipEditorTest, JsonSerializationNoClip)
 {
-  // ClipEditor with no region set
+  // ClipEditor with no clip set
   nlohmann::json j = *clip_editor_;
 
   // Verify JSON contains expected keys
-  EXPECT_TRUE (j.contains ("regionId"));
+  EXPECT_TRUE (j.contains ("clipId"));
   EXPECT_TRUE (j.contains ("midiEditor"));
   EXPECT_TRUE (j.contains ("automationEditor"));
   EXPECT_TRUE (j.contains ("chordEditor"));
   EXPECT_TRUE (j.contains ("audioClipEditor"));
 }
 
-TEST_F (ClipEditorTest, JsonSerializationRoundTripNoRegion)
+TEST_F (ClipEditorTest, JsonSerializationRoundTripNoClip)
 {
   nlohmann::json j = *clip_editor_;
 
   auto deserialized_editor = std::make_unique<ClipEditor> (*registry_, nullptr);
   j.get_to (*deserialized_editor);
 
-  // Should still have no region
-  EXPECT_FALSE (deserialized_editor->has_region ());
+  // Should still have no clip
+  EXPECT_FALSE (deserialized_editor->has_clip ());
 }
 
 // ============================================================================
 // Clone Tests
 // ============================================================================
 
-TEST_F (ClipEditorTest, InitFromNoRegion)
+TEST_F (ClipEditorTest, InitFromNoClip)
 {
   auto cloned_editor = std::make_unique<ClipEditor> (*registry_, nullptr);
 
   init_from (*cloned_editor, *clip_editor_, utils::ObjectCloneType::Snapshot);
 
-  // Should have no region like the original
-  EXPECT_FALSE (cloned_editor->has_region ());
+  // Should have no clip like the original
+  EXPECT_FALSE (cloned_editor->has_clip ());
 }
 
 // ============================================================================
-// Set/Unset Region Tests
+// Set/Unset Clip Tests
 // ============================================================================
 
-TEST_F (ClipEditorTest, UnsetRegionWhenNoRegionDoesNotThrow)
+TEST_F (ClipEditorTest, UnsetClipWhenNoClipDoesNotThrow)
 {
-  EXPECT_NO_THROW (clip_editor_->unsetRegion ());
-  EXPECT_FALSE (clip_editor_->has_region ());
+  EXPECT_NO_THROW (clip_editor_->unsetClip ());
+  EXPECT_FALSE (clip_editor_->has_clip ());
 }
 
-TEST_F (ClipEditorTest, UnsetRegionEmitsSignal)
+TEST_F (ClipEditorTest, UnsetClipEmitsSignal)
 {
   bool signal_emitted = false;
 
   QObject::connect (
-    clip_editor_.get (), &ClipEditor::regionChanged, clip_editor_.get (),
-    [&] (QVariant) { signal_emitted = true; });
+    clip_editor_.get (), &ClipEditor::clipObjectChanged, clip_editor_.get (),
+    [&] () { signal_emitted = true; });
 
-  clip_editor_->unsetRegion ();
+  clip_editor_->unsetClip ();
 
-  // Should not emit when there was no region
+  // Should not emit when there was no clip
   EXPECT_FALSE (signal_emitted);
 }
 }

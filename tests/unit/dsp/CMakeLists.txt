@@ -1,9 +1,7 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
-  atomic_position_qml_adapter_test.cpp
-  atomic_position_test.cpp
   audio_callback_test.cpp
   audio_pool_test.cpp
   audio_input_processor_test.cpp
@@ -13,6 +11,7 @@ add_executable(zrythm_dsp_unit_tests
   chord_descriptor_test.cpp
   chord_preset_test.cpp
   chord_suggestion_test.cpp
+  content_time_warp_test.cpp
   curve_test.cpp
   cv_port_test.cpp
   ditherer_test.cpp
@@ -41,6 +40,7 @@ add_executable(zrythm_dsp_unit_tests
   musical_scale_test.cpp
   parameter_test.cpp
   panning_test.cpp
+  position_test.cpp
   passthrough_processors_test.cpp
   peak_dsp_test.cpp
   peak_fall_smooth_test.cpp
@@ -52,13 +52,17 @@ add_executable(zrythm_dsp_unit_tests
   port_observer_test.cpp
   port_test.cpp
   processor_base_test.cpp
+  rubberband_timestretch_engine_test.cpp
   snap_grid_test.cpp
-  stretcher_test.cpp
+  tick_types_test.cpp
   tempo_map_test.cpp
   tempo_map_qml_adapter_test.cpp
+  tempo_warp_map_test.cpp
+  timebase_test.cpp
   timeline_data_cache_test.cpp
   transport_test.cpp
   true_peak_dsp_test.cpp
+  time_warp_map_test.cpp
 )
 
 set_target_properties(zrythm_dsp_unit_tests PROPERTIES

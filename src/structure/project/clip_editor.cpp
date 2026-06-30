@@ -22,65 +22,65 @@ ClipEditor::init_loaded ()
 {
 }
 
-QVariant
-ClipEditor::region () const
+arrangement::Clip *
+ClipEditor::clip () const
 {
-  if (has_region ())
+  if (has_clip ())
     {
-      return QVariant::fromValue (get_region_and_track ()->first);
+      auto * obj = get_clip_and_track ()->first;
+      return qobject_cast<arrangement::Clip *> (obj);
     }
 
-  return {};
+  return nullptr;
 }
 QVariant
 ClipEditor::track () const
 {
-  if (has_region ())
+  if (has_clip ())
     {
-      return QVariant::fromValue (get_region_and_track ()->second);
+      return QVariant::fromValue (get_clip_and_track ()->second);
     }
 
   return {};
 }
 
 void
-ClipEditor::setRegion (QVariant region, QVariant track)
+ClipEditor::setClip (QVariant clip, QVariant track)
 {
-  auto * r = dynamic_cast<ArrangerObject *> (region.value<QObject *> ());
+  auto * r = dynamic_cast<ArrangerObject *> (clip.value<QObject *> ());
   auto * t =
     dynamic_cast<structure::tracks::Track *> (track.value<QObject *> ());
-  set_region (r->get_uuid (), t->get_uuid ());
+  set_clip (r->get_uuid (), t->get_uuid ());
 }
 
 void
-ClipEditor::set_region (ArrangerObject::Uuid region_id, TrackUuid track_id)
+ClipEditor::set_clip (ArrangerObject::Uuid clip_id, TrackUuid track_id)
 {
-  if (region_id_.has_value () && region_id_.value ().first == region_id)
+  if (clip_id_.has_value () && clip_id_.value ().first == clip_id)
     return;
 
-  region_id_ = { region_id, track_id };
-  Q_EMIT regionChanged (QVariant::fromValue (get_region_and_track ()->first));
+  clip_id_ = { clip_id, track_id };
+  Q_EMIT clipObjectChanged ();
 }
 
 void
-ClipEditor::unsetRegion ()
+ClipEditor::unsetClip ()
 {
-  if (!region_id_)
+  if (!clip_id_)
     return;
 
-  region_id_.reset ();
-  Q_EMIT regionChanged ({});
+  clip_id_.reset ();
+  Q_EMIT clipObjectChanged ();
 }
 
 auto
-ClipEditor::get_region_and_track () const
+ClipEditor::get_clip_and_track () const
   -> std::optional<std::pair<ArrangerObject *, Track *>>
 {
-  auto &region_obj =
-    utils::get_typed<ArrangerObject> (object_registry_, region_id_->first);
-  auto &track_obj =
-    utils::get_typed<Track> (object_registry_, region_id_->second);
-  return std::make_pair (&region_obj, &track_obj);
+  auto &clip_obj =
+    utils::get_typed<ArrangerObject> (object_registry_, clip_id_->first);
+  auto &track_obj = utils::get_typed<Track> (object_registry_, clip_id_->second);
+  return std::make_pair (&clip_obj, &track_obj);
 }
 
 void
@@ -97,7 +97,7 @@ init_from (
   utils::ObjectCloneType clone_type)
 
 {
-  obj.region_id_ = other.region_id_;
+  obj.clip_id_ = other.clip_id_;
   init_from (*obj.audio_clip_editor_, *other.audio_clip_editor_, clone_type);
   init_from (*obj.automation_editor_, *other.automation_editor_, clone_type);
   init_from (*obj.chord_editor_, *other.chord_editor_, clone_type);
@@ -107,7 +107,7 @@ init_from (
 void
 to_json (nlohmann::json &j, const ClipEditor &editor)
 {
-  j[ClipEditor::kRegionIdKey] = editor.region_id_;
+  j[ClipEditor::kClipIdKey] = editor.clip_id_;
   j[ClipEditor::kMidiEditorKey] = editor.midi_editor_;
   j[ClipEditor::kAutomationEditorKey] = editor.automation_editor_;
   j[ClipEditor::kChordEditorKey] = editor.chord_editor_;
@@ -117,7 +117,7 @@ to_json (nlohmann::json &j, const ClipEditor &editor)
 void
 from_json (const nlohmann::json &j, ClipEditor &editor)
 {
-  j.at (ClipEditor::kRegionIdKey).get_to (editor.region_id_);
+  j.at (ClipEditor::kClipIdKey).get_to (editor.clip_id_);
   j.at (ClipEditor::kMidiEditorKey).get_to (*editor.midi_editor_);
   j.at (ClipEditor::kAutomationEditorKey).get_to (*editor.automation_editor_);
   j.at (ClipEditor::kChordEditorKey).get_to (*editor.chord_editor_);

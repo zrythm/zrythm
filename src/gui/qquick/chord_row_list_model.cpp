@@ -16,21 +16,21 @@ ChordRowListModel::ChordRowListModel (QObject * parent)
 }
 
 void
-ChordRowListModel::setRegion (structure::arrangement::ChordRegion * region)
+ChordRowListModel::setChordClip (structure::arrangement::ChordClip * clip)
 {
   beginResetModel ();
-  disconnect_from_region_model ();
+  disconnect_from_clip_model ();
   disconnect_descriptor_signals ();
   rows_.clear ();
-  region_ = region;
-  if (region_ != nullptr)
+  clip_ = clip;
+  if (clip_ != nullptr)
     {
       rebuild ();
-      connect_to_region_model ();
+      connect_to_clip_model ();
       connect_descriptor_signals ();
     }
   endResetModel ();
-  Q_EMIT regionChanged ();
+  Q_EMIT chordClipChanged ();
 }
 
 QHash<int, QByteArray>
@@ -107,7 +107,7 @@ ChordRowListModel::rebuild ()
 {
   // Group all chord objects by descriptor equivalence.
   rows_.clear ();
-  for (auto * co : region_->get_children_view ())
+  for (auto * co : clip_->get_children_view ())
     {
       auto * desc = co->chordDescriptor ();
       auto   it = std::ranges::find_if (rows_, [&] (const Row &r) {
@@ -125,10 +125,10 @@ ChordRowListModel::rebuild ()
 }
 
 void
-ChordRowListModel::connect_to_region_model ()
+ChordRowListModel::connect_to_clip_model ()
 {
   using structure::arrangement::ArrangerObjectListModel;
-  const auto * model = region_->chordObjects ();
+  const auto * model = clip_->chordObjects ();
 
   // Structural changes: rebuild + rewire per-object descriptor connections.
   connect (model, &QAbstractItemModel::rowsInserted, this, [this] () {
@@ -155,16 +155,16 @@ ChordRowListModel::connect_to_region_model ()
 }
 
 void
-ChordRowListModel::disconnect_from_region_model ()
+ChordRowListModel::disconnect_from_clip_model ()
 {
-  if (region_ != nullptr && region_->chordObjects () != nullptr)
-    disconnect (region_->chordObjects (), nullptr, this, nullptr);
+  if (clip_ != nullptr && clip_->chordObjects () != nullptr)
+    disconnect (clip_->chordObjects (), nullptr, this, nullptr);
 }
 
 void
 ChordRowListModel::connect_descriptor_signals ()
 {
-  for (auto * co : region_->get_children_view ())
+  for (auto * co : clip_->get_children_view ())
     {
       auto * desc = co->chordDescriptor ();
       descriptor_connections_.push_back (

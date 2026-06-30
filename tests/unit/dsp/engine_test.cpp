@@ -5,6 +5,7 @@
 #include "dsp/graph_builder.h"
 #include "dsp/midi_device_buffer.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
@@ -32,6 +33,7 @@ protected:
   {
     // Create real tempo map
     tempo_map_ = std::make_unique<TempoMap> (units::sample_rate (48000.0));
+    tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
     // Setup config provider with default values
     config_provider_ = {
@@ -41,7 +43,8 @@ protected:
     };
 
     // Create real transport with default settings
-    transport_ = std::make_unique<Transport> (*tempo_map_, config_provider_);
+    transport_ =
+      std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
 
     // Create real graph builder using the actual implementation
     // We'll use a simple mock implementation for testing
@@ -75,6 +78,7 @@ protected:
   };
 
   std::unique_ptr<TempoMap>           tempo_map_;
+  std::unique_ptr<TempoMapWrapper>    tempo_map_wrapper_;
   std::unique_ptr<Transport>          transport_;
   std::unique_ptr<MockProcessable>    processable_;
   std::unique_ptr<MockGraphBuilder>   graph_builder_;

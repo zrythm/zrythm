@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+#include <concepts>
+#include <ranges>
+
 #include "dsp/port.h"
 #include "dsp/port_observation_cache.h"
 #include "dsp/port_observation_manager.h"
@@ -10,6 +14,26 @@
 
 namespace zrythm::dsp
 {
+
+namespace
+{
+// Append @p incoming to @p buf, then drop the oldest entries from the front so
+// the buffer never exceeds @p cap. Uses range APIs throughout, so it is safe
+// for empty buffers (no raw-pointer/nonnull pitfalls as with std::memmove).
+template <typename T, std::ranges::input_range R>
+  requires std::convertible_to<std::ranges::range_value_t<R>, T>
+void
+append_capped (std::vector<T> &buf, R &&incoming, size_t cap)
+{
+  buf.append_range (incoming);
+  if (buf.size () > cap)
+    {
+      const auto excess = buf.size () - cap;
+      const auto new_end = std::shift_left (buf.begin (), buf.end (), excess);
+      buf.erase (new_end, buf.end ());
+    }
+}
+} // namespace
 
 struct PortObservationManager::Impl
 {
@@ -181,7 +205,8 @@ PortObservationManager::drain_all ()
         }
     }
 
-  // Pass 2: copy temp data into all registration caches
+  // Pass 2: append temp data into all registration caches, trimming the
+  // oldest entries when a cap is exceeded.
   for (auto &[id, reg] : impl_->registrations_)
     {
       auto it = port_data.find (reg.port_uuid);
@@ -191,47 +216,15 @@ PortObservationManager::drain_all ()
       auto &data = it->second;
       auto &cache = *reg.cache;
 
-      const auto num_channels = data.audio.size ();
-      if (cache.audio.size () < num_channels)
-        cache.audio.resize (num_channels);
+      if (cache.audio.size () < data.audio.size ())
+        cache.audio.resize (data.audio.size ());
+      for (size_t ch = 0; ch < data.audio.size (); ++ch)
+        append_capped (
+          cache.audio[ch], data.audio[ch],
+          PortObservationCache::kMaxAudioSamples);
 
-      for (size_t ch = 0; ch < num_channels; ++ch)
-        {
-          auto       prev_size = cache.audio[ch].size ();
-          const auto new_samples = data.audio[ch].size ();
-          const auto new_size = prev_size + new_samples;
-          if (new_size > PortObservationCache::kMaxAudioSamples)
-            {
-              const auto excess =
-                new_size - PortObservationCache::kMaxAudioSamples;
-              const auto to_discard = std::min (excess, prev_size);
-              const auto remaining = prev_size - to_discard;
-              std::memmove (
-                cache.audio[ch].data (), cache.audio[ch].data () + to_discard,
-                remaining * sizeof (float));
-              prev_size = remaining;
-            }
-          cache.audio[ch].resize (prev_size + new_samples);
-          std::ranges::copy (
-            data.audio[ch], cache.audio[ch].begin () + prev_size);
-        }
-
-      {
-        auto       prev_size = cache.midi.size ();
-        const auto new_events = data.midi.size ();
-        const auto new_size = prev_size + new_events;
-        if (new_size > PortObservationCache::kMaxMidiEvents)
-          {
-            const auto excess = new_size - PortObservationCache::kMaxMidiEvents;
-            const auto to_discard = std::min (excess, prev_size);
-            auto       new_begin = std::next (cache.midi.begin (), to_discard);
-            auto       old_end = std::next (cache.midi.begin (), prev_size);
-            std::move (new_begin, old_end, cache.midi.begin ());
-            prev_size -= to_discard;
-          }
-        cache.midi.resize (prev_size + new_events);
-        std::ranges::copy (data.midi, cache.midi.begin () + prev_size);
-      }
+      append_capped (
+        cache.midi, data.midi, PortObservationCache::kMaxMidiEvents);
     }
 }
 

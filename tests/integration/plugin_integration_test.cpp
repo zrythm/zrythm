@@ -239,8 +239,9 @@ TEST_P (PluginInstrumentTest, FreshInstanceProducesSound)
   auto  time_nfo = make_time_info (256);
   auto &transport = *owned_project_->transport_;
   auto &tempo_map = owned_project_->tempo_map ();
+  auto  transport_snapshot = transport.get_snapshot ();
   for (int i = 0; i < 5; ++i)
-    plugin->process_block (time_nfo, transport, tempo_map);
+    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
 
   auto audio_outs = find_audio_output_ports (*plugin);
   ASSERT_FALSE (audio_outs.empty ());
@@ -271,8 +272,9 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
   auto * target_param = find_first_plugin_param (*plugin);
   ASSERT_NE (target_param, nullptr);
   target_param->setBaseValue (0.8f);
+  auto transport_snapshot = transport.get_snapshot ();
   for (int i = 0; i < 3; ++i)
-    plugin->process_block (time_nfo, transport, tempo_map);
+    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
 
   auto saved_state = plugin->save_state ();
   ASSERT_FALSE (saved_state.empty ());
@@ -347,9 +349,10 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
 
   auto &transport2 = *project2->transport_;
   auto &tempo_map2 = project2->tempo_map ();
+  auto  transport2_snapshot = transport2.get_snapshot ();
 
   for (int i = 0; i < 5; ++i)
-    plugin2->process_block (time_nfo, transport2, tempo_map2);
+    plugin2->process_block (time_nfo, transport2_snapshot, tempo_map2);
 
   auto audio_outs2 = find_audio_output_ports (*plugin2);
   ASSERT_FALSE (audio_outs2.empty ());
@@ -403,8 +406,9 @@ TEST_P (PluginParamSyncTest, ParameterChangesReachPlugin)
   auto * target_param = find_first_plugin_param (*plugin);
   ASSERT_NE (target_param, nullptr) << "No automatable parameter found";
 
+  auto transport_snapshot = transport.get_snapshot ();
   for (int i = 0; i < 3; ++i)
-    plugin->process_block (time_nfo, transport, tempo_map);
+    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
 
   auto state_default = plugin->save_state ();
   ASSERT_FALSE (state_default.empty ());
@@ -412,7 +416,8 @@ TEST_P (PluginParamSyncTest, ParameterChangesReachPlugin)
   target_param->setBaseValue (0.9f);
   auto state_changed = state_default;
   ScopedQCoreApplication::process_events_until_true ([&] () {
-    plugin->process_block (time_nfo, transport, tempo_map);
+    auto transport_snap = transport.get_snapshot ();
+    plugin->process_block (time_nfo, transport_snap, tempo_map);
     state_changed = plugin->save_state ();
     return state_changed != state_default;
   });
@@ -439,8 +444,9 @@ TEST_P (PluginParamSyncTest, NoFeedbackLoopOnRepeatedCycles)
         p->setBaseValue (0.75f);
     }
 
+  auto transport_snapshot = transport.get_snapshot ();
   for (int i = 0; i < 5; ++i)
-    plugin->process_block (time_nfo, transport, tempo_map);
+    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
 
   std::vector<float> values_before;
   for (const auto &param_ref : plugin->get_parameters ())
@@ -449,8 +455,9 @@ TEST_P (PluginParamSyncTest, NoFeedbackLoopOnRepeatedCycles)
       values_before.push_back (p->baseValue ());
     }
 
+  transport_snapshot = transport.get_snapshot ();
   for (int i = 0; i < 20; ++i)
-    plugin->process_block (time_nfo, transport, tempo_map);
+    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
 
   std::vector<float> values_after;
   for (const auto &param_ref : plugin->get_parameters ())

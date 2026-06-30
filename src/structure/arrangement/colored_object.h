@@ -66,7 +66,7 @@ private:
 
 private:
   /**
-   * Color independent of owner (Track/Region etc.).
+   * Color independent of owner (Track/Clip etc.).
    *
    * If nullopt, the owner color will be used.
    */

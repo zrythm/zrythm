@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/marker.h"
 
 #include "helpers/mock_qobject.h"
@@ -20,21 +21,23 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
     marker = std::make_unique<Marker> (
-      *tempo_map, Marker::MarkerType::Custom, parent.get ());
+      *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap> tempo_map;
-  std::unique_ptr<MockQObject>   parent;
-  std::unique_ptr<Marker>        marker;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<Marker>               marker;
 };
 
 // Test initial state
 TEST_F (MarkerTest, InitialState)
 {
   EXPECT_EQ (marker->type (), ArrangerObject::Type::Marker);
-  EXPECT_EQ (marker->position ()->samples (), 0);
+  EXPECT_EQ (marker->position ()->ticks (), 0);
   EXPECT_EQ (marker->name ()->name (), "");
   EXPECT_EQ (marker->markerType (), Marker::MarkerType::Custom);
 }
@@ -48,13 +51,13 @@ TEST_F (MarkerTest, MarkerTypes)
 
   // Test start marker
   auto start_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Start, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Start, parent.get ());
   EXPECT_TRUE (start_marker->isStartMarker ());
   EXPECT_FALSE (start_marker->isEndMarker ());
 
   // Test end marker
   auto end_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::End, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::End, parent.get ());
   EXPECT_FALSE (end_marker->isStartMarker ());
   EXPECT_TRUE (end_marker->isEndMarker ());
 }
@@ -63,7 +66,7 @@ TEST_F (MarkerTest, MarkerTypes)
 TEST_F (MarkerTest, Serialization)
 {
   // Set initial state
-  marker->position ()->setSamples (2000);
+  marker->position ()->setTicks (2000);
   marker->name ()->setName ("Chorus");
 
   // Serialize
@@ -72,11 +75,11 @@ TEST_F (MarkerTest, Serialization)
 
   // Create new marker
   auto new_marker = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Custom, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
   from_json (j, *new_marker);
 
   // Verify state
-  EXPECT_EQ (new_marker->position ()->samples (), 2000);
+  EXPECT_EQ (new_marker->position ()->ticks (), 2000);
   EXPECT_EQ (new_marker->name ()->name (), "Chorus");
 }
 
@@ -84,18 +87,18 @@ TEST_F (MarkerTest, Serialization)
 TEST_F (MarkerTest, Copying)
 {
   // Set initial state
-  marker->position ()->setSamples (3000);
+  marker->position ()->setTicks (3000);
   marker->name ()->setName ("Outro");
 
   // Create target
   auto target = std::make_unique<Marker> (
-    *tempo_map, Marker::MarkerType::Custom, parent.get ());
+    *tempo_map_wrapper, Marker::MarkerType::Custom, parent.get ());
 
   // Copy
   init_from (*target, *marker, utils::ObjectCloneType::Snapshot);
 
   // Verify state
-  EXPECT_EQ (target->position ()->samples (), 3000);
+  EXPECT_EQ (target->position ()->ticks (), 3000);
   EXPECT_EQ (target->name ()->name (), "Outro");
 }
 
@@ -117,9 +120,9 @@ TEST_F (MarkerTest, EdgeCases)
   marker->name ()->setName ("");
   EXPECT_EQ (marker->name ()->name (), "");
 
-  // Negative position
-  marker->position ()->setSamples (-1000);
-  EXPECT_GE (marker->position ()->samples (), 0); // Should clamp to 0
+  // Negative position (no constraint, stored as-is)
+  marker->position ()->setTicks (-1000.0);
+  EXPECT_DOUBLE_EQ (marker->position ()->ticks (), -1000.0);
 }
 
 } // namespace zrythm::structure::arrangement

@@ -37,9 +37,14 @@ public:
   Q_ENUM (MarkerType)
 
   Marker (
-    const dsp::TempoMap &tempo_map,
-    MarkerType           type,
-    QObject *            parent = nullptr);
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    MarkerType                  type,
+    QObject *                   parent = nullptr);
+
+  dsp::TimelinePosition * position () const override
+  {
+    return static_cast<dsp::TimelinePosition *> (ArrangerObject::position ());
+  }
 
   // ========================================================================
   // QML Interface

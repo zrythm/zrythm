@@ -13,9 +13,9 @@ import Zrythm
 Arranger {
   id: root
 
+  readonly property ChordClip chordClip: clipEditor.clipObject as ChordClip
   required property ChordRowListModel chordRowModel
   required property ChordTrack chordTrack
-  readonly property ChordRegion region: clipEditor.region
   required property int rowHeight
   readonly property Track track: clipEditor.track
 
@@ -29,13 +29,13 @@ Arranger {
   function beginObjectCreation(coordinates: point): ChordObject {
     const row = Math.floor(coordinates.y / root.rowHeight);
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - region.position.ticks;
+    const localTickPosition = tickPosition - root.chordClip.position.ticks;
 
     if (row >= 0 && row < root.chordRowModel.rowCount()) {
       const desc = root.chordRowModel.descriptorAtRow(row);
-      const obj = root.objectCreator.addChordObjectFromDescriptor(region, localTickPosition, desc);
+      const obj = root.objectCreator.addChordObjectFromDescriptor(root.chordClip, localTickPosition, desc);
       root.currentAction = Arranger.CreatingResizingMovingR;
-      root.selectSingleObject(region.chordObjects, region.chordObjects.rowCount() - 1);
+      root.selectSingleObject(root.chordClip.chordObjects, root.chordClip.chordObjects.rowCount() - 1);
       CursorManager.setResizeEndCursor();
       return obj;
     }
@@ -85,7 +85,7 @@ Arranger {
     id: chordObjectsRepeater
 
     anchors.fill: parent
-    model: root.region.chordObjects
+    model: root.chordClip.chordObjects
 
     delegate: ArrangerObjectLoader {
       id: chordObjectLoader
@@ -97,7 +97,23 @@ Arranger {
         if (row < 0)
           return; // not yet grouped — keep the last layout until repopulated
         chordObjectLoader.y = row * root.rowHeight;
-        chordObjectLoader.width = Math.max((ArrangerObjectHelpers.getObjectEndTicks(chordObject) - chordObject.position.ticks) * root.ruler.pxPerTick, 2);
+
+        // Chord objects have no length — derive width from next sibling or clip end
+        const clip = chordObject.parentObject as ChordClip;
+        let endTicks = chordObject.position.ticks;
+        if (clip) {
+          const myPos = chordObject.position.ticks;
+          let nextPos = -1;
+          const chordObjects = clip.chordObjects;
+          for (let i = 0; i < chordObjects.rowCount(); i++) {
+            const other = chordObjects.data(chordObjects.index(i, 0), ArrangerObjectListModel.ArrangerObjectPtrRole);
+            const otherPos = other.position.ticks;
+            if (otherPos > myPos + 1e-9 && (nextPos < 0 || otherPos < nextPos))
+              nextPos = otherPos;
+          }
+          endTicks = nextPos >= 0 ? nextPos : clip.length.ticks;
+        }
+        chordObjectLoader.width = Math.max((endTicks - chordObject.position.ticks) * root.ruler.pxPerTick, 2);
       }
 
       arrangerSelectionModel: root.arrangerSelectionModel
@@ -152,8 +168,8 @@ Arranger {
       if (!payload || !Number.isFinite(payload.root) || !Number.isFinite(payload.type) || !Number.isFinite(payload.accent) || !Number.isFinite(payload.inversion) || (hasBass && !Number.isFinite(payload.bass)))
         return;
       const tickPosition = drop.x / root.ruler.pxPerTick;
-      const localTickPosition = tickPosition - region.position.ticks;
-      root.objectCreator.addChordObjectFromFields(region, localTickPosition, payload.root, payload.type, payload.accent, hasBass, hasBass ? payload.bass : MusicalScale.MusicalNote.C, payload.inversion);
+      const localTickPosition = tickPosition - root.chordClip.position.ticks;
+      root.objectCreator.addChordObjectFromFields(root.chordClip, localTickPosition, payload.root, payload.type, payload.accent, hasBass, hasBass ? payload.bass : MusicalScale.MusicalNote.C, payload.inversion);
       drop.accept(Qt.CopyAction);
     } catch (e) {
       // Malformed MIME data (stale/foreign drag source): ignore silently.

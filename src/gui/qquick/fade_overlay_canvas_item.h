@@ -11,7 +11,7 @@
 
 namespace zrythm::structure::arrangement
 {
-class AudioRegion;
+class AudioClip;
 }
 
 namespace zrythm::gui::qquick
@@ -30,7 +30,9 @@ class FadeOverlayCanvasItem : public QCanvasPainterItem
   Q_OBJECT
   QML_NAMED_ELEMENT (FadeOverlayCanvas)
 
-  Q_PROPERTY (QObject * region READ region WRITE setRegion NOTIFY regionChanged)
+  Q_PROPERTY (
+    zrythm::structure::arrangement::AudioClip * audioClip READ audioClip WRITE
+      setAudioClip NOTIFY audioClipChanged)
   Q_PROPERTY (
     qreal pxPerTick READ pxPerTick WRITE setPxPerTick NOTIFY pxPerTickChanged)
   Q_PROPERTY (
@@ -55,26 +57,21 @@ public:
 
   QCanvasPainterItemRenderer * createItemRenderer () const override;
 
-  QObject * region () const { return region_; }
-  void      setRegion (QObject * region);
-  qreal     pxPerTick () const { return px_per_tick_; }
-  void      setPxPerTick (qreal px);
-  FadeType  fadeType () const { return fade_type_; }
-  void      setFadeType (FadeType type);
-  bool      hovered () const { return hovered_; }
-  void      setHovered (bool hovered);
-  QColor    overlayColor () const { return overlay_color_; }
-  void      setOverlayColor (const QColor &color);
-  QColor    curveColor () const { return curve_color_; }
-  void      setCurveColor (const QColor &color);
-
-  structure::arrangement::AudioRegion * audioRegion () const
-  {
-    return audio_region_;
-  }
+  structure::arrangement::AudioClip * audioClip () const { return audio_clip_; }
+  void     setAudioClip (structure::arrangement::AudioClip * clip);
+  qreal    pxPerTick () const { return px_per_tick_; }
+  void     setPxPerTick (qreal px);
+  FadeType fadeType () const { return fade_type_; }
+  void     setFadeType (FadeType type);
+  bool     hovered () const { return hovered_; }
+  void     setHovered (bool hovered);
+  QColor   overlayColor () const { return overlay_color_; }
+  void     setOverlayColor (const QColor &color);
+  QColor   curveColor () const { return curve_color_; }
+  void     setCurveColor (const QColor &color);
 
 Q_SIGNALS:
-  void regionChanged ();
+  void audioClipChanged ();
   void pxPerTickChanged ();
   void fadeTypeChanged ();
   void hoveredChanged ();
@@ -82,15 +79,14 @@ Q_SIGNALS:
   void curveColorChanged ();
 
 private:
-  QObject *                                     region_ = nullptr;
-  QPointer<structure::arrangement::AudioRegion> audio_region_;
-  qreal                                         px_per_tick_ = 1.0;
-  FadeType                                      fade_type_ = FadeIn;
-  bool                                          hovered_ = false;
-  QColor overlay_color_{ 51, 51, 51, 153 };
+  QPointer<structure::arrangement::AudioClip> audio_clip_;
+  qreal                                       px_per_tick_ = 1.0;
+  FadeType                                    fade_type_ = FadeIn;
+  bool                                        hovered_ = false;
+  QColor                                      overlay_color_{ 51, 51, 51, 153 };
   QColor curve_color_{ 255, 255, 255, 200 };
 
-  std::vector<QMetaObject::Connection> region_connections_;
+  std::vector<QMetaObject::Connection> clip_connections_;
 };
 
 } // namespace zrythm::gui::qquick

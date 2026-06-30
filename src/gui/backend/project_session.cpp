@@ -219,20 +219,20 @@ ProjectSession::ProjectSession (
     track->lanes ()->create_missing_lanes (actual_lane_idx);
     const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
       units::precise_sample_t (start_position));
-    return std::tuple{ track, actual_lane_idx, start_ticks };
+    return std::tuple{ track, actual_lane_idx, start_ticks.asQuantity () };
   };
 
   recording_materializer_ = utils::make_qobject_unique<
     controllers::RecordingMaterializer> (
     *recording_coordinator_, *undo_stack_,
     controllers::RecordingMaterializer::ArrangerObjectCreators{
-      .audio_region =
+      .audio_clip =
         [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
            arranger_object_creator_.get ()),
          get_lane_info] (
           structure::tracks::TrackUuid track_id, units::sample_t start_position,
           const utils::audio::AudioBuffer &initial_frames, size_t lane_index)
-        -> controllers::RecordingMaterializer::RegionCreationResult {
+        -> controllers::RecordingMaterializer::ClipCreationResult {
         if (creator_ptr.isNull ())
           return std::nullopt;
         auto info = get_lane_info (track_id, start_position, lane_index);
@@ -242,19 +242,19 @@ ProjectSession::ProjectSession (
         auto *     lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
         const auto clip_name = utils::Utf8String::from_qstring (
           QObject::tr ("Recording %1").arg (track->name ()));
-        auto region_ref = creator_ptr->add_audio_region_for_recording (
+        auto clip_ref = creator_ptr->add_audio_clip_for_recording (
           *track, *lane, initial_frames, clip_name, start_ticks);
-        return controllers::RecordingMaterializer::CreatedRegion{
-          std::move (region_ref), actual_lane_idx
+        return controllers::RecordingMaterializer::CreatedClip{
+          std::move (clip_ref), actual_lane_idx
         };
       },
-      .midi_region =
+      .midi_clip =
         [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
            arranger_object_creator_.get ()),
          get_lane_info] (
           structure::tracks::TrackUuid track_id, units::sample_t start_position,
           size_t lane_index)
-        -> controllers::RecordingMaterializer::RegionCreationResult {
+        -> controllers::RecordingMaterializer::ClipCreationResult {
         if (creator_ptr.isNull ())
           return std::nullopt;
         auto info = get_lane_info (track_id, start_position, lane_index);
@@ -262,40 +262,39 @@ ProjectSession::ProjectSession (
           return std::nullopt;
         auto [track, actual_lane_idx, start_ticks] = *info;
         auto * lane = track->lanes ()->lanes ().at (actual_lane_idx).get ();
-        auto   region_ref = creator_ptr->add_midi_region_for_recording (
-          *track, *lane, start_ticks);
-        return controllers::RecordingMaterializer::CreatedRegion{
-          std::move (region_ref), actual_lane_idx
+        auto   clip_ref =
+          creator_ptr->add_midi_clip_for_recording (*track, *lane, start_ticks);
+        return controllers::RecordingMaterializer::CreatedClip{
+          std::move (clip_ref), actual_lane_idx
         };
       },
       .midi_note =
         [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
            arranger_object_creator_.get ()),
          project_ptr = QPointer<structure::project::Project> (project_.get ())] (
-          structure::arrangement::MidiRegion &region,
-          units::sample_t start_position, units::sample_t end_position,
-          int pitch, int velocity, int channel) {
+          structure::arrangement::MidiClip &clip, units::sample_t start_position,
+          units::sample_t end_position, int pitch, int velocity, int channel) {
           if (creator_ptr.isNull () || project_ptr.isNull ())
             return;
           const auto start_ticks = project_ptr->tempo_map ().samples_to_tick (
             units::precise_sample_t (start_position));
           const auto end_ticks = project_ptr->tempo_map ().samples_to_tick (
             units::precise_sample_t (end_position));
-          auto * note = creator_ptr->addMidiNote (
-            &region, start_ticks.in (units::ticks), pitch);
+          auto * note =
+            creator_ptr->addMidiNote (&clip, start_ticks.asDouble (), pitch);
           if (note != nullptr)
             {
               note->setVelocity (velocity);
               note->setMidiChannel (channel);
-              note->bounds ()->length ()->setTicks (
-                end_ticks.in (units::ticks) -start_ticks.in (units::ticks));
+              note->length ()->setTicks (
+                end_ticks.asDouble () - start_ticks.asDouble ());
             }
         },
       .midi_control_event =
         [creator_ptr = QPointer<actions::ArrangerObjectCreator> (
            arranger_object_creator_.get ()),
          project_ptr = QPointer<structure::project::Project> (project_.get ())] (
-          structure::arrangement::MidiRegion &region, units::sample_t position,
+          structure::arrangement::MidiClip &clip, units::sample_t position,
           structure::arrangement::MidiControlEvent::EventType type, int channel,
           int controller, int value) {
           if (creator_ptr.isNull () || project_ptr.isNull ())
@@ -303,7 +302,7 @@ ProjectSession::ProjectSession (
           const auto ticks = project_ptr->tempo_map ().samples_to_tick (
             units::precise_sample_t (position));
           creator_ptr->add_midi_control_event (
-            region, ticks, type, channel, controller, value);
+            clip, ticks.asQuantity (), type, channel, controller, value);
         },
     },
     [&settings = app_settings_] () {
@@ -430,6 +429,15 @@ ProjectSession::createArrangerObjectSelectionOperator (
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 ObjT> *> (project_->tracklist ()->getTrackLaneForObject (obj));
+            }
+          else if constexpr (
+            std::is_same_v<ObjT, structure::arrangement::TempoObject>
+            || std::is_same_v<ObjT, structure::arrangement::TimeSignatureObject>)
+            {
+              // Tempo/time-signature objects live on the timeline but are owned
+              // by the project's TempoObjectManager, not by a track.
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                ObjT> *> (project_->tempoObjectManager ());
             }
           else if constexpr (structure::arrangement::TimelineObject<ObjT>)
             {

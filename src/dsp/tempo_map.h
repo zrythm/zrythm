@@ -4,9 +4,11 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include <vector>
 
+#include "dsp/tick_types.h"
 #include "utils/units.h"
 
 #include <nlohmann/json_fwd.hpp>
@@ -49,7 +51,7 @@ public:
   struct TempoEvent
   {
     units::tick_t tick;    ///< Position in ticks
-    double        bpm{};   ///< Tempo in BPM
+    units::bpm_t  bpm{};   ///< Tempo
     CurveType     curve{}; ///< Curve type from this event to the next
 
     friend void to_json (nlohmann::json &j, const TempoEvent &e);
@@ -70,7 +72,7 @@ public:
 
     constexpr auto ticks_per_bar () const
     {
-      return units::ticks (quarters_per_bar () * FixedPpqTempoMap::get_ppq ());
+      return quarters_per_bar () * FixedPpqTempoMap::get_ppq ();
     }
 
     constexpr auto ticks_per_beat () const
@@ -119,7 +121,7 @@ public:
   /**
    * @brief Add a tempo event
    * @param tick Position in ticks
-   * @param bpm Tempo in BPM
+   * @param bpm Tempo
    * @param curve Curve type
    *
    * @warning Tempo events must only be added after all time signature events
@@ -127,7 +129,7 @@ public:
    *
    * @throws std::invalid_argument for invalid BPM or tick values
    */
-  void add_tempo_event (units::tick_t tick, double bpm, CurveType curve);
+  void add_tempo_event (units::tick_t tick, units::bpm_t bpm, CurveType curve);
 
   /// Remove a tempo event at the specified tick
   void remove_tempo_event (units::tick_t tick);
@@ -152,26 +154,25 @@ public:
   /// Remove a time signature event at the specified tick
   void remove_time_signature_event (units::tick_t tick);
 
-  /// Convert fractional ticks to seconds
-  auto
-  tick_to_seconds (units::precise_tick_t tick) const -> units::precise_second_t;
+  /// Convert timeline ticks to seconds
+  auto tick_to_seconds (TimelineTick tick) const -> units::precise_second_t;
 
-  /// Convert fractional ticks to samples
-  units::precise_sample_t tick_to_samples (units::precise_tick_t tick) const
+  /// Convert timeline ticks to samples
+  units::precise_sample_t tick_to_samples (TimelineTick tick) const
   {
     return tick_to_seconds (tick) * sample_rate_;
   }
 
-  units::sample_t tick_to_samples_rounded (units::precise_tick_t tick) const
+  units::sample_t tick_to_samples_rounded (TimelineTick tick) const
   {
     return au::round_as<int64_t> (units::samples, tick_to_samples (tick));
   }
 
-  /// Convert seconds to fractional ticks
-  units::precise_tick_t seconds_to_tick (units::precise_second_t seconds) const;
+  /// Convert seconds to timeline ticks
+  TimelineTick seconds_to_tick (units::precise_second_t seconds) const;
 
-  /// Convert samples to fractional ticks
-  units::precise_tick_t samples_to_tick (units::precise_sample_t samples) const
+  /// Convert samples to timeline ticks
+  TimelineTick samples_to_tick (units::precise_sample_t samples) const
   {
     const auto seconds = samples / sample_rate_;
     return seconds_to_tick (seconds);
@@ -185,11 +186,31 @@ public:
   TimeSignatureEvent time_signature_at_tick (units::tick_t tick) const;
 
   /**
-   * @brief Get the tempo event active at the given tick.
+   * @brief Get the tempo (BPM) active at the given tick.
    * @param tick Position in ticks
    * @return Tempo (or default 120 BPM if none found)
    */
-  double tempo_at_tick (units::tick_t tick) const;
+  units::bpm_t tempo_at_tick (units::tick_t tick) const;
+
+  /**
+   * @brief Read-only view of all tempo events, sorted ascending by tick.
+   *
+   * When empty, the default tempo (set via @ref set_default_bpm, 120 BPM by
+   * default) applies everywhere.
+   */
+  std::span<const TempoEvent> tempo_events () const noexcept { return events_; }
+
+  /**
+   * @brief Read-only view of all time signature events, sorted ascending by
+   * tick.
+   *
+   * When empty, the default time signature (set via @ref
+   * set_default_time_signature, 4/4 by default) applies everywhere.
+   */
+  std::span<const TimeSignatureEvent> time_signature_events () const noexcept
+  {
+    return time_sig_events_;
+  }
 
   /**
    * @brief Convert ticks to musical position (bar:beat:sixteenth:tick)
@@ -207,18 +228,15 @@ public:
    *
    * @throws std::invalid_argument for invalid position
    */
-  units::tick_t musical_position_to_tick (const MusicalPosition &pos) const;
+  TimelineTickI musical_position_to_tick (const MusicalPosition &pos) const;
 
   /// Get pulses per quarter note
-  static consteval int get_ppq () { return from_nttp (PPQ).in (units::ticks); }
+  static consteval auto get_ppq () { return from_nttp (PPQ); }
 
   /// Get current sample rate
-  double get_sample_rate () const
-  {
-    return sample_rate_.in (units::sample_rate);
-  }
+  auto get_sample_rate () const { return sample_rate_; }
 
-  void set_default_bpm (double bpm) { default_tempo_.bpm = bpm; }
+  void set_default_bpm (units::bpm_t bpm) { default_tempo_.bpm = bpm; }
   void set_default_time_signature (int numerator, int denominator)
   {
     default_time_sig_.numerator = numerator;
@@ -226,15 +244,6 @@ public:
   }
 
 private:
-  /// Get all tempo events
-  const std::vector<TempoEvent> &get_tempo_events () const { return events_; }
-
-  /// Get all time signature events
-  const std::vector<TimeSignatureEvent> &get_time_signature_events () const
-  {
-    return time_sig_events_;
-  }
-
   /// Rebuild cumulative time cache
   void rebuild_cumulative_times ();
 
@@ -268,8 +277,8 @@ private:
     from_nttp (PPQ) / 4; ///< Ticks per sixteenth note (PPQ/4)
 
   static constexpr auto DEFAULT_BPM_EVENT = TempoEvent{
-    units::ticks (0), 120.0, CurveType::Constant
-  }; ///< Default tempo in BPM
+    units::ticks (0), units::bpm (120.0), CurveType::Constant
+  }; ///< Default tempo
   static constexpr auto DEFAULT_TIME_SIG_EVENT =
     TimeSignatureEvent{ units::ticks (0), 4, 4 }; ///< Default time signature
   static constexpr auto DEFAULT_CUMULATIVE_SECONDS = units::seconds (0.0);

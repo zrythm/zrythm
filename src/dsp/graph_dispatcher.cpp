@@ -48,12 +48,12 @@ DspGraphDispatcher::preprocess_at_start_of_cycle (
   {
 #if 0
     [[maybe_unused]] auto &midi_events = piano_roll_events_;
-    if (time_nfo.buffer_offset_ == 0 && CLIP_EDITOR->has_region ())
+    if (time_nfo.buffer_offset_ == 0 && CLIP_EDITOR->has_clip ())
       {
-// FIXME!!!! threading bug here. clip editor region & track may be
+// FIXME!!!! threading bug here. clip editor clip & track may be
 // changed in the main (UI) thread while this is attempted
         auto clip_editor_track_var =
-          CLIP_EDITOR->get_region_and_track ()->second;
+          CLIP_EDITOR->get_clip_and_track ()->second;
         std::visit (
           [&] (auto &&track) {
             using TrackT = utils::base_type<decltype (track)>;

@@ -31,6 +31,7 @@
 
 #include "dsp/engine.h"
 #include "dsp/midi_device_buffer.h"
+#include "utils/enum_utils.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/tracy.h"
@@ -611,7 +612,8 @@ AudioEngine::advance_playhead_after_processing (
     transport_snapshot.get_play_state () == dsp::ITransport::PlayState::Rolling
     && remaining_latency_preroll_ == units::samples (0))
     {
-      transport_.add_to_playhead_in_audio_thread (roll_nframes);
+      transport_.add_to_playhead_in_audio_thread (
+        transport_snapshot, roll_nframes);
       transport_snapshot.set_position (
         transport_.get_playhead_position_in_audio_thread ());
     }

@@ -10,6 +10,37 @@
 namespace zrythm::dsp
 {
 /**
+ * @brief Computes the playhead position after adding frames, wrapping around
+ * the loop end if looping is enabled.
+ *
+ * Shared by ITransport's default implementation and Transport's audio-thread
+ * path.
+ */
+inline units::sample_t
+playhead_position_after_adding_frames (
+  units::sample_t current_position,
+  units::sample_t frames_to_add,
+  bool            loop_enabled,
+  units::sample_t loop_start,
+  units::sample_t loop_end) noexcept
+{
+  auto new_pos = current_position + frames_to_add;
+
+  /* if start frames were before the loop-end point and the new frames are
+   * after (loop crossed) */
+  if (loop_enabled)
+    {
+      while (current_position < loop_end && new_pos >= loop_end)
+        {
+          /* adjust the new frames */
+          new_pos += loop_start - loop_end;
+        }
+    }
+
+  return new_pos;
+}
+
+/**
  * @brief Interface for transport.
  */
 class ITransport
@@ -59,23 +90,10 @@ public:
     const units::sample_t current_playhead_position,
     const units::sample_t frames_to_add) const noexcept [[clang::nonblocking]]
   {
-    auto new_pos = current_playhead_position + frames_to_add;
-
-    /* if start frames were before the loop-end point and the new frames are
-     * after (loop crossed) */
-    if (loop_enabled ())
-      {
-        const auto loop_points = get_loop_range_positions ();
-        const auto loop_start = loop_points.first;
-        const auto loop_end = loop_points.second;
-        while (current_playhead_position < loop_end && new_pos >= loop_end)
-          {
-            /* adjust the new frames */
-            new_pos += loop_start - loop_end;
-          }
-      }
-
-    return new_pos;
+    const auto [loop_start, loop_end] = get_loop_range_positions ();
+    return playhead_position_after_adding_frames (
+      current_playhead_position, frames_to_add, loop_enabled (), loop_start,
+      loop_end);
   }
 
   virtual bool loop_enabled () const noexcept [[clang::nonblocking]] = 0;

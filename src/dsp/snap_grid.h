@@ -149,7 +149,8 @@ public:
     assert (ticks_per_beat > 0);
     assert (ticks_per_bar > 0);
 
-    int ticks = 0;
+    const int ppq = TempoMap::get_ppq ().in (units::ticks);
+    int       ticks = 0;
     switch (length)
       {
       case dsp::notes::NoteLength::Bar:
@@ -159,31 +160,31 @@ public:
         ticks = ticks_per_beat;
         break;
       case dsp::notes::NoteLength::Note_2_1:
-        ticks = 8 * TempoMap::get_ppq ();
+        ticks = 8 * ppq;
         break;
       case dsp::notes::NoteLength::Note_1_1:
-        ticks = 4 * TempoMap::get_ppq ();
+        ticks = 4 * ppq;
         break;
       case dsp::notes::NoteLength::Note_1_2:
-        ticks = 2 * TempoMap::get_ppq ();
+        ticks = 2 * ppq;
         break;
       case dsp::notes::NoteLength::Note_1_4:
-        ticks = TempoMap::get_ppq ();
+        ticks = ppq;
         break;
       case dsp::notes::NoteLength::Note_1_8:
-        ticks = TempoMap::get_ppq () / 2;
+        ticks = ppq / 2;
         break;
       case dsp::notes::NoteLength::Note_1_16:
-        ticks = TempoMap::get_ppq () / 4;
+        ticks = ppq / 4;
         break;
       case dsp::notes::NoteLength::Note_1_32:
-        ticks = TempoMap::get_ppq () / 8;
+        ticks = ppq / 8;
         break;
       case dsp::notes::NoteLength::Note_1_64:
-        ticks = TempoMap::get_ppq () / 16;
+        ticks = ppq / 16;
         break;
       case dsp::notes::NoteLength::Note_1_128:
-        ticks = TempoMap::get_ppq () / 32;
+        ticks = ppq / 32;
         break;
       }
 

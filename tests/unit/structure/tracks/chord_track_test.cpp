@@ -6,9 +6,11 @@
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/track_processor.h"
+#include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
 
+#include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
@@ -115,7 +117,7 @@ TEST_F (ChordTrackTest, ChordPitchesSelfEquality)
 }
 
 // ========================================================================
-// Chord region cache tests
+// Chord clip cache tests
 // ========================================================================
 
 class ChordTrackCacheTest : public ::testing::Test
@@ -131,19 +133,21 @@ protected:
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
 
     final_deps_ = std::make_unique<FinalTrackDependencies> (
-      *tempo_map_wrapper_, *registry_, *transport_, [] { return false; },
+      *tempo_map_wrapper_, *registry_, [] { return false; },
       TrackRecordingCallback{});
 
     chord_track_ = std::make_unique<ChordTrack> (*final_deps_);
 
     sample_rate_provider_ = [] () { return units::sample_rate (44100); };
-    bpm_provider_ = [] () { return 120.0; };
+    bpm_provider_ = [] () { return units::bpm (120.0); };
+
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
 
     factory_ = std::make_unique<arrangement::ArrangerObjectFactory> (
       arrangement::ArrangerObjectFactory::Dependencies{
-        .tempo_map_ = *tempo_map_,
+        .tempo_map_ = *tempo_map_wrapper_,
         .registry_ = *registry_,
-        .musical_mode_getter_ = [] () { return true; },
         .last_timeline_obj_len_provider_ = [] () { return 100.0; },
         .last_editor_obj_len_provider_ = [] () { return 50.0; },
         .automation_curve_algorithm_provider_ =
@@ -161,6 +165,7 @@ protected:
   std::unique_ptr<ChordTrack>                            chord_track_;
   arrangement::ArrangerObjectFactory::SampleRateProvider sample_rate_provider_;
   arrangement::ArrangerObjectFactory::BpmProvider        bpm_provider_;
+  std::unique_ptr<utils::AppSettings>                    app_settings_;
   std::unique_ptr<arrangement::ArrangerObjectFactory>    factory_;
 };
 
@@ -174,23 +179,23 @@ TEST_F (ChordTrackCacheTest, EmptyTrackCacheIsNoOp)
   EXPECT_TRUE (events.empty ());
 }
 
-TEST_F (ChordTrackCacheTest, ChordRegionPopulatesMidiCache)
+TEST_F (ChordTrackCacheTest, ChordClipPopulatesMidiCache)
 {
-  auto region_ref =
-    factory_->get_builder<arrangement::ChordRegion> ()
+  auto clip_ref =
+    factory_->get_builder<arrangement::ChordClip> ()
       .with_start_ticks (units::ticks (0))
       .with_end_ticks (units::ticks (3840))
       .build_in_registry ();
   chord_track_->arrangement::ArrangerObjectOwner<
-    arrangement::ChordRegion>::add_object (region_ref);
-  auto * region = region_ref.get_object_as<arrangement::ChordRegion> ();
+    arrangement::ChordClip>::add_object (clip_ref);
+  auto * clip = clip_ref.get_object_as<arrangement::ChordClip> ();
 
   auto chord_ref =
     factory_->get_builder<arrangement::ChordObject> ()
       .with_start_ticks (units::ticks (0))
       .with_chord_descriptor (dsp::MusicalNote::C, dsp::ChordType::Major)
       .build_in_registry ();
-  region->add_object (chord_ref);
+  clip->add_object (chord_ref);
 
   chord_track_->regeneratePlaybackCaches (
     utils::ExpandableTickRange{ std::make_pair (0.0, 3840.0) });

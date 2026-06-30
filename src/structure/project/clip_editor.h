@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "structure/arrangement/clip.h"
 #include "structure/project/audio_clip_editor.h"
 #include "structure/project/automation_editor.h"
 #include "structure/project/chord_editor.h"
@@ -22,8 +23,10 @@ namespace zrythm::structure::project
 class ClipEditor : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY (QVariant region READ region NOTIFY regionChanged)
-  Q_PROPERTY (QVariant track READ track NOTIFY regionChanged)
+  Q_PROPERTY (
+    zrythm::structure::arrangement::Clip * clipObject READ clip NOTIFY
+      clipObjectChanged)
+  Q_PROPERTY (QVariant track READ track NOTIFY clipObjectChanged)
   Q_PROPERTY (
     zrythm::structure::project::MidiEditor * midiEditor READ midiEditor CONSTANT
       FINAL)
@@ -61,11 +64,11 @@ public:
     return automation_editor_.get ();
   }
 
-  QVariant         region () const;
-  QVariant         track () const;
-  Q_INVOKABLE void setRegion (QVariant region, QVariant track);
-  Q_INVOKABLE void unsetRegion ();
-  Q_SIGNAL void    regionChanged (QVariant region);
+  arrangement::Clip * clip () const;
+  QVariant            track () const;
+  Q_INVOKABLE void    setClip (QVariant clip, QVariant track);
+  Q_INVOKABLE void    unsetClip ();
+  Q_SIGNAL void       clipObjectChanged ();
 
   // ============================================================================
 
@@ -82,12 +85,12 @@ public:
   /**
    * Sets the track and refreshes the piano roll widgets.
    */
-  void set_region (ArrangerObject::Uuid region_id, TrackUuid track_id);
+  void set_clip (ArrangerObject::Uuid clip_id, TrackUuid track_id);
 
-  bool has_region () const { return region_id_.has_value (); }
+  bool has_clip () const { return clip_id_.has_value (); }
 
   std::optional<std::pair<ArrangerObject *, Track *>>
-  get_region_and_track () const;
+  get_clip_and_track () const;
 
   friend void init_from (
     ClipEditor            &obj,
@@ -95,7 +98,7 @@ public:
     utils::ObjectCloneType clone_type);
 
 private:
-  static constexpr auto kRegionIdKey = "regionId"sv;
+  static constexpr auto kClipIdKey = "clipId"sv;
   static constexpr auto kMidiEditorKey = "midiEditor"sv;
   static constexpr auto kAutomationEditorKey = "automationEditor"sv;
   static constexpr auto kChordEditorKey = "chordEditor"sv;
@@ -106,8 +109,8 @@ private:
 private:
   utils::IObjectRegistry &object_registry_;
 
-  /** Region currently attached to the clip editor. */
-  std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> region_id_;
+  /** Clip currently attached to the clip editor. */
+  std::optional<std::pair<ArrangerObject::Uuid, TrackUuid>> clip_id_;
 
   utils::QObjectUniquePtr<MidiEditor>       midi_editor_;
   utils::QObjectUniquePtr<AudioClipEditor>  audio_clip_editor_;

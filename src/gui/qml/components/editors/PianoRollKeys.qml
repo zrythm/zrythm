@@ -55,7 +55,7 @@ Item {
       root._rebuildHighlightCache();
     }
 
-    target: root.chordTrack?.chordRegions ?? null
+    target: root.chordTrack?.chordClips ?? null
   }
   Connections {
     function onContentChanged() {

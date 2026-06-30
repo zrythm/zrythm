@@ -42,6 +42,14 @@ ctest --test-dir builddir_cmake -N
 ./builddir_cmake/products/bin/zrythm_dsp_unit_tests --gtest_filter=TempoMapTest.testCaseName
 ```
 
+When investigating a test failure, run the failing test alone with `--output-on-failure` and **do not clip the output** — the full output (including ASan stack traces, assertion messages, and gtest logs) is often needed to diagnose the root cause. Use `-R "<TestName>"` to isolate a single test.
+
+**All tests are assumed to pass at each commit.** If a test fails after uncommitted changes, it is almost always those changes' fault — do not waste time checking whether the test was already broken.
+
+```bash
+ctest --test-dir builddir_cmake -R "TestName" --output-on-failure
+```
+
 ### Test Binary Target Names
 
 Test binary targets follow a strict naming convention. **Do not guess target names** — derive them from the pattern:
@@ -140,7 +148,7 @@ Dependencies are defined in [`package-lock.cmake`](package-lock.cmake) and fetch
 
 - **Repository**: This project uses a self-hosted GitLab instance at https://gitlab.zrythm.org/zrythm/zrythm
 - All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
-- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body. **Bullet points should describe behavioral or user-facing changes, not implementation details** — don't mention specific C++ patterns, smart pointer types, refactoring mechanics, or other details obvious from reading the diff
+- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body. **Both the summary and the bullet points use the imperative tone** (e.g., "Add", "Replace", "Remove" — as if giving a command, not "Adds"/"Replaces" or "Added"/"Replaced"). **Bullet points should describe what changed at the level of the named classes, modules, or abstractions involved and their observable behavior.** Name the key things a change touches (e.g. "Add `ITimeStretchEngine` and `TimeWarpMap`", "Remove the legacy `Stretcher`") so the commit is scannable and locatable — but omit low-level mechanics obvious from the diff (specific C++ patterns, smart-pointer types, refactoring steps)
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
 - See [AI_POLICY.md](doc/dev/AI_POLICY.md) for `Assisted-by:` trailers, which must be included in commit messages
 - Use `Fixes #123` for bugfixes, `Implements #123` for new features and the git trailer `GitLab-Work-Item: #123` to specify relations to GitLab issues (work items)
@@ -211,6 +219,7 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 ### General
 
 - **Never use the Write tool on existing files.** Always use the Edit tool to make targeted changes, preserving all existing comments, blank lines, and formatting. The Write tool may only be used for new files that don't exist yet.
+- **Never assume our own code is immutable.** This is our codebase — we can and should modify any part of it (including base classes, utility types, build config, existing APIs) when it leads to a better design. When a constraint in existing code blocks the ideal solution, propose changing the code rather than working around it. Do not rationalize why a workaround is necessary; offer to fix the root cause instead.
 
 ### C++23
 
@@ -224,7 +233,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use `ptr == nullptr` instead of `!ptr` when doing null checks
 - Use `std::numbers` instead of macros for number constants like `M_PI`
 - Use ranges and range-based for-loops instead of C-style for-loops
-- Use `std::span` instead of array pointers and sizes
+- Use `std::span` instead of array pointers and sizes; for read-only accessors returning a collection, return `std::span<const T>` (a lightweight view) rather than `const std::vector<T>&`, so callers can't mutate the contents and the interface isn't tied to a specific container type
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Use `std::next` and `std::prev` instead of adding/subtracting to iterators directly
@@ -233,11 +242,14 @@ Zrythm makes extensive use of modern C++ features:
 - Use west const style for simple const qualifiers (e.g., `const int x`, not `int const x`)
 - Use `auto` for type-deduced variable declarations where the type is obvious from the initializer (e.g., `const auto &changes = tracker.changes();`, `auto * port = ...`)
 - Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
+- API doc comments (Doxygen `@brief`, `@param`, `@return`) must describe the contract — what the function does, its parameters, return value, preconditions, and edge cases — not who calls it or why it was introduced. Mentioning specific callers (e.g. "exposed for use by X") couples the docs to internal architecture and goes stale when those callers change; design rationale belongs in commit messages or architecture docs, not the method's API comment
 
 ### Unit Safety
 
 **Strong Unit Type Usage Guidelines:**
-- Prefer `au::max`, `au::min`, etc., over the `std` alternatives when the arguments are unit types
+- Use strong types (`units::sample_t`, `units::precise_tick_t`, etc.) everywhere — including struct members, function parameters, and local variables. Never extract to raw `int64_t`/`double` when the operation can be done directly on the strong type
+- Prefer `au` math functions (`abs`, `min`, `max`, `clamp`, etc.) over the `std` alternatives when the arguments are unit types. Use **unqualified** calls (e.g., `abs(q)`, not `au::abs(q)` or `std::abs(q.in(units::samples))`) — see [au math docs](https://aurora-opensource.github.io/au/main/reference/math/)
+- Never write patterns like `std::abs(a.source_frame.in(units::samples) - a.output_frame.in(units::samples)) <= tol.in(units::samples)` — instead write `abs(a.source_frame - a.output_frame) <= tol`
 
 ### Audio Processing
 
@@ -341,7 +353,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [ScopedJuceQApplication](tests/helpers/scoped_juce_qapplication.h): Inherits from ScopedQCoreApplication and also runs the JUCE message loop inside Qt's event loop. Only to be used when we can't avoid dependence on JUCE's message loop.
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
-- Logging can be enabled in tests by calling `init_logging(LoggerType::Test)` (from `src/utils/logger.h`)
+- Logging can be enabled in tests by calling `init_logging(utils::LoggerType::Test)` (from `src/utils/logger.h`)
 
 ---
 
@@ -368,4 +380,4 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 ---
 
-*This document is maintained by the Zrythm development team. Last updated: 2026-04-21*
+*This document is maintained by the Zrythm development team. Last updated: 2026-06-23*

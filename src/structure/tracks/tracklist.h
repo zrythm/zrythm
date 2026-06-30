@@ -132,16 +132,6 @@ public:
    */
   void handle_click (TrackUuid track_id, bool ctrl, bool shift, bool dragged);
 
-  std::vector<ArrangerObjectPtrVariant> get_timeline_objects () const;
-
-  /**
-   * @brief Clears either the timeline selections or the clip editor selections.
-   *
-   * @param object_id The object that is part of the target selections.
-   */
-  void
-  clear_selections_for_object_siblings (const ArrangerObject::Uuid &object_id);
-
   std::optional<TrackUuidReference>
   get_track_for_plugin (const plugins::Plugin::Uuid &plugin_id) const;
 
@@ -183,7 +173,7 @@ public:
   void mark_track_for_bounce (
     TrackPtrVariant track_var,
     bool            bounce,
-    bool            mark_regions,
+    bool            mark_clips,
     bool            mark_children,
     bool            mark_parents);
 

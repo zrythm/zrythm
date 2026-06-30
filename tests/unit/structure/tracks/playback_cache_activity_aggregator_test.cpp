@@ -39,7 +39,10 @@ protected:
   TrackUuidReference create_midi_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
+      *tempo_map_wrapper,
+      *registry_,
+      [] { return false; },
+      {},
     };
     return utils::create_object<MidiTrack> (*registry_, std::move (deps));
   }

@@ -184,7 +184,7 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
   auto         clip_ref = utils::create_object<dsp::FileAudioSource> (
     project->get_registry (), buffer,
     dsp::FileAudioSource::BitDepth::BIT_DEPTH_32,
-    project->engine ()->sample_rate (), test_bpm,
+    project->engine ()->sample_rate (), units::bpm (test_bpm),
     utils::Utf8String::from_utf8_encoded_string ("test_clip"));
   auto clip_id = clip_ref.id ();
 
@@ -231,7 +231,7 @@ TEST_F (ProjectLoaderTest, RoundtripWithAudioFiles)
 
   // These fields are serialized in JSON
   EXPECT_EQ (loaded_clip.get_name ().view (), "test_clip");
-  EXPECT_EQ (loaded_clip.get_bpm (), test_bpm);
+  EXPECT_EQ (loaded_clip.source_bpm ().in (units::bpm), test_bpm);
 
   // These fields are read from the audio file during init_loaded()
   EXPECT_EQ (loaded_clip.get_num_channels (), num_channels);

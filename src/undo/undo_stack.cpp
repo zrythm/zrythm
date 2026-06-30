@@ -12,6 +12,7 @@
 #include "commands/delete_tracks_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/move_plugins_command.h"
+#include "commands/remove_arranger_object_command.h"
 #include "commands/remove_plugins_command.h"
 #include "commands/route_track_command.h"
 #include "undo/undo_stack.h"
@@ -76,8 +77,10 @@ bool
 UndoStack::command_or_children_require_engine_pause (
   const QUndoCommand &cmd) const
 {
-  static constexpr std::array<int, 3> command_ids_with_graph_pause = {
-    commands::AddTempoMapAffectingArrangerObjectCommand<
+  static constexpr std::array<int, 4> command_ids_with_graph_pause = {
+    commands::AddArrangerObjectCommand<
+      structure::arrangement::TempoObject>::CommandId,
+    commands::RemoveArrangerObjectCommand<
       structure::arrangement::TempoObject>::CommandId,
     commands::MoveTempoMapAffectingArrangerObjectsCommand::CommandId,
     commands::ChangeTempoMapAffectingQObjectPropertyCommand::CommandId,

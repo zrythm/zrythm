@@ -8,11 +8,14 @@
 #include "structure/tracks/track_routing.h"
 #include "structure/tracks/tracklist.h"
 #include "undo/undo_stack.h"
+#include "utils/app_settings.h"
 #include "utils/io_utils.h"
 #include "utils/object_registry.h"
 
 #include <QTemporaryDir>
 #include <QTemporaryFile>
+
+#include "helpers/in_memory_settings_backend.h"
 
 #include "unit/actions/mock_undo_stack.h"
 #include "unit/dsp/graph_helpers.h"
@@ -39,8 +42,10 @@ protected:
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,          registry_, transport_,
-      soloed_tracks_exist_getter_, {},
+      tempo_map_wrapper_,
+      registry_,
+      soloed_tracks_exist_getter_,
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -83,10 +88,12 @@ protected:
       tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 50.0; });
 
     // Create arranger object factory with proper dependencies
+    app_settings_ = std::make_unique<utils::AppSettings> (
+      std::make_unique<test_helpers::InMemorySettingsBackend> ());
+
     structure::arrangement::ArrangerObjectFactory::Dependencies obj_factory_deps{
-      .tempo_map_ = tempo_map_,
+      .tempo_map_ = tempo_map_wrapper_,
       .registry_ = registry_,
-      .musical_mode_getter_ = [] () { return true; },
       .last_timeline_obj_len_provider_ = [] () { return 100.0; },
       .last_editor_obj_len_provider_ = [] () { return 50.0; },
       .automation_curve_algorithm_provider_ =
@@ -96,7 +103,7 @@ protected:
     arranger_object_factory = std::make_unique<
       structure::arrangement::ArrangerObjectFactory> (
       obj_factory_deps, [] () { return units::sample_rate (44100); },
-      [] () { return 120.0; });
+      [] () { return units::bpm (120.0); });
 
     // Create track creator
     track_creator_ = std::make_unique<TrackCreator> (
@@ -259,6 +266,7 @@ protected:
   std::unique_ptr<undo::UndoStack>                    undo_stack_;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_timeline;
   std::unique_ptr<dsp::SnapGrid>                      snap_grid_editor;
+  std::unique_ptr<utils::AppSettings>                 app_settings_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory>
                                          arranger_object_factory;
   std::unique_ptr<TrackCreator>          track_creator_;
@@ -502,8 +510,8 @@ TEST_F (FileImporterTest, ImportFileToClipSlot)
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Clip slot should now have a region
-  EXPECT_NE (clip_slot->region (), nullptr);
+  // Clip slot should now have a clip
+  EXPECT_NE (clip_slot->clip (), nullptr);
 }
 
 // TODO: unimplememented
@@ -530,8 +538,8 @@ TEST_F (FileImporterTest, ImportMidiFileToClipSlot)
   // Should have pushed commands to undo stack
   EXPECT_GT (undo_stack_->count (), initial_undo_count);
 
-  // Clip slot should now have a region
-  EXPECT_NE (clip_slot->region (), nullptr);
+  // Clip slot should now have a clip
+  EXPECT_NE (clip_slot->clip (), nullptr);
 }
 #endif
 
@@ -558,7 +566,7 @@ TEST_F (FileImporterTest, ImportUnsupportedFileToClipSlot)
   EXPECT_EQ (undo_stack_->count (), initial_undo_count);
 
   // Clip slot should still be empty
-  EXPECT_EQ (clip_slot->region (), nullptr);
+  EXPECT_EQ (clip_slot->clip (), nullptr);
 }
 
 // Test file type detection priority

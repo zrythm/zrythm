@@ -108,6 +108,12 @@ QtObject {
   readonly property FontLoader notoSansThaiFont: FontLoader {
     source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansThai-VariableFont_wdth_wght.ttf")
   }
+  readonly property FontLoader notoSansSymbolsFont: FontLoader {
+    source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansSymbols-VariableFont_wght.ttf")
+  }
+  readonly property FontLoader notoSansSymbols2Font: FontLoader {
+    source: Qt.resolvedUrl("qrc:/qt/qml/Zrythm/fonts/NotoSansSymbols2-Regular.ttf")
+  }
   // used in contrast with textColor
 
   property color pageColor: darkMode ? "#161616" : "#E3E3E3"
@@ -117,7 +123,7 @@ QtObject {
     duration: root.animationDuration
     easing.type: root.animationEasingType
   }
-  readonly property color regionContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
+  readonly property color clipContentColor: Qt.rgba(colorPalette.highlightedText.r, colorPalette.highlightedText.g, colorPalette.highlightedText.b, 0.85)
   readonly property real scrollLoaderBufferPx: 64
   readonly property font semiBoldTextFont: ({
       "family": root.fontFamily,

@@ -45,8 +45,10 @@ protected:
 
     // Create track factory with dependencies
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_,          registry_, transport_,
-      soloed_tracks_exist_getter_, {},
+      tempo_map_wrapper_,
+      registry_,
+      soloed_tracks_exist_getter_,
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {
@@ -266,6 +268,27 @@ TEST_F (TrackOperatorTest, SetCommentWithUndoRedo)
 
   undo_stack->redo ();
   EXPECT_EQ (track->comment (), QString ("New comment"));
+}
+
+// Test setTimebase with undo/redo
+TEST_F (TrackOperatorTest, SetTimebaseWithUndoRedo)
+{
+  // MockTrack defaults to Musical (base Track default)
+  ASSERT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+
+  track_operator->setTimebase (dsp::Timebase::Absolute);
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
+  EXPECT_EQ (undo_stack->count (), 1);
+
+  undo_stack->undo ();
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Musical);
+
+  undo_stack->redo ();
+  EXPECT_EQ (
+    track->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
 }
 
 // ============================================================================

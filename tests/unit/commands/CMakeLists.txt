@@ -4,7 +4,7 @@
 add_executable(zrythm_commands_unit_tests
   add_arranger_object_command_test.cpp
   add_plugin_command_test.cpp
-  add_region_to_clip_slot_command_test.cpp
+  add_clip_to_clip_slot_command_test.cpp
   add_track_command_test.cpp
   delete_tracks_command_test.cpp
   change_qobject_property_command_test.cpp

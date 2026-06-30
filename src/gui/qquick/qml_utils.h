@@ -58,7 +58,7 @@ public:
     bool          tint = true);
 
   Q_INVOKABLE static QVector<float>
-  getAutomationRegionValues (QObject * automationRegion, int pixelWidth);
+  getAutomationClipValues (QObject * automationClip, int pixelWidth);
 
   Q_INVOKABLE static bool rectanglesIntersect (QRectF a, QRectF b);
   Q_INVOKABLE static bool rectanglesIntersect (QRect a, QRect b);

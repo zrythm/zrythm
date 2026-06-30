@@ -21,7 +21,10 @@ protected:
       std::make_unique<structure::tracks::TrackRouting> (registry_);
 
     structure::tracks::FinalTrackDependencies factory_deps{
-      tempo_map_wrapper_, registry_, transport_, [] { return false; }, {},
+      tempo_map_wrapper_,
+      registry_,
+      [] { return false; },
+      {},
     };
     track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
       [factory_deps] () -> structure::tracks::FinalTrackDependencies {

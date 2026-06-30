@@ -47,27 +47,28 @@ TEST_F (SnapGridTest, SnapTicksCalculation)
 
   // Default should be quarter note (960 ticks)
   double snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ());
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks));
 
   // Test eighth note (1/8)
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
   snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () / 2.0);
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks) / 2.0);
 
   // Test dotted quarter note
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
   snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
   snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () * 1.5);
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks) * 1.5);
 
   // Test triplet quarter note
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
   snap_grid->setSnapNoteType (dsp::notes::NoteType::Triplet);
   snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () * 2.0 / 3.0);
+  EXPECT_DOUBLE_EQ (
+    snap_ticks, TempoMap::get_ppq ().in (units::ticks) * 2.0 / 3.0);
 }
 
 // Test adaptive snapping
@@ -78,19 +79,19 @@ TEST_F (SnapGridTest, AdaptiveSnapping)
   // Test sixteenths visible
   snap_grid->setSixteenthsVisible (true);
   double snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () / 4);
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks) / 4);
 
   // Test beats visible
   snap_grid->setSixteenthsVisible (false);
   snap_grid->setBeatsVisible (true);
   snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ());
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks));
 
   // Test bars visible (default when neither sixteenths nor beats are visible)
   snap_grid->setSixteenthsVisible (false);
   snap_grid->setBeatsVisible (false);
   snap_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq () * 4);
+  EXPECT_DOUBLE_EQ (snap_ticks, TempoMap::get_ppq ().in (units::ticks) * 4);
 }
 
 // Test next/prev snap point calculation
@@ -100,7 +101,7 @@ TEST_F (SnapGridTest, NextPrevSnapPoint)
   snap_grid->setSnapToGrid (true);
 
   // Test quarter note grid (default)
-  const double quarter_ticks = TempoMap::get_ppq ();
+  const double quarter_ticks = TempoMap::get_ppq ().in (units::ticks);
 
   // Test at tick 0
   EXPECT_DOUBLE_EQ (snap_grid->nextSnapPoint (0), quarter_ticks);
@@ -125,7 +126,7 @@ TEST_F (SnapGridTest, ClosestSnapPoint)
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
 
-  const double quarter_ticks = TempoMap::get_ppq ();
+  const double quarter_ticks = TempoMap::get_ppq ().in (units::ticks);
 
   // Test exactly on grid
   EXPECT_DOUBLE_EQ (snap_grid->closestSnapPoint (0), 0);
@@ -143,7 +144,7 @@ TEST_F (SnapGridTest, SnapFunction)
   snap_grid->setSnapAdaptive (false);
   snap_grid->setSnapToGrid (true);
 
-  const double quarter_ticks = TempoMap::get_ppq ();
+  const double quarter_ticks = TempoMap::get_ppq ().in (units::ticks);
 
   // Test basic snapping
   EXPECT_DOUBLE_EQ (snap_grid->snap (units::ticks (0)).in (units::ticks), 0.0);
@@ -165,7 +166,7 @@ TEST_F (SnapGridTest, KeepOffset)
   snap_grid->setSnapToGrid (true);
   snap_grid->setKeepOffset (true);
 
-  const double quarter_ticks = TempoMap::get_ppq ();
+  const double quarter_ticks = TempoMap::get_ppq ().in (units::ticks);
 
   // Start at 100 ticks offset from grid
   auto start_ticks = units::ticks (100);
@@ -203,7 +204,7 @@ TEST_F (SnapGridTest, CombinedSnapping)
   snap_grid->setSnapToGrid (true);
   snap_grid->setSnapToEvents (true);
 
-  const double quarter_ticks = TempoMap::get_ppq ();
+  const double quarter_ticks = TempoMap::get_ppq ().in (units::ticks);
 
   // Set up event callback
   std::vector<double> test_events = { quarter_ticks / 2, quarter_ticks + 10 };
@@ -246,7 +247,7 @@ TEST_F (SnapGridTest, DefaultTicks)
   snap_grid->setSnapAdaptive (false);
   snap_grid->setLengthType (SnapGrid::NoteLengthType::Custom);
   default_ticks = snap_grid->defaultTicks (0);
-  EXPECT_DOUBLE_EQ (default_ticks, TempoMap::get_ppq ());
+  EXPECT_DOUBLE_EQ (default_ticks, TempoMap::get_ppq ().in (units::ticks));
 }
 
 // Test time signature changes affect snap calculation
@@ -261,7 +262,7 @@ TEST_F (SnapGridTest, TimeSignatureChanges)
 
   // Bar length should be 3 * quarter notes = 3 * 960 = 2880 ticks
   double bar_ticks = snap_grid->snapTicks (0);
-  EXPECT_DOUBLE_EQ (bar_ticks, TempoMap::get_ppq () * 3);
+  EXPECT_DOUBLE_EQ (bar_ticks, TempoMap::get_ppq ().in (units::ticks) * 3);
 }
 
 // Test string representation
@@ -338,7 +339,9 @@ TEST_F (SnapGridTest, EdgeCases)
   // Test very large ticks
   auto large_ticks = units::ticks (1000000.0);
   auto snapped = snap_grid->snap (large_ticks);
-  EXPECT_NEAR (snapped.in (units::ticks), 1000000.0, TempoMap::get_ppq ());
+  EXPECT_NEAR (
+    snapped.in (units::ticks), 1000000.0,
+    TempoMap::get_ppq ().in (units::ticks));
 
   // Test empty event callback
   snap_grid->setSnapToGrid (false);
@@ -408,17 +411,22 @@ TEST_F (SnapGridTest, NoteLengthTypeProperties)
   // Test that snap ticks calculation respects note length and type
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
   snap_grid->setSnapNoteType (dsp::notes::NoteType::Normal);
-  EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq ());
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snapTicks (0), TempoMap::get_ppq ().in (units::ticks));
 
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_8);
-  EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () / 2);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snapTicks (0), TempoMap::get_ppq ().in (units::ticks) / 2);
 
   snap_grid->setSnapNoteLength (dsp::notes::NoteLength::Note_1_4);
   snap_grid->setSnapNoteType (dsp::notes::NoteType::Dotted);
-  EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () * 1.5);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snapTicks (0), TempoMap::get_ppq ().in (units::ticks) * 1.5);
 
   snap_grid->setSnapNoteType (dsp::notes::NoteType::Triplet);
-  EXPECT_DOUBLE_EQ (snap_grid->snapTicks (0), TempoMap::get_ppq () * 2.0 / 3.0);
+  EXPECT_DOUBLE_EQ (
+    snap_grid->snapTicks (0),
+    TempoMap::get_ppq ().in (units::ticks) * 2.0 / 3.0);
 }
 
 // Test that demonstrates the bug: snap points don't respect time signature

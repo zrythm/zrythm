@@ -22,7 +22,6 @@ process_track_connections (
   structure::tracks::Track * tr,
   dsp::graph::Graph         &graph,
   ProjectGraphBuilder       &self,
-  const dsp::ITransport     &transport,
   const Project             &project,
   dsp::graph::GraphNode *    initial_processor_node,
   dsp::MidiPanicProcessor   &midi_panic_processor,
@@ -114,7 +113,6 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   const auto &engine = project_->audio_engine_;
   // auto *      sample_processor = engine->sample_processor_.get ();
   auto * tracklist = project_->tracklist ();
-  auto * transport = project->getTransport ();
   auto * midi_panic_processor = engine->midi_panic_processor ();
   auto * observation_manager = project->portObservationManager ();
 
@@ -297,7 +295,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
       if (tr->get_track_processor () != nullptr)
         {
           process_track_connections (
-            tr, graph, *this, *transport, *project, initial_processor_node,
+            tr, graph, *this, *project, initial_processor_node,
             *midi_panic_processor, monitor_fader_);
 
           // connect audio input processor to this track, if configured

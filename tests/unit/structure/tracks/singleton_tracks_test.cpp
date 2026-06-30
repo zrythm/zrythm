@@ -34,7 +34,10 @@ protected:
   TrackUuidReference create_chord_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {},
+      *tempo_map_wrapper,
+      *registry_,
+      [] { return false; },
+      {},
     };
 
     return utils::create_object<ChordTrack> (*registry_, std::move (deps));
@@ -44,7 +47,7 @@ protected:
   TrackUuidReference create_modulator_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, [] { return false; }, {}
     };
 
     return utils::create_object<ModulatorTrack> (*registry_, std::move (deps));
@@ -54,7 +57,7 @@ protected:
   TrackUuidReference create_master_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, [] { return false; }, {}
     };
 
     return utils::create_object<MasterTrack> (*registry_, std::move (deps));
@@ -64,7 +67,7 @@ protected:
   TrackUuidReference create_marker_track ()
   {
     FinalTrackDependencies deps{
-      *tempo_map_wrapper, *registry_, *transport_, [] { return false; }, {}
+      *tempo_map_wrapper, *registry_, [] { return false; }, {}
     };
 
     return utils::create_object<MarkerTrack> (*registry_, std::move (deps));

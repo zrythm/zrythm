@@ -17,7 +17,7 @@ template <typename T>
 concept RangeOfMidiNotePointers = utils::RangeOf<T, MidiNote *>;
 
 /**
- * A MIDI note inside a Region shown in the piano roll.
+ * A MIDI note inside a Clip shown in the piano roll.
  */
 class MidiNote : public ArrangerObject
 {
@@ -32,9 +32,16 @@ class MidiNote : public ArrangerObject
   QML_UNCREATABLE ("")
 
 public:
-  MidiNote (const dsp::TempoMap &tempo_map, QObject * parent = nullptr);
+  MidiNote (
+    const dsp::TempoMapWrapper &tempo_map_wrapper,
+    QObject *                   parent = nullptr);
   Q_DISABLE_COPY_MOVE (MidiNote)
   ~MidiNote () override;
+
+  dsp::ContentPosition * position () const override
+  {
+    return qobject_cast<dsp::ContentPosition *> (ArrangerObject::position ());
+  }
 
   static constexpr midi_byte_t DEFAULT_VELOCITY = 90;
 
@@ -132,8 +139,8 @@ private:
     const auto range_to_test = range | std::views::reverse;
     auto       it = std::ranges::max_element (
       range_to_test, [] (const auto &a, const auto &b) {
-        return a->bounds ()->get_end_position_samples (false)
-               < b->bounds ()->get_end_position_samples (false);
+        return (a->position ()->ticks () + a->length ()->ticks ())
+               < (b->position ()->ticks () + b->length ()->ticks ());
       });
     return (it != range_to_test.end ()) ? *it : nullptr;
   }

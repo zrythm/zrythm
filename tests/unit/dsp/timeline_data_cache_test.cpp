@@ -204,7 +204,7 @@ TEST_F (
   MidiTimelineDataCacheTest,
   RemoveSequencesMatchingInterval_AdjacentNotOverlapping)
 {
-  // Two adjacent regions: R1 at [0, 100) and R2 at [100, 200)
+  // Two adjacent clips: R1 at [0, 100) and R2 at [100, 200)
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (10)),
     midi_event::make_note_off (0, 60, units::samples (90)),
@@ -587,12 +587,12 @@ TEST_F (AudioTimelineDataCacheTest, InitialState)
 
 TEST_F (AudioTimelineDataCacheTest, ClearMethod)
 {
-  // Add an audio region first
-  cache->add_audio_region (
+  // Add an audio clip first
+  cache->add_audio_clip (
     { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
-  // Verify regions were added
+  // Verify clips were added
   EXPECT_TRUE (cache->has_content ());
 
   // Clear the cache
@@ -602,34 +602,34 @@ TEST_F (AudioTimelineDataCacheTest, ClearMethod)
   EXPECT_FALSE (cache->has_content ());
 }
 
-TEST_F (AudioTimelineDataCacheTest, AddAudioRegionAndFinalize)
+TEST_F (AudioTimelineDataCacheTest, AddAudioClipAndFinalize)
 {
-  // Add audio region and finalize
-  cache->add_audio_region (
+  // Add audio clip and finalize
+  cache->add_audio_clip (
     { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
-  // Should have one audio region
+  // Should have one audio clip
   EXPECT_TRUE (cache->has_content ());
-  EXPECT_EQ (cache->audio_regions ().size (), 1);
+  EXPECT_EQ (cache->audio_clips ().size (), 1);
 
-  // Verify the audio region properties
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions[0].start_sample, units::samples (0));
-  EXPECT_EQ (regions[0].end_sample, units::samples (256));
-  EXPECT_EQ (regions[0].audio_buffer.getNumChannels (), 2);
-  EXPECT_EQ (regions[0].audio_buffer.getNumSamples (), 256);
+  // Verify the audio clip properties
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips[0].start_sample, units::samples (0));
+  EXPECT_EQ (clips[0].end_sample, units::samples (256));
+  EXPECT_EQ (clips[0].audio_buffer.getNumChannels (), 2);
+  EXPECT_EQ (clips[0].audio_buffer.getNumSamples (), 256);
 }
 
 TEST_F (AudioTimelineDataCacheTest, ReversedIntervalThrows)
 {
   EXPECT_THROW (
-    cache->add_audio_region (
+    cache->add_audio_clip (
       { units::samples (200), units::samples (100) }, audio_buffer),
     std::invalid_argument);
 }
 
-TEST_F (AudioTimelineDataCacheTest, AddMultipleAudioRegions)
+TEST_F (AudioTimelineDataCacheTest, AddMultipleAudioClips)
 {
   // Create multiple audio buffers
   juce::AudioSampleBuffer buffer1 (2, 128);
@@ -642,25 +642,24 @@ TEST_F (AudioTimelineDataCacheTest, AddMultipleAudioRegions)
   buffer1.getWritePointer (0)[0] = 1.0f; // Mark buffer1
   buffer2.getWritePointer (0)[0] = 2.0f; // Mark buffer2
 
-  // Add regions at different positions
-  cache->add_audio_region (
-    { units::samples (0), units::samples (128) }, buffer1);
-  cache->add_audio_region (
+  // Add clips at different positions
+  cache->add_audio_clip ({ units::samples (0), units::samples (128) }, buffer1);
+  cache->add_audio_clip (
     { units::samples (256), units::samples (512) }, buffer2);
   cache->finalize_changes ();
 
-  // Should have two regions sorted by start position
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions.size (), 2);
-  EXPECT_EQ (regions[0].start_sample, units::samples (0));
-  EXPECT_EQ (regions[1].start_sample, units::samples (256));
+  // Should have two clips sorted by start position
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips.size (), 2);
+  EXPECT_EQ (clips[0].start_sample, units::samples (0));
+  EXPECT_EQ (clips[1].start_sample, units::samples (256));
 
   // Verify the buffers are independent copies
-  EXPECT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 1.0f);
-  EXPECT_EQ (regions[1].audio_buffer.getReadPointer (0)[0], 2.0f);
+  EXPECT_EQ (clips[0].audio_buffer.getReadPointer (0)[0], 1.0f);
+  EXPECT_EQ (clips[1].audio_buffer.getReadPointer (0)[0], 2.0f);
 }
 
-TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
+TEST_F (AudioTimelineDataCacheTest, RemoveAudioClipsMatchingInterval)
 {
   // Create audio buffers
   juce::AudioSampleBuffer buffer1 (2, 128);
@@ -671,48 +670,47 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval)
   buffer2.clear ();
   buffer3.clear ();
 
-  // Add regions at different positions
-  cache->add_audio_region (
+  // Add clips at different positions
+  cache->add_audio_clip (
     { units::samples (0), units::samples (128) },
     buffer1); // Before removal interval
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (200), units::samples (328) },
     buffer2); // Inside removal interval
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (400), units::samples (528) },
     buffer3); // After removal interval
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->audio_regions ().size (), 3);
+  EXPECT_EQ (cache->audio_clips ().size (), 3);
 
-  // Remove regions overlapping with [150, 350]
+  // Remove clips overlapping with [150, 350]
   cache->remove_sequences_matching_interval (
     { units::samples (150), units::samples (350) });
   cache->finalize_changes ();
 
-  // Should have 2 regions remaining (before and after)
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions.size (), 2);
-  EXPECT_EQ (regions[0].start_sample, units::samples (0));
-  EXPECT_EQ (regions[1].start_sample, units::samples (400));
+  // Should have 2 clips remaining (before and after)
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips.size (), 2);
+  EXPECT_EQ (clips[0].start_sample, units::samples (0));
+  EXPECT_EQ (clips[1].start_sample, units::samples (400));
 }
 
 // Regression test for gitlab #5240 (audio variant)
-TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval_Adjacent)
+TEST_F (AudioTimelineDataCacheTest, RemoveAudioClipsMatchingInterval_Adjacent)
 {
   juce::AudioSampleBuffer buffer1 (2, 100);
   juce::AudioSampleBuffer buffer2 (2, 100);
   buffer1.clear ();
   buffer2.clear ();
 
-  // Adjacent regions: [0, 100) and [100, 200)
-  cache->add_audio_region (
-    { units::samples (0), units::samples (100) }, buffer1);
-  cache->add_audio_region (
+  // Adjacent clips: [0, 100) and [100, 200)
+  cache->add_audio_clip ({ units::samples (0), units::samples (100) }, buffer1);
+  cache->add_audio_clip (
     { units::samples (100), units::samples (200) }, buffer2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->audio_regions ().size (), 2);
+  EXPECT_EQ (cache->audio_clips ().size (), 2);
 
   // Remove overlapping with [100, 200) — buffer1 at [0, 100) is adjacent, not
   // overlapping
@@ -721,28 +719,27 @@ TEST_F (AudioTimelineDataCacheTest, RemoveAudioRegionsMatchingInterval_Adjacent)
   cache->finalize_changes ();
 
   // buffer1 at [0, 100) should remain
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions.size (), 1);
-  EXPECT_EQ (regions[0].start_sample, units::samples (0));
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips.size (), 1);
+  EXPECT_EQ (clips[0].start_sample, units::samples (0));
 }
 
 // Reverse direction: [0, 100) removal must not evict [100, 200)
 TEST_F (
   AudioTimelineDataCacheTest,
-  RemoveAudioRegionsMatchingInterval_AdjacentReverse)
+  RemoveAudioClipsMatchingInterval_AdjacentReverse)
 {
   juce::AudioSampleBuffer buffer1 (2, 100);
   juce::AudioSampleBuffer buffer2 (2, 100);
   buffer1.clear ();
   buffer2.clear ();
 
-  cache->add_audio_region (
-    { units::samples (0), units::samples (100) }, buffer1);
-  cache->add_audio_region (
+  cache->add_audio_clip ({ units::samples (0), units::samples (100) }, buffer1);
+  cache->add_audio_clip (
     { units::samples (100), units::samples (200) }, buffer2);
   cache->finalize_changes ();
 
-  EXPECT_EQ (cache->audio_regions ().size (), 2);
+  EXPECT_EQ (cache->audio_clips ().size (), 2);
 
   // Remove overlapping with [0, 100) — buffer2 at [100, 200) is adjacent, not
   // overlapping
@@ -751,15 +748,15 @@ TEST_F (
   cache->finalize_changes ();
 
   // buffer2 at [100, 200) should remain
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions.size (), 1);
-  EXPECT_EQ (regions[0].start_sample, units::samples (100));
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips.size (), 1);
+  EXPECT_EQ (clips[0].start_sample, units::samples (100));
 }
 
 TEST_F (AudioTimelineDataCacheTest, AudioBufferIndependence)
 {
   // Add an audio buffer
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (0), units::samples (256) }, audio_buffer);
   cache->finalize_changes ();
 
@@ -767,17 +764,17 @@ TEST_F (AudioTimelineDataCacheTest, AudioBufferIndependence)
   audio_buffer.setSample (0, 0, 0.2f);
 
   // Verify the cached buffer is unaffected (independent copy)
-  const auto &regions = cache->audio_regions ();
-  EXPECT_FLOAT_EQ (regions[0].audio_buffer.getReadPointer (0)[0], 0.5f);
+  const auto &clips = cache->audio_clips ();
+  EXPECT_FLOAT_EQ (clips[0].audio_buffer.getReadPointer (0)[0], 0.5f);
 
   // Modify the cached buffer
-  const_cast<juce::AudioSampleBuffer &> (regions[0].audio_buffer).clear ();
+  const_cast<juce::AudioSampleBuffer &> (clips[0].audio_buffer).clear ();
 
   // Verify the original buffer is still unaffected
   EXPECT_FLOAT_EQ (audio_buffer.getReadPointer (0)[0], 0.2f);
 }
 
-TEST_F (AudioTimelineDataCacheTest, AudioRegionSorting)
+TEST_F (AudioTimelineDataCacheTest, AudioClipSorting)
 {
   // Create audio buffers
   juce::AudioSampleBuffer buffer1 (2, 128);
@@ -788,21 +785,21 @@ TEST_F (AudioTimelineDataCacheTest, AudioRegionSorting)
   buffer2.clear ();
   buffer3.clear ();
 
-  // Add regions in non-sequential order
-  cache->add_audio_region (
+  // Add clips in non-sequential order
+  cache->add_audio_clip (
     { units::samples (300), units::samples (428) }, buffer1); // Last
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (100), units::samples (228) }, buffer2); // First
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (200), units::samples (328) }, buffer3); // Middle
   cache->finalize_changes ();
 
-  // Verify regions are sorted by start position
-  const auto &regions = cache->audio_regions ();
-  EXPECT_EQ (regions.size (), 3);
-  EXPECT_EQ (regions[0].start_sample, units::samples (100));
-  EXPECT_EQ (regions[1].start_sample, units::samples (200));
-  EXPECT_EQ (regions[2].start_sample, units::samples (300));
+  // Verify clips are sorted by start position
+  const auto &clips = cache->audio_clips ();
+  EXPECT_EQ (clips.size (), 3);
+  EXPECT_EQ (clips[0].start_sample, units::samples (100));
+  EXPECT_EQ (clips[1].start_sample, units::samples (200));
+  EXPECT_EQ (clips[2].start_sample, units::samples (300));
 }
 
 TEST_F (AudioTimelineDataCacheTest, CachedRangesSignalOnFinalize)
@@ -814,9 +811,9 @@ TEST_F (AudioTimelineDataCacheTest, CachedRangesSignalOnFinalize)
   buffer1.clear ();
   buffer2.clear ();
 
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (100), units::samples (200) }, buffer1);
-  cache->add_audio_region (
+  cache->add_audio_clip (
     { units::samples (300), units::samples (400) }, buffer2);
   cache->finalize_changes ();
 
@@ -847,7 +844,7 @@ TEST_F (AudioTimelineDataCacheTest, CachedRangesClearedOnClear)
   juce::AudioSampleBuffer buffer (1, 64);
   buffer.clear ();
 
-  cache->add_audio_region ({ units::samples (0), units::samples (64) }, buffer);
+  cache->add_audio_clip ({ units::samples (0), units::samples (64) }, buffer);
   cache->finalize_changes ();
 
   QSignalSpy spy (cache.get (), &TimelineDataCache::cachedRangesChanged);
@@ -863,7 +860,7 @@ TEST_F (AudioTimelineDataCacheTest, EmptyAudioOperations)
 {
   // Operations on empty audio cache should not crash
   EXPECT_FALSE (cache->has_content ());
-  EXPECT_EQ (cache->audio_regions ().size (), 0);
+  EXPECT_EQ (cache->audio_clips ().size (), 0);
 
   cache->remove_sequences_matching_interval (
     { units::samples (0), units::samples (100) });

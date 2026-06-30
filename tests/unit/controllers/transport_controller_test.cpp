@@ -4,6 +4,7 @@
 #include "controllers/transport_controller.h"
 #include "dsp/snap_grid.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 
 #include <gtest/gtest.h>
@@ -19,6 +20,7 @@ protected:
   void SetUp () override
   {
     tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     snap_grid_ = std::make_unique<dsp::SnapGrid> (
       *tempo_map_, dsp::notes::NoteLength::Note_1_4, [] () { return 0.0; });
 
@@ -30,16 +32,17 @@ protected:
     };
 
     transport_ =
-      std::make_unique<dsp::Transport> (*tempo_map_, config_provider_);
+      std::make_unique<dsp::Transport> (*tempo_map_wrapper_, config_provider_);
     transport_controller_ =
       std::make_unique<TransportController> (*transport_, *snap_grid_);
   }
 
-  std::unique_ptr<dsp::TempoMap>       tempo_map_;
-  std::unique_ptr<dsp::SnapGrid>       snap_grid_;
-  std::unique_ptr<dsp::Transport>      transport_;
-  std::unique_ptr<TransportController> transport_controller_;
-  dsp::Transport::ConfigProvider       config_provider_;
+  std::unique_ptr<dsp::TempoMap>        tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper_;
+  std::unique_ptr<dsp::SnapGrid>        snap_grid_;
+  std::unique_ptr<dsp::Transport>       transport_;
+  std::unique_ptr<TransportController>  transport_controller_;
+  dsp::Transport::ConfigProvider        config_provider_;
 };
 
 // Test backward/forward movement

@@ -5,6 +5,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Zrythm
+import ZrythmGui
 
 Loader {
   id: root
@@ -14,10 +15,13 @@ Loader {
   required property int index
   required property var model
   readonly property real objectEndX: x + width
-  readonly property real objectX: {
-    const objectTimelineTicks = arrangerObject.position.ticks + (arrangerObject.parentObject ? arrangerObject.parentObject.position.ticks : 0);
-    return objectTimelineTicks * pxPerTick;
+
+  TimelinePositionTracker {
+    id: posTracker
+    arrangerObject: root.arrangerObject
   }
+
+  readonly property real objectX: posTracker.timelineTicks * pxPerTick
   required property real pxPerTick
   required property real scrollViewWidth
   required property real scrollX
@@ -33,8 +37,8 @@ Loader {
   x: objectX
 
   Binding on width {
-    value: root.arrangerObject.bounds ? Math.max(root.arrangerObject.bounds.length.ticks * root.pxPerTick, 2) : 0
-    when: !root.useCustomWidth && root.arrangerObject.bounds
+    value: Math.max((posTracker.timelineEndTicks - posTracker.timelineTicks) * root.pxPerTick, 2)
+    when: !root.useCustomWidth && root.arrangerObject.length
   }
 
   SelectionTracker {

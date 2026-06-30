@@ -15,9 +15,9 @@ GridLayout {
   readonly property AudioClipEditor audioEditor: clipEditor.audioEditor
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  required property AudioRegion region
+  required property AudioClip audioClip
   required property ProjectSession session
-  readonly property Track track: project.tracklist.getTrackForTimelineObject(root.region)
+  readonly property Track track: project.tracklist.getTrackForTimelineObject(root.audioClip)
 
   columnSpacing: 0
   columns: 3
@@ -34,7 +34,7 @@ GridLayout {
 
     Layout.fillWidth: true
     editorSettings: root.audioEditor
-    region: root.region
+    clipObject: root.audioClip
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
     track: root.track

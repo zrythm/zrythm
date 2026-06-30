@@ -215,7 +215,7 @@ TEST_F (MetronomeTest, BarAndBeatTicks)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -254,7 +254,7 @@ TEST_F (MetronomeTest, LoopCrossing)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport with loop (0-1 seconds)
   EXPECT_CALL (*transport_, get_play_state ())
@@ -302,7 +302,7 @@ TEST_F (MetronomeTest, CountinTicks)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport for countin
   EXPECT_CALL (*transport_, get_play_state ())
@@ -335,7 +335,7 @@ TEST_F (MetronomeTest, VolumeAppliedToSamples)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -382,7 +382,7 @@ TEST_F (MetronomeTest, DifferentTimeSignatures)
   // Setup 3/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 3, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -408,7 +408,8 @@ TEST_F (MetronomeTest, HighTempo)
   // Setup 4/4 time signature with high tempo
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 240.0, TempoMap::CurveType::Constant); // 240 BPM
+    units::ticks (0), units::bpm (240.0),
+    TempoMap::CurveType::Constant); // 240 BPM
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -446,7 +447,7 @@ TEST_F (MetronomeTest, EnabledFalsePreventsTicks)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -475,7 +476,7 @@ TEST_F (MetronomeTest, EnabledTrueAllowsTicks)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -503,7 +504,7 @@ TEST_F (MetronomeTest, EnabledToggleDuringProcessing)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())
@@ -542,7 +543,7 @@ TEST_F (MetronomeTest, DisabledDuringPlaybackClearsBuffer)
   // Setup 4/4 time signature
   tempo_map_->add_time_signature_event (units::ticks (0), 4, 4);
   tempo_map_->add_tempo_event (
-    units::ticks (0), 120.0, TempoMap::CurveType::Constant);
+    units::ticks (0), units::bpm (120.0), TempoMap::CurveType::Constant);
 
   // Setup transport
   EXPECT_CALL (*transport_, get_play_state ())

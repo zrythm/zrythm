@@ -41,7 +41,7 @@ FileImporter::importFiles (
             structure::tracks::Track::Type::Audio);
           auto * audio_track =
             track_qvar.value<structure::tracks::AudioTrack *> ();
-          arranger_object_creator_.addAudioRegionFromFile (
+          arranger_object_creator_.addAudioClipFromFile (
             audio_track, audio_track->lanes ()->getFirstLane (), filepath, 0);
         }
       else if (isMidiFile (filepath))
@@ -50,7 +50,7 @@ FileImporter::importFiles (
             structure::tracks::Track::Type::Midi);
           auto * midi_track =
             track_qvar.value<structure::tracks::MidiTrack *> ();
-          arranger_object_creator_.addMidiRegionFromMidiFile (
+          arranger_object_creator_.addMidiClipFromMidiFile (
             midi_track, midi_track->lanes ()->getFirstLane (), filepath, 0, 0);
         }
     }
@@ -66,12 +66,12 @@ FileImporter::importFileToClipSlot (
 {
   if (isAudioFile (filePath))
     {
-      arranger_object_creator_.addAudioRegionToClipSlotFromFile (
+      arranger_object_creator_.addAudioClipToClipSlotFromFile (
         track, clipSlot, filePath);
     }
   else if (isMidiFile (filePath))
     {
-      arranger_object_creator_.addMidiRegionToClipSlotFromFile (
+      arranger_object_creator_.addMidiClipToClipSlotFromFile (
         track, clipSlot, filePath);
     }
 }

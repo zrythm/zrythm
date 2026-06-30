@@ -17,11 +17,11 @@ class RelocateArrangerObjectCommand : public QUndoCommand
 {
 public:
   RelocateArrangerObjectCommand (
-    structure::arrangement::ArrangerObjectUuidReference   region_ref,
+    structure::arrangement::ArrangerObjectUuidReference   clip_ref,
     structure::arrangement::ArrangerObjectOwner<ObjectT> &source_owner,
     structure::arrangement::ArrangerObjectOwner<ObjectT> &target_owner)
       : QUndoCommand (QObject::tr ("Relocate Object")),
-        obj_ref_ (std::move (region_ref)), target_owner_ (target_owner),
+        obj_ref_ (std::move (clip_ref)), target_owner_ (target_owner),
         source_owner_ (source_owner)
   {
     if (
@@ -36,14 +36,14 @@ public:
   void undo () override
   {
     // move object back
-    auto region_ref = target_owner_.remove_object (obj_ref_.id ());
-    source_owner_.add_object (region_ref);
+    auto clip_ref = target_owner_.remove_object (obj_ref_.id ());
+    source_owner_.add_object (clip_ref);
   }
   void redo () override
   {
     // move object
-    auto region_ref = source_owner_.remove_object (obj_ref_.id ());
-    target_owner_.add_object (region_ref);
+    auto clip_ref = source_owner_.remove_object (obj_ref_.id ());
+    target_owner_.add_object (clip_ref);
   }
 
 private:

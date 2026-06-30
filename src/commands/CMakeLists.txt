@@ -18,7 +18,7 @@ target_sources(zrythm_commands_lib
     FILES
       add_arranger_object_command.h
       add_plugin_command.h
-      add_region_to_clip_slot_command.h
+      add_clip_to_clip_slot_command.h
       add_track_command.h
       chord_pad_commands.h
       route_track_command.h
@@ -27,6 +27,7 @@ target_sources(zrythm_commands_lib
       edit_chord_object_command.h
       change_track_color_command.h
       change_track_comment_command.h
+      change_timebase_override_command.h
       move_arranger_objects_command.h
       move_plugins_command.h
       move_tracks_command.h

@@ -3,9 +3,8 @@
 
 #include <memory>
 
-#include "dsp/atomic_position.h"
-#include "dsp/atomic_position_qml_adapter.h"
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "structure/arrangement/automation_point.h"
 
 #include "helpers/mock_qobject.h"
@@ -22,22 +21,25 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
 
     // Create automation point
-    point = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+    point =
+      std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>   tempo_map;
-  std::unique_ptr<MockQObject>     parent;
-  std::unique_ptr<AutomationPoint> point;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<AutomationPoint>      point;
 };
 
 // Test initial state
 TEST_F (AutomationPointTest, InitialState)
 {
   EXPECT_EQ (point->type (), ArrangerObject::Type::AutomationPoint);
-  EXPECT_EQ (point->position ()->samples (), 0);
+  EXPECT_EQ (point->position ()->ticks (), 0);
   EXPECT_EQ (point->value (), 0.0f);
 }
 
@@ -79,8 +81,8 @@ TEST_F (AutomationPointTest, ValueChangedSignal)
 // Test position operations
 TEST_F (AutomationPointTest, PositionOperations)
 {
-  point->position ()->setSamples (1000);
-  EXPECT_EQ (point->position ()->samples (), 1000);
+  point->position ()->setTicks (1000);
+  EXPECT_EQ (point->position ()->ticks (), 1000);
 
   point->position ()->setTicks (1920.0);
   EXPECT_DOUBLE_EQ (point->position ()->ticks (), 1920.0);
@@ -90,7 +92,7 @@ TEST_F (AutomationPointTest, PositionOperations)
 TEST_F (AutomationPointTest, Serialization)
 {
   // Set initial state
-  point->position ()->setSamples (2000);
+  point->position ()->setTicks (2000);
   point->setValue (0.8f);
 
   // Serialize
@@ -98,11 +100,12 @@ TEST_F (AutomationPointTest, Serialization)
   to_json (j, *point);
 
   // Create new point
-  auto new_point = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+  auto new_point =
+    std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
   from_json (j, *new_point);
 
   // Verify state
-  EXPECT_EQ (new_point->position ()->samples (), 2000);
+  EXPECT_EQ (new_point->position ()->ticks (), 2000);
   EXPECT_FLOAT_EQ (new_point->value (), 0.8f);
 }
 
@@ -110,17 +113,18 @@ TEST_F (AutomationPointTest, Serialization)
 TEST_F (AutomationPointTest, Copying)
 {
   // Set initial state
-  point->position ()->setSamples (3000);
+  point->position ()->setTicks (3000);
   point->setValue (0.9f);
 
   // Create target
-  auto target = std::make_unique<AutomationPoint> (*tempo_map, parent.get ());
+  auto target =
+    std::make_unique<AutomationPoint> (*tempo_map_wrapper, parent.get ());
 
   // Copy
   init_from (*target, *point, utils::ObjectCloneType::Snapshot);
 
   // Verify state
-  EXPECT_EQ (target->position ()->samples (), 3000);
+  EXPECT_EQ (target->position ()->ticks (), 3000);
   EXPECT_FLOAT_EQ (target->value (), 0.9f);
 }
 
@@ -135,9 +139,9 @@ TEST_F (AutomationPointTest, EdgeCases)
   point->setValue (1.5f);
   EXPECT_FLOAT_EQ (point->value (), 1.5f);
 
-  // Negative position
-  point->position ()->setSamples (-1000);
-  EXPECT_GE (point->position ()->samples (), 0); // Should clamp to 0
+  // Negative position (no constraint, stored as-is)
+  point->position ()->setTicks (-1000.0);
+  EXPECT_DOUBLE_EQ (point->position ()->ticks (), -1000.0);
 }
 
 } // namespace zrythm::structure::arrangement

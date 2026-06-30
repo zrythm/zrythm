@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
+#include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 
 #include "helpers/scoped_qcoreapplication.h"
@@ -24,6 +25,7 @@ protected:
     scoped_qt_app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
 
     tempo_map_ = std::make_unique<TempoMap> (SAMPLE_RATE);
+    tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
     // Setup config provider with default values
     config_provider_ = {
@@ -32,11 +34,13 @@ protected:
       .recording_preroll_bars_ = [] () { return 0; }
     };
 
-    transport_ = std::make_unique<Transport> (*tempo_map_, config_provider_);
+    transport_ =
+      std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
   }
 
   std::unique_ptr<test_helpers::ScopedQCoreApplication> scoped_qt_app_;
   std::unique_ptr<TempoMap>                             tempo_map_;
+  std::unique_ptr<TempoMapWrapper>                      tempo_map_wrapper_;
   std::unique_ptr<Transport>                            transport_;
   Transport::ConfigProvider                             config_provider_;
 };
@@ -51,21 +55,20 @@ TEST_F (TransportTest, InitialState)
   EXPECT_FALSE (transport_->isRolling ());
   EXPECT_TRUE (transport_->isPaused ());
 
-  // Test ITransport interface
-  EXPECT_EQ (transport_->get_play_state (), Transport::PlayState::Paused);
-  EXPECT_TRUE (transport_->loop_enabled ());
-  EXPECT_FALSE (transport_->recording_enabled ());
-  EXPECT_FALSE (transport_->punch_enabled ());
+  // Test via snapshot (what the audio thread sees)
+  auto snapshot = transport_->get_snapshot ();
+  EXPECT_EQ (snapshot.get_play_state (), Transport::PlayState::Paused);
+  EXPECT_TRUE (snapshot.loop_enabled ());
 
   // Test initial positions
   EXPECT_DOUBLE_EQ (
     transport_->get_playhead_position_in_audio_thread ().in (units::samples),
     0.0);
 
-  auto [loop_start, loop_end] = transport_->get_loop_range_positions ();
+  auto [loop_start, loop_end] = snapshot.get_loop_range_positions ();
   EXPECT_GE (loop_end.in (units::samples), loop_start.in (units::samples));
 
-  auto [punch_in, punch_out] = transport_->get_punch_range_positions ();
+  auto [punch_in, punch_out] = snapshot.get_punch_range_positions ();
   EXPECT_GE (punch_out.in (units::samples), punch_in.in (units::samples));
 }
 
@@ -148,8 +151,7 @@ TEST_F (TransportTest, RequestPause)
 
   // Request pause
   transport_->requestPause ();
-  EXPECT_EQ (
-    transport_->get_play_state (), Transport::PlayState::PauseRequested);
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::PauseRequested);
 
   // Check that playhead before pause is stored
   EXPECT_DOUBLE_EQ (
@@ -180,10 +182,10 @@ TEST_F (TransportTest, PunchRangePositionCheck)
   transport_->punchOutPosition ()->setTicks (punch_out_ticks);
 
   // Convert to samples for testing
-  const auto punch_in_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (punch_in_ticks));
-  const auto punch_out_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (punch_out_ticks));
+  const auto punch_in_samples = tempo_map_->tick_to_samples_rounded (
+    TimelineTick{ units::ticks (punch_in_ticks) });
+  const auto punch_out_samples = tempo_map_->tick_to_samples_rounded (
+    TimelineTick{ units::ticks (punch_out_ticks) });
 
   // Test positions inside range
   EXPECT_TRUE (transport_->position_is_inside_punch_range (punch_in_samples));
@@ -206,7 +208,8 @@ TEST_F (TransportTest, AudioThreadPlayheadAdvancement)
   const auto initial_pos = transport_->get_playhead_position_in_audio_thread ();
   const auto nframes = units::samples (512);
 
-  transport_->add_to_playhead_in_audio_thread (nframes);
+  transport_->add_to_playhead_in_audio_thread (
+    transport_->get_snapshot (), nframes);
 
   const auto new_pos = transport_->get_playhead_position_in_audio_thread ();
   EXPECT_DOUBLE_EQ (
@@ -223,7 +226,7 @@ TEST_F (TransportTest, RealTimeSafePlayStateSetting)
   transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
 
   // State should be updated immediately
-  EXPECT_EQ (transport_->get_play_state (), Transport::PlayState::Rolling);
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Rolling);
 }
 
 // Test marker navigation
@@ -260,14 +263,14 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
   };
 
   auto countin_transport =
-    std::make_unique<Transport> (*tempo_map_, countin_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, countin_config);
 
   // Request roll to trigger count-in
   countin_transport->requestRoll ();
 
   // Should have count-in frames remaining
   const auto countin_frames =
-    countin_transport->metronome_countin_frames_remaining ();
+    countin_transport->get_snapshot ().metronome_countin_frames_remaining ();
   EXPECT_GT (countin_frames.in (units::samples), 0);
 
   // Consume some frames
@@ -276,7 +279,8 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
 
   // Frames remaining should be reduced
   EXPECT_EQ (
-    countin_transport->metronome_countin_frames_remaining ().in (units::samples),
+    countin_transport->get_snapshot ().metronome_countin_frames_remaining ().in (
+      units::samples),
     countin_frames.in (units::samples) -consume_frames.in (units::samples));
 }
 
@@ -291,7 +295,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
   };
 
   auto preroll_transport =
-    std::make_unique<Transport> (*tempo_map_, preroll_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, preroll_config);
 
   // Enable recording and request roll to trigger preroll
   preroll_transport->setRecordEnabled (true);
@@ -299,7 +303,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
 
   // Should have preroll frames remaining
   const auto preroll_frames =
-    preroll_transport->recording_preroll_frames_remaining ();
+    preroll_transport->get_snapshot ().recording_preroll_frames_remaining ();
   EXPECT_GT (preroll_frames.in (units::samples), 0);
 
   // Consume some frames
@@ -308,7 +312,8 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
 
   // Frames remaining should be reduced
   EXPECT_EQ (
-    preroll_transport->recording_preroll_frames_remaining ().in (units::samples),
+    preroll_transport->get_snapshot ().recording_preroll_frames_remaining ().in (
+      units::samples),
     preroll_frames.in (units::samples) -consume_frames.in (units::samples));
 }
 // Test serialization/deserialization
@@ -328,7 +333,7 @@ TEST_F (TransportTest, Serialization)
   j = *transport_;
 
   // Create new transport and deserialize
-  Transport new_transport (*tempo_map_, config_provider_);
+  Transport new_transport (*tempo_map_wrapper_, config_provider_);
   j.get_to (new_transport);
 
   // Verify positions were restored
@@ -355,7 +360,7 @@ TEST_F (TransportTest, PropertyNotificationTimer)
   transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
 
   // State should be changed but signal not emitted yet
-  EXPECT_EQ (transport_->get_play_state (), Transport::PlayState::Rolling);
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Rolling);
 
   // Note: In a real test environment, we'd need to wait for the timer
   // to fire and then expect the signal. For unit tests, we verify the
@@ -377,11 +382,12 @@ TEST_F (TransportTest, LoopEndCrossing)
   transport_->move_playhead (units::ticks (1800.0), true);
 
   // Get loop end position for testing
-  const auto loop_end_samples =
-    tempo_map_->tick_to_samples_rounded (units::ticks (loop_end_ticks));
+  const auto loop_end_samples = tempo_map_->tick_to_samples_rounded (
+    TimelineTick{ units::ticks (loop_end_ticks) });
 
-  // Test ITransport loop point detection
-  const auto frames_to_loop_end = transport_->is_loop_point_met_in_audio_thread (
+  // Test ITransport loop point detection (via snapshot)
+  auto       snapshot = transport_->get_snapshot ();
+  const auto frames_to_loop_end = snapshot.is_loop_point_met_in_audio_thread (
     units::samples (loop_end_samples.in (units::samples) -100),
     units::samples (200));
 
@@ -616,6 +622,13 @@ TEST_F (TransportTest, TransportSnapshotLargeValues)
 // Test TransportSnapshot from actual Transport
 TEST_F (TransportTest, TransportSnapshotFromTransport)
 {
+  // Configure known loop/punch tick positions (default tempo 120 BPM, 44.1 kHz:
+  // 1 beat = 0.5 s = 22050 samples; 960 ticks = 1 beat).
+  transport_->loopStartPosition ()->setTicks (960.0); // 0.5 s
+  transport_->loopEndPosition ()->setTicks (3840.0);  // 2.0 s
+  transport_->punchInPosition ()->setTicks (1920.0);  // 1.0 s
+  transport_->punchOutPosition ()->setTicks (4800.0); // 2.5 s
+
   // Set up transport with specific state
   transport_->setLoopEnabled (true);
   transport_->setRecordEnabled (true);
@@ -627,19 +640,45 @@ TEST_F (TransportTest, TransportSnapshotFromTransport)
   auto snapshot = transport_->get_snapshot ();
 
   // Verify snapshot matches transport state
-  EXPECT_EQ (snapshot.loop_enabled (), transport_->loop_enabled ());
-  EXPECT_EQ (snapshot.recording_enabled (), transport_->recording_enabled ());
-  EXPECT_EQ (snapshot.punch_enabled (), transport_->punch_enabled ());
-  EXPECT_EQ (snapshot.get_play_state (), transport_->get_play_state ());
+  EXPECT_EQ (snapshot.loop_enabled (), transport_->loopEnabled ());
+  EXPECT_EQ (snapshot.recording_enabled (), transport_->recordEnabled ());
+  EXPECT_EQ (snapshot.punch_enabled (), transport_->punchEnabled ());
+  EXPECT_EQ (snapshot.get_play_state (), transport_->getPlayState ());
   EXPECT_EQ (
     snapshot.get_playhead_position_in_audio_thread (),
     transport_->get_playhead_position_in_audio_thread ());
-  EXPECT_EQ (
-    snapshot.get_loop_range_positions (),
-    transport_->get_loop_range_positions ());
-  EXPECT_EQ (
-    snapshot.get_punch_range_positions (),
-    transport_->get_punch_range_positions ());
+
+  // Snapshot's loop/punch ranges must reflect the configured tick positions
+  // converted to samples via the tempo map.
+  auto [loop_start, loop_end] = snapshot.get_loop_range_positions ();
+  EXPECT_EQ (loop_start.in (units::samples), 22050);
+  EXPECT_EQ (loop_end.in (units::samples), 88200);
+  auto [punch_in, punch_out] = snapshot.get_punch_range_positions ();
+  EXPECT_EQ (punch_in.in (units::samples), 44100);
+  EXPECT_EQ (punch_out.in (units::samples), 110250);
+}
+
+// The RT marker snapshot stores loop/punch positions as samples, which depend
+// on the sample rate. It must be rebuilt when the sample rate changes.
+TEST_F (TransportTest, SnapshotUpdatesOnSampleRateChange)
+{
+  // Loop range: 960 ticks (0.5 s @120 BPM) .. 1920 ticks (1.0 s).
+  transport_->loopStartPosition ()->setTicks (960.0);
+  transport_->loopEndPosition ()->setTicks (1920.0);
+
+  // At 44.1 kHz: 22050 .. 44100 samples.
+  auto snapshot44 = transport_->get_snapshot ();
+  auto [lo44, hi44] = snapshot44.get_loop_range_positions ();
+  EXPECT_EQ (lo44.in (units::samples), 22050);
+  EXPECT_EQ (hi44.in (units::samples), 44100);
+
+  tempo_map_wrapper_->setSampleRate (48000.0);
+
+  // At 48 kHz the same ticks map to 24000 .. 48000 samples.
+  auto snapshot48 = transport_->get_snapshot ();
+  auto [lo48, hi48] = snapshot48.get_loop_range_positions ();
+  EXPECT_EQ (lo48.in (units::samples), 24000);
+  EXPECT_EQ (hi48.in (units::samples), 48000);
 }
 
 // Test QML adapters are accessible

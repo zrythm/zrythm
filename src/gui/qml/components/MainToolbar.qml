@@ -57,6 +57,8 @@ ZrythmToolBar {
       isUndo: false
       undoStack: root.session.undoStack
     },
+    ToolSeparator {
+    },
     ToolBox {
       id: toolBox
 

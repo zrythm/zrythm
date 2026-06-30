@@ -22,7 +22,7 @@ namespace zrythm::controllers
  * @brief Orchestrates the recording lifecycle across all armed tracks.
  *
  * Owns per-track recording sessions (audio or MIDI) and runs a periodic timer
- * that drains recorded data from each session's ring buffer for region
+ * that drains recorded data from each session's ring buffer for clip
  * creation.
  *
  * @section thread_safety Thread Safety
@@ -140,7 +140,7 @@ Q_SIGNALS:
    * @brief Emitted when recorded audio data has been drained from a session.
    *
    * Connected consumers (e.g. RecordingMaterializer) use this to create or
-   * expand regions from the recorded audio packets.
+   * expand clips from the recorded audio packets.
    */
   void audioDataReady (
     structure::tracks::TrackUuid      track_id,
@@ -150,7 +150,7 @@ Q_SIGNALS:
    * @brief Emitted when recorded MIDI data has been drained from a session.
    *
    * Connected consumers (e.g. RecordingMaterializer) use this to create
-   * MidiRegion objects from the recorded MIDI packets.
+   * MidiClip objects from the recorded MIDI packets.
    */
   void midiDataReady (
     structure::tracks::TrackUuid     track_id,

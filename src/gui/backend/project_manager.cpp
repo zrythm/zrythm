@@ -189,14 +189,12 @@ ProjectManager::create_default (
       }
       project_session->setTitle (name.to_qstring ());
       project_session->project ()->add_default_tracks ();
+      project_session->uiState ()->clipEditor ()->init ();
+      project_session->uiState ()->chordPadBank ()->applyPresetFromScale (
+        dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A);
     },
     Qt::BlockingQueuedConnection);
   project_session->moveToThread (this->thread ());
-
-  project_session->uiState ()->clipEditor ()->init ();
-
-  project_session->uiState ()->chordPadBank ()->applyPresetFromScale (
-    dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A);
 
   z_debug ("done creating default project");
 

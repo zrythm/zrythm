@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "dsp/timebase.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_owner.h"
 
@@ -12,28 +13,28 @@ namespace zrythm::structure::tracks
 {
 
 /**
- * @brief A container of MIDI or Audio regions.
+ * @brief A container of MIDI or Audio clips.
  *
  * Intended to be used as part of a TrackLaneList in a LanedTrackMixin as part
  * of a Track. In practice, only Instrument, Audio and MIDI tracks have lanes.
  *
- * For convenience, this handles all cases by including both MidiRegion and
- * AudioRegion objects. In practice, only one list will be used.
+ * For convenience, this handles all cases by including both MidiClip and
+ * AudioClip objects. In practice, only one list will be used.
  */
 class TrackLane
     : public utils::UuidIdentifiableObject<TrackLane>,
-      public arrangement::ArrangerObjectOwner<arrangement::MidiRegion>,
-      public arrangement::ArrangerObjectOwner<arrangement::AudioRegion>
+      public arrangement::ArrangerObjectOwner<arrangement::MidiClip>,
+      public arrangement::ArrangerObjectOwner<arrangement::AudioClip>
 {
   Q_OBJECT
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     TrackLane,
-    midiRegions,
-    zrythm::structure::arrangement::MidiRegion)
+    midiClips,
+    zrythm::structure::arrangement::MidiClip)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     TrackLane,
-    audioRegions,
-    zrythm::structure::arrangement::AudioRegion)
+    audioClips,
+    zrythm::structure::arrangement::AudioClip)
   Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameChanged)
   Q_PROPERTY (double height READ height WRITE setHeight NOTIFY heightChanged)
   Q_PROPERTY (bool muted READ muted WRITE setMuted NOTIFY muteChanged)
@@ -58,18 +59,10 @@ public:
   {
     utils::IObjectRegistry &registry_;
     SoloedLanesExistFunc    soloed_lanes_exist_func_;
+    dsp::TimebaseProvider * timebase_provider_ = nullptr;
   };
 
-  TrackLane (TrackLaneDependencies dependencies, QObject * parent = nullptr)
-      : utils::UuidIdentifiableObject<TrackLane> (parent),
-        arrangement::ArrangerObjectOwner<
-          arrangement::MidiRegion> (dependencies.registry_, *this),
-        arrangement::ArrangerObjectOwner<
-          arrangement::AudioRegion> (dependencies.registry_, *this),
-        soloed_lanes_exist_func_ (
-          std::move (dependencies.soloed_lanes_exist_func_))
-  {
-  }
+  TrackLane (TrackLaneDependencies dependencies, QObject * parent = nullptr);
   Q_DISABLE_COPY_MOVE (TrackLane)
   ~TrackLane () override;
 
@@ -167,14 +160,14 @@ public:
   // std::unique_ptr<TrackLaneT> gen_snapshot () const;
 
   std::string get_field_name_for_serialization (
-    const arrangement::MidiRegion * _) const override
+    const arrangement::MidiClip * _) const override
   {
-    return "midiRegions";
+    return "midiClips";
   }
   std::string get_field_name_for_serialization (
-    const arrangement::AudioRegion * _) const override
+    const arrangement::AudioClip * _) const override
   {
-    return "audioRegions";
+    return "audioClips";
   }
 
 private:
@@ -193,6 +186,8 @@ private:
 
 private:
   SoloedLanesExistFunc soloed_lanes_exist_func_;
+
+  QPointer<dsp::TimebaseProvider> timebase_provider_;
 
   /** Name of lane, e.g. "Lane 1". */
   utils::Utf8String name_;

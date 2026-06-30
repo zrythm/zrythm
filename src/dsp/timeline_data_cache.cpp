@@ -137,7 +137,7 @@ MidiTimelineDataCache::compute_cached_sample_ranges () const
 void
 AudioTimelineDataCache::clear_impl ()
 {
-  audio_regions_.clear ();
+  audio_clips_.clear ();
 }
 
 void
@@ -147,14 +147,14 @@ AudioTimelineDataCache::remove_sequences_matching_interval (
   validate_interval (interval);
 
   // Strict overlap: adjacent intervals are not considered overlapping.
-  std::erase_if (audio_regions_, [&] (const AudioRegionEntry &entry) {
+  std::erase_if (audio_clips_, [&] (const AudioClipEntry &entry) {
     return intervals_overlap (
       { entry.start_sample, entry.end_sample }, interval);
   });
 }
 
 void
-AudioTimelineDataCache::add_audio_region (
+AudioTimelineDataCache::add_audio_clip (
   IntervalType                   interval,
   const juce::AudioSampleBuffer &audio_buffer)
 {
@@ -162,20 +162,20 @@ AudioTimelineDataCache::add_audio_region (
 
   validate_interval (interval);
 
-  AudioRegionEntry entry;
+  AudioClipEntry entry;
   // Create a copy of the audio buffer
   entry.audio_buffer = audio_buffer;
   entry.start_sample = start_sample;
   entry.end_sample = end_sample;
 
-  audio_regions_.push_back (entry);
+  audio_clips_.push_back (entry);
 }
 
 void
 AudioTimelineDataCache::finalize_changes_impl ()
 {
-  // Sort audio regions by start position for efficient processing
-  std::ranges::sort (audio_regions_, {}, [] (const AudioRegionEntry &entry) {
+  // Sort audio clips by start position for efficient processing
+  std::ranges::sort (audio_clips_, {}, [] (const AudioClipEntry &entry) {
     return entry.start_sample;
   });
 }
@@ -183,13 +183,13 @@ AudioTimelineDataCache::finalize_changes_impl ()
 bool
 AudioTimelineDataCache::has_content () const
 {
-  return !audio_regions_.empty ();
+  return !audio_clips_.empty ();
 }
 
 std::vector<AudioTimelineDataCache::IntervalType>
 AudioTimelineDataCache::compute_cached_sample_ranges () const
 {
-  return audio_regions_ | std::views::transform ([] (const AudioRegionEntry &e) {
+  return audio_clips_ | std::views::transform ([] (const AudioClipEntry &e) {
            return std::make_pair (e.start_sample, e.end_sample);
          })
          | std::ranges::to<std::vector<IntervalType>> ();

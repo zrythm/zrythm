@@ -20,28 +20,30 @@ protected:
   void SetUp () override
   {
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
     parent = std::make_unique<MockQObject> ();
 
     // Create objects with proper parenting
     obj = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::Marker, *tempo_map,
+      ArrangerObject::Type::Marker, *tempo_map_wrapper,
       MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
     obj2 = std::make_unique<MockArrangerObject> (
-      ArrangerObject::Type::MidiNote, *tempo_map,
+      ArrangerObject::Type::MidiNote, *tempo_map_wrapper,
       MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   }
 
-  std::unique_ptr<dsp::TempoMap>      tempo_map;
-  std::unique_ptr<MockQObject>        parent;
-  std::unique_ptr<MockArrangerObject> obj;
-  std::unique_ptr<MockArrangerObject> obj2;
+  std::unique_ptr<dsp::TempoMap>        tempo_map;
+  std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
+  std::unique_ptr<MockQObject>          parent;
+  std::unique_ptr<MockArrangerObject>   obj;
+  std::unique_ptr<MockArrangerObject>   obj2;
 };
 
 // Test initial state
 TEST_F (ArrangerObjectTest, InitialState)
 {
   EXPECT_EQ (obj->type (), ArrangerObject::Type::Marker);
-  EXPECT_EQ (obj->position ()->samples (), 0);
+  EXPECT_EQ (obj->position ()->ticks (), 0);
   EXPECT_NE (obj->position (), nullptr);
   EXPECT_EQ (obj->parentObject (), nullptr);
 }
@@ -59,8 +61,8 @@ TEST_F (ArrangerObjectTest, PositionOperations)
   obj->position ()->setTicks (960.0);
   EXPECT_DOUBLE_EQ (obj->position ()->ticks (), 960.0);
 
-  obj->position ()->setSeconds (1.5);
-  EXPECT_DOUBLE_EQ (obj->position ()->seconds (), 1.5);
+  obj->position ()->setTicks (1920.0);
+  EXPECT_DOUBLE_EQ (obj->position ()->ticks (), 1920.0);
 }
 
 // Test parent object operations
@@ -89,59 +91,6 @@ TEST_F (ArrangerObjectTest, ParentObjectOperations)
   EXPECT_EQ (parentChangedSpy.count (), 0); // No signal for same parent
 }
 
-TEST_F (ArrangerObjectTest, IsStartHitByRange)
-{
-  // Set position to 1000 samples
-  obj->position ()->setSamples (1000);
-
-  // Test inclusive start, exclusive end (default)
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (1000), units::samples (2000))); // exact start
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (500), units::samples (1500))); // within range
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (1001), units::samples (2000))); // just after start
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (2000), units::samples (3000))); // after range
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (0), units::samples (999))); // before range
-
-  // Test exclusive start
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (1000), units::samples (2000),
-    false)); // exact start (excluded)
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (999), units::samples (2000),
-    false)); // after exclusive start
-
-  // Test inclusive end
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (0), units::samples (1000), true,
-    true)); // exact end (included)
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (0), units::samples (1000), true,
-    false)); // exact end (excluded)
-
-  // Test exact position at both boundaries
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (1000), units::samples (1000), true, true)); // included
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (1000), units::samples (1000), false, false)); // excluded
-
-  // Test negative values (clamped to zero currently)
-  obj->position ()->setSamples (-500);
-  EXPECT_FALSE (obj->is_start_hit_by_range (
-    units::samples (-1000), units::samples (0))); // within negative range
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (0), units::samples (1))); // including 0
-
-  // Test large values
-  obj->position ()->setSamples (1e9);
-  EXPECT_TRUE (obj->is_start_hit_by_range (
-    units::samples (static_cast<int64_t> (1e9 - 100)),
-    units::samples (static_cast<int64_t> (1e9 + 100))));
-}
-
 // Test UUID functionality
 TEST_F (ArrangerObjectTest, UuidFunctionality)
 {
@@ -151,7 +100,7 @@ TEST_F (ArrangerObjectTest, UuidFunctionality)
   // Test persistence through cloning
   const auto         original_uuid = obj->get_uuid ();
   MockArrangerObject temp (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   init_from (temp, *obj, utils::ObjectCloneType::Snapshot);
   EXPECT_EQ (temp.get_uuid (), original_uuid);
@@ -169,7 +118,7 @@ TEST_F (ArrangerObjectTest, Serialization)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   from_json (j, new_obj);
 
@@ -177,81 +126,6 @@ TEST_F (ArrangerObjectTest, Serialization)
   EXPECT_EQ (new_obj.get_uuid (), obj->get_uuid ());
   EXPECT_EQ (new_obj.type (), obj->type ());
   EXPECT_DOUBLE_EQ (new_obj.position ()->ticks (), 1920.0);
-}
-
-// Test time conversion with parent object
-TEST_F (ArrangerObjectTest, TimeConversionWithParent)
-{
-  // Set up parent object at position 1920 ticks
-  obj2->position ()->setTicks (1920.0);
-  const auto parent_ticks = units::ticks (obj2->position ()->ticks ());
-  const auto parent_seconds = units::seconds (obj2->position ()->seconds ());
-  const auto parent_samples = tempo_map->tick_to_samples (parent_ticks);
-
-  // Set child object with parent
-  obj->setParentObject (obj2.get ());
-
-  // Test time conversions relative to parent
-  const auto relative_ticks = units::ticks (480.0);
-  const auto expected_seconds =
-    tempo_map->tick_to_seconds (parent_ticks + relative_ticks) - parent_seconds;
-  const auto expected_samples =
-    tempo_map->tick_to_samples (parent_ticks + relative_ticks) - parent_samples;
-
-  // Test tick to seconds conversion
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .tick_to_seconds (relative_ticks)
-      .in (units::seconds),
-    expected_seconds.in (units::seconds));
-
-  // Test seconds to tick conversion
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .seconds_to_tick (expected_seconds)
-      .in (units::ticks),
-    relative_ticks.in (units::ticks));
-
-  // Test tick to samples conversion
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .tick_to_samples (relative_ticks)
-      .in (units::samples),
-    expected_samples.in (units::samples));
-
-  // Test samples to tick conversion
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .samples_to_tick (expected_samples)
-      .in (units::ticks),
-    relative_ticks.in (units::ticks));
-
-  // Remove parent and test global time conversion
-  obj->setParentObject (nullptr);
-
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .tick_to_seconds (relative_ticks)
-      .in (units::seconds),
-    tempo_map->tick_to_seconds (relative_ticks).in (units::seconds));
-
-  EXPECT_DOUBLE_EQ (
-    obj->position ()
-      ->position ()
-      .time_conversion_functions ()
-      .seconds_to_tick (expected_seconds)
-      .in (units::ticks),
-    tempo_map->seconds_to_tick (expected_seconds).in (units::ticks));
 }
 
 // Test edge cases
@@ -263,7 +137,7 @@ TEST_F (ArrangerObjectTest, EdgeCases)
 
   // Large position
   obj->position ()->setTicks (1e9);
-  EXPECT_GT (obj->position ()->seconds (), 0.0);
+  EXPECT_GT (obj->position ()->ticks (), 0.0);
 }
 
 // Test subcomponent creation based on feature flags
@@ -271,41 +145,28 @@ TEST_F (ArrangerObjectTest, SubcomponentCreation)
 {
   // Test with only bounds feature
   auto bounds_only_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
-  EXPECT_NE (bounds_only_obj->bounds (), nullptr);
-  EXPECT_EQ (bounds_only_obj->loopRange (), nullptr);
+  EXPECT_NE (bounds_only_obj->length (), nullptr);
   EXPECT_EQ (bounds_only_obj->name (), nullptr);
   EXPECT_EQ (bounds_only_obj->color (), nullptr);
   EXPECT_EQ (bounds_only_obj->mute (), nullptr);
-  EXPECT_EQ (bounds_only_obj->fadeRange (), nullptr);
 
-  // Test with region features (includes bounds, looping, name, color, mute)
-  auto region_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region, parent.get ());
-
-  EXPECT_NE (region_obj->bounds (), nullptr);
-  EXPECT_NE (region_obj->loopRange (), nullptr);
-  EXPECT_NE (region_obj->name (), nullptr);
-  EXPECT_NE (region_obj->color (), nullptr);
-  EXPECT_NE (region_obj->mute (), nullptr);
-  EXPECT_EQ (region_obj->fadeRange (), nullptr);
-
-  // Test with all features
-  auto all_features_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+  // Test with all base features (bounds, name, color, mute, clip-owned)
+  auto full_obj = std::make_unique<MockArrangerObject> (
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
 
-  EXPECT_NE (all_features_obj->bounds (), nullptr);
-  EXPECT_NE (all_features_obj->loopRange (), nullptr);
-  EXPECT_NE (all_features_obj->name (), nullptr);
-  EXPECT_NE (all_features_obj->color (), nullptr);
-  EXPECT_NE (all_features_obj->mute (), nullptr);
-  EXPECT_NE (all_features_obj->fadeRange (), nullptr);
+  EXPECT_NE (full_obj->length (), nullptr);
+  EXPECT_NE (full_obj->name (), nullptr);
+  EXPECT_NE (full_obj->color (), nullptr);
+  EXPECT_NE (full_obj->mute (), nullptr);
 }
 
 // Test signal connections
@@ -313,9 +174,12 @@ TEST_F (ArrangerObjectTest, SignalConnections)
 {
   // Create object with all features to test signal connections
   auto signal_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
 
   // Setup signal spy
@@ -328,7 +192,7 @@ TEST_F (ArrangerObjectTest, SignalConnections)
   propertiesChangedSpy.clear ();
 
   // Test bounds length change signal (may produce > 1 signals due to trackBounds)
-  signal_obj->bounds ()->length ()->setTicks (200.0);
+  signal_obj->length ()->setTicks (200.0);
   EXPECT_GE (propertiesChangedSpy.count (), 1);
   propertiesChangedSpy.clear ();
 
@@ -345,11 +209,6 @@ TEST_F (ArrangerObjectTest, SignalConnections)
   // Test mute change signal
   signal_obj->mute ()->setMuted (true);
   EXPECT_EQ (propertiesChangedSpy.count (), 1);
-  propertiesChangedSpy.clear ();
-
-  // Test fade properties change signal
-  signal_obj->fadeRange ()->startOffset ()->setTicks (50.0);
-  EXPECT_EQ (propertiesChangedSpy.count (), 1);
 }
 
 // Test parent object signal emissions
@@ -357,7 +216,7 @@ TEST_F (ArrangerObjectTest, ParentObjectSignals)
 {
   // Create object with all features to test signal connections
   auto signal_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
   // Setup signal spies
@@ -391,19 +250,20 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
 {
   // Create object with all features
   auto full_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
 
   // Set values on all subcomponents
   full_obj->position ()->setTicks (1920.0);
-  full_obj->bounds ()->length ()->setTicks (960.0);
-  full_obj->loopRange ()->loopStartPosition ()->setTicks (480.0);
+  full_obj->length ()->setTicks (960.0);
   full_obj->name ()->setName ("Test Object");
   full_obj->color ()->setColor (QColor (128, 64, 32));
   full_obj->mute ()->setMuted (true);
-  full_obj->fadeRange ()->startOffset ()->setTicks (240.0);
 
   // Serialize
   nlohmann::json j;
@@ -411,9 +271,12 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
   from_json (j, new_obj);
 
@@ -421,12 +284,10 @@ TEST_F (ArrangerObjectTest, SerializationWithSubcomponents)
   EXPECT_EQ (new_obj.get_uuid (), full_obj->get_uuid ());
   EXPECT_EQ (new_obj.type (), full_obj->type ());
   EXPECT_DOUBLE_EQ (new_obj.position ()->ticks (), 1920.0);
-  EXPECT_DOUBLE_EQ (new_obj.bounds ()->length ()->ticks (), 960.0);
-  EXPECT_DOUBLE_EQ (new_obj.loopRange ()->loopStartPosition ()->ticks (), 480.0);
+  EXPECT_DOUBLE_EQ (new_obj.length ()->ticks (), 960.0);
   EXPECT_EQ (new_obj.name ()->name (), "Test Object");
   EXPECT_EQ (new_obj.color ()->color (), QColor (128, 64, 32));
   EXPECT_TRUE (new_obj.mute ()->muted ());
-  EXPECT_DOUBLE_EQ (new_obj.fadeRange ()->startOffset ()->ticks (), 240.0);
 }
 
 // Test serialization/deserialization with parent object
@@ -443,7 +304,7 @@ TEST_F (ArrangerObjectTest, SerializationWithParentObject)
 
   // Create new object from serialized data
   MockArrangerObject new_obj (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
   from_json (j, new_obj);
 
@@ -460,25 +321,29 @@ TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
 {
   // Create object with all features
   auto source_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
 
   // Set values on all subcomponents
   source_obj->position ()->setTicks (3840.0);
-  source_obj->bounds ()->length ()->setTicks (1920.0);
-  source_obj->loopRange ()->loopStartPosition ()->setTicks (960.0);
+  source_obj->length ()->setTicks (1920.0);
   source_obj->name ()->setName ("Source Object");
   source_obj->color ()->setColor (QColor (64, 128, 192));
   source_obj->mute ()->setMuted (false);
-  source_obj->fadeRange ()->startOffset ()->setTicks (480.0);
 
   // Create target object
   auto target_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
-    MockArrangerObject::ArrangerObjectFeatures::Region
-      | MockArrangerObject::ArrangerObjectFeatures::Fading,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
+    MockArrangerObject::ArrangerObjectFeatures::Bounds
+      | MockArrangerObject::ArrangerObjectFeatures::Name
+      | MockArrangerObject::ArrangerObjectFeatures::Color
+      | MockArrangerObject::ArrangerObjectFeatures::Mute
+      | MockArrangerObject::ArrangerObjectFeatures::ClipOwned,
     parent.get ());
 
   // Copy
@@ -487,13 +352,10 @@ TEST_F (ArrangerObjectTest, CopyingWithSubcomponents)
   // Verify state
   EXPECT_EQ (target_obj->get_uuid (), source_obj->get_uuid ());
   EXPECT_DOUBLE_EQ (target_obj->position ()->ticks (), 3840.0);
-  EXPECT_DOUBLE_EQ (target_obj->bounds ()->length ()->ticks (), 1920.0);
-  EXPECT_DOUBLE_EQ (
-    target_obj->loopRange ()->loopStartPosition ()->ticks (), 960.0);
+  EXPECT_DOUBLE_EQ (target_obj->length ()->ticks (), 1920.0);
   EXPECT_EQ (target_obj->name ()->name (), "Source Object");
   EXPECT_EQ (target_obj->color ()->color (), QColor (64, 128, 192));
   EXPECT_FALSE (target_obj->mute ()->muted ());
-  EXPECT_DOUBLE_EQ (target_obj->fadeRange ()->startOffset ()->ticks (), 480.0);
 }
 
 // Test copying with parent object
@@ -506,7 +368,7 @@ TEST_F (ArrangerObjectTest, CopyingWithParentObject)
 
   // Create target object
   auto target_obj = std::make_unique<MockArrangerObject> (
-    ArrangerObject::Type::Marker, *tempo_map,
+    ArrangerObject::Type::Marker, *tempo_map_wrapper,
     MockArrangerObject::ArrangerObjectFeatures::Bounds, parent.get ());
 
   // Copy - parent object should not be copied (runtime only)

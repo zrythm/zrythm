@@ -10,6 +10,7 @@
 #include "dsp/tempo_map.h"
 #include "utils/serialization.h"
 
+#include <au/math.hh>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
@@ -73,9 +74,9 @@ from_json (const nlohmann::json &j, FixedPpqTempoMap<units::PPQ> &tempo_map)
 template <units::tick_t::NTTP PPQ>
 void
 FixedPpqTempoMap<
-  PPQ>::add_tempo_event (units::tick_t tick, double bpm, CurveType curve)
+  PPQ>::add_tempo_event (units::tick_t tick, units::bpm_t bpm, CurveType curve)
 {
-  if (bpm <= 0)
+  if (bpm <= units::bpm (0.0))
     throw std::invalid_argument ("BPM must be positive");
   if (tick < units::ticks (0))
     throw std::invalid_argument ("Tick must be non-negative");
@@ -166,13 +167,14 @@ FixedPpqTempoMap<PPQ>::remove_time_signature_event (units::tick_t tick)
 
 template <units::tick_t::NTTP PPQ>
 auto
-FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
+FixedPpqTempoMap<PPQ>::tick_to_seconds (TimelineTick tick) const
   -> units::precise_second_t
 {
+  const auto tick_q = tick.asQuantity ();
   const auto &[events, cumulative_seconds] = get_events_or_default ();
 
   // Find the last event <= target tick
-  auto it = std::ranges::upper_bound (events, tick, {}, &TempoEvent::tick);
+  auto it = std::ranges::upper_bound (events, tick_q, {}, &TempoEvent::tick);
 
   if (it == events.begin ())
     {
@@ -183,17 +185,13 @@ FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
   const auto         &startEvent = events[index];
   const units::tick_t segmentStart = startEvent.tick;
   const auto          ticksFromStart =
-    tick - static_cast<units::precise_tick_t> (segmentStart);
+    tick_q - static_cast<units::precise_tick_t> (segmentStart);
   const auto baseSeconds = cumulative_seconds[index];
 
   // Last event segment
   if (index == events.size () - 1)
     {
-      return baseSeconds
-             + units::seconds (
-               (ticksFromStart.in (units::ticks)
-                / static_cast<double> (get_ppq ()))
-               * (60.0 / startEvent.bpm));
+      return baseSeconds + ticksFromStart / startEvent.bpm;
     }
 
   const auto         &endEvent = events[index + 1];
@@ -203,103 +201,92 @@ FixedPpqTempoMap<PPQ>::tick_to_seconds (units::precise_tick_t tick) const
   // Constant tempo segment
   if (startEvent.curve == CurveType::Constant)
     {
-      return baseSeconds
-             + units::seconds (
-               (ticksFromStart.in (units::ticks)
-                / static_cast<double> (get_ppq ()))
-               * (60.0 / startEvent.bpm));
+      return baseSeconds + ticksFromStart / startEvent.bpm;
     }
   // Linear tempo ramp
   else if (startEvent.curve == CurveType::Linear)
     {
-      const double bpm0 = startEvent.bpm;
-      const double bpm1 = endEvent.bpm;
+      const auto bpm0 = startEvent.bpm;
+      const auto bpm1 = endEvent.bpm;
 
-      if (std::abs (bpm1 - bpm0) < 1e-5)
+      if (abs (bpm1 - bpm0) < units::bpm (1e-5))
         {
-          return baseSeconds
-                 + units::seconds (
-                   (ticksFromStart.in (units::ticks)
-                    / static_cast<double> (get_ppq ()))
-                   * (60.0 / bpm0));
+          return baseSeconds + ticksFromStart / bpm0;
         }
 
-      const auto   fraction = ticksFromStart / dSegmentTicks;
-      const double currentBpm = bpm0 + (fraction * (bpm1 - bpm0));
+      const auto fraction = ticksFromStart / dSegmentTicks;
+      const auto currentBpm = bpm0 + fraction * (bpm1 - bpm0);
 
       return baseSeconds
-             + units::seconds (
-               (60.0 * dSegmentTicks.in (units::ticks))
-               / (get_ppq () * (bpm1 - bpm0)) * std::log (currentBpm / bpm0));
+             + dSegmentTicks / (bpm1 - bpm0) * std::log (currentBpm / bpm0);
     }
 
   return baseSeconds;
 }
 
 template <units::tick_t::NTTP PPQ>
-units::precise_tick_t
+TimelineTick
 FixedPpqTempoMap<PPQ>::seconds_to_tick (units::precise_second_t seconds) const
 {
-  if (seconds <= units::seconds (0.0))
-    return units::ticks (0.0);
+  return TimelineTick{ [&] () -> units::precise_tick_t {
+    if (seconds <= units::seconds (0.0))
+      return units::ticks (0.0);
 
-  const auto &[events, cumulative_seconds] = get_events_or_default ();
+    const auto &[events, cumulative_seconds] = get_events_or_default ();
 
-  // Find the segment containing the time
-  auto         it = std::ranges::upper_bound (cumulative_seconds, seconds);
-  const size_t index =
-    (it == cumulative_seconds.begin ())
-      ? 0
-      : std::distance (cumulative_seconds.begin (), it) - 1;
+    // Find the segment containing the time
+    auto         it = std::ranges::upper_bound (cumulative_seconds, seconds);
+    const size_t index =
+      (it == cumulative_seconds.begin ())
+        ? 0
+        : std::distance (cumulative_seconds.begin (), it) - 1;
 
-  const auto        baseSeconds = cumulative_seconds[index];
-  const auto        timeInSegment = seconds - baseSeconds;
-  const TempoEvent &startEvent = events[index];
+    const auto        baseSeconds = cumulative_seconds[index];
+    const auto        timeInSegment = seconds - baseSeconds;
+    const TempoEvent &startEvent = events[index];
 
-  // Last segment
-  if (index == events.size () - 1)
-    {
-      const double beats =
-        timeInSegment.in (units::seconds) * (startEvent.bpm / 60.0);
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + units::ticks (beats * get_ppq ());
-    }
+    // Last segment
+    if (index == events.size () - 1)
+      {
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + timeInSegment * startEvent.bpm;
+      }
 
-  const TempoEvent   &endEvent = events[index + 1];
-  const units::tick_t segmentTicks = endEvent.tick - startEvent.tick;
-  const auto dSegmentTicks = static_cast<units::precise_tick_t> (segmentTicks);
+    const TempoEvent   &endEvent = events[index + 1];
+    const units::tick_t segmentTicks = endEvent.tick - startEvent.tick;
+    const auto dSegmentTicks = static_cast<units::precise_tick_t> (segmentTicks);
 
-  // Constant tempo segment
-  if (startEvent.curve == CurveType::Constant)
-    {
-      const double beats =
-        timeInSegment.in (units::seconds) * (startEvent.bpm / 60.0);
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + units::ticks (beats * get_ppq ());
-    }
-  // Linear tempo ramp
-  else if (startEvent.curve == CurveType::Linear)
-    {
-      const double bpm0 = startEvent.bpm;
-      const double bpm1 = endEvent.bpm;
+    // Constant tempo segment
+    if (startEvent.curve == CurveType::Constant)
+      {
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + timeInSegment * startEvent.bpm;
+      }
+    // Linear tempo ramp
+    else if (startEvent.curve == CurveType::Linear)
+      {
+        const auto bpm0 = startEvent.bpm;
+        const auto bpm1 = endEvent.bpm;
 
-      if (std::abs (bpm1 - bpm0) < 1e-5)
-        {
-          const double beats = timeInSegment.in (units::seconds) * (bpm0 / 60.0);
-          return static_cast<units::precise_tick_t> (startEvent.tick)
-                 + units::ticks (beats * get_ppq ());
-        }
+        if (abs (bpm1 - bpm0) < units::bpm (1e-5))
+          {
+            return static_cast<units::precise_tick_t> (startEvent.tick)
+                   + timeInSegment * bpm0;
+          }
 
-      const auto A =
-        (get_ppq () * (bpm1 - bpm0)) / (60.0 * dSegmentTicks.in (units::ticks));
-      const double expVal = std::exp (A * timeInSegment.in (units::seconds));
-      const double f = (expVal - 1.0) * (bpm0 / (bpm1 - bpm0));
+        // Coerce the mixed-unit product to plain ticks before dividing, so the
+        // ratio is unitless (magnitude 1) and usable directly with std::exp.
+        const auto exponent = au::as_raw_number (
+          (timeInSegment * (bpm1 - bpm0)).as (units::ticks) / dSegmentTicks);
+        const auto expVal = std::exp (exponent);
+        const auto f = (expVal - 1.0) * (bpm0 / (bpm1 - bpm0));
 
-      return static_cast<units::precise_tick_t> (startEvent.tick)
-             + f * dSegmentTicks;
-    }
+        return static_cast<units::precise_tick_t> (startEvent.tick)
+               + f * dSegmentTicks;
+      }
 
-  return static_cast<units::precise_tick_t> (startEvent.tick);
+    return static_cast<units::precise_tick_t> (startEvent.tick);
+  }() };
 }
 
 template <units::tick_t::NTTP PPQ>
@@ -324,8 +311,8 @@ FixedPpqTempoMap<PPQ>::time_signature_at_tick (units::tick_t tick) const
 }
 
 template <units::tick_t::NTTP PPQ>
-double
-FixedPpqTempoMap<PPQ>::tempo_at_tick (units::tick_t tick) const
+auto
+FixedPpqTempoMap<PPQ>::tempo_at_tick (units::tick_t tick) const -> units::bpm_t
 {
   if (events_.empty ())
     return default_tempo_.bpm;
@@ -349,10 +336,10 @@ FixedPpqTempoMap<PPQ>::tempo_at_tick (units::tick_t tick) const
   const auto         &startEvent = *it;
   const auto         &endEvent = *(it + 1);
   const units::tick_t segmentTicks = endEvent.tick - startEvent.tick;
-  const double        fraction =
+  const auto          fraction =
     static_cast<units::precise_tick_t> (tick - startEvent.tick)
     / static_cast<units::precise_tick_t> (segmentTicks);
-  const double currentBpm =
+  const auto currentBpm =
     startEvent.bpm + fraction * (endEvent.bpm - startEvent.bpm);
 
   return currentBpm;
@@ -390,14 +377,12 @@ FixedPpqTempoMap<PPQ>::tick_to_musical_position (units::tick_t tick) const
   const int   denominator = sigEvent.denominator;
 
   // Calculate ticks per bar and beat
-  const double  quarters_per_bar = numerator * (4.0 / denominator);
-  const int64_t ticks_per_bar =
-    static_cast<int64_t> (quarters_per_bar * get_ppq ());
-  const int64_t ticks_per_beat = ticks_per_bar / numerator;
+  const double quarters_per_bar = numerator * (4.0 / denominator);
+  const auto   ticks_per_bar = quarters_per_bar * get_ppq ();
+  const auto   ticks_per_beat = ticks_per_bar / numerator;
 
   // Calculate absolute bar number
   int64_t cumulative_bars = 1;
-  // int64_t cumulative_ticks = 0;
 
   // Calculate total bars from previous time signatures
   for (auto prev = time_sig_events.begin (); prev != it; ++prev)
@@ -406,8 +391,7 @@ FixedPpqTempoMap<PPQ>::tick_to_musical_position (units::tick_t tick) const
       const int    prev_denominator = prev->denominator;
       const double prev_quarters_per_bar =
         prev_numerator * (4.0 / prev_denominator);
-      const int64_t prev_ticks_per_bar =
-        static_cast<int64_t> (prev_quarters_per_bar * get_ppq ());
+      const auto prev_ticks_per_bar = prev_quarters_per_bar * get_ppq ();
 
       // Ticks from this signature to next
       auto       next = std::next (prev);
@@ -415,30 +399,39 @@ FixedPpqTempoMap<PPQ>::tick_to_musical_position (units::tick_t tick) const
         (next != time_sig_events.end ()) ? next->tick : sigEvent.tick;
       const auto segment_ticks = end_tick - prev->tick;
 
-      cumulative_bars += (segment_ticks / prev_ticks_per_bar).in (units::ticks);
-      // cumulative_ticks += segment_ticks;
+      cumulative_bars +=
+        static_cast<int64_t> (segment_ticks / prev_ticks_per_bar);
     }
 
   // Calculate bars since current signature
-  const auto    ticks_since_sig = tick - sigEvent.tick;
-  const int64_t bars_since_sig =
-    ticks_since_sig.in (units::ticks) / ticks_per_bar;
-  const auto bar = cumulative_bars + bars_since_sig;
+  const auto ticks_since_sig = tick - sigEvent.tick;
+  const auto bar =
+    cumulative_bars + static_cast<int64_t> (ticks_since_sig / ticks_per_bar);
 
-  // Calculate position within current bar
-  const int64_t ticks_in_bar = ticks_since_sig.in (units::ticks) % ticks_per_bar;
-  const auto beat = 1 + (ticks_in_bar / ticks_per_beat);
+  // Calculate position within current bar (integer tick arithmetic)
+  const auto ticks_per_bar_int =
+    au::floor_as<int64_t> (units::ticks, ticks_per_bar);
+  const auto ticks_per_beat_int =
+    au::floor_as<int64_t> (units::ticks, ticks_per_beat);
+  const auto ticks_since_sig_int =
+    au::floor_as<int64_t> (units::ticks, ticks_since_sig);
 
-  // Calculate position within current beat
-  const int64_t ticks_in_beat = ticks_in_bar % ticks_per_beat;
-  const auto    sixteenth =
-    1 + (ticks_in_beat / ticks_per_sixteenth_.in (units::ticks));
-  const auto tick_in_sixteenth =
-    (ticks_in_beat % ticks_per_sixteenth_.in (units::ticks));
+  const auto ticks_in_bar = ticks_since_sig_int % ticks_per_bar_int;
+  const auto beat =
+    1
+    + au::as_raw_number (ticks_in_bar / au::unblock_int_div (ticks_per_beat_int));
+
+  const auto ticks_in_beat = ticks_in_bar % ticks_per_beat_int;
+  const auto sixteenth =
+    1
+    + au::as_raw_number (
+      ticks_in_beat / au::unblock_int_div (ticks_per_sixteenth_));
+  const auto tick_in_sixteenth = ticks_in_beat % ticks_per_sixteenth_;
 
   return {
     static_cast<int> (bar), static_cast<int> (beat),
-    static_cast<int> (sixteenth), static_cast<int> (tick_in_sixteenth)
+    static_cast<int> (sixteenth),
+    static_cast<int> (tick_in_sixteenth.in (units::ticks))
   };
 }
 
@@ -451,12 +444,13 @@ FixedPpqTempoMap<PPQ>::samples_to_musical_position (
   // be after the given samples
   const auto tick = au::floor_as<int64_t> (
     units::ticks,
-    samples_to_tick (static_cast<units::precise_sample_t> (samples)));
+    samples_to_tick (static_cast<units::precise_sample_t> (samples))
+      .asQuantity ());
   return tick_to_musical_position (tick);
 }
 
 template <units::tick_t::NTTP PPQ>
-units::tick_t
+TimelineTickI
 FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) const
 {
   const auto &time_sig_events = get_time_signature_events_or_default ();
@@ -477,8 +471,8 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
       const int     numerator = event.numerator;
       const int     denominator = event.denominator;
       const double  quarters_per_bar = numerator * (4.0 / denominator);
-      const int64_t ticks_per_bar =
-        static_cast<int64_t> (quarters_per_bar * get_ppq ());
+      const int64_t ticks_per_bar = static_cast<int64_t> (
+        (quarters_per_bar * get_ppq ()).in (units::ticks));
 
       // Determine bars covered by this time signature
       auto bars_in_this_sig = units::ticks (0);
@@ -501,13 +495,14 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
           const int64_t ticks_per_beat = ticks_per_bar / numerator;
 
           // Add beat and sub-beat components
-          return bar_ticks
-                 + units::ticks (
-                   static_cast<int64_t> (pos.beat - 1) * ticks_per_beat)
-                 + units::ticks (
-                   static_cast<int64_t> (pos.sixteenth - 1)
-                   * ticks_per_sixteenth_.in (units::ticks))
-                 + units::ticks (pos.tick);
+          return TimelineTickI{
+            bar_ticks
+            + units::ticks (static_cast<int64_t> (pos.beat - 1) * ticks_per_beat)
+            + units::ticks (
+              static_cast<int64_t> (pos.sixteenth - 1)
+              * ticks_per_sixteenth_.in (units::ticks))
+            + units::ticks (pos.tick)
+          };
         }
 
       // Move to next time signature segment
@@ -515,7 +510,7 @@ FixedPpqTempoMap<PPQ>::musical_position_to_tick (const MusicalPosition &pos) con
       current_bar += bars_in_this_sig.in (units::ticks);
     }
 
-  return cumulative_ticks;
+  return TimelineTickI{ cumulative_ticks };
 }
 
 template <units::tick_t::NTTP PPQ>
@@ -550,28 +545,20 @@ FixedPpqTempoMap<PPQ>::compute_segment_time (
 {
   if (start.curve == CurveType::Constant)
     {
-      return units::seconds (
-        (static_cast<units::precise_tick_t> (segmentTicks).in (units::ticks)
-         / static_cast<double> (get_ppq ()))
-        * (60.0 / start.bpm));
+      return static_cast<units::precise_tick_t> (segmentTicks) / start.bpm;
     }
   if (start.curve == CurveType::Linear)
     {
-      const double bpm0 = start.bpm;
-      const double bpm1 = end.bpm;
+      const auto bpm0 = start.bpm;
+      const auto bpm1 = end.bpm;
 
-      if (std::abs (bpm1 - bpm0) < 1e-5)
+      if (abs (bpm1 - bpm0) < units::bpm (1e-5))
         {
-          return units::seconds (
-            (static_cast<units::precise_tick_t> (segmentTicks).in (units::ticks)
-             / static_cast<double> (get_ppq ()))
-            * (60.0 / bpm0));
+          return static_cast<units::precise_tick_t> (segmentTicks) / bpm0;
         }
 
-      return units::seconds (
-        (60.0
-         * static_cast<units::precise_tick_t> (segmentTicks).in (units::ticks))
-        / (get_ppq () * (bpm1 - bpm0)) * std::log (bpm1 / bpm0));
+      return static_cast<units::precise_tick_t> (segmentTicks) / (bpm1 - bpm0)
+             * std::log (bpm1 / bpm0);
     }
   return units::seconds (0.0);
 }

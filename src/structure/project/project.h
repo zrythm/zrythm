@@ -192,7 +192,7 @@ private:
   static constexpr auto kTransportKey = "transport"sv;
   static constexpr auto kAudioPoolKey = "audioPool"sv;
   static constexpr auto kTracklistKey = "tracklist"sv;
-  static constexpr auto kRegionLinkGroupManagerKey = "regionLinkGroupManager"sv;
+  static constexpr auto kClipLinkGroupManagerKey = "clipLinkGroupManager"sv;
   static constexpr auto kPortConnectionsManagerKey = "portConnectionsManager"sv;
   static constexpr auto kTempoObjectManagerKey = "tempoObjectManager"sv;
   static constexpr auto kClipLauncherKey = "clipLauncher"sv;
@@ -237,8 +237,8 @@ public:
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;
 
-  /** Manager for region link groups. */
-  // structure::arrangement::RegionLinkGroupManager region_link_group_manager_;
+  /** Manager for clip link groups. */
+  // structure::arrangement::ClipLinkGroupManager clip_link_group_manager_;
 
   /**
    * @brief Tracklist.

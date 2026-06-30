@@ -25,20 +25,24 @@ protected:
   void SetUp () override
   {
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
+    tempo_map_wrapper_ = std::make_unique<dsp::TempoMapWrapper> (*tempo_map_);
     transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
     registry_ = std::make_unique<utils::ObjectRegistry> ();
   }
 
-  template <typename RegionT>
+  template <typename ClipT>
   auto create_region (int64_t timeline_pos_samples, int64_t length)
   {
-    auto region_ref = utils::create_object<RegionT> (
-      *registry_, *tempo_map_, *registry_, nullptr);
-    auto * region = region_ref.template get_object_as<RegionT> ();
-    region->position ()->setSamples (static_cast<double> (timeline_pos_samples));
-    region->bounds ()->length ()->setSamples (static_cast<double> (length));
+    auto clip_ref = utils::create_object<ClipT> (
+      *registry_, *tempo_map_wrapper_, *registry_, nullptr);
+    auto * clip = clip_ref.template get_object_as<ClipT> ();
+    clip->position ()->setTicks (
+      tempo_map_->samples_to_tick (units::samples (timeline_pos_samples))
+        .asDouble ());
+    clip->length ()->setTicks (
+      tempo_map_->samples_to_tick (units::samples (length)).asDouble ());
 
-    if constexpr (std::is_same_v<RegionT, arrangement::AudioRegion>)
+    if constexpr (std::is_same_v<ClipT, arrangement::AudioClip>)
       {
         // Create a mock audio source
         auto sample_buffer =
@@ -53,35 +57,34 @@ protected:
 
         auto source_ref = utils::create_object<dsp::FileAudioSource> (
           *registry_, *sample_buffer, utils::audio::BitDepth::BIT_DEPTH_32,
-          units::sample_rate (44100), 120.f, u8"DummySource");
+          units::sample_rate (44100), units::bpm (120.0), u8"DummySource");
         auto audio_source_object_ref =
           utils::create_object<arrangement::AudioSourceObject> (
-            *registry_, *tempo_map_, *registry_, source_ref);
-        region->set_source (audio_source_object_ref);
+            *registry_, *tempo_map_wrapper_, *registry_, source_ref);
+        clip->set_source (audio_source_object_ref);
 
-        region->prepare_to_play (block_length_, sample_rate_);
+        clip->prepare_to_play (block_length_, sample_rate_);
       }
-    return region_ref;
+    return clip_ref;
   }
 
   void add_midi_note (
-    arrangement::MidiRegion * region,
-    int                       note,
-    int                       velocity,
-    int64_t                   start_frames,
-    int64_t                   end_frames)
+    arrangement::MidiClip * clip,
+    int                     note,
+    int                     velocity,
+    int64_t                 start_frames,
+    int64_t                 end_frames)
   {
-    auto note_ref =
-      utils::create_object<arrangement::MidiNote> (*registry_, *tempo_map_);
+    auto note_ref = utils::create_object<arrangement::MidiNote> (
+      *registry_, *tempo_map_wrapper_);
     note_ref.get_object_as<arrangement::MidiNote> ()->setPitch (note);
     note_ref.get_object_as<arrangement::MidiNote> ()->setVelocity (velocity);
-    note_ref.get_object_as<arrangement::MidiNote> ()->position ()->setSamples (
-      static_cast<double> (start_frames));
-    note_ref.get_object_as<arrangement::MidiNote> ()
-      ->bounds ()
-      ->length ()
-      ->setSamples (static_cast<double> (end_frames - start_frames));
-    region->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
+    note_ref.get_object_as<arrangement::MidiNote> ()->position ()->setTicks (
+      tempo_map_->samples_to_tick (units::samples (start_frames)).asDouble ());
+    note_ref.get_object_as<arrangement::MidiNote> ()->length ()->setTicks (
+      tempo_map_->samples_to_tick (units::samples (end_frames - start_frames))
+        .asDouble ());
+    clip->ArrangerObjectOwner<structure::arrangement::MidiNote>::add_object (
       note_ref);
   }
 
@@ -123,6 +126,7 @@ protected:
   }
 
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
+  std::unique_ptr<dsp::TempoMapWrapper>           tempo_map_wrapper_;
   std::unique_ptr<dsp::graph_test::MockTransport> transport_;
   std::unique_ptr<utils::ObjectRegistry>          registry_;
   units::sample_rate_t sample_rate_{ units::sample_rate (44100) };
