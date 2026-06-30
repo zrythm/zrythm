@@ -7,6 +7,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Layouts
+import Qt.labs.synchronizer
 import Zrythm
 
 ScrollView {
@@ -130,26 +131,25 @@ ScrollView {
         ComboBox {
           id: timebaseCombo
 
-          function updateCurrentIndex(): void {
-            // 0 = Musical, 1 = Absolute (matches dsp::Timebase enum)
-            currentIndex = root.track.timebaseProvider ? root.track.timebaseProvider.effectiveTimebase : 0;
-          }
-
           Layout.fillWidth: true
           model: [qsTr("Musical"), qsTr("Absolute")]
           visible: root.track.type === Track.Audio
 
-          Component.onCompleted: updateCurrentIndex()
+          Synchronizer on currentIndex {
+            sourceObject: root.track.timebaseProvider
+            sourceProperty: "effectiveTimebase"
+          }
+
           onActivated: function (index: int): void {
             trackOperator.setTimebase(index);
           }
 
           Connections {
-            function onEffectiveTimebaseChanged() {
-              timebaseCombo.updateCurrentIndex();
+            function onTrackChanged() {
+              timebaseCombo.currentIndex = root.track.timebaseProvider ? root.track.timebaseProvider.effectiveTimebase : 0;
             }
 
-            target: root.track.timebaseProvider
+            target: root
           }
         }
       }

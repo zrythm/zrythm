@@ -39,8 +39,8 @@ class Clip : public ArrangerObject
   Q_PROPERTY (
     zrythm::dsp::ContentTimeWarp * contentWarp READ contentWarp CONSTANT)
   Q_PROPERTY (
-    zrythm::dsp::TimebaseProvider * timebaseProvider READ timebaseProvider
-      CONSTANT)
+    zrythm::dsp::timebase::TimebaseProvider * timebaseProvider READ
+      timebaseProvider CONSTANT)
   Q_PROPERTY (
     double timelineLengthTicks READ timelineLengthTicks NOTIFY
       timelineLengthTicksChanged)

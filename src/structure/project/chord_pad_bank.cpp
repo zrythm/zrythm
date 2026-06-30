@@ -54,7 +54,7 @@ ChordPadBank::addChord (
   beginInsertRows ({}, row, row);
   chords_.push_back (
     zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
-      root, type, accent, inversion, bass));
+      root, type, accent, inversion, bass, this));
   endInsertRows ();
   connect_chord_signal (row);
   rebuild_playback_data ();
@@ -76,7 +76,7 @@ ChordPadBank::insertChord (
   chords_.insert (
     std::next (chords_.begin (), index),
     zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
-      root, type, accent, inversion, bass));
+      root, type, accent, inversion, bass, this));
   endInsertRows ();
   connect_chord_signal (index);
   rebuild_playback_data ();
@@ -160,7 +160,8 @@ ChordPadBank::applyPresetFromScale (
     {
       chords_.push_back (
         zrythm::utils::make_qobject_unique<dsp::ChordDescriptor> (
-          triad.root_note, triad.chord_type));
+          triad.root_note, triad.chord_type, dsp::ChordAccent::None, 0,
+          std::nullopt, this));
     }
 
   endResetModel ();

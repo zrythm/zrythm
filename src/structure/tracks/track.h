@@ -90,8 +90,8 @@ class Track : public utils::UuidIdentifiableObject<Track>
     bool clipLauncherMode READ clipLauncherMode WRITE setClipLauncherMode NOTIFY
       clipLauncherModeChanged)
   Q_PROPERTY (
-    zrythm::dsp::TimebaseProvider * timebaseProvider READ timebaseProvider
-      CONSTANT)
+    zrythm::dsp::timebase::TimebaseProvider * timebaseProvider READ
+      timebaseProvider CONSTANT)
   Q_PROPERTY (
     zrythm::structure::tracks::PlaybackCacheActivityTracker *
       playbackCacheActivityTracker READ playbackCacheActivityTracker CONSTANT)
