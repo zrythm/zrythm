@@ -416,8 +416,8 @@ TEST_P (PluginParamSyncTest, ParameterChangesReachPlugin)
   target_param->setBaseValue (0.9f);
   auto state_changed = state_default;
   ScopedQCoreApplication::process_events_until_true ([&] () {
-    auto transport_snapshot = transport.get_snapshot ();
-    plugin->process_block (time_nfo, transport_snapshot, tempo_map);
+    auto transport_snap = transport.get_snapshot ();
+    plugin->process_block (time_nfo, transport_snap, tempo_map);
     state_changed = plugin->save_state ();
     return state_changed != state_default;
   });
