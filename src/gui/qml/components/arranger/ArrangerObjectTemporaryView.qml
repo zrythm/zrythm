@@ -9,6 +9,7 @@ Rectangle {
 
   required property ArrangerObject arrangerObject
   required property point coordinatesOnConstruction
+  required property real originalWidth
 
   color: palette.accent
   height: 16

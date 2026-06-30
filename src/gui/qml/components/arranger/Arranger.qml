@@ -372,6 +372,7 @@ Item {
             "arrangerObject": object,
             "x": objectTimelineTicks * root.ruler.pxPerTick,
             "width": Math.max((objectTimelineEndTicks - objectTimelineTicks) * root.ruler.pxPerTick, 20),
+            "originalWidth": Math.max((objectTimelineEndTicks - objectTimelineTicks) * root.ruler.pxPerTick, 20),
             "y": root.getObjectY(object),
             "coordinatesOnConstruction": Qt.point(objectTimelineTicks * root.ruler.pxPerTick, root.getObjectY(object)),
             "height": root.getObjectHeight(object),
@@ -643,8 +644,15 @@ Item {
 
           property alias action: scrollView.currentAction
           property point currentCoordinates
+          // Authoritative resize delta in ticks, updated every mouse move and
+          // committed directly on release (no pixel round-trip).
+          property real currentResizeDeltaTicks: 0
           readonly property real currentTimelineTicks: currentCoordinates.x / root.ruler.pxPerTick
           property bool hovered: false
+
+          // Dragged object's original edge position (in ticks), captured once at
+          // the start of a resize drag (constant for its duration).
+          property real resizeOriginalTicks: 0
           property point startCoordinates
           readonly property real startTimelineTicks: startCoordinates.x / root.ruler.pxPerTick
 
@@ -686,6 +694,27 @@ Item {
             const xToMoveSinceStart = calculateSnappedMovementTicks(ArrangerObjectHelper.timelineTicks(obj)) * root.ruler.pxPerTick;
             root.tempQmlArrangerObjects.forEach(qmlObj => {
               qmlObj.x = qmlObj.coordinatesOnConstruction.x + xToMoveSinceStart;
+            });
+          }
+
+          function resizeTemporaryObjectsFromEnd() {
+            const snappedEndTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+            const deltaTicks = snappedEndTicks - resizeOriginalTicks;
+            currentResizeDeltaTicks = deltaTicks;
+            const deltaPx = deltaTicks * root.ruler.pxPerTick;
+            root.tempQmlArrangerObjects.forEach(qmlObj => {
+              qmlObj.width = Math.max(qmlObj.originalWidth + deltaPx, root.ruler.pxPerTick);
+            });
+          }
+
+          function resizeTemporaryObjectsFromStart() {
+            const snappedStartTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+            const deltaTicks = snappedStartTicks - resizeOriginalTicks;
+            currentResizeDeltaTicks = deltaTicks;
+            const deltaPx = deltaTicks * root.ruler.pxPerTick;
+            root.tempQmlArrangerObjects.forEach(qmlObj => {
+              qmlObj.x = qmlObj.coordinatesOnConstruction.x + deltaPx;
+              qmlObj.width = Math.max(qmlObj.originalWidth - deltaPx, root.ruler.pxPerTick);
             });
           }
 
@@ -784,35 +813,34 @@ Item {
                 moveSelectionsX(ticksToMove);
                 moveSelectionsY(dy, prevCoordinates.y);
               } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingLFade].includes(action)) {
-                // Apply snapping to resize endpoint
-                const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
-
-                // Calculate delta in ticks based on the resize type and direction
-                let resizeType = ArrangerObjectSelectionOperator.Bounds;
-                let delta = 0;
-                const obj = root.getObjectAtCurrentIndex();
-
                 // Determine resize type based on current action
+                let resizeType = ArrangerObjectSelectionOperator.Bounds;
                 if (action === Arranger.ResizingLLoop) {
                   resizeType = ArrangerObjectSelectionOperator.LoopPoints;
                 } else if (action === Arranger.ResizingLFade) {
                   resizeType = ArrangerObjectSelectionOperator.Fades;
                 }
 
-                // Calculate delta based on the resize type
-                if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
-                  // For bounds resize, delta is the difference in position ticks
-                  const originalPosTicks = ArrangerObjectHelper.timelineTicks(obj);
-                  delta = startTicks - originalPosTicks;
-                } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
-                  // For fades resize, delta is in ticks (will be converted internally)
+                if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                  // Fades use direct manipulation (live resizeObjects) because the
+                  // plain Rectangle temp view cannot represent fade curves.
+                  const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+                  const obj = root.getObjectAtCurrentIndex();
+                  let delta = 0;
                   if (obj.fadeRange) {
-                    const originalFadeIn = obj.fadeRange.startOffset.ticks;
-                    delta = startTicks - originalFadeIn;
+                    delta = startTicks - obj.fadeRange.startOffset.ticks;
                   }
+                  root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+                } else {
+                  // Bounds/LoopPoints use the temp-view pattern so the whole drag
+                  // commits as a single undo command on release.
+                  if (root.tempQmlArrangerObjects.length === 0) {
+                    root.updateTempQmlArrangerObjects();
+                    const obj = root.getObjectAtCurrentIndex();
+                    resizeOriginalTicks = ArrangerObjectHelper.timelineTicks(obj);
+                  }
+                  resizeTemporaryObjectsFromStart();
                 }
-
-                root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
               } else if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR, Arranger.ResizingR, Arranger.ResizingRLoop, Arranger.ResizingRFade].includes(action)) {
                 if (action === Arranger.CreatingResizingMovingR) {
                   moveSelectionsY(dy, prevCoordinates.y);
@@ -825,32 +853,33 @@ Item {
                     ArrangerObjectHelper.setEndFromTimelineTicks(obj, endTicks);
                   }
                 } else {
-                  // Calculate delta in ticks based on the resize type and direction
-                  let resizeType = ArrangerObjectSelectionOperator.Bounds;
-                  let delta = 0;
-                  const obj = root.getObjectAtCurrentIndex();
-
                   // Determine resize type based on current action
+                  let resizeType = ArrangerObjectSelectionOperator.Bounds;
                   if (action === Arranger.ResizingRLoop) {
                     resizeType = ArrangerObjectSelectionOperator.LoopPoints;
                   } else if (action === Arranger.ResizingRFade) {
                     resizeType = ArrangerObjectSelectionOperator.Fades;
                   }
 
-                  // Calculate delta based on the resize type
-                  if ([ArrangerObjectSelectionOperator.Bounds, ArrangerObjectSelectionOperator.LoopPoints].includes(resizeType)) {
-                    // For bounds resize, delta is the difference in ticks
-                    const originalEndTicks = ArrangerObjectHelper.timelineEndTicks(obj);
-                    delta = endTicks - originalEndTicks;
-                  } else if (resizeType === ArrangerObjectSelectionOperator.Fades) {
-                    // For fades resize, delta is in ticks (will be converted internally)
+                  if (resizeType === ArrangerObjectSelectionOperator.Fades) {
+                    // Fades use direct manipulation (live resizeObjects) because the
+                    // plain Rectangle temp view cannot represent fade curves.
+                    const obj = root.getObjectAtCurrentIndex();
+                    let delta = 0;
                     if (obj.fadeRange) {
-                      const originalFadeOut = obj.fadeRange.endOffset.ticks;
-                      delta = endTicks - originalFadeOut;
+                      delta = endTicks - obj.fadeRange.endOffset.ticks;
                     }
+                    root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
+                  } else {
+                    // Bounds/LoopPoints use the temp-view pattern so the whole drag
+                    // commits as a single undo command on release.
+                    if (root.tempQmlArrangerObjects.length === 0) {
+                      root.updateTempQmlArrangerObjects();
+                      const obj = root.getObjectAtCurrentIndex();
+                      resizeOriginalTicks = ArrangerObjectHelper.timelineEndTicks(obj);
+                    }
+                    resizeTemporaryObjectsFromEnd();
                   }
-
-                  root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
                 }
               }
             }
@@ -943,6 +972,20 @@ Item {
                 }
               } else if (action === Arranger.CreatingMoving) {
                 root.undoStack.endMacro();
+              } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingR, Arranger.ResizingRLoop].includes(action)) {
+                if (root.tempQmlArrangerObjects.length > 0) {
+                  let resizeType = ArrangerObjectSelectionOperator.Bounds;
+                  let direction = ArrangerObjectSelectionOperator.FromEnd;
+
+                  if ([Arranger.ResizingL, Arranger.ResizingLLoop].includes(action))
+                    direction = ArrangerObjectSelectionOperator.FromStart;
+                  if (action === Arranger.ResizingLLoop || action === Arranger.ResizingRLoop)
+                    resizeType = ArrangerObjectSelectionOperator.LoopPoints;
+
+                  if (Math.abs(currentResizeDeltaTicks) > 0.001)
+                    root.selectionOperator.resizeObjects(resizeType, direction, currentResizeDeltaTicks);
+                }
+                // Fades resize: already handled by direct manipulation
               }
               console.log("released after action");
             } else {
