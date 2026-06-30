@@ -72,7 +72,7 @@ public:
   {
     for (auto * child : get_children_view ())
       {
-        child->position ()->setTicks (child->position ()->ticks () + ticks);
+        child->position ()->addTicks (ticks);
       }
   }
 

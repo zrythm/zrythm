@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "dsp/tick_types.h"
 #include "gui/qquick/chord_clip_segmenter.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/chord_clip.h"
@@ -100,18 +101,18 @@ ChordClipSegmenter::recalculate ()
       return;
     }
 
-  const double clip_ticks = chord_clip_->length ()->ticks ();
-  if (clip_ticks <= 0.0)
+  const auto clip_ticks = chord_clip_->length ()->asTick ();
+  if (clip_ticks.asDouble () <= 0.0)
     {
       rebuild_model ();
       return;
     }
 
-  const double loop_start_ticks = chord_clip_->loopStartPosition ()->ticks ();
-  const double loop_end_ticks = chord_clip_->loopEndPosition ()->ticks ();
-  const double clip_start_ticks = chord_clip_->clipStartPosition ()->ticks ();
-  const double loop_length_ticks =
-    std::max (0.0, loop_end_ticks - loop_start_ticks);
+  const auto loop_start_ticks = chord_clip_->loopStartPosition ()->asTick ();
+  const auto loop_end_ticks = chord_clip_->loopEndPosition ()->asTick ();
+  const auto clip_start_ticks = chord_clip_->clipStartPosition ()->asTick ();
+  const auto loop_length_ticks = max (
+    dsp::ContentTick{ units::ticks (0.0) }, loop_end_ticks - loop_start_ticks);
 
   // Gather chord objects in sorted-by-position order (stable for equal
   // positions via the multi-index ranked index).
@@ -150,15 +151,15 @@ ChordClipSegmenter::recalculate ()
   // iterations use [loopStart, loopEnd). Each iteration's absolute range is
   // projected to clip-relative ticks, clamped to clip_ticks.
 
-  double virt_start = clip_start_ticks;
-  double virt_end = loop_end_ticks;
-  double abs_start = 0.0;
-  double abs_end = loop_end_ticks - clip_start_ticks;
+  auto virt_start = clip_start_ticks;
+  auto virt_end = loop_end_ticks;
+  auto abs_start = dsp::ContentTick{ units::ticks (0.0) };
+  auto abs_end = loop_end_ticks - clip_start_ticks;
   if (abs_end > clip_ticks)
     {
-      const double overflow = abs_end - clip_ticks;
-      virt_end -= overflow;
-      abs_end -= overflow;
+      const auto overflow = abs_end - clip_ticks;
+      virt_end = virt_end - overflow;
+      abs_end = abs_end - overflow;
     }
 
   new_segments.reserve (sorted_chords.size () * 4);
@@ -167,8 +168,8 @@ ChordClipSegmenter::recalculate ()
     {
       for (size_t i = 0; i < sorted_chords.size (); ++i)
         {
-          auto *       chord = sorted_chords[i];
-          const double chord_pos = chord->position ()->ticks ();
+          auto *     chord = sorted_chords[i];
+          const auto chord_pos = chord->position ()->asTick ();
 
           // Skip chords outside this iteration's virtual range. Half-open
           // [virt_start, virt_end): a chord exactly at virt_end belongs to
@@ -177,10 +178,10 @@ ChordClipSegmenter::recalculate ()
             continue;
 
           // Find end: next chord in the same iteration, or iteration end.
-          double chord_end = virt_end;
+          auto chord_end = virt_end;
           for (size_t j = i + 1; j < sorted_chords.size (); ++j)
             {
-              const double other_pos = sorted_chords[j]->position ()->ticks ();
+              const auto other_pos = sorted_chords[j]->position ()->asTick ();
               if (other_pos > chord_pos && other_pos < virt_end)
                 {
                   chord_end = other_pos;
@@ -188,31 +189,31 @@ ChordClipSegmenter::recalculate ()
                 }
             }
 
-          const double chord_abs_start = abs_start + (chord_pos - virt_start);
-          const double chord_abs_end = abs_start + (chord_end - virt_start);
+          const auto chord_abs_start = abs_start + (chord_pos - virt_start);
+          const auto chord_abs_end = abs_start + (chord_end - virt_start);
 
           ChordSegment segment;
-          segment.abs_start_ticks = chord_abs_start;
-          segment.abs_end_ticks = chord_abs_end;
+          segment.abs_start_ticks = chord_abs_start.asDouble ();
+          segment.abs_end_ticks = chord_abs_end.asDouble ();
           segment.chord_object = chord;
           segment.chord_index = get_insertion_index (chord);
-          new_segments.push_back (std::move (segment));
+          new_segments.push_back (segment);
         }
 
-      const double current_len = abs_end - abs_start;
-      if (current_len <= 0.0)
+      const auto current_len = abs_end - abs_start;
+      if (current_len.asDouble () <= 0.0)
         break; // safety against infinite loop
 
       // Advance to next iteration.
       virt_start = loop_start_ticks;
       virt_end = loop_end_ticks;
-      abs_start += current_len;
-      abs_end += loop_length_ticks;
+      abs_start = abs_start + current_len;
+      abs_end = abs_end + loop_length_ticks;
       if (abs_end > clip_ticks)
         {
-          const double overflow = abs_end - clip_ticks;
-          virt_end -= overflow;
-          abs_end -= overflow;
+          const auto overflow = abs_end - clip_ticks;
+          virt_end = virt_end - overflow;
+          abs_end = abs_end - overflow;
         }
     }
 

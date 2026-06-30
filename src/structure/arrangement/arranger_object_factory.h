@@ -233,8 +233,8 @@ public:
         {
           if constexpr (BoundedObject<ObjT>)
             {
-              obj->length ()->setTicks (
-                (*end_ticks_).in (units::ticks) -obj->position ()->ticks ());
+              set_end_from_timeline_ticks (
+                *obj, dsp::TimelineTick{ *end_ticks_ });
             }
         }
 

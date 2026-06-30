@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/clip.h"
 #include "structure/tracks/automation_track.h"
 
@@ -178,7 +179,8 @@ AutomationTrack::get_automation_point_around (
   AutomationPoint * ap = get_automation_point_before (pos_frames, true);
   if (
     (ap != nullptr)
-    && position_ticks - units::ticks (ap->position ()->ticks ()) <= delta_ticks)
+    && position_ticks - arrangement::timeline_ticks (*ap).asQuantity ()
+         <= delta_ticks)
     {
       return ap;
     }
@@ -194,7 +196,7 @@ AutomationTrack::get_automation_point_around (
   if (ap != nullptr)
     {
       const auto diff =
-        units::ticks (ap->position ()->ticks ()) - position_ticks;
+        arrangement::timeline_ticks (*ap).asQuantity () - position_ticks;
       if (diff >= units::ticks (0.0))
         return ap;
     }

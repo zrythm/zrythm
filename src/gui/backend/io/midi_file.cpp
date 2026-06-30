@@ -4,6 +4,7 @@
 #include <fmt/std.h>
 
 #include "gui/backend/io/midi_file.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/clip_renderer.h"
 #include "structure/arrangement/midi_clip.h"
 #include "structure/arrangement/midi_note.h"
@@ -139,8 +140,6 @@ MidiFile::into_clip (
           };
 
           double ticks = get_msg_time_in_ticks (msg.getTimeStamp ());
-          auto   global_pos = clip.position ()->ticks ();
-          global_pos += ticks;
           z_trace ("event at {}: {} ", ticks, msg.getDescription ());
 
           if (msg.isNoteOff (true))
@@ -314,8 +313,7 @@ MidiFile::export_midi_lane_to_sequence (
       if (start)
         {
           if (
-            (clip->position ()->ticks ()
-             + clip->length ()->ticks ())
+            structure::arrangement::timeline_end_ticks (*clip).asDouble ()
             < *start)
             continue;
         }

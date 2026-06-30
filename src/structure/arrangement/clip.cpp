@@ -248,12 +248,13 @@ Clip::get_num_loops (bool count_incomplete) const
 bool
 Clip::looped () const
 {
-  constexpr auto epsilon = units::ticks (1e-6);
-  const auto     len = units::ticks (length ()->ticks ());
-  const auto     loop_end = units::ticks (loopEndPosition ()->ticks ());
-  const auto     loop_start = units::ticks (loopStartPosition ()->ticks ());
-  const auto     clip_start = units::ticks (clipStartPosition ()->ticks ());
-  return loop_start > units::ticks (0.0) || clip_start > units::ticks (0.0)
+  constexpr auto epsilon = dsp::ContentTick{ units::ticks (1e-6) };
+  const auto     len = length ()->asTick ();
+  const auto     loop_end = loopEndPosition ()->asTick ();
+  const auto     loop_start = loopStartPosition ()->asTick ();
+  const auto     clip_start = clipStartPosition ()->asTick ();
+  return loop_start > dsp::ContentTick{ units::ticks (0.0) }
+         || clip_start > dsp::ContentTick{ units::ticks (0.0) }
          || abs (len - loop_end) > epsilon;
 }
 

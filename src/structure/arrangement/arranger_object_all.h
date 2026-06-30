@@ -74,15 +74,6 @@ get_frames_till_next_loop_or_end (
 }
 #endif
 
-inline auto
-get_object_tick_range (const ArrangerObject * obj)
-{
-  return std::make_pair (
-    obj->position ()->ticks (),
-    obj->position ()->ticks ()
-      + (obj->length () != nullptr ? obj->length ()->ticks () : 0));
-}
-
 /**
  * @brief Returns whether the given object is a Clip (MidiClip, AudioClip,
  * ChordClip, or AutomationClip).
@@ -116,7 +107,7 @@ timeline_ticks (const ArrangerObject &obj)
               ->asTick ());
         }
     }
-  return qobject_cast<const dsp::TimelinePosition *> (obj.position ())->asTick ();
+  return dsp::TimelineTick{ units::ticks (obj.position ()->ticks ()) };
 }
 
 /**
@@ -151,10 +142,17 @@ timeline_end_ticks (const ArrangerObject &obj)
         clip->length ()->asTick ());
     }
 
-  // No bounded object can reach here: Bounds implies either Clip (above) or
-  // ClipOwned with a parent Clip (handled earlier).
-  assert (false);
-  return timeline_ticks (obj);
+  // Standalone bounded object (no clip context): raw addition.
+  return dsp::TimelineTick{
+    units::ticks (obj.position ()->ticks () + obj.length ()->ticks ())
+  };
+}
+
+inline auto
+get_object_tick_range (const ArrangerObject * obj)
+{
+  return std::make_pair (
+    timeline_ticks (*obj).asDouble (), timeline_end_ticks (*obj).asDouble ());
 }
 
 /**
@@ -193,7 +191,13 @@ set_end_from_timeline_ticks (ArrangerObject &obj, dsp::TimelineTick timeline_end
       const auto content_end =
         clip->contentWarp ()->timelineToContent (timeline_end);
       clip->length ()->setTicks (content_end.asDouble ());
+      return;
     }
+
+  // Standalone bounded object (no clip context) — raw subtraction
+  obj.length ()->setTicks (
+    (timeline_end - dsp::TimelineTick{ units::ticks (obj.position ()->ticks ()) })
+      .asDouble ());
 }
 
 }

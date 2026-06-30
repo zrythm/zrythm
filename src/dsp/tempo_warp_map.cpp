@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "dsp/tempo_warp_map.h"
+#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -55,7 +56,7 @@ to_time_warp_map (
   std::ranges::sort (anchors, {}, &WarpAnchor::source_frame);
   std::vector<WarpAnchor> cleaned;
   cleaned.reserve (anchors.size ());
-  for (const auto &[i, a] : std::views::enumerate (anchors))
+  for (const auto &[i, a] : utils::views::enumerate (anchors))
     {
       const bool is_terminal = (static_cast<size_t> (i) + 1 == anchors.size ());
       if (!cleaned.empty ())

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <ranges>
 
+#include "dsp/tick_types.h"
 #include "gui/qquick/midi_clip_canvas_item.h"
 #include "gui/qquick/midi_clip_canvas_renderer.h"
 #include "structure/arrangement/arranger_object_all.h"
@@ -36,8 +37,8 @@ MidiClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
 
   if (clip->length () == nullptr)
     return;
-  const double clip_ticks = clip->length ()->ticks ();
-  if (clip_ticks <= 0.0)
+  const auto clip_ticks = clip->length ()->asTick ();
+  if (clip_ticks.asDouble () <= 0.0)
     return;
 
   auto pitch_range = get_pitch_range (children);
@@ -60,21 +61,21 @@ MidiClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
     static_cast<double> (canvas_height_)
     / static_cast<double> (num_visible_pitches);
 
-  const double loop_start_ticks = clip->loopStartPosition ()->ticks ();
-  const double loop_end_ticks = clip->loopEndPosition ()->ticks ();
-  const double clip_start_ticks = clip->clipStartPosition ()->ticks ();
-  const double loop_length_ticks =
-    std::max (0.0, loop_end_ticks - loop_start_ticks);
+  const auto loop_start_ticks = clip->loopStartPosition ()->asTick ();
+  const auto loop_end_ticks = clip->loopEndPosition ()->asTick ();
+  const auto clip_start_ticks = clip->clipStartPosition ()->asTick ();
+  const auto loop_length_ticks = max (
+    dsp::ContentTick{ units::ticks (0.0) }, loop_end_ticks - loop_start_ticks);
 
-  double loop_seg_virt_start = clip_start_ticks;
-  double loop_seg_virt_end = loop_end_ticks;
-  double loop_seg_abs_start = 0.0;
-  double loop_seg_abs_end = loop_end_ticks - clip_start_ticks;
+  auto loop_seg_virt_start = clip_start_ticks;
+  auto loop_seg_virt_end = loop_end_ticks;
+  auto loop_seg_abs_start = dsp::ContentTick{ units::ticks (0.0) };
+  auto loop_seg_abs_end = loop_end_ticks - clip_start_ticks;
   if (loop_seg_abs_end > clip_ticks)
     {
-      const double diff = loop_seg_abs_end - clip_ticks;
-      loop_seg_virt_end -= diff;
-      loop_seg_abs_end -= diff;
+      const auto diff = loop_seg_abs_end - clip_ticks;
+      loop_seg_virt_end = loop_seg_virt_end - diff;
+      loop_seg_abs_end = loop_seg_abs_end - diff;
     }
 
   note_rects_.reserve (children.size () * 4);
@@ -83,26 +84,28 @@ MidiClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
     {
       for (const auto * note : children)
         {
-          const double note_virt_start = note->position ()->ticks ();
-          const double note_virt_end =
-            note_virt_start + note->length ()->ticks ();
+          const auto note_virt_start = note->position ()->asTick ();
+          const auto note_virt_end =
+            note_virt_start + note->length ()->asTick ();
 
           if (
             note_virt_start >= loop_seg_virt_end
             || note_virt_end <= loop_seg_virt_start)
             continue;
 
-          const double note_abs_start = std::max (
+          const auto note_abs_start = max (
             loop_seg_abs_start,
             loop_seg_abs_start + (note_virt_start - loop_seg_virt_start));
-          const double note_abs_end = std::min (
+          const auto note_abs_end = min (
             loop_seg_abs_end,
             loop_seg_abs_start + (note_virt_end - loop_seg_virt_start));
 
-          const double relative_start = note_abs_start / clip_ticks;
-          const double relative_end = note_abs_end / clip_ticks;
-          const auto   x = static_cast<float> (relative_start * canvas_width_);
-          const auto   w = static_cast<float> (
+          const double relative_start =
+            note_abs_start.asDouble () / clip_ticks.asDouble ();
+          const double relative_end =
+            note_abs_end.asDouble () / clip_ticks.asDouble ();
+          const auto x = static_cast<float> (relative_start * canvas_width_);
+          const auto w = static_cast<float> (
             (relative_end - relative_start) * canvas_width_);
           const int  relative_pitch = (note->pitch () - min_pitch) + 1;
           const auto y = static_cast<float> (
@@ -116,20 +119,20 @@ MidiClipCanvasRenderer::synchronize (QCanvasPainterItem * item)
               .muted = note->mute ()->muted () });
         }
 
-      const double current_len = loop_seg_abs_end - loop_seg_abs_start;
-      if (current_len <= 0.0)
+      const auto current_len = loop_seg_abs_end - loop_seg_abs_start;
+      if (current_len.asDouble () <= 0.0)
         break;
 
       loop_seg_virt_start = loop_start_ticks;
       loop_seg_virt_end = loop_end_ticks;
-      loop_seg_abs_start += current_len;
-      loop_seg_abs_end += loop_length_ticks;
+      loop_seg_abs_start = loop_seg_abs_start + current_len;
+      loop_seg_abs_end = loop_seg_abs_end + loop_length_ticks;
 
       if (loop_seg_abs_end > clip_ticks)
         {
-          const double diff = loop_seg_abs_end - clip_ticks;
-          loop_seg_virt_end -= diff;
-          loop_seg_abs_end -= diff;
+          const auto diff = loop_seg_abs_end - clip_ticks;
+          loop_seg_virt_end = loop_seg_virt_end - diff;
+          loop_seg_abs_end = loop_seg_abs_end - diff;
         }
     }
 }

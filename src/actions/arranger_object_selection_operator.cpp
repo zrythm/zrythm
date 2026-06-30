@@ -9,6 +9,7 @@
 #include "commands/resize_arranger_objects_command.h"
 #include "dsp/timebase.h"
 #include "dsp/timestretch_engine.h"
+#include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/audio_clip.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
@@ -519,23 +520,17 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
     return std::visit (
       [&] (auto &&obj) {
         using ObjectT = utils::base_type<decltype (obj)>;
-        const double new_position = obj->position ()->ticks () + tick_delta;
-        const auto   timeline_position = [&] () {
-          const auto * parent_obj = obj->parentObject ();
-          if (parent_obj != nullptr)
-            {
-              return new_position + parent_obj->position ()->ticks ();
-            }
-          return new_position;
-        }();
+        const auto current_timeline =
+          structure::arrangement::timeline_ticks (*obj);
+        const auto new_timeline =
+          current_timeline + dsp::TimelineTick{ units::ticks (tick_delta) };
         if constexpr (
           std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
           {
             // Time Signature objects are only allowed at bar boundaries
             const auto &tempo_map = obj->get_tempo_map ();
             const auto  musical_pos = tempo_map.tick_to_musical_position (
-              au::round_as<int64_t> (
-                units::ticks, units::ticks (timeline_position)));
+              au::round_as<int64_t> (units::ticks, new_timeline.asQuantity ()));
             if (
               musical_pos.beat != 1 || musical_pos.sixteenth != 1
               || musical_pos.tick != 0)
@@ -543,7 +538,7 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
                 return false;
               }
           }
-        return timeline_position >= 0.0;
+        return new_timeline.asDouble () >= 0.0;
       },
       obj_var);
   });

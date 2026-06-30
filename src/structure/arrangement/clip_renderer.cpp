@@ -353,9 +353,9 @@ ClipRenderer::handle_automation_clip_range (
       const auto curve_up = start_val < end_val;
 
       // Calculate the offset from the previous point to the start position
-      const auto start_offset_ratio =
+      const auto start_offset_ratio = static_cast<float> (
         (range_in_output_buffer.first.asDouble () - prev_point_start.asDouble ())
-        / tl_distance.asDouble ();
+        / tl_distance.asDouble ());
       assert (start_offset_ratio >= 0.f && start_offset_ratio <= 1.f);
 
       // Calculate the segment length in samples
