@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
@@ -19,9 +18,9 @@ Item {
     }
   }
   property FolderDialog loadFolderDialog: FolderDialog {
-    title: qsTr("Open Project")
+    currentFolder: QmlUtils.localFileToQUrl(GlobalState.application.appSettings.newProjectDirectory)
     options: FolderDialog.ShowDirsOnly
-    selectedFolder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+    title: qsTr("Open Project")
 
     onAccepted: {
       root.loadProgressDialog.resetValues();

@@ -30,6 +30,7 @@ Item {
     }
   }
   property FolderDialog saveAsFolderDialog: FolderDialog {
+    currentFolder: QmlUtils.localFileToQUrl(GlobalState.application.appSettings.newProjectDirectory)
     title: qsTr("Save Project As")
 
     onAccepted: {

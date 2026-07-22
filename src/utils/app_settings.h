@@ -85,7 +85,7 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (QStringList, au_search_paths, QStringList ())
   DEFINE_SETTING_PROPERTY (
     QString,
-    new_project_directory,
+    newProjectDirectory,
     utils::Utf8String::from_path (
       (utils::Utf8String::from_qstring (
          QStandardPaths::writableLocation (QStandardPaths::DocumentsLocation))

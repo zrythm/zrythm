@@ -442,7 +442,7 @@ ApplicationWindow {
 
             Layout.fillWidth: true
             // placeholderText: qsTr("Parent Directory")
-            initialPath: root.appSettings?.new_project_directory ?? ""
+            initialPath: root.appSettings?.newProjectDirectory ?? ""
           }
 
           ComboBox {
