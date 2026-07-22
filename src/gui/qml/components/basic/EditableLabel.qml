@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,10 +15,10 @@ Control {
   property string text: ""
   property color textColor: palette.text
 
+  signal accepted(text: string)
+
   implicitHeight: 24
   implicitWidth: 120
-
-  signal accepted(text: string)
 
   Rectangle {
     id: background
@@ -93,6 +93,17 @@ Control {
       fill: parent
       leftMargin: 2
       rightMargin: 2
+    }
+
+    Connections {
+      function onTextChanged() {
+        if (root.currentlyEditing) {
+          root.currentlyEditing = false;
+        }
+        editField.text = root.text;
+      }
+
+      target: root
     }
   }
 }
