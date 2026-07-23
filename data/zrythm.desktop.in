@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2020, 2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2020, 2022, 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: FSFAP
 
 [Desktop Entry]
@@ -8,7 +8,7 @@ Version=1.0
 Comment=highly automated and intuitive digital audio workstation
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=daw;audio;midi;music;
-Exec=zrythm
+Exec=zrythm %f
 # Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 Icon=org.zrythm.Zrythm
 Type=Application

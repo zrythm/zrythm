@@ -18,6 +18,8 @@
 #include "utils/thread_safe_fftw.h"
 #include "utils/tracy.h"
 
+#include <QFileInfo>
+#include <QFileOpenEvent>
 #include <QFontDatabase>
 #include <QIcon>
 #include <QLocalSocket>
@@ -132,6 +134,7 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
   /* setup command line parser */
   setup_command_line_options ();
   cmd_line_parser_.process (*this);
+  process_command_line ();
 
   zrythm::utils::start_tracy ();
   zrythm::utils::set_thread_name ("Main");
@@ -412,6 +415,66 @@ ZrythmApplication::setup_command_line_options ()
        u"dummy"_s, tr ("Use dummy audio/midi engine"),
        },
   });
+
+  cmd_line_parser_.addPositionalArgument (
+    u"project"_s, tr ("Project file (.zpj) or project directory to open"),
+    u"[project]"_s);
+}
+
+void
+ZrythmApplication::process_command_line ()
+{
+  if (cmd_line_parser_.isSet (u"project"_s))
+    {
+      set_pending_project_file (cmd_line_parser_.value (u"project"_s));
+    }
+  else if (!cmd_line_parser_.positionalArguments ().isEmpty ())
+    {
+      set_pending_project_file (
+        cmd_line_parser_.positionalArguments ().front ());
+    }
+}
+
+void
+ZrythmApplication::set_pending_project_file (const QString &path)
+{
+  if (path.isEmpty ())
+    return;
+
+  // ProjectManager::loadProject() expects a project directory, so resolve
+  // .zpj files to their parent directory
+  const QFileInfo file_info (path);
+  const auto      dir_path =
+    file_info.isDir ()
+      ? file_info.absoluteFilePath ()
+      : file_info.absoluteDir ().absolutePath ();
+
+  if (dir_path == pending_project_file_)
+    return;
+
+  z_info ("Project to open at startup: {}", dir_path);
+  pending_project_file_ = dir_path;
+  Q_EMIT pendingProjectFileChanged (pending_project_file_);
+}
+
+QString
+ZrythmApplication::pendingProjectFile () const
+{
+  return pending_project_file_;
+}
+
+bool
+ZrythmApplication::event (QEvent * event)
+{
+  // handle file-open requests from the OS (eg, double-clicking a .zpj file
+  // on macOS)
+  if (event->type () == QEvent::FileOpen)
+    {
+      auto * file_open_event = static_cast<QFileOpenEvent *> (event);
+      set_pending_project_file (file_open_event->file ());
+      return true;
+    }
+  return QApplication::event (event);
 }
 
 void

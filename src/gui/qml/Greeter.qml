@@ -22,6 +22,7 @@ ApplicationWindow {
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
+  readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
 
   function openProjectWindow(session) {
     let newWindow = projectWindowComponent.createObject(session, {
@@ -114,7 +115,7 @@ ApplicationWindow {
     id: stack
 
     anchors.fill: parent
-    initialItem: root.appSettings?.first_run ? firstRunPage : progressPage
+    initialItem: (root.appSettings?.first_run && root.pendingProjectPath.length === 0) ? firstRunPage : progressPage
 
     popExit: Transition {
       PropertyAnimation {
@@ -278,9 +279,17 @@ ApplicationWindow {
         title: qsTr("Progress")
 
         StackView.onActivated: {
-          // start the scan in the background and move on to project selection page immediately
+          // start the scan in the background
           root.pluginManager.beginScan();
-          stack.push(projectSelectorPage);
+
+          if (root.pendingProjectPath.length > 0) {
+            // open the project requested on the command line or via a
+            // file-open request from the OS
+            loadController.loadFuture = root.projectManager.loadProject(root.pendingProjectPath);
+          } else {
+            // move on to project selection page immediately
+            stack.push(projectSelectorPage);
+          }
         }
 
         PlaceholderPage {
