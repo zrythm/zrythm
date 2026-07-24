@@ -320,7 +320,6 @@ target_include_directories(zrythm_gui_lib
     # https://bugreports.qt.io/browse/QTBUG-87221
     ${CMAKE_CURRENT_SOURCE_DIR}/backend
     ${CMAKE_CURRENT_SOURCE_DIR}/qquick
-    ${CMAKE_CURRENT_SOURCE_DIR}/backend/backend/settings
 )
 
 qt_add_library(zrythm_qml_lib STATIC)

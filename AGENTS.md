@@ -119,7 +119,7 @@ Zrythm is a highly automated and intuitive digital audio workstation (DAW) writt
 zrythm/
 ├── src/                 # Main source code
 │   ├── main.cpp        # Application entry point
-│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/backend/legacy_actions are legacy unused code kept for reference)
+│   ├── gui/            # Qt/QML user interface (backend/gtk_widgets and backend/legacy_actions are legacy unused code kept for reference)
 │   ├── dsp/            # Digital signal processing
 │   ├── engine/         # Core audio engine
 │   ├── plugins/        # Audio plugin hosting-related code

@@ -53,6 +53,5 @@ target_sources(zrythm_gui_lib
     zrythm_application.cpp
 )
 
-add_subdirectory(backend)
 add_subdirectory(io)
 # add_subdirectory(gtk_widgets) # TODO delete eventually

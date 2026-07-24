@@ -18,7 +18,6 @@ target_include_directories(zrythm_gui_lib
     # C++ headers in QML modules must be available as toplevel includes
     # https://bugreports.qt.io/browse/QTBUG-87221
     ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend
-    ${CMAKE_CURRENT_SOURCE_DIR}/gui/backend/backend
     ${CMAKE_CURRENT_SOURCE_DIR}/engine/session
 )
 
