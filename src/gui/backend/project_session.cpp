@@ -4,13 +4,13 @@
 #include <fmt/std.h>
 
 #include "controllers/project_saver.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_session.h"
 #include "gui/dsp/quantize_options.h"
 #include "structure/project/project_path_provider.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
+#include "utils/version.h"
 
 #include <QPointer>
 #include <QQmlEngine>
@@ -612,7 +612,7 @@ ProjectSession::save ()
   assert (!project_directory_.empty ());
 
   auto future = controllers::ProjectSaver::save (
-    *project_, *ui_state_, *undo_stack_, zrythm::Zrythm::get_app_version (),
+    *project_, *ui_state_, *undo_stack_, utils::get_app_version (),
     project_directory_, false);
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
@@ -627,8 +627,8 @@ ProjectSession::saveAs (const QString &path)
   auto new_path = utils::Utf8String::from_qstring (path).to_path ();
 
   auto future = controllers::ProjectSaver::save (
-    *project_, *ui_state_, *undo_stack_, zrythm::Zrythm::get_app_version (),
-    new_path, false);
+    *project_, *ui_state_, *undo_stack_, utils::get_app_version (), new_path,
+    false);
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
 

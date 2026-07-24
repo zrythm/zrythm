@@ -8,15 +8,16 @@
 
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "utils/backtrace.h"
 #include "utils/directory_manager.h"
+#include "utils/dsp_context.h"
 #include "utils/format_juce.h"
 #include "utils/qsettings_backend.h"
 #include "utils/qt.h"
 #include "utils/thread_safe_fftw.h"
 #include "utils/tracy.h"
+#include "utils/version.h"
 
 #include <QFileInfo>
 #include <QFileOpenEvent>
@@ -89,6 +90,9 @@ public:
   std::unique_ptr<dsp::IHardwareAudioInterface> hw_audio_interface_;
 
   std::unique_ptr<engine::session::MidiMappings> midi_mappings_;
+
+  /** DSP context (disables denormals) for the main thread. */
+  std::unique_ptr<DspContextRAII> dsp_context_;
 };
 
 ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
@@ -198,9 +202,8 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   launch_engine_process ();
 
-  Zrythm::getInstance ()->pre_init (
-    utils::Utf8String::from_qstring (applicationFilePath ()).to_path (), true,
-    true);
+  // disable denormals on the main thread
+  impl_->dsp_context_ = std::make_unique<DspContextRAII> ();
 
   setup_device_manager ();
 
@@ -208,11 +211,9 @@ ZrythmApplication::ZrythmApplication (int &argc, char ** argv)
 
   setup_ui ();
 
-  gZrythm->init ();
-
   constexpr const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;
-  const auto ver = Zrythm::get_version (false);
+  const auto ver = utils::get_app_version_string (false);
   std::cout
     << "\n==============================================================\n\n"
     << utils::Utf8String::from_qstring (format_qstr (
@@ -239,20 +240,6 @@ void
 ZrythmApplication::post_exec_initialization ()
 {
   setup_ipc ();
-
-  // do this on demand, not on startup
-#if 0
-  /* init directories in user path */
-  try
-    {
-      gZrythm->init_user_dirs_and_files ();
-    }
-  catch (const ZrythmException &e)
-    {
-      z_critical ("Failed to create user dirs and files: {}", e.what ());
-      return;
-    }
-#endif
 }
 
 void
@@ -715,8 +702,6 @@ ZrythmApplication::~ZrythmApplication ()
           impl_->engine_process_->kill ();
         }
     }
-
-  Zrythm::deleteInstance ();
 }
 
 zrythm::utils::AppSettings *

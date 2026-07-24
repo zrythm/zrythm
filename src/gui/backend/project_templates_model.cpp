@@ -3,7 +3,6 @@
 
 #include <algorithm>
 
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/project_manager.h"
 #include "project_templates_model.h"
 

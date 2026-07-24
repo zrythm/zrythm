@@ -10,7 +10,6 @@
 #include "engine/session/sample_processor.h"
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/io/midi_file.h"
 #include "gui/backend/plugin_manager.h"
 #include "plugins/plugin.h"

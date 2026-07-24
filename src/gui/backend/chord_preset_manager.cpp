@@ -3,7 +3,6 @@
 
 #include <fmt/std.h>
 
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/chord_preset_manager.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
@@ -531,7 +530,7 @@ ChordPresetManager::load_user_presets ()
   z_debug ("Reading user chord presets from {}...", main_path);
 
   std::vector<std::filesystem::path> preset_paths;
-  if (fs::is_directory (main_path))
+  if (std::filesystem::is_directory (main_path))
     {
       try
         {

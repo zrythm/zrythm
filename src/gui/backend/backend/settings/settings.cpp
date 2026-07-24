@@ -5,7 +5,6 @@
 
 #include "gui/backend/backend/settings/plugin_configuration_manager.h"
 #include "gui/backend/backend/settings/settings.h"
-#include "gui/backend/backend/zrythm.h"
 #include "utils/logger.h"
 
 void

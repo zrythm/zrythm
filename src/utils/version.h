@@ -6,6 +6,8 @@
 #include <optional>
 #include <string_view>
 
+#include "utils/utf8_string.h"
+
 #include <nlohmann/json_fwd.hpp>
 
 namespace zrythm::utils
@@ -73,5 +75,19 @@ void
 to_json (nlohmann::json &j, const Version &v);
 void
 from_json (const nlohmann::json &j, Version &v);
+
+/**
+ * @brief Returns the application version string.
+ *
+ * @param with_v Include a starting "v".
+ */
+Utf8String
+get_app_version_string (bool with_v);
+
+/**
+ * @brief Returns the application version as a Version struct.
+ */
+Version
+get_app_version ();
 
 } // namespace zrythm::utils

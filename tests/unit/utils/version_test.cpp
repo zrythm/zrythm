@@ -1,12 +1,16 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "zrythm-config.h"
+
 #include "utils/version.h"
 
+#include <fmt/format.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-using namespace zrythm::utils;
+namespace zrythm::utils
+{
 
 TEST (VersionTest, Equality)
 {
@@ -143,4 +147,30 @@ TEST (VersionTest, LargeVersionNumbers)
   nlohmann::json j = v;
   Version        restored = j.get<Version> ();
   EXPECT_EQ ((v), (restored));
+}
+
+TEST (VersionTest, GetAppVersionString)
+{
+  std::string_view expected = PACKAGE_VERSION;
+  if (!expected.empty () && expected[0] == 'v')
+    expected.remove_prefix (1);
+
+  // without "v" prefix
+  EXPECT_EQ (get_app_version_string (false), expected);
+
+  // with "v" prefix
+  EXPECT_EQ (get_app_version_string (true), fmt::format ("v{}", expected));
+}
+
+TEST (VersionTest, GetAppVersion)
+{
+  const auto v = get_app_version ();
+  EXPECT_GE (v.major, 0);
+  EXPECT_GE (v.minor, 0);
+
+  // the numeric version appears in the version string
+  EXPECT_TRUE (get_app_version_string (false).contains_substr (
+    utils::Utf8String::from_utf8_encoded_string (
+      fmt::format ("{}.{}", v.major, v.minor))));
+}
 }

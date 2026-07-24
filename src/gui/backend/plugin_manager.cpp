@@ -3,7 +3,6 @@
 
 #include "zrythm-config.h"
 
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_manager.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "plugins/CLAPPluginFormat.h"

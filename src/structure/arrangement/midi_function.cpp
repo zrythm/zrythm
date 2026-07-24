@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: © 2020, 2023-2024 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/backend/zrythm.h"
 #include "structure/arrangement/midi_function.h"
 #include "structure/arrangement/midi_note.h"
 #include "structure/project/project.h"

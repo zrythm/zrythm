@@ -7,7 +7,6 @@
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
-#include "gui/backend/backend/zrythm.h"
 #include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/project_session.h"
@@ -16,6 +15,7 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/directory_manager.h"
 #include "utils/io_utils.h"
+#include "utils/version.h"
 
 #include <QtConcurrentRun>
 
@@ -42,7 +42,7 @@ ProjectManager::init_templates ()
     dynamic_cast<ZrythmApplication *> (qApp)->get_directory_manager ();
   const auto user_templates_dir =
     dir_mgr.get_dir (IDirectoryManager::DirectoryType::USER_TEMPLATES);
-  if (fs::is_directory (user_templates_dir))
+  if (std::filesystem::is_directory (user_templates_dir))
     {
       try
         {
@@ -60,7 +60,7 @@ ProjectManager::init_templates ()
   {
     const auto system_templates_dir =
       dir_mgr.get_dir (IDirectoryManager::DirectoryType::SYSTEM_TEMPLATES);
-    if (fs::is_directory (system_templates_dir))
+    if (std::filesystem::is_directory (system_templates_dir))
       {
         try
           {
@@ -229,7 +229,7 @@ ProjectManager::createNewProject (
             project_dir_path] (utils::QObjectUniquePtr<ProjectSession> session) {
       auto future = controllers::ProjectSaver::save (
         *session->project (), *session->uiState (), *session->undoStack (),
-        zrythm::Zrythm::get_app_version (), project_dir_path, false);
+        utils::get_app_version (), project_dir_path, false);
       try
         {
           // This will throw on failure
