@@ -25,7 +25,8 @@ set(CTEST_CUSTOM_MEMCHECK_IGNORE
 set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     ".*/\\.qt/.*"
     ".*/_deps/.*"
-    ".*/build_.*/.*_autogen/.*"
+    ".*/\\.cache/CPM/.*"
+    ".*_autogen/.*"
     ".*/qrc_.*\\.cpp"
     ".*/.*_qmltyperegistrations\\.cpp"
     "./.*_libplugin_.*\\.cpp"
