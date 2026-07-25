@@ -23,8 +23,8 @@ ArrangerObjectBaseView {
     }
 
     const timelineTicks = ArrangerObjectHelper.timelineTicks(root.midiNote);
-    const activeChord = root.chordTrack ? root.chordTrack.chordAtTicks(timelineTicks) : null;
-    const activeScale = root.chordTrack ? root.chordTrack.scaleAtTicks(timelineTicks) : null;
+    const activeChord = root.chordTrack ? root.chordTrack.chordAtTimelineTicks(timelineTicks) : null;
+    const activeScale = root.chordTrack ? root.chordTrack.scaleAtTimelineTicks(timelineTicks) : null;
 
     const noteClass = root.midiNote.pitch % 12;
     const descr = activeChord && activeChord.chordDescriptor ? activeChord.chordDescriptor : null;

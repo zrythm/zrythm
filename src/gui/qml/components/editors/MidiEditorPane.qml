@@ -29,8 +29,8 @@ GridLayout {
   function _updateActiveChordAndScale() {
     if (root.chordTrack) {
       const ticks = root.project.transport.playhead.ticks;
-      root.activeChord = root.chordTrack.chordAtTicks(ticks);
-      root.activeScale = root.chordTrack.scaleAtTicks(ticks);
+      root.activeChord = root.chordTrack.chordAtTimelineTicks(ticks);
+      root.activeScale = root.chordTrack.scaleAtTimelineTicks(ticks);
     } else {
       root.activeChord = null;
       root.activeScale = null;

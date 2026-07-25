@@ -43,7 +43,7 @@ ColumnLayout {
       if (!root.chordTrack)
         return null;
       const ticks = root.session.project.transport.playhead.ticks;
-      const so = root.chordTrack.scaleAtTicks(ticks);
+      const so = root.chordTrack.scaleAtTimelineTicks(ticks);
       return so ? so.scale : null;
     }
   }
