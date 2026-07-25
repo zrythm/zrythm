@@ -263,6 +263,28 @@ Tracklist::getTrackLaneForObject (
   return nullptr;
 }
 
+AutomationTrack *
+Tracklist::getAutomationTrackForObject (
+  const arrangement::AutomationClip * clip) const
+{
+  for (const auto &track_ref : collection ()->tracks ())
+    {
+      const auto * atl = track_ref.get ()->automationTracklist ();
+      if (atl == nullptr)
+        continue;
+      for (auto * automation_track : atl->automation_tracks ())
+        {
+          if (
+            automation_track->arrangement::ArrangerObjectOwner<
+              arrangement::AutomationClip>::contains_object (clip->get_uuid ()))
+            {
+              return automation_track;
+            }
+        }
+    }
+  return nullptr;
+}
+
 // ========================================================================
 
 std::optional<TrackUuidReference>

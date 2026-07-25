@@ -64,6 +64,13 @@ public:
     const arrangement::ArrangerObject * timelineObject) const;
 
   /**
+   * @brief Returns the automation track that owns the given automation clip,
+   * or nullptr if none does.
+   */
+  AutomationTrack *
+  getAutomationTrackForObject (const arrangement::AutomationClip * clip) const;
+
+  /**
    * @brief Calls @p visitor for every arranger object owned by the
    * tracklist.
    *

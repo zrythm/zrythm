@@ -68,6 +68,19 @@ public:
   Q_INVOKABLE bool deleteObjects ();
 
   /**
+   * @brief Deletes the given object (eraser tool).
+   *
+   * Unlike deleteObjects(), this does not operate on the selection. Pushes a
+   * single remove command; wrap calls in an undo macro to erase multiple
+   * objects in one undo step.
+   *
+   * @return false if the object is null, not deletable, or not found in its
+   * owner.
+   */
+  Q_INVOKABLE bool
+  deleteObject (structure::arrangement::ArrangerObject * object);
+
+  /**
    * @brief Cuts the selected cuttable objects at the given timeline position.
    *
    * Only objects that strictly span @p ticks are cut (see is_cuttable_at()):

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_selection_operator.h"
@@ -55,6 +55,11 @@ protected:
       registry_, *tempo_map_wrapper, registry_);
     audio_clip_ref = utils::create_object<structure::arrangement::AudioClip> (
       registry_, *tempo_map_wrapper, registry_);
+    // Not added to test_objects_ (kept out of the selection list model);
+    // only used for direct (selection-independent) operations
+    automation_clip_ref =
+      utils::create_object<structure::arrangement::AutomationClip> (
+        registry_, *tempo_map_wrapper, registry_);
     tempo_ref = utils::create_object<structure::arrangement::TempoObject> (
       registry_, *tempo_map_wrapper);
     time_signature_ref =
@@ -136,6 +141,8 @@ protected:
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::AudioClip>::add_object (audio_clip_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::add_object (automation_clip_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TempoObject>::add_object (tempo_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TimeSignatureObject>::
@@ -188,6 +195,12 @@ protected:
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 structure::arrangement::AudioClip> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationClip>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::AutomationClip> *> (mock_owner_.get ());
             }
           else if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
@@ -312,6 +325,9 @@ protected:
   structure::arrangement::ArrangerObjectUuidReference note_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference marker_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference audio_clip_ref{
+    registry_
+  };
+  structure::arrangement::ArrangerObjectUuidReference automation_clip_ref{
     registry_
   };
   structure::arrangement::ArrangerObjectUuidReference midi_clip_ref{ registry_ };
@@ -793,6 +809,94 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
       structure::arrangement::MidiNote>::contains_object (note_id);
   EXPECT_FALSE (marker_found_after) << "Marker should have been deleted";
   EXPECT_FALSE (note_found_after) << "Note should have been deleted";
+}
+
+// Test deleteObject (eraser tool): deletes a single object directly, without
+// involving the selection
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectRemovesOwnedObject)
+{
+  const int  initial_count = undo_stack_->count ();
+  const auto note_id = note_ref.id ();
+
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id));
+
+  EXPECT_TRUE (operator_->deleteObject (note_ref.get ()));
+
+  // Exactly one command pushed
+  EXPECT_EQ (undo_stack_->count (), initial_count + 1);
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id))
+    << "Note should have been deleted";
+
+  // Undo restores the object
+  undo_stack_->undo ();
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id))
+    << "Undo should restore the deleted note";
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectNullReturnsFalse)
+{
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (nullptr));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectUndeletableReturnsFalse)
+{
+  // Start markers are not deletable
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
+
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (start_marker_ref.get ()));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectNotInOwnerReturnsFalse)
+{
+  // An object that no owner contains
+  auto orphan_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (orphan_note_ref.get ()));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+// Test deleteObject with an automation clip (owned by an AutomationTrack in
+// the project, not directly by a track — the mock owner mirrors that
+// indirection)
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectAutomationClip)
+{
+  const int  initial_count = undo_stack_->count ();
+  const auto clip_id = automation_clip_ref.id ();
+
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id));
+
+  EXPECT_TRUE (operator_->deleteObject (automation_clip_ref.get ()));
+
+  EXPECT_EQ (undo_stack_->count (), initial_count + 1);
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id))
+    << "Automation clip should have been deleted";
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id))
+    << "Undo should restore the deleted automation clip";
 }
 
 // Test deleting tempo/time-signature objects (owned by TempoObjectManager, not

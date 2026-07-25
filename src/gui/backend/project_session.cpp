@@ -524,6 +524,15 @@ ProjectSession::createArrangerObjectSelectionOperator (
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 ObjT> *> (project_->tempoObjectManager ());
             }
+          else if constexpr (
+            std::is_same_v<ObjT, structure::arrangement::AutomationClip>)
+            {
+              // Automation clips are owned by automation tracks, not directly
+              // by tracks
+              return static_cast<
+                structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                project_->tracklist ()->getAutomationTrackForObject (obj));
+            }
           else if constexpr (structure::arrangement::TimelineObject<ObjT>)
             {
               return dynamic_cast<

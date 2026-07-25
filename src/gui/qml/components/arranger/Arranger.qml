@@ -107,6 +107,28 @@ Item {
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(clampedTicks, startTicks) : clampedTicks;
   }
 
+  // Deletes all objects intersecting a small rect around the given point
+  // (eraser tool). The caller wraps calls in an undo macro.
+  function eraseObjectsAround(x: real, y: real) {
+    const eraserRadius = 6;
+    eraseObjectsInRect(Qt.rect(x - eraserRadius, y - eraserRadius, eraserRadius * 2, eraserRadius * 2));
+  }
+
+  // Deletes all objects intersecting the given rect (deduplicated across
+  // loaders - the same object can appear multiple times, e.g. main track
+  // area and lane area in the timeline). The caller wraps calls in an undo
+  // macro.
+  function eraseObjectsInRect(rect: rect) {
+    const hitLoaders = findArrangerObjectLoadersInRectRecursive(arrangerContent, rect, true);
+    const objects = new Set();
+    hitLoaders.forEach(loader => {
+      if (loader && loader.arrangerObject) {
+        objects.add(loader.arrangerObject);
+      }
+    });
+    objects.forEach(obj => root.selectionOperator.deleteObject(obj));
+  }
+
   function findArrangerObjectLoadersInRectRecursive(item: Item, rect: rect, recursive: bool): var {
     var hitChildren = [];
     recursive = recursive || false;
@@ -578,17 +600,18 @@ Item {
         Rectangle {
           id: selectionRectangle
 
+          readonly property color baseColor: scrollView.currentAction === Arranger.DeleteSelecting ? ZrythmTheme.dangerColor : ZrythmTheme.backgroundAppendColor
           readonly property real maxX: Math.max(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
           readonly property real maxY: Math.max(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
           readonly property real minX: Math.min(arrangerMouseArea.startCoordinates.x, arrangerMouseArea.currentCoordinates.x)
           readonly property real minY: Math.min(arrangerMouseArea.startCoordinates.y, arrangerMouseArea.currentCoordinates.y)
 
-          border.color: ZrythmTheme.backgroundAppendColor
+          border.color: baseColor
           border.width: 2
-          color: Qt.alpha(ZrythmTheme.backgroundAppendColor, 0.1)
+          color: Qt.alpha(baseColor, 0.1)
           height: maxY - minY
           opacity: 0.5
-          visible: scrollView.currentAction === Arranger.Selecting
+          visible: scrollView.currentAction === Arranger.Selecting || scrollView.currentAction === Arranger.DeleteSelecting
           width: maxX - minX
           x: minX
           y: minY
@@ -693,6 +716,9 @@ Item {
           // cursor override. Arranger drags preview visually and commit only in
           // onReleased, so there is no model state to revert here.
           onCanceled: {
+            if (action === Arranger.StartingErasing || action === Arranger.Erasing || action === Arranger.StartingDeleteSelection || action === Arranger.DeleteSelecting) {
+              root.undoStack.endMacro();
+            }
             action = Arranger.None;
             root.dragState.reset();
             root.wasClickedObjectSelectedOnPress = false;
@@ -739,6 +765,10 @@ Item {
                 }
               } else if (action === Arranger.StartingPanning)
                 action = Arranger.Panning;
+              else if (action === Arranger.StartingErasing)
+                action = Arranger.Erasing;
+              else if (action === Arranger.StartingDeleteSelection)
+                action = Arranger.DeleteSelecting;
               else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
                 if (KeyboardState.altHeld) {
                   action = Arranger.MovingLink;
@@ -764,7 +794,9 @@ Item {
               }
 
               // Process current action
-              if (action === Arranger.Selecting) {
+              if (action === Arranger.Erasing) {
+                root.eraseObjectsAround(mouse.x, mouse.y);
+              } else if (action === Arranger.Selecting) {
                 // Select all objects within the selection rectangle
                 root.selectObjectsInRectangle();
               } else if (action === Arranger.Panning) {
@@ -887,6 +919,16 @@ Item {
                     root.selectionOperator.cutAllObjectsAt(currentCutTicks, root.clipContext);
                   }
                   action = Arranger.Cutting;
+                } else if (root.tool.effectiveToolValue === ArrangerTool.Eraser) {
+                  // Eraser, all inside one undo macro until release:
+                  // - starting on an object: touch-erase - delete objects
+                  //   under the cursor immediately, keep erasing while
+                  //   dragging
+                  // - starting on empty space: rectangle erase - drag a
+                  //   rectangle, delete enclosed objects on release
+                  root.undoStack.beginMacro(qsTr("Erase Objects"));
+                  action = root.hoveredObject ? Arranger.StartingErasing : Arranger.StartingDeleteSelection;
+                  root.eraseObjectsAround(mouse.x, mouse.y);
                 } else if (root.hoveredObject) {
                   root.hoveredObject.requestSelection(mouse);
                   if (root.hoveredObject.isResizingL) {
@@ -924,7 +966,20 @@ Item {
               arrangerContextMenu.popup();
               return;
             }
-            if (action === Arranger.StartingMovingCopy) {
+            if (action === Arranger.StartingErasing || action === Arranger.Erasing) {
+              root.undoStack.endMacro();
+            } else if (action === Arranger.StartingDeleteSelection) {
+              // Click on empty space with the eraser - nothing more to do
+              root.undoStack.endMacro();
+            } else if (action === Arranger.DeleteSelecting) {
+              // Rectangle erase: delete all objects enclosed in the drag rect
+              const rectX = Math.min(startCoordinates.x, currentCoordinates.x);
+              const rectY = Math.min(startCoordinates.y, currentCoordinates.y);
+              const rectWidth = Math.abs(currentCoordinates.x - startCoordinates.x);
+              const rectHeight = Math.abs(currentCoordinates.y - startCoordinates.y);
+              root.eraseObjectsInRect(Qt.rect(rectX, rectY, rectWidth, rectHeight));
+              root.undoStack.endMacro();
+            } else if (action === Arranger.StartingMovingCopy) {
               // Ctrl+click without drag — perform the deferred toggle.
               root.handleDeferredCtrlClickToggle();
             } else if ([Arranger.StartingMoving, Arranger.StartingMovingLink].includes(action)) {

@@ -293,6 +293,53 @@ ArrangerObjectSelectionOperator::deleteObjects ()
 }
 
 bool
+ArrangerObjectSelectionOperator::deleteObject (
+  structure::arrangement::ArrangerObject * object)
+{
+  if (object == nullptr)
+    {
+      z_warning ("No object given to delete");
+      return false;
+    }
+
+  auto obj_var = utils::convert_to_variant_qobj<
+    structure::arrangement::ArrangerObjectPtrVariant> (object);
+
+  const auto deletable = std::visit (
+    [] (const auto &obj) {
+      return structure::arrangement::is_arranger_object_deletable (*obj);
+    },
+    obj_var);
+  if (!deletable)
+    {
+      z_warning ("Object {} cannot be deleted", object->get_uuid ());
+      return false;
+    }
+
+  auto owner_var = object_owner_provider_ (obj_var);
+  return std::visit (
+    [&] (auto &owner) {
+      if (owner == nullptr)
+        {
+          z_warning ("No owner found for object {}", object->get_uuid ());
+          return false;
+        }
+      const auto &children = owner->get_children_vector ();
+      const auto  it = std::ranges::find (
+        children, object->get_uuid (),
+        &structure::arrangement::ArrangerObjectUuidReference::id);
+      if (it == children.end ())
+        {
+          z_warning ("Object {} not found in its owner", object->get_uuid ());
+          return false;
+        }
+      undo_stack_.push (new commands::RemoveArrangerObjectCommand (*owner, *it));
+      return true;
+    },
+    owner_var);
+}
+
+bool
 ArrangerObjectSelectionOperator::cutObjectsAt (double ticks)
 {
   auto selected_objects = extractSelectedObjects ();
