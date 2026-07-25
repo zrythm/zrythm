@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/track_creator.h"
@@ -27,7 +27,7 @@ TrackCreator::addEmptyTrackFromType (
         .to_qstring ());
   }
 
-  undo_stack_.beginMacro (QObject::tr ("Add Track"));
+  undo::UndoStack::ScopedMacro macro (undo_stack_, QObject::tr ("Add Track"));
   undo_stack_.push (
     new commands::AddEmptyTrackCommand (track_collection_, track_ref));
 
@@ -41,7 +41,6 @@ TrackCreator::addEmptyTrackFromType (
           singleton_tracks_.masterTrack ()->get_uuid ()));
       }
   }
-  undo_stack_.endMacro ();
 
   return QVariant::fromValue (track_ref.get ());
 }

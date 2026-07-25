@@ -139,6 +139,42 @@ Clip::Clip (
 
 Clip::~Clip () noexcept = default;
 
+dsp::ContentTick
+Clip::content_position_at_timeline (dsp::TimelineTick timeline_pos) const
+{
+  const auto start = position ()->asTick ();
+  const auto end = content_warp_->contentToTimeline (length ()->asTick ());
+
+  // Sample-domain callers (e.g. playback probes at whole samples) quantize
+  // to sample boundaries and may land up to half a sample outside the
+  // tick-domain span after a tick -> rounded-sample -> tick conversion.
+  // Clamp within a 1-sample tolerance, assert beyond it.
+  const auto &tempo_map = get_tempo_map ();
+  const auto  tolerance =
+    tempo_map.samples_to_tick (
+      tempo_map.tick_to_samples_rounded (start) + units::samples (1))
+    - start;
+  assert (timeline_pos >= start - tolerance);
+  assert (timeline_pos < end + tolerance);
+  timeline_pos = std::clamp (
+    timeline_pos, start,
+    dsp::TimelineTick{
+      units::ticks (std::nextafter (end.asDouble (), start.asDouble ())) });
+
+  const auto unwound =
+    content_warp_->timelineTicksRelativeToContent (timeline_pos - start);
+  const auto loop_start = loopStartPosition ()->asTick ();
+  const auto loop_end = loopEndPosition ()->asTick ();
+  const auto loop_size = loop_end - loop_start;
+  auto       played = clipStartPosition ()->asTick () + unwound;
+  if (loop_size > dsp::ContentTick{})
+    {
+      while (played >= loop_end)
+        played -= loop_size;
+    }
+  return played;
+}
+
 // ========================================================================
 // Bounds methods (formerly ArrangerObjectBounds)
 // ========================================================================
@@ -318,6 +354,8 @@ init_from (Clip &obj, const Clip &other, utils::ObjectCloneType clone_type)
   obj.clip_start_pos_->setTicks (other.clip_start_pos_->ticks ());
   obj.loop_start_pos_->setTicks (other.loop_start_pos_->ticks ());
   obj.loop_end_pos_->setTicks (other.loop_end_pos_->ticks ());
+  // Warp configuration (rebuilt against this clip's own position/length)
+  obj.content_warp_->copy_configuration_from (*other.content_warp_);
   // Use the setter so the length-tracking connection is connected/disconnected
   // to match the cloned flag (the constructor left it in the `true` state).
   obj.setTrackBounds (other.track_bounds_);

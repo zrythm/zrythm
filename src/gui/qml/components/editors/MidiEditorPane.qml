@@ -193,6 +193,7 @@ GridLayout {
     arrangerContentHeight: pianoRollKeys.height
     arrangerSelectionModel: arrangerSelectionModel
     chordTrack: root.chordTrack
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     dragState: editorDragState
     highlightMode: root.highlightMode

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -93,6 +93,7 @@ GridLayout {
     arrangerContentHeight: automationLegend.height
     arrangerSelectionModel: arrangerSelectionModel
     automationEditor: root.automationEditor
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     uuidPropertyOperator: root.session.uuidPropertyOperator
     objectCreator: root.session.arrangerObjectCreator

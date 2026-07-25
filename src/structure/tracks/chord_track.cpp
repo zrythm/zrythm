@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -174,18 +174,12 @@ ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
 
   const auto * clip = *clip_var;
 
-  const auto local_frames =
-    timeline_frames_to_local (*clip, timeline_frames, true);
+  const auto played =
+    clip->content_position_at_timeline (dsp::TimelineTick{ timeline_ticks });
 
   auto chord_objects_view = clip->get_children_view () | std::views::reverse;
-  const auto &co_tempo_map = clip->get_tempo_map ();
-  const auto  co_clip_start =
-    co_tempo_map.tick_to_samples_rounded (clip->position ()->asTick ());
   auto it = std::ranges::find_if (chord_objects_view, [&] (const auto &co) {
-    return clip->contentWarp ()->contentToTimelineSamples (
-             co->position ()->asTick ())
-             - co_clip_start
-           <= local_frames;
+    return co->position ()->asTick () <= played;
   });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;

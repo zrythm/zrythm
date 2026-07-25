@@ -327,17 +327,16 @@ ArrangerObjectCreator::editChordObjectsDescriptor (
   if (valid_count == 0)
     return;
 
-  const bool single = (valid_count == 1);
+  const bool                                  single = (valid_count == 1);
+  std::optional<undo::UndoStack::ScopedMacro> macro;
   if (!single)
-    undo_stack_.beginMacro (QObject::tr ("Edit chord"));
+    macro.emplace (undo_stack_, QObject::tr ("Edit chord"));
   for (const auto &variant : chordObjects)
     {
       auto * co = variant.value<structure::arrangement::ChordObject *> ();
       if (co != nullptr)
         undo_stack_.push (new commands::EditChordObjectCommand (co, target));
     }
-  if (!single)
-    undo_stack_.endMacro ();
 }
 
 structure::arrangement::MidiClip *

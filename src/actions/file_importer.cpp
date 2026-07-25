@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/format_qt.h"
@@ -32,7 +32,8 @@ FileImporter::importFiles (
       return;
     }
 
-  undo_stack_.beginMacro (QString::fromUtf8 ("Import Files"));
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QString::fromUtf8 ("Import Files"));
   for (const auto &filepath : filePaths)
     {
       if (isAudioFile (filepath))
@@ -54,7 +55,6 @@ FileImporter::importFiles (
             midi_track, midi_track->lanes ()->getFirstLane (), filepath, 0, 0);
         }
     }
-  undo_stack_.endMacro ();
 }
 
 void

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -62,6 +62,18 @@ public:
     const arrangement::ArrangerObject * timelineObject) const;
   Q_INVOKABLE TrackLane * getTrackLaneForObject (
     const arrangement::ArrangerObject * timelineObject) const;
+
+  /**
+   * @brief Calls @p visitor for every arranger object owned by the
+   * tracklist.
+   *
+   * Covers all clips across all track lanes, chord clips, scale objects,
+   * markers and automation clips. Tempo/time-signature objects are not
+   * included (they are owned by the project's TempoObjectManager).
+   */
+  void for_each_arranger_object (
+    const std::function<void (arrangement::ArrangerObjectUuidReference)>
+      &visitor) const;
 
   Q_INVOKABLE bool isTrackPinned (const Track * track) const
   {

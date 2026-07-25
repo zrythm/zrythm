@@ -21,6 +21,7 @@ target_sources(zrythm_gui_lib
       fade_overlay_canvas_renderer.h
       generic_plugin_ui_controller.h
       grid_line_computer.h
+      keyboard_state.h
       live_waveform_canvas_item.h
       meter_processor.h
       midi_clip_canvas_item.h
@@ -53,6 +54,7 @@ target_sources(zrythm_gui_lib
     fade_overlay_canvas_renderer.cpp
     generic_plugin_ui_controller.cpp
     grid_line_computer.cpp
+    keyboard_state.cpp
     live_waveform_canvas_item.cpp
     meter_processor.cpp
     midi_clip_canvas_item.cpp

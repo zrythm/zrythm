@@ -53,16 +53,18 @@ Item {
     Panning
   }
 
-  property bool altHeld
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
   // The unified model index of the object clicked with Ctrl held.
   // Saved at press time so the deferred deselect on release targets the correct object
   // even if currentIndex were to change between press and release.
   property var clickedUnifiedIndexOnPress: null
+  // The clip whose children are cut when the Cut tool is used on empty
+  // space in editor contexts. Null in the timeline, where cutting on empty
+  // space cuts every bounded object across all tracks and lanes.
+  property Clip clipContext: null
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
-  property bool ctrlHeld
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   readonly property alias currentMousePosition: arrangerMouseArea.currentCoordinates
@@ -84,8 +86,7 @@ Item {
   readonly property real scrollY: root.editorSettings?.y ?? 0
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
   required property ArrangerObjectSelectionOperator selectionOperator
-  property bool shiftHeld
-  readonly property bool shouldSnap: !root.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
+  readonly property bool shouldSnap: !KeyboardState.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
   required property SnapGrid snapGrid
   required property TempoMap tempoMap
   required property ArrangerTool tool
@@ -189,7 +190,7 @@ Item {
   }
 
   function selectObjectsInRectangle() {
-    if (!root.ctrlHeld) {
+    if (!KeyboardState.ctrlHeld) {
       // Clear current selection first
       root.arrangerSelectionModel.clear();
     }
@@ -226,7 +227,7 @@ Item {
   function updateCursorFromAction(action: int) {
     switch (action) {
     case Arranger.None:
-      switch (root.tool.toolValue) {
+      switch (root.tool.effectiveToolValue) {
       case ArrangerTool.Select:
         if (root.hoveredObject !== null) {
           const shouldBeLoopResize = shouldResizeBeLoopResize(root.hoveredObject, root.hoveredObject.isResizeLHovered);
@@ -346,6 +347,14 @@ Item {
 
   onHoveredObjectChanged: {
     console.log("hovered object changed:", hoveredObject);
+  }
+
+  Connections {
+    function onEffectiveToolValueChanged() {
+      root.updateCursor();
+    }
+
+    target: root.tool
   }
 
   Connections {
@@ -584,11 +593,39 @@ Item {
           z: 1
         }
 
+        // Cut line indicator for the Cut tool: spans the hovered object, or
+        // the full height when over empty space (cut-all preview)
+        Rectangle {
+          id: cutLineIndicator
+
+          readonly property point hoveredObjectPos: root.hoveredObject ? root.hoveredObject.mapToItem(arrangerContent, 0, 0) : Qt.point(0, 0)
+
+          color: ZrythmTheme.dangerColor
+          height: root.hoveredObject ? root.hoveredObject.height : parent.height
+          visible: root.tool.effectiveToolValue === ArrangerTool.Cut && (arrangerMouseArea.hovered || root.hoveredObject !== null)
+          width: 2
+          x: arrangerMouseArea.currentCutTicks * root.ruler.pxPerTick - width / 2
+          y: hoveredObjectPos.y
+          z: 100
+        }
+
         MouseArea {
           id: arrangerMouseArea
 
           property alias action: scrollView.currentAction
           property point currentCoordinates
+          // Snapped (if snap is on) timeline ticks at the cursor, used for
+          // the Cut tool's cut position and line indicator.
+          // When hovering an object, the object view's hover position is
+          // used because hover moves over objects don't reach this MouseArea.
+          readonly property real currentCutTicks: {
+            let px = currentCoordinates.x;
+            if (root.hoveredObject !== null) {
+              px = root.hoveredObject.mapToItem(arrangerMouseArea, Qt.point(root.hoveredObject.hoveredPoint.x, 0)).x;
+            }
+            const ticks = px / root.ruler.pxPerTick;
+            return root.shouldSnap ? root.snapGrid.snapWithoutStartTicks(ticks) : ticks;
+          }
           // Authoritative resize delta in ticks, updated every mouse move and
           // committed directly on release (no pixel round-trip).
           property real currentResizeDeltaTicks: 0
@@ -669,7 +706,7 @@ Item {
                 root.dragState.dragMode = ArrangerDragState.DragMode.None;
                 CursorManager.unsetCursor();
                 root.hoveredObject.objectDoubleClicked();
-              } else {
+              } else if (root.tool.effectiveToolValue === ArrangerTool.Select || root.tool.effectiveToolValue === ArrangerTool.Edit) {
                 // create an object at the mouse position
                 let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
                 if (obj) {
@@ -691,22 +728,19 @@ Item {
             const dx = mouse.x - prevCoordinates.x;
             const dy = mouse.y - prevCoordinates.y;
             const ticksDiff = dx / root.ruler.pxPerTick;
-            root.shiftHeld = mouse.modifiers & Qt.ShiftModifier;
-            root.ctrlHeld = mouse.modifiers & Qt.ControlModifier;
-            root.altHeld = mouse.modifiers & Qt.AltModifier;
             if (pressed) {
               // handle action transitions
               if (action === Arranger.StartingSelection) {
                 action = Arranger.Selecting;
-                if (!root.ctrlHeld) {
+                if (!KeyboardState.ctrlHeld) {
                   root.arrangerSelectionModel.clear();
                 }
               } else if (action === Arranger.StartingPanning)
                 action = Arranger.Panning;
               else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
-                if (root.altHeld) {
+                if (KeyboardState.altHeld) {
                   action = Arranger.MovingLink;
-                } else if (root.ctrlHeld) {
+                } else if (KeyboardState.ctrlHeld) {
                   // TODO: also check that selection does not contain unclonable objects before entering this block
                   action = Arranger.MovingCopy;
                 } else {
@@ -717,13 +751,13 @@ Item {
                 root.dragState.dragMode = ArrangerDragState.DragMode.Move;
                 root.dragState.dragDeltaY = 0;
                 dragStartObjectY = root.getObjectY(root.getObjectAtCurrentIndex());
-              } else if (action === Arranger.Moving && root.altHeld) {
+              } else if (action === Arranger.Moving && KeyboardState.altHeld) {
                 action = Arranger.MovingLink;
-              } else if (action === Arranger.Moving && root.ctrlHeld) {
+              } else if (action === Arranger.Moving && KeyboardState.ctrlHeld) {
                 action = Arranger.MovingCopy;
-              } else if (action === Arranger.MovingLink && !root.altHeld) {
-                action = (root.ctrlHeld) ? Arranger.MovingCopy : Arranger.Moving;
-              } else if (action === Arranger.MovingCopy && !root.ctrlHeld) {
+              } else if (action === Arranger.MovingLink && !KeyboardState.altHeld) {
+                action = (KeyboardState.ctrlHeld) ? Arranger.MovingCopy : Arranger.Moving;
+              } else if (action === Arranger.MovingCopy && !KeyboardState.ctrlHeld) {
                 action = Arranger.Moving;
               }
 
@@ -839,7 +873,19 @@ Item {
                   root.hoveredObject.requestSelection(mouse);
                 }
               } else if (mouse.button === Qt.LeftButton) {
-                if (root.hoveredObject) {
+                if (root.tool.effectiveToolValue === ArrangerTool.Cut) {
+                  // Cut tool: cut at the (snapped) cursor position. Clicking
+                  // an object selects it first (like the Select tool);
+                  // clicking empty space cuts every bounded object at the
+                  // cursor line.
+                  if (root.hoveredObject) {
+                    root.hoveredObject.requestSelection(mouse);
+                    root.selectionOperator.cutObjectsAt(currentCutTicks);
+                  } else {
+                    root.selectionOperator.cutAllObjectsAt(currentCutTicks, root.clipContext);
+                  }
+                  action = Arranger.Cutting;
+                } else if (root.hoveredObject) {
                   root.hoveredObject.requestSelection(mouse);
                   if (root.hoveredObject.isResizingL) {
                     if (root.shouldResizeBeLoopResize(root.hoveredObject, true)) {

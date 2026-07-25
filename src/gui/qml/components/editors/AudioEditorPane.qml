@@ -83,6 +83,7 @@ GridLayout {
     Layout.fillWidth: true
     arrangerSelectionModel: emptySelectionModel
     audioEditor: root.audioEditor
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     fadePropertyOperator: fadePropertyOperator
     objectCreator: root.session.arrangerObjectCreator

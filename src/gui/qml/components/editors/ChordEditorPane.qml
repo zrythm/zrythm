@@ -166,6 +166,7 @@ GridLayout {
     arrangerSelectionModel: arrangerSelectionModel
     chordRowModel: chordRowModel
     chordTrack: root.chordTrack
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     objectCreator: root.session.arrangerObjectCreator
     rowHeight: root.rowHeight

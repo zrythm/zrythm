@@ -4,6 +4,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
+#include "dsp/content_time_warp.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -151,8 +152,24 @@ protected:
           if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
+              // Prefer the parent object (e.g. a clip) as owner, like in the
+              // project
+              if (
+                auto * parent_owner =
+                  dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                    structure::arrangement::MidiNote> *> (obj->parentObject ()))
+                {
+                  return parent_owner;
+                }
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 structure::arrangement::MidiNote> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+            {
+              // Prefer the parent clip as owner, like in the project
+              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::ChordObject> *> (obj->parentObject ());
             }
           else if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::Marker>)
@@ -198,8 +215,82 @@ protected:
     };
 
     // Create operator
+    auto mock_enumerator =
+      [this] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor visitor) {
+        for (const auto &obj_ref : test_objects_)
+          {
+            visitor (obj_ref);
+          }
+      };
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, *selection_model_, mock_owner_provider, *factory);
+      *undo_stack_, *selection_model_, mock_owner_provider, *factory,
+      mock_enumerator);
+  }
+
+  // Selects the row of the given object in the list model.
+  void
+  select_object (const structure::arrangement::ArrangerObjectUuidReference &ref)
+  {
+    const int rows = list_model_.rowCount ();
+    for (int i = 0; i < rows; ++i)
+      {
+        const auto variant = list_model_.data (
+          list_model_.index (i, 0),
+          structure::arrangement::ArrangerObjectListModel::
+            ArrangerObjectUuidReferenceRole);
+        if (
+          auto * obj_ref =
+            variant
+              .value<structure::arrangement::ArrangerObjectUuidReference *> ();
+          obj_ref != nullptr && obj_ref->id () == ref.id ())
+          {
+            selection_model_->select (
+              list_model_.index (i, 0), QItemSelectionModel::Select);
+            return;
+          }
+      }
+    FAIL () << "Object not found in list model";
+  }
+
+  // Adds a MIDI note with the given content span to the clip and returns its
+  // reference.
+  structure::arrangement::ArrangerObjectUuidReference add_note_to_clip (
+    structure::arrangement::MidiClip &clip,
+    double                            content_pos,
+    double                            content_len)
+  {
+    auto note_ref_local = utils::create_object<structure::arrangement::MidiNote> (
+      registry_, *tempo_map_wrapper);
+    note_ref_local.get ()->position ()->setTicks (content_pos);
+    note_ref_local.get ()->length ()->setTicks (content_len);
+    clip.structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::add_object (note_ref_local);
+    return note_ref_local;
+  }
+
+  // Adds a chord at the given content position to the clip and returns its
+  // reference.
+  structure::arrangement::ArrangerObjectUuidReference
+  add_chord_to_clip (structure::arrangement::ChordClip &clip, double content_pos)
+  {
+    auto chord_ref = utils::create_object<structure::arrangement::ChordObject> (
+      registry_, *tempo_map_wrapper);
+    chord_ref.get ()->position ()->setTicks (content_pos);
+    clip.add_object (chord_ref);
+    return chord_ref;
+  }
+
+  // Returns the child of the given owner vector at the given position in
+  // ticks, or nullptr.
+  template <typename ObjectT, typename ChildrenVector>
+  static ObjectT *
+  find_child_at (const ChildrenVector &children, double pos_ticks)
+  {
+    const auto it =
+      std::ranges::find_if (children, [pos_ticks] (const auto &ref) {
+        return ref.get ()->position ()->ticks () == pos_ticks;
+      });
+    return it != children.end () ? (*it).template get_object_as<ObjectT> () : nullptr;
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -2032,6 +2123,504 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMin)
   EXPECT_EQ (
     note_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (), 0);
   EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// ========================================================================
+// Cut tool tests
+// ========================================================================
+
+// Test cutObjectsAt splits a looped MIDI clip transparently
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsLoopedMidiClip)
+{
+  select_object (midi_clip_ref);
+
+  // Fixture MIDI clip: position 2000, length 4000, clip start 500, loop
+  // [1000, 3000) - spans timeline [2000, 6000), cut at 4500.
+  // Custom loop ranges imply bounds-tracking is off (as in production)
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  const bool result = operator_->cutObjectsAt (4500.0);
+  EXPECT_TRUE (result);
+
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Left half: original resized to end at the cut, loop range untouched
+  EXPECT_DOUBLE_EQ (clip->position ()->ticks (), 2000.0);
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 2500.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+
+  // Right half added to the same owner
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4500.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1500.0);
+  // Content position at the cut mapped through the loop:
+  // clip_start + offset = 500 + 2500 = 3000 >= loop_end (3000), so wrap by
+  // the loop size (2000) -> 1000
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 3000.0);
+  EXPECT_FALSE (right->trackBounds ());
+
+  // Single undo step (macro)
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test cutObjectsAt on a clip with default (tracked) loop bounds
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsTrackBoundsClip)
+{
+  auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  clip->position ()->setTicks (0.0);
+  clip->length ()->setTicks (2000.0); // trackBounds -> loop [0, 2000]
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::add_object (clip_ref);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    clip_ref);
+
+  select_object (clip_ref);
+
+  const bool result = operator_->cutObjectsAt (800.0);
+  EXPECT_TRUE (result);
+
+  // Left half: resized, bounds re-tracked (loop = [0, new length])
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 800.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 800.0);
+  EXPECT_TRUE (clip->trackBounds ());
+
+  // Right half: starts at the cut, keeps the original loop range
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 3);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 800.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1200.0);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 800.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 2000.0);
+  EXPECT_FALSE (right->trackBounds ());
+}
+
+// Test cutObjectsAt splits a MIDI note inside a clip
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsMidiNote)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Note at content [500, 1500) -> timeline [2500, 3500) (clip at 2000,
+  // identity warp)
+  auto   note_in_clip_ref = add_note_to_clip (*clip, 500.0, 1000.0);
+  auto * note_in_clip =
+    note_in_clip_ref.get_object_as<structure::arrangement::MidiNote> ();
+  note_in_clip->setPitch (64);
+  note_in_clip->setVelocity (100);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    note_in_clip_ref);
+
+  select_object (note_in_clip_ref);
+
+  const bool result = operator_->cutObjectsAt (3000.0);
+  EXPECT_TRUE (result);
+
+  // Left half: truncated at the cut
+  EXPECT_DOUBLE_EQ (note_in_clip->position ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (note_in_clip->length ()->ticks (), 500.0);
+
+  // Right half inside the same clip, keeping pitch/velocity
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 2);
+  // Content position at the cut = 3000 - 2000 = 1000
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 500.0);
+  EXPECT_EQ (right->pitch (), 64);
+  EXPECT_EQ (right->velocity (), 100);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test that notes not inside a clip are not cut
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSkipsMidiNoteWithoutClip)
+{
+  // Fixture note: position 1000, length 4000, not inside a clip
+  select_object (note_ref);
+
+  const bool result = operator_->cutObjectsAt (3000.0);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test cutAllObjectsAt cuts across multiple owners via the enumerator
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtAcrossOwners)
+{
+  // Fixture audio clip spans [3000, 5000)
+  audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
+    ->length ()
+    ->setTicks (2000.0);
+
+  // Cut at 4500: hits the MIDI clip [2000, 6000) and the audio clip
+  // [3000, 5000); skips the marker/tempo/time signature (point objects) and
+  // the note (not inside a clip).
+  // Custom loop ranges imply bounds-tracking is off (as in production)
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  const bool result = operator_->cutAllObjectsAt (4500.0, nullptr);
+  EXPECT_TRUE (result);
+
+  const auto &midi_children =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip>::get_children_vector ();
+  EXPECT_EQ (midi_children.size (), 2);
+  const auto &audio_children =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioClip>::get_children_vector ();
+  EXPECT_EQ (audio_children.size (), 2);
+
+  // Single undo step for the whole operation
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Undo restores both originals
+  undo_stack_->undo ();
+  EXPECT_EQ (midi_children.size (), 1);
+  EXPECT_EQ (audio_children.size (), 1);
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+}
+
+// Test cutAllObjectsAt cuts the bounded children of a clip (editor context)
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtInsideClip)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Note A at content [500, 1500) -> timeline [2500, 3500) - spans the cut
+  auto note_a_ref = add_note_to_clip (*clip, 500.0, 1000.0);
+  // Note B at content [1500, 2500) -> timeline [3500, 4500) - after the cut
+  add_note_to_clip (*clip, 1500.0, 1000.0);
+
+  const bool result = operator_->cutAllObjectsAt (3000.0, clip);
+  EXPECT_TRUE (result);
+
+  // Note A split into two, note B untouched
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 3);
+  EXPECT_DOUBLE_EQ (note_a_ref.get ()->length ()->ticks (), 500.0);
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 500.0);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test cutAllObjectsAt splits a chord object: chords are unbounded but
+// effectively span until the next chord or the clip's end
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtSplitsChordObject)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+
+  // Chord A at content 500 (effective span [500, 2500)), chord B at 2500
+  // (effective span [2500, clip end))
+  auto chord_a_ref = add_chord_to_clip (*clip, 500.0);
+  auto chord_b_ref = add_chord_to_clip (*clip, 2500.0);
+
+  // Cut at timeline 3000 = content 1000 (identity warp, clip at 2000):
+  // inside chord A's effective span
+  EXPECT_TRUE (operator_->cutAllObjectsAt (3000.0, clip));
+
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 3);
+  // Originals untouched
+  EXPECT_DOUBLE_EQ (chord_a_ref.get ()->position ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (chord_b_ref.get ()->position ()->ticks (), 2500.0);
+  // New chord starts at the cut (content 1000) and carries a copy of chord
+  // A's descriptor (no bass)
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 1000.0);
+  ASSERT_NE (new_chord, nullptr);
+  EXPECT_NE (
+    new_chord->chordDescriptor (),
+    chord_a_ref.get_object_as<structure::arrangement::ChordObject> ()
+      ->chordDescriptor ());
+  EXPECT_EQ (
+    new_chord->chordDescriptor ()->hasBass (),
+    chord_a_ref.get_object_as<structure::arrangement::ChordObject> ()
+      ->chordDescriptor ()
+      ->hasBass ());
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (chords.size (), 2);
+}
+
+// Test the boundaries of a chord object's effective span
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtChordBoundaries)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+
+  add_chord_to_clip (*clip, 500.0);
+  add_chord_to_clip (*clip, 2500.0);
+
+  // Before chord A's start (content 100 -> timeline 2100): no chord spans
+  EXPECT_FALSE (operator_->cutAllObjectsAt (2100.0, clip));
+  // Exactly at chord B's start (content 2500 -> timeline 4500)
+  EXPECT_FALSE (operator_->cutAllObjectsAt (4500.0, clip));
+  // Exactly at the clip's end (timeline 6000)
+  EXPECT_FALSE (operator_->cutAllObjectsAt (6000.0, clip));
+  EXPECT_EQ (clip->get_children_vector ().size (), 2);
+  EXPECT_EQ (undo_stack_->count (), 0);
+
+  // After chord B, within the clip (content 3000 -> timeline 5000): inside
+  // chord B's effective span (no next chord, ends at the clip's end)
+  EXPECT_TRUE (operator_->cutAllObjectsAt (5000.0, clip));
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 3);
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 3000.0);
+  ASSERT_NE (new_chord, nullptr);
+}
+
+// Test that cutting at or outside object boundaries is a no-op
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtBoundariesIsNoOp)
+{
+  select_object (midi_clip_ref);
+
+  EXPECT_FALSE (operator_->cutObjectsAt (2000.0)); // exactly at start
+  EXPECT_FALSE (operator_->cutObjectsAt (6000.0)); // exactly at end
+  EXPECT_FALSE (operator_->cutObjectsAt (1000.0)); // outside
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test that cutting an audio clip shifts the right half's fade offsets
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtAudioClipAdjustsFades)
+{
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  ASSERT_NE (clip, nullptr);
+  clip->length ()->setTicks (2000.0); // spans [3000, 5000)
+  clip->fadeRange ()->startOffset ()->setTicks (1500.0);
+  clip->fadeRange ()->endOffset ()->setTicks (1800.0);
+
+  select_object (audio_clip_ref);
+
+  const bool result = operator_->cutObjectsAt (4000.0);
+  EXPECT_TRUE (result);
+
+  // Left half fades unchanged
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->fadeRange ()->startOffset ()->ticks (), 1500.0);
+  EXPECT_DOUBLE_EQ (clip->fadeRange ()->endOffset ()->ticks (), 1800.0);
+
+  // Right half fades shifted by the cut offset (1000)
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+  auto * right =
+    find_child_at<structure::arrangement::AudioClip> (children, 4000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->fadeRange ()->startOffset ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (right->fadeRange ()->endOffset ()->ticks (), 800.0);
+}
+
+// Test undo/redo of a cut restores the original object exactly
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtUndoRedo)
+{
+  select_object (midi_clip_ref);
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  ASSERT_TRUE (operator_->cutObjectsAt (4500.0));
+
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (children.size (), 1);
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+  EXPECT_FALSE (clip->trackBounds ());
+
+  undo_stack_->redo ();
+  ASSERT_EQ (children.size (), 2);
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 2500.0);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4500.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1500.0);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1000.0);
+}
+
+// Test that a failed owner lookup leaves the object untouched and reports
+// failure (no partial cut)
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWithMissingOwnerIsNoOp)
+{
+  auto null_owner_provider =
+    [] (structure::arrangement::ArrangerObjectPtrVariant)
+    -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+    return static_cast<structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip> *> (nullptr);
+  };
+  ArrangerObjectSelectionOperator op_with_no_owner (
+    *undo_stack_, *selection_model_, null_owner_provider, *factory);
+
+  select_object (midi_clip_ref);
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+
+  EXPECT_FALSE (op_with_no_owner.cutObjectsAt (4500.0));
+
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  EXPECT_EQ (children.size (), 1);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test that cutting a Source-mode clip (non-linear warp from a tempo change)
+// computes the right half's clip start in the unwound content domain,
+// matching playback
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWarpedLoopedClip)
+{
+  // Tempo change mid-clip: 120 BPM until tick 1920 (1 second), then 240 BPM
+  tempo_map_wrapper->addTempoEvent (
+    1920.0, 240.0, dsp::TempoEventWrapper::CurveType::Constant);
+
+  auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  clip->position ()->setTicks (0.0);
+  clip->length ()->setTicks (3840.0);
+  // Source mode: content is anchored to wall-clock time at the source tempo
+  clip->set_source_bpm (units::bpm (120.0));
+  clip->timebaseProvider ()->setOverride (dsp::Timebase::Absolute);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (1920.0) });
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::add_object (clip_ref);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    clip_ref);
+  select_object (clip_ref);
+
+  // The clip spans timeline [0, 5760): content [0,1920] (1s at 120 BPM) ->
+  // [0,1920), content [1920,3840] (1s at 240 BPM) -> [1920,5760).
+  // Cut at 4800: 1.75s into the source -> unwound content position 3360,
+  // wrapped by the loop size (1920) -> 1440
+  ASSERT_TRUE (operator_->cutObjectsAt (4800.0));
+
+  // Left half ends at the cut (content 3360)
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 3360.0);
+
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 3);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4800.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1440.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 1920.0);
+  // Ends at the original's timeline end: 5760 is 2s into the source, the
+  // clone's start (4800) is 1.75s, so 0.25s = 480 content ticks
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 480.0);
+}
+
+// Test that cutting a note in a clip with a nonzero clip start splits the
+// note at the unwound content position under the cut (the clip editor's
+// content coordinate space), regardless of the clip start
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutObjectsAtSplitsMidiNoteWithClipStart)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+  // Fixture clip: position 2000, length 4000; playback starts at content 500
+  // and the loop covers the whole content so no wrapping occurs
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
+
+  // Note at content [1000, 2000) -> displayed at timeline [3000, 4000)
+  auto note_in_clip_ref = add_note_to_clip (*clip, 1000.0, 1000.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    note_in_clip_ref);
+  select_object (note_in_clip_ref);
+
+  // Cut at 3250: the unwound content position under the cut is 1250
+  ASSERT_TRUE (operator_->cutObjectsAt (3250.0));
+
+  // Left half ends at the cut
+  EXPECT_DOUBLE_EQ (note_in_clip_ref.get ()->position ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (note_in_clip_ref.get ()->length ()->ticks (), 250.0);
+
+  // Right half starts at the cut
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 2);
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1250.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 750.0);
+}
+
+// Test that cutting a chord in a clip with a nonzero clip start places the
+// clone at the unwound content position under the cut (the clip editor's
+// content coordinate space), regardless of the clip start
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutAllObjectsAtSplitsChordWithClipStart)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
+  add_chord_to_clip (*clip, 1000.0);
+
+  // Cut at timeline 3250: the unwound content position under the cut is
+  // 1250, inside the chord's effective span [1000, clip end)
+  ASSERT_TRUE (operator_->cutAllObjectsAt (3250.0, clip));
+
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 2);
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 1250.0);
+  EXPECT_NE (new_chord, nullptr);
 }
 
 } // namespace zrythm::actions

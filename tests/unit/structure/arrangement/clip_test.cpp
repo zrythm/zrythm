@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/content_time_warp.h"
 #include "dsp/tick_types.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "utils/object_registry.h"
@@ -114,6 +115,92 @@ TEST_F (ClipTest, SetLoopRangeClampsOutOfRangeInputs)
   EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 0.0);
   EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 0.0);
   EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 1.0);
+}
+
+// content_position_at_timeline returns the played content position: the
+// unwound content position offset by the clip start, wrapped into the loop
+// range.
+TEST_F (ClipTest, ContentPositionAtTimelineWithClipStartAndLoop)
+{
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (1000.0) },
+    dsp::ContentTick{ units::ticks (3000.0) });
+
+  // Inside the intro leg: 500 + 400 = 900, no wrap
+  EXPECT_DOUBLE_EQ (
+    clip
+      ->content_position_at_timeline (dsp::TimelineTick{ units::ticks (2400.0) })
+      .asDouble (),
+    900.0);
+
+  // Past the first loop end: 500 + 2500 = 3000 >= loop_end (3000), so wrap
+  // by the loop size (2000) -> 1000
+  EXPECT_DOUBLE_EQ (
+    clip
+      ->content_position_at_timeline (dsp::TimelineTick{ units::ticks (4500.0) })
+      .asDouble (),
+    1000.0);
+}
+
+// With a non-linear warp, the wrap must happen in the unwound content domain
+// (matching playback), not in the warped timeline-delta domain.
+TEST_F (ClipTest, ContentPositionAtTimelineWithWarpedLoop)
+{
+  clip->position ()->setTicks (0.0);
+  clip->length ()->setTicks (4000.0);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (1000.0) });
+  // Kinked warp: content [0,1000] -> delta [0,2000] (2x slope), then 0.5x:
+  // content [1000,2000] -> delta [2000,2500], content [2000,4000] -> delta
+  // [2500,3500]
+  const std::vector<dsp::ContentTimeWarp::WarpPoint> markers = {
+    { dsp::ContentTick{ units::ticks (0.0) },
+     dsp::TimelineTick{ units::ticks (0.0) }    },
+    { dsp::ContentTick{ units::ticks (1000.0) },
+     dsp::TimelineTick{ units::ticks (2000.0) } },
+    { dsp::ContentTick{ units::ticks (2000.0) },
+     dsp::TimelineTick{ units::ticks (2500.0) } },
+  };
+  clip->contentWarp ()->configure_as_warped (units::bpm (120.0), markers);
+
+  // Unwound content position at timeline 3000 is 3000: the start of the 4th
+  // loop leg, so the played content position is the loop start (0)
+  EXPECT_DOUBLE_EQ (
+    clip
+      ->content_position_at_timeline (dsp::TimelineTick{ units::ticks (3000.0) })
+      .asDouble (),
+    0.0);
+}
+
+// Sample-domain probes quantize to whole samples and can land slightly
+// outside the clip's tick-domain span; positions within a 1-sample tolerance
+// are clamped into the span.
+TEST_F (ClipTest, ContentPositionAtTimelineClampsWithinSampleTolerance)
+{
+  // At the default 120 BPM / 44.1kHz, tick 17 maps to 390.46875 samples,
+  // which rounds down to 390; converting 390 samples back yields ~16.98
+  // ticks - just below the clip's start tick
+  clip->position ()->setTicks (17.0);
+  clip->length ()->setTicks (960.0);
+
+  const auto probe = tempo_map->samples_to_tick (units::samples (390));
+  ASSERT_LT (probe.asDouble (), 17.0);
+
+  // Clamped to the clip start: played position is the content start (0)
+  EXPECT_DOUBLE_EQ (clip->content_position_at_timeline (probe).asDouble (), 0.0);
+
+  // Exactly at the clip's end (outside the [start, end) span but within the
+  // tolerance): clamped to just before the end
+  EXPECT_NEAR (
+    clip
+      ->content_position_at_timeline (dsp::TimelineTick{ units::ticks (977.0) })
+      .asDouble (),
+    960.0, 1e-6);
 }
 
 } // namespace zrythm::structure::arrangement

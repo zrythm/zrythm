@@ -538,7 +538,11 @@ ProjectSession::createArrangerObjectSelectionOperator (
         },
         obj_var);
     },
-    *project_->arrangerObjectFactory ());
+    *project_->arrangerObjectFactory (),
+    [this] (
+      actions::ArrangerObjectSelectionOperator::ArrangerObjectVisitor visitor) {
+      project_->tracklist ()->for_each_arranger_object (visitor);
+    });
 
   QQmlEngine::setObjectOwnership (sel_operator, QQmlEngine::JavaScriptOwnership);
 

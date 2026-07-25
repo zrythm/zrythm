@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_selection_operator.h"
@@ -21,16 +21,122 @@
 namespace zrythm::actions
 {
 
+/**
+ * @brief Configures a freshly cloned object as the right half of a cut.
+ *
+ * The clone is made to start at the content position the original plays at
+ * @p cut_pos and end at the original's timeline end, such that playback
+ * across the cut is identical to the uncut original.
+ */
+template <structure::arrangement::BoundedObject ObjectT>
+static void
+configure_cut_right_half (
+  const ObjectT    &orig,
+  ObjectT          &right,
+  dsp::TimelineTick cut_pos,
+  dsp::TimelineTick orig_timeline_end)
+{
+  if constexpr (structure::arrangement::ClipObject<ObjectT>)
+    {
+      right.position ()->setTicks (cut_pos.asDouble ());
+      // Length: end at the original's timeline end. Must be set after the
+      // position (the warp mapping is relative to it) and before the loop
+      // range (bounds-tracking may reset the loop positions when the length
+      // changes).
+      structure::arrangement::set_end_from_timeline_ticks (
+        right, orig_timeline_end);
+
+      // Clip start: the content position the original plays at the cut,
+      // accounting for the clip start and looping (same convention as
+      // playback).
+      right.set_loop_range (
+        orig.content_position_at_timeline (cut_pos),
+        orig.loopStartPosition ()->asTick (),
+        orig.loopEndPosition ()->asTick ());
+    }
+  else
+    {
+      // Non-clip bounded objects (e.g. MIDI notes) live in their parent
+      // clip's content coordinates and are edited in the clip editor's
+      // unwound content space: start at the unwound content position under
+      // the cut, keeping the original's other properties (from the clone)
+      // and the remaining length.
+      const auto * parent_clip = qobject_cast<
+        const structure::arrangement::Clip *> (orig.parentObject ());
+      if (parent_clip != nullptr)
+        {
+          const auto content_at_cut =
+            parent_clip->contentWarp ()->timelineToContent (cut_pos);
+          const auto orig_content_end =
+            orig.position ()->asTick () + orig.length ()->asTick ();
+          right.position ()->setTicks (content_at_cut.asDouble ());
+          right.length ()->setTicks (
+            (orig_content_end - content_at_cut).asDouble ());
+        }
+    }
+
+  if constexpr (structure::arrangement::FadeableObject<ObjectT>)
+    {
+      // Shift the fade offsets so the fades continue seamlessly across the
+      // cut. Fade offsets are not warped (see ArrangerObjectFadeRange), so
+      // the timeline-domain cut offset applies directly.
+      const auto o_cut = cut_pos - orig.position ()->asTick ();
+      right.fadeRange ()->startOffset ()->setTicks (
+        std::max (
+          dsp::TimelineTick{
+            units::ticks (orig.fadeRange ()->startOffset ()->ticks ()) }
+            - o_cut,
+          dsp::TimelineTick{})
+          .asDouble ());
+      right.fadeRange ()->endOffset ()->setTicks (
+        std::max (
+          dsp::TimelineTick{
+            units::ticks (orig.fadeRange ()->endOffset ()->ticks ()) }
+            - o_cut,
+          dsp::TimelineTick{})
+          .asDouble ());
+    }
+}
+
+/**
+ * @brief Returns the content position of the first chord strictly after
+ * @p chord in its parent clip, or std::nullopt if there is none.
+ */
+static std::optional<dsp::ContentTick>
+next_chord_content_position (const structure::arrangement::ChordObject &chord)
+{
+  const auto * clip = qobject_cast<const structure::arrangement::ChordClip *> (
+    chord.parentObject ());
+  if (clip == nullptr)
+    return std::nullopt;
+  const auto                      pos = chord.position ()->asTick ();
+  std::optional<dsp::ContentTick> next;
+  for (const auto * other : clip->get_sorted_children_view ())
+    {
+      const auto other_pos = other->position ()->asTick ();
+      if (other_pos > pos)
+        {
+          // The view is sorted by position: the first child after @p chord
+          // is the next one
+          next = other_pos;
+          break;
+        }
+    }
+  return next;
+}
+
 ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
   undo::UndoStack                               &undoStack,
   QItemSelectionModel                           &selectionModel,
   ObjectOwnerProvider                            objectOwnerProvider,
   structure::arrangement::ArrangerObjectFactory &objectFactory,
+  TimelineObjectsEnumerator                      timelineObjectsEnumerator,
   QObject *                                      parent)
     : QObject (parent), undo_stack_ (undoStack),
       selection_model_ (selectionModel),
       object_owner_provider_ (std::move (objectOwnerProvider)),
-      object_factory_ (objectFactory)
+      object_factory_ (objectFactory),
+      timeline_objects_enumerator_ (std::move (timelineObjectsEnumerator))
 {
 }
 
@@ -161,7 +267,8 @@ ArrangerObjectSelectionOperator::deleteObjects ()
     }
 
   // Create and push command
-  undo_stack_.beginMacro (
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
     QObject::tr ("Delete %1 Objects").arg (selected_objects.size ()));
   for (const auto &obj_ref : selected_objects)
     {
@@ -181,7 +288,256 @@ ArrangerObjectSelectionOperator::deleteObjects ()
         },
         owner_var);
     }
-  undo_stack_.endMacro ();
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::cutObjectsAt (double ticks)
+{
+  auto selected_objects = extractSelectedObjects ();
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to cut");
+      return false;
+    }
+
+  SelectedObjectsVector targets;
+  for (const auto &obj_ref : selected_objects)
+    {
+      if (is_cuttable_at (obj_ref, ticks))
+        targets.push_back (obj_ref);
+    }
+
+  return cut_objects (targets, ticks);
+}
+
+bool
+ArrangerObjectSelectionOperator::cutAllObjectsAt (
+  double                         ticks,
+  structure::arrangement::Clip * clip)
+{
+  SelectedObjectsVector targets;
+  const auto            collect_if_cuttable = [&] (const auto &obj_ref) {
+    if (is_cuttable_at (obj_ref, ticks))
+      targets.push_back (obj_ref);
+  };
+
+  if (clip != nullptr)
+    {
+      // Editor context: cut the bounded children of the given clip.
+      for (auto * model : clip->get_child_list_models ())
+        {
+          const int rows = model->rowCount ();
+          for (int i = 0; i < rows; ++i)
+            {
+              auto variant = model->data (
+                model->index (i, 0),
+                structure::arrangement::ArrangerObjectListModel::
+                  ArrangerObjectUuidReferenceRole);
+              if (
+                auto * obj_ref =
+                  variant.value<
+                    structure::arrangement::ArrangerObjectUuidReference *> ())
+                {
+                  collect_if_cuttable (*obj_ref);
+                }
+            }
+        }
+    }
+  else
+    {
+      // Timeline context: cut across all tracks and lanes.
+      if (!timeline_objects_enumerator_)
+        {
+          z_warning ("No timeline objects enumerator set - cannot cut all");
+          return false;
+        }
+      timeline_objects_enumerator_ (collect_if_cuttable);
+    }
+
+  return cut_objects (targets, ticks);
+}
+
+bool
+ArrangerObjectSelectionOperator::is_cuttable_at (
+  const structure::arrangement::ArrangerObjectUuidReference &obj_ref,
+  double                                                     ticks)
+{
+  const dsp::TimelineTick cut_pos{ units::ticks (ticks) };
+  auto                    obj_var = utils::convert_to_variant_qobj<
+    structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+  return std::visit (
+    [&] (const auto &obj) {
+      using ObjectT = utils::base_type<decltype (obj)>;
+      if constexpr (std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+        {
+          // Chords are unbounded but effectively span from their position
+          // until the next chord or the clip's end, so they are cuttable
+          // strictly inside that span.
+          const auto * clip = qobject_cast<const structure::arrangement::Clip *> (
+            obj->parentObject ());
+          if (clip == nullptr)
+            return false;
+          if (
+            cut_pos <= structure::arrangement::timeline_ticks (*clip)
+            || cut_pos >= structure::arrangement::timeline_end_ticks (*clip))
+            return false;
+          const auto cut_content =
+            clip->contentWarp ()->timelineToContent (cut_pos);
+          if (cut_content <= obj->position ()->asTick ())
+            return false;
+          const auto next = next_chord_content_position (*obj);
+          return !next.has_value () || cut_content < *next;
+        }
+      else if constexpr (!structure::arrangement::BoundedObject<ObjectT>)
+        {
+          return false;
+        }
+      else
+        {
+          if constexpr (!structure::arrangement::ClipObject<ObjectT>)
+            {
+              // Non-clip bounded objects (e.g. notes) live in their parent
+              // clip's content coordinates — a parent clip is needed to map
+              // the cut position.
+              if (
+                qobject_cast<const structure::arrangement::Clip *> (
+                  obj->parentObject ())
+                == nullptr)
+                return false;
+            }
+          return cut_pos > structure::arrangement::timeline_ticks (*obj)
+                 && cut_pos < structure::arrangement::timeline_end_ticks (*obj);
+        }
+    },
+    obj_var);
+}
+
+bool
+ArrangerObjectSelectionOperator::cut_objects (
+  const SelectedObjectsVector &objects,
+  double                       ticks)
+{
+  if (objects.empty ())
+    {
+      z_debug ("No cuttable objects at position {}", ticks);
+      return false;
+    }
+
+  const dsp::TimelineTick cut_pos{ units::ticks (ticks) };
+
+  // Resolve owners up front: objects without an owner are skipped, and if
+  // none can be cut the operation is a no-op (no empty undo step).
+  struct ResolvedTarget
+  {
+    structure::arrangement::ArrangerObjectUuidReference obj_ref;
+    structure::arrangement::ArrangerObjectPtrVariant    obj_var;
+    ArrangerObjectOwnerPtrVariant                       owner_var;
+  };
+  std::vector<ResolvedTarget> targets;
+  targets.reserve (objects.size ());
+  for (const auto &obj_ref : objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      auto       owner_var = object_owner_provider_ (obj_var);
+      const bool has_owner = std::visit (
+        [] (const auto &owner) { return owner != nullptr; }, owner_var);
+      if (!has_owner)
+        {
+          z_warning ("No owner found for object {}", obj_ref.id ());
+          continue;
+        }
+      targets.push_back (
+        { obj_ref, std::move (obj_var), std::move (owner_var) });
+    }
+  if (targets.empty ())
+    {
+      z_debug ("No objects with owners to cut at position {}", ticks);
+      return false;
+    }
+
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Cut %1 Objects").arg (targets.size ()));
+  for (const auto &target : targets)
+    {
+      std::visit (
+        [&] (const auto &obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+
+          std::optional<structure::arrangement::ArrangerObjectUuidReference>
+            new_obj_ref_opt;
+          if constexpr (structure::arrangement::BoundedObject<ObjectT>)
+            {
+              const auto tl_end =
+                structure::arrangement::timeline_end_ticks (*obj);
+
+              // Right half: clone and configure BEFORE resizing the original
+              // (the resize may change the original's loop range via
+              // bounds-tracking)
+              auto new_obj_ref =
+                object_factory_.clone_new_object_identity (*obj);
+              auto * new_obj = new_obj_ref.template get_object_as<ObjectT> ();
+              configure_cut_right_half (*obj, *new_obj, cut_pos, tl_end);
+
+              // Left half: resize the original to end at the cut position.
+              // For clips the delta is in timeline ticks; for objects inside
+              // a clip (e.g. notes, edited in the clip's unwound content
+              // space) it is in content ticks, ending the original at the
+              // unwound content position under the cut.
+              double resize_delta = (cut_pos - tl_end).asDouble ();
+              if constexpr (!structure::arrangement::ClipObject<ObjectT>)
+                {
+                  const auto * parent_clip = qobject_cast<
+                    const structure::arrangement::Clip *> (obj->parentObject ());
+                  const auto content_at_cut =
+                    parent_clip->contentWarp ()->timelineToContent (cut_pos);
+                  resize_delta =
+                    (content_at_cut
+                     - (obj->position ()->asTick () + obj->length ()->asTick ()))
+                      .asDouble ();
+                }
+              undo_stack_.push (new commands::ResizeArrangerObjectsCommand (
+                { target.obj_ref }, commands::ResizeType::Bounds,
+                commands::ResizeDirection::FromEnd, resize_delta));
+
+              new_obj_ref_opt = std::move (new_obj_ref);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+            {
+              // Chords are unbounded and play until the next chord: the
+              // clone starting at the cut automatically ends the original's
+              // effective span, so no resize is needed. Like other editor
+              // content, the clone is placed at the unwound content position
+              // under the cut.
+              const auto * clip = qobject_cast<
+                const structure::arrangement::Clip *> (obj->parentObject ());
+              if (clip != nullptr)
+                {
+                  auto new_obj_ref =
+                    object_factory_.clone_new_object_identity (*obj);
+                  auto * new_obj =
+                    new_obj_ref.template get_object_as<ObjectT> ();
+                  new_obj->position ()->setTicks (
+                    clip->contentWarp ()->timelineToContent (cut_pos).asDouble ());
+                  new_obj_ref_opt = std::move (new_obj_ref);
+                }
+            }
+          if (!new_obj_ref_opt.has_value ())
+            return;
+
+          // Add the right half to the same owner.
+          std::visit (
+            [&] (auto &owner) {
+              undo_stack_.push (new commands::AddArrangerObjectCommand (
+                *owner, *new_obj_ref_opt));
+            },
+            target.owner_var);
+        },
+        target.obj_var);
+    }
 
   return true;
 }
@@ -215,8 +571,8 @@ ArrangerObjectSelectionOperator::cloneObjects ()
     }
 
   // Create and push command
-  undo_stack_.beginMacro (
-    QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Copy %1 Objects").arg (selected_objects.size ()));
   for (const auto &obj_ref : selected_objects)
     {
       auto obj_var = utils::convert_to_variant_qobj<
@@ -242,7 +598,6 @@ ArrangerObjectSelectionOperator::cloneObjects ()
         },
         owner_var);
     }
-  undo_stack_.endMacro ();
 
   return true;
 }
@@ -281,7 +636,8 @@ ArrangerObjectSelectionOperator::toggleMute ()
 
   const bool new_muted = !targets.front ().current_muted;
 
-  undo_stack_.beginMacro (
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
     new_muted
       ? QObject::tr ("Mute %1 Objects").arg (targets.size ())
       : QObject::tr ("Unmute %1 Objects").arg (targets.size ()));
@@ -290,7 +646,6 @@ ArrangerObjectSelectionOperator::toggleMute ()
       undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
         *target.mute_obj, "muted", new_muted));
     }
-  undo_stack_.endMacro ();
 
   return true;
 }
@@ -320,7 +675,8 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
       return false;
     }
 
-  undo_stack_.beginMacro (
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
     QObject::tr ("Change Timestretch Algorithm on %1 Clip(s)")
       .arg (targets.size ()));
   for (auto * clip : targets)
@@ -328,7 +684,6 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
       undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
         *clip, "stretchAlgorithm", QVariant::fromValue (algorithm)));
     }
-  undo_stack_.endMacro ();
 
   return true;
 }
@@ -343,7 +698,8 @@ ArrangerObjectSelectionOperator::setTimebaseOverride (dsp::Timebase timebase)
       return false;
     }
 
-  undo_stack_.beginMacro (QObject::tr ("Set Timebase Override"));
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Set Timebase Override"));
   for (const auto &obj_ref : selected_objects)
     {
       auto obj_var = utils::convert_to_variant_qobj<
@@ -359,7 +715,6 @@ ArrangerObjectSelectionOperator::setTimebaseOverride (dsp::Timebase timebase)
         },
         obj_var);
     }
-  undo_stack_.endMacro ();
   return true;
 }
 
@@ -373,7 +728,8 @@ ArrangerObjectSelectionOperator::clearTimebaseOverride ()
       return false;
     }
 
-  undo_stack_.beginMacro (QObject::tr ("Clear Timebase Override"));
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Clear Timebase Override"));
   for (const auto &obj_ref : selected_objects)
     {
       auto obj_var = utils::convert_to_variant_qobj<
@@ -389,7 +745,6 @@ ArrangerObjectSelectionOperator::clearTimebaseOverride ()
         },
         obj_var);
     }
-  undo_stack_.endMacro ();
   return true;
 }
 

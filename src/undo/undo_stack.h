@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -60,6 +60,27 @@ public:
     stack_->beginMacro (text);
   }
   Q_INVOKABLE void endMacro () { stack_->endMacro (); }
+
+  /**
+   * @brief RAII helper that ends an undo macro on destruction.
+   *
+   * Keeps beginMacro()/endMacro() balanced on early returns and exceptions.
+   * QUndoStack discards empty macros, so destructing without any pushes is a
+   * no-op.
+   */
+  class ScopedMacro
+  {
+  public:
+    ScopedMacro (UndoStack &stack, const QString &text) : stack_ (stack)
+    {
+      stack_.beginMacro (text);
+    }
+    ~ScopedMacro () { stack_.endMacro (); }
+    Q_DISABLE_COPY_MOVE (ScopedMacro)
+
+  private:
+    UndoStack &stack_;
+  };
 
   QStringList undoActions ();
   QStringList redoActions ();

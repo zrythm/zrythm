@@ -98,6 +98,19 @@ ApplicationWindow {
     closeAndDestroy();
   }
 
+  // Temporary scissors: override the arranger tool with the Cut tool while
+  // Alt is held
+  Connections {
+    function onModifierHeldChanged() {
+      if (KeyboardState.altHeld)
+        root.session.uiState.tool.setToolValueOverride(ArrangerTool.Cut);
+      else
+        root.session.uiState.tool.clearToolValueOverride();
+    }
+
+    target: KeyboardState
+  }
+
   Connections {
     function onAlertRequested(title, message) {
       console.log("Alert requested: ", title, message);

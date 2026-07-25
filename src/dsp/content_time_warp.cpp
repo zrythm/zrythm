@@ -38,22 +38,34 @@ ContentTimeWarp::contentToTimeline (ContentTick content) const
 double
 ContentTimeWarp::contentToTimelineTicksRelative (double contentTicks) const
 {
+  return contentToTimelineTicksRelative (ContentTick{ units::ticks (contentTicks) })
+    .asDouble ();
+}
+
+TimelineTick
+ContentTimeWarp::contentToTimelineTicksRelative (ContentTick content) const
+{
   const auto pos_ticks =
     (clip_position_ != nullptr) ? clip_position_->asTick () : TimelineTick{};
-  return (contentToTimeline (ContentTick{ units::ticks (contentTicks) })
-          - pos_ticks)
-    .asDouble ();
+  return contentToTimeline (content) - pos_ticks;
 }
 
 double
 ContentTimeWarp::timelineTicksRelativeToContent (
   double timelineTicksRelative) const
 {
+  return timelineTicksRelativeToContent (
+           TimelineTick{ units::ticks (timelineTicksRelative) })
+    .asDouble ();
+}
+
+ContentTick
+ContentTimeWarp::timelineTicksRelativeToContent (
+  TimelineTick timeline_delta) const
+{
   const auto pos_ticks =
     (clip_position_ != nullptr) ? clip_position_->asTick () : TimelineTick{};
-  return timelineToContent (
-           pos_ticks + TimelineTick{ units::ticks (timelineTicksRelative) })
-    .asDouble ();
+  return timelineToContent (pos_ticks + timeline_delta);
 }
 
 units::sample_t
@@ -106,6 +118,17 @@ ContentTimeWarp::configure_as_warped (
   mode_ = Mode::Warped;
   source_bpm_ = source_bpm;
   user_markers_.assign (user_markers.begin (), user_markers.end ());
+  connect_for_mode ();
+  rebuild ();
+  Q_EMIT mapChanged ();
+}
+
+void
+ContentTimeWarp::copy_configuration_from (const ContentTimeWarp &other)
+{
+  mode_ = other.mode_;
+  source_bpm_ = other.source_bpm_;
+  user_markers_ = other.user_markers_;
   connect_for_mode ();
   rebuild ();
   Q_EMIT mapChanged ();

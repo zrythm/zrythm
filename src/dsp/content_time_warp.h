@@ -35,6 +35,9 @@ namespace zrythm::dsp
  * (timeline ticks relative to the clip start).
  *
  * Main-thread only — not real-time safe.
+ *
+ * @see Clip for an overview of the content/timeline coordinate spaces and
+ * the unwound-content-space convention used by clip editors and playback.
  */
 class ContentTimeWarp : public QObject
 {
@@ -84,6 +87,9 @@ public:
    */
   Q_INVOKABLE double contentToTimelineTicksRelative (double contentTicks) const;
 
+  /// Strong-typed overload for C++ callers (see the double version above).
+  TimelineTick contentToTimelineTicksRelative (ContentTick content) const;
+
   /**
    * @brief Convert timeline ticks RELATIVE to the clip's start position back to
    * content ticks.
@@ -98,6 +104,10 @@ public:
    */
   Q_INVOKABLE double
   timelineTicksRelativeToContent (double timelineTicksRelative) const;
+
+  /// Strong-typed overload for C++ callers (see the double version above).
+  ContentTick
+  timelineTicksRelativeToContent (TimelineTick timeline_delta) const;
 
   /**
    * @brief Convert content ticks to ABSOLUTE timeline samples.
@@ -129,6 +139,15 @@ public:
   void configure_as_warped (
     units::bpm_t               source_bpm,
     std::span<const WarpPoint> user_markers);
+
+  /**
+   * @brief Copies the configuration (mode, source BPM and user markers) from
+   * @p other.
+   *
+   * The warp points are rebuilt from the copied configuration against this
+   * warp's own clip position/length and tempo map.
+   */
+  void copy_configuration_from (const ContentTimeWarp &other);
 
   /**
    * @brief Returns true if the warp mapping is 1:1 (no timestretch needed).
