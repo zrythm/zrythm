@@ -186,6 +186,9 @@ FixedPpqTempoMap<PPQ>::tick_to_seconds (TimelineTick tick) const
 {
   const auto tick_q = tick.asQuantity ();
 
+  // Negative timeline positions are invalid
+  assert (tick_q >= units::ticks (0.0));
+
   // No inserted events: base tempo (constant) over the whole timeline.
   if (events_.empty ())
     return tick_q / base_bpm_;

@@ -101,8 +101,10 @@ Item {
   // this for type-specific drops (e.g. chord pad → chord editor).
   signal canvasDrop(DragEvent drop)
 
-  function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
-    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
+  function calculateSnappedTimelinePosition(currentTicks: real, startTicks: real): real {
+    // Clamp: timeline positions must be at or after the timeline origin
+    const clampedTicks = Math.max(0, currentTicks);
+    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(clampedTicks, startTicks) : clampedTicks;
   }
 
   function findArrangerObjectLoadersInRectRecursive(item: Item, rect: rect, recursive: bool): var {
@@ -656,7 +658,7 @@ Item {
             let ticksToMove;
             if (root.shouldSnap) {
               const unsnappedObjectTicks = objectTicksAtDragStart + unsnappedTicksSinceStart;
-              const snappedObjectTicks = root.calculateSnappedPosition(unsnappedObjectTicks, objectTicksAtDragStart);
+              const snappedObjectTicks = root.calculateSnappedTimelinePosition(unsnappedObjectTicks, objectTicksAtDragStart);
               ticksToMove = snappedObjectTicks - objectTicksAtDragStart;
             } else {
               ticksToMove = unsnappedTicksSinceStart;
@@ -792,7 +794,7 @@ Item {
                 if (resizeType === ArrangerObjectSelectionOperator.Fades) {
                   // Fades use direct manipulation (live resizeObjects) because the
                   // plain Rectangle temp view cannot represent fade curves.
-                  const startTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+                  const startTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
                   const obj = root.getObjectAtCurrentIndex();
                   let delta = 0;
                   if (obj.fadeRange) {
@@ -807,7 +809,7 @@ Item {
                     const obj = root.getObjectAtCurrentIndex();
                     resizeOriginalTicks = ArrangerObjectHelper.timelineTicks(obj);
                   }
-                  const snappedStartTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+                  const snappedStartTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
                   const deltaTicks = snappedStartTicks - resizeOriginalTicks;
                   currentResizeDeltaTicks = deltaTicks;
                   root.dragState.dragDeltaPx = deltaTicks * root.ruler.pxPerTick;
@@ -817,7 +819,7 @@ Item {
                   moveSelectionsY(dy, prevCoordinates.y);
                 }
                 // Apply snapping to resize endpoint
-                const endTicks = root.calculateSnappedPosition(currentTimelineTicks, startTimelineTicks);
+                const endTicks = root.calculateSnappedTimelinePosition(currentTimelineTicks, startTimelineTicks);
                 if ([Arranger.CreatingResizingMovingR, Arranger.CreatingResizingR].includes(action)) {
                   const obj = root.getObjectAtCurrentIndex();
                   if (endTicks > ArrangerObjectHelper.timelineTicks(obj)) {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -179,6 +179,11 @@ public:
           play_state_ (play_state), loop_enabled_ (loop_enabled),
           punch_enabled_ (punch_enabled), recording_enabled_ (recording_enabled)
     {
+      assert (loop_range_.first >= units::samples (0));
+      assert (loop_range_.second >= loop_range_.first);
+      assert (punch_range_.first >= units::samples (0));
+      assert (punch_range_.second >= punch_range_.first);
+      assert (playhead_position_ >= units::samples (0));
     }
 
     std::pair<units::sample_t, units::sample_t>

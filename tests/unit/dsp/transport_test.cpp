@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/tempo_map.h"
@@ -70,6 +70,22 @@ TEST_F (TransportTest, InitialState)
 
   auto [punch_in, punch_out] = snapshot.get_punch_range_positions ();
   EXPECT_GE (punch_out.in (units::samples), punch_in.in (units::samples));
+}
+
+// Test that moving the playhead to a negative position clamps to the timeline
+// origin (the audio thread must never see a negative position)
+TEST_F (TransportTest, NegativePlayheadMoveClampsToZero)
+{
+  transport_->playhead ()->setTicks (-100.0);
+
+  EXPECT_DOUBLE_EQ (transport_->playhead ()->ticks (), 0.0);
+  EXPECT_EQ (
+    transport_->get_playhead_position_in_audio_thread (), units::samples (0));
+
+  // The snapshot must contain a valid position
+  const auto snapshot = transport_->get_snapshot ();
+  EXPECT_EQ (
+    snapshot.get_playhead_position_in_audio_thread (), units::samples (0));
 }
 
 // Test QML property setters and getters
@@ -398,10 +414,6 @@ TEST_F (TransportTest, LoopEndCrossing)
 // Test edge cases
 TEST_F (TransportTest, EdgeCases)
 {
-  // Test moving to negative position
-  transport_->move_playhead (units::ticks (-100.0), false);
-  EXPECT_GE (transport_->playhead ()->ticks (), 0.0);
-
   // Test very large position
   const auto large_ticks = units::ticks (1000000.0);
   transport_->move_playhead (large_ticks, false);
