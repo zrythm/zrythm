@@ -442,12 +442,12 @@ TEST_F (RecordingMaterializerTest, TransportStopFinalizesMacro)
   write_and_drain (track_id, units::samples (0), true);
   EXPECT_EQ (clip_create_count_, 1);
 
-  EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
+  EXPECT_TRUE (undo_stack_->macroActive ()) << "Macro should still be open";
 
   coordinator_->disarm_track (track_id);
   coordinator_->process_pending ();
 
-  EXPECT_TRUE (undo_stack_->canUndo ())
+  EXPECT_FALSE (undo_stack_->macroActive ())
     << "Macro should be finalized after session ends";
 }
 
@@ -466,11 +466,11 @@ TEST_F (RecordingMaterializerTest, MultipleTracksSameMacro)
   write_and_drain (track_b, units::samples (0), true);
   EXPECT_EQ (clip_create_count_, 2);
 
-  EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
+  EXPECT_TRUE (undo_stack_->macroActive ()) << "Macro should still be open";
 
   coordinator_->disarm_track (track_a);
   coordinator_->process_pending ();
-  EXPECT_FALSE (undo_stack_->canUndo ())
+  EXPECT_TRUE (undo_stack_->macroActive ())
     << "Macro should remain open while track_b is still recording";
 
   write_and_drain (track_b, units::samples (256), true);
@@ -484,7 +484,7 @@ TEST_F (RecordingMaterializerTest, MultipleTracksSameMacro)
   coordinator_->disarm_track (track_b);
   coordinator_->process_pending ();
 
-  EXPECT_TRUE (undo_stack_->canUndo ())
+  EXPECT_FALSE (undo_stack_->macroActive ())
     << "Macro should be finalized only when all tracks done";
 }
 
@@ -535,12 +535,12 @@ TEST_F (RecordingMaterializerTest, DisarmFinalizesMacro)
   write_and_drain (track_id, units::samples (0), true);
   EXPECT_EQ (clip_create_count_, 1);
 
-  EXPECT_FALSE (undo_stack_->canUndo ()) << "Macro should still be open";
+  EXPECT_TRUE (undo_stack_->macroActive ()) << "Macro should still be open";
 
   coordinator_->disarm_track (track_id);
   coordinator_->process_pending ();
 
-  EXPECT_TRUE (undo_stack_->canUndo ())
+  EXPECT_FALSE (undo_stack_->macroActive ())
     << "Macro should be finalized after disarm and process_pending";
 }
 
@@ -559,7 +559,7 @@ TEST_F (RecordingMaterializerTest, DisarmOneOfTwoTracksDoesNotFinalizeMacro)
   coordinator_->disarm_track (track_a);
   coordinator_->process_pending ();
 
-  EXPECT_FALSE (undo_stack_->canUndo ())
+  EXPECT_TRUE (undo_stack_->macroActive ())
     << "Macro should remain open while track_b is still recording";
 }
 
@@ -581,7 +581,7 @@ TEST_F (RecordingMaterializerTest, DisarmAllTracksFinalizesMacro)
   coordinator_->disarm_track (track_b);
   coordinator_->process_pending ();
 
-  EXPECT_TRUE (undo_stack_->canUndo ())
+  EXPECT_FALSE (undo_stack_->macroActive ())
     << "Macro should be finalized after all tracks disarmed";
 }
 

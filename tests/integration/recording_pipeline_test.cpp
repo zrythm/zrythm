@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "commands/add_arranger_object_command.h"
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
 #include "controllers/recording_session.h"
@@ -226,6 +227,20 @@ protected:
     project_->engine ()->deactivate ();
   }
 
+  // Mimics the production creators, which add the created clip to the
+  // track's lane via an undo command (UndoStack macros are lazy, so the
+  // recording macro only materializes once a command is pushed)
+  template <typename ClipT>
+  void add_clip_to_track_lane (
+    structure::tracks::TrackUuid                        track_id,
+    structure::arrangement::ArrangerObjectUuidReference clip_ref)
+  {
+    auto * track = project_->tracklist ()->get_track (track_id);
+    ASSERT_NE (track, nullptr);
+    undo_stack_->push (new commands::AddArrangerObjectCommand<ClipT> (
+      *track->lanes ()->getFirstLane (), clip_ref));
+  }
+
   void create_materializer ()
   {
     undo_stack_ = zrythm::actions::create_mock_undo_stack ();
@@ -242,6 +257,8 @@ protected:
             track_id, start_position, initial_frames);
           if (!clip_ref_opt.has_value ())
             return std::nullopt;
+          add_clip_to_track_lane<structure::arrangement::AudioClip> (
+            track_id, *clip_ref_opt);
           return controllers::RecordingMaterializer::CreatedClip{
             std::move (*clip_ref_opt), lane_index
           };
@@ -262,6 +279,8 @@ protected:
                 units::samples (start_position.in (units::samples)))
               .asDouble ());
           midi_clip_refs_.push_back (clip_ref);
+          add_clip_to_track_lane<structure::arrangement::MidiClip> (
+            track_id, clip_ref);
           return controllers::RecordingMaterializer::CreatedClip{
             std::move (clip_ref), lane_index
           };

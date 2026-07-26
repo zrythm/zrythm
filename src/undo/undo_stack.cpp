@@ -124,9 +124,42 @@ UndoStack::execute_with_engine_pause_if_needed (
 }
 
 void
+UndoStack::beginMacro (const QString &text)
+{
+  ++open_macro_count_;
+  pending_macros_.emplace_back (text);
+}
+
+void
+UndoStack::endMacro ()
+{
+  if (open_macro_count_ <= 0)
+    {
+      z_warning ("endMacro() called without a matching beginMacro()");
+      return;
+    }
+  --open_macro_count_;
+  if (!pending_macros_.empty ())
+    {
+      // Macro never received a command - discard it
+      pending_macros_.pop_back ();
+      return;
+    }
+  stack_->endMacro ();
+}
+
+void
 UndoStack::push (QUndoCommand * cmd)
 {
   z_debug ("Performing action '{}'", cmd->text ());
+  // Realize any pending (lazy) macros so this command lands inside them (done
+  // before the engine pause so macro realization doesn't depend on the pause
+  // requester invoking the action synchronously)
+  for (const auto &macro_text : pending_macros_)
+    {
+      stack_->beginMacro (macro_text);
+    }
+  pending_macros_.clear ();
   execute_with_engine_pause_if_needed (*cmd, [this, cmd] () {
     stack_->push (cmd);
   });
@@ -135,6 +168,11 @@ UndoStack::push (QUndoCommand * cmd)
 void
 UndoStack::redo ()
 {
+  if (open_macro_count_ > 0)
+    {
+      z_warning ("Ignoring redo() while a macro is open");
+      return;
+    }
   assert (canRedo ());
   assert (stack_->canRedo ());
   z_debug ("Redoing");
@@ -145,6 +183,11 @@ UndoStack::redo ()
 void
 UndoStack::undo ()
 {
+  if (open_macro_count_ > 0)
+    {
+      z_warning ("Ignoring undo() while a macro is open");
+      return;
+    }
   assert (canUndo ());
   z_debug ("Undoing");
   const auto * cmd = stack_->command (stack_->index () - 1);

@@ -462,8 +462,9 @@ TEST_F (FileImporterTest, ImportUnsupportedFiles)
   // Should not have created any tracks for unsupported files
   EXPECT_EQ (track_collection_->track_count (), initial_track_count);
 
-  // Should still push macro command even if no files are processed
-  EXPECT_GT (undo_stack_->count (), initial_undo_count);
+  // Empty macros are discarded, so nothing should be pushed when no files
+  // are processed
+  EXPECT_EQ (undo_stack_->count (), initial_undo_count);
 }
 
 // Test undo/redo functionality for file import
