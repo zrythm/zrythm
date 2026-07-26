@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/track_all.h"
@@ -19,6 +19,60 @@ Tracklist::Tracklist (utils::IObjectRegistry &registry, QObject * parent)
 // ========================================================================
 // QML Interface
 // ========================================================================
+
+void
+Tracklist::for_each_arranger_object (
+  const std::function<void (arrangement::ArrangerObjectUuidReference)> &visitor)
+  const
+{
+  const auto visit_owner_children = [&] (const auto * owner) {
+    if (owner == nullptr)
+      return;
+    for (const auto &child_ref : owner->get_children_vector ())
+      {
+        visitor (child_ref);
+      }
+  };
+
+  for (const auto &track_ref : collection ()->tracks ())
+    {
+      const auto * track = track_ref.get ();
+
+      // Lane clips (MIDI and audio)
+      if (track->lanes () != nullptr)
+        {
+          for (const auto &lane : track->lanes ()->lanes ())
+            {
+              visit_owner_children (
+                static_cast<const arrangement::ArrangerObjectOwner<
+                  arrangement::MidiClip> *> (lane.get ()));
+              visit_owner_children (
+                static_cast<const arrangement::ArrangerObjectOwner<
+                  arrangement::AudioClip> *> (lane.get ()));
+            }
+        }
+
+      // Chord clips, scale objects and markers (singleton tracks)
+      visit_owner_children (
+        dynamic_cast<const arrangement::ArrangerObjectOwner<
+          arrangement::ChordClip> *> (track));
+      visit_owner_children (
+        dynamic_cast<const arrangement::ArrangerObjectOwner<
+          arrangement::ScaleObject> *> (track));
+      visit_owner_children (
+        dynamic_cast<const arrangement::ArrangerObjectOwner<
+          arrangement::Marker> *> (track));
+
+      // Automation clips
+      if (const auto * atl = track->automationTracklist ())
+        {
+          for (const auto * at : atl->automation_tracks ())
+            {
+              visit_owner_children (at);
+            }
+        }
+    }
+}
 
 Track *
 Tracklist::getTrackForTimelineObject (
@@ -205,6 +259,28 @@ Tracklist::getTrackLaneForObject (
       }
     default:
       break;
+    }
+  return nullptr;
+}
+
+AutomationTrack *
+Tracklist::getAutomationTrackForObject (
+  const arrangement::AutomationClip * clip) const
+{
+  for (const auto &track_ref : collection ()->tracks ())
+    {
+      const auto * atl = track_ref.get ()->automationTracklist ();
+      if (atl == nullptr)
+        continue;
+      for (auto * automation_track : atl->automation_tracks ())
+        {
+          if (
+            automation_track->arrangement::ArrangerObjectOwner<
+              arrangement::AutomationClip>::contains_object (clip->get_uuid ()))
+            {
+              return automation_track;
+            }
+        }
     }
   return nullptr;
 }

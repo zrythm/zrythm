@@ -215,6 +215,38 @@ TEST_F (AutomationTrackTest, AutomationPointAround)
   EXPECT_EQ (point, nullptr);
 }
 
+// Probing exactly at a clip's start in samples: the sample -> tick
+// conversion can land slightly below the clip's start tick (sample
+// rounding); Clip::content_position_at_timeline() clamps within a 1-sample
+// tolerance, so the point at the clip's content start is returned.
+TEST_F (AutomationTrackTest, AutomationPointBeforeAtClipStartSampleRounding)
+{
+  // At the default 120 BPM / 44.1kHz / 960 PPQN, 1 tick = 22.96875 samples.
+  // Tick 17 maps to 390.46875 samples, which rounds down to 390; converting
+  // 390 samples back yields ~16.98 ticks - below the clip's start tick
+  constexpr double clip_start_ticks = 17.0;
+  const auto       clip_start_samples = tempo_map->tick_to_samples_rounded (
+    dsp::TimelineTick{ units::ticks (clip_start_ticks) });
+  ASSERT_EQ (clip_start_samples, units::samples (390));
+  ASSERT_LT (
+    tempo_map->samples_to_tick (clip_start_samples).asDouble (),
+    clip_start_ticks);
+
+  auto clip_ref = utils::create_object<arrangement::AutomationClip> (
+    *registry, *tempo_map_wrapper, *registry, nullptr);
+  auto * clip = clip_ref.get_object_as<arrangement::AutomationClip> ();
+  clip->position ()->setTicks (clip_start_ticks);
+  clip->length ()->setTicks (960.0);
+  automation_track->add_object (clip_ref);
+  add_automation_point (clip, 0.5, 0.0);
+
+  auto * point =
+    automation_track->get_automation_point_before (clip_start_samples, true);
+  ASSERT_NE (point, nullptr);
+  EXPECT_DOUBLE_EQ (point->position ()->ticks (), 0.0);
+  EXPECT_FLOAT_EQ (point->value (), 0.5f);
+}
+
 TEST_F (AutomationTrackTest, NormalizedValueCalculation)
 {
   auto clip = create_automation_clip (100, 200);

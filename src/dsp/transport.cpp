@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -275,6 +275,9 @@ Transport::can_user_move_playhead () const
 void
 Transport::move_playhead (units::precise_tick_t target_ticks, bool set_cue_point)
 {
+  // Negative timeline positions are invalid
+  assert (target_ticks >= units::ticks (0.0));
+
   /* if currently recording, do nothing */
   if (!can_user_move_playhead ())
     {

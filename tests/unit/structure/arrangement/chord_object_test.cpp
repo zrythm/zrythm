@@ -110,6 +110,23 @@ TEST_F (ChordObjectTest, Copying)
   EXPECT_EQ (target->chordDescriptor ()->chordType (), dsp::ChordType::Minor);
   EXPECT_EQ (target->chordDescriptor ()->inversion (), 2);
   EXPECT_FALSE (target->mute ()->muted ());
+  // No bass on the source -> no bass on the copy
+  EXPECT_FALSE (target->chordDescriptor ()->hasBass ());
+}
+
+// Test copying a chord with a bass note
+TEST_F (ChordObjectTest, CopyingWithBassNote)
+{
+  chord_obj->chordDescriptor ()->setRootNote (dsp::MusicalNote::E);
+  chord_obj->chordDescriptor ()->setBassNote (dsp::MusicalNote::G);
+
+  auto target =
+    std::make_unique<ChordObject> (*tempo_map_wrapper, parent.get ());
+
+  init_from (*target, *chord_obj, utils::ObjectCloneType::Snapshot);
+
+  EXPECT_TRUE (target->chordDescriptor ()->hasBass ());
+  EXPECT_EQ (target->chordDescriptor ()->bassNote (), dsp::MusicalNote::G);
 }
 
 // Test edge cases

@@ -37,17 +37,24 @@ Arranger {
   required property UuidPropertyOperator uuidPropertyOperator
 
   function beginObjectCreation(coordinates: point): AutomationPoint {
-    const value = getNormalizedValueAtY(coordinates.y);
-    console.log("Automation Arranger: beginObjectCreation", coordinates, value);
-    const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - root.automationClip.position.ticks;
-
-    let automationPoint = objectCreator.addAutomationPoint(root.automationClip, localTickPosition, value);
+    const automationPoint = createObjectAt(coordinates);
     root.currentAction = Arranger.CreatingMoving;
     root.selectSingleObject(root.automationClip.automationPoints, root.automationClip.automationPoints.rowCount() - 1);
     CursorManager.setResizeEndCursor();
 
     return automationPoint;
+  }
+
+  function createObjectAt(coordinates: point): AutomationPoint {
+    const value = getNormalizedValueAtY(coordinates.y);
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
+    const localTickPosition = tickPosition - root.automationClip.position.ticks;
+
+    return objectCreator.addAutomationPoint(root.automationClip, localTickPosition, value);
+  }
+
+  function createdObjectTypeAt(coordinates: point): int {
+    return ArrangerObject.AutomationPoint;
   }
 
   function getNormalizedValueAtY(y: real): real {
@@ -73,7 +80,7 @@ Arranger {
       return;
     }
     const delta = currentValue - prevValue;
-    console.log("moving selections by", delta, "value");
+    console.debug("moving selections by", delta, "value");
     if (root.selectionOperator) {
       const success = root.selectionOperator.moveAutomationPointsByDelta(delta);
       if (!success) {

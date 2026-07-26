@@ -19,6 +19,9 @@ class ArrangerTool : public QObject
   QML_ELEMENT
   Q_PROPERTY (
     int toolValue READ toolValue WRITE setToolValue NOTIFY toolValueChanged)
+  Q_PROPERTY (
+    ToolType effectiveToolValue READ effectiveToolValue NOTIFY
+      effectiveToolValueChanged FINAL)
 
 public:
   enum ToolType : std::uint8_t
@@ -40,6 +43,27 @@ public:
   void              setToolValue (int tool);
   Q_SIGNAL void     toolValueChanged (int tool);
 
+  /**
+   * @brief The tool currently in effect.
+   *
+   * Equal to the override set via @ref setToolValueOverride if any,
+   * otherwise @ref toolValue.
+   */
+  [[nodiscard]] ToolType effectiveToolValue () const;
+
+  /**
+   * @brief Sets a transient override of the selected tool (e.g. temporary
+   * scissors while a modifier is held).
+   *
+   * @param tool A @ref ToolType value. Not serialized or cloned.
+   */
+  Q_INVOKABLE void setToolValueOverride (int tool);
+
+  /// Clears the override set via @ref setToolValueOverride.
+  Q_INVOKABLE void clearToolValueOverride ();
+
+  Q_SIGNAL void effectiveToolValueChanged ();
+
   friend void init_from (
     ArrangerTool          &obj,
     const ArrangerTool    &other,
@@ -51,6 +75,9 @@ private:
 
 private:
   ToolType tool_{ ToolType::Select };
+
+  // Transient UI state (not serialized or cloned).
+  std::optional<ToolType> tool_value_override_;
 };
 
 } // namespace zrythm::structure::project

@@ -32,6 +32,17 @@ namespace zrythm::structure::arrangement
  *
  * Common members (position, length, name, mute, color) remain on
  * ArrangerObject via feature flags.
+ *
+ * ### Coordinate spaces
+ *
+ * Clip content — child objects (notes, chords, automation points) and the
+ * clip start/loop positions — lives in "unwound content space": content
+ * ticks relative to the clip's data origin, ignoring looping. Clip
+ * editors display and edit children in this space. Playback and rendering
+ * expand loops in the content domain (see for_each_loop_segment()) and
+ * map unwound content positions to the timeline through the
+ * ContentTimeWarp; content_position_at_timeline() performs the inverse
+ * mapping (timeline position to played content position).
  */
 class Clip : public ArrangerObject
 {
@@ -108,6 +119,21 @@ public:
    */
   double        timelineLengthTicks () const;
   Q_SIGNAL void timelineLengthTicksChanged ();
+
+  /**
+   * @brief Returns the content position this clip plays at the given timeline
+   * position.
+   *
+   * Accounts for the clip start and looping in the unwound content domain
+   * (the same convention as playback): the unwound content position is
+   * offset by the clip start, then wrapped into the loop range.
+   *
+   * @pre @p timeline_pos is within the clip's timeline span
+   * ([position, end)), up to a 1-sample tolerance on either side (positions
+   * within the tolerance are clamped; see the implementation).
+   */
+  dsp::ContentTick
+  content_position_at_timeline (dsp::TimelineTick timeline_pos) const;
 
   /**
    * @brief Returns the end position of this clip in timeline samples.

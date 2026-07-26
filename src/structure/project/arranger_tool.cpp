@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/project/arranger_tool.h"
+#include "utils/debug.h"
 
 #include <nlohmann/json.hpp>
 
@@ -24,6 +25,39 @@ ArrangerTool::setToolValue (int tool)
     {
       tool_ = new_tool;
       Q_EMIT toolValueChanged (tool);
+      Q_EMIT effectiveToolValueChanged ();
+    }
+}
+
+ArrangerTool::ToolType
+ArrangerTool::effectiveToolValue () const
+{
+  return tool_value_override_.value_or (tool_);
+}
+
+void
+ArrangerTool::setToolValueOverride (int tool)
+{
+  if (tool < 0 || tool > static_cast<int> (ToolType::Audition))
+    {
+      z_warning ("Invalid tool value override: {}", tool);
+      return;
+    }
+  const auto new_override = static_cast<ToolType> (tool);
+  if (tool_value_override_ != new_override)
+    {
+      tool_value_override_ = new_override;
+      Q_EMIT effectiveToolValueChanged ();
+    }
+}
+
+void
+ArrangerTool::clearToolValueOverride ()
+{
+  if (tool_value_override_.has_value ())
+    {
+      tool_value_override_.reset ();
+      Q_EMIT effectiveToolValueChanged ();
     }
 }
 

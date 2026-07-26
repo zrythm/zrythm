@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -14,7 +14,6 @@ RowLayout {
 
   ButtonGroup {
     id: toolGroup
-
   }
 
   LinkedButtons {
@@ -26,7 +25,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Select
+      checked: root.tool.effectiveToolValue === ArrangerTool.Select
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "box-dotted-symbolic.svg")
 
       onClicked: {
@@ -41,7 +40,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Edit
+      checked: root.tool.effectiveToolValue === ArrangerTool.Edit
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "pencil-symbolic.svg")
 
       onClicked: {
@@ -56,7 +55,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Cut
+      checked: root.tool.effectiveToolValue === ArrangerTool.Cut
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "cut-symbolic.svg")
 
       onClicked: {
@@ -71,7 +70,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Eraser
+      checked: root.tool.effectiveToolValue === ArrangerTool.Eraser
       icon.source: ResourceManager.getIconUrl("gnome-icon-library", "eraser2-symbolic.svg")
 
       onClicked: {
@@ -86,7 +85,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Ramp
+      checked: root.tool.effectiveToolValue === ArrangerTool.Ramp
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "draw-line.svg")
 
       onClicked: {
@@ -101,7 +100,7 @@ RowLayout {
     Button {
       ButtonGroup.group: toolGroup
       checkable: true
-      checked: root.tool.toolValue === ArrangerTool.Audition
+      checked: root.tool.effectiveToolValue === ArrangerTool.Audition
       icon.source: ResourceManager.getIconUrl("zrythm-dark", "audio-volume-high.svg")
 
       onClicked: {

@@ -3,12 +3,14 @@
 
 #include "dsp/chord_descriptor.h"
 #include "dsp/midi_event.h"
+#include "dsp/musical_scale.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/tracks/chord_track.h"
 #include "structure/tracks/track_processor.h"
 #include "utils/app_settings.h"
 #include "utils/midi.h"
 #include "utils/object_registry.h"
+#include "utils/qt.h"
 
 #include "helpers/in_memory_settings_backend.h"
 #include "helpers/scoped_qcoreapplication.h"
@@ -218,6 +220,52 @@ TEST_F (ChordTrackCacheTest, ChordClipPopulatesMidiCache)
   EXPECT_EQ (note_pitches[0], 48);
   EXPECT_EQ (note_pitches[1], 52);
   EXPECT_EQ (note_pitches[2], 55);
+}
+
+// ========================================================================
+// get_chord_at_ticks / get_scale_at_ticks tests
+// ========================================================================
+
+TEST_F (ChordTrackCacheTest, GetChordAtNegativeTicksClampsToZero)
+{
+  auto clip_ref =
+    factory_->get_builder<arrangement::ChordClip> ()
+      .with_start_ticks (units::ticks (0))
+      .with_end_ticks (units::ticks (3840))
+      .build_in_registry ();
+  chord_track_->arrangement::ArrangerObjectOwner<
+    arrangement::ChordClip>::add_object (clip_ref);
+  auto * clip = clip_ref.get_object_as<arrangement::ChordClip> ();
+
+  auto chord_ref =
+    factory_->get_builder<arrangement::ChordObject> ()
+      .with_start_ticks (units::ticks (0))
+      .with_chord_descriptor (dsp::MusicalNote::C, dsp::ChordType::Major)
+      .build_in_registry ();
+  clip->add_object (chord_ref);
+  const auto * chord = chord_ref.get_object_as<arrangement::ChordObject> ();
+
+  EXPECT_EQ (
+    chord_track_->get_chord_at_ticks (dsp::TimelineTick{ units::ticks (-960.0) }),
+    chord);
+}
+
+TEST_F (ChordTrackCacheTest, GetScaleAtNegativeTicksClampsToZero)
+{
+  auto scale_ref =
+    factory_->get_builder<arrangement::ScaleObject> ()
+      .with_start_ticks (units::ticks (0))
+      .with_scale (
+        utils::make_qobject_unique<dsp::MusicalScale> (
+          dsp::MusicalScale::ScaleType::Major, dsp::MusicalNote::C))
+      .build_in_registry ();
+  chord_track_->arrangement::ArrangerObjectOwner<
+    arrangement::ScaleObject>::add_object (scale_ref);
+  const auto * scale = scale_ref.get_object_as<arrangement::ScaleObject> ();
+
+  EXPECT_EQ (
+    chord_track_->get_scale_at_ticks (dsp::TimelineTick{ units::ticks (-960.0) }),
+    scale);
 }
 
 // ========================================================================

@@ -327,17 +327,16 @@ ArrangerObjectCreator::editChordObjectsDescriptor (
   if (valid_count == 0)
     return;
 
-  const bool single = (valid_count == 1);
+  const bool                                  single = (valid_count == 1);
+  std::optional<undo::UndoStack::ScopedMacro> macro;
   if (!single)
-    undo_stack_.beginMacro (QObject::tr ("Edit chord"));
+    macro.emplace (undo_stack_, QObject::tr ("Edit chord"));
   for (const auto &variant : chordObjects)
     {
       auto * co = variant.value<structure::arrangement::ChordObject *> ();
       if (co != nullptr)
         undo_stack_.push (new commands::EditChordObjectCommand (co, target));
     }
-  if (!single)
-    undo_stack_.endMacro ();
 }
 
 structure::arrangement::MidiClip *
@@ -364,6 +363,19 @@ ArrangerObjectCreator::add_audio_clip_with_clip (
     std::move (clip_id), start_ticks);
   add_laned_object (track, lane, obj_ref);
   return obj_ref.get_object_as<structure::arrangement::AudioClip> ();
+}
+
+structure::arrangement::ScaleObject *
+ArrangerObjectCreator::addScaleObject (
+  structure::tracks::ChordTrack * track,
+  double                          startTicks)
+{
+  // Same default scale as new projects (see Project)
+  return add_scale_object (
+    *track,
+    utils::make_qobject_unique<dsp::MusicalScale> (
+      dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A),
+    units::ticks (startTicks));
 }
 
 structure::arrangement::ScaleObject *

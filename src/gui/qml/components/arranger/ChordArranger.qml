@@ -27,20 +27,35 @@ Arranger {
   signal verticalChordChangeRequested(var targetDescriptor)
 
   function beginObjectCreation(coordinates: point): ChordObject {
-    const row = Math.floor(coordinates.y / root.rowHeight);
-    const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - root.chordClip.position.ticks;
-
-    if (row >= 0 && row < root.chordRowModel.rowCount()) {
-      const desc = root.chordRowModel.descriptorAtRow(row);
-      const obj = root.objectCreator.addChordObjectFromDescriptor(root.chordClip, localTickPosition, desc);
+    const obj = createObjectAt(coordinates);
+    if (obj !== null) {
       root.currentAction = Arranger.CreatingResizingMovingR;
       root.selectSingleObject(root.chordClip.chordObjects, root.chordClip.chordObjects.rowCount() - 1);
       CursorManager.setResizeEndCursor();
       return obj;
     }
-    root.chordCreationRequested(localTickPosition);
+
+    // Empty zone (below all rows): ask the user to pick a chord type
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
+    root.chordCreationRequested(tickPosition - root.chordClip.position.ticks);
     return null;
+  }
+
+  function createObjectAt(coordinates: point): ChordObject {
+    const row = Math.floor(coordinates.y / root.rowHeight);
+    if (row < 0 || row >= root.chordRowModel.rowCount()) {
+      return null;
+    }
+
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
+    const localTickPosition = tickPosition - root.chordClip.position.ticks;
+    const desc = root.chordRowModel.descriptorAtRow(row);
+    return root.objectCreator.addChordObjectFromDescriptor(root.chordClip, localTickPosition, desc);
+  }
+
+  function createdObjectTypeAt(coordinates: point): int {
+    const row = Math.floor(coordinates.y / root.rowHeight);
+    return (row >= 0 && row < root.chordRowModel.rowCount()) ? ArrangerObject.ChordObject : -1;
   }
 
   function getObjectHeight(obj: ChordObject): real {
@@ -78,6 +93,9 @@ Arranger {
   editorSettings: clipEditor.chordEditor
   enableYScroll: true
   scrollView.ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+  // Creation failure means the popup zone was clicked - no rubber-band
+  // selection fallback
+  selectionFallbackOnFailedCreation: false
 
   content: Repeater {
     id: chordObjectsRepeater

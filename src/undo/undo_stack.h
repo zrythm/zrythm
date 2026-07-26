@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -55,11 +55,42 @@ public:
     return stack_->command (index);
   }
 
-  Q_INVOKABLE void beginMacro (const QString &text)
+  // Macro creation is lazy: beginMacro() only records the macro text, and the
+  // macro is realized on the underlying QUndoStack when the first command is
+  // pushed. endMacro() without any intervening push() discards the macro, so
+  // empty macros never pollute the undo stack (QUndoStack itself has no API
+  // to remove an empty macro once begun).
+  Q_INVOKABLE void beginMacro (const QString &text);
+  Q_INVOKABLE void endMacro ();
+
+  /**
+   * @brief Returns whether a macro is currently open (begun but not ended).
+   *
+   * This covers both pending (not yet realized) and realized macros, so it
+   * remains accurate even though macro creation is lazy.
+   */
+  Q_INVOKABLE bool macroActive () const { return open_macro_count_ > 0; }
+
+  /**
+   * @brief RAII helper that ends an undo macro on destruction.
+   *
+   * Keeps beginMacro()/endMacro() balanced on early returns and exceptions.
+   * Because macro creation is lazy (see beginMacro()), destructing without
+   * any pushes discards the macro instead of pushing an empty one.
+   */
+  class ScopedMacro
   {
-    stack_->beginMacro (text);
-  }
-  Q_INVOKABLE void endMacro () { stack_->endMacro (); }
+  public:
+    ScopedMacro (UndoStack &stack, const QString &text) : stack_ (stack)
+    {
+      stack_.beginMacro (text);
+    }
+    ~ScopedMacro () { stack_.endMacro (); }
+    Q_DISABLE_COPY_MOVE (ScopedMacro)
+
+  private:
+    UndoStack &stack_;
+  };
 
   QStringList undoActions ();
   QStringList redoActions ();
@@ -110,6 +141,16 @@ private:
 
 private:
   utils::QObjectUniquePtr<QUndoStack> stack_;
+
+  /**
+   * Texts of macros begun via beginMacro() but not yet realized on the
+   * underlying stack (see beginMacro()). Realized in order on the next
+   * push(); pending entries nest inside any already-realized macro.
+   */
+  std::vector<QString> pending_macros_;
+
+  // Number of macros begun but not yet ended (pending + realized)
+  int open_macro_count_ = 0;
 
   // Engine operations
   CallbackWithPausedEngineRequester callback_with_paused_engine_requester_;

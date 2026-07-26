@@ -95,71 +95,73 @@ PluginImporter::import (
             }
           z_debug ("Plugin instance ready. Importing {}", descr->name ());
 
-          // Begin macro for undo/redo
-          undo_stack_.beginMacro (
-            QObject::tr ("Import %1").arg (descr->name ()));
+          {
+            // End the macro before the handler below runs: handlers must not
+            // have any undo commands they push folded into the import macro
+            undo::UndoStack::ScopedMacro macro (
+              undo_stack_, QObject::tr ("Import %1").arg (descr->name ()));
 
-          // Determine target group
-          auto * plugin_group = [&] () -> plugins::PluginGroup * {
-            structure::tracks::Track * track = nullptr;
+            // Determine target group
+            auto * plugin_group = [&] () -> plugins::PluginGroup * {
+              structure::tracks::Track * track = nullptr;
 
-            if (track_or_group.has_value ())
+              if (track_or_group.has_value ())
+                {
+                  if (
+                    std::holds_alternative<plugins::PluginGroup *> (
+                      track_or_group.value ()))
+                    {
+                      return std::get<plugins::PluginGroup *> (
+                        track_or_group.value ());
+                    }
+                  if (
+                    std::holds_alternative<structure::tracks::Track *> (
+                      track_or_group.value ()))
+                    {
+                      track = std::get<structure::tracks::Track *> (
+                        track_or_group.value ());
+                    }
+                }
+
+              if (descr->isInstrument ())
+                {
+                  auto * t =
+                    track != nullptr
+                      ? track
+                      : track_creator_
+                          .addEmptyTrackFromType (
+                            structure::tracks::Track::Type::Instrument)
+                          .value<structure::tracks::InstrumentTrack *> ();
+                  return t->channel ()->instruments ();
+                }
+              if (descr->isMidiModifier ())
+                {
+                  auto * t =
+                    track != nullptr
+                      ? track
+                      : track_creator_
+                          .addEmptyTrackFromType (
+                            structure::tracks::Track::Type::MidiBus)
+                          .value<structure::tracks::MidiBusTrack *> ();
+                  return t->channel ()->midiFx ();
+                }
+              auto * t =
+                track != nullptr
+                  ? track
+                  : track_creator_
+                      .addEmptyTrackFromType (
+                        structure::tracks::Track::Type::AudioBus)
+                      .value<structure::tracks::AudioBusTrack *> ();
+              return t->channel ()->inserts ();
+            }();
+
+            // Add plugin to the group using AddPluginCommand
+            if (plugin_group != nullptr)
               {
-                if (
-                  std::holds_alternative<plugins::PluginGroup *> (
-                    track_or_group.value ()))
-                  {
-                    return std::get<plugins::PluginGroup *> (
-                      track_or_group.value ());
-                  }
-                if (
-                  std::holds_alternative<structure::tracks::Track *> (
-                    track_or_group.value ()))
-                  {
-                    track = std::get<structure::tracks::Track *> (
-                      track_or_group.value ());
-                  }
+                undo_stack_.push (new commands::AddPluginCommand (
+                  *plugin_group, inner_plugin_ref, index));
               }
-
-            if (descr->isInstrument ())
-              {
-                auto * t =
-                  track != nullptr
-                    ? track
-                    : track_creator_
-                        .addEmptyTrackFromType (
-                          structure::tracks::Track::Type::Instrument)
-                        .value<structure::tracks::InstrumentTrack *> ();
-                return t->channel ()->instruments ();
-              }
-            if (descr->isMidiModifier ())
-              {
-                auto * t =
-                  track != nullptr
-                    ? track
-                    : track_creator_
-                        .addEmptyTrackFromType (
-                          structure::tracks::Track::Type::MidiBus)
-                        .value<structure::tracks::MidiBusTrack *> ();
-                return t->channel ()->midiFx ();
-              }
-            auto * t =
-              track != nullptr
-                ? track
-                : track_creator_
-                    .addEmptyTrackFromType (structure::tracks::Track::Type::AudioBus)
-                    .value<structure::tracks::AudioBusTrack *> ();
-            return t->channel ()->inserts ();
-          }();
-
-          // Add plugin to the group using AddPluginCommand
-          if (plugin_group != nullptr)
-            {
-              undo_stack_.push (new commands::AddPluginCommand (
-                *plugin_group, inner_plugin_ref, index));
-            }
-
-          undo_stack_.endMacro ();
+          }
 
           instantiation_finished_handler_ (inner_plugin_ref);
         },

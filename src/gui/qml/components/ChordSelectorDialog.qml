@@ -30,7 +30,7 @@ Dialog {
     return s;
   }
   property ChordTrack chordTrack: null
-  readonly property ScaleObject currentScale: root.chordTrack ? root.chordTrack.scaleAtTicks(root.playheadTicks) : null
+  readonly property ScaleObject currentScale: root.chordTrack ? root.chordTrack.scaleAtTimelineTicks(root.playheadTicks) : null
   property var diatonicChords: []
   property bool filterToScale: false
   readonly property var noteNames: root._scaleHelper.allNoteNames()

@@ -23,55 +23,119 @@ Arranger {
       return null;
     }
 
+    // Move-only objects (no length): open the macro before creation so the
+    // creation and the post-creation drag-move fold into a single undo step;
+    // the arranger closes it on release
+    const objectType = createdObjectTypeAt(coordinates);
+    const isMoveOnlyObject = objectType === ArrangerObject.Marker || objectType === ArrangerObject.ScaleObject;
+    if (isMoveOnlyObject) {
+      root.undoStack.beginMacro(objectType === ArrangerObject.Marker ? qsTr("Create Marker") : qsTr("Create Scale Object"));
+    }
+
+    const obj = createObjectAt(coordinates);
+    if (obj === null) {
+      if (isMoveOnlyObject) {
+        root.undoStack.endMacro();
+      }
+      return null;
+    }
+
+    if (isMoveOnlyObject) {
+      root.creationMacroOpen = true;
+      root.currentAction = Arranger.CreatingMoving;
+      if (objectType === ArrangerObject.Marker) {
+        const markerTrack = track as MarkerTrack;
+        root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
+      } else {
+        const chordTrack = track as ChordTrack;
+        root.selectSingleObject(chordTrack.scaleObjects, chordTrack.scaleObjects.rowCount() - 1);
+      }
+      CursorManager.setClosedHandCursor();
+      return obj;
+    }
+
+    // Clips
+    root.currentAction = Arranger.CreatingResizingR;
+    const automationTrack = getAutomationTrackAtY(coordinates.y);
+    if (automationTrack) {
+      const clipOwner = automationTrack.clips;
+      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
+    } else if (track.type === Track.Chord) {
+      const clipOwner = (track as ChordTrack).chordClips;
+      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
+    } else {
+      const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
+      const clipOwner = trackLane ? trackLane.midiClips : track.lanes.getFirstLane().midiClips;
+      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
+    }
+    CursorManager.setResizeEndCursor();
+    return obj;
+  }
+
+  // Chord tracks show scale objects in a strip at the bottom of the track
+  function chordTrackScaleLaneContains(y: real): bool {
+    const trackItem = getTrackItemAtY(y);
+    if (!trackItem || trackItem.track.type !== Track.Chord) {
+      return false;
+    }
+    const relativeY = y + tracksListView.contentY - trackItem.y;
+    const scaleLaneHeight = arrangerObjectTextMetrics.height + 2 * ZrythmTheme.buttonPadding;
+    return relativeY > trackItem.track.height - scaleLaneHeight;
+  }
+
+  function createObjectAt(coordinates: point): ArrangerObject {
+    const track = getTrackAtY(coordinates.y);
+    if (!track) {
+      return null;
+    }
+
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
 
     const automationTrack = getAutomationTrackAtY(coordinates.y);
     if (automationTrack) {
-      console.log("Creating automation clip");
-      let clip = objectCreator.addEmptyAutomationClip(track, automationTrack, tickPosition);
-      root.currentAction = Arranger.CreatingResizingR;
-      const clipOwner = automationTrack.clips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-      CursorManager.setResizeEndCursor();
-      return clip;
+      return objectCreator.addEmptyAutomationClip(track, automationTrack, tickPosition);
     }
 
     const trackLane = getTrackLaneAtY(coordinates.y) as TrackLane;
-    console.log("Timeline: beginObjectCreation", coordinates, track, trackLane, automationTrack);
 
     switch (track.type) {
     case Track.Chord:
-      {
-        console.log("creating chord clip");
-        let clip = objectCreator.addEmptyChordClip(track, tickPosition);
-        root.currentAction = Arranger.CreatingResizingR;
-        const clipOwner = (track as ChordTrack).chordClips;
-        root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-        CursorManager.setResizeEndCursor();
-        return clip;
+      if (chordTrackScaleLaneContains(coordinates.y)) {
+        return objectCreator.addScaleObject(track as ChordTrack, tickPosition);
       }
+      return objectCreator.addEmptyChordClip(track, tickPosition);
     case Track.Marker:
-      console.log("creating marker", Track.Marker, ArrangerObject.Marker);
-      root.undoStack.beginMacro("Create Marker");
-      let marker = objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), tickPosition);
-      root.currentAction = Arranger.CreatingMoving;
-      const markerTrack = track as MarkerTrack;
-      root.selectSingleObject(markerTrack.markers, markerTrack.markers.rowCount() - 1);
-      CursorManager.setClosedHandCursor();
-      return marker;
+      return objectCreator.addMarker(Marker.Custom, track, qsTr("Custom Marker"), tickPosition);
     case Track.Midi:
     case Track.Instrument:
-      console.log("creating midi clip", track.lanes.getFirstLane());
-      let clip = objectCreator.addEmptyMidiClip(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
-      root.currentAction = Arranger.CreatingResizingR;
-      const clipOwner = trackLane ? trackLane.midiClips : track.lanes.getFirstLane().midiClips;
-      root.selectSingleObject(clipOwner, clipOwner.rowCount() - 1);
-      CursorManager.setResizeEndCursor();
-      return clip;
+      return objectCreator.addEmptyMidiClip(track, trackLane ? trackLane : track.lanes.getFirstLane(), tickPosition);
     default:
       return null;
     }
     return null;
+  }
+
+  function createdObjectTypeAt(coordinates: point): int {
+    const track = getTrackAtY(coordinates.y);
+    if (!track) {
+      return -1;
+    }
+
+    if (getAutomationTrackAtY(coordinates.y)) {
+      return ArrangerObject.AutomationClip;
+    }
+
+    switch (track.type) {
+    case Track.Chord:
+      return chordTrackScaleLaneContains(coordinates.y) ? ArrangerObject.ScaleObject : ArrangerObject.ChordClip;
+    case Track.Marker:
+      return ArrangerObject.Marker;
+    case Track.Midi:
+    case Track.Instrument:
+      return ArrangerObject.MidiClip;
+    default:
+      return -1;
+    }
   }
 
   function getAutomationTrackAtY(y: real): AutomationTrack {
@@ -97,7 +161,6 @@ Arranger {
     // Get relative Y position within the automation tracks list
     const automationListY = y - loader.y;
     const automationItem = loader.item.itemAt(0, automationListY);
-    console.log("Timeline: getAutomationTrackAtY", y, trackItem, loader, automationListY, automationItem);
     return automationItem?.automationTrack ?? null;
   }
 
@@ -222,7 +285,6 @@ Arranger {
     // Get relative Y position within the lanes list
     const laneListY = relativeY - laneLoader.y;
     const laneItem = laneLoader.item.itemAt(0, laneListY);
-    console.log("Timeline: getTrackLaneAtY", relativeY, trackItem, laneLoader, laneListY, laneItem);
     return laneItem?.trackLane ?? null;
   }
 

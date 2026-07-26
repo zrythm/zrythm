@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <thread>
@@ -159,6 +159,19 @@ TEST_F (PlayheadTest, ConcurrentAccess)
   EXPECT_GT (
     playhead_->position_samples_FOR_TESTING ().in (units::samples), 0.0);
   EXPECT_GT (playhead_->position_ticks ().in (units::ticks), 0.0);
+}
+
+// Test that setting a negative tick position clamps to the timeline origin
+TEST_F (PlayheadTest, SetNegativePositionClampsToZero)
+{
+  // Set a valid position first, then a negative one
+  playhead_->set_position_ticks (units::ticks (1920.0));
+  playhead_->set_position_ticks (units::ticks (-1945.0));
+
+  // Tick and sample positions must remain consistent at 0
+  EXPECT_DOUBLE_EQ (playhead_->position_ticks ().in (units::ticks), 0.0);
+  EXPECT_DOUBLE_EQ (
+    playhead_->position_samples_FOR_TESTING ().in (units::samples), 0.0);
 }
 
 // Test large block processing

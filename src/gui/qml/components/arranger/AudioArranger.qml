@@ -21,10 +21,6 @@ Arranger {
   property QObjectPropertyOperator fadePropertyOperator: null
   readonly property Track track: clipEditor.track
 
-  function beginObjectCreation(coordinates: point): var {
-    return null;
-  }
-
   function getObjectHeight(obj): real {
     return 0;
   }

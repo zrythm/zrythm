@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -22,6 +22,8 @@ class MockArrangerObjectOwner
         structure::arrangement::MidiClip>,
       public structure::arrangement::ArrangerObjectOwner<
         structure::arrangement::AudioClip>,
+      public structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AutomationClip>,
       public structure::arrangement::ArrangerObjectOwner<
         structure::arrangement::AutomationPoint>,
       public structure::arrangement::ArrangerObjectOwner<
@@ -48,6 +50,10 @@ class MockArrangerObjectOwner
     zrythm::structure::arrangement::AudioClip)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
     MockArrangerObjectOwner,
+    automationClips,
+    zrythm::structure::arrangement::AutomationClip)
+  DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
+    MockArrangerObjectOwner,
     automationPoints,
     zrythm::structure::arrangement::AutomationPoint)
   DEFINE_ARRANGER_OBJECT_OWNER_QML_PROPERTIES (
@@ -68,6 +74,8 @@ public:
         ArrangerObjectOwner<structure::arrangement::Marker> (registry, *this),
         ArrangerObjectOwner<structure::arrangement::MidiClip> (registry, *this),
         ArrangerObjectOwner<structure::arrangement::AudioClip> (registry, *this),
+        ArrangerObjectOwner<
+          structure::arrangement::AutomationClip> (registry, *this),
         ArrangerObjectOwner<
           structure::arrangement::AutomationPoint> (registry, *this),
         ArrangerObjectOwner<structure::arrangement::TempoObject> (registry, *this),
@@ -90,6 +98,11 @@ public:
     std::string,
     get_field_name_for_serialization,
     (const structure::arrangement::AudioClip * obj),
+    (const override));
+  MOCK_METHOD (
+    std::string,
+    get_field_name_for_serialization,
+    (const structure::arrangement::AutomationClip * obj),
     (const override));
   MOCK_METHOD (
     std::string,

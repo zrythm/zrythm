@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/curve.h"
@@ -220,22 +220,16 @@ AutomationTrack::get_automation_point_before (
   const auto clip_end_frames = r->get_end_position_samples (true);
 
   /* if clip ends before pos, assume pos is the clip's end pos */
-  auto local_pos = timeline_frames_to_local (
-    *r,
+  const auto effective_pos =
     !search_only_backwards && (clip_end_frames < timeline_position)
       ? clip_end_frames - units::samples (1)
-      : timeline_position,
-    true);
+      : timeline_position;
+  const auto played = r->content_position_at_timeline (
+    dsp::TimelineTick{ r->get_tempo_map ().samples_to_tick (effective_pos) });
 
-  const auto &ap_tempo_map = r->get_tempo_map ();
-  const auto  ap_clip_start =
-    ap_tempo_map.tick_to_samples_rounded (r->position ()->asTick ());
   for (auto * ap : std::ranges::reverse_view (r->get_children_view ()))
     {
-      if (
-        r->contentWarp ()->contentToTimelineSamples (ap->position ()->asTick ())
-          - ap_clip_start
-        <= local_pos)
+      if (ap->position ()->asTick () <= played)
         {
           return ap;
         }
@@ -341,12 +335,12 @@ AutomationTrack::get_normalized_value (
 
   /* if clip ends before pos, assume pos is the clip's end pos */
   const auto clip_end_position = clip->get_end_position_samples (true);
-  auto       localp = timeline_frames_to_local (
-    *clip,
+  const auto effective_pos =
     !search_only_clips_enclosing_position && (clip_end_position < timeline_frames)
       ? clip_end_position - units::samples (1)
-      : timeline_frames,
-    true);
+      : timeline_frames;
+  const auto played = clip->content_position_at_timeline (
+    dsp::TimelineTick{ clip->get_tempo_map ().samples_to_tick (effective_pos) });
 
   auto next_ap = clip->get_next_ap (*ap, false);
 
@@ -357,33 +351,22 @@ AutomationTrack::get_normalized_value (
     }
 
   /* ratio of how far in we are in the curve */
-  const auto &val_tempo_map = clip->get_tempo_map ();
-  const auto  val_clip_start =
-    val_tempo_map.tick_to_samples_rounded (clip->position ()->asTick ());
-  auto ap_frames =
-    clip->contentWarp ()->contentToTimelineSamples (ap->position ()->asTick ())
-    - val_clip_start;
-  auto next_ap_frames =
-    clip->contentWarp ()->contentToTimelineSamples (
-      next_ap->position ()->asTick ())
-    - val_clip_start;
-  double ratio = 1.0;
-  auto   numerator = localp - ap_frames;
-  auto   denominator = next_ap_frames - ap_frames;
-  if (numerator == units::samples (0))
+  const auto ap_pos = ap->position ()->asTick ();
+  const auto numerator = played - ap_pos;
+  const auto denominator = next_ap->position ()->asTick () - ap_pos;
+  double     ratio = 1.0;
+  if (numerator == dsp::ContentTick{})
     {
       ratio = 0.0;
     }
-  else if (denominator == units::samples (0)) [[unlikely]]
+  else if (denominator == dsp::ContentTick{}) [[unlikely]]
     {
       z_warning ("denominator is 0. this should never happen");
       ratio = 1.0;
     }
   else
     {
-      ratio =
-        numerator.in<double> (units::samples)
-        / denominator.in<double> (units::samples);
+      ratio = numerator.asDouble () / denominator.asDouble ();
     }
   z_return_val_if_fail (ratio >= 0, 0.f);
 

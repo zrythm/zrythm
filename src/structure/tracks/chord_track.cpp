@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -143,22 +143,28 @@ ChordTrack::get_scale_at (size_t index) const -> ScaleObject *
 }
 
 auto
-ChordTrack::get_scale_at_ticks (units::precise_tick_t timeline_ticks) const
+ChordTrack::get_scale_at_ticks (dsp::TimelineTick timeline_ticks) const
   -> ScaleObject *
 {
+  timeline_ticks =
+    std::max (timeline_ticks, dsp::TimelineTick{ units::ticks (0.0) });
+
   auto view = std::ranges::reverse_view (
     ArrangerObjectOwner<ScaleObject>::get_children_view ());
   auto it = std::ranges::find_if (view, [timeline_ticks] (const auto &scale) {
-    return units::ticks (scale->position ()->ticks ()) <= timeline_ticks;
+    return scale->position ()->asTick () <= timeline_ticks;
   });
 
   return it != view.end () ? (*it) : nullptr;
 }
 
 auto
-ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
+ChordTrack::get_chord_at_ticks (dsp::TimelineTick timeline_ticks) const
   -> ChordObject *
 {
+  timeline_ticks =
+    std::max (timeline_ticks, dsp::TimelineTick{ units::ticks (0.0) });
+
   const auto timeline_frames =
     base_dependencies_.tempo_map_.get_tempo_map ().tick_to_samples_rounded (
       dsp::TimelineTick{ timeline_ticks });
@@ -174,33 +180,27 @@ ChordTrack::get_chord_at_ticks (units::precise_tick_t timeline_ticks) const
 
   const auto * clip = *clip_var;
 
-  const auto local_frames =
-    timeline_frames_to_local (*clip, timeline_frames, true);
+  const auto played =
+    clip->content_position_at_timeline (dsp::TimelineTick{ timeline_ticks });
 
   auto chord_objects_view = clip->get_children_view () | std::views::reverse;
-  const auto &co_tempo_map = clip->get_tempo_map ();
-  const auto  co_clip_start =
-    co_tempo_map.tick_to_samples_rounded (clip->position ()->asTick ());
   auto it = std::ranges::find_if (chord_objects_view, [&] (const auto &co) {
-    return clip->contentWarp ()->contentToTimelineSamples (
-             co->position ()->asTick ())
-             - co_clip_start
-           <= local_frames;
+    return co->position ()->asTick () <= played;
   });
 
   return it != chord_objects_view.end () ? (*it) : nullptr;
 }
 
 auto
-ChordTrack::chordAtTicks (double ticks) const -> ChordObject *
+ChordTrack::chordAtTimelineTicks (double ticks) const -> ChordObject *
 {
-  return get_chord_at_ticks (units::ticks (ticks));
+  return get_chord_at_ticks (dsp::TimelineTick{ units::ticks (ticks) });
 }
 
 auto
-ChordTrack::scaleAtTicks (double ticks) const -> ScaleObject *
+ChordTrack::scaleAtTimelineTicks (double ticks) const -> ScaleObject *
 {
-  return get_scale_at_ticks (units::ticks (ticks));
+  return get_scale_at_ticks (dsp::TimelineTick{ units::ticks (ticks) });
 }
 
 void

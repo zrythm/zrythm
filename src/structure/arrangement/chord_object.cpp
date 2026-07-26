@@ -37,7 +37,10 @@ init_from (
   auto *       dest = obj.chordDescriptor ();
   dest->setRootNote (src->rootNote ());
   dest->setHasBass (src->hasBass ());
-  dest->setBassNote (src->bassNote ());
+  // Only copy the bass note when one is set: setBassNote() enables the bass
+  // as a side effect, and bassNote() reports a fallback note when unset
+  if (src->hasBass ())
+    dest->setBassNote (src->bassNote ());
   dest->setChordType (src->chordType ());
   dest->setChordAccent (src->chordAccent ());
   dest->setInversion (src->inversion ());

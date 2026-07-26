@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
+#include "dsp/content_time_warp.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
@@ -54,6 +55,11 @@ protected:
       registry_, *tempo_map_wrapper, registry_);
     audio_clip_ref = utils::create_object<structure::arrangement::AudioClip> (
       registry_, *tempo_map_wrapper, registry_);
+    // Not added to test_objects_ (kept out of the selection list model);
+    // only used for direct (selection-independent) operations
+    automation_clip_ref =
+      utils::create_object<structure::arrangement::AutomationClip> (
+        registry_, *tempo_map_wrapper, registry_);
     tempo_ref = utils::create_object<structure::arrangement::TempoObject> (
       registry_, *tempo_map_wrapper);
     time_signature_ref =
@@ -135,6 +141,8 @@ protected:
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::AudioClip>::add_object (audio_clip_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::add_object (automation_clip_ref);
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TempoObject>::add_object (tempo_ref);
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TimeSignatureObject>::
@@ -151,8 +159,24 @@ protected:
           if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::MidiNote>)
             {
+              // Prefer the parent object (e.g. a clip) as owner, like in the
+              // project
+              if (
+                auto * parent_owner =
+                  dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                    structure::arrangement::MidiNote> *> (obj->parentObject ()))
+                {
+                  return parent_owner;
+                }
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 structure::arrangement::MidiNote> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+            {
+              // Prefer the parent clip as owner, like in the project
+              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::ChordObject> *> (obj->parentObject ());
             }
           else if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::Marker>)
@@ -171,6 +195,12 @@ protected:
             {
               return static_cast<structure::arrangement::ArrangerObjectOwner<
                 structure::arrangement::AudioClip> *> (mock_owner_.get ());
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationClip>)
+            {
+              return static_cast<structure::arrangement::ArrangerObjectOwner<
+                structure::arrangement::AutomationClip> *> (mock_owner_.get ());
             }
           else if constexpr (
             std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
@@ -198,8 +228,82 @@ protected:
     };
 
     // Create operator
+    auto mock_enumerator =
+      [this] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor visitor) {
+        for (const auto &obj_ref : test_objects_)
+          {
+            visitor (obj_ref);
+          }
+      };
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, *selection_model_, mock_owner_provider, *factory);
+      *undo_stack_, *selection_model_, mock_owner_provider, *factory,
+      mock_enumerator);
+  }
+
+  // Selects the row of the given object in the list model.
+  void select_object (
+    const structure::arrangement::ArrangerObjectUuidReference &ref,
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::Select)
+  {
+    const int rows = list_model_.rowCount ();
+    for (int i = 0; i < rows; ++i)
+      {
+        const auto variant = list_model_.data (
+          list_model_.index (i, 0),
+          structure::arrangement::ArrangerObjectListModel::
+            ArrangerObjectUuidReferenceRole);
+        if (
+          auto * obj_ref =
+            variant
+              .value<structure::arrangement::ArrangerObjectUuidReference *> ();
+          obj_ref != nullptr && obj_ref->id () == ref.id ())
+          {
+            selection_model_->select (list_model_.index (i, 0), flags);
+            return;
+          }
+      }
+    FAIL () << "Object not found in list model";
+  }
+
+  // Adds a MIDI note with the given content span to the clip and returns its
+  // reference.
+  structure::arrangement::ArrangerObjectUuidReference add_note_to_clip (
+    structure::arrangement::MidiClip &clip,
+    double                            content_pos,
+    double                            content_len)
+  {
+    auto note_ref_local = utils::create_object<structure::arrangement::MidiNote> (
+      registry_, *tempo_map_wrapper);
+    note_ref_local.get ()->position ()->setTicks (content_pos);
+    note_ref_local.get ()->length ()->setTicks (content_len);
+    clip.structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::add_object (note_ref_local);
+    return note_ref_local;
+  }
+
+  // Adds a chord at the given content position to the clip and returns its
+  // reference.
+  structure::arrangement::ArrangerObjectUuidReference
+  add_chord_to_clip (structure::arrangement::ChordClip &clip, double content_pos)
+  {
+    auto chord_ref = utils::create_object<structure::arrangement::ChordObject> (
+      registry_, *tempo_map_wrapper);
+    chord_ref.get ()->position ()->setTicks (content_pos);
+    clip.add_object (chord_ref);
+    return chord_ref;
+  }
+
+  // Returns the child of the given owner vector at the given position in
+  // ticks, or nullptr.
+  template <typename ObjectT, typename ChildrenVector>
+  static ObjectT *
+  find_child_at (const ChildrenVector &children, double pos_ticks)
+  {
+    const auto it =
+      std::ranges::find_if (children, [pos_ticks] (const auto &ref) {
+        return ref.get ()->position ()->ticks () == pos_ticks;
+      });
+    return it != children.end () ? (*it).template get_object_as<ObjectT> () : nullptr;
   }
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
@@ -223,6 +327,9 @@ protected:
   structure::arrangement::ArrangerObjectUuidReference audio_clip_ref{
     registry_
   };
+  structure::arrangement::ArrangerObjectUuidReference automation_clip_ref{
+    registry_
+  };
   structure::arrangement::ArrangerObjectUuidReference midi_clip_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference tempo_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference time_signature_ref{
@@ -240,10 +347,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, InitialState)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   const double tick_delta = 100.0;
 
@@ -272,10 +377,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Move objects to position 100 first to allow negative movement
   for (const auto &obj_ref : test_objects_)
@@ -311,10 +414,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   bool result = operator_->moveByTicks (0.0);
   EXPECT_TRUE (result);
@@ -386,10 +487,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
 TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   const double tick_delta = 100.0;
 
@@ -448,8 +547,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const int pitch_delta = 5;
 
@@ -496,8 +594,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   const double delta = 0.2;
 
@@ -542,8 +639,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   bool result = operator_->moveNotesByPitch (0);
   EXPECT_TRUE (result);
@@ -556,8 +652,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   // Find MIDI note and set its pitch to 125 (close to max)
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
@@ -611,8 +706,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelt
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   bool result = operator_->moveAutomationPointsByDelta (0.0);
   EXPECT_TRUE (result);
@@ -643,8 +737,7 @@ TEST_F (
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   // Try to move by 0.2 (would result in value 1.1, which is out of range)
   bool result = operator_->moveAutomationPointsByDelta (0.2);
@@ -664,10 +757,8 @@ TEST_F (
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -704,15 +795,101 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   EXPECT_FALSE (note_found_after) << "Note should have been deleted";
 }
 
+// Test deleteObject (eraser tool): deletes a single object directly, without
+// involving the selection
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectRemovesOwnedObject)
+{
+  const int  initial_count = undo_stack_->count ();
+  const auto note_id = note_ref.id ();
+
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id));
+
+  EXPECT_TRUE (operator_->deleteObject (note_ref.get ()));
+
+  // Exactly one command pushed
+  EXPECT_EQ (undo_stack_->count (), initial_count + 1);
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id))
+    << "Note should have been deleted";
+
+  // Undo restores the object
+  undo_stack_->undo ();
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiNote>::contains_object (note_id))
+    << "Undo should restore the deleted note";
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectNullReturnsFalse)
+{
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (nullptr));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectUndeletableReturnsFalse)
+{
+  // Start markers are not deletable
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
+
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (start_marker_ref.get ()));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectNotInOwnerReturnsFalse)
+{
+  // An object that no owner contains
+  auto orphan_note_ref = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+
+  const int initial_count = undo_stack_->count ();
+
+  EXPECT_FALSE (operator_->deleteObject (orphan_note_ref.get ()));
+  EXPECT_EQ (undo_stack_->count (), initial_count);
+}
+
+// Test deleteObject with an automation clip (owned by an AutomationTrack in
+// the project, not directly by a track — the mock owner mirrors that
+// indirection)
+TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectAutomationClip)
+{
+  const int  initial_count = undo_stack_->count ();
+  const auto clip_id = automation_clip_ref.id ();
+
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id));
+
+  EXPECT_TRUE (operator_->deleteObject (automation_clip_ref.get ()));
+
+  EXPECT_EQ (undo_stack_->count (), initial_count + 1);
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id))
+    << "Automation clip should have been deleted";
+
+  undo_stack_->undo ();
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AutomationClip>::contains_object (clip_id))
+    << "Undo should restore the deleted automation clip";
+}
+
 // Test deleting tempo/time-signature objects (owned by TempoObjectManager, not
 // a track) — guards the TempoObject/TimeSignatureObject owner dispatch.
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsTempoAndTimeSignature)
 {
   // tempo_ref is index 4, time_signature_ref is index 5 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (5, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
+  select_object (time_signature_ref);
 
   const auto tempo_id = tempo_ref.id ();
   const auto ts_id = time_signature_ref.id ();
@@ -782,8 +959,7 @@ TEST_F (
   CloneObjectsTempoObjectRequestsEnginePause)
 {
   // tempo_ref is index 4 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
 
   EXPECT_TRUE (operator_->cloneObjects ());
   EXPECT_TRUE (engine_pause_requested_)
@@ -797,8 +973,7 @@ TEST_F (
   DeleteTempoObjectRequestsEnginePauseViaDeleteObjects)
 {
   // tempo_ref is index 4 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
 
   EXPECT_TRUE (operator_->deleteObjects ());
   EXPECT_TRUE (engine_pause_requested_)
@@ -837,8 +1012,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 
   // Update selection to only include non-deletable marker
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -866,12 +1040,9 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
     structure::arrangement::Marker>::add_object (start_marker_ref);
 
   // Update selection to include multiple objects
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -888,10 +1059,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store the UUIDs of the selected objects (marker and note)
   const auto marker_id = marker_ref.id ();
@@ -967,9 +1136,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromEnd)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
@@ -990,9 +1157,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
@@ -1014,9 +1179,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
 
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromEnd, delta);
@@ -1039,9 +1202,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
 
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
@@ -1066,9 +1227,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
 
   // Clear selection and only select objects that support fades resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0),
-    QItemSelectionModel::Select); // Select only AudioClip
+  select_object (audio_clip_ref); // Select only AudioClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, delta);
@@ -1088,9 +1247,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
 TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFadesRejectNegative)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0),
-    QItemSelectionModel::Select); // AudioClip (fadeOut = 300)
+  select_object (audio_clip_ref); // AudioClip (fadeOut = 300)
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, -500.0);
@@ -1139,9 +1296,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsUndoRedo)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Perform resize
   bool result = operator_->resizeObjects (
@@ -1176,9 +1331,7 @@ TEST_F (
 {
   // Clear selection and only select MIDI note (non-timeline object)
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Set MIDI note position to a small positive value first
   if (auto * note_obj = note_ref.get ())
@@ -1216,9 +1369,7 @@ TEST_F (
 {
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Set initial length to 100 ticks
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
@@ -1249,9 +1400,7 @@ TEST_F (
 {
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   // Set initial length to 100 ticks
   auto * midi_clip_obj =
@@ -1282,8 +1431,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
 {
   // Clear selection and only select tempo object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+  select_object (tempo_ref); // Tempo object
 
   const double tick_delta = 100.0;
 
@@ -1312,9 +1460,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
 {
   // Clear selection and only select time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1348,9 +1494,7 @@ TEST_F (
 {
   // Clear selection and only select time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1375,10 +1519,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
 {
   // Clear selection and select regular object + tempo object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+  select_object (marker_ref); // Marker
+  select_object (tempo_ref);  // Tempo object
 
   const double tick_delta = 100.0;
 
@@ -1416,11 +1558,8 @@ TEST_F (
 {
   // Clear selection and select regular object + time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (marker_ref);         // Marker
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1460,11 +1599,8 @@ TEST_F (
 {
   // Clear selection and select regular object + time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (marker_ref);         // Marker
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1493,10 +1629,8 @@ TEST_F (
 TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsValidSelection)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1582,8 +1716,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
 
   // Update list model and selection
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1600,10 +1733,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
 TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUndoRedo)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial counts
   const int  initial_undo_count = undo_stack_->count ();
@@ -1681,8 +1812,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
 {
   // Select audio clip for testing
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   // Store initial counts
   const int  initial_undo_count = undo_stack_->count ();
@@ -1729,8 +1859,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocities)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const int velocity_delta = 15;
 
@@ -1771,8 +1900,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   bool result = operator_->changeVelocities (0);
   EXPECT_TRUE (result);
@@ -1781,15 +1909,229 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
   EXPECT_EQ (undo_stack_->index (), 0);
 }
 
+// Test rampVelocities linear interpolation across selected notes
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesLinearInterpolation)
+{
+  auto ramp_note_ref1 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref2 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref3 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  for (
+    const auto &ramp_note_ref :
+    { ramp_note_ref1, ramp_note_ref2, ramp_note_ref3 })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (ramp_note_ref);
+    }
+  ramp_note_ref1.get ()->position ()->setTicks (1000.0);
+  ramp_note_ref2.get ()->position ()->setTicks (2000.0);
+  ramp_note_ref3.get ()->position ()->setTicks (3000.0);
+
+  select_object (ramp_note_ref1);
+  select_object (ramp_note_ref2);
+  select_object (ramp_note_ref3);
+
+  bool result = operator_->rampVelocities (nullptr, 1000.0, 10.0, 3000.0, 110.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    10);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    60);
+  EXPECT_EQ (
+    ramp_note_ref3.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    110);
+
+  // One macro for the whole ramp
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Undo restores all original velocities, redo re-applies the ramp
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  EXPECT_EQ (
+    ramp_note_ref3.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  undo_stack_->redo ();
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    60);
+}
+
+// Test rampVelocities clamps notes outside the line's span to the nearest
+// endpoint value, including when the line is dragged right-to-left
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesClampsOutsideSpan)
+{
+  auto ramp_note_ref1 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref2 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  for (const auto &ramp_note_ref : { ramp_note_ref1, ramp_note_ref2 })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (ramp_note_ref);
+    }
+  ramp_note_ref1.get ()->position ()->setTicks (0.0);
+  ramp_note_ref2.get ()->position ()->setTicks (5000.0);
+
+  select_object (ramp_note_ref1);
+  select_object (ramp_note_ref2);
+
+  // Reversed drag (end before start): each note outside the span gets the
+  // value of its nearest endpoint (10 at tick 1000, 110 at tick 3000)
+  bool result = operator_->rampVelocities (nullptr, 3000.0, 110.0, 1000.0, 10.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    10);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    110);
+}
+
+// Test rampVelocities with identical start and end positions (vertical line)
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesEqualEndpoints)
+{
+  note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (64);
+  select_object (note_ref);
+
+  bool result = operator_->rampVelocities (nullptr, 1000.0, 30.0, 1000.0, 90.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    note_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    90);
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test rampVelocities with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesNoSelection)
+{
+  selection_model_->clear ();
+
+  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test rampVelocities ignores selected objects that are not MIDI notes
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesIgnoresNonNotes)
+{
+  select_object (marker_ref);
+
+  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed when nothing changed
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test rampVelocities applies to all notes inside the line's span when no
+// notes are selected
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RampVelocitiesClipScopeWhenNoSelection)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Clip at timeline 2000 with identity warp: notes at timeline 2000, 3000
+  // and 7000
+  auto note1_ref = add_note_to_clip (*clip, 0.0, 100.0);
+  auto note2_ref = add_note_to_clip (*clip, 1000.0, 100.0);
+  auto note3_ref = add_note_to_clip (*clip, 5000.0, 100.0);
+  for (const auto &ramp_note_ref : { note1_ref, note2_ref, note3_ref })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+    }
+
+  selection_model_->clear ();
+
+  bool result = operator_->rampVelocities (clip, 2000.0, 10.0, 3000.0, 110.0);
+  EXPECT_TRUE (result);
+
+  // Notes inside the span get the line's velocities
+  EXPECT_EQ (
+    note1_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    10);
+  EXPECT_EQ (
+    note2_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    110);
+  // Note outside the span is untouched
+  EXPECT_EQ (
+    note3_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    64);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test rampVelocities only affects the selected notes even when a clip is
+// given
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RampVelocitiesSelectionTakesPrecedenceOverClip)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Selected note at timeline 2000 (outside the ramp span), unselected note
+  // at timeline 7000 (inside the ramp span)
+  auto selected_note_ref = add_note_to_clip (*clip, 0.0, 100.0);
+  auto other_note_ref = add_note_to_clip (*clip, 5000.0, 100.0);
+  for (const auto &ramp_note_ref : { selected_note_ref, other_note_ref })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+    }
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    selected_note_ref);
+  select_object (selected_note_ref);
+
+  bool result = operator_->rampVelocities (clip, 5000.0, 20.0, 7000.0, 80.0);
+  EXPECT_TRUE (result);
+
+  // Selected note outside the span gets the nearest endpoint's value
+  EXPECT_EQ (
+    selected_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    20);
+  // Unselected clip note inside the span is untouched
+  EXPECT_EQ (
+    other_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+}
+
 // Test changeVelocities with invalid velocity (out of range)
 // Test toggleMute mutes unmuted objects
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
+  select_object (midi_clip_ref);
 
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
@@ -1809,10 +2151,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
   midi_clip_ref.get ()->mute ()->setMuted (true);
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
+  select_object (midi_clip_ref);
 
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
@@ -1836,8 +2176,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (midi_clip_ref);
 
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
@@ -1855,10 +2194,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   EXPECT_EQ (marker_ref.get ()->mute (), nullptr);
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
@@ -1874,8 +2211,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteOnlyNonMuteableObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
 
   bool result = operator_->toggleMute ();
   EXPECT_FALSE (result);
@@ -1892,8 +2228,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmOnAudioClip)
     clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Polyphonic);
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   bool result =
     operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
@@ -1916,10 +2251,8 @@ TEST_F (
 {
   selection_model_->clear ();
   // Select marker (index 0) and audio clip (index 3)
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (audio_clip_ref);
 
   bool result =
     operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Monophonic);
@@ -1952,8 +2285,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetTimebaseOverrideOnClip)
   auto initial = clip->timebaseProvider ()->effectiveTimebase ();
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   bool result = operator_->setTimebaseOverride (dsp::Timebase::Absolute);
   EXPECT_TRUE (result);
@@ -1975,8 +2307,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ClearTimebaseOverrideOnClip)
     audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   operator_->setTimebaseOverride (dsp::Timebase::Absolute);
   EXPECT_TRUE (clip->timebaseProvider ()->hasOverride ());
@@ -1998,8 +2329,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
   EXPECT_FALSE (operator_->selectionHasTimebaseProviders ());
 
   // Audio clip (index 3) has a timebase provider
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
   EXPECT_TRUE (operator_->selectionHasTimebaseProviders ());
 }
 
@@ -2008,8 +2338,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMax)
 {
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (120);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const bool result = operator_->changeVelocities (20); // 120 + 20 = 140
 
@@ -2023,8 +2352,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMax)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMin)
 {
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (5);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const bool result = operator_->changeVelocities (-20); // 5 - 20 = -15
 
@@ -2032,6 +2360,504 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMin)
   EXPECT_EQ (
     note_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (), 0);
   EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// ========================================================================
+// Cut tool tests
+// ========================================================================
+
+// Test cutObjectsAt splits a looped MIDI clip transparently
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsLoopedMidiClip)
+{
+  select_object (midi_clip_ref);
+
+  // Fixture MIDI clip: position 2000, length 4000, clip start 500, loop
+  // [1000, 3000) - spans timeline [2000, 6000), cut at 4500.
+  // Custom loop ranges imply bounds-tracking is off (as in production)
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  const bool result = operator_->cutObjectsAt (4500.0);
+  EXPECT_TRUE (result);
+
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Left half: original resized to end at the cut, loop range untouched
+  EXPECT_DOUBLE_EQ (clip->position ()->ticks (), 2000.0);
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 2500.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+
+  // Right half added to the same owner
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4500.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1500.0);
+  // Content position at the cut mapped through the loop:
+  // clip_start + offset = 500 + 2500 = 3000 >= loop_end (3000), so wrap by
+  // the loop size (2000) -> 1000
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 3000.0);
+  EXPECT_FALSE (right->trackBounds ());
+
+  // Single undo step (macro)
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test cutObjectsAt on a clip with default (tracked) loop bounds
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsTrackBoundsClip)
+{
+  auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  clip->position ()->setTicks (0.0);
+  clip->length ()->setTicks (2000.0); // trackBounds -> loop [0, 2000]
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::add_object (clip_ref);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    clip_ref);
+
+  select_object (clip_ref);
+
+  const bool result = operator_->cutObjectsAt (800.0);
+  EXPECT_TRUE (result);
+
+  // Left half: resized, bounds re-tracked (loop = [0, new length])
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 800.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 800.0);
+  EXPECT_TRUE (clip->trackBounds ());
+
+  // Right half: starts at the cut, keeps the original loop range
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 3);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 800.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1200.0);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 800.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 2000.0);
+  EXPECT_FALSE (right->trackBounds ());
+}
+
+// Test cutObjectsAt splits a MIDI note inside a clip
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsMidiNote)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Note at content [500, 1500) -> timeline [2500, 3500) (clip at 2000,
+  // identity warp)
+  auto   note_in_clip_ref = add_note_to_clip (*clip, 500.0, 1000.0);
+  auto * note_in_clip =
+    note_in_clip_ref.get_object_as<structure::arrangement::MidiNote> ();
+  note_in_clip->setPitch (64);
+  note_in_clip->setVelocity (100);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    note_in_clip_ref);
+
+  select_object (note_in_clip_ref);
+
+  const bool result = operator_->cutObjectsAt (3000.0);
+  EXPECT_TRUE (result);
+
+  // Left half: truncated at the cut
+  EXPECT_DOUBLE_EQ (note_in_clip->position ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (note_in_clip->length ()->ticks (), 500.0);
+
+  // Right half inside the same clip, keeping pitch/velocity
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 2);
+  // Content position at the cut = 3000 - 2000 = 1000
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 500.0);
+  EXPECT_EQ (right->pitch (), 64);
+  EXPECT_EQ (right->velocity (), 100);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test that notes not inside a clip are not cut
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSkipsMidiNoteWithoutClip)
+{
+  // Fixture note: position 1000, length 4000, not inside a clip
+  select_object (note_ref);
+
+  const bool result = operator_->cutObjectsAt (3000.0);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test cutAllObjectsAt cuts across multiple owners via the enumerator
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtAcrossOwners)
+{
+  // Fixture audio clip spans [3000, 5000)
+  audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
+    ->length ()
+    ->setTicks (2000.0);
+
+  // Cut at 4500: hits the MIDI clip [2000, 6000) and the audio clip
+  // [3000, 5000); skips the marker/tempo/time signature (point objects) and
+  // the note (not inside a clip).
+  // Custom loop ranges imply bounds-tracking is off (as in production)
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  const bool result = operator_->cutAllObjectsAt (4500.0, nullptr);
+  EXPECT_TRUE (result);
+
+  const auto &midi_children =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip>::get_children_vector ();
+  EXPECT_EQ (midi_children.size (), 2);
+  const auto &audio_children =
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioClip>::get_children_vector ();
+  EXPECT_EQ (audio_children.size (), 2);
+
+  // Single undo step for the whole operation
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Undo restores both originals
+  undo_stack_->undo ();
+  EXPECT_EQ (midi_children.size (), 1);
+  EXPECT_EQ (audio_children.size (), 1);
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+}
+
+// Test cutAllObjectsAt cuts the bounded children of a clip (editor context)
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtInsideClip)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Note A at content [500, 1500) -> timeline [2500, 3500) - spans the cut
+  auto note_a_ref = add_note_to_clip (*clip, 500.0, 1000.0);
+  // Note B at content [1500, 2500) -> timeline [3500, 4500) - after the cut
+  add_note_to_clip (*clip, 1500.0, 1000.0);
+
+  const bool result = operator_->cutAllObjectsAt (3000.0, clip);
+  EXPECT_TRUE (result);
+
+  // Note A split into two, note B untouched
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 3);
+  EXPECT_DOUBLE_EQ (note_a_ref.get ()->length ()->ticks (), 500.0);
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 500.0);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test cutAllObjectsAt splits a chord object: chords are unbounded but
+// effectively span until the next chord or the clip's end
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtSplitsChordObject)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+
+  // Chord A at content 500 (effective span [500, 2500)), chord B at 2500
+  // (effective span [2500, clip end))
+  auto chord_a_ref = add_chord_to_clip (*clip, 500.0);
+  auto chord_b_ref = add_chord_to_clip (*clip, 2500.0);
+
+  // Cut at timeline 3000 = content 1000 (identity warp, clip at 2000):
+  // inside chord A's effective span
+  EXPECT_TRUE (operator_->cutAllObjectsAt (3000.0, clip));
+
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 3);
+  // Originals untouched
+  EXPECT_DOUBLE_EQ (chord_a_ref.get ()->position ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (chord_b_ref.get ()->position ()->ticks (), 2500.0);
+  // New chord starts at the cut (content 1000) and carries a copy of chord
+  // A's descriptor (no bass)
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 1000.0);
+  ASSERT_NE (new_chord, nullptr);
+  EXPECT_NE (
+    new_chord->chordDescriptor (),
+    chord_a_ref.get_object_as<structure::arrangement::ChordObject> ()
+      ->chordDescriptor ());
+  EXPECT_EQ (
+    new_chord->chordDescriptor ()->hasBass (),
+    chord_a_ref.get_object_as<structure::arrangement::ChordObject> ()
+      ->chordDescriptor ()
+      ->hasBass ());
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (chords.size (), 2);
+}
+
+// Test the boundaries of a chord object's effective span
+TEST_F (ArrangerObjectSelectionOperatorTest, CutAllObjectsAtChordBoundaries)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+
+  add_chord_to_clip (*clip, 500.0);
+  add_chord_to_clip (*clip, 2500.0);
+
+  // Before chord A's start (content 100 -> timeline 2100): no chord spans
+  EXPECT_FALSE (operator_->cutAllObjectsAt (2100.0, clip));
+  // Exactly at chord B's start (content 2500 -> timeline 4500)
+  EXPECT_FALSE (operator_->cutAllObjectsAt (4500.0, clip));
+  // Exactly at the clip's end (timeline 6000)
+  EXPECT_FALSE (operator_->cutAllObjectsAt (6000.0, clip));
+  EXPECT_EQ (clip->get_children_vector ().size (), 2);
+  EXPECT_EQ (undo_stack_->count (), 0);
+
+  // After chord B, within the clip (content 3000 -> timeline 5000): inside
+  // chord B's effective span (no next chord, ends at the clip's end)
+  EXPECT_TRUE (operator_->cutAllObjectsAt (5000.0, clip));
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 3);
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 3000.0);
+  ASSERT_NE (new_chord, nullptr);
+}
+
+// Test that cutting at or outside object boundaries is a no-op
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtBoundariesIsNoOp)
+{
+  select_object (midi_clip_ref);
+
+  EXPECT_FALSE (operator_->cutObjectsAt (2000.0)); // exactly at start
+  EXPECT_FALSE (operator_->cutObjectsAt (6000.0)); // exactly at end
+  EXPECT_FALSE (operator_->cutObjectsAt (1000.0)); // outside
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test that cutting an audio clip shifts the right half's fade offsets
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtAudioClipAdjustsFades)
+{
+  auto * clip =
+    audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
+  ASSERT_NE (clip, nullptr);
+  clip->length ()->setTicks (2000.0); // spans [3000, 5000)
+  clip->fadeRange ()->startOffset ()->setTicks (1500.0);
+  clip->fadeRange ()->endOffset ()->setTicks (1800.0);
+
+  select_object (audio_clip_ref);
+
+  const bool result = operator_->cutObjectsAt (4000.0);
+  EXPECT_TRUE (result);
+
+  // Left half fades unchanged
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->fadeRange ()->startOffset ()->ticks (), 1500.0);
+  EXPECT_DOUBLE_EQ (clip->fadeRange ()->endOffset ()->ticks (), 1800.0);
+
+  // Right half fades shifted by the cut offset (1000)
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+  auto * right =
+    find_child_at<structure::arrangement::AudioClip> (children, 4000.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (right->fadeRange ()->startOffset ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (right->fadeRange ()->endOffset ()->ticks (), 800.0);
+}
+
+// Test undo/redo of a cut restores the original object exactly
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtUndoRedo)
+{
+  select_object (midi_clip_ref);
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+  ASSERT_TRUE (operator_->cutObjectsAt (4500.0));
+
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 2);
+
+  undo_stack_->undo ();
+  EXPECT_EQ (children.size (), 1);
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  EXPECT_DOUBLE_EQ (clip->clipStartPosition ()->ticks (), 500.0);
+  EXPECT_DOUBLE_EQ (clip->loopStartPosition ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (clip->loopEndPosition ()->ticks (), 3000.0);
+  EXPECT_FALSE (clip->trackBounds ());
+
+  undo_stack_->redo ();
+  ASSERT_EQ (children.size (), 2);
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 2500.0);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4500.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 1500.0);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1000.0);
+}
+
+// Test that a failed owner lookup leaves the object untouched and reports
+// failure (no partial cut)
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWithMissingOwnerIsNoOp)
+{
+  auto null_owner_provider =
+    [] (structure::arrangement::ArrangerObjectPtrVariant)
+    -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+    return static_cast<structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip> *> (nullptr);
+  };
+  ArrangerObjectSelectionOperator op_with_no_owner (
+    *undo_stack_, *selection_model_, null_owner_provider, *factory);
+
+  select_object (midi_clip_ref);
+  midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
+    ->setTrackBounds (false);
+
+  EXPECT_FALSE (op_with_no_owner.cutObjectsAt (4500.0));
+
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  EXPECT_EQ (children.size (), 1);
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Test that cutting a Source-mode clip (non-linear warp from a tempo change)
+// computes the right half's clip start in the unwound content domain,
+// matching playback
+TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWarpedLoopedClip)
+{
+  // Tempo change mid-clip: 120 BPM until tick 1920 (1 second), then 240 BPM
+  tempo_map_wrapper->addTempoEvent (
+    1920.0, 240.0, dsp::TempoEventWrapper::CurveType::Constant);
+
+  auto clip_ref = utils::create_object<structure::arrangement::MidiClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip = clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  clip->position ()->setTicks (0.0);
+  clip->length ()->setTicks (3840.0);
+  // Source mode: content is anchored to wall-clock time at the source tempo
+  clip->set_source_bpm (units::bpm (120.0));
+  clip->timebaseProvider ()->setOverride (dsp::Timebase::Absolute);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (1920.0) });
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::add_object (clip_ref);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    clip_ref);
+  select_object (clip_ref);
+
+  // The clip spans timeline [0, 5760): content [0,1920] (1s at 120 BPM) ->
+  // [0,1920), content [1920,3840] (1s at 240 BPM) -> [1920,5760).
+  // Cut at 4800: 1.75s into the source -> unwound content position 3360,
+  // wrapped by the loop size (1920) -> 1440
+  ASSERT_TRUE (operator_->cutObjectsAt (4800.0));
+
+  // Left half ends at the cut (content 3360)
+  EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 3360.0);
+
+  const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiClip>::get_children_vector ();
+  ASSERT_EQ (children.size (), 3);
+  auto * right =
+    find_child_at<structure::arrangement::MidiClip> (children, 4800.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->clipStartPosition ()->ticks (), 1440.0);
+  EXPECT_DOUBLE_EQ (right->loopStartPosition ()->ticks (), 0.0);
+  EXPECT_DOUBLE_EQ (right->loopEndPosition ()->ticks (), 1920.0);
+  // Ends at the original's timeline end: 5760 is 2s into the source, the
+  // clone's start (4800) is 1.75s, so 0.25s = 480 content ticks
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 480.0);
+}
+
+// Test that cutting a note in a clip with a nonzero clip start splits the
+// note at the unwound content position under the cut (the clip editor's
+// content coordinate space), regardless of the clip start
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutObjectsAtSplitsMidiNoteWithClipStart)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+  // Fixture clip: position 2000, length 4000; playback starts at content 500
+  // and the loop covers the whole content so no wrapping occurs
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
+
+  // Note at content [1000, 2000) -> displayed at timeline [3000, 4000)
+  auto note_in_clip_ref = add_note_to_clip (*clip, 1000.0, 1000.0);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    note_in_clip_ref);
+  select_object (note_in_clip_ref);
+
+  // Cut at 3250: the unwound content position under the cut is 1250
+  ASSERT_TRUE (operator_->cutObjectsAt (3250.0));
+
+  // Left half ends at the cut
+  EXPECT_DOUBLE_EQ (note_in_clip_ref.get ()->position ()->ticks (), 1000.0);
+  EXPECT_DOUBLE_EQ (note_in_clip_ref.get ()->length ()->ticks (), 250.0);
+
+  // Right half starts at the cut
+  const auto &notes = clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  ASSERT_EQ (notes.size (), 2);
+  auto * right = find_child_at<structure::arrangement::MidiNote> (notes, 1250.0);
+  ASSERT_NE (right, nullptr);
+  EXPECT_DOUBLE_EQ (right->length ()->ticks (), 750.0);
+}
+
+// Test that cutting a chord in a clip with a nonzero clip start places the
+// clone at the unwound content position under the cut (the clip editor's
+// content coordinate space), regardless of the clip start
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutAllObjectsAtSplitsChordWithClipStart)
+{
+  auto chord_clip_ref = utils::create_object<structure::arrangement::ChordClip> (
+    registry_, *tempo_map_wrapper, registry_);
+  auto * clip =
+    chord_clip_ref.get_object_as<structure::arrangement::ChordClip> ();
+  clip->position ()->setTicks (2000.0);
+  clip->length ()->setTicks (4000.0);
+  clip->set_loop_range (
+    dsp::ContentTick{ units::ticks (500.0) },
+    dsp::ContentTick{ units::ticks (0.0) },
+    dsp::ContentTick{ units::ticks (4000.0) });
+  add_chord_to_clip (*clip, 1000.0);
+
+  // Cut at timeline 3250: the unwound content position under the cut is
+  // 1250, inside the chord's effective span [1000, clip end)
+  ASSERT_TRUE (operator_->cutAllObjectsAt (3250.0, clip));
+
+  const auto &chords = clip->get_children_vector ();
+  ASSERT_EQ (chords.size (), 2);
+  auto * new_chord =
+    find_child_at<structure::arrangement::ChordObject> (chords, 1250.0);
+  EXPECT_NE (new_chord, nullptr);
 }
 
 } // namespace zrythm::actions

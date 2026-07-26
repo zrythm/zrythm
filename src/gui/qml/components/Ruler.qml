@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 pragma ComponentBehavior: Bound
 
@@ -66,8 +66,10 @@ Item {
   property Track track: null
   required property Transport transport
 
-  function calculateSnappedPosition(currentTicks: real, startTicks: real): real {
-    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(currentTicks, startTicks) : currentTicks;
+  function calculateSnappedTimelinePosition(currentTicks: real, startTicks: real): real {
+    // Clamp: timeline positions must be at or after the timeline origin
+    const clampedTicks = Math.max(0, currentTicks);
+    return root.shouldSnap ? root.snapGrid.snapWithStartTicks(clampedTicks, startTicks) : clampedTicks;
   }
 
   /// Converts an absolute content-item x (mouse.x) to clip content ticks.
@@ -507,24 +509,24 @@ Item {
 
         switch (root.currentAction) {
         case Ruler.CurrentAction.MovingPlayhead:
-          root.transport.playhead.ticks = root.calculateSnappedPosition(currentTicks, root.ticksFromX(root.dragStartX));
+          root.transport.playhead.ticks = root.calculateSnappedTimelinePosition(currentTicks, root.ticksFromX(root.dragStartX));
           break;
         case Ruler.CurrentAction.MovingLoopStart:
           const newStartTicks = root.dragStartLoopStartTicks + tickDelta;
-          const snappedStartTicks = root.calculateSnappedPosition(newStartTicks, root.dragStartLoopStartTicks);
+          const snappedStartTicks = root.calculateSnappedTimelinePosition(newStartTicks, root.dragStartLoopStartTicks);
           // Clamp: start must be >= 0 and < end position
           root.transport.loopStartPosition.ticks = Math.max(0, Math.min(snappedStartTicks, root.transport.loopEndPosition.ticks - 1));
           break;
         case Ruler.CurrentAction.MovingLoopEnd:
           const newEndTicks = root.dragStartLoopEndTicks + tickDelta;
-          const snappedEndTicks = root.calculateSnappedPosition(newEndTicks, root.dragStartLoopEndTicks);
+          const snappedEndTicks = root.calculateSnappedTimelinePosition(newEndTicks, root.dragStartLoopEndTicks);
           // Clamp: end must be > start position
           root.transport.loopEndPosition.ticks = Math.max(snappedEndTicks, root.transport.loopStartPosition.ticks + 1);
           break;
         case Ruler.CurrentAction.MovingLoopRange:
           const loopLength = root.dragStartLoopEndTicks - root.dragStartLoopStartTicks;
           const newRangeStartTicks = root.dragStartLoopStartTicks + tickDelta;
-          const snappedRangeStartTicks = root.calculateSnappedPosition(newRangeStartTicks, root.dragStartLoopStartTicks);
+          const snappedRangeStartTicks = root.calculateSnappedTimelinePosition(newRangeStartTicks, root.dragStartLoopStartTicks);
           const clampedStartTicks = Math.max(0, snappedRangeStartTicks);
           root.transport.loopStartPosition.ticks = clampedStartTicks;
           root.transport.loopEndPosition.ticks = clampedStartTicks + loopLength;
@@ -532,7 +534,7 @@ Item {
         case Ruler.CurrentAction.MovingClipStart:
           {
             const ct = root.contentTicksAt(mouse.x);
-            const snapped = root.calculateSnappedPosition(ct, root.dragStartClipStartTicks);
+            const snapped = root.calculateSnappedTimelinePosition(ct, root.dragStartClipStartTicks);
             // Clamp: clip-start must stay in [0, loop-end - 1] so the echoed
             // (non-dragged) loop positions are not forced to move.
             const clamped = Math.max(0, Math.min(snapped, root.dragStartClipLoopEndTicks - 1));
@@ -545,7 +547,7 @@ Item {
         case Ruler.CurrentAction.MovingClipLoopStart:
           {
             const ct = root.contentTicksAt(mouse.x);
-            const snapped = root.calculateSnappedPosition(ct, root.dragStartClipLoopStartTicks);
+            const snapped = root.calculateSnappedTimelinePosition(ct, root.dragStartClipLoopStartTicks);
             // Clamp: loop-start must stay in [0, loop-end - 1].
             const clamped = Math.max(0, Math.min(snapped, root.dragStartClipLoopEndTicks - 1));
             root.clipOperator.updateClipLoopPointsDrag(root.dragStartClipStartTicks, clamped, root.dragStartClipLoopEndTicks);
@@ -554,7 +556,7 @@ Item {
         case Ruler.CurrentAction.MovingClipLoopEnd:
           {
             const ct = root.contentTicksAt(mouse.x);
-            const snapped = root.calculateSnappedPosition(ct, root.dragStartClipLoopEndTicks);
+            const snapped = root.calculateSnappedTimelinePosition(ct, root.dragStartClipLoopEndTicks);
             // Clamp: loop-end must stay > max(clip-start, loop-start).
             const minEnd = Math.max(root.dragStartClipStartTicks, root.dragStartClipLoopStartTicks) + 1;
             const clamped = Math.max(snapped, minEnd);
@@ -576,7 +578,7 @@ Item {
 
           // For playhead, also set initial position on press
           if (root.currentAction === Ruler.CurrentAction.MovingPlayhead) {
-            root.transport.movePlayhead(root.calculateSnappedPosition(root.ticksFromX(mouse.x), root.ticksFromX(mouse.x)), true);
+            root.transport.movePlayhead(root.calculateSnappedTimelinePosition(root.ticksFromX(mouse.x), root.ticksFromX(mouse.x)), true);
           }
 
           // Clip loop marker drag: capture content-tick starts and begin gesture.

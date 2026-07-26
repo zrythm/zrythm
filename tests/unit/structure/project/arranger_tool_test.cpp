@@ -129,6 +129,94 @@ TEST_F (ArrangerToolTest, AllToolTypes)
 }
 
 // ============================================================================
+// Effective Tool Tests
+// ============================================================================
+
+TEST_F (ArrangerToolTest, EffectiveToolValueFollowsToolByDefault)
+{
+  EXPECT_EQ (
+    arranger_tool_->effectiveToolValue (),
+    static_cast<ArrangerTool::ToolType> (arranger_tool_->toolValue ()));
+
+  arranger_tool_->setToolValue (static_cast<int> (ArrangerTool::ToolType::Ramp));
+  EXPECT_EQ (
+    arranger_tool_->effectiveToolValue (), ArrangerTool::ToolType::Ramp);
+}
+
+TEST_F (ArrangerToolTest, ToolValueOverrideForcesTool)
+{
+  arranger_tool_->setToolValue (
+    static_cast<int> (ArrangerTool::ToolType::Select));
+
+  arranger_tool_->setToolValueOverride (
+    static_cast<int> (ArrangerTool::ToolType::Cut));
+  EXPECT_EQ (arranger_tool_->effectiveToolValue (), ArrangerTool::ToolType::Cut);
+  // The selected tool itself is unchanged
+  EXPECT_EQ (
+    arranger_tool_->toolValue (),
+    static_cast<int> (ArrangerTool::ToolType::Select));
+
+  arranger_tool_->clearToolValueOverride ();
+  EXPECT_EQ (
+    arranger_tool_->effectiveToolValue (), ArrangerTool::ToolType::Select);
+}
+
+TEST_F (ArrangerToolTest, EffectiveToolValueChangedSignal)
+{
+  int emissions = 0;
+  QObject::connect (
+    arranger_tool_.get (), &ArrangerTool::effectiveToolValueChanged,
+    arranger_tool_.get (), [&] { ++emissions; });
+
+  arranger_tool_->setToolValueOverride (
+    static_cast<int> (ArrangerTool::ToolType::Cut));
+  EXPECT_EQ (emissions, 1);
+
+  // No change -> no emission
+  arranger_tool_->setToolValueOverride (
+    static_cast<int> (ArrangerTool::ToolType::Cut));
+  EXPECT_EQ (emissions, 1);
+
+  arranger_tool_->setToolValue (static_cast<int> (ArrangerTool::ToolType::Edit));
+  EXPECT_EQ (emissions, 2);
+
+  arranger_tool_->clearToolValueOverride ();
+  EXPECT_EQ (emissions, 3);
+}
+
+// The override is transient UI state: it is neither serialized nor cloned
+TEST_F (ArrangerToolTest, ToolValueOverrideIsTransient)
+{
+  arranger_tool_->setToolValue (static_cast<int> (ArrangerTool::ToolType::Edit));
+  arranger_tool_->setToolValueOverride (
+    static_cast<int> (ArrangerTool::ToolType::Cut));
+
+  nlohmann::json j = *arranger_tool_;
+  auto           deserialized_tool = std::make_unique<ArrangerTool> (nullptr);
+  j.get_to (*deserialized_tool);
+  EXPECT_EQ (
+    deserialized_tool->effectiveToolValue (),
+    static_cast<ArrangerTool::ToolType> (deserialized_tool->toolValue ()));
+
+  auto cloned_tool = std::make_unique<ArrangerTool> (nullptr);
+  init_from (*cloned_tool, *arranger_tool_, utils::ObjectCloneType::Snapshot);
+  EXPECT_EQ (
+    cloned_tool->effectiveToolValue (),
+    static_cast<ArrangerTool::ToolType> (cloned_tool->toolValue ()));
+}
+
+// Out-of-range overrides are rejected
+TEST_F (ArrangerToolTest, InvalidToolValueOverrideIgnored)
+{
+  arranger_tool_->setToolValueOverride (-1);
+  arranger_tool_->setToolValueOverride (
+    static_cast<int> (ArrangerTool::ToolType::Audition) + 1);
+  EXPECT_EQ (
+    arranger_tool_->effectiveToolValue (),
+    static_cast<ArrangerTool::ToolType> (arranger_tool_->toolValue ()));
+}
+
+// ============================================================================
 // Serialization Tests
 // ============================================================================
 

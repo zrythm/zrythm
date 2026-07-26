@@ -378,12 +378,20 @@ TEST_F (ContentTimeWarpTest, SourceModeRelativePairMatchesAbsoluteBeyondRange)
     - pos_->asTick ().asDouble ();
 
   // Relative delta equals the absolute conversion minus the clip position.
-  const double rel_delta = warp_->contentToTimelineTicksRelative (1920.0);
-  EXPECT_NEAR (rel_delta, abs_delta, 0.5);
+  const auto rel_delta = warp_->contentToTimelineTicksRelative (
+    ContentTick{ units::ticks (1920.0) });
+  EXPECT_NEAR (rel_delta.asDouble (), abs_delta, 0.5);
 
   // Reverse relative lookup recovers the content position.
-  const double recovered = warp_->timelineTicksRelativeToContent (rel_delta);
-  EXPECT_NEAR (recovered, 1920.0, 0.5);
+  const auto recovered = warp_->timelineTicksRelativeToContent (rel_delta);
+  EXPECT_NEAR (recovered.asDouble (), 1920.0, 0.5);
+
+  // The double QML-facing overloads agree with the strong-typed API.
+  EXPECT_NEAR (
+    warp_->contentToTimelineTicksRelative (1920.0), rel_delta.asDouble (), 1e-9);
+  EXPECT_NEAR (
+    warp_->timelineTicksRelativeToContent (rel_delta.asDouble ()),
+    recovered.asDouble (), 1e-9);
 }
 
 TEST_F (ContentTimeWarpTest, LinearRampProducesDenseWarpPoints)

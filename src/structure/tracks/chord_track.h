@@ -112,23 +112,27 @@ public:
     std::pair<units::sample_u32_t, units::sample_u32_t> range);
 
   /**
-   * Returns the ChordObject at the given Position
-   * in the TimelineArranger.
+   * Returns the ChordObject active at the given timeline position.
+   *
+   * Negative timeline ticks are clamped to 0 (this can happen when querying
+   * the position of clip content located before the clip start of a clip
+   * placed at the timeline origin).
    */
-  ChordObject * get_chord_at_ticks (units::precise_tick_t timeline_ticks) const;
+  ChordObject * get_chord_at_ticks (dsp::TimelineTick timeline_ticks) const;
 
   /**
-   * Returns the ScaleObject at the given Position
-   * in the TimelineArranger.
+   * Returns the ScaleObject active at the given timeline position.
+   *
+   * Negative timeline ticks are clamped to 0 (see @ref get_chord_at_ticks).
    */
-  ScaleObject * get_scale_at_ticks (units::precise_tick_t timeline_ticks) const;
+  ScaleObject * get_scale_at_ticks (dsp::TimelineTick timeline_ticks) const;
 
   // ========================================================================
   // QML Interface
   // ========================================================================
 
-  Q_INVOKABLE ChordObject * chordAtTicks (double ticks) const;
-  Q_INVOKABLE ScaleObject * scaleAtTicks (double ticks) const;
+  Q_INVOKABLE ChordObject * chordAtTimelineTicks (double ticks) const;
+  Q_INVOKABLE ScaleObject * scaleAtTimelineTicks (double ticks) const;
 
   friend void init_from (
     ChordTrack            &obj,

@@ -156,18 +156,11 @@ private:
 public:
   /**
    * @brief Set playhead position in musical ticks (GUI thread only)
-   * @param ticks New position in ticks
+   * @param ticks New position in ticks (negative values are clamped to 0)
    *
    * @note Uses mutex to synchronize with GUI thread
    */
-  void set_position_ticks (units::precise_tick_t ticks) [[clang::blocking]]
-  {
-    std::lock_guard lock (position_mutex_);
-    position_ticks_ = ticks;
-    position_samples_.store (
-      tempo_map_.tick_to_samples (TimelineTick{ ticks }),
-      std::memory_order_release);
-  }
+  void set_position_ticks (units::precise_tick_t ticks) [[clang::blocking]];
 
   /**
    * @brief Get current playhead position in ticks (GUI thread only)

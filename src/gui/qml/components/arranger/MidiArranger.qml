@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -19,17 +19,24 @@ Arranger {
   readonly property Track track: clipEditor.track
 
   function beginObjectCreation(coordinates: point): MidiNote {
-    const pitch = getPitchAtY(coordinates.y);
-    console.log("Midi Arranger: beginObjectCreation", coordinates, pitch);
-    const tickPosition = coordinates.x / root.ruler.pxPerTick;
-    const localTickPosition = tickPosition - root.midiClip.position.ticks;
-
-    let midiNote = objectCreator.addMidiNote(root.midiClip, localTickPosition, pitch);
+    const midiNote = createObjectAt(coordinates);
     root.currentAction = Arranger.CreatingResizingMovingR;
     root.selectSingleObject(root.midiClip.midiNotes, root.midiClip.midiNotes.rowCount() - 1);
     CursorManager.setResizeEndCursor();
 
     return midiNote;
+  }
+
+  function createObjectAt(coordinates: point): MidiNote {
+    const pitch = getPitchAtY(coordinates.y);
+    const tickPosition = coordinates.x / root.ruler.pxPerTick;
+    const localTickPosition = tickPosition - root.midiClip.position.ticks;
+
+    return objectCreator.addMidiNote(root.midiClip, localTickPosition, pitch);
+  }
+
+  function createdObjectTypeAt(coordinates: point): int {
+    return ArrangerObject.MidiNote;
   }
 
   function getObjectHeight(obj: MidiNote): real {
@@ -55,7 +62,7 @@ Arranger {
       return;
     }
     const delta = currentPitch - prevPitch;
-    console.log("moving selections by", delta, "pitch");
+    console.debug("moving selections by", delta, "pitch");
     if (root.selectionOperator) {
       const success = root.selectionOperator.moveNotesByPitch(delta);
       if (!success) {
