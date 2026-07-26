@@ -78,6 +78,7 @@ Item {
   required property EditorSettings editorSettings
   property bool enableYScroll: false
   property ArrangerObjectBaseView hoveredObject: null
+  property real lastPaintedSlotTicks: 0
   required property ArrangerObjectCreator objectCreator
   property var objectPaintedSlots: null
   // Edit tool Ctrl+drag object painting state: consecutive snap-length
@@ -284,6 +285,24 @@ Item {
     if (obj) {
       ArrangerObjectHelper.setEndFromTimelineTicks(obj, slotTicks + root.snapGrid.defaultTicks(slotTicks));
     }
+  }
+
+  // Paints the given snap slot and every snap slot between the last painted
+  // slot and it, so fast drags do not leave gaps.
+  function paintSlotsUpTo(slotTicks: real, y: real) {
+    const forward = slotTicks >= root.lastPaintedSlotTicks;
+    let walked = root.lastPaintedSlotTicks;
+    for (let i = 0; i < 512; ++i) {
+      const next = forward ? root.snapGrid.nextSnapPoint(walked) : root.snapGrid.prevSnapPoint(walked);
+      // Stop if the walk does not advance or reached/passed the target slot
+      if (forward ? (next <= walked || next >= slotTicks) : (next >= walked || next <= slotTicks)) {
+        break;
+      }
+      walked = next;
+      root.paintObjectAtSlot(walked, y);
+    }
+    root.paintObjectAtSlot(slotTicks, y);
+    root.lastPaintedSlotTicks = slotTicks;
   }
 
   function selectObjectsInRectangle() {
@@ -884,9 +903,10 @@ Item {
               // Process current action
               if (root.objectPainting) {
                 // Edit tool Ctrl+drag: paint a snap-length object at each
-                // newly entered snap slot
+                // newly entered snap slot, filling skipped slots on fast
+                // drags
                 if (root.shouldSnap) {
-                  root.paintObjectAtSlot(root.snapGrid.snapWithoutStartTicks(Math.max(0, currentTimelineTicks)), mouse.y);
+                  root.paintSlotsUpTo(root.snapGrid.snapWithoutStartTicks(Math.max(0, currentTimelineTicks)), mouse.y);
                 }
               } else if (action === Arranger.Erasing) {
                 root.eraseObjectsAround(mouse.x, mouse.y);
@@ -1031,7 +1051,8 @@ Item {
                     root.undoStack.beginMacro(qsTr("Paint Objects"));
                     root.objectPainting = true;
                     root.objectPaintedSlots = new Set();
-                    root.paintObjectAtSlot(root.snapGrid.snapWithoutStartTicks(unsnappedTicks), mouse.y);
+                    root.lastPaintedSlotTicks = root.snapGrid.snapWithoutStartTicks(unsnappedTicks);
+                    root.paintObjectAtSlot(root.lastPaintedSlotTicks, mouse.y);
                   } else {
                     // Pencil: create an object at the (snapped) cursor
                     // position; the drag sizes it via the CreatingResizing*
