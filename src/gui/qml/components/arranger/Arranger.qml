@@ -49,7 +49,8 @@ Item {
     Cutting,
     Renaming,
     StartingPanning,
-    Panning
+    Panning,
+    StartingSecondaryErase
   }
 
   property alias arrangerContentHeight: arrangerContent.height
@@ -92,6 +93,9 @@ Item {
   readonly property real scrollXPlusWidth: scrollX + scrollViewWidth
   readonly property real scrollY: root.editorSettings?.y ?? 0
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
+  // Whether the current secondary-button press started on an object;
+  // decides touch-erase vs rectangle erase if it becomes an erase drag
+  property bool secondaryErasePressedOnObject: false
   // Whether a failed single-press object creation (beginObjectCreation
   // returning null) falls back to rubber-band selection. Subclasses that
   // handle creation failure differently (e.g. ChordArranger opens a popup)
@@ -876,7 +880,18 @@ Item {
                 action = Arranger.Erasing;
               else if (action === Arranger.StartingDeleteSelection)
                 action = Arranger.DeleteSelecting;
-              else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
+              else if (action === Arranger.StartingSecondaryErase) {
+                // Secondary-button drag: erasing starts once the drag
+                // passes the platform drag threshold (manhattan length,
+                // as in the QStyleHints::startDragDistance docs); a
+                // release below the threshold opens the context menu
+                // instead. Mirrors the eraser tool split by press target
+                const manhattanDistance = Math.abs(currentCoordinates.x - startCoordinates.x) + Math.abs(currentCoordinates.y - startCoordinates.y);
+                if (manhattanDistance >= Qt.styleHints.startDragDistance) {
+                  root.undoStack.beginMacro(qsTr("Erase Objects"));
+                  action = root.secondaryErasePressedOnObject ? Arranger.Erasing : Arranger.DeleteSelecting;
+                }
+              } else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
                 if (KeyboardState.altHeld) {
                   action = Arranger.MovingLink;
                 } else if (KeyboardState.ctrlHeld) {
@@ -1020,6 +1035,11 @@ Item {
                 if (root.hoveredObject) {
                   root.hoveredObject.requestSelection(mouse);
                 }
+                // A drag past the platform drag threshold turns this into
+                // an erase gesture (see StartingSecondaryErase); a release
+                // without a drag opens the context menu
+                root.secondaryErasePressedOnObject = root.hoveredObject !== null;
+                action = Arranger.StartingSecondaryErase;
               } else if (mouse.button === Qt.LeftButton) {
                 if (root.tool.effectiveToolValue === ArrangerTool.Cut) {
                   // Cut tool: cut at the (snapped) cursor position. Clicking
@@ -1099,8 +1119,19 @@ Item {
           }
           onReleased: mouse => {
             if (mouse.button === Qt.RightButton) {
-              arrangerContextMenu.popup();
-              return;
+              if (action === Arranger.StartingSecondaryErase) {
+                // Secondary click without drag: context menu
+                action = Arranger.None;
+                root.updateCursor();
+                arrangerContextMenu.popup();
+                return;
+              }
+              if (![Arranger.StartingErasing, Arranger.Erasing, Arranger.StartingDeleteSelection, Arranger.DeleteSelecting].includes(action)) {
+                arrangerContextMenu.popup();
+                return;
+              }
+              // Secondary-drag erase: handled by the eraser release logic
+              // below, no context menu
             }
             if (action === Arranger.StartingErasing || action === Arranger.Erasing) {
               root.undoStack.endMacro();
