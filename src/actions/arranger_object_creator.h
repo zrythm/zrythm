@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -66,6 +66,13 @@ public:
 
   Q_INVOKABLE structure::arrangement::ChordClip *
   addEmptyChordClip (structure::tracks::ChordTrack * track, double startTicks);
+
+  /**
+   * @brief Creates a scale object with the default scale at the given
+   * timeline position.
+   */
+  Q_INVOKABLE structure::arrangement::ScaleObject *
+  addScaleObject (structure::tracks::ChordTrack * track, double startTicks);
 
   Q_INVOKABLE structure::arrangement::AutomationClip * addEmptyAutomationClip (
     structure::tracks::Track *           track,

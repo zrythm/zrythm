@@ -14,10 +14,6 @@ Arranger {
   readonly property real maxVelocityHeight: height
   required property MidiEditor midiEditor
 
-  function beginObjectCreation(x: real, y: real): var {
-    return null;
-  }
-
   function moveSelectionsY(dy: real, prevY: real) {
   }
 

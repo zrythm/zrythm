@@ -366,6 +366,19 @@ ArrangerObjectCreator::add_audio_clip_with_clip (
 }
 
 structure::arrangement::ScaleObject *
+ArrangerObjectCreator::addScaleObject (
+  structure::tracks::ChordTrack * track,
+  double                          startTicks)
+{
+  // Same default scale as new projects (see Project)
+  return add_scale_object (
+    *track,
+    utils::make_qobject_unique<dsp::MusicalScale> (
+      dsp::MusicalScale::ScaleType::Aeolian, dsp::MusicalNote::A),
+    units::ticks (startTicks));
+}
+
+structure::arrangement::ScaleObject *
 ArrangerObjectCreator::add_scale_object (
   structure::tracks::ChordTrack             &chord_track,
   utils::QObjectUniquePtr<dsp::MusicalScale> scale,

@@ -30,7 +30,6 @@ Item {
     StretchingR,
     StartingAuditioning,
     Auditioning,
-    Autofilling,
     Erasing,
     StartingErasing,
     StartingMoving,
@@ -65,6 +64,9 @@ Item {
   property Clip clipContext: null
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
+  // Whether an undo macro was opened by object creation (e.g. marker
+  // creation) and must be closed on release.
+  property bool creationMacroOpen: false
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   readonly property alias currentMousePosition: arrangerMouseArea.currentCoordinates
@@ -77,6 +79,10 @@ Item {
   property bool enableYScroll: false
   property ArrangerObjectBaseView hoveredObject: null
   required property ArrangerObjectCreator objectCreator
+  property var objectPaintedSlots: null
+  // Edit tool Ctrl+drag object painting state: consecutive snap-length
+  // objects are created inside a single undo macro while dragging.
+  property bool objectPainting: false
   required property Ruler ruler
   property alias scrollView: scrollView
   readonly property real scrollViewHeight: scrollView.height
@@ -85,6 +91,11 @@ Item {
   readonly property real scrollXPlusWidth: scrollX + scrollViewWidth
   readonly property real scrollY: root.editorSettings?.y ?? 0
   readonly property real scrollYPlusHeight: scrollY + scrollViewHeight
+  // Whether a failed single-press object creation (beginObjectCreation
+  // returning null) falls back to rubber-band selection. Subclasses that
+  // handle creation failure differently (e.g. ChordArranger opens a popup)
+  // set this to false.
+  property bool selectionFallbackOnFailedCreation: true
   required property ArrangerObjectSelectionOperator selectionOperator
   readonly property bool shouldSnap: !KeyboardState.shiftHeld && (root.snapGrid.snapToGrid || root.snapGrid.snapToEvents)
   required property SnapGrid snapGrid
@@ -101,10 +112,38 @@ Item {
   // this for type-specific drops (e.g. chord pad → chord editor).
   signal canvasDrop(DragEvent drop)
 
+  // Interactive object creation entry point (single-press pencil,
+  // double-click): creates an object via createObjectAt() and applies
+  // interactive side effects (selection, current action, cursor, undo
+  // macros, popups). Subclasses override; the default creates nothing.
+  function beginObjectCreation(coordinates: point): ArrangerObject {
+    return null;
+  }
+
   function calculateSnappedTimelinePosition(currentTicks: real, startTicks: real): real {
     // Clamp: timeline positions must be at or after the timeline origin
     const clampedTicks = Math.max(0, currentTicks);
     return root.shouldSnap ? root.snapGrid.snapWithStartTicks(clampedTicks, startTicks) : clampedTicks;
+  }
+
+  function canPaintObjectAt(coordinates: point): bool {
+    return root.objectPaintingEnabledForType(root.createdObjectTypeAt(coordinates));
+  }
+
+  // Creates an object at the given coordinates without any interactive side
+  // effects (no selection, actions, macros or popups). Used by object
+  // painting and by beginObjectCreation(). Subclasses override; the default
+  // creates nothing.
+  function createObjectAt(coordinates: point): ArrangerObject {
+    return null;
+  }
+
+  // Returns the ArrangerObject.Type that createObjectAt() would create at
+  // the given coordinates, or -1 if none. Used to gate Edit tool Ctrl+drag
+  // object painting before anything is created. Subclasses override; the
+  // default creates nothing.
+  function createdObjectTypeAt(coordinates: point): int {
+    return -1;
   }
 
   // Deletes all objects intersecting a small rect around the given point
@@ -213,6 +252,40 @@ Item {
     }
   }
 
+  // Centralized policy for which object types may be painted with Edit tool
+  // Ctrl+drag (paintable = clips, notes/chords and automation points).
+  function objectPaintingEnabledForType(objectType: int): bool {
+    switch (objectType) {
+    case ArrangerObject.MidiClip:
+    case ArrangerObject.AudioClip:
+    case ArrangerObject.ChordClip:
+    case ArrangerObject.AutomationClip:
+    case ArrangerObject.MidiNote:
+    case ArrangerObject.ChordObject:
+    case ArrangerObject.AutomationPoint:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  // Creates a snap-length object at the given snap slot if none was painted
+  // there yet during the current Edit tool Ctrl+drag.
+  function paintObjectAtSlot(slotTicks: real, y: real) {
+    if (root.objectPaintedSlots.has(slotTicks)) {
+      return;
+    }
+    root.objectPaintedSlots.add(slotTicks);
+    const slotCoordinates = Qt.point(slotTicks * root.ruler.pxPerTick, y);
+    if (!root.canPaintObjectAt(slotCoordinates)) {
+      return;
+    }
+    const obj = root.createObjectAt(slotCoordinates);
+    if (obj) {
+      ArrangerObjectHelper.setEndFromTimelineTicks(obj, slotTicks + root.snapGrid.defaultTicks(slotTicks));
+    }
+  }
+
   function selectObjectsInRectangle() {
     if (!KeyboardState.ctrlHeld) {
       // Clear current selection first
@@ -275,7 +348,16 @@ Item {
         }
         return;
       case ArrangerTool.Edit:
-        CursorManager.setPencilCursor();
+        // Ctrl switches the pencil to object painting (brush) mode, when
+        // painting is possible at the cursor position. The input check is
+        // only a preview for the idle state; an active brush drag is
+        // latched via objectPainting and keeps the brush cursor even if
+        // Ctrl is released mid-drag.
+        if (root.objectPainting || (KeyboardState.ctrlHeld && root.shouldSnap && root.hoveredObject === null && root.canPaintObjectAt(root.currentMousePosition))) {
+          CursorManager.setBrushCursor();
+        } else {
+          CursorManager.setPencilCursor();
+        }
         return;
       case ArrangerTool.Cut:
         CursorManager.setCutCursor();
@@ -344,9 +426,6 @@ Item {
     case Arranger.ResizingUpFadeIn:
       CursorManager.setFadeInCursor();
       return;
-    case Arranger.Autofilling:
-      CursorManager.setBrushCursor();
-      return;
     case Arranger.StartingSelection:
     case Arranger.Selecting:
       CursorManager.setPointerCursor();
@@ -369,16 +448,22 @@ Item {
   implicitHeight: 100
   implicitWidth: 64
 
-  onHoveredObjectChanged: {
-    console.log("hovered object changed:", hoveredObject);
-  }
-
   Connections {
     function onEffectiveToolValueChanged() {
       root.updateCursor();
     }
 
     target: root.tool
+  }
+
+  Connections {
+    // Modifier changes affect the cursor (e.g. Ctrl switches the Edit tool
+    // between pencil and brush)
+    function onModifierHeldChanged() {
+      root.updateCursor();
+    }
+
+    target: KeyboardState
   }
 
   Connections {
@@ -441,7 +526,7 @@ Item {
         width: root.ruler.contentWidth
 
         onActiveFocusChanged: {
-          console.log("active focus", activeFocus, root);
+          console.debug("active focus", activeFocus, root);
         }
         onArrangerIsActiveChanged: {
           appWindow.activeArranger = arrangerIsActive ? root : null;
@@ -551,8 +636,7 @@ Item {
               }
             }
             onDropped: drop => {
-              // Handle the dropped file(s)
-              console.log("Drop on arranger at coordinates", drop.x, drop.y);
+              console.debug("Drop on arranger at coordinates", drop.x, drop.y);
               root.canvasDrop(drop);
             }
             onPositionChanged:
@@ -716,9 +800,12 @@ Item {
           // cursor override. Arranger drags preview visually and commit only in
           // onReleased, so there is no model state to revert here.
           onCanceled: {
-            if (action === Arranger.StartingErasing || action === Arranger.Erasing || action === Arranger.StartingDeleteSelection || action === Arranger.DeleteSelecting) {
+            if (action === Arranger.StartingErasing || action === Arranger.Erasing || action === Arranger.StartingDeleteSelection || action === Arranger.DeleteSelecting || root.objectPainting || root.creationMacroOpen) {
               root.undoStack.endMacro();
             }
+            root.objectPainting = false;
+            root.objectPaintedSlots = null;
+            root.creationMacroOpen = false;
             action = Arranger.None;
             root.dragState.reset();
             root.wasClickedObjectSelectedOnPress = false;
@@ -727,15 +814,16 @@ Item {
             CursorManager.unsetCursor();
           }
           onDoubleClicked: mouse => {
-            console.log("doubleClicked", action);
+            console.debug("doubleClicked", action);
             if (mouse.button === Qt.LeftButton) {
               if (root.hoveredObject !== null) {
                 action = Arranger.None;
                 root.dragState.dragMode = ArrangerDragState.DragMode.None;
                 CursorManager.unsetCursor();
                 root.hoveredObject.objectDoubleClicked();
-              } else if (root.tool.effectiveToolValue === ArrangerTool.Select || root.tool.effectiveToolValue === ArrangerTool.Edit) {
-                // create an object at the mouse position
+              } else if (root.tool.effectiveToolValue === ArrangerTool.Select) {
+                // create an object at the mouse position (the Edit tool
+                // creates on single press instead)
                 let obj = root.beginObjectCreation(Qt.point(mouse.x, mouse.y));
                 if (obj) {
                   snapNewlyCreatedObjects();
@@ -794,7 +882,13 @@ Item {
               }
 
               // Process current action
-              if (action === Arranger.Erasing) {
+              if (root.objectPainting) {
+                // Edit tool Ctrl+drag: paint a snap-length object at each
+                // newly entered snap slot
+                if (root.shouldSnap) {
+                  root.paintObjectAtSlot(root.snapGrid.snapWithoutStartTicks(Math.max(0, currentTimelineTicks)), mouse.y);
+                }
+              } else if (action === Arranger.Erasing) {
                 root.eraseObjectsAround(mouse.x, mouse.y);
               } else if (action === Arranger.Selecting) {
                 // Select all objects within the selection rectangle
@@ -897,7 +991,7 @@ Item {
           onPressed: mouse => {
             startCoordinates = Qt.point(mouse.x, mouse.y);
             currentCoordinates = startCoordinates;
-            console.log("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
+            console.debug("press inside arranger", startCoordinates, "start ticks:", currentTimelineTicks);
             arrangerContent.forceActiveFocus();
             if (action === Arranger.None) {
               if (mouse.button === Qt.MiddleButton) {
@@ -929,6 +1023,27 @@ Item {
                   root.undoStack.beginMacro(qsTr("Erase Objects"));
                   action = root.hoveredObject ? Arranger.StartingErasing : Arranger.StartingDeleteSelection;
                   root.eraseObjectsAround(mouse.x, mouse.y);
+                } else if (root.tool.effectiveToolValue === ArrangerTool.Edit && root.hoveredObject === null) {
+                  const unsnappedTicks = Math.max(0, mouse.x) / root.ruler.pxPerTick;
+                  if (KeyboardState.ctrlHeld && root.shouldSnap && root.canPaintObjectAt(Qt.point(mouse.x, mouse.y))) {
+                    // Pencil Ctrl+drag: paint consecutive snap-length
+                    // objects, one undo macro for the whole drag
+                    root.undoStack.beginMacro(qsTr("Paint Objects"));
+                    root.objectPainting = true;
+                    root.objectPaintedSlots = new Set();
+                    root.paintObjectAtSlot(root.snapGrid.snapWithoutStartTicks(unsnappedTicks), mouse.y);
+                  } else {
+                    // Pencil: create an object at the (snapped) cursor
+                    // position; the drag sizes it via the CreatingResizing*
+                    // flow. beginObjectCreation sets the action itself
+                    const startTicks = root.shouldSnap ? root.snapGrid.snapWithoutStartTicks(unsnappedTicks) : unsnappedTicks;
+                    const obj = root.beginObjectCreation(Qt.point(startTicks * root.ruler.pxPerTick, mouse.y));
+                    if (obj === null && root.selectionFallbackOnFailedCreation) {
+                      // Creation not possible here (e.g. unsupported track)
+                      // - fall back to rubber-band selection
+                      action = Arranger.StartingSelection;
+                    }
+                  }
                 } else if (root.hoveredObject) {
                   root.hoveredObject.requestSelection(mouse);
                   if (root.hoveredObject.isResizingL) {
@@ -979,6 +1094,10 @@ Item {
               const rectHeight = Math.abs(currentCoordinates.y - startCoordinates.y);
               root.eraseObjectsInRect(Qt.rect(rectX, rectY, rectWidth, rectHeight));
               root.undoStack.endMacro();
+            } else if (root.objectPainting) {
+              root.objectPainting = false;
+              root.objectPaintedSlots = null;
+              root.undoStack.endMacro();
             } else if (action === Arranger.StartingMovingCopy) {
               // Ctrl+click without drag — perform the deferred toggle.
               root.handleDeferredCtrlClickToggle();
@@ -1009,7 +1128,10 @@ Item {
                 if (hasHorizontalMove || action === Arranger.MovingCopy || action === Arranger.MovingLink)
                   root.undoStack.endMacro();
               } else if (action === Arranger.CreatingMoving) {
-                root.undoStack.endMacro();
+                if (root.creationMacroOpen) {
+                  root.creationMacroOpen = false;
+                  root.undoStack.endMacro();
+                }
               } else if ([Arranger.ResizingL, Arranger.ResizingLLoop, Arranger.ResizingR, Arranger.ResizingRLoop].includes(action)) {
                 let resizeType = ArrangerObjectSelectionOperator.Bounds;
                 let direction = ArrangerObjectSelectionOperator.FromEnd;
@@ -1023,9 +1145,9 @@ Item {
                   root.selectionOperator.resizeObjects(resizeType, direction, currentResizeDeltaTicks);
                 // Fades resize: already handled by direct manipulation
               }
-              console.log("released after action");
+              console.debug("released after action");
             } else {
-              console.log("released without action");
+              console.debug("released without action");
               if (root.hoveredObject === null) {
                 root.arrangerSelectionModel.clear();
               }

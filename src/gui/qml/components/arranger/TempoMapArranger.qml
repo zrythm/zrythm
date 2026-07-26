@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,28 +15,37 @@ Arranger {
   required property TempoObjectManager tempoObjectManager
 
   function beginObjectCreation(coordinates: point): ArrangerObject {
+    // Open the macro before creation so the creation and the post-creation
+    // drag-move fold into a single undo step; the arranger closes it on
+    // release
+    const isTimeSignature = coordinates.y > laneHeight;
+    root.undoStack.beginMacro(isTimeSignature ? qsTr("Create Time Signature Object") : qsTr("Create Tempo Object"));
+    const obj = createObjectAt(coordinates);
+    if (obj === null) {
+      root.undoStack.endMacro();
+      return null;
+    }
+
+    root.creationMacroOpen = true;
+    if (isTimeSignature) {
+      root.selectSingleObject(tempoObjectManager.timeSignatureObjects, tempoObjectManager.timeSignatureObjects.rowCount() - 1);
+    } else {
+      root.selectSingleObject(tempoObjectManager.tempoObjects, tempoObjectManager.tempoObjects.rowCount() - 1);
+    }
+    root.currentAction = Arranger.CreatingMoving;
+    CursorManager.setClosedHandCursor();
+    return obj;
+  }
+
+  function createObjectAt(coordinates: point): ArrangerObject {
     const tickPosition = coordinates.x / root.ruler.pxPerTick;
 
     if (coordinates.y > laneHeight) {
-      console.log("Creating time signature object");
-
       const musicalPosition = root.tempoMap.getMusicalPosition(tickPosition);
       const adjustedTickPosition = root.tempoMap.getTickFromMusicalPosition(musicalPosition.bar, 1, 1, 0);
-      root.undoStack.beginMacro("Create Time Signature Object");
-      let timeSigObj = objectCreator.addTimeSignatureObject(tempoObjectManager, 4, 4, adjustedTickPosition);
-      root.currentAction = Arranger.CreatingMoving;
-      root.selectSingleObject(tempoObjectManager.timeSignatureObjects, tempoObjectManager.timeSignatureObjects.rowCount() - 1);
-      CursorManager.setClosedHandCursor();
-      return timeSigObj;
-    } else {
-      console.log("Creating tempo object");
-      root.undoStack.beginMacro("Create Tempo Object");
-      let tempoObj = objectCreator.addTempoObject(tempoObjectManager, 140, TempoEventWrapper.Linear, tickPosition);
-      root.currentAction = Arranger.CreatingMoving;
-      root.selectSingleObject(tempoObjectManager.tempoObjects, tempoObjectManager.tempoObjects.rowCount() - 1);
-      CursorManager.setClosedHandCursor();
-      return tempoObj;
+      return objectCreator.addTimeSignatureObject(tempoObjectManager, 4, 4, adjustedTickPosition);
     }
+    return objectCreator.addTempoObject(tempoObjectManager, 140, TempoEventWrapper.Linear, tickPosition);
   }
 
   function getObjectHeight(obj: ArrangerObject): real {
@@ -71,8 +80,8 @@ Arranger {
       scrollX: root.scrollX
       scrollXPlusWidth: root.scrollXPlusWidth
       selectionModel: root.arrangerSelectionModel
-      tempoObjectManager: root.tempoObjectManager
       tempoMap: root.tempoMap
+      tempoObjectManager: root.tempoObjectManager
       width: root.scrollViewWidth
       x: root.scrollX
     }
