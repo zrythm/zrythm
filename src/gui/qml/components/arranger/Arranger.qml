@@ -55,6 +55,10 @@ Item {
 
   property alias arrangerContentHeight: arrangerContent.height
   required property ItemSelectionModel arrangerSelectionModel
+  // Audition tool: playhead position and rolling state saved on press and
+  // restored on release
+  property double auditionSavedPlayheadTicks: 0
+  property bool auditionWasRolling: false
   // The unified model index of the object clicked with Ctrl held.
   // Saved at press time so the deferred deselect on release targets the correct object
   // even if currentIndex were to change between press and release.
@@ -65,16 +69,16 @@ Item {
   property Clip clipContext: null
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
-  // Drag coordinates of the arranger MouseArea, exposed for subclasses that
-  // implement custom tools (see handleCustomToolPress/Release).
-  readonly property alias dragCurrentCoordinates: arrangerMouseArea.currentCoordinates
-  readonly property alias dragStartCoordinates: arrangerMouseArea.startCoordinates
   // Whether an undo macro was opened by object creation (e.g. marker
   // creation) and must be closed on release.
   property bool creationMacroOpen: false
   property int currentAction: Arranger.CurrentAction.None
   readonly property alias currentActionStartCoordinates: arrangerMouseArea.startCoordinates
   readonly property alias currentMousePosition: arrangerMouseArea.currentCoordinates
+  // Drag coordinates of the arranger MouseArea, exposed for subclasses that
+  // implement custom tools (see handleCustomToolPress/Release).
+  readonly property alias dragCurrentCoordinates: arrangerMouseArea.currentCoordinates
+  readonly property alias dragStartCoordinates: arrangerMouseArea.startCoordinates
   // Shareable drag state. Defaults to a private instance; compositions that
   // need cross-arranger linkage (e.g. MidiEditorPane) pass one instance to
   // several arrangers. Read/write via root.dragState.dragMode etc.
@@ -355,6 +359,16 @@ Item {
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
     const clipObject = object.arrangerObject as Clip;
     return clipObject !== null && (clipObject.looped || isObjectHoveredInBottomHalf);
+  }
+
+  function stopAudition() {
+    // Stop playback, then restore the playhead (requestPause may move it
+    // to the cue point) and the previous rolling state
+    root.transport.requestPause();
+    root.transport.movePlayhead(root.auditionSavedPlayheadTicks, false);
+    if (root.auditionWasRolling) {
+      root.transport.requestRoll();
+    }
   }
 
   function updateCursor() {
@@ -856,6 +870,11 @@ Item {
           onDoubleClicked: mouse => {
             console.debug("doubleClicked", action);
             if (mouse.button === Qt.LeftButton) {
+              if (root.tool.effectiveToolValue === ArrangerTool.Audition) {
+                // Audition tool: every click auditions (press starts
+                // playback, release stops it) - no double-click actions
+                return;
+              }
               if (root.hoveredObject !== null) {
                 action = Arranger.None;
                 root.dragState.dragMode = ArrangerDragState.DragMode.None;
@@ -1082,6 +1101,16 @@ Item {
                   root.undoStack.beginMacro(qsTr("Erase Objects"));
                   action = root.hoveredObject ? Arranger.StartingErasing : Arranger.StartingDeleteSelection;
                   root.eraseObjectsAround(mouse.x, mouse.y);
+                } else if (root.tool.effectiveToolValue === ArrangerTool.Audition) {
+                  // Audition: play from the (snapped) cursor position until
+                  // release; the transport state is restored on release
+                  const unsnappedTicks = Math.max(0, mouse.x) / root.ruler.pxPerTick;
+                  const ticks = root.shouldSnap ? root.snapGrid.snapWithoutStartTicks(unsnappedTicks) : unsnappedTicks;
+                  root.auditionSavedPlayheadTicks = root.transport.playhead.ticks;
+                  root.auditionWasRolling = root.transport.isRolling();
+                  root.transport.movePlayhead(ticks, false);
+                  root.transport.requestRoll();
+                  action = Arranger.Auditioning;
                 } else if (root.tool.effectiveToolValue === ArrangerTool.Edit && root.hoveredObject === null) {
                   const unsnappedTicks = Math.max(0, mouse.x) / root.ruler.pxPerTick;
                   if (KeyboardState.ctrlHeld && root.shouldSnap && root.canPaintObjectAt(Qt.point(mouse.x, mouse.y))) {
@@ -1157,6 +1186,8 @@ Item {
             }
             if (root.handleCustomToolRelease()) {
               // Custom tool action handled by a subclass
+            } else if (action === Arranger.Auditioning) {
+              root.stopAudition();
             } else if (action === Arranger.StartingErasing || action === Arranger.Erasing) {
               root.undoStack.endMacro();
             } else if (action === Arranger.StartingDeleteSelection) {
