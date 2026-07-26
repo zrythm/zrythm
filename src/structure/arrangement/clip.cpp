@@ -149,8 +149,8 @@ Clip::content_position_at_timeline (dsp::TimelineTick timeline_pos) const
   // to sample boundaries and may land up to half a sample outside the
   // tick-domain span after a tick -> rounded-sample -> tick conversion.
   // Clamp within a 1-sample tolerance, assert beyond it.
-  const auto &tempo_map = get_tempo_map ();
-  const auto  tolerance =
+  const auto                 &tempo_map = get_tempo_map ();
+  [[maybe_unused]] const auto tolerance =
     tempo_map.samples_to_tick (
       tempo_map.tick_to_samples_rounded (start) + units::samples (1))
     - start;
