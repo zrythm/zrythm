@@ -241,8 +241,9 @@ protected:
   }
 
   // Selects the row of the given object in the list model.
-  void
-  select_object (const structure::arrangement::ArrangerObjectUuidReference &ref)
+  void select_object (
+    const structure::arrangement::ArrangerObjectUuidReference &ref,
+    QItemSelectionModel::SelectionFlags flags = QItemSelectionModel::Select)
   {
     const int rows = list_model_.rowCount ();
     for (int i = 0; i < rows; ++i)
@@ -257,8 +258,7 @@ protected:
               .value<structure::arrangement::ArrangerObjectUuidReference *> ();
           obj_ref != nullptr && obj_ref->id () == ref.id ())
           {
-            selection_model_->select (
-              list_model_.index (i, 0), QItemSelectionModel::Select);
+            selection_model_->select (list_model_.index (i, 0), flags);
             return;
           }
       }
@@ -347,10 +347,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, InitialState)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   const double tick_delta = 100.0;
 
@@ -379,10 +377,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Move objects to position 100 first to allow negative movement
   for (const auto &obj_ref : test_objects_)
@@ -418,10 +414,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   bool result = operator_->moveByTicks (0.0);
   EXPECT_TRUE (result);
@@ -493,10 +487,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
 TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   const double tick_delta = 100.0;
 
@@ -555,8 +547,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const int pitch_delta = 5;
 
@@ -603,8 +594,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   const double delta = 0.2;
 
@@ -649,8 +639,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   bool result = operator_->moveNotesByPitch (0);
   EXPECT_TRUE (result);
@@ -663,8 +652,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   // Find MIDI note and set its pitch to 125 (close to max)
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
@@ -718,8 +706,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelt
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   bool result = operator_->moveAutomationPointsByDelta (0.0);
   EXPECT_TRUE (result);
@@ -750,8 +737,7 @@ TEST_F (
     structure::arrangement::AutomationPoint>::add_object (automation_point_ref);
 
   // Update list model and select automation point
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (automation_point_ref);
 
   // Try to move by 0.2 (would result in value 1.1, which is out of range)
   bool result = operator_->moveAutomationPointsByDelta (0.2);
@@ -771,10 +757,8 @@ TEST_F (
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -904,10 +888,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectAutomationClip)
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsTempoAndTimeSignature)
 {
   // tempo_ref is index 4, time_signature_ref is index 5 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (5, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
+  select_object (time_signature_ref);
 
   const auto tempo_id = tempo_ref.id ();
   const auto ts_id = time_signature_ref.id ();
@@ -977,8 +959,7 @@ TEST_F (
   CloneObjectsTempoObjectRequestsEnginePause)
 {
   // tempo_ref is index 4 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
 
   EXPECT_TRUE (operator_->cloneObjects ());
   EXPECT_TRUE (engine_pause_requested_)
@@ -992,8 +973,7 @@ TEST_F (
   DeleteTempoObjectRequestsEnginePauseViaDeleteObjects)
 {
   // tempo_ref is index 4 in the list model.
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select);
+  select_object (tempo_ref);
 
   EXPECT_TRUE (operator_->deleteObjects ());
   EXPECT_TRUE (engine_pause_requested_)
@@ -1032,8 +1012,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
 
   // Update selection to only include non-deletable marker
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1061,12 +1040,9 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
     structure::arrangement::Marker>::add_object (start_marker_ref);
 
   // Update selection to include multiple objects
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (6, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1083,10 +1059,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
 TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store the UUIDs of the selected objects (marker and note)
   const auto marker_id = marker_ref.id ();
@@ -1162,9 +1136,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromEnd)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
@@ -1185,9 +1157,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
@@ -1209,9 +1179,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
 
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromEnd, delta);
@@ -1234,9 +1202,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
 
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
@@ -1261,9 +1227,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
 
   // Clear selection and only select objects that support fades resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0),
-    QItemSelectionModel::Select); // Select only AudioClip
+  select_object (audio_clip_ref); // Select only AudioClip
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, delta);
@@ -1283,9 +1247,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
 TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFadesRejectNegative)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0),
-    QItemSelectionModel::Select); // AudioClip (fadeOut = 300)
+  select_object (audio_clip_ref); // AudioClip (fadeOut = 300)
 
   bool result = operator_->resizeObjects (
     commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, -500.0);
@@ -1334,9 +1296,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsUndoRedo)
 
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Perform resize
   bool result = operator_->resizeObjects (
@@ -1371,9 +1331,7 @@ TEST_F (
 {
   // Clear selection and only select MIDI note (non-timeline object)
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Set MIDI note position to a small positive value first
   if (auto * note_obj = note_ref.get ())
@@ -1411,9 +1369,7 @@ TEST_F (
 {
   // Clear selection and only select objects that support bounds resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0),
-    QItemSelectionModel::Select); // Select only MidiNote
+  select_object (note_ref); // Select only MidiNote
 
   // Set initial length to 100 ticks
   auto * note_obj = note_ref.get_object_as<structure::arrangement::MidiNote> ();
@@ -1444,9 +1400,7 @@ TEST_F (
 {
   // Clear selection and only select objects that support loop points resize
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0),
-    QItemSelectionModel::Select); // Select only MidiClip
+  select_object (midi_clip_ref); // Select only MidiClip
 
   // Set initial length to 100 ticks
   auto * midi_clip_obj =
@@ -1477,8 +1431,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
 {
   // Clear selection and only select tempo object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+  select_object (tempo_ref); // Tempo object
 
   const double tick_delta = 100.0;
 
@@ -1507,9 +1460,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
 {
   // Clear selection and only select time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1543,9 +1494,7 @@ TEST_F (
 {
   // Clear selection and only select time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1570,10 +1519,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
 {
   // Clear selection and select regular object + tempo object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (4, 0), QItemSelectionModel::Select); // Tempo object
+  select_object (marker_ref); // Marker
+  select_object (tempo_ref);  // Tempo object
 
   const double tick_delta = 100.0;
 
@@ -1611,11 +1558,8 @@ TEST_F (
 {
   // Clear selection and select regular object + time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (marker_ref);         // Marker
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1655,11 +1599,8 @@ TEST_F (
 {
   // Clear selection and select regular object + time signature object
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select); // Marker
-  selection_model_->select (
-    list_model_.index (5, 0),
-    QItemSelectionModel::Select); // Time signature object
+  select_object (marker_ref);         // Marker
+  select_object (time_signature_ref); // Time signature object
 
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
@@ -1688,10 +1629,8 @@ TEST_F (
 TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsValidSelection)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1777,8 +1716,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
 
   // Update list model and selection
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (start_marker_ref);
 
   // Store initial undo stack count
   const int initial_count = undo_stack_->count ();
@@ -1795,10 +1733,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
 TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUndoRedo)
 {
   // Select marker and note for testing
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   // Store initial counts
   const int  initial_undo_count = undo_stack_->count ();
@@ -1876,8 +1812,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
 {
   // Select audio clip for testing
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   // Store initial counts
   const int  initial_undo_count = undo_stack_->count ();
@@ -1924,8 +1859,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocities)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const int velocity_delta = 15;
 
@@ -1966,8 +1900,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
 {
   // Select note for testing
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   bool result = operator_->changeVelocities (0);
   EXPECT_TRUE (result);
@@ -1981,10 +1914,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
+  select_object (midi_clip_ref);
 
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
@@ -2004,10 +1935,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
   midi_clip_ref.get ()->mute ()->setMuted (true);
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
+  select_object (midi_clip_ref);
 
   bool result = operator_->toggleMute ();
   EXPECT_TRUE (result);
@@ -2031,8 +1960,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteNoSelection)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (2, 0), QItemSelectionModel::Select);
+  select_object (midi_clip_ref);
 
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
@@ -2050,10 +1978,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (note_ref);
 
   EXPECT_EQ (marker_ref.get ()->mute (), nullptr);
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
@@ -2069,8 +1995,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteOnlyNonMuteableObjects)
 {
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
 
   bool result = operator_->toggleMute ();
   EXPECT_FALSE (result);
@@ -2087,8 +2012,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmOnAudioClip)
     clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Polyphonic);
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   bool result =
     operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
@@ -2111,10 +2035,8 @@ TEST_F (
 {
   selection_model_->clear ();
   // Select marker (index 0) and audio clip (index 3)
-  selection_model_->select (
-    list_model_.index (0, 0), QItemSelectionModel::Select);
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (marker_ref);
+  select_object (audio_clip_ref);
 
   bool result =
     operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Monophonic);
@@ -2147,8 +2069,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetTimebaseOverrideOnClip)
   auto initial = clip->timebaseProvider ()->effectiveTimebase ();
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   bool result = operator_->setTimebaseOverride (dsp::Timebase::Absolute);
   EXPECT_TRUE (result);
@@ -2170,8 +2091,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ClearTimebaseOverrideOnClip)
     audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ();
 
   selection_model_->clear ();
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
 
   operator_->setTimebaseOverride (dsp::Timebase::Absolute);
   EXPECT_TRUE (clip->timebaseProvider ()->hasOverride ());
@@ -2193,8 +2113,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
   EXPECT_FALSE (operator_->selectionHasTimebaseProviders ());
 
   // Audio clip (index 3) has a timebase provider
-  selection_model_->select (
-    list_model_.index (3, 0), QItemSelectionModel::Select);
+  select_object (audio_clip_ref);
   EXPECT_TRUE (operator_->selectionHasTimebaseProviders ());
 }
 
@@ -2203,8 +2122,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMax)
 {
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (120);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const bool result = operator_->changeVelocities (20); // 120 + 20 = 140
 
@@ -2218,8 +2136,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMax)
 TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMin)
 {
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (5);
-  selection_model_->select (
-    list_model_.index (1, 0), QItemSelectionModel::Select);
+  select_object (note_ref);
 
   const bool result = operator_->changeVelocities (-20); // 5 - 20 = -15
 
