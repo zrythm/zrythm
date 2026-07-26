@@ -4,6 +4,7 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/add_arranger_object_command.h"
 #include "commands/change_timebase_override_command.h"
+#include "commands/change_uuid_identifiable_object_property_command.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
 #include "commands/resize_arranger_objects_command.h"
@@ -234,6 +235,84 @@ ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
     static_cast<double> (velocity_delta),
     commands::MoveArrangerObjectsCommand::VerticalChangeType::Velocity);
   undo_stack_.push (command);
+
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::rampVelocities (
+  structure::arrangement::MidiClip * clip,
+  double                             start_ticks,
+  double                             start_value,
+  double                             end_ticks,
+  double                             end_value)
+{
+  // Collect the target notes: the selected MIDI notes, or, when none are
+  // selected, all notes of the given clip inside the line's tick span
+  std::vector<structure::arrangement::MidiNote *> target_notes;
+  for (const auto &obj_ref : extractSelectedObjects ())
+    {
+      if (
+        auto * note =
+          obj_ref.template get_object_as<structure::arrangement::MidiNote> ();
+        note != nullptr)
+        {
+          target_notes.push_back (note);
+        }
+    }
+  if (target_notes.empty ())
+    {
+      if (clip == nullptr)
+        {
+          z_debug ("No notes selected for velocity ramp");
+          return false;
+        }
+      const double span_start = std::min (start_ticks, end_ticks);
+      const double span_end = std::max (start_ticks, end_ticks);
+      for (
+        auto * note :
+        clip->structure::arrangement::ArrangerObjectOwner<
+          structure::arrangement::MidiNote>::get_sorted_children_view ())
+        {
+          const double note_ticks =
+            structure::arrangement::timeline_ticks (*note).asDouble ();
+          if (note_ticks >= span_start && note_ticks <= span_end)
+            {
+              target_notes.push_back (note);
+            }
+        }
+      if (target_notes.empty ())
+        {
+          z_debug ("No notes inside the velocity ramp span");
+          return false;
+        }
+    }
+
+  // Velocity of the ramp line at the given timeline position, clamped to
+  // the nearest endpoint outside the line's span
+  const auto velocity_at = [=] (double ticks) {
+    const double t =
+      (end_ticks == start_ticks)
+        ? 1.0
+        : std::clamp ((ticks - start_ticks) / (end_ticks - start_ticks), 0.0, 1.0);
+    return std::clamp (
+      static_cast<int> (
+        std::lround (start_value + t * (end_value - start_value))),
+      0, 127);
+  };
+
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Ramp Velocities"));
+  for (auto * note : target_notes)
+    {
+      const int new_velocity = velocity_at (
+        structure::arrangement::timeline_ticks (*note).asDouble ());
+      if (new_velocity == note->velocity ())
+        continue;
+      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
+        *note, object_factory_.registry (), QStringLiteral ("velocity"),
+        new_velocity));
+    }
 
   return true;
 }
@@ -661,8 +740,9 @@ ArrangerObjectSelectionOperator::toggleMute ()
 
   struct MuteTarget
   {
-    QObject * mute_obj;
-    bool      current_muted;
+    structure::arrangement::ArrangerObject * owner_obj;
+    QObject *                                mute_obj;
+    bool                                     current_muted;
   };
 
   std::vector<MuteTarget> targets;
@@ -671,7 +751,7 @@ ArrangerObjectSelectionOperator::toggleMute ()
       auto * mute = obj_ref.get ()->mute ();
       if (mute != nullptr)
         {
-          targets.push_back ({ mute, mute->muted () });
+          targets.push_back ({ obj_ref.get (), mute, mute->muted () });
         }
     }
 
@@ -690,8 +770,9 @@ ArrangerObjectSelectionOperator::toggleMute ()
       : QObject::tr ("Unmute %1 Objects").arg (targets.size ()));
   for (const auto &target : targets)
     {
-      undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
-        *target.mute_obj, "muted", new_muted));
+      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
+        *target.owner_obj, *target.mute_obj, object_factory_.registry (),
+        QStringLiteral ("muted"), new_muted));
     }
 
   return true;
@@ -728,8 +809,9 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
       .arg (targets.size ()));
   for (auto * clip : targets)
     {
-      undo_stack_.push (new commands::ChangeQObjectPropertyCommand (
-        *clip, "stretchAlgorithm", QVariant::fromValue (algorithm)));
+      undo_stack_.push (new commands::ChangeUuidIdentifiableObjectPropertyCommand (
+        *clip, object_factory_.registry (), QStringLiteral ("stretchAlgorithm"),
+        QVariant::fromValue (algorithm)));
     }
 
   return true;

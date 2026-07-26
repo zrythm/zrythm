@@ -58,6 +58,28 @@ public:
 
   Q_INVOKABLE bool changeVelocities (int velocity_delta);
 
+  /**
+   * @brief Ramps the velocities of MIDI notes linearly.
+   *
+   * Each affected note is set to the velocity of the line from
+   * (@p start_ticks, @p start_value) to (@p end_ticks, @p end_value),
+   * evaluated at the note's timeline position and clamped to [0, 127].
+   *
+   * When at least one MIDI note is selected, only the selected notes are
+   * affected; selected notes outside the line's tick span get the nearest
+   * endpoint's value. Otherwise, all notes of @p clip whose position is
+   * inside the line's tick span are affected. All inside a single undo
+   * macro.
+   *
+   * @return false if no notes are affected.
+   */
+  Q_INVOKABLE bool rampVelocities (
+    structure::arrangement::MidiClip * clip,
+    double                             start_ticks,
+    double                             start_value,
+    double                             end_ticks,
+    double                             end_value);
+
   Q_INVOKABLE bool moveAutomationPointsByDelta (double delta);
 
   Q_INVOKABLE bool resizeObjects (

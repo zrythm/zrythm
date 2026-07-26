@@ -1909,6 +1909,222 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
   EXPECT_EQ (undo_stack_->index (), 0);
 }
 
+// Test rampVelocities linear interpolation across selected notes
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesLinearInterpolation)
+{
+  auto ramp_note_ref1 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref2 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref3 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  for (
+    const auto &ramp_note_ref :
+    { ramp_note_ref1, ramp_note_ref2, ramp_note_ref3 })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (ramp_note_ref);
+    }
+  ramp_note_ref1.get ()->position ()->setTicks (1000.0);
+  ramp_note_ref2.get ()->position ()->setTicks (2000.0);
+  ramp_note_ref3.get ()->position ()->setTicks (3000.0);
+
+  select_object (ramp_note_ref1);
+  select_object (ramp_note_ref2);
+  select_object (ramp_note_ref3);
+
+  bool result = operator_->rampVelocities (nullptr, 1000.0, 10.0, 3000.0, 110.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    10);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    60);
+  EXPECT_EQ (
+    ramp_note_ref3.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    110);
+
+  // One macro for the whole ramp
+  EXPECT_EQ (undo_stack_->index (), 1);
+
+  // Undo restores all original velocities, redo re-applies the ramp
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  EXPECT_EQ (
+    ramp_note_ref3.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+  undo_stack_->redo ();
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    60);
+}
+
+// Test rampVelocities clamps notes outside the line's span to the nearest
+// endpoint value, including when the line is dragged right-to-left
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesClampsOutsideSpan)
+{
+  auto ramp_note_ref1 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  auto ramp_note_ref2 = utils::create_object<structure::arrangement::MidiNote> (
+    registry_, *tempo_map_wrapper);
+  for (const auto &ramp_note_ref : { ramp_note_ref1, ramp_note_ref2 })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+      test_objects_.get<structure::arrangement::random_access_index> ()
+        .push_back (ramp_note_ref);
+    }
+  ramp_note_ref1.get ()->position ()->setTicks (0.0);
+  ramp_note_ref2.get ()->position ()->setTicks (5000.0);
+
+  select_object (ramp_note_ref1);
+  select_object (ramp_note_ref2);
+
+  // Reversed drag (end before start): each note outside the span gets the
+  // value of its nearest endpoint (10 at tick 1000, 110 at tick 3000)
+  bool result = operator_->rampVelocities (nullptr, 3000.0, 110.0, 1000.0, 10.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    ramp_note_ref1.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    10);
+  EXPECT_EQ (
+    ramp_note_ref2.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    110);
+}
+
+// Test rampVelocities with identical start and end positions (vertical line)
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesEqualEndpoints)
+{
+  note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (64);
+  select_object (note_ref);
+
+  bool result = operator_->rampVelocities (nullptr, 1000.0, 30.0, 1000.0, 90.0);
+  EXPECT_TRUE (result);
+
+  EXPECT_EQ (
+    note_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    90);
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test rampVelocities with no selection
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesNoSelection)
+{
+  selection_model_->clear ();
+
+  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  EXPECT_FALSE (result);
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test rampVelocities ignores selected objects that are not MIDI notes
+TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesIgnoresNonNotes)
+{
+  select_object (marker_ref);
+
+  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  EXPECT_FALSE (result);
+
+  // No command should be pushed when nothing changed
+  EXPECT_EQ (undo_stack_->index (), 0);
+}
+
+// Test rampVelocities applies to all notes inside the line's span when no
+// notes are selected
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RampVelocitiesClipScopeWhenNoSelection)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Clip at timeline 2000 with identity warp: notes at timeline 2000, 3000
+  // and 7000
+  auto note1_ref = add_note_to_clip (*clip, 0.0, 100.0);
+  auto note2_ref = add_note_to_clip (*clip, 1000.0, 100.0);
+  auto note3_ref = add_note_to_clip (*clip, 5000.0, 100.0);
+  for (const auto &ramp_note_ref : { note1_ref, note2_ref, note3_ref })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+    }
+
+  selection_model_->clear ();
+
+  bool result = operator_->rampVelocities (clip, 2000.0, 10.0, 3000.0, 110.0);
+  EXPECT_TRUE (result);
+
+  // Notes inside the span get the line's velocities
+  EXPECT_EQ (
+    note1_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    10);
+  EXPECT_EQ (
+    note2_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    110);
+  // Note outside the span is untouched
+  EXPECT_EQ (
+    note3_ref.get_object_as<structure::arrangement::MidiNote> ()->velocity (),
+    64);
+
+  EXPECT_EQ (undo_stack_->index (), 1);
+}
+
+// Test rampVelocities only affects the selected notes even when a clip is
+// given
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  RampVelocitiesSelectionTakesPrecedenceOverClip)
+{
+  auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  ASSERT_NE (clip, nullptr);
+
+  // Selected note at timeline 2000 (outside the ramp span), unselected note
+  // at timeline 7000 (inside the ramp span)
+  auto selected_note_ref = add_note_to_clip (*clip, 0.0, 100.0);
+  auto other_note_ref = add_note_to_clip (*clip, 5000.0, 100.0);
+  for (const auto &ramp_note_ref : { selected_note_ref, other_note_ref })
+    {
+      ramp_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+        ->setVelocity (64);
+    }
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    selected_note_ref);
+  select_object (selected_note_ref);
+
+  bool result = operator_->rampVelocities (clip, 5000.0, 20.0, 7000.0, 80.0);
+  EXPECT_TRUE (result);
+
+  // Selected note outside the span gets the nearest endpoint's value
+  EXPECT_EQ (
+    selected_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    20);
+  // Unselected clip note inside the span is untouched
+  EXPECT_EQ (
+    other_note_ref.get_object_as<structure::arrangement::MidiNote> ()
+      ->velocity (),
+    64);
+}
+
 // Test changeVelocities with invalid velocity (out of range)
 // Test toggleMute mutes unmuted objects
 TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)

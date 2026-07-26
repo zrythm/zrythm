@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -41,6 +41,9 @@ public:
         bpm_provider_ (std::move (bpm_provider))
   {
   }
+
+  /// Returns the object registry the factory registers new objects in.
+  utils::IObjectRegistry &registry () const { return dependencies_.registry_; }
 
   template <structure::arrangement::FinalArrangerObjectSubclass ObjT>
   class Builder

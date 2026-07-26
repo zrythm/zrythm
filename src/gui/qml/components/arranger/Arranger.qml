@@ -65,6 +65,10 @@ Item {
   property Clip clipContext: null
   required property ClipEditor clipEditor
   default property alias content: extraContent.data
+  // Drag coordinates of the arranger MouseArea, exposed for subclasses that
+  // implement custom tools (see handleCustomToolPress/Release).
+  readonly property alias dragCurrentCoordinates: arrangerMouseArea.currentCoordinates
+  readonly property alias dragStartCoordinates: arrangerMouseArea.startCoordinates
   // Whether an undo macro was opened by object creation (e.g. marker
   // creation) and must be closed on release.
   property bool creationMacroOpen: false
@@ -213,6 +217,19 @@ Item {
   // Only StartingMovingCopy needs this because Ctrl+click means "toggle
   // selection" when no drag happens, whereas Alt+click and plain click do not
   // toggle — they always select.
+  // Handles a press for a tool not built into the base arranger. Called
+  // before the generic object move/resize and selection fallback; subclasses
+  // return true if they handled the press (setting the action themselves).
+  function handleCustomToolPress(mouse: var): bool {
+    return false;
+  }
+
+  // Handles a release while a custom tool action is active. Called first in
+  // the release handler; subclasses return true if they consumed it.
+  function handleCustomToolRelease(): bool {
+    return false;
+  }
+
   function handleDeferredCtrlClickToggle() {
     if (root.wasClickedObjectSelectedOnPress) {
       const idx = root.clickedUnifiedIndexOnPress;
@@ -891,7 +908,9 @@ Item {
                   root.undoStack.beginMacro(qsTr("Erase Objects"));
                   action = root.secondaryErasePressedOnObject ? Arranger.Erasing : Arranger.DeleteSelecting;
                 }
-              } else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
+              } else if (action === Arranger.StartingRamp)
+                action = Arranger.Ramping;
+              else if ([Arranger.StartingMoving, Arranger.StartingMovingCopy, Arranger.StartingMovingLink].includes(action)) {
                 if (KeyboardState.altHeld) {
                   action = Arranger.MovingLink;
                 } else if (KeyboardState.ctrlHeld) {
@@ -1085,6 +1104,9 @@ Item {
                       action = Arranger.StartingSelection;
                     }
                   }
+                } else if (root.handleCustomToolPress(mouse)) {
+                  // Custom tool handled by a subclass - it set the action
+                  // itself
                 } else if (root.hoveredObject) {
                   root.hoveredObject.requestSelection(mouse);
                   if (root.hoveredObject.isResizingL) {
@@ -1133,7 +1155,9 @@ Item {
               // Secondary-drag erase: handled by the eraser release logic
               // below, no context menu
             }
-            if (action === Arranger.StartingErasing || action === Arranger.Erasing) {
+            if (root.handleCustomToolRelease()) {
+              // Custom tool action handled by a subclass
+            } else if (action === Arranger.StartingErasing || action === Arranger.Erasing) {
               root.undoStack.endMacro();
             } else if (action === Arranger.StartingDeleteSelection) {
               // Click on empty space with the eraser - nothing more to do
