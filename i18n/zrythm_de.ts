@@ -17687,7 +17687,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
         <source>Setting up project...</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt wird eingerichtet ...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
@@ -17702,7 +17702,7 @@ Unterstützen Sie dieses Projekt über https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
         <source>Project loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Projekt geladen</translation>
     </message>
 </context>
 <context>
