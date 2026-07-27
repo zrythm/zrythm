@@ -909,7 +909,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="14"/>
         <source>Open…</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="21"/>
@@ -2637,12 +2637,12 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="147"/>
         <source>Fader input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrée de chariot</translation>
     </message>
     <message>
         <location filename="../src/dsp/fader.cpp" line="160"/>
         <source>Fader output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie de chariot</translation>
     </message>
     <message>
         <source>Prefader Volume</source>
@@ -2659,7 +2659,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
-        <translation type="unfinished">Contrôle de la balance</translation>
+        <translation>Contrôle de la balance</translation>
     </message>
     <message>
         <source>Prefader Mute</source>
@@ -2668,7 +2668,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="74"/>
         <source>Fader Mute</source>
-        <translation type="unfinished">Sourdine fader</translation>
+        <translation>Sourdine du chariot</translation>
     </message>
     <message>
         <source>Prefader Solo</source>
