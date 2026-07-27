@@ -133,6 +133,21 @@ ChordPadBank::transposeChords (bool up)
 }
 
 dsp::ChordDescriptor *
+ChordPadBank::chord_for_note (midi_byte_t note_number)
+{
+  if (
+    note_number < kBasePadNote
+    || note_number >= kBasePadNote + kTriggerablePadCount)
+    return nullptr;
+
+  const auto index = note_number - kBasePadNote;
+  if (index >= static_cast<int> (chords_.size ()))
+    return nullptr;
+
+  return chords_[index].get ();
+}
+
+dsp::ChordDescriptor *
 ChordPadBank::chordAt (int index)
 {
   if (index < 0 || index >= static_cast<int> (chords_.size ()))

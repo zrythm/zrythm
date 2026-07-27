@@ -110,6 +110,15 @@ public:
   std::optional<dsp::ChordDescriptor::ChordPitches>
   get_pitches_for_note (midi_byte_t note_number) noexcept [[clang::nonblocking]];
 
+  /**
+   * @brief Returns the chord descriptor for the pad triggered by the given
+   * MIDI note number, or nullptr if the note is outside the trigger range or
+   * the pad has no chord.
+   *
+   * @see get_pitches_for_note()
+   */
+  dsp::ChordDescriptor * chord_for_note (midi_byte_t note_number);
+
   Q_INVOKABLE dsp::ChordDescriptor * chordAt (int index);
 
   friend void to_json (nlohmann::json &j, const ChordPadBank &bank);

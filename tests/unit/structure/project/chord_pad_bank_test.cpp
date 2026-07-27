@@ -46,6 +46,46 @@ TEST_F (ChordPadBankTest, InitiallyEmpty)
   EXPECT_EQ (bank_->rowCount (), 0);
 }
 
+TEST_F (ChordPadBankTest, ChordForNoteReturnsNullBelowBaseNote)
+{
+  bank_->addChord (MusicalNote::C, ChordType::Major);
+  EXPECT_EQ (bank_->chord_for_note (ChordPadBank::kBasePadNote - 1), nullptr);
+}
+
+TEST_F (ChordPadBankTest, ChordForNoteReturnsNullAboveTriggerRange)
+{
+  bank_->addChord (MusicalNote::C, ChordType::Major);
+  EXPECT_EQ (
+    bank_->chord_for_note (
+      ChordPadBank::kBasePadNote + ChordPadBank::kTriggerablePadCount),
+    nullptr);
+}
+
+TEST_F (ChordPadBankTest, ChordForNoteReturnsNullForUnassignedPad)
+{
+  bank_->applyPresetFromScale (MusicalScale::ScaleType::Major, MusicalNote::C);
+  ASSERT_EQ (bank_->rowCount (), 7);
+  EXPECT_EQ (bank_->chord_for_note (ChordPadBank::kBasePadNote + 7), nullptr);
+  EXPECT_EQ (
+    bank_->chord_for_note (
+      ChordPadBank::kBasePadNote + ChordPadBank::kTriggerablePadCount - 1),
+    nullptr);
+}
+
+TEST_F (ChordPadBankTest, ChordForNoteReturnsDescriptorForAssignedPad)
+{
+  bank_->addChord (MusicalNote::G, ChordType::Minor);
+  bank_->addChord (MusicalNote::D, ChordType::Major);
+
+  auto * first = bank_->chord_for_note (ChordPadBank::kBasePadNote);
+  ASSERT_NE (first, nullptr);
+  expect_chord_matches (*first, MusicalNote::G, ChordType::Minor);
+
+  auto * second = bank_->chord_for_note (ChordPadBank::kBasePadNote + 1);
+  ASSERT_NE (second, nullptr);
+  expect_chord_matches (*second, MusicalNote::D, ChordType::Major);
+}
+
 TEST_F (ChordPadBankTest, AddChordIncrementsRowCount)
 {
   bank_->addChord (MusicalNote::C, ChordType::Major);

@@ -356,14 +356,8 @@ ProjectSession::ProjectSession (
             creator_ptr.isNull () || project_ptr.isNull ()
             || pad_bank_ptr.isNull ())
             return;
-          using ChordPadBank = structure::project::ChordPadBank;
-          if (
-            note_number < ChordPadBank::kBasePadNote
-            || note_number
-                 >= ChordPadBank::kBasePadNote + ChordPadBank::kTriggerablePadCount)
-            return;
-          auto * descriptor =
-            pad_bank_ptr->chordAt (note_number - ChordPadBank::kBasePadNote);
+          auto * descriptor = pad_bank_ptr->chord_for_note (
+            static_cast<midi_byte_t> (note_number));
           if (descriptor == nullptr)
             return;
           const auto ticks = project_ptr->tempo_map ().samples_to_tick (
