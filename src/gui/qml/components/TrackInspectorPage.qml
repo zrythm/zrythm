@@ -313,7 +313,7 @@ ScrollView {
 
     Loader {
       Layout.fillWidth: true
-      active: root.track.type === Track.Instrument || root.track.type === Track.Midi
+      active: root.track.type === Track.Instrument || root.track.type === Track.Midi || root.track.type === Track.Chord
       visible: active
 
       sourceComponent: ExpanderBox {
