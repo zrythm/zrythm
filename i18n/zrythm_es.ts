@@ -2919,24 +2919,24 @@ Bit depth: {} bits</translation>
     <message>
         <location filename="../tests/unit/commands/change_parameter_value_command_test.cpp" line="233"/>
         <source>Change &apos;%1&apos; value to %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar el valor &apos;%1 &apos; a %2</translation>
     </message>
     <message>
         <location filename="../src/commands/move_arranger_objects_command.cpp" line="15"/>
         <source>Move Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover Objetos</translation>
     </message>
     <message>
         <location filename="../src/commands/move_plugins_command.cpp" line="15"/>
         <source>Move Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Complemento de Movimiento</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/commands/move_plugins_command.cpp" line="16"/>
         <source>Move %n Plugin(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Mover complemento %n</numerusform>
+            <numerusform>Mover complementos %n</numerusform>
         </translation>
     </message>
     <message>
@@ -2953,85 +2953,96 @@ Write comments and bugs to {}
 Support this project at {}
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>{}-{}
+{}
+
+{} ¡viene sin ABSOLUTAMENTE NINGUNA GARANTÍA!
+
+Este es software libre, y puede redistribuirlo bajo ciertas
+condiciones. Consultar el archivo &apos;COPIA&apos; para más detalles.
+
+Escribe comentarios y errores a {}
+Apoya este proyecto en {}
+
+</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="56"/>
         <source>Unsupported audio format: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de audio no admitido: %1</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="65"/>
         <source>Failed to create parent directories for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al crear directorios principales para %1</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="77"/>
         <source>Failed to open output file: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al abrir el archivo de salida: %1</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="88"/>
         <source>Failed to create audio writer for %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al crear el escritor de audio para %1</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="119"/>
         <source>Failed to write audio data to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al escribir datos de audio en %1</translation>
     </message>
     <message>
         <location filename="../src/utils/audio_file_writer.cpp" line="128"/>
         <source>Writing audio file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Escribir archivo de audio...</translation>
     </message>
     <message>
         <location filename="../src/dsp/graph_renderer.cpp" line="172"/>
         <source>Rendering to audio...</source>
-        <translation type="unfinished"></translation>
+        <translation>Renderizado a audio...</translation>
     </message>
     <message>
         <location filename="../src/commands/move_tracks_command.cpp" line="16"/>
         <source>Move Tracks</source>
-        <translation type="unfinished"></translation>
+        <translation>Mover Pistas</translation>
     </message>
     <message>
         <location filename="../src/commands/remove_plugins_command.cpp" line="13"/>
         <source>Remove Plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminar Complemento</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/commands/remove_plugins_command.cpp" line="14"/>
         <source>Remove %n Plugin(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>Eliminar %n Complemento</numerusform>
+            <numerusform>Eliminar %n Complementos</numerusform>
         </translation>
     </message>
     <message>
         <location filename="../src/commands/resize_arranger_objects_command.cpp" line="13"/>
         <source>Resize Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiar el Tamaño de los Objetos</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_loader.cpp" line="68"/>
         <source>Verifying directory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verificación del directorio...</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_loader.cpp" line="80"/>
         <source>Reading project file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lectura del archivo del proyecto...</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_loader.cpp" line="88"/>
         <source>Parsing project data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Analizar datos del proyecto...</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_loader.cpp" line="96"/>
         <source>Extracting metadata...</source>
-        <translation type="unfinished"></translation>
+        <translation>Extracción de metadatos...</translation>
     </message>
     <message>
         <location filename="../src/controllers/project_loader.cpp" line="103"/>
