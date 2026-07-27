@@ -36,7 +36,8 @@ struct DeviceManager::MidiImpl
       auto             it = owner_.buffers.find (ident);
       if (it != owner_.buffers.end ())
         {
-          if (!it->second->push (message))
+          if (!it->second->push (message.withTimeStamp (
+                juce::Time::getMillisecondCounterHiRes () * 0.001)))
             {
               ++owner_.overflow_count;
             }

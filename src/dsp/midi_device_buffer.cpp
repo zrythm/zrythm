@@ -56,12 +56,12 @@ MidiDeviceBuffer::drain (
           base_timestamp = msg_timestamp;
         }
 
-      const auto sample_offset = au::round_as<int> (
-        units::samples, (msg_timestamp - *base_timestamp) * sample_rate);
       const auto clamped_offset = au::clamp (
-        sample_offset, units::samples (0),
-        nframes.as<int> (units::samples) - units::samples (1));
-      output.addEvent (msg, clamped_offset.in<int> (units::samples));
+        (msg_timestamp - *base_timestamp) * sample_rate, units::samples (0.0),
+        units::samples (static_cast<double> (nframes.in (units::samples) -1)));
+      output.addEvent (
+        msg,
+        au::round_as<int> (units::samples, clamped_offset).in (units::samples));
     }
 }
 

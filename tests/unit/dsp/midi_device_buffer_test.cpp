@@ -106,6 +106,38 @@ TEST_F (MidiDeviceBufferTest, TimestampsClampedToBlockRange)
   EXPECT_EQ (sample_positions (output), (std::vector<int>{ 0, 255 }));
 }
 
+TEST_F (MidiDeviceBufferTest, EventBeforeBlockStartClampsToZero)
+{
+  auto msg = juce::MidiMessage::noteOn (1, 60, 0.5f);
+  msg.setTimeStamp (100.0 - 0.001);
+  buffer_.push (msg);
+
+  auto output = make_preallocated_buffer (1);
+  buffer_.drain (output, sample_rate_, nframes_, units::seconds (100.0));
+
+  ASSERT_EQ (output.getNumEvents (), 1);
+  EXPECT_EQ (sample_positions (output), (std::vector<int>{ 0 }));
+}
+
+TEST_F (MidiDeviceBufferTest, OutOfRangeTimestampsClampWithoutOverflow)
+{
+  // Mimic the offset caused by a 32-bit millisecond clock wrap (2^32 ms
+  // behind the block start)
+  auto msg1 = juce::MidiMessage::noteOn (1, 60, 0.5f);
+  msg1.setTimeStamp (4869786.454 - 4294967.296);
+  buffer_.push (msg1);
+
+  auto msg2 = juce::MidiMessage::noteOn (1, 61, 0.5f);
+  msg2.setTimeStamp (4869786.454 + 1e12);
+  buffer_.push (msg2);
+
+  auto output = make_preallocated_buffer (2);
+  buffer_.drain (output, sample_rate_, nframes_, units::seconds (4869786.454));
+
+  ASSERT_EQ (output.getNumEvents (), 2);
+  EXPECT_EQ (sample_positions (output), (std::vector<int>{ 0, 255 }));
+}
+
 TEST_F (MidiDeviceBufferTest, ClearDiscardsAllEvents)
 {
   auto msg = juce::MidiMessage::noteOn (1, 60, 0.5f);
