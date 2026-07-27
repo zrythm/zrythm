@@ -18233,37 +18233,37 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="293"/>
         <source>Loading project file...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを読み込み中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="345"/>
         <source>Creating project...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを作成中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="363"/>
         <source>Deserializing project data...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを逆シリアル化...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
         <source>Setting up project...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを準備中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
         <source>Rebuilding audio graph...</source>
-        <translation type="unfinished"></translation>
+        <translation>波形を再生成中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="399"/>
         <source>Starting engine...</source>
-        <translation type="unfinished"></translation>
+        <translation>エンジンを開始...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
         <source>Project loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクト読み込み</translation>
     </message>
 </context>
 <context>
@@ -18272,7 +18272,7 @@ Support this project at https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>新規プロジェクト</translation>
     </message>
 </context>
 <context>
@@ -18280,12 +18280,12 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="392"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを開く</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="393"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>新規プロジェクトを作成</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
@@ -18295,7 +18295,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>
         <source>Use dummy audio/midi engine</source>
-        <translation type="unfinished"></translation>
+        <translation>ダミー音源/MIDIを使用</translation>
     </message>
 </context>
 <context>
@@ -18303,7 +18303,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/plugins/plugin_scan_manager.cpp" line="128"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
+        <translation>スキャン中...</translation>
     </message>
 </context>
 <context>
