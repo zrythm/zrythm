@@ -210,6 +210,7 @@ Item {
 
     anchors.fill: parent
     hoverEnabled: true
+    preventStealing: true
 
     onDoubleClicked: {
       paramOp.setValue(root.defaultBalanceValue);
@@ -236,12 +237,19 @@ Item {
       }
     }
     onPressed: function (mouse) {
-      root.dragging = true;
-      root.balanceAtStart = root.balanceParameter.baseValue;
-      root.lastX = mouse.x;
-      mouse.accepted = true;
+      if (mouse.button === Qt.LeftButton) {
+        root.dragging = true;
+        root.balanceAtStart = root.balanceParameter.baseValue;
+        root.lastX = mouse.x;
+        mouse.accepted = true;
+      }
     }
-    onReleased: {
+    onReleased: function (mouse) {
+      if (mouse.button === Qt.LeftButton) {
+        root.dragging = false;
+      }
+    }
+    onCanceled: {
       root.dragging = false;
     }
     onWheel: {

@@ -192,6 +192,7 @@ Item {
 
     anchors.fill: parent
     hoverEnabled: true
+    preventStealing: true
 
     onDoubleClicked: {
       paramOp.setValue(root.defaultFaderValue);
@@ -212,12 +213,19 @@ Item {
       }
     }
     onPressed: function (mouse) {
-      root.dragging = true;
-      root.ampAtStart = root.faderGain.baseValue;
-      root.lastY = mouse.y;
-      mouse.accepted = true;
+      if (mouse.button === Qt.LeftButton) {
+        root.dragging = true;
+        root.ampAtStart = root.faderGain.baseValue;
+        root.lastY = mouse.y;
+        mouse.accepted = true;
+      }
     }
-    onReleased: {
+    onReleased: function (mouse) {
+      if (mouse.button === Qt.LeftButton) {
+        root.dragging = false;
+      }
+    }
+    onCanceled: {
       root.dragging = false;
     }
     onWheel: {

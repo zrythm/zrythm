@@ -311,6 +311,7 @@ Control {
 
     anchors.fill: parent
     hoverEnabled: true
+    preventStealing: true
 
     onDoubleClicked: {
       root.value = root.defaultValue;
@@ -356,6 +357,10 @@ Control {
         root.dragging = false;
         knobCanvas.requestPaint();
       }
+    }
+    onCanceled: {
+      root.dragging = false;
+      knobCanvas.requestPaint();
     }
     onWheel: function (wheel) {
       var step = wheel.modifiers & Qt.ControlModifier ? 0.01 : 0.05;
