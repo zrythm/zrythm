@@ -18272,7 +18272,7 @@ Support this project at https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
-        <translation>新規プロジェクト</translation>
+        <translation>空白のプロジェクト</translation>
     </message>
 </context>
 <context>
@@ -18290,7 +18290,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
         <source>Create new project with template</source>
-        <translation type="unfinished"></translation>
+        <translation>テンプレートから新規プロジェクトを作成</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>

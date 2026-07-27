@@ -622,13 +622,13 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="228"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="451"/>
         <source>Custom Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>Période temporelle personnalisée</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
         <source>Track Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélection de piste</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
