@@ -358,8 +358,8 @@ set(language_mappings
   "tr/Türkiye"
   "uk/Українська"
   "vi/Tiếng Việt"
-  "zh_CN/简体中文"
-  "zh_TW/繁體中文"
+  "zh_Hans/简体中文"
+  "zh_Hant/繁體中文"
 )
 
 foreach(lang_pair ${language_mappings})
