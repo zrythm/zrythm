@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -44,6 +44,11 @@ public:
 
   /**
    * @brief Maps a source model index to the unified model index.
+   *
+   * If the index's model is not yet a source of the unified model, it is
+   * added automatically. Returns an invalid index if @a sourceIndex is
+   * invalid.
+   *
    * @param sourceIndex The index in the source model.
    * @return The corresponding index in the unified model.
    */

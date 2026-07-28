@@ -23,13 +23,19 @@ Control {
   readonly property bool pluginEnabled: root.plugin && root.plugin.bypassParameter.baseValue < 0.5
   required property PluginGroup pluginGroup
   required property PluginImporter pluginImporter
-  required property var pluginModelIndex
   required property PluginOperator pluginOperator
   required property PluginSelectionModel pluginSelectionModel
   required property Track track
   required property TrackSelectionModel trackSelectionModel
 
   signal pluginClicked(Plugin plugin)
+
+  // Returns a fresh model index for this delegate's plugin. Must be called at
+  // time of use - QModelIndex values must not be cached in QML because they
+  // are frozen snapshots that go stale when model rows change.
+  function pluginModelIndex(): var {
+    return pluginSelectionModel.getModelIndex(index);
+  }
 
   function gatherSelectedPlugins() {
     const plugins = [];
@@ -120,7 +126,7 @@ Control {
   SelectionTracker {
     id: selectionTracker
 
-    modelIndex: root.pluginModelIndex
+    modelIndexProvider: root.pluginModelIndex
     selectionModel: root.pluginSelectionModel
   }
 
@@ -131,7 +137,7 @@ Control {
     onTapped: (eventPoint, button) => {
       if (root.plugin) {
         root.selectCurrentTrack();
-        root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+        root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex());
         root.pluginClicked(root.plugin);
       }
     }
@@ -144,8 +150,8 @@ Control {
     onTapped: (eventPoint, button) => {
       if (root.plugin) {
         root.selectCurrentTrack();
-        root.pluginSelectionModel.select(root.pluginModelIndex, ItemSelectionModel.Toggle);
-        root.pluginSelectionModel.setCurrentIndex(root.pluginModelIndex, ItemSelectionModel.NoUpdate);
+        root.pluginSelectionModel.select(root.pluginModelIndex(), ItemSelectionModel.Toggle);
+        root.pluginSelectionModel.setCurrentIndex(root.pluginModelIndex(), ItemSelectionModel.NoUpdate);
       }
     }
   }
@@ -158,13 +164,14 @@ Control {
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
+        const thisIdx = root.pluginModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.pluginModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.pluginModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.pluginSelectionModel.model, top, bottom);
           root.pluginSelectionModel.select(sel, ItemSelectionModel.ClearAndSelect);
         } else {
-          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+          root.pluginSelectionModel.selectSinglePlugin(thisIdx);
         }
       }
     }
@@ -178,13 +185,14 @@ Control {
       if (root.plugin) {
         root.selectCurrentTrack();
         const currentIdx = root.pluginSelectionModel.currentIndex;
+        const thisIdx = root.pluginModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.pluginModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.pluginModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.pluginSelectionModel.model, top, bottom);
           root.pluginSelectionModel.select(sel, ItemSelectionModel.Select);
         } else {
-          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+          root.pluginSelectionModel.selectSinglePlugin(thisIdx);
         }
       }
     }
@@ -196,8 +204,8 @@ Control {
     onTapped: (eventPoint, button) => {
       if (root.plugin) {
         root.selectCurrentTrack();
-        if (!root.pluginSelectionModel.isSelected(root.pluginModelIndex))
-          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex);
+        if (!root.pluginSelectionModel.isSelected(root.pluginModelIndex()))
+          root.pluginSelectionModel.selectSinglePlugin(root.pluginModelIndex());
       }
       contextMenu.popup();
     }

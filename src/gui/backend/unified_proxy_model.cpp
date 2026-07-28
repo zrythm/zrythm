@@ -31,6 +31,11 @@ UnifiedProxyModel::removeSourceModel (QAbstractItemModel * model)
 QModelIndex
 UnifiedProxyModel::mapFromSource (const QModelIndex &sourceIndex) const
 {
+  if (!sourceIndex.isValid ())
+    return {};
+
+  const_cast<UnifiedProxyModel *> (this)->addSourceModel (
+    const_cast<QAbstractItemModel *> (sourceIndex.model ()));
   return QConcatenateTablesProxyModel::mapFromSource (sourceIndex);
 }
 QModelIndex

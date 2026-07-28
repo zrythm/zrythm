@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -87,28 +87,7 @@ Loader {
   SelectionTracker {
     id: selectionTracker
 
-    // Dummy property to force the modelIndex to be recalculated
-    property bool dummy: false
-
-    modelIndex: {
-      root.unifiedObjectsModel.addSourceModel(root.model);
-      const ret = root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0));
-      dummy;
-      return ret;
-    }
+    modelIndexProvider: () => root.unifiedObjectsModel.mapFromSource(root.model.index(root.index, 0))
     selectionModel: root.arrangerSelectionModel
-  }
-
-  // When objects are added to previous source models in the unified model, the modelIndex above is not updated, so we force an update here when objects are added/removed
-  Connections {
-    function onRowsInserted() {
-      selectionTracker.dummy = !selectionTracker.dummy;
-    }
-
-    function onRowsRemoved() {
-      selectionTracker.dummy = !selectionTracker.dummy;
-    }
-
-    target: root.unifiedObjectsModel
   }
 }

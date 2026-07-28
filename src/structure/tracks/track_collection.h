@@ -28,9 +28,11 @@ class TrackCollection : public QAbstractListModel
     int numMutedTracks READ numMutedTracks NOTIFY numMutedTracksChanged)
   Q_PROPERTY (
     int numListenedTracks READ numListenedTracks NOTIFY numListenedTracksChanged)
+  Q_PROPERTY (
+    bool moveInProgress READ moveInProgress WRITE setMoveInProgress NOTIFY
+      moveInProgressChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
-
 public:
   enum TrackRoles
   {
@@ -66,12 +68,42 @@ public:
 
   Q_INVOKABLE void setTrackExpanded (const Track * track, bool expanded);
 
+  /**
+   * @brief Returns the model index for @p track, or an invalid index if the
+   * track is not in the collection.
+   */
+  Q_INVOKABLE QModelIndex indexForTrack (const Track * track) const;
+
+  /**
+   * @brief Returns the number of tracks in the collection.
+   */
+  Q_INVOKABLE int trackCount () const
+  {
+    return static_cast<int> (tracks_.size ());
+  }
+
   int           numSoloedTracks () const;
   Q_SIGNAL void numSoloedTracksChanged ();
   int           numMutedTracks () const;
   Q_SIGNAL void numMutedTracksChanged ();
   int           numListenedTracks () const;
   Q_SIGNAL void numListenedTracksChanged ();
+
+  /**
+   * @brief Whether a compound track move (remove + reinsert) is in progress.
+   *
+   * Set by commands around multi-step mutations so that selection-policy
+   * handlers can ignore the transient row removal/insertion signals.
+   */
+  bool moveInProgress () const { return move_in_progress_; }
+  void setMoveInProgress (bool move_in_progress)
+  {
+    if (move_in_progress_ == move_in_progress)
+      return;
+    move_in_progress_ = move_in_progress;
+    Q_EMIT moveInProgressChanged ();
+  }
+  Q_SIGNAL void moveInProgressChanged ();
 
   /**
    * @brief Emitted after tracks are moved within the collection.
@@ -170,6 +202,10 @@ public:
     }
   void notify_tracks_moved (const Container &uuids)
   {
+    // Clear the move flag before emitting tracksMoved() so that tracksMoved
+    // handlers observe moveInProgress == false.
+    setMoveInProgress (false);
+
     QList<int> rows;
     for (const auto &ref : tracks_)
       {
@@ -313,6 +349,8 @@ private:
 
   std::unordered_map<Track::Uuid, QMetaObject::Connection>
     recording_param_connections_;
+
+  bool move_in_progress_ = false;
 };
 
 } // namespace zrythm::structure::tracks

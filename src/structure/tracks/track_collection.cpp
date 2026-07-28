@@ -166,6 +166,19 @@ TrackCollection::setTrackExpanded (const Track * track, bool expanded)
   set_track_expanded (track->get_uuid (), expanded);
 }
 
+QModelIndex
+TrackCollection::indexForTrack (const Track * track) const
+{
+  if (track == nullptr)
+    return {};
+
+  const auto row = get_track_index (track->get_uuid ());
+  if (row >= static_cast<decltype (row)> (tracks_.size ()))
+    return {};
+
+  return index (static_cast<int> (row), 0);
+}
+
 int
 TrackCollection::numSoloedTracks () const
 {

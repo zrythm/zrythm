@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "structure/tracks/audio_bus_track.h"
@@ -1064,6 +1064,104 @@ TEST_F (TrackCollectionTest, RecordingSignalForTrackAmongMultipleTracks)
   auto args2 = spy.takeFirst ();
   EXPECT_EQ (args2.at (0).value<Track *> (), track2.get ());
   EXPECT_TRUE (args2.at (1).toBool ());
+}
+
+TEST_F (TrackCollectionTest, IndexForTrack)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  track_collection->add_track (track1);
+  track_collection->add_track (track2);
+  track_collection->add_track (track3);
+
+  const auto idx2 = track_collection->indexForTrack (track2.get ());
+  ASSERT_TRUE (idx2.isValid ());
+  EXPECT_EQ (idx2.row (), 1);
+
+  // Index follows the track's current position after a move
+  track_collection->move_track (track3.id (), 0);
+  const auto idx3 = track_collection->indexForTrack (track3.get ());
+  ASSERT_TRUE (idx3.isValid ());
+  EXPECT_EQ (idx3.row (), 0);
+  const auto idx1 = track_collection->indexForTrack (track1.get ());
+  ASSERT_TRUE (idx1.isValid ());
+  EXPECT_EQ (idx1.row (), 1);
+}
+
+TEST_F (TrackCollectionTest, IndexForTrackUnknownTrackReturnsInvalid)
+{
+  auto track1 = create_audio_bus_track ();
+  track_collection->add_track (track1);
+
+  auto unowned = create_audio_bus_track ();
+  EXPECT_FALSE (track_collection->indexForTrack (unowned.get ()).isValid ());
+}
+
+TEST_F (TrackCollectionTest, IndexForTrackNullReturnsInvalid)
+{
+  EXPECT_FALSE (track_collection->indexForTrack (nullptr).isValid ());
+}
+
+TEST_F (TrackCollectionTest, MoveInProgressDefaultsToFalse)
+{
+  EXPECT_FALSE (track_collection->moveInProgress ());
+}
+
+TEST_F (TrackCollectionTest, SetMoveInProgressEmitsOnChangeOnly)
+{
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::moveInProgressChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  track_collection->setMoveInProgress (true);
+  EXPECT_EQ (spy.count (), 1);
+
+  track_collection->setMoveInProgress (true);
+  EXPECT_EQ (spy.count (), 1);
+
+  track_collection->setMoveInProgress (false);
+  EXPECT_EQ (spy.count (), 2);
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedClearsMoveInProgress)
+{
+  auto track1 = create_audio_bus_track ();
+  track_collection->add_track (track1);
+
+  track_collection->setMoveInProgress (true);
+  std::unordered_set<Track::Uuid> moved{ track1.id () };
+  track_collection->notify_tracks_moved (moved);
+
+  EXPECT_FALSE (track_collection->moveInProgress ());
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedEmptySetStillClearsMoveInProgress)
+{
+  track_collection->setMoveInProgress (true);
+
+  std::unordered_set<Track::Uuid> empty;
+  track_collection->notify_tracks_moved (empty);
+
+  EXPECT_FALSE (track_collection->moveInProgress ());
+}
+
+TEST_F (TrackCollectionTest, NotifyTracksMovedNoSpuriousMoveInProgressChanged)
+{
+  // With the flag already false (e.g. the delete-tracks path), clearing it
+  // again must not emit.
+  QSignalSpy spy (
+    track_collection.get (), &TrackCollection::moveInProgressChanged);
+  ASSERT_TRUE (spy.isValid ());
+
+  auto track1 = create_audio_bus_track ();
+  track_collection->add_track (track1);
+
+  std::unordered_set<Track::Uuid> moved{ track1.id () };
+  track_collection->notify_tracks_moved (moved);
+
+  EXPECT_EQ (spy.count (), 0);
 }
 
 } // namespace zrythm::structure::tracks

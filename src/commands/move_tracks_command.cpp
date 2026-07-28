@@ -8,6 +8,25 @@
 namespace zrythm::commands
 {
 
+namespace
+{
+// Scoped move-in-progress flag. Cleared on destruction if still set (safety
+// net for early exits; the normal path clears it in notify_tracks_moved()
+// before tracksMoved is emitted).
+struct MoveInProgressGuard
+{
+  explicit MoveInProgressGuard (structure::tracks::TrackCollection &collection)
+      : collection_ (collection)
+  {
+    collection_.setMoveInProgress (true);
+  }
+
+  ~MoveInProgressGuard () { collection_.setMoveInProgress (false); }
+
+  structure::tracks::TrackCollection &collection_;
+};
+} // namespace
+
 MoveTracksCommand::MoveTracksCommand (
   structure::tracks::TrackCollection                &collection,
   std::vector<structure::tracks::TrackUuidReference> track_refs,
@@ -46,6 +65,8 @@ MoveTracksCommand::MoveTracksCommand (
 void
 MoveTracksCommand::undo ()
 {
+  const MoveInProgressGuard move_guard (collection_);
+
   // Same two-phase approach as redo(): remove all moved tracks, then insert
   // them at their original positions.
   auto current_positions =
@@ -114,6 +135,8 @@ MoveTracksCommand::undo ()
 void
 MoveTracksCommand::redo ()
 {
+  const MoveInProgressGuard move_guard (collection_);
+
   // Phase 1: Remove all tracks in reverse order of their current positions
   // to avoid index shifting during removal.
   auto current_positions =

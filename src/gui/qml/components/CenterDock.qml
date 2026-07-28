@@ -34,6 +34,10 @@ ColumnLayout {
 
   Connections {
     function onTracksMoved(rows) {
+      // Re-select moved tracks at their new rows (their selection is lost
+      // because moves are implemented as remove + reinsert).
+      // Known limitation: the selection is rebuilt from the moved tracks
+      // only - selected tracks that were not moved are deselected.
       root.trackSelectionModel.clearSelection();
       for (const row of rows)
         root.trackSelectionModel.select(root.project.tracklist.collection.index(row, 0), ItemSelectionModel.Select);

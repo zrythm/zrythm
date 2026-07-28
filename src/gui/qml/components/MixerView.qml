@@ -27,14 +27,11 @@ RowLayout {
     Layout.fillHeight: true
 
     delegate: ChannelView {
-      required property int index
-
       audioEngine: root.audioEngine
       channel: track.channel
       pluginImporter: root.pluginImporter
       pluginOperator: root.pluginOperator
       portObservationManager: root.portObservationManager
-      trackModelIndex: mixerProxyModel.mapToSource(mixerProxyModel.index(index, 0))
       trackSelectionModel: root.trackSelectionModel
       tracklist: root.tracklist
       undoStack: root.undoStack

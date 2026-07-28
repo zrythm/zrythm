@@ -134,6 +134,10 @@ ApplicationWindow {
 
   Connections {
     function onRowsAboutToBeRemoved(modelIndex: var, first: int, last: int) {
+      // Ignore transient removals that are part of a track move
+      if (root.project.tracklist.collection.moveInProgress)
+        return;
+
       // Auto-deselect tracks when removed from the project
       for (let i = first; i <= last; ++i) {
         const trackModelIndex = trackSelectionModel.getModelIndex(i);
@@ -142,12 +146,20 @@ ApplicationWindow {
     }
 
     function onRowsInserted(modelIndex: var, first: int, last: int) {
+      // Ignore transient insertions that are part of a track move
+      if (root.project.tracklist.collection.moveInProgress)
+        return;
+
       // Auto-select tracks when added to the project
       const trackModelIndex = trackSelectionModel.getModelIndex(last);
       trackSelectionModel.selectSingleTrack(trackModelIndex);
     }
 
     function onRowsRemoved(modelIndex: var, first: int, last: int) {
+      // Ignore transient removals that are part of a track move
+      if (root.project.tracklist.collection.moveInProgress)
+        return;
+
       // Ensure at least 1 track is always selected
       if (!trackSelectionModel.hasSelection) {
         const numTracks = root.project.tracklist.collection.rowCount();

@@ -19,19 +19,25 @@ ColumnLayout {
   required property PluginOperator pluginOperator
   required property PortObservationManager portObservationManager
   required property Track track
-  required property var trackModelIndex
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
 
   signal pluginClicked(Plugin plugin)
 
+  // Returns a fresh source-model index for this delegate's track. Must be
+  // called at time of use - QModelIndex values must not be cached in QML
+  // because they are frozen snapshots that go stale when model rows change.
+  function trackModelIndex(): var {
+    return tracklist.collection.indexForTrack(track);
+  }
+
   implicitWidth: 48
 
   SelectionTracker {
     id: selectionTracker
 
-    modelIndex: root.trackModelIndex
+    modelIndexProvider: root.trackModelIndex
     selectionModel: root.trackSelectionModel
   }
 
@@ -55,7 +61,7 @@ ColumnLayout {
       acceptedModifiers: Qt.NoModifier
 
       onTapped: (eventPoint, button) => {
-        root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+        root.trackSelectionModel.selectSingleTrack(root.trackModelIndex());
       }
     }
 
@@ -63,8 +69,8 @@ ColumnLayout {
       acceptedModifiers: Qt.ControlModifier
 
       onTapped: (eventPoint, button) => {
-        root.trackSelectionModel.select(root.trackModelIndex, ItemSelectionModel.Toggle);
-        root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.NoUpdate);
+        root.trackSelectionModel.select(root.trackModelIndex(), ItemSelectionModel.Toggle);
+        root.trackSelectionModel.setCurrentIndex(root.trackModelIndex(), ItemSelectionModel.NoUpdate);
       }
     }
 
@@ -73,13 +79,14 @@ ColumnLayout {
 
       onTapped: (eventPoint, button) => {
         const currentIdx = root.trackSelectionModel.currentIndex;
+        const thisIdx = root.trackModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
           root.trackSelectionModel.select(sel, ItemSelectionModel.ClearAndSelect);
         } else {
-          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+          root.trackSelectionModel.setCurrentIndex(thisIdx, ItemSelectionModel.Select);
         }
       }
     }
@@ -89,13 +96,14 @@ ColumnLayout {
 
       onTapped: (eventPoint, button) => {
         const currentIdx = root.trackSelectionModel.currentIndex;
+        const thisIdx = root.trackModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
           root.trackSelectionModel.select(sel, ItemSelectionModel.Select);
         } else {
-          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+          root.trackSelectionModel.setCurrentIndex(thisIdx, ItemSelectionModel.Select);
         }
       }
     }

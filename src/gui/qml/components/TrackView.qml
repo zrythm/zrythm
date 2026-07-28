@@ -27,12 +27,9 @@ Control {
   property Track listViewDropTargetFolder: null
   property int listViewDropTargetIndex: -1
   property bool listViewIsLast: false
-  property int listViewPastEndIndex: -1
   required property PortObservationManager portObservationManager
   required property Track track // connected automatically when used as a delegate for a Tracklist model
   required property TrackCollectionOperator trackCollectionOperator
-  required property int trackIndex
-  readonly property var trackModelIndex: trackSelectionModel?.getModelIndex(trackIndex)
   required property TrackSelectionModel trackSelectionModel
   required property Tracklist tracklist
   required property UndoStack undoStack
@@ -42,11 +39,18 @@ Control {
   signal trackDragEnded
   signal trackDragStarted
 
+  // Returns a fresh source-model index for this delegate's track. Must be
+  // called at time of use - QModelIndex values must not be cached in QML
+  // because they are frozen snapshots that go stale when model rows change.
+  function trackModelIndex(): var {
+    return tracklist.collection.indexForTrack(track);
+  }
+
   height: track.fullVisibleHeight
   hoverEnabled: true
   implicitHeight: 48
   implicitWidth: 200
-  opacity: listViewDraggedTrack !== null && trackSelectionModel.isSelected(root.trackModelIndex) ? 0.5 : ZrythmTheme.getOpacity(track.enabled, root.Window.active)
+  opacity: listViewDraggedTrack !== null && selectionTracker.isSelected ? 0.5 : ZrythmTheme.getOpacity(track.enabled, root.Window.active)
 
   ContextMenu.menu: Menu {
     id: contextMenu
@@ -97,7 +101,7 @@ Control {
       acceptedModifiers: Qt.NoModifier
 
       onTapped: (eventPoint, button) => {
-        root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+        root.trackSelectionModel.selectSingleTrack(root.trackModelIndex());
       }
     }
 
@@ -105,8 +109,8 @@ Control {
       acceptedButtons: Qt.RightButton
 
       onTapped: (eventPoint, button) => {
-        if (!root.trackSelectionModel.isSelected(root.trackModelIndex))
-          root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+        if (!root.trackSelectionModel.isSelected(root.trackModelIndex()))
+          root.trackSelectionModel.selectSingleTrack(root.trackModelIndex());
         contextMenu.popup();
       }
     }
@@ -115,8 +119,8 @@ Control {
       acceptedModifiers: Qt.ControlModifier
 
       onTapped: (eventPoint, button) => {
-        root.trackSelectionModel.select(root.trackModelIndex, ItemSelectionModel.Toggle);
-        root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.NoUpdate);
+        root.trackSelectionModel.select(root.trackModelIndex(), ItemSelectionModel.Toggle);
+        root.trackSelectionModel.setCurrentIndex(root.trackModelIndex(), ItemSelectionModel.NoUpdate);
       }
     }
 
@@ -125,13 +129,14 @@ Control {
 
       onTapped: (eventPoint, button) => {
         const currentIdx = root.trackSelectionModel.currentIndex;
+        const thisIdx = root.trackModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
           root.trackSelectionModel.select(sel, ItemSelectionModel.ClearAndSelect);
         } else {
-          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+          root.trackSelectionModel.setCurrentIndex(thisIdx, ItemSelectionModel.Select);
         }
       }
     }
@@ -141,13 +146,14 @@ Control {
 
       onTapped: (eventPoint, button) => {
         const currentIdx = root.trackSelectionModel.currentIndex;
+        const thisIdx = root.trackModelIndex();
         if (currentIdx && currentIdx.valid) {
-          const top = Math.min(currentIdx.row, root.trackModelIndex.row);
-          const bottom = Math.max(currentIdx.row, root.trackModelIndex.row);
+          const top = Math.min(currentIdx.row, thisIdx.row);
+          const bottom = Math.max(currentIdx.row, thisIdx.row);
           const sel = QmlUtils.createRangeSelection(root.trackSelectionModel.model, top, bottom);
           root.trackSelectionModel.select(sel, ItemSelectionModel.Select);
         } else {
-          root.trackSelectionModel.setCurrentIndex(root.trackModelIndex, ItemSelectionModel.Select);
+          root.trackSelectionModel.setCurrentIndex(thisIdx, ItemSelectionModel.Select);
         }
       }
     }
@@ -161,8 +167,8 @@ Control {
       onActiveChanged: {
         if (active) {
           // Select the dragged track if it wasn't already selected
-          if (!root.trackSelectionModel.isSelected(root.trackModelIndex))
-            root.trackSelectionModel.selectSingleTrack(root.trackModelIndex);
+          if (!root.trackSelectionModel.isSelected(root.trackModelIndex()))
+            root.trackSelectionModel.selectSingleTrack(root.trackModelIndex());
           root.trackDragStarted();
         } else {
           root.trackDragEnded();
@@ -188,10 +194,11 @@ Control {
 
             // Fixed-size edge zones (8px) for line-drop vs folder-drop
             const edgeZone = 8;
+            const targetRow = targetItem.trackModelIndex().row;
             if (targetItem.foldable && targetLocalPoint.y > edgeZone && targetLocalPoint.y < targetItem.height - edgeZone) {
-              root.dropTargetFolderChanged(targetItem.track, targetItem.trackIndex + 1);
+              root.dropTargetFolderChanged(targetItem.track, targetRow + 1);
             } else {
-              const idx = relativeY < 0.5 ? targetItem.trackIndex : targetItem.trackIndex + 1;
+              const idx = relativeY < 0.5 ? targetRow : targetRow + 1;
               root.dropTargetChanged(idx);
             }
           } else if (!targetItem && lvPoint.x >= 0 && lvPoint.x <= lv.width) {
@@ -200,8 +207,9 @@ Control {
             const footerH = lv.footerItem ? lv.footerItem.height : 0;
             const trackContentEnd = lv.contentHeight - footerH;
             const cursorContentY = lvPoint.y + lv.contentY;
-            if (cursorContentY >= trackContentEnd - 10 && root.listViewPastEndIndex >= 0) {
-              root.dropTargetChanged(root.listViewPastEndIndex);
+            if (cursorContentY >= trackContentEnd - 10) {
+              const pastEndIndex = root.tracklist.isTrackPinned(root.track) ? root.tracklist.pinnedTracksCutoff : root.tracklist.collection.trackCount();
+              root.dropTargetChanged(pastEndIndex);
             }
           }
         }
@@ -421,7 +429,7 @@ Control {
   SelectionTracker {
     id: selectionTracker
 
-    modelIndex: root.trackModelIndex
+    modelIndexProvider: root.trackModelIndex
     selectionModel: root.trackSelectionModel
   }
 
@@ -430,7 +438,7 @@ Control {
 
     color: palette.highlight
     height: 3
-    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetFolder === null && root.listViewDropTargetIndex === root.trackIndex && root.listViewDropTargetIndex >= 0
+    visible: root.listViewDraggedTrack !== null && !selectionTracker.isSelected && root.listViewDropTargetFolder === null && root.listViewDropTargetIndex === root.trackModelIndex().row && root.listViewDropTargetIndex >= 0
     z: 100
 
     anchors {
@@ -445,7 +453,7 @@ Control {
 
     color: palette.highlight
     height: 3
-    visible: root.listViewDraggedTrack !== null && !root.trackSelectionModel.isSelected(root.trackModelIndex) && root.listViewDropTargetFolder === null && root.listViewIsLast && root.listViewDropTargetIndex === root.trackIndex + 1
+    visible: root.listViewDraggedTrack !== null && !selectionTracker.isSelected && root.listViewDropTargetFolder === null && root.listViewIsLast && root.listViewDropTargetIndex === root.trackModelIndex().row + 1
     z: 100
 
     anchors {

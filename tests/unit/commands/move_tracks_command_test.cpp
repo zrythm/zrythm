@@ -856,4 +856,52 @@ TEST_F (MoveTracksCommandTest, TracksMovedSignalMultipleTracks)
   EXPECT_EQ (received_rows[1], 2); // track3
 }
 
+// Test the moveInProgress flag lifecycle: set during row removal/insertion
+// signals, cleared before tracksMoved, and false after redo/undo complete.
+TEST_F (MoveTracksCommandTest, MoveInProgressLifecycle)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+
+  collection_->add_track (track1);
+  collection_->add_track (track2);
+  collection_->add_track (track3);
+
+  bool in_progress_on_rows_removed = false;
+  bool in_progress_on_rows_inserted = false;
+  bool in_progress_on_tracks_moved = true;
+  QObject::connect (
+    collection_.get (), &structure::tracks::TrackCollection::rowsRemoved,
+    collection_.get (),
+    [&] { in_progress_on_rows_removed = collection_->moveInProgress (); });
+  QObject::connect (
+    collection_.get (), &structure::tracks::TrackCollection::rowsInserted,
+    collection_.get (),
+    [&] { in_progress_on_rows_inserted = collection_->moveInProgress (); });
+  QObject::connect (
+    collection_.get (), &structure::tracks::TrackCollection::tracksMoved,
+    collection_.get (),
+    [&] { in_progress_on_tracks_moved = collection_->moveInProgress (); });
+
+  std::vector<structure::tracks::TrackUuidReference> tracks{ track1 };
+  MoveTracksCommand cmd (*collection_, tracks, 3);
+
+  EXPECT_FALSE (collection_->moveInProgress ());
+  cmd.redo ();
+  EXPECT_TRUE (in_progress_on_rows_removed);
+  EXPECT_TRUE (in_progress_on_rows_inserted);
+  EXPECT_FALSE (in_progress_on_tracks_moved);
+  EXPECT_FALSE (collection_->moveInProgress ());
+
+  in_progress_on_rows_removed = false;
+  in_progress_on_rows_inserted = false;
+  in_progress_on_tracks_moved = true;
+  cmd.undo ();
+  EXPECT_TRUE (in_progress_on_rows_removed);
+  EXPECT_TRUE (in_progress_on_rows_inserted);
+  EXPECT_FALSE (in_progress_on_tracks_moved);
+  EXPECT_FALSE (collection_->moveInProgress ());
+}
+
 } // namespace zrythm::commands

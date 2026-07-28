@@ -24,7 +24,6 @@ ListView {
   delegate: PluginSlotView {
     pluginGroup: root.pluginGroup
     pluginImporter: root.pluginImporter
-    pluginModelIndex: pluginSelectionModel.getModelIndex(index)
     pluginOperator: root.pluginOperator
     pluginSelectionModel: root.pluginSelectionModel
     track: root.track

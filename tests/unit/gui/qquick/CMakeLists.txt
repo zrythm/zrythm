@@ -7,6 +7,7 @@ add_executable(zrythm_gui_qquick_unit_tests
   generic_plugin_ui_controller_test.cpp
   meter_processor_test.cpp
   timeline_position_tracker_test.cpp
+  unified_proxy_model_test.cpp
   waveform_peak_computation_test.cpp
 )
 
