@@ -7,6 +7,8 @@
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
+#include <QItemSelectionModel>
+
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
 
@@ -902,6 +904,60 @@ TEST_F (MoveTracksCommandTest, MoveInProgressLifecycle)
   EXPECT_TRUE (in_progress_on_rows_inserted);
   EXPECT_FALSE (in_progress_on_tracks_moved);
   EXPECT_FALSE (collection_->moveInProgress ());
+}
+
+// Test that selections of non-moved tracks survive a move. QItemSelectionModel
+// stores selections as persistent indices, which follow the row shifts caused
+// by remove + reinsert; only the moved rows lose their selection.
+TEST_F (MoveTracksCommandTest, NonMovedSelectionSurvivesMove)
+{
+  auto track1 = create_audio_bus_track ();
+  auto track2 = create_audio_bus_track ();
+  auto track3 = create_audio_bus_track ();
+  auto track4 = create_audio_bus_track ();
+  auto track5 = create_audio_bus_track ();
+
+  collection_->add_track (track1);
+  collection_->add_track (track2);
+  collection_->add_track (track3);
+  collection_->add_track (track4);
+  collection_->add_track (track5);
+
+  QItemSelectionModel selection (collection_.get ());
+  selection.select (collection_->index (0, 0), QItemSelectionModel::Select);
+  selection.select (collection_->index (2, 0), QItemSelectionModel::Select);
+  selection.select (collection_->index (4, 0), QItemSelectionModel::Select);
+
+  // Move track1 (row 0) to position 3
+  std::vector<structure::tracks::TrackUuidReference> tracks{ track1 };
+  MoveTracksCommand cmd (*collection_, tracks, 3);
+  cmd.redo ();
+
+  // New order: track2(0), track3(1), track1(2), track4(3), track5(4).
+  // The moved track's selection is invalidated by its removal; the others
+  // follow the row shifts.
+  EXPECT_FALSE (selection.isSelected (collection_->index (0, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (1, 0)));
+  EXPECT_FALSE (selection.isSelected (collection_->index (2, 0)));
+  EXPECT_FALSE (selection.isSelected (collection_->index (3, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (4, 0)));
+
+  // Mirror CenterDock's onTracksMoved handler: re-select the moved track at
+  // its new row.
+  selection.select (collection_->index (2, 0), QItemSelectionModel::Select);
+
+  // The full pre-move selection must be restored.
+  EXPECT_TRUE (selection.isSelected (collection_->index (1, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (2, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (4, 0)));
+
+  cmd.undo ();
+
+  // The moved track's re-added selection is invalidated again; the survivors
+  // follow the rows back to their original positions.
+  EXPECT_FALSE (selection.isSelected (collection_->index (0, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (2, 0)));
+  EXPECT_TRUE (selection.isSelected (collection_->index (4, 0)));
 }
 
 } // namespace zrythm::commands
