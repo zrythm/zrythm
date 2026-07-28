@@ -24,4 +24,8 @@ const languageMap = {
 @LANGUAGE_MAP_STRING@
 };
 
+// Languages shown in the top-level language menu; all others are listed
+// under "More Languages"
+const mainLanguageCodes = ["en", "de", "es", "fr", "ja", "ko", "pt_BR", "ru", "zh_Hans", "zh_Hant"];
+
 // clang-format on

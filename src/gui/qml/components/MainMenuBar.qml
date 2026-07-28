@@ -19,6 +19,23 @@ MenuBar {
   required property SaveController saveController
   required property ProjectSession session
 
+  Component {
+    id: localeMenuItemComponent
+
+    MenuItem {
+      required property string code
+      required property string displayName
+
+      checkable: true
+      checked: GlobalState.application.appSettings.uiLocale === code
+      text: displayName
+
+      onTriggered: {
+        GlobalState.application.translationManager.loadTranslation(code);
+      }
+    }
+  }
+
   Menu {
     title: qsTr("&File")
 
@@ -107,6 +124,27 @@ MenuBar {
     }
 
     Menu {
+      id: languageMenu
+
+      function mainEntries() {
+        // keep the curated order of Config.mainLanguageCodes
+        return Config.mainLanguageCodes.map(makeEntry);
+      }
+
+      function makeEntry(code) {
+        const info = Config.languageMap[code];
+        // U+200E (LRM) on both sides of the name keeps the percentage suffix at the right end for RTL language names
+        return ({
+            "code": code,
+            "name": info.name,
+            "displayName": code === "en" ? info.name : "\u200E" + info.name + "\u200E (" + info.percent + "%)"
+          });
+      }
+
+      function moreEntries() {
+        return Object.keys(Config.languageMap).filter(code => !Config.mainLanguageCodes.includes(code)).map(makeEntry).sort((a, b) => a.code.localeCompare(b.code));
+      }
+
       title: qsTr("Language")
 
       MenuItem {
@@ -125,26 +163,19 @@ MenuBar {
       }
 
       Repeater {
-        model: Object.keys(Config.languageMap).map(code => {
-          return ({
-              "code": code,
-              "name": Config.languageMap[code]
-            });
-        })
+        delegate: localeMenuItemComponent
+        model: languageMenu.mainEntries()
+      }
 
-        delegate: MenuItem {
-          id: localeMenuItem
+      MenuSeparator {
+      }
 
-          required property string code
-          required property string name
+      Menu {
+        title: qsTr("More Languages")
 
-          checkable: true
-          checked: GlobalState.application.appSettings.uiLocale === code
-          text: name
-
-          onTriggered: {
-            GlobalState.application.translationManager.loadTranslation(code);
-          }
+        Repeater {
+          delegate: localeMenuItemComponent
+          model: languageMenu.moreEntries()
         }
       }
     }
