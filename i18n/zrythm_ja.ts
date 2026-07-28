@@ -91,7 +91,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>ズーム イン</translation>
     </message>
 </context>
 <context>
@@ -534,7 +534,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
         <source>Bit Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>ビット深度</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
@@ -556,7 +556,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル名のパターン</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
@@ -592,7 +592,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
         <source>Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>時間の範囲</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
@@ -640,7 +640,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>出力</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
@@ -740,7 +740,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="94"/>
         <source>Donate</source>
-        <translation type="unfinished"></translation>
+        <translation>寄付する</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="92"/>
@@ -781,7 +781,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="224"/>
         <source>Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>設定</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/Greeter.qml" line="249"/>
@@ -1022,7 +1022,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="197"/>
         <source>Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>デバイス</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="200"/>
@@ -1518,7 +1518,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>カテゴリー</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
@@ -1597,7 +1597,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="39"/>
         <source>Fullscreen</source>
-        <translation type="unfinished"></translation>
+        <translation>全画面表示</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ProjectWindow.qml" line="407"/>
@@ -18233,37 +18233,37 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="293"/>
         <source>Loading project file...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを読み込み中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="345"/>
         <source>Creating project...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを作成中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="363"/>
         <source>Deserializing project data...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを逆シリアル化...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="374"/>
         <source>Setting up project...</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを準備中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="392"/>
         <source>Rebuilding audio graph...</source>
-        <translation type="unfinished"></translation>
+        <translation>波形を再生成中...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="399"/>
         <source>Starting engine...</source>
-        <translation type="unfinished"></translation>
+        <translation>エンジンを開始...</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/project_manager.cpp" line="411"/>
         <source>Project loaded</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクト読み込み</translation>
     </message>
 </context>
 <context>
@@ -18272,7 +18272,7 @@ Support this project at https://liberapay.com/Zrythm
         <location filename="../src/gui/backend/project_templates_model.cpp" line="26"/>
         <location filename="../src/gui/backend/project_templates_model.cpp" line="66"/>
         <source>Blank Project</source>
-        <translation type="unfinished"></translation>
+        <translation>空白のプロジェクト</translation>
     </message>
 </context>
 <context>
@@ -18280,22 +18280,22 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="392"/>
         <source>Open project</source>
-        <translation type="unfinished"></translation>
+        <translation>プロジェクトを開く</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="393"/>
         <source>Create new project</source>
-        <translation type="unfinished"></translation>
+        <translation>新規プロジェクトを作成</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="395"/>
         <source>Create new project with template</source>
-        <translation type="unfinished"></translation>
+        <translation>テンプレートから新規プロジェクトを作成</translation>
     </message>
     <message>
         <location filename="../src/gui/backend/zrythm_application.cpp" line="398"/>
         <source>Use dummy audio/midi engine</source>
-        <translation type="unfinished"></translation>
+        <translation>ダミー音源/MIDIを使用</translation>
     </message>
 </context>
 <context>
@@ -18303,7 +18303,7 @@ Support this project at https://liberapay.com/Zrythm
     <message>
         <location filename="../src/plugins/plugin_scan_manager.cpp" line="128"/>
         <source>Scanning...</source>
-        <translation type="unfinished"></translation>
+        <translation>スキャン中...</translation>
     </message>
 </context>
 <context>

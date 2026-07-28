@@ -7,17 +7,17 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>Over Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Gelicenseerd onder de GNU AGPLv3 licentie.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>Licentie bekijken</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
@@ -27,12 +27,12 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Derde partij notities</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm en het Zrythm logo zijn handelsmerken van Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -42,12 +42,12 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies alles</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Terug</translation>
     </message>
 </context>
 <context>
@@ -55,23 +55,23 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopiëren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Plakken</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
         <source>Copy Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Objecten kopiëren</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="868"/>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="870"/>
         <source>Move Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Verplaats Object</translation>
     </message>
 </context>
 <context>
@@ -79,7 +79,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="48"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Test</translation>
     </message>
 </context>
 <context>
@@ -87,7 +87,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Inzoomen</translation>
     </message>
 </context>
 <context>
@@ -100,7 +100,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="61"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Zoom In</translation>
     </message>
 </context>
 <context>
@@ -113,7 +113,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="116"/>
         <source>On</source>
-        <translation type="unfinished"></translation>
+        <translation>Aan</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="130"/>
@@ -128,7 +128,7 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="147"/>
         <source>Off</source>
-        <translation type="unfinished"></translation>
+        <translation>Uit</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="182"/>
@@ -146,7 +146,7 @@
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="32"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Reset</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="40"/>
@@ -159,7 +159,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="41"/>
         <source>Select a clip from the timeline</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecteer een clip van tijdlijn</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="43"/>
@@ -174,7 +174,7 @@
     <message>
         <location filename="../src/gui/qml/components/BottomDock.qml" line="103"/>
         <source>Mixer</source>
-        <translation type="unfinished">Mengpaneel</translation>
+        <translation>Mengpaneel</translation>
     </message>
     <message>
         <source>Modulators</source>
@@ -936,7 +936,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="57"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translation>Taal</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/MainMenuBar.qml" line="64"/>

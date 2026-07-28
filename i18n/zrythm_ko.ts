@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm와 Zrythm 로고는 Alexandros Theodotou의 상표로 입니다.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
@@ -1422,7 +1422,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>범주</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>

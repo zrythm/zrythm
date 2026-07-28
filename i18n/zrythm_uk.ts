@@ -91,7 +91,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation type="unfinished"></translation>
+        <translation>Збільшити</translation>
     </message>
 </context>
 <context>
@@ -532,7 +532,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="163"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="396"/>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="172"/>
@@ -542,7 +542,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
         <source>Bit Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>Розрядність</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
@@ -552,7 +552,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="183"/>
         <source>Dither</source>
-        <translation type="unfinished"></translation>
+        <translation>Дизер</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="191"/>
@@ -564,7 +564,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Шаблон імені файлу</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
@@ -582,13 +582,13 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
         <source>Mixdown</source>
-        <translation type="unfinished"></translation>
+        <translation>Змішування</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="206"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="429"/>
         <source>Stems</source>
-        <translation type="unfinished"></translation>
+        <translation>Стебла</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="217"/>
@@ -600,7 +600,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
         <source>Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>Діапазон часу</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
@@ -618,7 +618,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="445"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Кастом</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="227"/>
@@ -636,7 +636,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
         <source>Track Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Вибір треку</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
@@ -648,7 +648,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Вихід</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
@@ -1554,12 +1554,12 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Категорія</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>увімкнено</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="63"/>
@@ -1574,7 +1574,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="71"/>
         <source>Gain</source>
-        <translation type="unfinished"></translation>
+        <translation>посилення</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="101"/>

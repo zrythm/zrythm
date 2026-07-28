@@ -42,7 +42,7 @@
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona tutto</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
@@ -55,12 +55,12 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Incolla</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
@@ -640,7 +640,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>

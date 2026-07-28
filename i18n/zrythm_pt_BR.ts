@@ -1518,7 +1518,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>

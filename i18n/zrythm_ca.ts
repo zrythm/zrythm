@@ -534,7 +534,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
         <source>Bit Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>Profunditat de bits</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
@@ -556,7 +556,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Patró de nom de fitxer</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
@@ -592,7 +592,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
         <source>Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>Interval de temps</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
@@ -640,7 +640,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortida</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
@@ -1522,7 +1522,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Categoria</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>

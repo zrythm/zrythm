@@ -7,47 +7,47 @@
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="20"/>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="57"/>
         <source>About Zrythm</source>
-        <translation type="unfinished"></translation>
+        <translation>About Zrythm</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="90"/>
         <source>Licensed under the GNU AGPLv3 License.</source>
-        <translation type="unfinished"></translation>
+        <translation>Licensed under the GNU AGPLv3 License.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="99"/>
         <source>View License</source>
-        <translation type="unfinished"></translation>
+        <translation>View License</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="109"/>
         <source>Trademark Policy</source>
-        <translation type="unfinished"></translation>
+        <translation>Trademark Policy</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="119"/>
         <source>Third Party Notices</source>
-        <translation type="unfinished"></translation>
+        <translation>Third Party Notices</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="132"/>
         <source>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zrythm and the Zrythm logo are trademarks of Alexandros Theodotou.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="168"/>
         <source>&amp;Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Copy</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="178"/>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Select All</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AboutDialog.qml" line="187"/>
         <source>Back</source>
-        <translation type="unfinished"></translation>
+        <translation>Back</translation>
     </message>
 </context>
 <context>
@@ -55,23 +55,23 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="462"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="468"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Paste</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="860"/>
         <source>Copy Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Copy Objects</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="868"/>
         <location filename="../src/gui/qml/components/arranger/Arranger.qml" line="870"/>
         <source>Move Objects</source>
-        <translation type="unfinished"></translation>
+        <translation>Move Objects</translation>
     </message>
     <message>
         <source>Delete</source>
@@ -83,7 +83,7 @@
     <message>
         <location filename="../src/gui/qml/components/arranger/ArrangerObjectBaseView.qml" line="48"/>
         <source>Test</source>
-        <translation type="unfinished"></translation>
+        <translation>Test</translation>
     </message>
 </context>
 <context>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AudioEditorPane.qml" line="52"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Zoom In</translation>
+        <translation>Zoom In</translation>
     </message>
 </context>
 <context>
@@ -99,12 +99,12 @@
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="35"/>
         <source>Drum Notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Drum Notation</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/editors/AutomationEditorPane.qml" line="61"/>
         <source>Zoom In</source>
-        <translation type="unfinished">Zoom In</translation>
+        <translation>Zoom In</translation>
     </message>
 </context>
 <context>
@@ -112,37 +112,37 @@
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="77"/>
         <source>Change automatable</source>
-        <translation type="unfinished">Channel %s</translation>
+        <translation>Change automatable</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="116"/>
         <source>On</source>
-        <translation type="unfinished">On</translation>
+        <translation>On</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="130"/>
         <source>Touch</source>
-        <translation type="unfinished"></translation>
+        <translation>Touch</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="130"/>
         <source>Latch</source>
-        <translation type="unfinished"></translation>
+        <translation>Latch</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="147"/>
         <source>Off</source>
-        <translation type="unfinished">Off</translation>
+        <translation>Off</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="182"/>
         <source>Hide automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Hide automation lane</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/AutomationTracksListView.qml" line="206"/>
         <source>Add automation lane</source>
-        <translation type="unfinished"></translation>
+        <translation>Add automation lane</translation>
     </message>
 </context>
 <context>
@@ -150,7 +150,7 @@
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="32"/>
         <source>Reset</source>
-        <translation type="unfinished">Reset</translation>
+        <translation>Reset</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/BalanceControl.qml" line="40"/>

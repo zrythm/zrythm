@@ -534,7 +534,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="173"/>
         <source>Bit Depth</source>
-        <translation type="unfinished"></translation>
+        <translation>Profondeur binaire</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="182"/>
@@ -556,7 +556,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="192"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="415"/>
         <source>Filename Pattern</source>
-        <translation type="unfinished"></translation>
+        <translation>Motif de nom de fichier</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="201"/>
@@ -592,7 +592,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="218"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="441"/>
         <source>Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>Plage temporelle</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="222"/>
@@ -622,13 +622,13 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="228"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="451"/>
         <source>Custom Time Range</source>
-        <translation type="unfinished"></translation>
+        <translation>Période temporelle personnalisée</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="270"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="493"/>
         <source>Track Selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélection de piste</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="312"/>
@@ -640,7 +640,7 @@ XRun Count: %2</source>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="313"/>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="536"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/views/ExportDialog.qml" line="318"/>
@@ -909,7 +909,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="14"/>
         <source>Open…</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir…</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/LoadController.qml" line="21"/>
@@ -1542,7 +1542,7 @@ XRun Count: %2</source>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="42"/>
         <source>Category</source>
-        <translation type="unfinished"></translation>
+        <translation>Catégorie</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/components/PluginInspectorPage.qml" line="51"/>
@@ -2637,12 +2637,12 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="147"/>
         <source>Fader input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrée de chariot</translation>
     </message>
     <message>
         <location filename="../src/dsp/fader.cpp" line="160"/>
         <source>Fader output</source>
-        <translation type="unfinished"></translation>
+        <translation>Sortie de chariot</translation>
     </message>
     <message>
         <source>Prefader Volume</source>
@@ -2659,7 +2659,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="60"/>
         <source>Fader Balance</source>
-        <translation type="unfinished">Contrôle de la balance</translation>
+        <translation>Contrôle de la balance</translation>
     </message>
     <message>
         <source>Prefader Mute</source>
@@ -2668,7 +2668,7 @@ Utiliser la sauvegarde la plus récente  ?</translation>
     <message>
         <location filename="../src/dsp/fader.cpp" line="74"/>
         <source>Fader Mute</source>
-        <translation type="unfinished">Sourdine fader</translation>
+        <translation>Sourdine du chariot</translation>
     </message>
     <message>
         <source>Prefader Solo</source>
