@@ -10,7 +10,7 @@ Zrythm
 
 *a highly automated and intuitive digital audio workstation*
 
-![screenshot](https://www.zrythm.org/downloads/screenshot_20260530.png)
+![screenshot](https://www.zrythm.org/static/images/screenshots/screenshot-20260729.png)
 
 Zrythm is a digital audio workstation tailored for both professionals and beginners, offering an intuitive interface and robust functionality.
 
@@ -29,9 +29,12 @@ in C++23 using Qt/QML and JUCE.
 
 - Clip looping and cloning
 - Adaptive snapping
+- Editing tools: pencil, eraser, cut, ramp and audition
 - Multiple lanes per track
 - Piano roll (MIDI editor) with velocity editor
+- Chord pad, chord editor and chord suggestions
 - Audio editor with adjustable gain/fades
+- Musical mode with offline time-stretching
 - Audio/MIDI recording with takes
 - Wide variety of track types for every purpose
 - Support for VST3, CLAP, LV2, LADSPA and AudioUnit plugins
@@ -47,7 +50,7 @@ in C++23 using Qt/QML and JUCE.
 <details>
 <summary>Not yet ported from v1 (click to expand)</summary>
 
-- Clip linking and stretching
+- Clip linking
 - Bounce anything to audio or MIDI
 - Piano roll chord integration and drum mode
 - Audio editor part editing (including in external app)
@@ -64,7 +67,6 @@ in C++23 using Qt/QML and JUCE.
 - Built-in file browser
 - Optional plugin sandboxing (bridging)
 - Stem export
-- Chord pad with built-in and user presets, including the ability to generate chords from scales
 - Automatic project backups
 - Serializable undo history
 
