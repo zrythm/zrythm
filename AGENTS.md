@@ -313,6 +313,11 @@ Zrythm makes extensive use of modern C++ features:
 - Instead, use `Connections` with the appropriate signal handler (e.g., `onSelectionChanged`) to reactively update properties
 - Never use `parent.parent.someProperty` chains to access delegate properties from child items — they are fragile and break easily. Use IDs instead (e.g., give the delegate an `id: myDelegate` and reference `myDelegate.someProperty`)
 
+### UI Design
+
+- We mostly follow [Apple's Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/) for UI/UX decisions
+- Use title-style capitalization in menus (e.g., "Show Experimental Translations", not "Show experimental translations")
+
 ### External Documentation
 
 When you need to search external library/framework documentation (Qt, JUCE, etc.), use the `context7` tools (`resolve-library-id` then `query-docs`) rather than web search.
