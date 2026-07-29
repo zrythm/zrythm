@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import argparse
@@ -54,6 +54,27 @@ class ZrythmProductCreator:
             print(f"Error getting product: {e}", file=sys.stderr)
             return None
 
+    def get_latest_snapshot_price(self) -> Optional[str]:
+        """
+        Fetch the JPY price of the most recent snapshot (Single) product.
+
+        Queries the products collection filtered to Single products and
+        ordered newest-first, returning the latest one's price so that
+        newly created products reuse the current price instead of a
+        hardcoded value.
+
+        Returns:
+            Price as a string (e.g. "2200"), or None if the request
+            failed or no snapshot products exist yet.
+        """
+        data = self.get_product("?type=Single&ordering=-created_at&limit=1")
+        if not isinstance(data, dict):
+            return None
+        results = data.get("results") or []
+        if not results:
+            return None
+        return results[0].get("price_jpy")
+
     def create_product(self, product_data: dict) -> Optional[dict]:
         """
         Create a new product via the API.
@@ -106,13 +127,22 @@ class ZrythmProductCreator:
             summary = "Nightly build"
             description = f"Nightly build at {datetime.now().isoformat()}."
 
+        price_jpy = self.get_latest_snapshot_price()
+        if price_jpy is None:
+            print(
+                "Error: could not fetch the latest snapshot price from the API",
+                file=sys.stderr,
+            )
+            return None
+        print(f"Using latest snapshot price: {price_jpy} JPY", file=sys.stderr)
+
         product_data = {
             "type": product_type,
             "summary": summary,
             "description": description,
             "version": version,
             "image_url": "https://www.zrythm.org/static/icons/zrythm/z_frame_8.png",
-            "price_jpy": "2200"
+            "price_jpy": price_jpy
         }
 
         return self.create_product(product_data)
