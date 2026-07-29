@@ -5,13 +5,11 @@ workflow:
   rules:
     # run merge request pipelines
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    # do not run branch pipelines if corresponding merge requests exist...
+    # do not run branch pipelines if corresponding merge requests exist
     # (this avoids duplicate pipelines)
     - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
       when: never
-    # ...but otherwise run branch pipelines (unless this commit is also tagged)
-    - if: $CI_COMMIT_BRANCH && $CI_COMMIT_TAG
-      when: never
+    # run branch pipelines
     - if: $CI_COMMIT_BRANCH
     # run tag pipelines
     - if: $CI_COMMIT_TAG
