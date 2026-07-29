@@ -65,6 +65,9 @@ you can sign your commit automatically with `git commit -s`.
 You must use your real name (i.e., pseudonyms or anonymous contributions cannot
 be made).
 
+See [doc/dev/commit_messages.md](doc/dev/commit_messages.md) for the full
+commit message conventions (subject and body formatting, and other trailers).
+
 # Test and Bug Reports
 Install the software and send feedback to the community about your experience.
 You can help the project by reporting issues.

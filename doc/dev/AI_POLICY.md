@@ -31,3 +31,6 @@ AI-assisted contributions should include an `Assisted-by` tag in the git commit 
 ```
 Assisted-by: GLM-5.2
 ```
+
+See [commit_messages.md](commit_messages.md) for the general commit message
+conventions and the full set of trailers.

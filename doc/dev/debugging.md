@@ -172,12 +172,7 @@ See also [CONTRIBUTING.md](CONTRIBUTING.md) and
 [REUSE FAQ](https://reuse.software/faq/).
 
 ## Commit Messages
-Please follow the 50/72 rule:
-* commit subject within 50 characters
-* commit body (optional) wrapped at 72 characters
 
-See `git log` for examples.
-
-We are considering switching to a format that
-resembles the
-[GNU ChangeLog style](https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html#Style-of-Change-Logs).
+See [commit_messages.md](commit_messages.md) for the commit message
+conventions (subject and body formatting, the required `Signed-off-by:`
+sign-off, and other trailers).

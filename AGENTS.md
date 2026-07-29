@@ -173,13 +173,12 @@ To add a dependency: add it to `conanfile.py` and consume via `find_package`; if
 ### Git Workflow
 
 - **Repository**: This project uses a self-hosted GitLab instance at https://gitlab.zrythm.org/zrythm/zrythm
-- All commits require sign-off: use `git commit -s` or add `Signed-off-by:` manually
-- **Commit message style**: Use `<ClassName>: <imperative-summary>` format (e.g., `TrackCollection:`, `MoveTracksCommand:`, `TempoMap:`). If no single class is central to the change or too many classes are involved, use a general term related to what changed (e.g., `cmake:`, `tracks:`, `nlohmann-json:`). Follow with bullet points for significant details, keep summaries concise, and use backticks when referencing code in the body. **Both the summary and the bullet points use the imperative tone** (e.g., "Add", "Replace", "Remove" — as if giving a command, not "Adds"/"Replaces" or "Added"/"Replaced"). **Bullet points should describe what changed at the level of the named classes, modules, or abstractions involved and their observable behavior.** Name the key things a change touches (e.g. "Add `ITimeStretchEngine` and `TimeWarpMap`", "Remove the legacy `Stretcher`") so the commit is scannable and locatable — but omit low-level mechanics obvious from the diff (specific C++ patterns, smart-pointer types, refactoring steps)
+- Commit messages follow [doc/dev/commit_messages.md](doc/dev/commit_messages.md): subject and body style, the required `Signed-off-by:` DCO sign-off (`git commit -s`), and trailers (`Fixes #N`, `Implements #N`, `GitLab-Work-Item: #N`)
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for DCO details
 - See [AI_POLICY.md](doc/dev/AI_POLICY.md) for `Assisted-by:` trailers, which must be included in commit messages
-- Use `Fixes #123` for bugfixes, `Implements #123` for new features and the git trailer `GitLab-Work-Item: #123` to specify relations to GitLab issues (work items)
 - Main branch: `master`, PR target: `master`
 - Note: This branch is under major refactoring (see README.md warning)
+- **Release notes / change summaries:** When summarizing changes between releases or writing release notes/announcement posts, read [CHANGELOG.md](CHANGELOG.md) first — it is the curated, grouped source of truth. Use `git log` only to fill in gaps, since the raw log includes noise (translation merges, formatting, etc.)
 
 ### GitLab Interaction
 
