@@ -48,24 +48,22 @@ def main():
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Make extra libraries importable by placing them next to the .dsp file
+    # Resolve extra libraries via Faust's import search path (-I) instead of
+    # copying them next to the .dsp. All plugin custom commands share the same
+    # build directory, so copying to a shared path would race under parallel
+    # builds (Ninja): one job could truncate the file while another job's faust
+    # is reading it.
+    import_dirs: list[str] = []
     for lib in args.lib:
-        lib_path = Path(lib)
-        (dsp_path.parent / lib_path.name).write_bytes(lib_path.read_bytes())
+        parent = str(Path(lib).parent.resolve())
+        if parent not in import_dirs:
+            import_dirs.append(parent)
 
     out_file = out_dir / f"{args.class_name}.cpp"
-    cmd = [
-        args.faust,
-        "-lang",
-        "cpp",
-        "-cn",
-        args.class_name,
-        "-a",
-        args.arch,
-        str(dsp_path),
-        "-o",
-        str(out_file),
-    ]
+    cmd = [args.faust, "-lang", "cpp", "-cn", args.class_name, "-a", args.arch]
+    for imp_dir in import_dirs:
+        cmd += ["-I", imp_dir]
+    cmd += [str(dsp_path), "-o", str(out_file)]
     print("Running:", " ".join(cmd))
     subprocess.run(cmd, check=True)
 
