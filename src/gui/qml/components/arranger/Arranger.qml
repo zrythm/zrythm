@@ -372,6 +372,13 @@ Item {
   }
 
   function updateCursor() {
+    // Do not set the cursor while the pointer is outside this arranger (or its
+    // objects) and no action is active (e.g. when a modifier key is pressed
+    // elsewhere in the UI). Cleanup on pointer exit is handled by the
+    // StateGroup below.
+    if (!arrangerMouseArea.containsMouse && root.hoveredObject === null && arrangerMouseArea.action === Arranger.CurrentAction.None) {
+      return;
+    }
     updateCursorFromAction(root.currentAction);
   }
 
