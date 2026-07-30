@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -43,6 +43,23 @@ public:
   Q_INVOKABLE void setFadeOutCursor ();
 
   Q_INVOKABLE void unsetCursor ();
+
+  /**
+   * @brief Hides the cursor by pushing a blank override cursor.
+   *
+   * Replaces any currently active override cursor. Not reference counted:
+   * repeated calls while the cursor is already hidden are no-ops.
+   *
+   * Call showCursor() to restore the normal cursor.
+   */
+  Q_INVOKABLE void hideCursor ();
+
+  /**
+   * @brief Clears all override cursors, restoring the normal cursor.
+   *
+   * Equivalent to unsetCursor().
+   */
+  Q_INVOKABLE void showCursor ();
 
   Q_INVOKABLE static QPoint cursorPosition ();
   Q_INVOKABLE static void   warpCursor (QPoint point);

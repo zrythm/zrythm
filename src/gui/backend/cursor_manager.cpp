@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/format_qt.h"
@@ -221,6 +221,18 @@ CursorManager::unsetCursor ()
     }
   popped_cursor_count_ = 0;
   last_cursor_cache_key_ = u""_s;
+}
+
+void
+CursorManager::hideCursor ()
+{
+  set_cursor (u"__blank__"_s, QCursor (Qt::BlankCursor));
+}
+
+void
+CursorManager::showCursor ()
+{
+  unsetCursor ();
 }
 
 void
