@@ -224,18 +224,6 @@ CursorManager::unsetCursor ()
 }
 
 void
-CursorManager::hideCursor ()
-{
-  set_cursor (u"__blank__"_s, QCursor (Qt::BlankCursor));
-}
-
-void
-CursorManager::showCursor ()
-{
-  unsetCursor ();
-}
-
-void
 CursorManager::warpCursor (QPoint point)
 {
   QCursor::setPos (point);

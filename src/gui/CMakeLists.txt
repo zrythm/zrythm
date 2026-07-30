@@ -192,6 +192,7 @@ set(rel_qml_file_paths
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml
   components/basic/SplitButton.qml
+  components/basic/WarpDragArea.qml
   components/basic/ZrythmToolBar.qml
   components/dragndrop/DescriptorDragItem.qml
   components/dragndrop/PluginDragItem.qml
