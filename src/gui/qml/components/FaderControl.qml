@@ -9,18 +9,15 @@ import Zrythm
 Item {
   id: root
 
-  property real ampAtStart: 0.0
   readonly property int bgRadius: ZrythmTheme.toolButtonRadius
   property real currentAutomatedValue: faderValue
   property real currentModulatedValue: faderValue
   readonly property real defaultFaderValue: 0.8
-  property bool dragging: false
+  readonly property bool dragging: mouseArea.dragging
   required property ProcessorParameter faderGain
   property real faderValue: faderGain.baseValue
   readonly property int handleHeight: 12
   property bool hovered: false
-  property real lastX: 0
-  property real lastY: 0
   required property UndoStack undoStack
 
   signal bindMidiCC
@@ -49,10 +46,6 @@ Item {
     }
   }
 
-  Component.onCompleted: {
-    mouseArea.acceptedButtons = Qt.LeftButton | Qt.RightButton;
-  }
-
   // Update currently automated/modulated values
   Timer {
     interval: 16 // ~60fps
@@ -67,7 +60,6 @@ Item {
 
   ProcessorParameterOperator {
     id: paramOp
-
   }
 
   Binding {
@@ -187,52 +179,22 @@ Item {
     width: valueTextMetrics.width
   }
 
-  MouseArea {
+  WarpDragArea {
     id: mouseArea
 
+    allowedAxes: Qt.Vertical
     anchors.fill: parent
-    hoverEnabled: true
-    preventStealing: true
+    defaultValue: root.defaultFaderValue
+    value: root.faderGain.baseValue
 
-    onDoubleClicked: {
-      paramOp.setValue(root.defaultFaderValue);
-    }
     onEntered: {
       root.hovered = true;
     }
     onExited: {
       root.hovered = false;
     }
-    onPositionChanged: function (mouse) {
-      if (root.dragging) {
-        var deltaY = root.lastY - mouse.y;
-        var sensitivity = 0.005;
-        var newValue = Math.max(0, Math.min(1, root.ampAtStart + deltaY * sensitivity));
-
-        paramOp.setValue(newValue);
-      }
-    }
-    onPressed: function (mouse) {
-      if (mouse.button === Qt.LeftButton) {
-        root.dragging = true;
-        root.ampAtStart = root.faderGain.baseValue;
-        root.lastY = mouse.y;
-        mouse.accepted = true;
-      }
-    }
-    onReleased: function (mouse) {
-      if (mouse.button === Qt.LeftButton) {
-        root.dragging = false;
-      }
-    }
-    onCanceled: {
-      root.dragging = false;
-    }
-    onWheel: {
-      var step = wheel.modifiers & Qt.ControlModifier ? 0.01 : 0.05;
-      var newValue = Math.max(0, Math.min(1, root.faderValue + (wheel.angleDelta.y > 0 ? step : -step)));
+    onValueModified: function (newValue) {
       paramOp.setValue(newValue);
-      wheel.accepted = true;
     }
   }
 }

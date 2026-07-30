@@ -9,14 +9,11 @@ import Zrythm
 Item {
   id: root
 
-  property real balanceAtStart: 0.0
   required property ProcessorParameter balanceParameter
   property real balanceValue: balanceParameter.baseValue
   readonly property real defaultBalanceValue: 0.5
-  property bool dragging: false
+  readonly property bool dragging: mouseArea.dragging
   property bool hovered: false
-  property real lastX: 0
-  property real lastY: 0
   required property UndoStack undoStack
 
   signal bindMidiCC
@@ -45,13 +42,8 @@ Item {
     }
   }
 
-  Component.onCompleted: {
-    mouseArea.acceptedButtons = Qt.LeftButton | Qt.RightButton;
-  }
-
   ProcessorParameterOperator {
     id: paramOp
-
   }
 
   Binding {
@@ -205,58 +197,23 @@ Item {
     visible: root.hovered || root.dragging
   }
 
-  MouseArea {
+  WarpDragArea {
     id: mouseArea
 
+    allowedAxes: Qt.Horizontal
     anchors.fill: parent
-    hoverEnabled: true
-    preventStealing: true
+    defaultValue: root.defaultBalanceValue
+    value: root.balanceParameter.baseValue
+    wheelAxis: Qt.Horizontal
 
-    onDoubleClicked: {
-      paramOp.setValue(root.defaultBalanceValue);
-    }
     onEntered: {
       root.hovered = true;
     }
     onExited: {
       root.hovered = false;
     }
-    onPositionChanged: function (mouse) {
-      if (root.dragging) {
-        var deltaX = mouse.x - root.lastX;
-        var sensitivity = 0.002;
-
-        // Lower sensitivity if Ctrl held
-        if (mouse.modifiers & Qt.ControlModifier) {
-          sensitivity = 0.001;
-        }
-
-        var newValue = Math.max(0, Math.min(1, root.balanceAtStart + deltaX * sensitivity));
-
-        paramOp.setValue(newValue);
-      }
-    }
-    onPressed: function (mouse) {
-      if (mouse.button === Qt.LeftButton) {
-        root.dragging = true;
-        root.balanceAtStart = root.balanceParameter.baseValue;
-        root.lastX = mouse.x;
-        mouse.accepted = true;
-      }
-    }
-    onReleased: function (mouse) {
-      if (mouse.button === Qt.LeftButton) {
-        root.dragging = false;
-      }
-    }
-    onCanceled: {
-      root.dragging = false;
-    }
-    onWheel: {
-      var step = wheel.modifiers & Qt.ControlModifier ? 0.01 : 0.05;
-      var newValue = Math.max(0, Math.min(1, root.balanceValue + (wheel.angleDelta.x > 0 ? step : -step)));
+    onValueModified: function (newValue) {
       paramOp.setValue(newValue);
-      wheel.accepted = true;
     }
   }
 }
