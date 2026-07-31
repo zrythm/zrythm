@@ -209,7 +209,7 @@ AudioEngine::
 
   if (state.playing_)
     {
-      transport_.requestPause ();
+      transport_.pause_for_engine_internal ();
 
       if (force_pause)
         {
@@ -270,14 +270,14 @@ AudioEngine::resume (const EngineState &state)
   transport_.setLoopEnabled (state.looping_);
   if (state.playing_)
     {
-      transport_.move_playhead (
-        transport_.playhead_ticks_before_pause (), false);
+      // Resume from the current position: the engine-internal pause did not
+      // move the playhead. Any tempo change made during the pause was handled
+      // by the tempoEventsChanged handler, which re-anchors a paused playhead
+      // to its musical position
       transport_.requestRoll ();
     }
-  else
-    {
-      transport_.requestPause ();
-    }
+  // when not playing, the transport was never touched during the pause so
+  // there is nothing to restore
 
   // z_debug ("restarting engine: setting fade in samples");
   // control_room_->monitor_fader_->request_fade_in ();

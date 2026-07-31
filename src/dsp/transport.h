@@ -302,6 +302,15 @@ public:
   Q_INVOKABLE void requestPause () [[clang::blocking]];
 
   /**
+   * @brief Requests a pause without moving the playhead.
+   *
+   * Unlike requestPause(), this does not record the pre-pause playhead
+   * position and does not move the playhead to the cue point when
+   * return-to-cue is enabled.
+   */
+  void pause_for_engine_internal () [[clang::blocking]];
+
+  /**
    * Request playback.
    */
   Q_INVOKABLE void requestRoll () [[clang::blocking]];

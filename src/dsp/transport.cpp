@@ -56,7 +56,19 @@ Transport::Transport (
   // — tick values stay the same but sample positions change.
   QObject::connect (
     &tempo_map_wrapper, &dsp::TempoMapWrapper::tempoEventsChanged, this,
-    [this] () { update_rt_marker_snapshot (); });
+    [this] () {
+      update_rt_marker_snapshot ();
+
+      // Keep a paused playhead anchored to its musical position, which the
+      // tempo change remaps. While rolling or transitioning (including a
+      // pending pause request), the sample position is kept so playback
+      // continues uninterrupted; the tick position re-syncs from the sample
+      // position via the playhead adapter's timer
+      if (play_state_ == PlayState::Paused)
+        {
+          playhead_.set_position_ticks (playhead_.position_ticks ());
+        }
+    });
 
   // Recompute RT snapshot when the sample rate changes.
   QObject::connect (
@@ -189,9 +201,15 @@ Transport::set_play_state_rt_safe (PlayState state)
 }
 
 void
-Transport::requestPause ()
+Transport::pause_for_engine_internal ()
 {
   set_play_state_rt_safe (PlayState::PauseRequested);
+}
+
+void
+Transport::requestPause ()
+{
+  pause_for_engine_internal ();
 
   playhead_before_pause_ = playhead_.position_ticks ();
   if (config_provider_.return_to_cue_on_pause_ ())

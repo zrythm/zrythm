@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -720,6 +720,106 @@ TEST_F (AudioEngineTest, ResumeWithRunningEngineRestoresState)
   EXPECT_TRUE (state.running_);
   EXPECT_TRUE (state.playing_);
   EXPECT_TRUE (state.looping_);
+}
+
+TEST_F (AudioEngineTest, ResumeWhileNotPlayingLeavesTransportUntouched)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  transport_->setPlayState (dsp::ITransport::PlayState::Paused);
+  transport_->move_playhead (units::ticks (1920.0), false);
+
+  AudioEngine::EngineState state{
+    .running_ = true, .playing_ = false, .looping_ = true
+  };
+  engine->resume (state);
+
+  EXPECT_TRUE (engine->running ());
+  EXPECT_EQ (transport_->getPlayState (), dsp::ITransport::PlayState::Paused);
+  EXPECT_EQ (
+    transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
+    1920.0);
+}
+
+TEST_F (AudioEngineTest, EnginePauseDoesNotMovePlayheadToCue)
+{
+  // Enable return-to-cue: a user-initiated pause moves the playhead to the cue
+  // point, but an engine-internal pause must leave the playhead untouched
+  config_provider_.return_to_cue_on_pause_ = [] () { return true; };
+  transport_ =
+    std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
+
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  // Paused away from the cue point (which is at tick 0)
+  transport_->setPlayState (dsp::ITransport::PlayState::Paused);
+  transport_->move_playhead (units::ticks (1920.0), false);
+
+  engine->execute_function_with_paused_processing_synchronously (
+    [] () { }, false);
+
+  EXPECT_EQ (
+    transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
+    1920.0);
+}
+
+TEST_F (AudioEngineTest, WaitforPauseWhilePlayingDoesNotMovePlayheadToCue)
+{
+  config_provider_.return_to_cue_on_pause_ = [] () { return true; };
+  transport_ =
+    std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
+
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->set_running (true);
+
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
+  transport_->move_playhead (units::ticks (1920.0), false);
+
+  AudioEngine::EngineState state{};
+  engine->wait_for_pause (state, true, false);
+
+  EXPECT_TRUE (state.playing_);
+  EXPECT_EQ (
+    transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
+    1920.0);
+}
+
+TEST_F (AudioEngineTest, TempoChangeWhilePausedKeepsMusicalPosition)
+{
+  transport_->setPlayState (dsp::ITransport::PlayState::Paused);
+  transport_->move_playhead (units::ticks (1920.0), false);
+
+  tempo_map_wrapper_->setBaseBpm (tempo_map_wrapper_->baseBpm () * 2.0);
+
+  EXPECT_DOUBLE_EQ (
+    transport_->playhead ()->playhead ().position_ticks ().in (units::ticks),
+    1920.0);
+}
+
+TEST_F (AudioEngineTest, TempoChangeWhileRollingKeepsSamplePosition)
+{
+  transport_->setPlayState (dsp::ITransport::PlayState::Rolling);
+  transport_->move_playhead (units::ticks (1920.0), false);
+  const auto samples_before =
+    transport_->playhead ()->playhead ().position_samples_FOR_TESTING ();
+
+  tempo_map_wrapper_->setBaseBpm (tempo_map_wrapper_->baseBpm () * 2.0);
+
+  EXPECT_EQ (
+    transport_->playhead ()->playhead ().position_samples_FOR_TESTING ().in (
+      units::samples),
+    samples_before.in (units::samples));
 }
 
 TEST_F (AudioEngineTest, GetProcessingLockReturnsValidLock)
