@@ -186,6 +186,7 @@ set(rel_qml_file_paths
   components/basic/RecordButton.qml
   components/basic/ResizeHandle.qml
   components/basic/RotatedLabel.qml
+  components/basic/ScrubbableValueSegment.qml
   components/basic/SoloButton.qml
   components/basic/ZrythmActionRow.qml
   components/basic/ZrythmFilePicker.qml

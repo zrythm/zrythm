@@ -32,6 +32,9 @@ MouseArea {
   property real fineFactor: 0.1
   property real from: 0
 
+  /// Cursor shape while hovering and not dragging (-1 leaves the existing cursor untouched)
+  property int hoverCursorShape: -1
+
   /// Hide and pin the cursor while dragging
   property bool pinCursor: true
 
@@ -75,7 +78,12 @@ MouseArea {
   acceptedButtons: Qt.LeftButton
 
   // Hide the cursor while dragging (undefined leaves the existing cursor untouched)
-  cursorShape: priv.dragging && root.pinCursor ? Qt.BlankCursor : undefined
+  cursorShape: {
+    if (priv.dragging && root.pinCursor) {
+      return Qt.BlankCursor;
+    }
+    return root.hoverCursorShape >= 0 ? root.hoverCursorShape : undefined;
+  }
   hoverEnabled: true
   preventStealing: true
 
@@ -172,6 +180,10 @@ MouseArea {
     }
 
     const step = (wheel.modifiers & Qt.ControlModifier ? root.wheelFineStep : root.wheelStep) * (root.to - root.from);
+    if (!(step > 0)) {
+      // Zero or invalid range: nothing to step through
+      return;
+    }
     const newValue = clampValue(root.value + (angleDelta > 0 ? step : -step));
     if (newValue !== root.value) {
       root.valueModified(newValue);
