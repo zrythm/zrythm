@@ -1,9 +1,0 @@
-# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
-# SPDX-License-Identifier: CC0-1.0
-include(_msvc)
-include(_qt_windows)
-
-[settings]
-arch=armv8
-build_type=Release
-compiler.runtime_type=Release

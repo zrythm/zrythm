@@ -53,9 +53,9 @@ run appleclang_release  appleclang_build
 run msvc_debug    msvc_release
 run msvc_release  msvc_release
 
-# Windows (ARM64)
-run msvc_arm64_debug    msvc_arm64_release
-run msvc_arm64_release  msvc_arm64_release
+# Windows (ARM64EC)
+run msvc_arm64ec_debug    msvc_arm64ec_release
+run msvc_arm64ec_release  msvc_arm64ec_release
 
 # Sanitizer profiles (whole-chain instrumentation)
 run clang_tsan  gcc_release

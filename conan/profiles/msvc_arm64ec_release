@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: CC0-1.0
+#
+# Profile for Windows on ARM (ARM64EC), Release build.
+#
+# Dependencies are plain x64 binaries: ARM64EC binaries can link x64
+# libraries and load x64 plugins in-process under emulation. Only Zrythm
+# itself is compiled as ARM64EC via the flags below. The ARM64-targeted
+# compiler accepts /arm64EC, and CMake detects the ARM64EC architecture
+# family during compiler identification, adding /MACHINE:ARM64EC and the
+# _ARM64EC_ defines automatically.
+#
+# compiler.march is deliberately not set here: /arch:AVX is only valid for
+# the x64-targeted compiler.
+include(_msvc)
+include(_qt_windows)
+
+[settings]
+arch=x86_64
+build_type=Release
+compiler.runtime_type=Release
+
+[conf]
+zrythm/*:tools.build:cflags+=["/arm64EC"]
+zrythm/*:tools.build:cxxflags+=["/arm64EC"]

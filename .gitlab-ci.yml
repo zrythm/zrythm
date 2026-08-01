@@ -227,20 +227,15 @@ configure:mac-arm:
       - conanbuild/${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
-configure:windows:
-  extends: .windows-with-conan
+# Shared definition for Windows configure jobs. BUILD_PROFILE is the conan
+# build-machine profile to use.
+.configure-windows-template:
   stage: setup
   variables:
     GIT_DEPTH: 0 # Fetch full history
   script:
-    - conan install . -pr:h ${env:HOST_PROFILE} -pr:b msvc_release --build=missing --lockfile=conan.lock
+    - conan install . -pr:h ${env:HOST_PROFILE} -pr:b ${env:BUILD_PROFILE} --build=missing --lockfile=conan.lock
     - cmake --preset default -DZRYTHM_WITH_ASIO=ON
-  parallel:
-    matrix:
-      - BUILD_TYPE: Debug
-        HOST_PROFILE: msvc_debug
-      - BUILD_TYPE: Release
-        HOST_PROFILE: msvc_release
   artifacts:
     paths:
       - conanbuild/${BUILD_TYPE}
@@ -248,26 +243,31 @@ configure:windows:
       - conanbuild/${BUILD_TYPE}/**/.git/**/*
     expire_in: 1 day
 
-configure:windows-arm64:
-  extends: .windows-arm-with-conan
-  stage: setup
+configure:windows:
+  extends:
+    - .configure-windows-template
+    - .windows-with-conan
   variables:
-    GIT_DEPTH: 0 # Fetch full history
-  script:
-    - conan install . -pr:h ${env:HOST_PROFILE} -pr:b msvc_arm64_release --build=missing --lockfile=conan.lock
-    - cmake --preset default -DZRYTHM_WITH_ASIO=ON
+    BUILD_PROFILE: "msvc_release"
   parallel:
     matrix:
       - BUILD_TYPE: Debug
-        HOST_PROFILE: msvc_arm64_debug
+        HOST_PROFILE: msvc_debug
       - BUILD_TYPE: Release
-        HOST_PROFILE: msvc_arm64_release
-  artifacts:
-    paths:
-      - conanbuild/${BUILD_TYPE}
-    exclude:
-      - conanbuild/${BUILD_TYPE}/**/.git/**/*
-    expire_in: 1 day
+        HOST_PROFILE: msvc_release
+
+configure:windows-arm64ec:
+  extends:
+    - .configure-windows-template
+    - .windows-arm-with-conan
+  variables:
+    BUILD_PROFILE: "msvc_arm64ec_release"
+  parallel:
+    matrix:
+      - BUILD_TYPE: Debug
+        HOST_PROFILE: msvc_arm64ec_debug
+      - BUILD_TYPE: Release
+        HOST_PROFILE: msvc_arm64ec_release
 
 check:clazy:
   extends: .gnu-linux-template
@@ -517,10 +517,43 @@ build:mac-arm:
     reports:
       junit: conanbuild/${BUILD_TYPE}/test_results/*.xml
 
-build:windows:
-  extends: .windows-template
+# Shared definition for Windows build jobs: build, test, package with
+# INNOSETUP. CPACK_SYSTEM_NAME must match the CPack system name of the
+# build (see CMakeLists.txt); it is used for the packaging scratch dir and
+# the Inno Setup error log path.
+.build-windows-template:
   stage: build
   timeout: 3h # release build takes >2h
+  variables:
+    CPACK_SYSTEM_NAME: "win64"
+    RUN_BENCHMARKS: "0"
+  script:
+    # MSBuild flags for VS generator: -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
+    - cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel
+    - if (! $?) { exit 1 }
+    - ctest --test-dir "conanbuild/${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit --rerun-failed --output-on-failure
+    - if (("${env:BUILD_TYPE}" -eq "Release") -and ("${env:RUN_BENCHMARKS}" -eq "1")) { cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
+    # Use shorter path for packaging to avoid Windows path length limitations
+    - $shortPackageDir = "C:\tmp\package-${env:CPACK_SYSTEM_NAME}-${env:BUILD_TYPE}"
+    - if (Test-Path $shortPackageDir) { Remove-Item -Recurse -Force $shortPackageDir }
+    - New-Item -ItemType Directory -Path $shortPackageDir -Force
+    - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config "conanbuild/${env:BUILD_TYPE}/CPackConfig.cmake" -B $shortPackageDir; if (-not $?) { Get-Content "$shortPackageDir/_CPack_Packages/${env:CPACK_SYSTEM_NAME}/INNOSETUP/ISCCOutput.log"; exit 1 }
+    # Move the resulting exe files to the expected location for artifacts
+    - if (Test-Path "package-${env:BUILD_TYPE}") { Remove-Item -Recurse -Force "package-${env:BUILD_TYPE}" }
+    - New-Item -ItemType Directory -Path "package-${env:BUILD_TYPE}" -Force
+    - Move-Item "$shortPackageDir\*.exe*" "package-${env:BUILD_TYPE}\"
+  artifacts:
+    paths:
+      - package-${BUILD_TYPE}/*.exe*
+    when: on_success
+    expire_in: "1 day"
+
+build:windows:
+  extends:
+    - .build-windows-template
+    - .windows-template
+  variables:
+    RUN_BENCHMARKS: "1"
   needs:
     - job: configure:windows
       artifacts: true
@@ -528,54 +561,32 @@ build:windows:
         matrix:
           - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
             HOST_PROFILE: $[[ matrix.HOST_PROFILE ]]
-  script:
-    # MSBuild flags for VS generator: -- /verbosity:minimal "/consoleLoggerParameters:NoSummary;ForceConsoleColor"
-    - cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel
-    - if (! $?) { exit 1 }
-    - ctest --test-dir "conanbuild/${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit --rerun-failed --output-on-failure
-    - if ("${env:BUILD_TYPE}" -eq "Release") { cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --target run_all_benchmarks }
-    # Use shorter path for packaging to avoid Windows path length limitations
-    - $shortPackageDir = "C:\tmp\package-${env:BUILD_TYPE}"
-    - if (Test-Path $shortPackageDir) { Remove-Item -Recurse -Force $shortPackageDir }
-    - New-Item -ItemType Directory -Path $shortPackageDir -Force
-    - cpack -G INNOSETUP -C ${env:BUILD_TYPE} --config "conanbuild/${env:BUILD_TYPE}/CPackConfig.cmake" -B $shortPackageDir; if (-not $?) { Get-Content "$shortPackageDir/_CPack_Packages/win64/INNOSETUP/ISCCOutput.log"; exit 1 }
-    # Move the resulting exe files to the expected location for artifacts
-    - if (Test-Path "package-${env:BUILD_TYPE}") { Remove-Item -Recurse -Force "package-${env:BUILD_TYPE}" }
-    - New-Item -ItemType Directory -Path "package-${env:BUILD_TYPE}" -Force
-    - Move-Item "$shortPackageDir\*.exe*" "package-${env:BUILD_TYPE}\"
   parallel:
     matrix:
       - BUILD_TYPE: Debug
         HOST_PROFILE: msvc_debug
       - BUILD_TYPE: Release
         HOST_PROFILE: msvc_release
-  artifacts:
-    paths:
-      - package-${BUILD_TYPE}/*.exe*
-    when: on_success
-    expire_in: "1 day"
 
-build:windows-arm64:
-  extends: .windows-arm-template
-  stage: build
-  timeout: 3h # release build takes >2h
+build:windows-arm64ec:
+  extends:
+    - .build-windows-template
+    - .windows-arm-template
+  variables:
+    CPACK_SYSTEM_NAME: "win-arm64ec"
   needs:
-    - job: configure:windows-arm64
+    - job: configure:windows-arm64ec
       artifacts: true
       parallel:
         matrix:
           - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
             HOST_PROFILE: $[[ matrix.HOST_PROFILE ]]
-  script:
-    - cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel
-    - if (! $?) { exit 1 }
-    - ctest --test-dir "conanbuild/${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit --rerun-failed --output-on-failure
   parallel:
     matrix:
       - BUILD_TYPE: Debug
-        HOST_PROFILE: msvc_arm64_debug
+        HOST_PROFILE: msvc_arm64ec_debug
       - BUILD_TYPE: Release
-        HOST_PROFILE: msvc_arm64_release
+        HOST_PROFILE: msvc_arm64ec_release
 
 update-manual:
   extends: .gnu-linux-template
@@ -620,6 +631,8 @@ deploy:installers:
   needs:
     - job: build:windows
       artifacts: true
+    - job: build:windows-arm64ec
+      artifacts: true
     - job: build:mac-arm
       artifacts: true
     - job: build:gnu/linux
@@ -628,10 +641,15 @@ deploy:installers:
     # Source version info generated by CMake during configure (see GetVersionFromGitTag.cmake)
     - source conanbuild/Release/version.env
     - VERSION_WITHOUT_V=$(echo $VERSION_STRING_FULL | sed 's/^v//')
-    # Deploy Windows installer
-    - windowsArtifact=$(find package-Release -name "*.exe" | head -n 1)
+    # Deploy Windows (x64) installer
+    - windowsArtifact=$(find package-Release -name "*-win64.exe" | head -n 1)
     - if [ -n "$windowsArtifact" ]; then
       python3 scripts/deploy_file_to_s3.py --prefix "packages/windows" "$windowsArtifact";
+      fi
+    # Deploy Windows (ARM64EC) installer
+    - windowsArm64ecArtifact=$(find package-Release -name "*-win-arm64ec.exe" | head -n 1)
+    - if [ -n "$windowsArm64ecArtifact" ]; then
+      python3 scripts/deploy_file_to_s3.py --prefix "packages/windows-arm64ec" "$windowsArm64ecArtifact";
       fi
     # Deploy macOS DMG
     - macArtifact=$(find package-Release -name "*.dmg" | head -n 1)
@@ -652,6 +670,7 @@ deploy:installers:
       fi
   dependencies:
     - build:windows
+    - build:windows-arm64ec
     - build:mac-arm
     - build:gnu/linux
   before_script:

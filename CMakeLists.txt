@@ -1304,6 +1304,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 if(WIN32)
+  if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
+    # Distinguish ARM64EC packages from x64 ones (win64 by default)
+    set(CPACK_SYSTEM_NAME "win-arm64ec")
+  endif()
   if(MAGICK_EXECUTABLE)
     # Installer banner
     set(CPACK_PACKAGE_ICON "${ZRYTHM_BMP_FILE}")
