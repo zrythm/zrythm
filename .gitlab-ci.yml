@@ -40,19 +40,20 @@ stages:
 
 .windows-activate-venv: &windows-activate-venv
   - ./venv/Scripts/Activate.ps1
-  # Temporary solution until cmake 4.2.0 release
-  - $Env:PATH = "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin$([System.IO.Path]::PathSeparator)$Env:PATH"
 
 # .mac-enable-brew-env: &mac-enable-brew-env
 # - eval "$(/opt/homebrew/bin/brew shellenv)";
 
 .windows-enable-vs-env: &windows-enable-vs-env
-  - Import-Module "C:\Program Files\Microsoft Visual Studio\18\Community\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+  # Locate the newest VS installation via vswhere (ships with the VS Installer
+  # at a fixed path, including on ARM64) instead of hardcoding the path
+  - $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
+  - Import-Module "${vsPath}\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
   - >-
     Enter-VsDevShell
-    -VsInstallPath "C:\Program Files\Microsoft Visual Studio\18\Community"
+    -VsInstallPath "${vsPath}"
     -SkipAutomaticLocation
-    -DevCmdArguments -arch=x64
+    -DevCmdArguments "-arch=${env:VS_DEV_SHELL_ARCH}"
   #- chcp 65001 # UTF-8
 
 .gnu-linux-template:
@@ -99,6 +100,8 @@ stages:
     GIT_SUBMODULE_STRATEGY: recursive
     INSTALLDIR: "install_windows"
     VSLANG: "1033"
+    # MSVC target arch to initialize the VS dev shell for (x64 or arm64)
+    VS_DEV_SHELL_ARCH: "x64"
     # use /MP1 to disable parallel builds if the compiler messages are hard to read
     CL: "/MP" # prepended to the cl command
     _CL_: "" # appended to the cl command
@@ -112,6 +115,25 @@ stages:
 # Use for jobs that don't depend on configure:windows artifacts.
 .windows-with-conan:
   extends: .windows-template
+  before_script:
+    - *windows-enable-vs-env
+    - python -m venv venv
+    - *windows-activate-venv
+    - python -m pip install -r requirements.txt
+    - conan config install conan
+    - $r = conan remote list 2>$null; if (-not ($r -match 'conan-local-index')) { conan remote add conan-local-index ext/conan-center-index }
+    - python tools/export_conan_recipes.py
+
+.windows-arm-template:
+  extends: .windows-template
+  tags:
+    - windows-arm
+  variables:
+    VS_DEV_SHELL_ARCH: "arm64"
+
+# Windows ARM64 template with full environment setup (venv, conan, recipes).
+.windows-arm-with-conan:
+  extends: .windows-arm-template
   before_script:
     - *windows-enable-vs-env
     - python -m venv venv
@@ -212,6 +234,27 @@ configure:windows:
         HOST_PROFILE: msvc_debug
       - BUILD_TYPE: Release
         HOST_PROFILE: msvc_release
+  artifacts:
+    paths:
+      - conanbuild/${BUILD_TYPE}
+    exclude:
+      - conanbuild/${BUILD_TYPE}/**/.git/**/*
+    expire_in: 1 day
+
+configure:windows-arm64:
+  extends: .windows-arm-with-conan
+  stage: setup
+  variables:
+    GIT_DEPTH: 0 # Fetch full history
+  script:
+    - conan install . -pr:h ${env:HOST_PROFILE} -pr:b msvc_arm64_release --build=missing --lockfile=conan.lock
+    - cmake --preset default -DZRYTHM_WITH_ASIO=ON
+  parallel:
+    matrix:
+      - BUILD_TYPE: Debug
+        HOST_PROFILE: msvc_arm64_debug
+      - BUILD_TYPE: Release
+        HOST_PROFILE: msvc_arm64_release
   artifacts:
     paths:
       - conanbuild/${BUILD_TYPE}
@@ -504,6 +547,28 @@ build:windows:
       - package-${BUILD_TYPE}/*.exe*
     when: on_success
     expire_in: "1 day"
+
+build:windows-arm64:
+  extends: .windows-arm-template
+  stage: build
+  timeout: 3h # release build takes >2h
+  needs:
+    - job: configure:windows-arm64
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: $[[ matrix.BUILD_TYPE ]]
+            HOST_PROFILE: $[[ matrix.HOST_PROFILE ]]
+  script:
+    - cmake --build "conanbuild/${env:BUILD_TYPE}" --config "${env:BUILD_TYPE}" --parallel
+    - if (! $?) { exit 1 }
+    - ctest --test-dir "conanbuild/${env:BUILD_TYPE}" -C "${env:BUILD_TYPE}" -D NightlyTest -D NightlySubmit --rerun-failed --output-on-failure
+  parallel:
+    matrix:
+      - BUILD_TYPE: Debug
+        HOST_PROFILE: msvc_arm64_debug
+      - BUILD_TYPE: Release
+        HOST_PROFILE: msvc_arm64_release
 
 update-manual:
   extends: .gnu-linux-template

@@ -158,7 +158,8 @@ You can change `Release` to `Debug` below if you want to build in debug mode.
    | GNU/Linux (Clang) | `clang_debug` / `clang_release` | — |
    | GNU/Linux (GCC) | `gcc_debug` / `gcc_release` | — |
    | macOS | `appleclang_debug` / `appleclang_release` | `appleclang_build` |
-   | Windows | `msvc_debug` / `msvc_release` | — |
+   | Windows (x64) | `msvc_debug` / `msvc_release` | — |
+   | Windows (ARM64) | `msvc_arm64_debug` / `msvc_arm64_release` | — |
 
    > [!NOTE]
    > macOS uses `appleclang_build` (Release) as the build profile because the host profile builds sanitizer-instrumented Qt, which requires cross-building (sanitizer profiles set `cross_build=True` to skip running test executables that would otherwise fail under the sanitizer runtime).
