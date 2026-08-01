@@ -49,11 +49,18 @@ stages:
   # at a fixed path, including on ARM64) instead of hardcoding the path
   - $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath
   - Import-Module "${vsPath}\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+  # Enter-VsDevShell echoes multi-line environment variable values (e.g.
+  # CI_COMMIT_MESSAGE, file-type CI variables) to the console (known VS bug,
+  # Developer Community #1503548). Remove them for the call and restore them
+  # afterwards so they stay available to the rest of the job.
+  - $multiLineEnvVars = @{}; @(Get-ChildItem Env:) | Where-Object { $_.Value.Contains("`n") } | ForEach-Object { $multiLineEnvVars[$_.Name] = $_.Value }
+  - '@($multiLineEnvVars.Keys) | ForEach-Object { Remove-Item "Env:$_" }'
   - >-
     Enter-VsDevShell
     -VsInstallPath "${vsPath}"
     -SkipAutomaticLocation
     -DevCmdArguments "-arch=${env:VS_DEV_SHELL_ARCH}"
+  - $multiLineEnvVars.GetEnumerator() | ForEach-Object { Set-Item "Env:$($_.Key)" $_.Value }
   #- chcp 65001 # UTF-8
 
 .gnu-linux-template:
