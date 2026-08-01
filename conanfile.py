@@ -46,7 +46,7 @@ class Zrythm(ConanFile):
         self.requires("gsl-lite/1.1.0")
         self.requires("au/[~0.5]")
         self.requires("onetbb/2023.0.0")
-        self.requires("tracy/[>=0.13.1]")
+        self.requires("tracy/[>=0.13.1 <1]")
         self.requires("xxhash/0.8.3")
         if self.settings.os == "Linux":
             self.requires("freetype/[>=2.14]")
