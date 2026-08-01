@@ -60,6 +60,12 @@ public:
   Q_INVOKABLE static bool rectanglesIntersect (QRectF a, QRectF b);
   Q_INVOKABLE static bool rectanglesIntersect (QRect a, QRect b);
 
+  Q_INVOKABLE static QString qtRuntimeVersion ();
+  Q_INVOKABLE static QString osDescription ();
+  Q_INVOKABLE static QString cpuArchitecture ();
+  Q_INVOKABLE static QString juceVersion ();
+  Q_INVOKABLE static void    copyToClipboard (const QString &text);
+
   /**
    * @brief Helper to create a selection from a list of rows in a single column.
    */

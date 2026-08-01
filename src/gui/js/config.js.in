@@ -19,6 +19,7 @@ const PURCHASE_URL = "@purchase_url@";
 const IS_INSTALLER_VER = is_true("@ZRYTHM_IS_INSTALLER_VER@");
 const IS_TRIAL_VER = is_true("@ZRYTHM_IS_TRIAL_VER@");
 const FLATPAK_BUILD = is_true("@FLATPAK_BUILD@");
+const BUILD_TYPE = "@CMAKE_BUILD_TYPE@";
 
 const languageMap = {
 @LANGUAGE_MAP_STRING@

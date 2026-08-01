@@ -15,8 +15,13 @@
 #include "utils/math_utils.h"
 #include "utils/utf8_string.h"
 
+#include <QClipboard>
+#include <QGuiApplication>
 #include <QRectF>
 #include <QRegularExpression>
+#include <QSysInfo>
+
+#include <juce_core/juce_core.h>
 
 namespace zrythm::gui::qquick
 {
@@ -161,6 +166,37 @@ bool
 QmlUtils::rectanglesIntersect (QRect a, QRect b)
 {
   return a.intersects (b);
+}
+
+QString
+QmlUtils::qtRuntimeVersion ()
+{
+  return QString::fromLatin1 (qVersion ());
+}
+
+QString
+QmlUtils::osDescription ()
+{
+  return QSysInfo::prettyProductName ();
+}
+
+QString
+QmlUtils::cpuArchitecture ()
+{
+  return QSysInfo::currentCpuArchitecture ();
+}
+
+QString
+QmlUtils::juceVersion ()
+{
+  return utils::Utf8String::from_juce_string (juce::SystemStats::getJUCEVersion ())
+    .to_qstring ();
+}
+
+void
+QmlUtils::copyToClipboard (const QString &text)
+{
+  QGuiApplication::clipboard ()->setText (text);
 }
 
 QItemSelection

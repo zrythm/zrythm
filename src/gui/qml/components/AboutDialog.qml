@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -79,6 +79,24 @@ Dialog {
 
       Label {
         Layout.alignment: Qt.AlignHCenter
+        font.pointSize: 9
+        text: qsTr("Platform: %1").arg(Qt.platform.pluginName)
+      }
+
+      Label {
+        Layout.alignment: Qt.AlignHCenter
+        font.pointSize: 9
+        text: qsTr("Qt %1 · %2 · %3").arg(QmlUtils.qtRuntimeVersion()).arg(QmlUtils.juceVersion()).arg(Config.BUILD_TYPE)
+      }
+
+      Label {
+        Layout.alignment: Qt.AlignHCenter
+        font.pointSize: 9
+        text: qsTr("%1 (%2)").arg(QmlUtils.osDescription()).arg(QmlUtils.cpuArchitecture())
+      }
+
+      Label {
+        Layout.alignment: Qt.AlignHCenter
         font.pointSize: 10
         text: "© %1 %2. All rights reserved.".arg(Config.COPYRIGHT_YEARS).arg(Config.COPYRIGHT_NAME)
       }
@@ -122,6 +140,17 @@ Dialog {
             licenseTitle: "Third Party Notices",
             licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions_sbom.txt")
           })
+        }
+
+        Button {
+          flat: true
+          text: qsTr("Copy System Info")
+
+          onClicked: {
+            const installKind = Config.FLATPAK_BUILD ? qsTr("Flatpak") : (Config.IS_INSTALLER_VER ? qsTr("Official build") : qsTr("Local build"));
+            const info = "Zrythm v%1\nQt %2\n%3\nOS: %4 (%5)\nPlatform: %6\nBuild: %7 (%8)".arg(Config.VERSION_STRING_FULL_WITHOUT_V).arg(QmlUtils.qtRuntimeVersion()).arg(QmlUtils.juceVersion()).arg(QmlUtils.osDescription()).arg(QmlUtils.cpuArchitecture()).arg(Qt.platform.pluginName).arg(Config.BUILD_TYPE).arg(installKind);
+            QmlUtils.copyToClipboard(info);
+          }
         }
       }
 
