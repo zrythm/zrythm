@@ -468,11 +468,14 @@ add_library(_zrythm_warning_flags INTERFACE)
 add_library(_zrythm_coverage_lib INTERFACE)
 
 if(ZRYTHM_OPTIMIZED_BUILD)
-  # LTO
-  include(CheckIPOSupported)
-  check_ipo_supported(RESULT ipo_supported)
-  if(ipo_supported)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+  # LTO (skipped on ARM64EC: the MSVC backend crashes with C1001 during
+  # /LTCG links)
+  if(NOT (MSVC AND CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC"))
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported)
+    if(ipo_supported)
+      set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
   endif()
 
   if(compiler_is_gcc)
