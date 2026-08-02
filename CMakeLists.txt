@@ -965,6 +965,13 @@ add_library(zrythm::spdlog ALIAS _spdlog_lib)
 
 find_package(Boost REQUIRED)
 
+if(MSVC AND CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
+  # ARM64EC defines _M_X64, which makes Boost.Unordered enable its SSE2
+  # group-matching path; MSVC's SSE2-to-ARM64EC intrinsic translation
+  # miscompiles it under /O2 (hash lookups fail), so use the scalar path
+  target_compile_definitions(Boost::headers INTERFACE BOOST_UNORDERED_DISABLE_SSE2)
+endif()
+
 find_package(gsl-lite REQUIRED)
 find_package(type_safe REQUIRED)
 # mp-units fails to compile on AppleClang and also Au seems more ergonomic
