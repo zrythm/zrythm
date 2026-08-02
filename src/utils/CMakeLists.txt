@@ -77,6 +77,7 @@ target_sources(zrythm_utils_lib
       isettings_backend.h
       jack.h
       logger.h
+      main_thread_dispatcher.h
       math_utils.h
       mem.h
       midi.h

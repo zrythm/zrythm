@@ -19,6 +19,7 @@ add_executable(zrythm_utils_unit_tests
   icloneable_test.cpp
   io_test.cpp
   logger_test.cpp
+  main_thread_dispatcher_test.cpp
   serialization_test.cpp
   math_test.cpp
   midi_test.cpp
