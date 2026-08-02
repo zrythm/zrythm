@@ -980,6 +980,12 @@ endif()
 find_package(TBB REQUIRED)
 CPMGetPackage(farbot)
 CPMGetPackage(loop-tempo-estimator)
+if(CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
+  # pffft's SIMD path includes <xmmintrin.h> directly; on ARM64EC the x86
+  # intrinsics headers are only available through <intrin.h>, so build
+  # pffft with scalar code
+  target_compile_definitions(pffft PRIVATE PFFFT_SIMD_DISABLE)
+endif()
 
 if(ZRYTHM_TRACY)
   find_package(Tracy REQUIRED)
