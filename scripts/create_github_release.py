@@ -30,6 +30,7 @@ from github import Auth, Github
 GITHUB_REPO = "zrythm/zrythm"
 S3_PREFIXES = [
     "packages/windows",
+    "packages/windows-arm64ec",
     "packages/macos-universal",
     "packages/gnu-linux-cpack",
 ]
