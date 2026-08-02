@@ -144,7 +144,7 @@ private Q_SLOTS:
   /**
    * @brief Handle visibility changes.
    */
-  void on_ui_visibility_changed ();
+  void on_ui_visibility_changed () override;
 
 private:
   /**
@@ -183,6 +183,25 @@ private:
    * @brief Applies state from a QByteArray to the CLAP plugin.
    */
   void apply_state_from_byte_array (const QByteArray &data);
+
+  /**
+   * @brief Flushes parameter updates and syncs Zrythm parameter values to
+   * match.
+   *
+   * Calls paramsFlush() with empty input events (per the CLAP spec, plugins
+   * may defer parameter updates until the next paramsFlush() after a state
+   * load), then reads the resulting values back into Zrythm's baseValues.
+   * Main thread only; the plugin must be instantiated and inactive.
+   */
+  void flush_and_sync_params_when_inactive ();
+
+  /**
+   * @brief Reads all parameter values from the plugin into Zrythm's
+   * baseValues.
+   *
+   * Main thread only; the plugin must be instantiated.
+   */
+  void sync_param_values_from_plugin ();
 
 private:
   class ClapPluginImpl;

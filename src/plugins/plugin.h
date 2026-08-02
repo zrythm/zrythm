@@ -10,9 +10,9 @@
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 #include "dsp/processor_base.h"
-#include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_host_window.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 #include "utils/variant_helpers.h"
@@ -143,6 +143,18 @@ public:
    */
   Q_SIGNAL void uiVisibleChanged (bool visible);
 
+protected:
+  /**
+   * @brief Shows/hides the plugin UI to match @ref uiVisible.
+   *
+   * Connected to @ref uiVisibleChanged by the base class, and additionally
+   * invoked via a queued connection after the configuration is set if the UI
+   * was already marked visible (e.g., during project deserialization), so
+   * that callers finish setting up before native windows are created.
+   */
+  virtual void on_ui_visibility_changed () { }
+
+public:
   /**
    * @brief Whether the plugin provides its own native editor UI.
    *
@@ -248,9 +260,12 @@ public:
   std::string save_state () const;
 
   /**
-   * @brief Queues a previously saved state to be applied to the plugin.
+   * @brief Loads a previously saved state into the plugin.
    *
-   * The state will be applied during the next processing cycle.
+   * If the plugin is instantiated, the state is applied immediately on the
+   * main thread and Zrythm's parameter values are synced to the loaded
+   * state. Otherwise, the state is stashed and applied during
+   * instantiation.
    */
   void load_state (const std::string &base64_state);
 
@@ -444,15 +459,17 @@ private:
 class CarlaNativePlugin;
 class JucePlugin;
 class ClapPlugin;
+class Vst3Plugin;
 class FaustPlugin;
 
-using PluginVariant = std::variant<JucePlugin, ClapPlugin, FaustPlugin>;
+using PluginVariant =
+  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin>;
 using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
 using PluginUuidReference = utils::TypedUuidReference<Plugin>;
 
 using PluginHostWindowFactory =
-  std::function<std::unique_ptr<plugins::IPluginHostWindow> (Plugin &)>;
+  std::function<std::unique_ptr<plugins::PluginHostWindow> (Plugin &)>;
 
 } // namespace zrythm::plugins
 

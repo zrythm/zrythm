@@ -25,24 +25,17 @@ JucePlugin::JucePlugin (
   CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
   std::function<units::sample_rate_t ()> sample_rate_provider,
   std::function<units::sample_u32_t ()>  buffer_size_provider,
-  PluginHostWindowFactory                top_level_window_provider,
   QObject *                              parent)
     : Plugin (registry, parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
       sample_rate_provider_ (std::move (sample_rate_provider)),
-      buffer_size_provider_ (std::move (buffer_size_provider)),
-      top_level_window_provider_ (std::move (top_level_window_provider))
+      buffer_size_provider_ (std::move (buffer_size_provider))
 {
   // Connect to configuration changes
   connect (
     this, &Plugin::configurationChanged, this,
     &JucePlugin::on_configuration_changed);
-
-  // Connect to UI visibility changes
-  connect (
-    this, &Plugin::uiVisibleChanged, this,
-    &JucePlugin::on_ui_visibility_changed);
 
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
@@ -54,10 +47,6 @@ JucePlugin::JucePlugin (
 
 JucePlugin::~JucePlugin ()
 {
-  if (editor_)
-    {
-      hide_editor ();
-    }
 
   if (juce_plugin_)
     {
@@ -86,20 +75,9 @@ JucePlugin::on_configuration_changed (
 bool
 JucePlugin::hasNativeUi () const
 {
-  return juce_plugin_ != nullptr && juce_plugin_->hasEditor ();
-}
-
-void
-JucePlugin::on_ui_visibility_changed ()
-{
-  if (uiVisible () && !editor_visible_)
-    {
-      show_editor ();
-    }
-  else if (!uiVisible () && editor_visible_)
-    {
-      hide_editor ();
-    }
+  // JUCE-hosted plugins use the generic UI only: hosting JUCE editors
+  // natively is no longer supported
+  return false;
 }
 
 void
@@ -200,13 +178,6 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
 
           z_info ("Successfully loaded JUCE plugin: {}", get_name ());
           Q_EMIT instantiationFinished (true, {});
-          Q_EMIT hasNativeUiChanged ();
-          // If the UI was requested while instantiation was in progress,
-          // show the editor now
-          if (uiVisible ())
-            {
-              on_ui_visibility_changed ();
-            }
         }
       catch (const std::exception &e)
         {
@@ -617,42 +588,6 @@ JucePlugin::JuceParamListener::parameterGestureChanged (
   int  parameterIndex,
   bool gestureIsStarting)
 {
-}
-
-void
-JucePlugin::show_editor ()
-{
-  if (!juce_plugin_ || editor_visible_)
-    return;
-
-  if (!juce_plugin_->hasEditor ())
-    return;
-
-  z_debug ("creating editor for {}", get_name ());
-  editor_ = std::unique_ptr<juce::AudioProcessorEditor> (
-    juce_plugin_->createEditorAndMakeActive ());
-
-  if (editor_)
-    {
-      editor_->setVisible (true);
-
-      top_level_window_ = top_level_window_provider_ (*this);
-      top_level_window_->setJuceComponentContentNonOwned (editor_.get ());
-
-      editor_visible_ = true;
-    }
-}
-
-void
-JucePlugin::hide_editor ()
-{
-  if (!editor_)
-    return;
-
-  editor_->setVisible (false);
-  top_level_window_.reset ();
-  editor_.reset ();
-  editor_visible_ = false;
 }
 
 std::string

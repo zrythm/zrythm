@@ -10,6 +10,7 @@
 
 #include <QSignalSpy>
 
+#include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
 
 #include "unit/actions/mock_undo_stack.h"
@@ -119,18 +120,8 @@ protected:
   // Helper to create a mock window provider
   plugins::PluginHostWindowFactory create_mock_window_provider ()
   {
-    return [] (plugins::Plugin &) {
-      class MockWindow : public plugins::IPluginHostWindow
-      {
-      public:
-        void setJuceComponentContentNonOwned (juce::Component *) override { }
-        void setSizeAndCenter (int, int) override { }
-        void setSize (int, int) override { }
-        void setVisible (bool) override { }
-        WId  getEmbedWindowId () const override { return 0; }
-      };
-      return std::make_unique<MockWindow> ();
-    };
+    return test_helpers::make_mock_plugin_host_window_factory (
+      std::make_shared<test_helpers::MockPluginHostWindowState> ());
   }
 
   // Helper to create a test plugin descriptor

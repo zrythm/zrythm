@@ -46,6 +46,10 @@ foreach (vst3sdk_tgt base pluginterfaces sdk_common sdk sdk_hosting)
 endforeach ()
 target_link_libraries(base PUBLIC Threads::Threads ${CMAKE_DL_LIBS})
 
+# Treat SDK headers as system headers in consumers so our strict warning flags
+# don't fire on them (the SDK headers trip -Wundef, -Wnon-virtual-dtor, etc.)
+target_include_directories(sdk_hosting SYSTEM INTERFACE ${vst3sdk_SOURCE_DIR})
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   # threadchecker_{linux,mac}.{cpp,mm} use std::terminate() without including
   # <exception> (fails with libc++; not fixed upstream as of v3.8.0_build_66)

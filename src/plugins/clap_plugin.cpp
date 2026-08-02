@@ -45,9 +45,11 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
 #include "plugins/plugin_library.h"
+#include "plugins/plugin_run_loop.h"
 #include "utils/concurrency.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
+#include "utils/main_thread_dispatcher.h"
 #include "utils/qt.h"
 #include "utils/raii_utils.h"
 #include "utils/registry_utils.h"
@@ -78,13 +80,45 @@ using ClapPluginProxy = clap::helpers::PluginProxy<
   clap::helpers::MisbehaviourHandler::Terminate,
   clap::helpers::CheckingLevel::Maximal>;
 
+namespace
+{
+/**
+ * @brief Request from a plugin-initiated host callback (the CLAP host
+ * callbacks are [thread-safe], so plugins may call them from any thread,
+ * including the audio thread) to be handled on the main thread.
+ */
+struct ClapMainThreadRequest
+{
+  enum class Kind : uint8_t
+  {
+    Resize,
+    Show,
+    Hide,
+    Closed,
+    Restart,
+    MainThreadCallback,
+  };
+
+  Kind     kind;
+  bool     was_destroyed = false; // Closed
+  uint32_t width = 0;             // Resize
+  uint32_t height = 0;            // Resize
+};
+} // namespace
+
 class ClapPlugin::ClapPluginImpl
 {
   friend class ClapPlugin;
 
 public:
   ClapPluginImpl (ClapPlugin &owner, PluginHostWindowFactory host_window_factory)
-      : owner_ (owner), host_window_factory_ (std::move (host_window_factory))
+      : owner_ (owner), host_window_factory_ (std::move (host_window_factory)),
+        main_dispatcher_ (
+          owner_,
+          std::chrono::milliseconds{ 20 },
+          [this] (const ClapMainThreadRequest &request) {
+            handle_main_thread_request (request);
+          })
   {
   }
 
@@ -176,7 +210,16 @@ public:
 
   void setPluginWindowVisibility (bool isVisible);
 
-  void eventLoopSetFdNotifierFlags (int fd, int flags);
+  /**
+   * @brief Handles a plugin-initiated GUI request. Main thread.
+   */
+  void handle_main_thread_request (const ClapMainThreadRequest &request);
+
+  /**
+   * @brief Destroys the plugin GUI (if created) and the host window. Main
+   * thread.
+   */
+  void destroy_gui ();
 
 private:
   ClapPlugin &owner_;
@@ -187,17 +230,11 @@ private:
   const clap_plugin_factory *      pluginFactory_ = nullptr;
   std::unique_ptr<ClapPluginProxy> plugin_;
 
-  /* timers */
-  clap_id                                              nextTimerId_ = 0;
-  std::unordered_map<clap_id, std::unique_ptr<QTimer>> timers_;
-
-  /* fd events */
-  struct Notifiers
-  {
-    std::unique_ptr<QSocketNotifier> rd;
-    std::unique_ptr<QSocketNotifier> wr;
-  };
-  std::unordered_map<int, std::unique_ptr<Notifiers>> fds_;
+  /* timers & fd events (CLAP timer/posix-fd extensions) */
+  clap_id                                           nextTimerId_ = 0;
+  PluginRunLoop                                     run_loop_;
+  std::unordered_map<int, PluginRunLoop::Token>     fd_tokens_;
+  std::unordered_map<clap_id, PluginRunLoop::Token> timer_tokens_;
 
   /* thread pool */
   std::vector<std::unique_ptr<QThread>> threadPool_;
@@ -220,7 +257,11 @@ private:
 
   clap::helpers::EventList evIn_;
   clap::helpers::EventList evOut_;
-  clap_process             process_{};
+
+  /** Always-empty input event list for scheduled audio-thread flushes. */
+  clap::helpers::EventList evFlushIn_;
+
+  clap_process process_{};
 
   /**
    * @brief Supported note dialects of each input note port (bitmask of
@@ -236,9 +277,6 @@ private:
   PluginState state_{ Inactive };
   bool        stateIsDirty_ = false;
 
-  // TODO: scheduleRestart_ is stored but never checked — wire into
-  // process_impl() to handle the CLAP host requestRestart() callback.
-  std::atomic_bool scheduleRestart_{ false };
   std::atomic_bool scheduleDeactivate_{ false };
 
   std::atomic_bool scheduleProcess_{ true };
@@ -250,16 +288,23 @@ private:
   bool         isGuiVisible_ = false;
   bool         isGuiFloating_ = false;
 
-  // TODO: scheduleMainThreadCallback_ is stored but never checked — wire
-  // into the main thread event loop to handle the CLAP requestCallback().
-  std::atomic_bool scheduleMainThreadCallback_{ false };
-
   // work-around the fact that stopProcessing() requires being called by an
   // audio thread for whatever reason
   std::atomic_bool force_audio_thread_check_{ false };
 
-  PluginHostWindowFactory            host_window_factory_;
-  std::unique_ptr<IPluginHostWindow> editor_;
+  PluginHostWindowFactory           host_window_factory_;
+  std::unique_ptr<PluginHostWindow> editor_;
+
+  /**
+   * @brief Dispatcher marshaling plugin-initiated requests (posted from any
+   * thread) to the main thread.
+   */
+  utils::MainThreadDispatcher<ClapMainThreadRequest> main_dispatcher_;
+
+  /** Last processing configuration, needed to re-activate the plugin when
+   * it requests a restart. */
+  units::sample_rate_t last_sample_rate_{ units::sample_rate (0) };
+  units::sample_u32_t  last_max_block_length_{ units::samples (0u) };
 
   units::sample_u32_t latency_;
 };
@@ -283,11 +328,6 @@ ClapPlugin::ClapPlugin (
   connect (
     this, &Plugin::configurationChanged, this,
     &ClapPlugin::on_configuration_changed);
-
-  // Connect to UI visibility changes
-  connect (
-    this, &Plugin::uiVisibleChanged, this,
-    &ClapPlugin::on_ui_visibility_changed);
 
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
@@ -342,19 +382,28 @@ ClapPlugin::on_ui_visibility_changed ()
 }
 
 static clap_window
-makeClapWindow (WId window)
+makeClapWindow (plugins::WindowSystem window_system, WId window)
 {
   clap_window w{};
-#ifdef Q_OS_LINUX
-  w.api = CLAP_WINDOW_API_X11;
-  w.x11 = window;
-#elifdef Q_OS_MACOS
-  w.api = CLAP_WINDOW_API_COCOA;
-  w.cocoa = reinterpret_cast<clap_nsview> (window);
-#elifdef Q_OS_WIN
-  w.api = CLAP_WINDOW_API_WIN32;
-  w.win32 = reinterpret_cast<clap_hwnd> (window);
-#endif
+  switch (window_system)
+    {
+    case plugins::WindowSystem::X11:
+      w.api = CLAP_WINDOW_API_X11;
+      w.x11 = window;
+      break;
+    case plugins::WindowSystem::Wayland:
+      w.api = CLAP_WINDOW_API_WAYLAND;
+      w.ptr = reinterpret_cast<void *> (window);
+      break;
+    case plugins::WindowSystem::Cocoa:
+      w.api = CLAP_WINDOW_API_COCOA;
+      w.cocoa = reinterpret_cast<clap_nsview> (window);
+      break;
+    case plugins::WindowSystem::Win32:
+      w.api = CLAP_WINDOW_API_WIN32;
+      w.win32 = reinterpret_cast<clap_hwnd> (window);
+      break;
+    }
 
   return w;
 }
@@ -367,25 +416,24 @@ ClapPlugin::show_editor ()
   if (!pimpl_->plugin_->canUseGui ())
     return;
 
+  // The GUI is kept alive while hidden - just re-show it
   if (pimpl_->isGuiCreated_)
     {
-      pimpl_->plugin_->guiDestroy ();
-      pimpl_->isGuiCreated_ = false;
-      pimpl_->isGuiVisible_ = false;
+      pimpl_->setPluginWindowVisibility (true);
+      return;
     }
 
-  const auto getCurrentClapGuiApi = [] () -> const char * {
-#if defined(Q_OS_LINUX)
-    return CLAP_WINDOW_API_X11;
-#elif defined(Q_OS_WIN)
-    return CLAP_WINDOW_API_WIN32;
-#elif defined(Q_OS_MACOS)
-    return CLAP_WINDOW_API_COCOA;
-#else
-#  error "unsupported platform"
-#endif
-  };
-  pimpl_->guiApi_ = getCurrentClapGuiApi ();
+  pimpl_->editor_ = pimpl_->host_window_factory_ (*this);
+  if (pimpl_->editor_ == nullptr)
+    {
+      z_warning ("CLAP: no host window available for plugin editor");
+      setUiVisible (false);
+      return;
+    }
+
+  const auto embed_id = pimpl_->editor_->getEmbedWindowId ();
+  auto       w = makeClapWindow (pimpl_->editor_->windowSystem (), embed_id);
+  pimpl_->guiApi_ = w.api;
 
   pimpl_->isGuiFloating_ = false;
   if (!pimpl_->plugin_->guiIsApiSupported (pimpl_->guiApi_, false))
@@ -393,18 +441,18 @@ ClapPlugin::show_editor ()
       if (!pimpl_->plugin_->guiIsApiSupported (pimpl_->guiApi_, true))
         {
           z_warning ("could not find a suitable gui api");
+          pimpl_->destroy_gui ();
+          setUiVisible (false);
           return;
         }
       pimpl_->isGuiFloating_ = true;
     }
 
-  pimpl_->editor_ = pimpl_->host_window_factory_ (*this);
-
-  const auto embed_id = pimpl_->editor_->getEmbedWindowId ();
-  auto       w = makeClapWindow (embed_id);
   if (!pimpl_->plugin_->guiCreate (w.api, pimpl_->isGuiFloating_))
     {
       z_warning ("could not create the plugin gui");
+      pimpl_->destroy_gui ();
+      setUiVisible (false);
       return;
     }
 
@@ -414,7 +462,7 @@ ClapPlugin::show_editor ()
   if (pimpl_->isGuiFloating_)
     {
       pimpl_->plugin_->guiSetTransient (&w);
-      pimpl_->plugin_->guiSuggestTitle ("using clap-host suggested title");
+      pimpl_->plugin_->guiSuggestTitle (get_name ().c_str ());
     }
   else
     {
@@ -424,22 +472,19 @@ ClapPlugin::show_editor ()
       if (!pimpl_->plugin_->guiGetSize (&width, &height))
         {
           z_warning ("could not get the size of the plugin gui");
-          pimpl_->isGuiCreated_ = false;
-          pimpl_->plugin_->guiDestroy ();
-          pimpl_->editor_->setVisible (false);
+          pimpl_->destroy_gui ();
           setUiVisible (false);
           return;
         }
 
       pimpl_->editor_->setSizeAndCenter (
         static_cast<int> (width), static_cast<int> (height));
+      pimpl_->editor_->setResizable (pimpl_->plugin_->guiCanResize ());
 
       if (!pimpl_->plugin_->guiSetParent (&w))
         {
           z_warning ("could not embbed the plugin gui");
-          pimpl_->isGuiCreated_ = false;
-          pimpl_->plugin_->guiDestroy ();
-          pimpl_->editor_->setVisible (false);
+          pimpl_->destroy_gui ();
           setUiVisible (false);
           return;
         }
@@ -462,15 +507,20 @@ ClapPlugin::ClapPluginImpl::setPluginWindowVisibility (bool isVisible)
   if (!isGuiCreated_)
     return;
 
+  // For floating GUIs the plugin manages its own window: the (hidden) host
+  // window only serves as the transient parent
   if (isVisible && !isGuiVisible_)
     {
+      if (!isGuiFloating_)
+        editor_->setVisible (true);
       plugin_->guiShow ();
       isGuiVisible_ = true;
     }
   else if (!isVisible && isGuiVisible_)
     {
       plugin_->guiHide ();
-      editor_->setVisible (false);
+      if (!isGuiFloating_)
+        editor_->setVisible (false);
       isGuiVisible_ = false;
     }
 }
@@ -481,34 +531,95 @@ ClapPlugin::guiResizeHintsChanged () noexcept
   // TODO
 }
 
+void
+ClapPlugin::ClapPluginImpl::handle_main_thread_request (
+  const ClapMainThreadRequest &request)
+{
+  assert (is_main_thread);
+
+  switch (request.kind)
+    {
+    case ClapMainThreadRequest::Kind::Resize:
+      if (editor_ != nullptr)
+        {
+          editor_->setSize (
+            static_cast<int> (request.width), static_cast<int> (request.height));
+        }
+      break;
+    case ClapMainThreadRequest::Kind::Show:
+      owner_.setUiVisible (true);
+      break;
+    case ClapMainThreadRequest::Kind::Hide:
+      owner_.setUiVisible (false);
+      break;
+    case ClapMainThreadRequest::Kind::Closed:
+      // The spec requires the host to call guiDestroy() to acknowledge
+      // plugin-side GUI destruction; destroying unconditionally covers the
+      // floating-window-closed and connection-lost cases too
+      z_debug (
+        "CLAP: plugin GUI closed by the plugin (was_destroyed={})",
+        request.was_destroyed);
+      destroy_gui ();
+      owner_.setUiVisible (false);
+      break;
+    case ClapMainThreadRequest::Kind::Restart:
+      if (isPluginActive ())
+        {
+          z_debug ("CLAP: restarting plugin at the plugin's request");
+          owner_.prepare_plugin_for_processing (
+            last_sample_rate_, last_max_block_length_);
+        }
+      break;
+    case ClapMainThreadRequest::Kind::MainThreadCallback:
+      if (plugin_ != nullptr)
+        plugin_->onMainThread ();
+      break;
+    }
+}
+
+void
+ClapPlugin::ClapPluginImpl::destroy_gui ()
+{
+  assert (is_main_thread);
+
+  if (isGuiCreated_)
+    {
+      plugin_->guiDestroy ();
+      isGuiCreated_ = false;
+      isGuiVisible_ = false;
+    }
+  editor_.reset ();
+}
+
 bool
 ClapPlugin::guiRequestResize (uint32_t width, uint32_t height) noexcept
 {
-  pimpl_->editor_->setSize (static_cast<int> (width), static_cast<int> (height));
-
-  return true;
+  return pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::Resize,
+      .width = width,
+      .height = height });
 }
 
 bool
 ClapPlugin::guiRequestShow () noexcept
 {
-  setUiVisible (true);
-
-  return true;
+  return pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::Show });
 }
 
 bool
 ClapPlugin::guiRequestHide () noexcept
 {
-  setUiVisible (false);
-
-  return true;
+  return pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::Hide });
 }
 
 void
 ClapPlugin::guiClosed (bool wasDestroyed) noexcept
 {
-  assert (is_main_thread);
+  pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::Closed,
+      .was_destroyed = wasDestroyed });
 }
 
 bool
@@ -518,12 +629,17 @@ ClapPlugin::posixFdSupportRegisterFd (int fd, clap_posix_fd_flags_t flags) noexc
 
   z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ())
 
-    [[maybe_unused]] auto it = pimpl_->fds_.find (fd);
-  assert (it == pimpl_->fds_.end ());
+    [[maybe_unused]] auto it = pimpl_->fd_tokens_.find (fd);
+  assert (it == pimpl_->fd_tokens_.end ());
 
-  pimpl_->fds_.insert_or_assign (
-    fd, std::make_unique<ClapPluginImpl::Notifiers> ());
-  pimpl_->eventLoopSetFdNotifierFlags (fd, static_cast<int> (flags));
+  const auto token = pimpl_->run_loop_.register_fd (
+    fd, (flags & CLAP_POSIX_FD_READ) != 0, (flags & CLAP_POSIX_FD_WRITE) != 0,
+    [this, fd] (bool read_ready) {
+      assert (is_main_thread);
+      pimpl_->plugin_->posixFdSupportOnFd (
+        fd, read_ready ? CLAP_POSIX_FD_READ : CLAP_POSIX_FD_WRITE);
+    });
+  pimpl_->fd_tokens_.insert_or_assign (fd, token);
   return true;
 }
 
@@ -534,12 +650,12 @@ ClapPlugin::posixFdSupportModifyFd (int fd, clap_posix_fd_flags_t flags) noexcep
 
   z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ());
 
-  [[maybe_unused]] auto it = pimpl_->fds_.find (fd);
-  assert (it != pimpl_->fds_.end ());
+  const auto it = pimpl_->fd_tokens_.find (fd);
+  assert (it != pimpl_->fd_tokens_.end ());
 
-  pimpl_->fds_.insert_or_assign (
-    fd, std::make_unique<ClapPluginImpl::Notifiers> ());
-  pimpl_->eventLoopSetFdNotifierFlags (fd, static_cast<int> (flags));
+  pimpl_->run_loop_.update_fd (
+    it->second, (flags & CLAP_POSIX_FD_READ) != 0,
+    (flags & CLAP_POSIX_FD_WRITE) != 0);
   return true;
 }
 
@@ -550,56 +666,12 @@ ClapPlugin::posixFdSupportUnregisterFd (int fd) noexcept
 
   z_warn_if_fail (pimpl_->plugin_->canUsePosixFdSupport ());
 
-  auto it = pimpl_->fds_.find (fd);
-  assert (it != pimpl_->fds_.end ());
+  const auto it = pimpl_->fd_tokens_.find (fd);
+  assert (it != pimpl_->fd_tokens_.end ());
 
-  pimpl_->fds_.erase (it);
+  pimpl_->run_loop_.unregister_fd (it->second);
+  pimpl_->fd_tokens_.erase (it);
   return true;
-}
-
-void
-ClapPlugin::ClapPluginImpl::eventLoopSetFdNotifierFlags (int fd, int flags)
-{
-  assert (is_main_thread);
-
-  auto it = fds_.find (fd);
-  Q_ASSERT (it != fds_.end ());
-
-  if ((flags & CLAP_POSIX_FD_READ) != 0)
-    {
-      if (!it->second->rd)
-        {
-          it->second->rd = std::make_unique<QSocketNotifier> (
-            (qintptr) fd, QSocketNotifier::Read);
-          QObject::connect (
-            it->second->rd.get (), &QSocketNotifier::activated, &owner_,
-            [this, fd] {
-              assert (is_main_thread);
-              plugin_->posixFdSupportOnFd (fd, CLAP_POSIX_FD_READ);
-            });
-        }
-      it->second->rd->setEnabled (true);
-    }
-  else if (it->second->rd)
-    it->second->rd->setEnabled (false);
-
-  if ((flags & CLAP_POSIX_FD_WRITE) != 0)
-    {
-      if (!it->second->wr)
-        {
-          it->second->wr = std::make_unique<QSocketNotifier> (
-            (qintptr) fd, QSocketNotifier::Write);
-          QObject::connect (
-            it->second->wr.get (), &QSocketNotifier::activated, &owner_,
-            [this, fd] {
-              assert (is_main_thread);
-              plugin_->posixFdSupportOnFd (fd, CLAP_POSIX_FD_WRITE);
-            });
-        }
-      it->second->wr->setEnabled (true);
-    }
-  else if (it->second->wr)
-    it->second->wr->setEnabled (false);
 }
 
 bool
@@ -639,16 +711,13 @@ ClapPlugin::timerSupportRegisterTimer (
 
   auto id = pimpl_->nextTimerId_++;
   *timerId = id;
-  auto timer = std::make_unique<QTimer> ();
 
-  QObject::connect (timer.get (), &QTimer::timeout, this, [this, id] {
-    assert (is_main_thread);
-    pimpl_->plugin_->timerSupportOnTimer (id);
-  });
-
-  auto t = timer.get ();
-  pimpl_->timers_.insert_or_assign (*timerId, std::move (timer));
-  t->start (static_cast<int> (periodMs));
+  const auto token = pimpl_->run_loop_.register_timer (
+    std::chrono::milliseconds{ periodMs }, [this, id] {
+      assert (is_main_thread);
+      pimpl_->plugin_->timerSupportOnTimer (id);
+    });
+  pimpl_->timer_tokens_.insert_or_assign (id, token);
   return true;
 }
 
@@ -659,10 +728,11 @@ ClapPlugin::timerSupportUnregisterTimer (clap_id timerId) noexcept
 
   z_warn_if_fail (pimpl_->plugin_->canUseTimerSupport ());
 
-  auto it = pimpl_->timers_.find (timerId);
-  assert (it != pimpl_->timers_.end ());
+  const auto it = pimpl_->timer_tokens_.find (timerId);
+  assert (it != pimpl_->timer_tokens_.end ());
 
-  pimpl_->timers_.erase (it);
+  pimpl_->run_loop_.unregister_timer (it->second);
+  pimpl_->timer_tokens_.erase (it);
   return true;
 }
 
@@ -726,6 +796,9 @@ ClapPlugin::prepare_plugin_for_processing (
     {
       release_resources_impl ();
     }
+
+  pimpl_->last_sample_rate_ = sample_rate;
+  pimpl_->last_max_block_length_ = max_block_length;
 
   pimpl_->setup_audio_ports_for_processing (max_block_length);
 
@@ -828,6 +901,23 @@ ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
 
   pimpl_->generateChangedParamInputEvents ();
   pimpl_->generateMidiInputEvents ();
+
+  // Honor scheduled flushes (plugin-requested via request_flush(), or after
+  // a runtime state load): paramsFlush is audio-thread-only while the plugin
+  // is active. Flush with empty input events so the plugin can resolve and
+  // output parameter values without re-receiving this cycle's input events.
+  if (pimpl_->scheduleParamFlush_.exchange (false, std::memory_order_acq_rel))
+    {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+      // Not our code, we don't care about RTSan violations here.
+      __rtsan::ScopedDisabler d;
+#endif
+      pimpl_->plugin_->paramsFlush (
+        pimpl_->evFlushIn_.clapInputEvents (),
+        pimpl_->evOut_.clapOutputEvents ());
+      pimpl_->handlePluginOutputEvents ();
+      pimpl_->evOut_.clear ();
+    }
 
   if (pimpl_->isPluginSleeping ())
     {
@@ -1022,53 +1112,9 @@ ClapPlugin::load_plugin (
       apply_state_from_byte_array (*state_to_apply_);
       state_to_apply_.reset ();
 
-      // Per the CLAP spec, plugins may defer parameter updates until the
-      // next paramsFlush() after state load. Flush to ensure parameter
-      // values are current before reading them back.
-      if (pimpl_->plugin_->canUseParams ())
-        {
-          pimpl_->evIn_.clear ();
-          pimpl_->evOut_.clear ();
-          pimpl_->plugin_->paramsFlush (
-            pimpl_->evIn_.clapInputEvents (),
-            pimpl_->evOut_.clapOutputEvents ());
-          // Discard output events — the flush is only to trigger internal
-          // plugin state resolution, not to process output parameter values.
-          pimpl_->evOut_.clear ();
-        }
-
-      // Per the CLAP spec, the plugin is responsible for persisting its
-      // parameter values via its state. Read back the parameter values (which
-      // reflect the loaded state) and update Zrythm's baseValues to match.
-      if (pimpl_->plugin_->canUseParams ())
-        {
-          int updated = 0;
-          for (auto &[clap_id_val, adapter] : pimpl_->clap_params_)
-            {
-              double value = 0;
-              if (!pimpl_->plugin_->paramsGetValue (clap_id_val, &value))
-                continue;
-
-              auto * zrythm_param = adapter.zrythm_param;
-              if (zrythm_param == nullptr)
-                continue;
-
-              const auto old_base = zrythm_param->baseValue ();
-              const auto range = zrythm_param->range ();
-              const auto normalized =
-                range.convertTo0To1 (static_cast<float> (value));
-              if (!utils::math::floats_near (old_base, normalized, 0.001f))
-                {
-                  zrythm_param->setBaseValue (normalized);
-                  ++updated;
-                  z_trace (
-                    "CLAP: get_value updated '{}' "
-                    "old={:.4f} new={:.4f}",
-                    zrythm_param->label (), old_base, normalized);
-                }
-            }
-          z_debug ("CLAP: get_value updated {} params", updated);
-        }
+      // The plugin is inactive at this point, so flushing and syncing on the
+      // main thread is allowed
+      flush_and_sync_params_when_inactive ();
     }
   else
     {
@@ -1078,11 +1124,6 @@ ClapPlugin::load_plugin (
   Q_EMIT pluginLoadedChanged (true);
 
   Q_EMIT hasNativeUiChanged ();
-  // If the UI was requested while the plugin was loading, show the editor now
-  if (uiVisible ())
-    {
-      on_ui_visibility_changed ();
-    }
 
   return true;
 }
@@ -1101,12 +1142,7 @@ ClapPlugin::unload_current_plugin ()
   if (!pimpl_->library_.is_loaded ())
     return;
 
-  if (pimpl_->isGuiCreated_)
-    {
-      pimpl_->plugin_->guiDestroy ();
-      pimpl_->isGuiCreated_ = false;
-      pimpl_->isGuiVisible_ = false;
-    }
+  pimpl_->destroy_gui ();
 
   release_resources_impl ();
 
@@ -1262,9 +1298,8 @@ ClapPlugin::ClapPluginImpl::generateMidiInputEvents () noexcept
 
   if (send_midi_dialect)
     {
-      // TODO: CC, pitch-bend, aftertouch and other non-note MIDI messages are
-      // silently dropped here — convert them to CLAP_EVENT_NOTE_EXPRESSION /
-      // CLAP_EVENT_PARAM_VALUE for full MPE / polyphonic modulation support.
+      // Raw MIDI passthrough covers CC, pitch bend, aftertouch and SysEx
+      // losslessly.
       // TODO: assign unique note_ids so CLAP synths that support per-note
       // expression can track individual notes.
       for (const auto &ev : owner_.midi_in_port_->buffer_)
@@ -1306,6 +1341,33 @@ ClapPlugin::ClapPluginImpl::generateMidiInputEvents () noexcept
         continue;
 
       const auto status = ev_data[0] & 0xF0;
+
+      // Polyphonic and channel aftertouch -> note expressions (channel
+      // pressure uses key=-1 for channel-wide). CC and pitch bend have no
+      // CLAP-dialect representation (the midi-mappings extension is not
+      // widespread), so they remain dropped in this path.
+      if (status == 0xA0 || status == 0xD0)
+        {
+          clap_event_note_expression clap_ev{};
+          clap_ev.header.size = sizeof (clap_ev);
+          clap_ev.header.time = ev.time ().in<uint32_t> (units::samples);
+          clap_ev.header.type = CLAP_EVENT_NOTE_EXPRESSION;
+          clap_ev.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+          clap_ev.header.flags = 0;
+          clap_ev.expression_id = CLAP_NOTE_EXPRESSION_PRESSURE;
+          clap_ev.note_id = -1;
+          clap_ev.port_index = 0;
+          clap_ev.channel = static_cast<int16_t> (ev_data[0] & 0x0F);
+          clap_ev.key =
+            status == 0xA0
+              ? static_cast<int16_t> (ev_data[1])
+              : static_cast<int16_t> (-1);
+          clap_ev.value =
+            status == 0xA0 ? ev_data[2] / 127.0 : ev_data[1] / 127.0;
+          evIn_.push (&clap_ev.header);
+          continue;
+        }
+
       const bool is_note_on = status == 0x90 && ev_data[2] != 0;
       const bool is_note_off =
         status == 0x80 || (status == 0x90 && ev_data[2] == 0);
@@ -1369,7 +1431,8 @@ ClapPlugin::ClapPluginImpl::handlePluginOutputEvents () noexcept
 void
 ClapPlugin::requestRestart () noexcept
 {
-  pimpl_->scheduleRestart_.store (true, std::memory_order_release);
+  pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::Restart });
 }
 
 void
@@ -1381,7 +1444,8 @@ ClapPlugin::requestProcess () noexcept
 void
 ClapPlugin::requestCallback () noexcept
 {
-  pimpl_->scheduleMainThreadCallback_.store (true, std::memory_order_release);
+  pimpl_->main_dispatcher_.post (
+    { .kind = ClapMainThreadRequest::Kind::MainThreadCallback });
 }
 
 void
@@ -1894,8 +1958,31 @@ ClapPlugin::save_state_impl () const
 void
 ClapPlugin::load_state_impl (const std::string &base64_state)
 {
-  state_to_apply_ =
-    QByteArray::fromBase64 (QByteArray::fromStdString (base64_state));
+  auto data = QByteArray::fromBase64 (QByteArray::fromStdString (base64_state));
+
+  if (!pimpl_ || !pimpl_->plugin_ || !pimpl_->plugin_->canUseState ())
+    {
+      // Not instantiated yet - apply during instantiation
+      state_to_apply_ = std::move (data);
+      return;
+    }
+
+  apply_state_from_byte_array (data);
+
+  if (pimpl_->isPluginActive ())
+    {
+      // paramsFlush is audio-thread-only while the plugin is active.
+      // Schedule it so the plugin can resolve deferred parameter updates;
+      // the resolved values flow back via the flush's output events.
+      pimpl_->scheduleParamFlush_.store (true, std::memory_order_release);
+
+      // Read back values now for plugins that apply state synchronously
+      sync_param_values_from_plugin ();
+    }
+  else
+    {
+      flush_and_sync_params_when_inactive ();
+    }
 }
 
 void
@@ -1917,7 +2004,71 @@ ClapPlugin::apply_state_from_byte_array (const QByteArray &data)
     d->remove (0, static_cast<qsizetype> (size));
     return static_cast<int64_t> (size);
   };
-  pimpl_->plugin_->stateLoad (&istream);
+  if (!pimpl_->plugin_->stateLoad (&istream))
+    {
+      z_warning ("CLAP: failed to restore plugin state");
+    }
+}
+
+void
+ClapPlugin::flush_and_sync_params_when_inactive ()
+{
+  assert (is_main_thread);
+  assert (!pimpl_->isPluginActive ());
+
+  if (!pimpl_->plugin_->canUseParams ())
+    return;
+
+  // Per the CLAP spec, plugins may defer parameter updates until the
+  // next paramsFlush() after state load. Flush to ensure parameter
+  // values are current before reading them back.
+  pimpl_->evIn_.clear ();
+  pimpl_->evOut_.clear ();
+  pimpl_->plugin_->paramsFlush (
+    pimpl_->evIn_.clapInputEvents (), pimpl_->evOut_.clapOutputEvents ());
+  // Discard output events — the flush is only to trigger internal
+  // plugin state resolution, not to process output parameter values.
+  pimpl_->evOut_.clear ();
+
+  sync_param_values_from_plugin ();
+}
+
+void
+ClapPlugin::sync_param_values_from_plugin ()
+{
+  assert (is_main_thread);
+
+  if (!pimpl_->plugin_->canUseParams ())
+    return;
+
+  // Per the CLAP spec, the plugin is responsible for persisting its
+  // parameter values via its state. Read back the parameter values (which
+  // reflect the loaded state) and update Zrythm's baseValues to match.
+  int updated = 0;
+  for (auto &[clap_id_val, adapter] : pimpl_->clap_params_)
+    {
+      double value = 0;
+      if (!pimpl_->plugin_->paramsGetValue (clap_id_val, &value))
+        continue;
+
+      auto * zrythm_param = adapter.zrythm_param;
+      if (zrythm_param == nullptr)
+        continue;
+
+      const auto old_base = zrythm_param->baseValue ();
+      const auto range = zrythm_param->range ();
+      const auto normalized = range.convertTo0To1 (static_cast<float> (value));
+      if (!utils::math::floats_near (old_base, normalized, 0.001f))
+        {
+          zrythm_param->setBaseValue (normalized);
+          ++updated;
+          z_trace (
+            "CLAP: get_value updated '{}' "
+            "old={:.4f} new={:.4f}",
+            zrythm_param->label (), old_base, normalized);
+        }
+    }
+  z_debug ("CLAP: get_value updated {} params", updated);
 }
 
 void

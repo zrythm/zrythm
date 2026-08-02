@@ -54,34 +54,6 @@ public:
   MOCK_METHOD (void, changeProgramName, (int, const juce::String &), (override));
 };
 
-class MockAudioProcessorEditor : public juce::AudioProcessorEditor
-{
-public:
-  MockAudioProcessorEditor (juce::AudioProcessor &p)
-      : juce::AudioProcessorEditor (p)
-  {
-  }
-  ~MockAudioProcessorEditor () override
-  {
-    getAudioProcessor ()->editorBeingDeleted (this);
-  }
-  MOCK_METHOD (void, setVisible, (bool), (override));
-};
-
-class MockTopLevelWindow : public plugins::IPluginHostWindow
-{
-public:
-  MOCK_METHOD (
-    void,
-    setJuceComponentContentNonOwned,
-    (juce::Component *),
-    (override));
-  MOCK_METHOD (void, setSizeAndCenter, (int, int), (override));
-  MOCK_METHOD (void, setSize, (int, int), (override));
-  MOCK_METHOD (void, setVisible, (bool), (override));
-  MOCK_METHOD (WId, getEmbedWindowId, (), (const override));
-};
-
 class JucePluginTest
     : public ::testing::Test,
       public test_helpers::ScopedJuceQApplication
@@ -105,16 +77,6 @@ protected:
       {
         plugin_->release_resources ();
       }
-  }
-
-  plugins::PluginHostWindowFactory createMockTopLevelWindowProvider ()
-  {
-    return [] (Plugin &) {
-      auto mock_window = std::make_unique<MockTopLevelWindow> ();
-      EXPECT_CALL (*mock_window, setVisible (::testing::_))
-        .Times (::testing::AnyNumber ());
-      return mock_window;
-    };
   }
 
   void createTestDescriptor ()
@@ -195,7 +157,7 @@ private:
   {
     plugin_ = std::make_unique<JucePlugin> (
       *registry_, func, [this] () { return sample_rate_; },
-      [this] () { return buffer_size_; }, createMockTopLevelWindowProvider ());
+      [this] () { return buffer_size_; });
   }
 };
 
@@ -406,8 +368,7 @@ TEST_F (JucePluginTest, StateSavingLoading)
       std::function<void (
         std::unique_ptr<juce::AudioPluginInstance>, const juce::String &)>
         callback) { callback (std::move (mock), ""); },
-    [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
-    createMockTopLevelWindowProvider ());
+    [this] () { return sample_rate_; }, [this] () { return buffer_size_; });
 
   // Deserialize - this should decode the base64 state and call
   // setStateInformation
@@ -426,7 +387,7 @@ TEST_F (JucePluginTest, HasNativeUiFalseBeforeInstantiation)
   plugin_->set_configuration (*config_);
 }
 
-TEST_F (JucePluginTest, HasNativeUiReflectsEditorAvailability)
+TEST_F (JucePluginTest, HasNativeUiFalseEvenWithEditor)
 {
   createTestConfiguration ();
   setupMockPlugin ();
@@ -435,73 +396,8 @@ TEST_F (JucePluginTest, HasNativeUiReflectsEditorAvailability)
   setupJucePlugin (true);
   plugin_->set_configuration (*config_);
 
-  EXPECT_TRUE (plugin_->hasNativeUi ());
-}
-
-TEST_F (JucePluginTest, ShowEditorDoesNothingForEditorlessPlugin)
-{
-  createTestConfiguration ();
-  setupMockPlugin ();
-  EXPECT_CALL (*mock_plugin_, hasEditor ())
-    .WillRepeatedly (::testing::Return (false));
-  EXPECT_CALL (*mock_plugin_, createEditor ()).Times (0);
-
-  // Count top-level window provider invocations (must stay 0)
-  int window_provider_calls = 0;
-  plugin_ = std::make_unique<JucePlugin> (
-    *registry_,
-    [this] (
-      const juce::PluginDescription &, double, int,
-      std::function<void (
-        std::unique_ptr<juce::AudioPluginInstance>, const juce::String &)>
-        callback) { callback (std::move (mock_plugin_), ""); },
-    [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
-    [&window_provider_calls] (Plugin &) {
-      ++window_provider_calls;
-      return std::make_unique<MockTopLevelWindow> ();
-    });
-
-  plugin_->set_configuration (*config_);
-  plugin_->setUiVisible (true);
-
-  EXPECT_EQ (window_provider_calls, 0);
-}
-
-TEST_F (JucePluginTest, EditorManagement)
-{
-  createTestConfiguration ();
-
-  setupMockPlugin ();
-
-  // Setup editor expectations
-  auto * editor = new MockAudioProcessorEditor (*mock_plugin_);
-  editor->setSize (64, 64);
-  EXPECT_CALL (*mock_plugin_, hasEditor ())
-    .WillRepeatedly (::testing::Return (true));
-  EXPECT_CALL (*mock_plugin_, createEditor ())
-    .WillOnce (::testing::Return (editor));
-  {
-    ::testing::InSequence seq;
-    EXPECT_CALL (*editor, setVisible (true));
-    EXPECT_CALL (*editor, setVisible (false));
-  }
-
-  // Setup async callback expectation
-  setupJucePlugin (true);
-
-  // Wait for instantiation to complete
-  bool instantiation_finished = false;
-  QObject::connect (
-    plugin_.get (), &JucePlugin::instantiationFinished, plugin_.get (),
-    [&instantiation_finished] () { instantiation_finished = true; });
-
-  plugin_->set_configuration (*config_);
-
-  process_events_until_true ([&] () { return instantiation_finished; });
-
-  // Test editor management
-  plugin_->setUiVisible (true);
-  plugin_->setUiVisible (false);
+  // JUCE-hosted plugins use the generic UI only
+  EXPECT_FALSE (plugin_->hasNativeUi ());
 }
 
 TEST_F (JucePluginTest, MidiProcessing)
@@ -765,13 +661,6 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   createTestConfiguration ();
   setupMockPlugin ();
 
-  auto * editor = new MockAudioProcessorEditor (*mock_plugin_);
-  editor->setSize (64, 64);
-  EXPECT_CALL (*mock_plugin_, hasEditor ())
-    .WillRepeatedly (::testing::Return (true));
-  EXPECT_CALL (*mock_plugin_, createEditor ())
-    .WillOnce (::testing::Return (editor));
-
   // Setup async callback expectation
   setupJucePlugin (true);
 
@@ -812,17 +701,9 @@ TEST_F (JucePluginTest, SerializationPreservesState)
         .WillRepeatedly (::testing::Return ("Test Plugin"));
       EXPECT_CALL (*mock, releaseResources ()).Times (1);
 
-#if 0
-      auto * editor = new MockAudioProcessorEditor (*mock);
-      editor->setSize (64, 64);
-      EXPECT_CALL (*mock, hasEditor ()).WillRepeatedly (::testing::Return (true));
-      EXPECT_CALL (*mock, createEditor ()).WillOnce (::testing::Return (editor));
-#endif
-
       callback (std::move (mock), "");
     },
-    [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
-    createMockTopLevelWindowProvider ());
+    [this] () { return sample_rate_; }, [this] () { return buffer_size_; });
 
   bool deserialized_plugin_instantiation_finished = false;
   QObject::connect (
@@ -974,8 +855,7 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
       std::function<void (
         std::unique_ptr<juce::AudioPluginInstance>, const juce::String &)>
         callback) { callback (std::move (mock), ""); },
-    [this] () { return sample_rate_; }, [this] () { return buffer_size_; },
-    createMockTopLevelWindowProvider ());
+    [this] () { return sample_rate_; }, [this] () { return buffer_size_; });
 
   bool deserialized_plugin_instantiation_finished = false;
   QObject::connect (

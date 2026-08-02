@@ -1009,6 +1009,7 @@ find_package(Qt6 6.11
     Widgets
     Quick
     QuickControls2
+    QuickWidgets
     Concurrent
     LinguistTools
     QuickTest

@@ -36,7 +36,6 @@ public:
    * @param create_plugin_instance_async_func Function to create plugin instance
    * @param sample_rate_provider Function to provide current sample rate
    * @param buffer_size_provider Function to provide current buffer size
-   * @param top_level_window_provider Factory for creating plugin host windows
    * @param parent Parent QObject
    */
   JucePlugin (
@@ -44,7 +43,6 @@ public:
     CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
     std::function<units::sample_rate_t ()> sample_rate_provider,
     std::function<units::sample_u32_t ()>  buffer_size_provider,
-    PluginHostWindowFactory                top_level_window_provider,
     QObject *                              parent = nullptr);
 
   ~JucePlugin () override;
@@ -75,11 +73,6 @@ private Q_SLOTS:
     PluginConfiguration * configuration,
     bool                  generateNewPluginPortsAndParams);
 
-  /**
-   * @brief Handle visibility changes.
-   */
-  void on_ui_visibility_changed ();
-
 private:
   /**
    * @brief Initialize the JUCE plugin instance asynchronously.
@@ -107,16 +100,6 @@ private:
    */
   void sync_changed_params_to_juce () noexcept [[clang::nonblocking]];
 
-  /**
-   * @brief Show the plugin's editor window.
-   */
-  void show_editor ();
-
-  /**
-   * @brief Hide the plugin's editor window.
-   */
-  void hide_editor ();
-
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const JucePlugin &p);
   friend void           from_json (const nlohmann::json &j, JucePlugin &p);
@@ -128,9 +111,7 @@ private:
 
   CreatePluginInstanceAsyncFunc create_plugin_instance_async_func_;
 
-  std::unique_ptr<juce::AudioPluginInstance>  juce_plugin_;
-  std::unique_ptr<juce::AudioProcessorEditor> editor_;
-  std::unique_ptr<plugins::IPluginHostWindow> top_level_window_;
+  std::unique_ptr<juce::AudioPluginInstance> juce_plugin_;
 
   std::function<units::sample_rate_t ()> sample_rate_provider_;
   std::function<units::sample_u32_t ()>  buffer_size_provider_;
@@ -182,15 +163,12 @@ private:
   std::vector<float *> output_channels_;
 
   bool juce_initialized_ = false;
-  bool editor_visible_ = false;
   bool plugin_loading_ = false;
 
   // Optional state to apply on instantiation (this is mainly used as a
   // temporary space to store the restored state temporarily until the plugin is
   // instantiated).
   std::optional<juce::MemoryBlock> state_to_apply_;
-
-  PluginHostWindowFactory top_level_window_provider_;
 };
 
 } // namespace zrythm::plugins

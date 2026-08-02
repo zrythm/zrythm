@@ -84,7 +84,7 @@ protected:
       };
 
     plugins::PluginHostWindowFactory window_factory =
-      [] (plugins::Plugin &) -> std::unique_ptr<plugins::IPluginHostWindow> {
+      [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
       return nullptr;
     };
 
@@ -379,7 +379,7 @@ TEST_F (ProjectTest, GetFinalTrackDependenciesThrowsWhenNotInstalled)
   auto project = std::make_unique<Project> (
     *app_settings, [this] (bool) { return project_dir; }, *hw_interface,
     midi_interface_, plugin_format_manager,
-    [] (plugins::Plugin &) -> std::unique_ptr<plugins::IPluginHostWindow> {
+    [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
       return nullptr;
     },
     *metronome, *monitor_fader);

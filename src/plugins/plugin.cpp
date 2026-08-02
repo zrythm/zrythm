@@ -26,6 +26,9 @@ Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
         successful ? InstantiationStatus::Successful : InstantiationStatus::Failed;
       Q_EMIT instantiationStatusChanged (instantiation_status_);
     });
+
+  QObject::connect (
+    this, &Plugin::uiVisibleChanged, this, &Plugin::on_ui_visibility_changed);
 }
 
 dsp::ProcessorParameter *
@@ -91,6 +94,15 @@ Plugin::set_configuration (const PluginConfiguration &setting)
   const bool generate_new =
     get_input_ports ().empty () && get_output_ports ().empty ();
   Q_EMIT configurationChanged (configuration_.get (), generate_new);
+
+  // If the UI was marked visible before loading completed (e.g., during
+  // project deserialization), queue the UI restore so that callers finish
+  // setting up before native windows are created
+  if (uiVisible ())
+    {
+      QMetaObject::invokeMethod (
+        this, [this] () { on_ui_visibility_changed (); }, Qt::QueuedConnection);
+    }
 }
 
 // ============================================================================

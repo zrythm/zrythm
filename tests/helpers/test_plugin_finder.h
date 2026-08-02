@@ -4,6 +4,7 @@
 #pragma once
 
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/vst3_plugin_format.h"
 #include "utils/file_path_list.h"
 #include "utils/qt.h"
 
@@ -53,7 +54,7 @@ find_test_plugin_by_name (
 inline std::unique_ptr<juce::PluginDescription>
 find_test_vst3_plugin_by_name (const juce::String &target_name)
 {
-  return find_test_plugin_by_name<juce::VST3PluginFormat> (
+  return find_test_plugin_by_name<plugins::Vst3PluginFormat> (
     QStringLiteral (TEST_VST3_SEARCH_PATHS), target_name);
 }
 

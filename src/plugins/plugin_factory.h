@@ -88,7 +88,9 @@ private:
     auto build ()
     {
       auto obj_ref = [&] () {
-        if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
+        if constexpr (
+          std::is_same_v<PluginT, plugins::ClapPlugin>
+          || std::is_same_v<PluginT, plugins::Vst3Plugin>)
           {
             return utils::create_object<PluginT> (
               dependencies_.registry, dependencies_.registry,
@@ -106,8 +108,7 @@ private:
               dependencies_.registry, dependencies_.registry,
               dependencies_.create_plugin_instance_async_func_,
               dependencies_.sample_rate_provider_,
-              dependencies_.buffer_size_provider_,
-              dependencies_.top_level_window_provider_);
+              dependencies_.buffer_size_provider_);
           }
       }();
 
@@ -158,7 +159,9 @@ public:
   template <typename PluginT>
   std::unique_ptr<PluginT> build_for_deserialization () const
   {
-    if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
+    if constexpr (
+      std::is_same_v<PluginT, plugins::ClapPlugin>
+      || std::is_same_v<PluginT, plugins::Vst3Plugin>)
       {
         return std::make_unique<PluginT> (
           dependencies_.registry, dependencies_.top_level_window_provider_);
@@ -173,8 +176,7 @@ public:
           dependencies_.registry,
           dependencies_.create_plugin_instance_async_func_,
           dependencies_.sample_rate_provider_,
-          dependencies_.buffer_size_provider_,
-          dependencies_.top_level_window_provider_);
+          dependencies_.buffer_size_provider_);
       }
   }
 
@@ -193,6 +195,13 @@ public:
     if (protocol == plugins::Protocol::ProtocolType::CLAP)
       {
         return get_builder<plugins::ClapPlugin> ()
+          .with_setting (setting)
+          .with_instantiation_finished_options (instantiation_finish_options)
+          .build ();
+      }
+    if (protocol == plugins::Protocol::ProtocolType::VST3)
+      {
+        return get_builder<plugins::Vst3Plugin> ()
           .with_setting (setting)
           .with_instantiation_finished_options (instantiation_finish_options)
           .build ();

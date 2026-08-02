@@ -62,15 +62,34 @@ protected:
     // references these objects, then base destructor frees them).
   }
 
+  /**
+   * @brief Recording callback that does nothing (the default).
+   */
+  static structure::tracks::TrackRecordingCallback
+  make_null_recording_callback ()
+  {
+    return
+      [] (
+        const structure::tracks::Track::Uuid &, units::sample_t,
+        const dsp::ITransport &, const dsp::MidiEventBuffer *,
+        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
+        units::sample_u32_t) { };
+  }
+
+  /**
+   * @brief Window factory that creates no windows (the default).
+   */
+  static plugins::PluginHostWindowFactory make_null_window_factory ()
+  {
+    return [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
+      return nullptr;
+    };
+  }
+
   std::unique_ptr<structure::project::Project> create_minimal_project (
     structure::tracks::TrackRecordingCallback recording_callback =
-      [] (
-        const structure::tracks::Track::Uuid &,
-        units::sample_t,
-        const dsp::ITransport &,
-        const dsp::MidiEventBuffer *,
-        std::optional<structure::tracks::TrackProcessor::ConstStereoPortPair>,
-        units::sample_u32_t) { })
+      make_null_recording_callback (),
+    plugins::PluginHostWindowFactory window_factory = make_null_window_factory ())
   {
     using namespace zrythm::structure::project;
     using namespace zrythm::plugins;
@@ -80,14 +99,22 @@ protected:
         return for_backup ? project_dir_ / "backups" : project_dir_;
       };
 
-    PluginHostWindowFactory window_factory =
-      [] (Plugin &) -> std::unique_ptr<IPluginHostWindow> { return nullptr; };
-
     auto project = std::make_unique<Project> (
       *app_settings_, path_provider, *hw_interface_, midi_interface_,
-      plugin_format_manager_, window_factory, *metronome_, *monitor_fader_);
+      plugin_format_manager_, std::move (window_factory), *metronome_,
+      *monitor_fader_);
     project->install_recording_callback (std::move (recording_callback));
     return project;
+  }
+
+  /**
+   * @brief Overload that only customizes the window factory.
+   */
+  std::unique_ptr<structure::project::Project>
+  create_minimal_project (plugins::PluginHostWindowFactory window_factory)
+  {
+    return create_minimal_project (
+      make_null_recording_callback (), std::move (window_factory));
   }
 
   std::unique_ptr<QTemporaryDir>                  temp_dir_obj_;

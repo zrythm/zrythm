@@ -111,7 +111,7 @@ private:
    *
    * This method can be used as a PluginHostWindowFactory.
    */
-  std::unique_ptr<plugins::IPluginHostWindow>
+  std::unique_ptr<plugins::PluginHostWindow>
   create_window_for_plugin (plugins::Plugin &plugin) const;
 
 private:

@@ -8,6 +8,7 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/faust/faust_registry.h"
 #include "plugins/out_of_process_scanner.h"
+#include "plugins/vst3_plugin_format.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
 
@@ -50,6 +51,8 @@ PluginManager::PluginManager (
   juce::addDefaultFormatsToManager (*format_manager_);
   format_manager_->addFormat (
     std::make_unique<zrythm::plugins::CLAPPluginFormat> ());
+  format_manager_->addFormat (
+    std::make_unique<zrythm::plugins::Vst3PluginFormat> ());
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (
