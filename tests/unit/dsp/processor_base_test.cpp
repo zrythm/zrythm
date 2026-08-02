@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/graph.h"
@@ -285,7 +285,7 @@ TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
   EXPECT_TRUE (graph.is_valid ());
 }
 
-TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
+TEST_F (ProcessorBaseTest, ChangeTrackerReportsNothingOnFirstCycleWhenUntouched)
 {
   auto param_ref = utils::create_object<dsp::ProcessorParameter> (
     *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
@@ -295,9 +295,8 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
 
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
-
-  // First cycle: all params detected as changed (prev_values_ starts at -1)
+  // Untouched params are not reported on the first cycle - their values
+  // originate from the processor itself, so there is nothing to send back
   std::vector<ProcessorBase::ParameterChangeTracker::Change> captured;
   EXPECT_CALL (
     *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
@@ -310,9 +309,7 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsNewParam)
     units::samples (0), units::samples (256));
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  ASSERT_EQ (captured.size (), 1u);
-  EXPECT_EQ (captured[0].index, 0u);
-  EXPECT_FLOAT_EQ (captured[0].modulated_value, param->currentValue ());
+  EXPECT_EQ (captured.size (), 0u);
 }
 
 TEST_F (ProcessorBaseTest, ChangeTrackerSkipsUnchangedParams)
@@ -328,15 +325,15 @@ TEST_F (ProcessorBaseTest, ChangeTrackerSkipsUnchangedParams)
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
-  // First cycle: change detected
+  // First cycle: no change
   EXPECT_CALL (
     *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
     .WillOnce ([&] (auto, auto &, auto &) {
-      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 1u);
+      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 0u);
     });
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  // Second cycle: no change
+  // Second cycle: still no change
   EXPECT_CALL (
     *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
     .WillOnce ([&] (auto, auto &, auto &) {
@@ -359,11 +356,11 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsParamEdit)
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
-  // First cycle
+  // First cycle: no change
   EXPECT_CALL (
     *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
     .WillOnce ([&] (auto, auto &, auto &) {
-      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 1u);
+      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 0u);
     });
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
@@ -378,6 +375,70 @@ TEST_F (ProcessorBaseTest, ChangeTrackerDetectsParamEdit)
       const auto &ct = processor_->change_tracker ();
       captured = ct.changes ();
     });
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  ASSERT_EQ (captured.size (), 1u);
+  EXPECT_FLOAT_EQ (captured[0].base_value, 0.8f);
+  EXPECT_FLOAT_EQ (captured[0].modulated_value, 0.8f);
+}
+
+TEST_F (ProcessorBaseTest, ChangeTrackerDetectsEditBetweenPrepareAndFirstProcess)
+{
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
+    dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f },
+    u8"TestParam");
+  processor_->add_parameter (param_ref);
+  auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  // Edit after prepare but before the first process cycle
+  param->setBaseValue (0.8f);
+
+  std::vector<ProcessorBase::ParameterChangeTracker::Change> captured;
+  EXPECT_CALL (
+    *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
+    .WillOnce ([&] (auto, auto &, auto &) {
+      const auto &ct = processor_->change_tracker ();
+      captured = ct.changes ();
+    });
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+  processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  ASSERT_EQ (captured.size (), 1u);
+  EXPECT_FLOAT_EQ (captured[0].base_value, 0.8f);
+  EXPECT_FLOAT_EQ (captured[0].modulated_value, 0.8f);
+}
+
+TEST_F (ProcessorBaseTest, ChangeTrackerPreservesPendingEditsAcrossReprepare)
+{
+  auto param_ref = utils::create_object<dsp::ProcessorParameter> (
+    *registry_, *registry_, dsp::ProcessorParameter::UniqueId (u8"test-param"),
+    dsp::ParameterRange{ dsp::ParameterRange::Type::Linear, 0.f, 1.f, 0.f, 0.5f },
+    u8"TestParam");
+  processor_->add_parameter (param_ref);
+  auto * param = param_ref.get_object_as<dsp::ProcessorParameter> ();
+
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  // Edit, then get re-prepared before the edit could be processed
+  param->setBaseValue (0.8f);
+  processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  // The pending edit must still be detected
+  std::vector<ProcessorBase::ParameterChangeTracker::Change> captured;
+  EXPECT_CALL (
+    *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
+    .WillOnce ([&] (auto, auto &, auto &) {
+      const auto &ct = processor_->change_tracker ();
+      captured = ct.changes ();
+    });
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   ASSERT_EQ (captured.size (), 1u);
@@ -404,11 +465,11 @@ TEST_F (ProcessorBaseTest, ChangeTrackerRecordsMultipleParams)
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
 
-  // First cycle: both change
+  // First cycle: no changes
   EXPECT_CALL (
     *processor_, custom_process_block (::testing::_, ::testing::_, ::testing::_))
     .WillOnce ([&] (auto, auto &, auto &) {
-      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 2u);
+      EXPECT_EQ (processor_->change_tracker ().changes ().size (), 0u);
     });
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 

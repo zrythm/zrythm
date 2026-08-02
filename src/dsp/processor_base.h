@@ -26,8 +26,10 @@ public:
    * @brief Tracks parameter value changes across processing cycles.
    *
    * Built during the existing parameter loop in process_block() — no extra
-   * passes. prev_values_ starts at -1.f (sentinel, since normalized values
-   * are [0,1]) so the first cycle naturally marks all params as changed.
+   * passes. At prepare time, previously unseen parameters are seeded from
+   * their base value and already-tracked parameters keep their last known
+   * value, so parameters whose values have not changed since then (e.g.,
+   * values that originate from a plugin itself) are not reported.
    *
    * Only valid to read during custom_process_block(); cleared afterward.
    */
@@ -51,24 +53,40 @@ public:
     /** Changes accumulated during the current cycle's parameter loop. */
     std::vector<Change> changes_;
 
-    /** Previous cycle's modulated values, parallel to live_params_. */
-    std::vector<float> prev_values_;
+    /** Last known modulated value per parameter. */
+    struct TrackedValue
+    {
+      dsp::ProcessorParameter * param{};
+      float                     modulated_value{};
+    };
 
-    /** Resets state for a new parameter count (called from
-     * prepare_for_processing()). */
-    void prepare (size_t count);
+    /** Previously tracked values, parallel to live_params_. */
+    std::vector<TrackedValue> prev_values_;
+
+    /**
+     * Reseeds tracking for the given parameters.
+     *
+     * Parameters seen for the first time are seeded from their base value
+     * (the effective value before automation/modulation is applied);
+     * already-tracked parameters keep their previous value so that edits
+     * made since the last process cycle (or before a re-prepare) are still
+     * detected.
+     */
+    void prepare (std::span<dsp::ProcessorParameter * const> params);
 
     /** Compares current modulated value against previous cycle; records a
      * Change if different. Called once per parameter per process_block(). */
     void record_if_changed (size_t i, dsp::ProcessorParameter * param)
     {
+      assert (i < prev_values_.size ());
       float modulated = param->currentValue ();
-      if (!utils::math::floats_equal (prev_values_[i], modulated))
+      if (
+        !utils::math::floats_equal (prev_values_[i].modulated_value, modulated))
         {
           changes_.push_back (
             { i, param->baseValue (), param->valueAfterAutomationApplied (),
               modulated, param });
-          prev_values_[i] = modulated;
+          prev_values_[i].modulated_value = modulated;
         }
     }
 
@@ -85,8 +103,6 @@ private:
     std::vector<dsp::ProcessorParameter *> live_params_;
     std::vector<dsp::PortPtrVariant>       live_input_ports_;
     std::vector<dsp::PortPtrVariant>       live_output_ports_;
-
-    ParameterChangeTracker change_tracker_;
 
     /**
      * @brief True while inside process_block(), false otherwise.
@@ -127,7 +143,7 @@ public:
   const ParameterChangeTracker &change_tracker () const noexcept
   {
     assert (processing_caches_ && processing_caches_->is_processing_);
-    return processing_caches_->change_tracker_;
+    return change_tracker_;
   }
 
   // ============================================================================
@@ -195,6 +211,15 @@ private:
 
   // Caches
   std::unique_ptr<BaseProcessingCache> processing_caches_;
+
+  /**
+   * Parameter change tracking state.
+   *
+   * Kept outside processing_caches_ so that tracked values survive
+   * re-preparation (processing_caches_ is recreated on each
+   * prepare_for_processing()).
+   */
+  ParameterChangeTracker change_tracker_;
 
   BOOST_DESCRIBE_CLASS (ProcessorBase, (), (), (), (name_))
 };

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <unordered_map>
+
 #include "dsp/processor_base.h"
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
@@ -13,11 +15,27 @@ namespace zrythm::dsp
 {
 
 void
-ProcessorBase::ParameterChangeTracker::prepare (size_t count)
+ProcessorBase::ParameterChangeTracker::prepare (
+  std::span<dsp::ProcessorParameter * const> params)
 {
-  prev_values_.assign (count, -1.f);
+  std::unordered_map<dsp::ProcessorParameter *, float> prev_by_param;
+  prev_by_param.reserve (prev_values_.size ());
+  for (const auto &prev : prev_values_)
+    prev_by_param.emplace (prev.param, prev.modulated_value);
+
+  prev_values_.clear ();
+  prev_values_.reserve (params.size ());
+  for (auto * param : params)
+    {
+      const auto it = prev_by_param.find (param);
+      // No automation/modulation has been applied at prepare time, so the
+      // base value is the effective current value (currentValue() is only
+      // updated during process_block())
+      prev_values_.push_back (
+        { param, it != prev_by_param.end () ? it->second : param->baseValue () });
+    }
   changes_.clear ();
-  changes_.reserve (count);
+  changes_.reserve (params.size ());
 }
 
 ProcessorBase::ProcessorBase (
@@ -102,8 +120,7 @@ ProcessorBase::prepare_for_processing_impl (
         nullptr, sample_rate, max_block_length);
     }
 
-  processing_caches_->change_tracker_.prepare (
-    processing_caches_->live_params_.size ());
+  change_tracker_.prepare (processing_caches_->live_params_);
 
   custom_prepare_for_processing (node, sample_rate, max_block_length);
 }
@@ -165,7 +182,7 @@ ProcessorBase::process_block (
     utils::views::enumerate (processing_caches_->live_params_))
     {
       param->process_block (time_nfo, transport, tempo_map);
-      processing_caches_->change_tracker_.record_if_changed (i, param);
+      change_tracker_.record_if_changed (i, param);
     }
 
   // clear output ports before processing
@@ -184,7 +201,7 @@ ProcessorBase::process_block (
   custom_process_block (time_nfo, transport, tempo_map);
 
   // clear changes for next cycle
-  processing_caches_->change_tracker_.clear ();
+  change_tracker_.clear ();
 
   // clear input ports for next cycle
   for (const auto &in_var : processing_caches_->live_input_ports_)

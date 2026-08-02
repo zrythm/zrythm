@@ -586,11 +586,11 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
     }
   ASSERT_NE (zrythm_param, nullptr);
 
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
+
   // Change parameter value and verify synchronization
   float new_value = 0.75f;
   zrythm_param->setBaseValue (new_value);
-
-  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
   // Process with MIDI input
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -608,6 +608,44 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
   juce_param->setValueNotifyingHost (0.25f);
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   EXPECT_FLOAT_EQ (zrythm_param->baseValue (), 0.25f);
+}
+
+TEST_F (JucePluginTest, PluginOnlyParamChangesAreNotOverwrittenOnFirstCycle)
+{
+  createTestConfiguration ();
+  setupMockPlugin ();
+
+  mock_plugin_->addHostedParameter (
+    std::make_unique<juce::AudioParameterFloat> (
+      juce::ParameterID{ juce::String ("test-param-unique-id") },
+      juce::String ("Test Param"), juce::NormalisableRange<float> (0.0f, 1.0f),
+      0.5f));
+  auto * mock_plugin = mock_plugin_.get ();
+
+  setupJucePlugin (true);
+
+  bool instantiation_finished = false;
+  QObject::connect (
+    plugin_.get (), &JucePlugin::instantiationFinished, plugin_.get (),
+    [&instantiation_finished] () { instantiation_finished = true; });
+
+  plugin_->set_configuration (*config_);
+
+  process_events_until_true ([&] () { return instantiation_finished; });
+
+  // Plugin-side change the host was not notified about, leaving the host
+  // with a stale value (e.g. the plugin loaded a patch internally)
+  auto * juce_param = mock_plugin->getHostedParameter (1);
+  juce_param->setValue (0.9f);
+
+  plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
+
+  auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  // The host's stale value must not be pushed over the plugin's state
+  EXPECT_FLOAT_EQ (juce_param->getValue (), 0.9f);
 }
 
 TEST_F (JucePluginTest, AudioProcessingEdgeCases)
