@@ -1323,6 +1323,14 @@ if(WIN32)
   if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
     # Distinguish ARM64EC packages from x64 ones (win64 by default)
     set(CPACK_SYSTEM_NAME "win-arm64ec")
+    # Native ARM64 installer: plain "x64" (CPack's default) makes Inno Setup
+    # refuse to run on Windows on ARM
+    set(CPACK_INNOSETUP_ARCHITECTURE "arm64")
+  else()
+    # Allow the x64 installer to run on Windows on ARM under x64 emulation;
+    # plain "x64" excludes ARM64 machines
+    set(CPACK_INNOSETUP_SETUP_ArchitecturesAllowed "x64compatible")
+    set(CPACK_INNOSETUP_SETUP_ArchitecturesInstallIn64BitMode "x64compatible")
   endif()
   if(MAGICK_EXECUTABLE)
     # Installer banner
