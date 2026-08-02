@@ -42,6 +42,11 @@ if(WIN32)
     COMMAND "${WINDEPLOYQT_EXECUTABLE}"
       --qmldir "${CMAKE_BINARY_DIR}"
       --pdb --force
+      # The x64 CRT that windeployqt copies breaks C++ exception handling in
+      # ARM64EC binaries (the ARM64X CRT in System32 must be used instead).
+      # Distributing the VC redistributable also violates the GPL.
+      # See: https://www.gnu.org/licenses/gpl-faq.html#RedistributingWindows
+      --no-compiler-runtime
       -qml -widgets -quick -quickwidgets -test
       $<TARGET_FILE:zrythm>
     COMMAND_EXPAND_LISTS
