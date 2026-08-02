@@ -317,7 +317,7 @@ ScrollView {
       visible: active
 
       sourceComponent: ExpanderBox {
-        icon.source: ResourceManager.getIconUrl("gnome-icon-library", "input-keyboard-symbolic.svg")
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", "signal-midi.svg")
         title: qsTr("MIDI Input")
 
         frameContentItem: ColumnLayout {
