@@ -167,6 +167,10 @@ _installed*
 
 # Python related files
 venv
+__pycache__/
+
+# CPack output directories
+package-*/
 
 # Node.js
 node_modules
