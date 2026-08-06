@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -93,7 +93,10 @@ GraphScheduler::trigger_node (GraphNode &node)
       /* all nodes that feed this node have completed, so this node be
        * processed now. */
       /*z_info ("triggering node, pushing back");*/
-      trigger_queue_.push_back (&node);
+      // Cannot fail in practice: the queue is sized to the number of graph
+      // nodes and each node is queued at most once per cycle
+      const bool pushed [[maybe_unused]] = trigger_queue_->try_push (&node);
+      assert (pushed);
     }
 }
 
@@ -115,7 +118,8 @@ GraphScheduler::rechain_from_node_collection (
   terminal_refcnt_.store (
     static_cast<int> (graph_nodes_.terminal_nodes_.size ()));
 
-  trigger_queue_.reserve (graph_nodes_.graph_nodes_.size ());
+  trigger_queue_.emplace (
+    std::max<size_t> (graph_nodes_.graph_nodes_.size (), 1));
 
   sample_rate_ = sample_rate;
   max_block_length_ = max_block_length;

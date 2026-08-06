@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -146,7 +146,9 @@ GraphThread::on_reached_terminal_node ()
       /* and start the initial nodes */
       for (auto node : scheduler_.graph_nodes_.trigger_nodes_)
         {
-          scheduler_.trigger_queue_.push_back (std::addressof (node.get ()));
+          const bool pushed [[maybe_unused]] =
+            scheduler_.trigger_queue_->try_push (std::addressof (node.get ()));
+          assert (pushed);
         }
       /* continue in worker-thread */
     }
@@ -168,7 +170,7 @@ GraphThread::run_worker () noexcept
 
       /* Wake up idle threads, but at most as many as there's work in the
        * trigger queue that can be processed by other threads */
-      if (scheduler->trigger_queue_.pop_front (to_run))
+      if (scheduler->trigger_queue_->try_pop (to_run))
         {
           assert (to_run != nullptr);
           if constexpr (DEBUG_THREADS)
@@ -224,7 +226,7 @@ GraphThread::run_worker () noexcept
             }
 
           /* try to find some work to do */
-          scheduler->trigger_queue_.pop_front (to_run);
+          scheduler->trigger_queue_->try_pop (to_run);
         }
 
       /* this thread has now claimed the graph node for processing - process it */
@@ -290,7 +292,9 @@ GraphThread::run ()
       for (const auto node : graph->graph_nodes_.trigger_nodes_)
         {
           /*z_info ("[main] pushing back node {} during bootstrap", i);*/
-          graph->trigger_queue_.push_back (std::addressof (node.get ()));
+          const bool pushed [[maybe_unused]] =
+            graph->trigger_queue_->try_push (std::addressof (node.get ()));
+          assert (pushed);
         }
 
       /* after setup, the main-thread just becomes a normal worker */

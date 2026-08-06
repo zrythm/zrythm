@@ -25,8 +25,6 @@ add_executable(zrythm_utils_unit_tests
   math_test.cpp
   midi_test.cpp
   monotonic_time_provider_test.cpp
-  mpmc_queue_test.cpp
-  object_pool_test.cpp
   playback_cache_scheduler_test.cpp
   qt_test.cpp
   raii_utils_test.cpp

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -27,12 +27,12 @@
 #pragma once
 
 #include "dsp/graph_node.h"
-#include "utils/mpmc_queue.h"
 #include "utils/rt_thread_id.h"
 
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_core/juce_core.h>
 #include <moodycamel/lightweightsemaphore.h>
+#include <rigtorp/MPMCQueue.h>
 
 namespace zrythm::dsp::graph
 {
@@ -229,7 +229,9 @@ private:
   moodycamel::LightweightSemaphore trigger_sem_{ 0 };
 
   /** Queue containing nodes that can be processed. */
-  MPMCQueue<GraphNode *> trigger_queue_;
+  std::optional<rigtorp::MPMCQueue<GraphNode *>> trigger_queue_{
+    std::in_place, 8
+  };
 
   /**
    * @brief Live graph nodes.

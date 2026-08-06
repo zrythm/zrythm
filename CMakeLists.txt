@@ -916,6 +916,8 @@ find_package(zstd REQUIRED)
 
 find_package(xxHash REQUIRED)
 
+find_package(MPMCQueue REQUIRED)
+
 # not used, might use in the future
 if(0)
   pkg_check_modules(VAMP_SDK vamp-sdk IMPORTED_TARGET)
@@ -1078,6 +1080,7 @@ list(APPEND zrythm_link_libs
   clap-helpers
   TBB::tbb
   farbot::farbot
+  MPMCQueue::MPMCQueue
   Au::au
   zrythm::qt_libs
   zrythm::sanitizers

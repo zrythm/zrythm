@@ -48,6 +48,7 @@ class Zrythm(ConanFile):
         self.requires("onetbb/2023.0.0")
         self.requires("tracy/[>=0.13.1 <1]")
         self.requires("xxhash/0.8.3")
+        self.requires("mpmcqueue/1.0")
         if self.settings.os == "Linux":
             self.requires("freetype/[>=2.14]")
             self.requires("fontconfig/[>=2.15]")
