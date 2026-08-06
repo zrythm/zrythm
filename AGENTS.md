@@ -102,6 +102,8 @@ pre-commit run --all-files
 clang-tidy src/file.cpp -p conanbuild/Debug
 ```
 
+**Only run clang-format on C++ files** (`.cpp`/`.h`/`.hpp`). Never run it on QML, CMake, Python, or other non-C++ files — clang-format does not understand their syntax and mangles them beyond repair.
+
 ---
 
 ## Project Overview
@@ -245,6 +247,9 @@ When editing or creating [developer documentation](doc/dev/), focus on high leve
 
 - **Never use the Write tool on existing files.** Always use the Edit tool to make targeted changes, preserving all existing comments, blank lines, and formatting. The Write tool may only be used for new files that don't exist yet.
 - **Never assume our own code is immutable.** This is our codebase — we can and should modify any part of it (including base classes, utility types, build config, existing APIs) when it leads to a better design. When a constraint in existing code blocks the ideal solution, propose changing the code rather than working around it. Do not rationalize why a workaround is necessary; offer to fix the root cause instead.
+- **Fail fast, noisily, and at the source.** Validate external input (plugin callbacks, file data, user actions) at the boundary where it enters our code, and reject invalid conditions with a   visible error (warning log + refusal of the operation, or an assertion for contract violations). Do not clamp, coerce, or otherwise silently "fix" bad values deeper in the system — that masks bugs and makes them surface far from their cause.
+- Use assertions for catching programmer bugs, and exceptions (or error/warning logs + refusals/early returns) for catching unsupported runtime input
+- **Prefer the cleanest correct approach over quick fixes.** Long-term good design and maintainability always outweigh temporary refactoring costs — take the time to refactor properly rather than layering workarounds on top of a flawed design.
 
 ### C++23
 
@@ -269,7 +274,7 @@ Zrythm makes extensive use of modern C++ features:
 - Prefer pimpl (pointer to implementation) for non-trivial class members that don't need to be exposed in the header, to reduce include dependencies and improve compile times
 - API doc comments (Doxygen `@brief`, `@param`, `@return`) must describe the contract — what the function does, its parameters, return value, preconditions, and edge cases — not who calls it or why it was introduced. Mentioning specific callers (e.g. "exposed for use by X") couples the docs to internal architecture and goes stale when those callers change; design rationale belongs in commit messages or architecture docs, not the method's API comment
 - When a class derives the same template twice (e.g. `TempoObjectManager` derives both `ArrangerObjectOwner<TempoObject>` and `ArrangerObjectOwner<TimeSignatureObject>`), member lookup is ambiguous. Disambiguate with explicit base-class scope resolution (e.g. `manager->structure::arrangement::ArrangerObjectOwner<...TempoObject>::get_sorted_children_view()`), not `static_cast`
-- **Comments describe what, not why-not**: In code comments, state what the code or test does objectively. Do not narrate bug history, explain what a previous version did wrong, or describe what must "not" happen — commit messages and architecture docs are the right place for that
+- **Comments describe what, not why-not**: In code comments, state what the code or test does objectively. Do not narrate bug history, explain what a previous version did wrong, describe what must "not" happen, or reference specific third-party products as bug archaeology — commit messages and architecture docs are the right place for those; state durable constraints objectively instead (e.g., "latencyGet() is only allowed once activate() returns"). Test names follow the same rule: name them after the contract being verified, in a way that still makes sense when the motivating bug is long forgotten
 
 ### Unit Safety
 
