@@ -74,6 +74,7 @@ target_sources(zrythm_utils_lib
       hash.h
       io_utils.h
       icloneable.h
+      inplace_function.h
       isettings_backend.h
       jack.h
       logger.h

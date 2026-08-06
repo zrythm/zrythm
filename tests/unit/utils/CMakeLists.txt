@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_utils_unit_tests
@@ -17,6 +17,7 @@ add_executable(zrythm_utils_unit_tests
   float_ranges_test.cpp
   hash_test.cpp
   icloneable_test.cpp
+  inplace_function_test.cpp
   io_test.cpp
   logger_test.cpp
   main_thread_dispatcher_test.cpp
