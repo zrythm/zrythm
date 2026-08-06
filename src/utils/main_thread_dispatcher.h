@@ -3,35 +3,38 @@
 
 #pragma once
 
-#include <bit>
 #include <cassert>
 #include <chrono>
 #include <functional>
 #include <type_traits>
 #include <utility>
 
+#include "utils/inplace_function.h"
 #include "utils/qt.h"
 
 #include <QThread>
 #include <QTimer>
 
-#include <farbot/fifo.hpp>
+#include <rigtorp/MPMCQueue.h>
 
 namespace zrythm::utils
 {
 
 /**
- * @brief Dispatches requests of a trivially copyable type from any thread
+ * @brief Dispatches requests of a move-constructible type from any thread
  * (including realtime threads) to a Qt object's thread for handling.
  *
- * Requests are pushed to a pre-allocated lock-free fifo — no allocations or
- * locks on the calling thread — and drained by a QTimer pump on the context
- * object's thread. Requests posted from the context's own thread are handled
- * synchronously, after any already-queued requests.
+ * Requests are pushed to a pre-allocated lock-free MPMC queue — no
+ * allocations or locks on the calling thread — and drained by a QTimer pump
+ * on the context object's thread. Requests posted from the context's own
+ * thread are handled synchronously, after any already-queued requests —
+ * except reentrant posts from a running handler, which are queued and
+ * handled by the in-progress drain (or the next pump), so FIFO ordering is
+ * preserved with bounded stack depth.
  *
- * Each pump handles at most one fifo's worth of requests, so a sustained
- * flood of posts cannot starve the event loop; the remainder is handled on
- * subsequent pumps.
+ * Each pump handles at most @ref max_requests_per_pump requests, so a
+ * sustained flood of posts cannot starve the event loop; the remainder is
+ * handled on subsequent pumps.
  *
  * Preconditions:
  * - @p context's thread affinity must not change for the dispatcher's
@@ -39,25 +42,25 @@ namespace zrythm::utils
  * - Other threads must stop calling post() before the dispatcher is
  *   destroyed.
  *
- * @note Due to a farbot implementation detail, at most 64 distinct threads
- * can ever post to a given dispatcher instance (threads are registered on
- * first post and never unregistered). This is ample for plugin main-thread
- * callbacks (audio thread, host thread pools, plugin-internal threads).
- *
  * @tparam fifo_capacity Maximum number of pending requests before posts
- * start getting dropped. Must be a power of 2.
+ * start getting dropped.
  */
 template <typename T, std::size_t fifo_capacity = 32>
-  requires std::is_trivially_copy_constructible_v<T>
-           && std::is_default_constructible_v<T>
+  requires std::is_default_constructible_v<T>
+           && std::is_nothrow_move_constructible_v<T>
+           && std::is_nothrow_move_assignable_v<T>
 class MainThreadDispatcher
 {
-  static_assert (
-    std::has_single_bit (fifo_capacity),
-    "fifo_capacity must be a power of 2");
+  static_assert (fifo_capacity >= 1);
 
 public:
   using Handler = std::function<void (const T &)>;
+
+  /**
+   * @brief Maximum number of requests handled per pump, so that a
+   * sustained flood of posts cannot starve the event loop.
+   */
+  static constexpr std::size_t max_requests_per_pump = 64;
 
   /**
    * @brief Constructs the dispatcher and starts the pump timer.
@@ -74,8 +77,7 @@ public:
     QObject                  &context,
     std::chrono::milliseconds pump_interval,
     Handler                   handler)
-      : context_ (context), handler_ (std::move (handler)),
-        fifo_ (static_cast<int> (fifo_capacity))
+      : context_ (context), handler_ (std::move (handler)), queue_ (fifo_capacity)
   {
     assert (QThread::currentThread () == context_.thread ());
 
@@ -86,8 +88,22 @@ public:
     pump_timer_->start (pump_interval);
   }
 
-  // The pump timer connection captures `this`, and the class is not intended
-  // to be copied or moved (already impossible via the fifo's atomic members)
+  /**
+   * @brief Constructs the dispatcher without an explicit handler: each
+   * request is invoked as the work item.
+   *
+   * Only participates in overload resolution when T is invocable.
+   */
+  MainThreadDispatcher (QObject &context, std::chrono::milliseconds pump_interval)
+    requires std::invocable<const T &>
+      : MainThreadDispatcher (context, pump_interval, [] (const T &request) {
+          std::invoke (request);
+        })
+  {
+  }
+
+  // The pump timer connection captures `this`, and the queue is neither
+  // copyable nor movable
   MainThreadDispatcher (const MainThreadDispatcher &) = delete;
   MainThreadDispatcher (MainThreadDispatcher &&) = delete;
   MainThreadDispatcher &operator= (const MainThreadDispatcher &) = delete;
@@ -96,50 +112,83 @@ public:
   /**
    * @brief Posts a request to be handled on the context's thread.
    *
-   * Realtime-safe: no allocations or locks (the fifo push is block-free).
-   * When called on the context's own thread, pending requests are drained
-   * first and the request is then handled synchronously, so requests are
-   * always handled in the order they were posted.
+   * Realtime-safe: no allocations or locks (the queue push is lock-free and
+   * bounded). When called on the context's own thread, pending requests are
+   * drained first and the request is then handled synchronously, so
+   * requests are always handled in the order they were posted. A reentrant
+   * post from a running handler is queued instead of running inline, so
+   * self-reposting handlers cannot recurse unboundedly.
    *
-   * @return False if the request was dropped because the fifo was full
-   * (only possible under pathological flooding, since the fifo is drained
+   * @return False if the request was dropped because the queue was full
+   * (only possible under pathological flooding, since the queue is drained
    * on every pump interval).
    */
-  bool post (const T &request) noexcept
+  bool post (T request) noexcept
   {
     if (QThread::currentThread () == context_.thread ())
       {
+        if (handling_)
+          {
+            // Reentrant post from a running handler: queue it — the
+            // in-progress drain (or the next pump) picks it up,
+            // preserving FIFO order with bounded stack depth
+            return queue_.try_push (std::move (request));
+          }
         process_pending ();
+        handling_ = true;
         handler_ (request);
+        handling_ = false;
         return true;
       }
-    return fifo_.push (T{ request });
+    return queue_.try_push (std::move (request));
   }
 
   /**
-   * @brief Handles pending requests (at most one fifo's worth). Called on
-   * the context's thread.
+   * @brief Handles pending requests (at most @ref max_requests_per_pump).
+   * Called on the context's thread.
    */
   void process_pending ()
   {
     assert (QThread::currentThread () == context_.thread ());
 
-    T   request{};
-    int handled = 0;
-    while (handled++ < static_cast<int> (fifo_capacity) && fifo_.pop (request))
+    // Reentrant call from a running handler: the in-progress drain keeps
+    // handling queued requests
+    if (handling_)
+      return;
+
+    handling_ = true;
+    T           request{};
+    std::size_t handled = 0;
+    while (handled++ < max_requests_per_pump && queue_.try_pop (request))
       handler_ (request);
+    handling_ = false;
   }
 
 private:
   QObject &context_;
   Handler  handler_;
 
-  farbot::fifo<
-    T,
-    farbot::fifo_options::concurrency::single,
-    farbot::fifo_options::concurrency::multiple>
-                                  fifo_;
+  rigtorp::MPMCQueue<T>           queue_;
   utils::QObjectUniquePtr<QTimer> pump_timer_;
+  bool                            handling_ = false;
 };
+
+/**
+ * @brief Type-erased closure for use with MainThreadDispatcher.
+ *
+ * Stored inline: capturing a few pointers never allocates.
+ */
+using MainThreadCallback = InplaceFunction<void (), 48>;
+
+/**
+ * @brief Dispatcher of type-erased closures (the common case for
+ * host-bound requests, e.g. from plugins).
+ *
+ * The capacity is generous so that even plugins posting requests every
+ * process block (e.g. CLAP request_callback) do not overflow between
+ * pumps; the memory cost is ~200 KB for a single shared instance.
+ */
+using MainThreadClosureDispatcher =
+  MainThreadDispatcher<MainThreadCallback, 1024>;
 
 } // namespace zrythm::utils

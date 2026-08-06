@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <cstdint>
 #include <ranges>
 #include <thread>
@@ -100,7 +101,7 @@ TEST_F (MainThreadDispatcherTest, PostFromContextThreadDrainsQueueFirst)
 TEST_F (MainThreadDispatcherTest, PostsAreDroppedWhenFifoIsFull)
 {
   // The pump interval is long and the event loop is never run, so the
-  // fifo never drains and fills up
+  // queue never drains and fills up
   MainThreadDispatcher<TestRequest, 4> small_dispatcher (
     *context_, 10s, [] (const TestRequest &) { });
 
@@ -109,13 +110,72 @@ TEST_F (MainThreadDispatcherTest, PostsAreDroppedWhenFifoIsFull)
     std::jthread poster ([&] {
       for (const auto i : std::views::iota (0, 8))
         {
-          if (small_dispatcher.post ({ .a = static_cast<uint32_t> (i), .b = 0 }))
+          if (
+            small_dispatcher.post (
+              TestRequest{ .a = static_cast<uint32_t> (i), .b = 0 }))
             ++accepted;
         }
     });
   }
 
   EXPECT_EQ (accepted, 4);
+}
+
+TEST_F (MainThreadDispatcherTest, NestedSameThreadPostPreservesOrdering)
+{
+  MainThreadDispatcher<TestRequest> local_dispatcher (
+    *context_, 10s, [this, &local_dispatcher] (const TestRequest &request) {
+      handled_.push_back (request);
+      if (request.a == 1)
+        {
+          // Nested post from the context thread: queued and handled by
+          // the in-progress drain, before the outer drain pass continues
+          EXPECT_TRUE (local_dispatcher.post ({ .a = 2, .b = 0 }));
+        }
+    });
+
+  {
+    std::jthread poster ([&] {
+      EXPECT_TRUE (local_dispatcher.post ({ .a = 100, .b = 0 }));
+      EXPECT_TRUE (local_dispatcher.post ({ .a = 1, .b = 0 }));
+    });
+  }
+
+  local_dispatcher.process_pending ();
+
+  ASSERT_EQ (handled_.size (), 3);
+  EXPECT_EQ (handled_[0].a, 100u);
+  EXPECT_EQ (handled_[1].a, 1u);
+  EXPECT_EQ (handled_[2].a, 2u);
+}
+
+TEST_F (MainThreadDispatcherTest, ReentrantPostDoesNotRecurse)
+{
+  int depth = 0;
+  int max_depth = 0;
+
+  MainThreadDispatcher<TestRequest> local_dispatcher (
+    *context_, 10s, [&] (const TestRequest &request) {
+      ++depth;
+      max_depth = std::max (max_depth, depth);
+      handled_.push_back (request);
+      // Chain reentrant posts: 1 -> 2 -> 3
+      if (request.a >= 1 && request.a < 3)
+        EXPECT_TRUE (local_dispatcher.post ({ .a = request.a + 1, .b = 0 }));
+      --depth;
+    });
+
+  EXPECT_TRUE (local_dispatcher.post ({ .a = 1, .b = 0 }));
+  // Drain the reentrantly-queued requests
+  local_dispatcher.process_pending ();
+  local_dispatcher.process_pending ();
+
+  // Handlers never nest, and FIFO order is preserved
+  EXPECT_EQ (max_depth, 1);
+  ASSERT_EQ (handled_.size (), 3);
+  EXPECT_EQ (handled_[0].a, 1u);
+  EXPECT_EQ (handled_[1].a, 2u);
+  EXPECT_EQ (handled_[2].a, 3u);
 }
 
 } // namespace zrythm::utils
