@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -10,6 +10,8 @@
  *
  * Provides a unique identifier for each thread without using
  * non-real-time safe operations like std::this_thread::get_id().
+ *
+ * IDs start from 1; ID 0 is reserved to mean "unset".
  */
 class RTThreadId
 {
