@@ -8,6 +8,7 @@ target_sources(zrythm_plugins_lib
     # carla_native_plugin.cpp
     CLAPPluginFormat.cpp
     clap_plugin.cpp
+    host_window_units.cpp
     internal_plugin_base.cpp
     juce_plugin.cpp
     out_of_process_scanner.cpp
@@ -19,6 +20,7 @@ target_sources(zrythm_plugins_lib
     plugin_library.cpp
     plugin_parameter_list_model.cpp
     plugin_protocol.cpp
+    plugin_run_loop.cpp
     plugin_scan_manager.cpp
   PUBLIC
     FILE_SET HEADERS
@@ -27,6 +29,8 @@ target_sources(zrythm_plugins_lib
       # carla_native_plugin.h
       CLAPPluginFormat.h
       clap_plugin.h
+      gl_context_utils.h
+      host_window_units.h
       internal_plugin_base.h
       iplugin_host_window.h
       juce_plugin.h
@@ -41,6 +45,7 @@ target_sources(zrythm_plugins_lib
       plugin_library.h
       plugin_parameter_list_model.h
       plugin_protocol.h
+      plugin_run_loop.h
       plugin_scan_manager.h
 )
 
