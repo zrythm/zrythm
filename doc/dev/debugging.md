@@ -54,12 +54,13 @@ See also:
 
 ## gprof
 To profile with gprof,
-use the `profiling` option when running meson,
+enable the `ZRYTHM_PROFILING` CMake option
+(`-DZRYTHM_PROFILING=ON`) when configuring,
 then build and run the program normally. The program
 must end gracefully (ie, not Ctrl-C). When the
 program ends, run
 
-    gprof --flat-profile --annotated-source -B --exec-counts --directory-path="$pwd)" --print-path --graph --table-length=16 --function-ordering --min-count=100 build/src/zrythm > results
+    gprof --flat-profile --annotated-source -B --exec-counts --directory-path="$pwd)" --print-path --graph --table-length=16 --function-ordering --min-count=100 conanbuild/Debug/products/bin/zrythm > results
 
 and check the results file for the profiling results.
 
@@ -90,14 +91,15 @@ considerably*
 # Memory usage
 To debug memory usage, the
 [massif](https://valgrind.org/docs/manual/ms-manual.html)
-tool from valgrind can be used. To use on the
-`actions/mixer selections action` test for example,
-use
+tool from valgrind can be used. Run the test binary
+under valgrind directly (test binaries live in
+`conanbuild/Debug/products/bin/`; use `--gtest_filter`
+to select tests). For example:
 
-    meson test --timeout-multiplier=0 -C build --wrap="valgrind --tool=massif --num-callers=160 --suppressions=$(pwd)/tools/vg.sup" actions_mixer_selections_action
+    valgrind --tool=massif --num-callers=160 --suppressions=$(pwd)/tools/vg.sup ./conanbuild/Debug/products/bin/zrythm_actions_unit_tests --gtest_filter='*ArrangerObjectSelection*'
 
 This will create a file called `massif.out.<pid>`
-that contains memory snapshots in the `build`
+that contains memory snapshots in the current
 directory. This file can be opened with
 [Massif-Visualizer](https://apps.kde.org/en-gb/massif-visualizer/)
 for inspection.
@@ -108,9 +110,23 @@ termination.
 
 *Note: massif runs the program 20 times slower*
 
-Alternatively, valgrind's leak check can be used
+Alternatively, valgrind's leak check can be used on the
+whole suite (or a `-R` subset) via CTest's memcheck
+mode:
 
-    meson test --timeout-multiplier=0 -C build --wrap="valgrind --num-callers=160 --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --suppressions=$(pwd)/tools/vg.sup" actions_mixer_selections_action
+    ctest --test-dir conanbuild/Debug -T memcheck -R "SomeTest"
+
+`include(CTest)` sets `MEMORYCHECK_COMMAND` when
+valgrind is found at configure time; customize the run
+via the `MEMORYCHECK_COMMAND_OPTIONS` and
+`MEMORYCHECK_SUPPRESSIONS_FILE` CMake cache entries.
+Logs are written to
+`conanbuild/Debug/Testing/Temporary/MemoryChecker.<#>.log`.
+
+For ad-hoc runs with custom flags, run the test binary
+under valgrind directly:
+
+    valgrind --num-callers=160 --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --suppressions=$(pwd)/tools/vg.sup ./conanbuild/Debug/products/bin/zrythm_actions_unit_tests --gtest_filter='*ArrangerObjectSelection*'
 
 # Real-time safety
 
