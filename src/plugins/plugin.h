@@ -4,23 +4,49 @@
 #pragma once
 
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <vector>
 
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 #include "dsp/processor_base.h"
-#include "plugins/iplugin_host_window.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
+#include "plugins/plugin_host_window.h"
+#include "utils/main_thread_dispatcher.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 #include "utils/variant_helpers.h"
 
-#include <QTimer>
+#include <QPointer>
 
 namespace zrythm::plugins
 {
+
+/**
+ * @brief Handlers for plugin requests towards the host.
+ *
+ * Owned by the project and shared with all plugins via dependency
+ * injection; an empty std::function means the request is dropped.
+ *
+ * Handlers are invoked on the main thread (posted via the shared main
+ * thread dispatcher when called from other threads).
+ */
+struct PluginHostMainThreadCallbacks
+{
+  /** Requests a recalculation of the processing graph (latency changes). */
+  std::function<void ()> latency_recalc_;
+
+  /**
+   * @brief Runs the given function with audio processing paused, resuming
+   * afterwards (e.g. for plugin-initiated restarts).
+   *
+   * Called on the main thread; the given function is executed
+   * synchronously before this handler returns.
+   */
+  std::function<void (std::function<void ()>)> with_paused_processing_;
+};
 
 /**
  * @brief DSP processing plugin.
@@ -57,6 +83,9 @@ class Plugin : public utils::UuidIdentifiableObject<Plugin>, public dsp::Process
   Q_PROPERTY (
     bool uiVisible READ uiVisible WRITE setUiVisible NOTIFY uiVisibleChanged)
   Q_PROPERTY (bool hasNativeUi READ hasNativeUi NOTIFY hasNativeUiChanged)
+  Q_PROPERTY (
+    bool bypassed READ bypassed WRITE setBypassed NOTIFY bypassedChanged)
+  Q_PROPERTY (bool abActive READ abActive NOTIFY abActiveChanged)
   Q_PROPERTY (
     InstantiationStatus instantiationStatus READ instantiationStatus NOTIFY
       instantiationStatusChanged)
@@ -127,6 +156,36 @@ public:
   dsp::ProcessorParameter * bypassParameter () const;
   dsp::ProcessorParameter * gainParameter () const;
 
+  /**
+   * @brief Whether the plugin is currently bypassed, based on the bypass
+   * parameter.
+   */
+  bool bypassed () const;
+  void setBypassed (bool bypassed);
+
+  /**
+   * @brief Emitted when the plugin's bypass state changed (in either
+   * direction).
+   */
+  Q_SIGNAL void bypassedChanged (bool bypassed);
+
+  /**
+   * @brief Whether the A/B comparison state is currently on slot B.
+   */
+  bool abActive () const { return ab_b_active_; }
+
+  /**
+   * @brief Emitted when the active A/B slot changed.
+   */
+  Q_SIGNAL void abActiveChanged (bool b_active);
+
+  /**
+   * @brief Saves the current state into the active A/B slot and switches
+   * to the other slot (initialized as a copy of the current state on first
+   * use).
+   */
+  Q_INVOKABLE void switchAbState ();
+
   bool uiVisible () const { return visible_; }
   void setUiVisible (bool visible)
   {
@@ -143,6 +202,18 @@ public:
    */
   Q_SIGNAL void uiVisibleChanged (bool visible);
 
+protected:
+  /**
+   * @brief Shows/hides the plugin UI to match @ref uiVisible.
+   *
+   * Connected to @ref uiVisibleChanged by the base class, and additionally
+   * invoked via a queued connection after the configuration is set if the UI
+   * was already marked visible (e.g., during project deserialization), so
+   * that callers finish setting up before native windows are created.
+   */
+  virtual void on_ui_visibility_changed () { }
+
+public:
   /**
    * @brief Whether the plugin provides its own native editor UI.
    *
@@ -150,6 +221,18 @@ public:
    * is set.
    */
   virtual bool hasNativeUi () const { return false; }
+
+  /**
+   * @brief Whether the native editor UI is both provided and presentable.
+   *
+   * Wraps @ref hasNativeUi with presentation failures reported via @ref
+   * set_native_ui_unavailable (e.g., no usable windowing connection). When
+   * false while @ref uiVisible is set, the generic parameter UI is shown.
+   */
+  bool hasPresentableNativeUi () const
+  {
+    return hasNativeUi () && !native_ui_unavailable_;
+  }
 
   /**
    * @brief Emitted by implementations when @ref hasNativeUi may have changed
@@ -248,19 +331,157 @@ public:
   std::string save_state () const;
 
   /**
-   * @brief Queues a previously saved state to be applied to the plugin.
+   * @brief Loads a previously saved state into the plugin.
    *
-   * The state will be applied during the next processing cycle.
+   * If the plugin is instantiated, the state is applied immediately on the
+   * main thread and Zrythm's parameter values are synced to the loaded
+   * state. Otherwise, the state is stashed and applied during
+   * instantiation.
+   *
+   * @return False if the plugin rejected the state (a deferred application
+   * counts as success).
    */
-  void load_state (const std::string &base64_state);
+  bool load_state (const std::string &base64_state);
 
   /**
    * @brief Flushes plugin-reported parameter values to Zrythm params.
    *
-   * Called on the main thread by a timer (~20ms). Exchanges pending_value
-   * atomics and calls setBaseValue() for any non-sentinel values.
+   * Called on the main thread by a shared project-wide timer (~20ms).
+   * No-op unless values are pending: exchanges pending_value atomics and
+   * calls setBaseValue() for any non-sentinel values.
    */
   void flush_plugin_values ();
+
+protected:
+  /**
+   * @brief Stores a plugin-reported value to be applied to the Zrythm
+   * param on the next main thread flush.
+   *
+   * Realtime-safe. @p index is an index into the live params (same as the
+   * ParamSync entries).
+   */
+  void set_param_pending_from_plugin (size_t index, float value) noexcept
+    [[clang::nonblocking]];
+
+public:
+  // ============================================================================
+  // Main Thread Services
+  // ============================================================================
+
+  /**
+   * @brief Sets the project-owned services used to fulfill host-bound
+   * requests on the main thread.
+   *
+   * @param dispatcher Shared closure dispatcher. PluginFactory sets this
+   * at construction; tests constructing plugins directly must call this
+   * before any host-bound request can be posted.
+   * @param callbacks Handlers for specific requests; empty std::functions
+   * mean the corresponding request is dropped.
+   */
+  void set_main_thread_services (
+    utils::MainThreadClosureDispatcher &dispatcher,
+    PluginHostMainThreadCallbacks       callbacks)
+  {
+    main_thread_dispatcher_ = &dispatcher;
+    main_thread_callbacks_ = std::move (callbacks);
+  }
+
+  /**
+   * @brief Posts an action to run on the main thread as long as this
+   * plugin still exists when the action runs.
+   *
+   * The action is silently dropped if the plugin no longer exists when the
+   * dispatcher pump runs, so @p action may safely capture `this` or plugin
+   * members.
+   *
+   * Realtime-safe: no allocations or locks (the weak self-reference was
+   * primed at construction). When called on the main thread, the action
+   * runs synchronously, after any already-queued actions.
+   *
+   * @return False if the action was dropped because the dispatcher queue
+   * was full.
+   */
+  template <typename F>
+    requires std::is_nothrow_move_constructible_v<std::decay_t<F>>
+             && std::is_nothrow_copy_constructible_v<std::decay_t<F>>
+  bool post_main_thread_action (F &&action) noexcept [[clang::nonblocking]]
+  {
+    assert (main_thread_dispatcher_ != nullptr);
+    return main_thread_dispatcher_->post (
+      guard_main_thread_action (std::forward<F> (action)));
+  }
+
+  /**
+   * @brief Posts an action to run on the main thread once the posting call
+   * stack has unwound.
+   *
+   * Same guarantees as @ref post_main_thread_action, except the action is
+   * always run by a later dispatcher pump, never inline. Required for
+   * actions posted from a callback the plugin invoked on us, which may only
+   * touch the plugin after its own call has returned.
+   *
+   * @return False if the action was dropped because the dispatcher queue
+   * was full.
+   */
+  template <typename F>
+    requires std::is_nothrow_move_constructible_v<std::decay_t<F>>
+             && std::is_nothrow_copy_constructible_v<std::decay_t<F>>
+  bool
+  post_main_thread_action_deferred (F &&action) noexcept [[clang::nonblocking]]
+  {
+    assert (main_thread_dispatcher_ != nullptr);
+    return main_thread_dispatcher_->post_deferred (
+      guard_main_thread_action (std::forward<F> (action)));
+  }
+
+private:
+  /**
+   * @brief Wraps @p action so that it becomes a no-op if this plugin is
+   * destroyed before it runs.
+   */
+  template <typename F>
+  auto guard_main_thread_action (F &&action) noexcept [[clang::nonblocking]]
+  {
+    auto guarded_action =
+      [guard = self_guard_, action = std::forward<F> (action)] () mutable {
+        if (guard == nullptr)
+          return;
+        std::invoke (action);
+      };
+    static_assert (
+      std::is_constructible_v<
+        utils::MainThreadCallback, decltype (guarded_action)>,
+      "guarded action must fit the dispatcher's inline storage");
+    return guarded_action;
+  }
+
+public:
+  /**
+   * @brief Notifies the host that the plugin's playback latency changed.
+   *
+   * Safe to call from any thread: the request is posted to the main thread
+   * via the shared dispatcher. The request is dropped if no latency-recalc
+   * callback is installed, or if the plugin no longer exists when the
+   * request runs.
+   */
+  void notify_latency_changed () noexcept [[clang::nonblocking]];
+
+protected:
+  /**
+   * @brief Sets whether presenting the native editor is currently
+   * unavailable, forcing the generic UI while @ref uiVisible is set.
+   *
+   * Implementations clear this when a native presentation is attempted and
+   * set it when presentation fails for environment reasons (as opposed to
+   * the plugin lacking an editor). Emits @ref hasNativeUiChanged on change.
+   */
+  void set_native_ui_unavailable (bool unavailable)
+  {
+    if (native_ui_unavailable_ == unavailable)
+      return;
+    native_ui_unavailable_ = unavailable;
+    Q_EMIT hasNativeUiChanged ();
+  }
 
 private:
   virtual void prepare_plugin_for_processing (
@@ -286,7 +507,7 @@ private:
     const dsp::TempoMap         &tempo_map) noexcept;
 
   virtual std::string save_state_impl () const = 0;
-  virtual void        load_state_impl (const std::string &base64_state) = 0;
+  virtual bool        load_state_impl (const std::string &base64_state) = 0;
 
   // ============================================================================
 
@@ -297,6 +518,12 @@ private:
    * on sample rate/buffer size changes must go in prepare_for_processing().
    */
   void init_param_caches ();
+
+  /**
+   * @brief Connects bypassedChanged to the current bypass parameter's
+   * baseValueChanged, replacing any previous connection.
+   */
+  void arm_bypassed_relay ();
 
 protected:
   /**
@@ -341,21 +568,46 @@ protected:
    *
    * If the plugin itself doesn't provide a bypass parameter, one will be
    * created for it.
+   *
+   * Set via @ref set_bypass_id, which also connects the bypassedChanged
+   * forwarding.
    */
   std::optional<dsp::ProcessorParameter::Uuid> bypass_id_;
+
+  /**
+   * @brief Sets the bypass parameter and connects bypassedChanged to it.
+   *
+   * Implementations must call this whenever the bypass parameter becomes
+   * known (construction, deserialization), so that bypassedChanged fires
+   * on parameter writes even before the first processing preparation.
+   */
+  void set_bypass_id (dsp::ProcessorParameter::Uuid id);
 
   /**
    * @brief Zrythm-provided plugin gain parameter.
    */
   std::optional<dsp::ProcessorParameter::Uuid> gain_id_;
 
+  /** A/B comparison state slots (base64 states) and the active flag. */
+  std::string ab_state_a_;
+  std::string ab_state_b_;
+  bool        ab_b_active_ = false;
+
+  /** Connection re-arming @ref bypassedChanged on the current bypass
+   * parameter. */
+  QMetaObject::Connection bypassed_relay_connection_;
+
   /* Realtime caches */
   std::vector<dsp::AudioPort *> audio_in_ports_;
   std::vector<dsp::AudioPort *> audio_out_ports_;
   std::vector<dsp::CVPort *>    cv_in_ports_;
-  dsp::MidiPort *               midi_in_port_{};
-  dsp::MidiPort *               midi_out_port_{};
-  dsp::ProcessorParameter *     bypass_param_rt_{};
+
+  /** All MIDI ports, in creation order (VST3 event bus / CLAP note port
+   * index). */
+  std::vector<dsp::MidiPort *> midi_in_ports_;
+  std::vector<dsp::MidiPort *> midi_out_ports_;
+
+  dsp::ProcessorParameter * bypass_param_rt_{};
 
   // ============================================================================
   // Parameter Synchronization
@@ -372,9 +624,10 @@ protected:
        * One-shot feedback guard: set when the plugin reports a value.
        * On the next audio cycle, if the computed value matches, the send
        * is skipped and the guard is consumed (reset to -1.f).
-       * Audio thread only.
+       * Written on the plugin's reporting thread (any thread), consumed on
+       * the audio thread.
        */
-      float last_from_plugin = -1.f;
+      std::atomic<float> last_from_plugin{ -1.f };
 
       /**
        * Cross-thread bridge: audio thread stores normalized value with
@@ -387,7 +640,8 @@ protected:
       Entry (const Entry &) = delete;
       Entry &operator= (const Entry &) = delete;
       Entry (Entry &&other) noexcept
-          : last_from_plugin (other.last_from_plugin),
+          : last_from_plugin (
+              other.last_from_plugin.load (std::memory_order_relaxed)),
             pending_value (other.pending_value.load (std::memory_order_relaxed))
       {
       }
@@ -395,7 +649,9 @@ protected:
       {
         if (this != &other)
           {
-            last_from_plugin = other.last_from_plugin;
+            last_from_plugin.store (
+              other.last_from_plugin.load (std::memory_order_relaxed),
+              std::memory_order_relaxed);
             pending_value.store (
               other.pending_value.load (std::memory_order_relaxed),
               std::memory_order_relaxed);
@@ -407,10 +663,30 @@ protected:
     /** Parallel to ProcessorBase's live_params_. */
     std::vector<Entry> entries;
 
+    /** Whether any entry has a pending value (fast path for flushes). */
+    std::atomic<bool> dirty{ false };
+
     void prepare (size_t count) { entries.resize (count); }
   };
 
   ParamSync param_sync_;
+
+  // ============================================================================
+  // Main Thread Services
+  // ============================================================================
+
+  /**
+   * @brief Project-owned shared dispatcher for host-bound requests on the
+   * main thread, or nullptr when running without a project
+   * (headless/tests).
+   */
+  utils::MainThreadClosureDispatcher * main_thread_dispatcher_{};
+
+  /**
+   * @brief Handlers for host-bound requests on the main thread (empty
+   * std::function = the request is dropped).
+   */
+  PluginHostMainThreadCallbacks main_thread_callbacks_{};
 
   // ============================================================================
 
@@ -428,31 +704,40 @@ private:
   /** Whether plugin UI is opened or not. */
   bool visible_ = false;
 
+  /** Whether presenting the native editor is unavailable (see
+   * @ref set_native_ui_unavailable). */
+  bool native_ui_unavailable_ = false;
+
   /**
    * @brief Flag to error out if set_configuration() is called more than once.
    */
   bool set_configuration_called_{};
 
   /**
-   * @brief Timer that flushes plugin→host param changes on the main thread.
-   * Started in custom_prepare_for_processing(), stopped in
-   * custom_release_resources().
+   * @brief Weak self-reference used to drop pending main thread actions
+   * after the plugin is destroyed.
+   *
+   * Created at construction so that the QObject weak-reference control
+   * block is allocated up-front on the main thread — copying it in
+   * realtime code is then just an atomic increment (no allocations).
    */
-  utils::QObjectUniquePtr<QTimer> param_flush_timer_;
+  QPointer<const Plugin> self_guard_;
 };
 
 class CarlaNativePlugin;
 class JucePlugin;
 class ClapPlugin;
+class Vst3Plugin;
 class FaustPlugin;
 
-using PluginVariant = std::variant<JucePlugin, ClapPlugin, FaustPlugin>;
+using PluginVariant =
+  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin>;
 using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
 using PluginUuidReference = utils::TypedUuidReference<Plugin>;
 
 using PluginHostWindowFactory =
-  std::function<std::unique_ptr<plugins::IPluginHostWindow> (Plugin &)>;
+  std::function<std::unique_ptr<plugins::PluginHostWindow> (Plugin &)>;
 
 } // namespace zrythm::plugins
 

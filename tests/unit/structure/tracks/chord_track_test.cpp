@@ -43,7 +43,8 @@ TEST_F (ChordTrackTest, TransformChordExpandsSingleNoteToChord)
     src.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev = dsp::midi_event::make_note_off (0, 48, units::samples (10));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 48, units::samples (10));
     src.push_back (_ev.time_, _ev.data ());
   }
 

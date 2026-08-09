@@ -36,7 +36,6 @@ public:
    * @param create_plugin_instance_async_func Function to create plugin instance
    * @param sample_rate_provider Function to provide current sample rate
    * @param buffer_size_provider Function to provide current buffer size
-   * @param top_level_window_provider Factory for creating plugin host windows
    * @param parent Parent QObject
    */
   JucePlugin (
@@ -44,7 +43,6 @@ public:
     CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
     std::function<units::sample_rate_t ()> sample_rate_provider,
     std::function<units::sample_u32_t ()>  buffer_size_provider,
-    PluginHostWindowFactory                top_level_window_provider,
     QObject *                              parent = nullptr);
 
   ~JucePlugin () override;
@@ -65,7 +63,7 @@ protected:
   void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override;
 
   std::string save_state_impl () const override;
-  void        load_state_impl (const std::string &base64_state) override;
+  bool        load_state_impl (const std::string &base64_state) override;
 
 private Q_SLOTS:
   /**
@@ -74,11 +72,6 @@ private Q_SLOTS:
   void on_configuration_changed (
     PluginConfiguration * configuration,
     bool                  generateNewPluginPortsAndParams);
-
-  /**
-   * @brief Handle visibility changes.
-   */
-  void on_ui_visibility_changed ();
 
 private:
   /**
@@ -108,14 +101,12 @@ private:
   void sync_changed_params_to_juce () noexcept [[clang::nonblocking]];
 
   /**
-   * @brief Show the plugin's editor window.
+   * @brief Read back JUCE parameter values into Zrythm's base values.
+   *
+   * Called after a state load so Zrythm's parameters reflect the loaded
+   * state. Main thread only.
    */
-  void show_editor ();
-
-  /**
-   * @brief Hide the plugin's editor window.
-   */
-  void hide_editor ();
+  void sync_param_values_from_juce ();
 
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const JucePlugin &p);
@@ -128,9 +119,7 @@ private:
 
   CreatePluginInstanceAsyncFunc create_plugin_instance_async_func_;
 
-  std::unique_ptr<juce::AudioPluginInstance>  juce_plugin_;
-  std::unique_ptr<juce::AudioProcessorEditor> editor_;
-  std::unique_ptr<plugins::IPluginHostWindow> top_level_window_;
+  std::unique_ptr<juce::AudioPluginInstance> juce_plugin_;
 
   std::function<units::sample_rate_t ()> sample_rate_provider_;
   std::function<units::sample_u32_t ()>  buffer_size_provider_;
@@ -165,6 +154,31 @@ private:
   std::vector<ParameterMapping> parameter_mappings_;
 
   /**
+   * @brief Processor-level listener for change notifications.
+   *
+   * Parameter value changes are handled per-parameter via JuceParamListener;
+   * this listener handles processor-wide change flags (currently latency).
+   */
+  class JuceProcessorListener : public juce::AudioProcessorListener
+  {
+  public:
+    JuceProcessorListener (JucePlugin &parent) : parent_ (parent) { }
+
+    void audioProcessorParameterChanged (
+      juce::AudioProcessor * processor,
+      int                    parameterIndex,
+      float                  newValue) [[clang::blocking]] override;
+    void audioProcessorChanged (
+      juce::AudioProcessor * processor,
+      const ChangeDetails   &details) [[clang::blocking]] override;
+
+  private:
+    JucePlugin &parent_;
+  };
+
+  std::unique_ptr<JuceProcessorListener> processor_listener_;
+
+  /**
    * @brief Maps JUCE param index -> position in parameter_mappings_.
    * Built in create_parameters_from_juce_plugin() for O(1) lookup.
    */
@@ -177,20 +191,29 @@ private:
    */
   std::unordered_map<size_t, size_t> zrythm_param_index_to_mapping_;
 
+  /**
+   * @brief Reports a dropped plugin output event (audio-thread safe).
+   *
+   * The event violated the output contract (out-of-range param index or
+   * event position); the drop is counted and logged on the main thread at
+   * a bounded (power-of-two) rate.
+   */
+  void note_invalid_output_event_drop (std::string_view violation) noexcept;
+
+  /** Drop counter for note_invalid_output_event_drop(). */
+  std::atomic<uint32_t> invalid_output_event_drops_{ 0 };
+
   // Audio/MIDI buffer management
   std::vector<float *> input_channels_;
   std::vector<float *> output_channels_;
 
   bool juce_initialized_ = false;
-  bool editor_visible_ = false;
   bool plugin_loading_ = false;
 
   // Optional state to apply on instantiation (this is mainly used as a
   // temporary space to store the restored state temporarily until the plugin is
   // instantiated).
   std::optional<juce::MemoryBlock> state_to_apply_;
-
-  PluginHostWindowFactory top_level_window_provider_;
 };
 
 } // namespace zrythm::plugins

@@ -52,8 +52,8 @@ ChordTrack::transform_chord_and_append (
         {
           for (auto pitch : *pitches_opt)
             {
-              const auto ev =
-                dsp::midi_event::make_note_off (0, pitch, src_ev.time ());
+              const auto ev = dsp::midi_event::
+                make_note_off_with_default_velocity (0, pitch, src_ev.time ());
               if (
                 dest.size_in_bytes () + dsp::MidiEventBuffer::kHeaderSize
                   + ev.data ().size ()

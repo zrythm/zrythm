@@ -10,6 +10,7 @@
  */
 
 #include <ostream>
+#include <ranges>
 
 #include "utils/format_qt.h"
 
@@ -86,28 +87,39 @@ protected:
     }
   }
 
+  template <typename PortT>
+  static PortT * find_first_port_of_type (const auto &port_refs)
+  {
+    auto typed_ports =
+      port_refs | std::views::transform ([] (const auto &port_ref) {
+        return port_ref.template get_object_as<PortT> ();
+      })
+      | std::views::filter ([] (const PortT * port) { return port != nullptr; });
+    const auto it = typed_ports.begin ();
+    return it == typed_ports.end () ? nullptr : *it;
+  }
+
+  template <typename PortT>
+  static std::vector<PortT *> find_all_ports_of_type (const auto &port_refs)
+  {
+    return port_refs | std::views::transform ([] (const auto &port_ref) {
+             return port_ref.template get_object_as<PortT> ();
+           })
+           | std::views::filter ([] (const PortT * port) {
+               return port != nullptr;
+             })
+           | std::ranges::to<std::vector> ();
+  }
+
   static dsp::MidiPort * find_midi_input_port (plugins::Plugin &plugin)
   {
-    for (const auto &port_ref : plugin.get_input_ports ())
-      {
-        auto * midi_port = port_ref.get_object_as<dsp::MidiPort> ();
-        if (midi_port != nullptr)
-          return midi_port;
-      }
-    return nullptr;
+    return find_first_port_of_type<dsp::MidiPort> (plugin.get_input_ports ());
   }
 
   static std::vector<dsp::AudioPort *>
   find_audio_output_ports (plugins::Plugin &plugin)
   {
-    std::vector<dsp::AudioPort *> result;
-    for (const auto &port_ref : plugin.get_output_ports ())
-      {
-        auto * audio_port = port_ref.get_object_as<dsp::AudioPort> ();
-        if (audio_port != nullptr)
-          result.push_back (audio_port);
-      }
-    return result;
+    return find_all_ports_of_type<dsp::AudioPort> (plugin.get_output_ports ());
   }
 
   static dsp::graph::ProcessBlockInfo make_time_info (uint32_t num_frames = 256)
@@ -473,6 +485,149 @@ TEST_P (PluginParamSyncTest, NoFeedbackLoopOnRepeatedCycles)
         << "Parameter " << i << " drifted from " << values_before[i] << " to "
         << values_after[i];
     }
+}
+
+// ============================================================================
+// Chunk processing tests (loop-point splits pass a nonzero buffer offset)
+// ============================================================================
+
+class PluginChunkGainTest : public PluginIntegrationTestBase
+{
+};
+
+INSTANTIATE_TEST_SUITE_P (
+  TestGain,
+  PluginChunkGainTest,
+  testing::Values (
+    PluginTestParam{ "Test Gain", PluginTestParam::Format::CLAP },
+    PluginTestParam{ "Test Gain", PluginTestParam::Format::VST3 }));
+
+// When the graph splits a cycle at a loop point, the node is called with a
+// nonzero buffer offset: the plugin must receive exactly the chunk's input
+// frames, and its output must land at the chunk's position in the port
+// buffers
+TEST_P (PluginChunkGainTest, ProcessesCorrectChunkWhenBufferOffsetIsNonZero)
+{
+  auto * plugin = import_and_prepare_plugin (GetParam ());
+  ASSERT_NE (plugin, nullptr);
+
+  auto * audio_in =
+    find_first_port_of_type<dsp::AudioPort> (plugin->get_input_ports ());
+  const auto audio_outs = find_audio_output_ports (*plugin);
+  ASSERT_NE (audio_in, nullptr);
+  ASSERT_FALSE (audio_outs.empty ());
+  auto * audio_out = audio_outs.front ();
+
+  constexpr auto kOffset = 64u;
+  constexpr auto kNframes = 128u;
+  constexpr auto kBlockSize = 256u;
+  constexpr auto kSentinel = -1.f;
+
+  // Ramp on the input; sentinel on the output so writes outside the chunk
+  // are detected (process_block only clears the chunk region)
+  for (const auto ch : { 0, 1 })
+    {
+      for (const auto i : std::views::iota (0u, kBlockSize))
+        {
+          audio_in->buffers ()->setSample (
+            ch, static_cast<int> (i), static_cast<float> (i) / 256.f);
+          audio_out->buffers ()->setSample (ch, static_cast<int> (i), kSentinel);
+        }
+    }
+
+  auto      &transport = *owned_project_->transport_;
+  auto      &tempo_map = owned_project_->tempo_map ();
+  const auto transport_snapshot = transport.get_snapshot ();
+  const dsp::graph::ProcessBlockInfo time_nfo{
+    .transport_position_ = units::samples (0u),
+    .buffer_offset_ = units::samples (kOffset),
+    .nframes_ = units::samples (kNframes),
+  };
+  plugin->process_block (time_nfo, transport_snapshot, tempo_map);
+
+  for (const auto ch : { 0, 1 })
+    {
+      for (const auto i : std::views::iota (0u, kBlockSize))
+        {
+          const bool in_chunk = i >= kOffset && i < kOffset + kNframes;
+          // The fixtures default to unity gain: the chunk must be an exact
+          // copy
+          const float expected =
+            in_chunk ? static_cast<float> (i) / 256.f : kSentinel;
+          EXPECT_FLOAT_EQ (
+            audio_out->buffers ()->getSample (ch, static_cast<int> (i)),
+            expected)
+            << "ch " << ch << " sample " << i;
+        }
+    }
+}
+
+class PluginChunkSynthTest : public PluginIntegrationTestBase
+{
+};
+
+INSTANTIATE_TEST_SUITE_P (
+  TestSynth,
+  PluginChunkSynthTest,
+  testing::Values (
+    PluginTestParam{ "Test Synth", PluginTestParam::Format::CLAP },
+    PluginTestParam{ "Test Synth", PluginTestParam::Format::VST3 }));
+
+// The MIDI port buffer holds events for the whole cycle, so on loop-point
+// splits each chunk must only receive the events inside it, re-based to the
+// chunk start; plugin output events must be re-based back to cycle-relative
+// times (the fixtures echo note events to their note output)
+TEST_P (PluginChunkSynthTest, NoteEventsAreFilteredAndRebasedAroundChunkSplits)
+{
+  auto * plugin = import_and_prepare_plugin (GetParam ());
+  ASSERT_NE (plugin, nullptr);
+
+  auto * midi_in = find_midi_input_port (*plugin);
+  auto * midi_out =
+    find_first_port_of_type<dsp::MidiPort> (plugin->get_output_ports ());
+  const auto audio_outs = find_audio_output_ports (*plugin);
+  ASSERT_NE (midi_in, nullptr);
+  ASSERT_NE (midi_out, nullptr);
+  ASSERT_FALSE (audio_outs.empty ());
+
+  const auto note_on =
+    dsp::midi_event::make_note_on (0, 60, 100, units::samples (100u));
+  midi_in->buffer_.push_back (note_on.time_, note_on.data ());
+
+  auto      &transport = *owned_project_->transport_;
+  auto      &tempo_map = owned_project_->tempo_map ();
+  const auto transport_snapshot = transport.get_snapshot ();
+
+  // Chunk [0, 64) does not contain the note
+  const dsp::graph::ProcessBlockInfo first_chunk{
+    .transport_position_ = units::samples (0u),
+    .buffer_offset_ = units::samples (0u),
+    .nframes_ = units::samples (64u),
+  };
+  plugin->process_block (first_chunk, transport_snapshot, tempo_map);
+  EXPECT_TRUE (midi_out->buffer_.empty ())
+    << "Note outside the chunk was delivered to the plugin";
+  EXPECT_FALSE (
+    utils::audio::buffer_has_audio (*audio_outs.front ()->buffers (), 0, 64));
+
+  // Chunk [64, 192) contains the note at chunk-relative sample 36
+  const dsp::graph::ProcessBlockInfo second_chunk{
+    .transport_position_ = units::samples (0u),
+    .buffer_offset_ = units::samples (64u),
+    .nframes_ = units::samples (128u),
+  };
+  plugin->process_block (second_chunk, transport_snapshot, tempo_map);
+
+  ASSERT_EQ (midi_out->buffer_.size (), 1u);
+  const auto echoed = midi_out->buffer_.front ();
+  EXPECT_EQ (echoed.time (), units::samples (100u))
+    << "Echoed note was not re-based to the cycle timeline";
+  const auto echoed_data = echoed.data ();
+  ASSERT_GE (echoed_data.size (), 3u);
+  EXPECT_EQ (echoed_data[0], 0x90);
+  EXPECT_EQ (echoed_data[1], 60);
+  EXPECT_TRUE (
+    utils::audio::buffer_has_audio (*audio_outs.front ()->buffers (), 64, 128));
 }
 
 } // namespace zrythm::tests

@@ -54,7 +54,11 @@ target_compile_definitions(juce_lib
     JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
     JUCE_USE_MP3AUDIOFORMAT=1
     JUCE_WEB_BROWSER=0
-    JUCE_PLUGINHOST_VST3=1
+    # VST3 hosting/scanning is done natively via the VST3 SDK (see
+    # src/plugins/vst3_plugin_format.cpp and vst3_plugin.cpp); JUCE's VST3
+    # wrapper is disabled because it embeds its own copy of the SDK sources,
+    # which would clash with the sdk_hosting targets
+    JUCE_PLUGINHOST_VST3=0
     JUCE_PLUGINHOST_LADSPA=1
     JUCE_PLUGINHOST_AU=1
     JUCE_USE_CURL=0

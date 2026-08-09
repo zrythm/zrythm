@@ -410,7 +410,8 @@ SampleProcessor::queue_file_or_chord_preset (
           auto * pl = pl_ref.get_object_as<CarlaNativePlugin> ();
           pl->instantiate ();
           pl->activate (true);
-          z_return_if_fail (pl->midi_in_port_ && pl->l_out_ && pl->r_out_);
+          z_return_if_fail (
+            !pl->midi_in_ports_.empty () && pl->l_out_ && pl->r_out_);
 
           instrument_track->channel_->add_plugin (
             pl_ref,

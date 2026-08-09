@@ -57,7 +57,7 @@ public:
     ());
 };
 
-class MockAudioFormat : public juce::VST3PluginFormat
+class MockAudioFormat : public juce::AudioPluginFormat
 {
 public:
   MOCK_METHOD (juce::String, getName, (), (const override));
@@ -66,6 +66,45 @@ public:
     searchPathsForPlugins,
     (const juce::FileSearchPath &, bool, bool),
     (override));
+  bool canScanForPlugins () const override { return true; }
+  bool isTrivialToScan () const override { return false; }
+
+  void findAllTypesForFile (
+    juce::OwnedArray<juce::PluginDescription> &,
+    const juce::String &) override
+  {
+  }
+  void createPluginInstance (
+    const juce::PluginDescription &,
+    double,
+    int,
+    PluginCreationCallback callback) override
+  {
+    callback (nullptr, "unsupported");
+  }
+  bool fileMightContainThisPluginType (const juce::String &) override
+  {
+    return true;
+  }
+  juce::String
+  getNameOfPluginFromIdentifier (const juce::String &fileOrIdentifier) override
+  {
+    return fileOrIdentifier;
+  }
+  bool pluginNeedsRescanning (const juce::PluginDescription &) override
+  {
+    return false;
+  }
+  bool doesPluginStillExist (const juce::PluginDescription &) override
+  {
+    return true;
+  }
+  juce::FileSearchPath getDefaultLocationsToSearch () override { return {}; }
+  bool                 requiresUnblockedMessageThreadDuringCreation (
+    const juce::PluginDescription &) const override
+  {
+    return false;
+  }
 };
 
 class MockScanner : public juce::KnownPluginList::CustomScanner

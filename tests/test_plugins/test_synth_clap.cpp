@@ -106,17 +106,21 @@ public:
   bool     implementsNotePorts () const noexcept override { return true; }
   uint32_t notePortsCount (bool isInput) const noexcept override
   {
-    return isInput ? 1 : 0;
+    // Each variant additionally echoes incoming note events (in its own
+    // dialect) on an output port so hosts can verify note-output forwarding
+    return 1;
   }
   bool notePortsInfo (uint32_t index, bool isInput, clap_note_port_info * info)
     const noexcept override
   {
-    if (!isInput || index != 0)
+    if (index != 0)
       return false;
     info->id = 0;
     info->supported_dialects = SupportedDialects;
     info->preferred_dialect = SupportedDialects;
-    std::snprintf (info->name, sizeof (info->name), "%s", "Note Input");
+    std::snprintf (
+      info->name, sizeof (info->name), "%s",
+      isInput ? "Note Input" : "Note Output");
     return true;
   }
 
@@ -196,6 +200,8 @@ public:
   clap_process_status process (const clap_process * process) noexcept override
   {
     apply_events (process->in_events);
+    echo_note_events (
+      process->in_events, process->out_events, process->frames_count);
 
     const auto num_frames = process->frames_count;
     if (process->audio_outputs_count < 1)
@@ -210,6 +216,56 @@ public:
   }
 
 private:
+  static void echo_note_events (
+    const clap_input_events *  in,
+    const clap_output_events * out,
+    uint32_t                   frames_count) noexcept
+  {
+    const auto num_events = in->size (in);
+    for (uint32_t i = 0; i < num_events; ++i)
+      {
+        const auto * header = in->get (in, i);
+        if (header->space_id != CLAP_CORE_EVENT_SPACE_ID)
+          continue;
+        if constexpr (SupportedDialects == CLAP_NOTE_DIALECT_CLAP)
+          {
+            if (
+              header->type != CLAP_EVENT_NOTE_ON
+              && header->type != CLAP_EVENT_NOTE_OFF)
+              continue;
+            const auto * note =
+              reinterpret_cast<const clap_event_note *> (header);
+            // Key 127 requests a deliberately out-of-block echo so hosts
+            // can verify output event time validation
+            if (note->key == 127)
+              {
+                auto bad = *note;
+                bad.header.time = frames_count;
+                out->try_push (out, &bad.header);
+                continue;
+              }
+            out->try_push (out, header);
+          }
+        else
+          {
+            if (header->type != CLAP_EVENT_MIDI)
+              continue;
+            const auto * midi =
+              reinterpret_cast<const clap_event_midi *> (header);
+            // Key 127 requests a deliberately out-of-block echo so hosts
+            // can verify output event time validation
+            if ((midi->data[0] & 0xF0) == 0x90 && midi->data[1] == 127)
+              {
+                auto bad = *midi;
+                bad.header.time = frames_count;
+                out->try_push (out, &bad.header);
+                continue;
+              }
+            out->try_push (out, header);
+          }
+      }
+  }
+
   void apply_events (const clap_input_events * in) noexcept
   {
     const auto num_events = in->size (in);

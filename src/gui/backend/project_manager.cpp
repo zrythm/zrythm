@@ -7,9 +7,10 @@
 #include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
-#include "gui/backend/plugin_host_window.h"
 #include "gui/backend/project_manager.h"
 #include "gui/backend/project_session.h"
+#include "gui/backend/qt_plugin_host_window.h"
+#include "gui/backend/x11_plugin_host_window.h"
 #include "gui/backend/zrythm_application.h"
 #include "structure/tracks/track.h"
 #include "structure/tracks/tracklist.h"
@@ -17,6 +18,7 @@
 #include "utils/io_utils.h"
 #include "utils/version.h"
 
+#include <QGuiApplication>
 #include <QtConcurrentRun>
 
 using namespace std::chrono_literals;
@@ -134,26 +136,40 @@ ProjectManager::getRecentProjects () const
   return recent_projects_model_;
 }
 
-std::unique_ptr<plugins::IPluginHostWindow>
+std::unique_ptr<plugins::PluginHostWindow>
 ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
 {
   auto track_ref =
     this->active_session_->project ()->tracklist ()->get_track_for_plugin (
       plugin.get_uuid ());
-  auto ret = std::make_unique<plugins::JuceDocumentPluginHostWindow> (
-    utils::Utf8String::from_utf8_encoded_string (
-      fmt::format (
-        "{} - {} [{}]",
-        track_ref.has_value ()
-          ? track_ref->get ()->name ()
-          : QObject::tr ("<no track>"),
-        plugin.get_node_name (),
-        plugin.configuration ()->descriptor ()->format ())),
-    [&plugin] () {
-      z_debug (
-        "close button pressed on '{}' plugin window", plugin.get_node_name ());
-      plugin.setUiVisible (false);
-    });
+  const auto title = utils::Utf8String::from_utf8_encoded_string (
+    fmt::format (
+      "{} - {} [{}]",
+      track_ref.has_value ()
+        ? track_ref->get ()->name ()
+        : QObject::tr ("<no track>"),
+      plugin.get_node_name (),
+      plugin.configuration ()->descriptor ()->format ()));
+  // Plugin editors need X11 windows. Under Wayland sessions Qt would create
+  // Wayland surfaces, so use a raw X11 window (via XWayland); everywhere else
+  // Qt's platform matches the plugin windowing system (xcb, Win32, Cocoa)
+  std::unique_ptr<plugins::PluginHostWindow> ret;
+  if (QGuiApplication::platformName ().startsWith (u"wayland"))
+    {
+      auto x11_window = std::make_unique<X11PluginHostWindow> (plugin);
+      if (!x11_window->is_valid ())
+        {
+          // No usable X connection - the plugin falls back to the generic UI
+          z_warning ("X11 host window unavailable (no X server?)");
+          return nullptr;
+        }
+      ret = std::move (x11_window);
+    }
+  else
+    {
+      ret = std::make_unique<QtPluginHostWindow> (plugin);
+    }
+  ret->setTitle (title.to_qstring ());
   return ret;
 }
 

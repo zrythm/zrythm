@@ -144,7 +144,8 @@ TEST_F (PortObserverTest, MidiMultipleEvents)
     port->buffer_.push_back (_ev1.time_, _ev1.data ());
   }
   {
-    const auto _ev2 = midi_event::make_note_off (0, 60, units::samples (100));
+    const auto _ev2 = midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100));
     port->buffer_.push_back (_ev2.time_, _ev2.data ());
   }
   {

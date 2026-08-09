@@ -146,7 +146,9 @@ TEST_F (PolyVoiceManagerTest, NoteOffMatchesPitchAndChannel)
 
   // Note-off on channel 0 only releases the channel-0 voice
   auto buf2 = make_buffer ();
-  push_event (buf2, midi_event::make_note_off (0, 60, units::samples (0u)));
+  push_event (
+    buf2,
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (0u)));
   manager_.process (output_, buf2, units::samples (0u), units::samples (256u));
 
   EXPECT_EQ (v0->note_off_count_, 1);

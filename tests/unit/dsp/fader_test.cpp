@@ -260,7 +260,8 @@ TEST_F (FaderTest, MidiProcessing)
   const auto ev2 =
     dsp::midi_event::make_note_on (0, 64, 90, units::samples (10));
   midi_in.buffer_.push_back (ev2.time_, ev2.data ());
-  const auto ev3 = dsp::midi_event::make_note_off (0, 60, units::samples (100));
+  const auto ev3 = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 60, units::samples (100));
   midi_in.buffer_.push_back (ev3.time_, ev3.data ());
 
   // Set gain parameter

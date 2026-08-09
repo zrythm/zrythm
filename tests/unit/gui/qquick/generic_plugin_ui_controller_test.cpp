@@ -24,6 +24,10 @@ protected:
   public:
     using plugins::InternalPluginBase::InternalPluginBase;
     bool hasNativeUi () const override { return true; }
+    void force_native_ui_unavailable (bool unavailable)
+    {
+      set_native_ui_unavailable (unavailable);
+    }
   };
 
   void SetUp () override
@@ -90,6 +94,20 @@ TEST_F (GenericPluginUiControllerTest, SkipsPluginsWithNativeUi)
   auto plugin = make_plugin<PluginWithNativeUi> ();
   controller_->trackPluginUiVisibility (plugin.get ());
   plugin->setUiVisible (true);
+  EXPECT_EQ (controller_->rowCount (), 0);
+}
+
+TEST_F (GenericPluginUiControllerTest, ShowsRowWhenNativeUiBecomesUnavailable)
+{
+  auto plugin = make_plugin<PluginWithNativeUi> ();
+  controller_->trackPluginUiVisibility (plugin.get ());
+  plugin->setUiVisible (true);
+  EXPECT_EQ (controller_->rowCount (), 0);
+
+  plugin->force_native_ui_unavailable (true);
+  EXPECT_EQ (controller_->rowCount (), 1);
+
+  plugin->force_native_ui_unavailable (false);
   EXPECT_EQ (controller_->rowCount (), 0);
 }
 

@@ -8,6 +8,7 @@
 
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
+#include "gui/backend/plugin_header_qml.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "utils/backtrace.h"
 #include "utils/directory_manager.h"
@@ -541,6 +542,9 @@ ZrythmApplication::setup_ui ()
 
   // Create and show the main window
   impl_->qml_engine_ = utils::make_qobject_unique<QQmlApplicationEngine> (this);
+  // Plugin window header bars share the main engine so their QML follows
+  // runtime theme changes (QML singletons are per-engine)
+  set_plugin_header_qml_engine (impl_->qml_engine_.get ());
   // KDDockWidgets::QtQuick::Platform::instance ()->setQmlEngine (&engine);
 
   // ${RESOURCE_PREFIX} from CMakeLists.txt

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <cassert>
 #include <utility>
 
 #include "utils/format_qt.h"
@@ -25,28 +26,21 @@ JucePlugin::JucePlugin (
   CreatePluginInstanceAsyncFunc          create_plugin_instance_async_func,
   std::function<units::sample_rate_t ()> sample_rate_provider,
   std::function<units::sample_u32_t ()>  buffer_size_provider,
-  PluginHostWindowFactory                top_level_window_provider,
   QObject *                              parent)
     : Plugin (registry, parent),
       create_plugin_instance_async_func_ (
         std::move (create_plugin_instance_async_func)),
       sample_rate_provider_ (std::move (sample_rate_provider)),
-      buffer_size_provider_ (std::move (buffer_size_provider)),
-      top_level_window_provider_ (std::move (top_level_window_provider))
+      buffer_size_provider_ (std::move (buffer_size_provider))
 {
   // Connect to configuration changes
   connect (
     this, &Plugin::configurationChanged, this,
     &JucePlugin::on_configuration_changed);
 
-  // Connect to UI visibility changes
-  connect (
-    this, &Plugin::uiVisibleChanged, this,
-    &JucePlugin::on_ui_visibility_changed);
-
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
-  bypass_id_ = bypass_ref.id ();
+  set_bypass_id (bypass_ref.id ());
   auto gain_ref = generate_default_gain_param ();
   add_parameter (gain_ref);
   gain_id_ = gain_ref.id ();
@@ -54,25 +48,22 @@ JucePlugin::JucePlugin (
 
 JucePlugin::~JucePlugin ()
 {
-  if (editor_)
-    {
-      hide_editor ();
-    }
-
   if (juce_plugin_)
     {
+      juce_plugin_->removeListener (processor_listener_.get ());
       juce_plugin_->releaseResources ();
     }
 }
 
 void
 JucePlugin::on_configuration_changed (
-  PluginConfiguration * configuration,
-  bool                  generateNewPluginPortsAndParams)
+  PluginConfiguration *,
+  bool generateNewPluginPortsAndParams)
 {
   // Reinitialize plugin with new configuration
   if (juce_plugin_)
     {
+      juce_plugin_->removeListener (processor_listener_.get ());
       juce_plugin_->releaseResources ();
       juce_plugin_.reset ();
       parameter_mappings_.clear ();
@@ -86,20 +77,9 @@ JucePlugin::on_configuration_changed (
 bool
 JucePlugin::hasNativeUi () const
 {
-  return juce_plugin_ != nullptr && juce_plugin_->hasEditor ();
-}
-
-void
-JucePlugin::on_ui_visibility_changed ()
-{
-  if (uiVisible () && !editor_visible_)
-    {
-      show_editor ();
-    }
-  else if (!uiVisible () && editor_visible_)
-    {
-      hide_editor ();
-    }
+  // JUCE-hosted plugins use the generic UI only: hosting JUCE editors
+  // natively is no longer supported
+  return false;
 }
 
 void
@@ -138,6 +118,8 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
         }
 
       juce_plugin_ = std::move (instance);
+      processor_listener_ = std::make_unique<JuceProcessorListener> (*this);
+      juce_plugin_->addListener (processor_listener_.get ());
 
       try
         {
@@ -174,25 +156,7 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
               // Deserialization: the state blob is the authoritative source.
               // Read back JUCE parameter values (which reflect the loaded
               // state) and update Zrythm's baseValues to match.
-              int updated = 0;
-              for (const auto &mapping : parameter_mappings_)
-                {
-                  if (mapping.juce_param && mapping.zrythm_param)
-                    {
-                      const auto old_base = mapping.zrythm_param->baseValue ();
-                      const auto new_val = mapping.juce_param->getValue ();
-                      if (!utils::math::floats_near (old_base, new_val, 0.001f))
-                        {
-                          mapping.zrythm_param->setBaseValue (new_val);
-                          ++updated;
-                          z_trace (
-                            "JUCE: state-load updated param '{}' "
-                            "old={:.4f} new={:.4f}",
-                            mapping.zrythm_param->label (), old_base, new_val);
-                        }
-                    }
-                }
-              z_debug ("JUCE: state-load read back {} params", updated);
+              sync_param_values_from_juce ();
             }
 
           juce_initialized_ = true;
@@ -200,13 +164,6 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
 
           z_info ("Successfully loaded JUCE plugin: {}", get_name ());
           Q_EMIT instantiationFinished (true, {});
-          Q_EMIT hasNativeUiChanged ();
-          // If the UI was requested while instantiation was in progress,
-          // show the editor now
-          if (uiVisible ())
-            {
-              on_ui_visibility_changed ();
-            }
         }
       catch (const std::exception &e)
         {
@@ -472,7 +429,7 @@ JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
   juce_midi_buffer_.clear ();
 
   // Process MIDI input if available
-  auto * midi_in = midi_in_port_;
+  auto * midi_in = midi_in_ports_.empty () ? nullptr : midi_in_ports_.front ();
   if ((midi_in != nullptr) && juce_plugin_->acceptsMidi ())
     {
       for (const auto &ev : midi_in->buffer_)
@@ -480,9 +437,11 @@ JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
           if (ev.time () >= local_offset && ev.time () < local_offset + nframes)
             {
               auto d = ev.data ();
+              // The port buffer holds cycle-relative times; JUCE expects
+              // positions relative to the chunk-sized MIDI buffer
               juce_midi_buffer_.addEvent (
                 d.data (), static_cast<int> (d.size ()),
-                ev.time ().in<int> (units::samples));
+                (ev.time () - local_offset).in<int> (units::samples));
             }
         }
     }
@@ -534,13 +493,28 @@ JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
     }
 
   // Process MIDI output if available
-  auto * midi_out = midi_out_port_;
+  auto * midi_out =
+    midi_out_ports_.empty () ? nullptr : midi_out_ports_.front ();
   if ((midi_out != nullptr) && juce_plugin_->producesMidi ())
     {
       for (const auto &ev : juce_midi_buffer_)
         {
+          // Plugin-reported positions must lie within the processed block
+          // (checked before the unsigned conversion: a negative position
+          // would wrap)
+          if (
+            ev.samplePosition < 0
+            || ev.samplePosition >= nframes.in<int> (units::samples))
+            [[unlikely]]
+            {
+              note_invalid_output_event_drop ("event position out of range"sv);
+              continue;
+            }
+          // JUCE reports chunk-relative positions; the MIDI port buffer
+          // holds cycle-relative times
           midi_out->buffer_.push_back (
-            units::samples (ev.samplePosition),
+            units::samples (static_cast<uint32_t> (ev.samplePosition))
+              + local_offset,
             std::span<const midi_byte_t>{
               reinterpret_cast<const midi_byte_t *> (ev.data),
               static_cast<size_t> (ev.numBytes) });
@@ -569,13 +543,30 @@ JucePlugin::sync_changed_params_to_juce () noexcept
       auto &entry = param_sync_.entries[change.index];
       if (
         utils::math::floats_equal (
-          change.modulated_value, entry.last_from_plugin))
+          change.modulated_value,
+          entry.last_from_plugin.load (std::memory_order_relaxed)))
         {
           entry.last_from_plugin = -1.f;
           continue;
         }
 
       mapping.juce_param->setValue (change.modulated_value);
+    }
+}
+
+void
+JucePlugin::note_invalid_output_event_drop (std::string_view violation) noexcept
+{
+  const auto drops =
+    invalid_output_event_drops_.fetch_add (1, std::memory_order_relaxed) + 1;
+  if (drops == 1 || (drops & (drops - 1)) == 0)
+    {
+      post_main_thread_action ([this, drops, violation] {
+        z_warning (
+          "JUCE plugin '{}': dropped {} invalid output event(s) so far "
+          "(last: {})",
+          get_name (), drops, violation);
+      });
     }
 }
 
@@ -593,8 +584,7 @@ JucePlugin::JuceParamListener::parameterValueChanged (
     return;
 
   const size_t param_index = mapping.zrythm_param_index;
-  auto        &entry = parent_.param_sync_.entries[param_index];
-  entry.pending_value.store (newValue, std::memory_order_release);
+  parent_.set_param_pending_from_plugin (param_index, newValue);
 
   if (
     juce::MessageManager::getInstanceWithoutCreating ()
@@ -608,7 +598,21 @@ JucePlugin::JuceParamListener::parameterValueChanged (
     {
       // Audio thread (during processBlock): set feedback guard for the
       // next cycle's sync_changed_params_to_juce().
-      entry.last_from_plugin = newValue;
+      if (param_index >= parent_.param_sync_.entries.size ()) [[unlikely]]
+        {
+          // Events can arrive before param_sync_ is prepared (e.g.,
+          // while the plugin changes parameters during state restore
+          // at project load); those are safe to drop. With a prepared
+          // param_sync_, an out-of-range index comes from the plugin's
+          // own parameter reporting
+          if (!parent_.param_sync_.entries.empty ())
+            {
+              parent_.note_invalid_output_event_drop (
+                "param index out of range"sv);
+            }
+          return;
+        }
+      parent_.param_sync_.entries[param_index].last_from_plugin = newValue;
     }
 }
 
@@ -620,39 +624,23 @@ JucePlugin::JuceParamListener::parameterGestureChanged (
 }
 
 void
-JucePlugin::show_editor ()
+JucePlugin::JuceProcessorListener::audioProcessorParameterChanged (
+  juce::AudioProcessor * processor,
+  int                    parameterIndex,
+  float                  newValue)
 {
-  if (!juce_plugin_ || editor_visible_)
-    return;
-
-  if (!juce_plugin_->hasEditor ())
-    return;
-
-  z_debug ("creating editor for {}", get_name ());
-  editor_ = std::unique_ptr<juce::AudioProcessorEditor> (
-    juce_plugin_->createEditorAndMakeActive ());
-
-  if (editor_)
-    {
-      editor_->setVisible (true);
-
-      top_level_window_ = top_level_window_provider_ (*this);
-      top_level_window_->setJuceComponentContentNonOwned (editor_.get ());
-
-      editor_visible_ = true;
-    }
+  // Parameter values are tracked per-parameter via JuceParamListener
 }
 
 void
-JucePlugin::hide_editor ()
+JucePlugin::JuceProcessorListener::audioProcessorChanged (
+  juce::AudioProcessor * processor,
+  const ChangeDetails   &details)
 {
-  if (!editor_)
-    return;
-
-  editor_->setVisible (false);
-  top_level_window_.reset ();
-  editor_.reset ();
-  editor_visible_ = false;
+  if (details.latencyChanged)
+    {
+      parent_.notify_latency_changed ();
+    }
 }
 
 std::string
@@ -667,10 +655,48 @@ JucePlugin::save_state_impl () const
 }
 
 void
+JucePlugin::sync_param_values_from_juce ()
+{
+  int updated = 0;
+  for (const auto &mapping : parameter_mappings_)
+    {
+      if (mapping.juce_param && mapping.zrythm_param)
+        {
+          const auto old_base = mapping.zrythm_param->baseValue ();
+          const auto new_val = mapping.juce_param->getValue ();
+          if (!utils::math::floats_near (old_base, new_val, 0.001f))
+            {
+              mapping.zrythm_param->setBaseValue (new_val);
+              ++updated;
+              z_trace (
+                "JUCE: state-load updated param '{}' "
+                "old={:.4f} new={:.4f}",
+                mapping.zrythm_param->label (), old_base, new_val);
+            }
+        }
+    }
+  z_debug ("JUCE: state-load read back {} params", updated);
+}
+
+bool
 JucePlugin::load_state_impl (const std::string &base64_state)
 {
-  state_to_apply_.emplace ();
-  state_to_apply_->fromBase64Encoding (base64_state);
+  juce::MemoryBlock state_data;
+  state_data.fromBase64Encoding (base64_state);
+
+  if (juce_plugin_ == nullptr)
+    {
+      // Not instantiated yet - apply during instantiation
+      state_to_apply_ = std::move (state_data);
+      return true;
+    }
+
+  // Instantiated: apply immediately and sync Zrythm's base values from the
+  // loaded state (JUCE's setStateInformation reports no failure)
+  juce_plugin_->setStateInformation (
+    state_data.getData (), static_cast<int> (state_data.getSize ()));
+  sync_param_values_from_juce ();
+  return true;
 }
 
 void

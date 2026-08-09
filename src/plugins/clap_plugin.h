@@ -5,8 +5,6 @@
 
 #include "plugins/plugin.h"
 
-#include <QTimer>
-
 #include <clap/clap.h>
 #include <clap/helpers/host.hh>
 
@@ -68,7 +66,7 @@ public:
     const noexcept override;
 
   // clap_host_latency
-  bool implementsLatency () const noexcept override { return false; }
+  bool implementsLatency () const noexcept override { return true; }
   void latencyChanged () noexcept override;
 
   // clap_host_thread_check
@@ -91,7 +89,12 @@ public:
   bool posixFdSupportUnregisterFd (int fd) noexcept override;
 
   // clap_host_thread_pool
-  bool implementsThreadPool () const noexcept override { return true; }
+  // TODO: populate threadPool_ with worker threads and advertise the pool
+  // (threadPoolRequestExec currently has no consumers, so advertising it
+  // would deadlock the audio thread for numTasks > 1). The spec permits
+  // hosts not to offer a thread pool; plugins must then fall back to their
+  // own threading.
+  bool implementsThreadPool () const noexcept override { return false; }
   bool threadPoolRequestExec (uint32_t numTasks) noexcept override;
 
   // clap_host_state
@@ -144,7 +147,7 @@ private Q_SLOTS:
   /**
    * @brief Handle visibility changes.
    */
-  void on_ui_visibility_changed ();
+  void on_ui_visibility_changed () override;
 
 private:
   /**
@@ -177,12 +180,31 @@ private:
   QByteArray save_state_to_byte_array () const;
 
   std::string save_state_impl () const override;
-  void        load_state_impl (const std::string &base64_state) override;
+  bool        load_state_impl (const std::string &base64_state) override;
 
   /**
    * @brief Applies state from a QByteArray to the CLAP plugin.
    */
-  void apply_state_from_byte_array (const QByteArray &data);
+  bool apply_state_from_byte_array (const QByteArray &data);
+
+  /**
+   * @brief Flushes parameter updates and syncs Zrythm parameter values to
+   * match.
+   *
+   * Calls paramsFlush() with empty input events (per the CLAP spec, plugins
+   * may defer parameter updates until the next paramsFlush() after a state
+   * load), then reads the resulting values back into Zrythm's baseValues.
+   * Main thread only; the plugin must be instantiated and inactive.
+   */
+  void flush_and_sync_params_when_inactive ();
+
+  /**
+   * @brief Reads all parameter values from the plugin into Zrythm's
+   * baseValues.
+   *
+   * Main thread only; the plugin must be instantiated.
+   */
+  void sync_param_values_from_plugin ();
 
 private:
   class ClapPluginImpl;
@@ -190,17 +212,6 @@ private:
 
   /** Pending state to apply after plugin initialization (from JSON). */
   std::optional<QByteArray> state_to_apply_;
-
-  /**
-   * @brief Reverse mapping from Zrythm ProcessorParameter pointer to CLAP
-   * param ID.
-   *
-   * Populated incrementally during paramsRescan() on the main thread.
-   * Read on the audio thread during process_impl(). Safe because audio
-   * processing starts after prepare_plugin_for_processing(), which is called
-   * after the map is built.
-   */
-  std::unordered_map<dsp::ProcessorParameter *, clap_id> zrythm_to_clap_;
 };
 
 } // namespace zrythm::plugins

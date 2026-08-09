@@ -76,7 +76,8 @@ push_note_on (
 void
 push_note_off (MidiPort &port, midi_byte_t channel, midi_byte_t pitch)
 {
-  const auto ev = midi_event::make_note_off (channel, pitch, units::samples (0));
+  const auto ev = midi_event::make_note_off_with_default_velocity (
+    channel, pitch, units::samples (0));
   port.buffer_.push_back (ev.time_, ev.data ());
 }
 

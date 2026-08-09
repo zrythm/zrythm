@@ -19,7 +19,7 @@ InternalPluginBase::InternalPluginBase (
 
   auto bypass_ref = generate_default_bypass_param ();
   add_parameter (bypass_ref);
-  bypass_id_ = bypass_ref.id ();
+  set_bypass_id (bypass_ref.id ());
   auto gain_ref = generate_default_gain_param ();
   add_parameter (gain_ref);
   gain_id_ = gain_ref.id ();

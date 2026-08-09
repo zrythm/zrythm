@@ -86,7 +86,9 @@ MidiTimelineDataCache::add_midi_sequence (
   for (const auto &[key, time] : missing_note_offs)
     {
       validated.push_back (
-        midi_event::make_note_off (key.first, key.second, time));
+        midi_event::make_note_off_with_default_velocity (
+          static_cast<midi_byte_t> (key.first),
+          static_cast<midi_byte_t> (key.second), time));
     }
 
   z_trace (

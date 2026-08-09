@@ -392,7 +392,7 @@ FaustPlugin::process_instrument (dsp::graph::ProcessBlockInfo time_info) noexcep
 
   synth_buffer_.clear (local_offset, nframes);
   const auto &midi_events =
-    midi_in_port_ != nullptr ? midi_in_port_->buffer_ : empty_midi_buffer_;
+    midi_in_ports_.empty () ? empty_midi_buffer_ : midi_in_ports_.front ()->buffer_;
   voice_manager_.process (
     synth_buffer_, midi_events, time_info.buffer_offset_, time_info.nframes_);
 

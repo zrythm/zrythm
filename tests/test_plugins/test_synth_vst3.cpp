@@ -30,6 +30,7 @@ public:
       return res;
 
     addEventInput (STR16 ("Event Input"), 1);
+    addEventOutput (STR16 ("Event Output"), 1);
     addAudioOutput (STR16 ("Output"), SpeakerArr::kStereo);
     parameters.addParameter (
       STR16 ("Level"), STR16 (""), 0, 1.0, ParameterInfo::kCanAutomate,
@@ -117,9 +118,27 @@ public:
             if (data.inputEvents->getEvent (i, event) != kResultOk)
               continue;
             if (event.type == Event::kNoteOnEvent)
-              synth_.note_on (event.noteOn.pitch, event.noteOn.velocity);
+              {
+                note_off_level_.store (0.0);
+                synth_.note_on (event.noteOn.pitch, event.noteOn.velocity);
+              }
             else if (event.type == Event::kNoteOffEvent)
-              synth_.note_off (event.noteOff.pitch);
+              {
+                synth_.note_off (event.noteOff.pitch);
+                // Expose the note-off velocity as a DC offset so hosts can
+                // verify it is delivered verbatim
+                note_off_level_.store (event.noteOff.velocity);
+              }
+            // Echo note events so hosts can verify note-output forwarding
+            // and event-time handling
+            if (
+              data.outputEvents != nullptr
+              && (event.type == Event::kNoteOnEvent || event.type == Event::kNoteOffEvent))
+              {
+                Event echoed = event;
+                echoed.busIndex = 0;
+                data.outputEvents->addEvent (echoed);
+              }
           }
       }
 
@@ -136,6 +155,15 @@ public:
     std::fill_n (right, data.numSamples, 0.0f);
     synth_.process (
       left, right, static_cast<uint32_t> (data.numSamples), gain_.load ());
+    const auto dc = static_cast<float> (note_off_level_.load ());
+    if (dc != 0.0f)
+      {
+        for (int32 i = 0; i < data.numSamples; ++i)
+          {
+            left[i] += dc;
+            right[i] += dc;
+          }
+      }
     return kResultOk;
   }
 
@@ -147,6 +175,7 @@ public:
 private:
   SineSynth           synth_;
   std::atomic<double> gain_{ 1.0 };
+  std::atomic<double> note_off_level_{ 0.0 };
 };
 
 } // namespace zrythm_test_plugins

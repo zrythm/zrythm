@@ -41,7 +41,7 @@ void
 GenericPluginUiController::evaluate (plugins::Plugin * plugin)
 {
   const bool should_show =
-    plugin->uiVisible () && !plugin->hasNativeUi ()
+    plugin->uiVisible () && !plugin->hasPresentableNativeUi ()
     && plugin->instantiationStatus ()
          == plugins::Plugin::InstantiationStatus::Successful;
 

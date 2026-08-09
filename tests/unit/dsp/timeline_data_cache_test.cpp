@@ -43,9 +43,9 @@ TEST_F (MidiTimelineDataCacheTest, ClearMethod)
   // Add a MIDI sequence first
   std::vector<SampleBasedMidiEvent> seq{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (1)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (1)),
     midi_event::make_note_on (0, 64, 127, units::samples (2)),
-    midi_event::make_note_off (0, 64, units::samples (3)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (3)),
   };
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
@@ -67,9 +67,9 @@ TEST_F (MidiTimelineDataCacheTest, AddSequenceAndFinalize)
   // Add MIDI sequence and finalize
   std::vector<SampleBasedMidiEvent> seq{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (1)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (1)),
     midi_event::make_note_on (0, 64, 127, units::samples (2)),
-    midi_event::make_note_off (0, 64, units::samples (3)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (3)),
   };
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
@@ -84,12 +84,12 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_NoOverlap)
   // Create sequences that match their intervals
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (25)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (25)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (160)),
-    midi_event::make_note_off (0, 64, units::samples (175)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (175)),
   };
 
   // Add sequences that don't overlap with removal interval
@@ -117,22 +117,22 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_PartialOverla
   // Create sequences that match their intervals
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (50)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (90)),
-    midi_event::make_note_off (0, 64, units::samples (170)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (170)),
   };
 
   std::vector<SampleBasedMidiEvent> seq3{
     midi_event::make_note_on (0, 67, 127, units::samples (160)),
-    midi_event::make_note_off (0, 67, units::samples (240)),
+    midi_event::make_note_off_with_default_velocity (0, 67, units::samples (240)),
   };
 
   std::vector<SampleBasedMidiEvent> seq4{
     midi_event::make_note_on (0, 69, 127, units::samples (210)),
-    midi_event::make_note_off (0, 69, units::samples (290)),
+    midi_event::make_note_off_with_default_velocity (0, 69, units::samples (290)),
   };
 
   // Add sequences with various overlaps
@@ -164,17 +164,17 @@ TEST_F (MidiTimelineDataCacheTest, RemoveSequencesMatchingInterval_FullyContaine
   // Create sequences that match their intervals
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (25)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (25)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (70)),
-    midi_event::make_note_off (0, 64, units::samples (85)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (85)),
   };
 
   std::vector<SampleBasedMidiEvent> seq3{
     midi_event::make_note_on (0, 67, 127, units::samples (110)),
-    midi_event::make_note_off (0, 67, units::samples (140)),
+    midi_event::make_note_off_with_default_velocity (0, 67, units::samples (140)),
   };
 
   // Add sequences where one is fully contained within removal interval
@@ -207,12 +207,12 @@ TEST_F (
   // Two adjacent clips: R1 at [0, 100) and R2 at [100, 200)
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (10)),
-    midi_event::make_note_off (0, 60, units::samples (90)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (90)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (110)),
-    midi_event::make_note_off (0, 64, units::samples (190)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (190)),
   };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
@@ -239,12 +239,12 @@ TEST_F (
 {
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (10)),
-    midi_event::make_note_off (0, 60, units::samples (90)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (90)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (110)),
-    midi_event::make_note_off (0, 64, units::samples (190)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (190)),
   };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq1);
@@ -268,17 +268,17 @@ TEST_F (MidiTimelineDataCacheTest, MultipleAddRemoveOperations)
   // Create sequences that match their intervals
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (50)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (70)),
-    midi_event::make_note_off (0, 64, units::samples (140)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (140)),
   };
 
   std::vector<SampleBasedMidiEvent> seq3{
     midi_event::make_note_on (0, 67, 127, units::samples (110)),
-    midi_event::make_note_off (0, 67, units::samples (190)),
+    midi_event::make_note_off_with_default_velocity (0, 67, units::samples (190)),
   };
 
   // Add multiple overlapping sequences
@@ -320,7 +320,7 @@ TEST_F (MidiTimelineDataCacheTest, ReversedIntervalThrows)
 {
   std::vector<SampleBasedMidiEvent> seq{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (10)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (10)),
   };
 
   EXPECT_THROW (
@@ -395,8 +395,8 @@ TEST_F (MidiTimelineDataCacheTest, AdjacentSamePitchNotesNoSpuriousNoteOff)
       0, 60, static_cast<midi_byte_t> (90), units::samples (0)),
     midi_event::make_note_on (
       0, 60, static_cast<midi_byte_t> (90), units::samples (100)),
-    midi_event::make_note_off (0, 60, units::samples (100)),
-    midi_event::make_note_off (0, 60, units::samples (200)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (100)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (200)),
   };
 
   // Confirm the problematic ordering: noteOn@100 before noteOff@100
@@ -425,8 +425,8 @@ TEST_F (
       0, 60, static_cast<midi_byte_t> (90), units::samples (0)),
     midi_event::make_note_on (
       0, 60, static_cast<midi_byte_t> (90), units::samples (100)),
-    midi_event::make_note_off (0, 60, units::samples (100)),
-    midi_event::make_note_off (0, 60, units::samples (200)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (100)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (200)),
   };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (200) }, seq);
@@ -455,12 +455,12 @@ TEST_F (MidiTimelineDataCacheTest, CachedRangesSignalOnFinalize)
 
   std::vector<SampleBasedMidiEvent> seq1{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (25)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (25)),
   };
 
   std::vector<SampleBasedMidiEvent> seq2{
     midi_event::make_note_on (0, 64, 127, units::samples (110)),
-    midi_event::make_note_off (0, 64, units::samples (150)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (150)),
   };
 
   cache->add_midi_sequence ({ units::samples (0), units::samples (50) }, seq1);
@@ -494,9 +494,9 @@ TEST_F (MidiTimelineDataCacheTest, CachedRangesClearedOnClear)
 {
   std::vector<SampleBasedMidiEvent> seq{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (50)),
     midi_event::make_note_on (0, 64, 127, units::samples (60)),
-    midi_event::make_note_off (0, 64, units::samples (80)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (80)),
   };
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();
@@ -526,9 +526,9 @@ TEST_F (MidiTimelineDataCacheTest, ConstCorrectness)
 {
   std::vector<SampleBasedMidiEvent> seq{
     midi_event::make_note_on (0, 60, 127, units::samples (0)),
-    midi_event::make_note_off (0, 60, units::samples (50)),
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (50)),
     midi_event::make_note_on (0, 64, 127, units::samples (60)),
-    midi_event::make_note_off (0, 64, units::samples (80)),
+    midi_event::make_note_off_with_default_velocity (0, 64, units::samples (80)),
   };
   cache->add_midi_sequence ({ units::samples (0), units::samples (100) }, seq);
   cache->finalize_changes ();

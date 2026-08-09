@@ -10,6 +10,7 @@
 
 #include <QSignalSpy>
 
+#include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
 
 #include "unit/actions/mock_undo_stack.h"
@@ -119,18 +120,8 @@ protected:
   // Helper to create a mock window provider
   plugins::PluginHostWindowFactory create_mock_window_provider ()
   {
-    return [] (plugins::Plugin &) {
-      class MockWindow : public plugins::IPluginHostWindow
-      {
-      public:
-        void setJuceComponentContentNonOwned (juce::Component *) override { }
-        void setSizeAndCenter (int, int) override { }
-        void setSize (int, int) override { }
-        void setVisible (bool) override { }
-        WId  getEmbedWindowId () const override { return 0; }
-      };
-      return std::make_unique<MockWindow> ();
-    };
+    return test_helpers::make_mock_plugin_host_window_factory (
+      std::make_shared<test_helpers::MockPluginHostWindowState> ());
   }
 
   // Helper to create a test plugin descriptor
@@ -175,12 +166,17 @@ protected:
       .sample_rate_provider_ = [this] () { return sample_rate_; },
       .buffer_size_provider_ = [this] () { return buffer_size_; },
       .top_level_window_provider_ = create_mock_window_provider (),
+      .main_thread_dispatcher_ = main_dispatcher_,
     };
 
     return std::make_unique<plugins::PluginFactory> (std::move (factory_deps));
   }
 
-  utils::ObjectRegistry                               registry_;
+  utils::ObjectRegistry              registry_;
+  QObject                            dispatcher_context_;
+  utils::MainThreadClosureDispatcher main_dispatcher_{
+    dispatcher_context_, std::chrono::milliseconds{ 10 }
+  };
   std::unique_ptr<structure::tracks::SingletonTracks> singleton_tracks_;
   std::unique_ptr<structure::tracks::TrackCollection> track_collection_;
   std::unique_ptr<structure::tracks::TrackRouting>    track_routing_;

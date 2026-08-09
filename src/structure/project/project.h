@@ -22,6 +22,9 @@
 #include "structure/scenes/clip_playback_service.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/tracklist.h"
+#include "utils/main_thread_dispatcher.h"
+
+#include <QTimer>
 
 namespace zrythm::dsp
 {
@@ -236,6 +239,28 @@ public:
 
   /** Audio file pool. */
   std::unique_ptr<dsp::AudioPool> pool_;
+
+  /**
+   * @brief Shared dispatcher for closures plugins need to run on the main
+   * thread (e.g. latency change notifications).
+   *
+   * @note Must be freed after the tracklist (which owns the plugins), so
+   * placed before it: plugins must never post to an already-destroyed
+   * dispatcher.
+   */
+  utils::MainThreadClosureDispatcher main_thread_dispatcher_;
+
+  /**
+   * @brief Handlers for plugin requests towards the host on the main
+   * thread, shared with all plugins.
+   */
+  plugins::PluginHostMainThreadCallbacks main_thread_callbacks_;
+
+  /**
+   * @brief Timer that flushes plugin-reported parameter values to Zrythm
+   * params for all plugins (~20ms).
+   */
+  utils::QObjectUniquePtr<QTimer> plugin_param_flush_timer_;
 
   /** Manager for clip link groups. */
   // structure::arrangement::ClipLinkGroupManager clip_link_group_manager_;

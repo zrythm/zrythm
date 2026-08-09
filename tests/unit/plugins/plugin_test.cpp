@@ -23,7 +23,7 @@ public:
   {
     auto bypass_ref = generate_default_bypass_param ();
     add_parameter (bypass_ref);
-    bypass_id_ = bypass_ref.id ();
+    set_bypass_id (bypass_ref.id ());
     auto gain_ref = generate_default_gain_param ();
     add_parameter (gain_ref);
     gain_id_ = gain_ref.id ();
@@ -55,8 +55,21 @@ public:
     last_time_info_ = time_info;
   }
 
-  std::string save_state_impl () const override { return {}; }
-  void        load_state_impl (const std::string &) override { }
+  std::string save_state_impl () const override
+  {
+    if (return_empty_state_)
+      return {};
+    return std::to_string (save_count_++);
+  }
+  bool load_state_impl (const std::string &state) override
+  {
+    loaded_states_.push_back (state);
+    return true;
+  }
+
+  mutable int              save_count_ = 0;
+  bool                     return_empty_state_ = false;
+  std::vector<std::string> loaded_states_;
 
   bool                         prepare_called_ = false;
   bool                         process_called_ = false;
@@ -95,6 +108,86 @@ protected:
   std::unique_ptr<dsp::graph_test::MockTransport> mock_transport_;
   std::unique_ptr<dsp::TempoMap>                  tempo_map_;
 };
+
+TEST_F (PluginTest, BypassedPropertyReflectsBypassParameter)
+{
+  auto * bypass = plugin_->bypassParameter ();
+  ASSERT_NE (bypass, nullptr);
+  ASSERT_FALSE (plugin_->bypassed ());
+
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  int  bypassed_change_count = 0;
+  bool last_bypassed = false;
+  QObject::connect (
+    plugin_.get (), &Plugin::bypassedChanged, plugin_.get (),
+    [&] (bool bypassed) {
+      last_bypassed = bypassed;
+      ++bypassed_change_count;
+    });
+
+  // The property write API updates the bypass parameter
+  plugin_->setBypassed (true);
+  EXPECT_TRUE (bypass->range ().isToggled (bypass->baseValue ()));
+  EXPECT_EQ (bypassed_change_count, 1);
+
+  // External parameter writes (automation, undo, plugin GUI) are
+  // re-emitted as bypassedChanged for QML bindings
+  bypass->setBaseValue (0.f);
+  EXPECT_FALSE (plugin_->bypassed ());
+  EXPECT_EQ (bypassed_change_count, 2);
+  EXPECT_FALSE (last_bypassed);
+
+  bypass->setBaseValue (1.f);
+  EXPECT_TRUE (plugin_->bypassed ());
+  EXPECT_EQ (bypassed_change_count, 3);
+  EXPECT_TRUE (last_bypassed);
+}
+
+// bypassedChanged must fire when the bypass parameter changes even before
+// the plugin is prepared for processing (e.g. right after project load),
+// or QML bypassed bindings go stale
+TEST_F (PluginTest, BypassedChangedEmittedBeforePrepare)
+{
+  int bypassed_change_count = 0;
+  QObject::connect (
+    plugin_.get (), &Plugin::bypassedChanged, plugin_.get (),
+    [&] (bool) { ++bypassed_change_count; });
+
+  plugin_->setBypassed (true);
+  EXPECT_EQ (bypassed_change_count, 1);
+}
+
+TEST_F (PluginTest, AbSwitchSwapsStateSlots)
+{
+  EXPECT_FALSE (plugin_->abActive ());
+
+  // Empty state is a no-op
+  plugin_->return_empty_state_ = true;
+  plugin_->switchAbState ();
+  EXPECT_FALSE (plugin_->abActive ());
+  EXPECT_TRUE (plugin_->loaded_states_.empty ());
+
+  plugin_->return_empty_state_ = false;
+
+  // First switch: B becomes active, initialized as a copy of the current
+  // state without a load
+  plugin_->switchAbState ();
+  EXPECT_TRUE (plugin_->abActive ());
+  EXPECT_TRUE (plugin_->loaded_states_.empty ());
+
+  // Second switch: saves B, restores A
+  plugin_->switchAbState ();
+  EXPECT_FALSE (plugin_->abActive ());
+  ASSERT_EQ (plugin_->loaded_states_.size (), 1);
+  EXPECT_EQ (plugin_->loaded_states_.at (0), "0");
+
+  // Third switch: saves A, restores B
+  plugin_->switchAbState ();
+  EXPECT_TRUE (plugin_->abActive ());
+  ASSERT_EQ (plugin_->loaded_states_.size (), 2);
+  EXPECT_EQ (plugin_->loaded_states_.at (1), "1");
+}
 
 TEST_F (PluginTest, ConstructionAndBasicProperties)
 {

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -7,6 +7,7 @@
 #include "plugins/clap_plugin.h"
 #include "plugins/faust/faust_plugin.h"
 #include "plugins/juce_plugin.h"
+#include "plugins/vst3_plugin.h"
 
 namespace zrythm::plugins
 {
@@ -22,6 +23,10 @@ plugin_base_to_ptr_variant (Plugin * pl) -> PluginPtrVariant
   if (auto * clap = qobject_cast<ClapPlugin *> (pl))
     {
       return clap;
+    }
+  if (auto * vst3 = qobject_cast<Vst3Plugin *> (pl))
+    {
+      return vst3;
     }
   if (auto * juce = qobject_cast<JucePlugin *> (pl))
     {

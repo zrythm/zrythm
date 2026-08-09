@@ -13,6 +13,7 @@
 
 #include "actions/plugin_importer.h"
 #include "actions/track_creator.h"
+#include "controllers/project_json_serializer.h"
 #include "controllers/project_loader.h"
 #include "controllers/project_saver.h"
 #include "plugins/faust/faust_registry.h"
@@ -23,6 +24,7 @@
 
 #include <QSignalSpy>
 
+#include "helpers/mock_plugin_host_window.h"
 #include "helpers/project_fixture.h"
 #include "helpers/project_json_comparators.h"
 #include "helpers/qt_helpers.h"
@@ -30,6 +32,8 @@
 
 #include <gtest/gtest.h>
 #include <juce_core/juce_core.h>
+#include <public.sdk/source/vst/utility/memoryibstream.h>
+#include <public.sdk/source/vst/vstpresetfile.h>
 
 namespace zrythm::controllers
 {
@@ -55,27 +59,29 @@ decode_test_clap_state (const QByteArray &raw_state)
 /**
  * @brief Decodes a VST3 test plugin state blob.
  *
- * VST3 state blobs are JUCE's `VST3PluginState` binary XML whose
- * `IEditController` child holds the base64-encoded controller state (a single
- * raw little-endian double written by the test plugin via IBStreamer).
+ * VST3 state blobs use the standard .vstpreset container format
+ * (Vst::PresetFile); the controller state chunk holds a single raw
+ * little-endian double written by the test plugin via IBStreamer.
  */
 static std::map<std::string, float>
-decode_test_vst3_state (const void * data, size_t size)
+decode_test_vst3_state (const QByteArray &raw_state)
 {
-  const auto xml =
-    juce::AudioProcessor::getXmlFromBinary (data, static_cast<int> (size));
-  if (xml == nullptr)
+  Steinberg::ResizableMemoryIBStream stream;
+  stream.write (
+    const_cast<char *> (raw_state.constData ()),
+    static_cast<Steinberg::int32> (raw_state.size ()), nullptr);
+  stream.rewind ();
+  Steinberg::Vst::PresetFile preset (&stream);
+  if (!preset.readChunkList () || !preset.seekToControllerState ())
     return {};
-  const auto * controller_state = xml->getChildByName ("IEditController");
-  if (controller_state == nullptr)
+  double           value = 0.0;
+  Steinberg::int32 bytes_read = 0;
+  if (
+    stream.read (
+      &value, static_cast<Steinberg::int32> (sizeof (value)), &bytes_read)
+      != Steinberg::kResultOk
+    || bytes_read != static_cast<Steinberg::int32> (sizeof (value)))
     return {};
-  juce::MemoryBlock mem;
-  if (!mem.fromBase64Encoding (controller_state->getAllSubText ()))
-    return {};
-  if (mem.getSize () != sizeof (double))
-    return {};
-  double value = 0.0;
-  std::memcpy (&value, mem.getData (), sizeof (value));
   return {
     { "level", static_cast<float> (value) }
   };
@@ -97,19 +103,10 @@ get_test_plugin_state_from_json (
     return {};
 
   const auto state_str = plugin_json["state"].get<std::string> ();
-  if (protocol == plugins::Protocol::ProtocolType::VST3)
-    {
-      // JucePlugin states are encoded with juce::MemoryBlock's base64 format
-      // ("<byte size>." prefix + custom alphabet), so use JUCE's matching
-      // decoder.
-      juce::MemoryBlock mem;
-      if (!mem.fromBase64Encoding (state_str))
-        return {};
-      return decode_test_vst3_state (mem.getData (), mem.getSize ());
-    }
-
   const auto raw =
     QByteArray::fromBase64 (QByteArray::fromStdString (state_str));
+  if (protocol == plugins::Protocol::ProtocolType::VST3)
+    return decode_test_vst3_state (raw);
   return decode_test_clap_state (raw);
 }
 
@@ -364,7 +361,7 @@ protected:
             << static_cast<int> (descriptor.protocol_);
 
           // Decode the state blob and verify the parameter values. For VST3,
-          // the blob is JUCE's VST3PluginState XML; for CLAP, the raw bytes
+          // the blob is a .vstpreset container; for CLAP, the raw bytes
           // written by the plugin's stateSave.
           if (
             descriptor.protocol_ == plugins::Protocol::ProtocolType::CLAP
@@ -659,8 +656,8 @@ TEST_F (ProjectSerializationRoundtripTest, LoadProjectWithVst3Plugin)
     plugins::PluginDescriptor::from_juce_description (*juce_desc);
   ASSERT_NE (descriptor, nullptr);
 
-  // 2 built-in (bypass + gain) + 1 plugin param (Gain)
-  save_load_save_roundtrip_with_plugin (*descriptor, 3);
+  // 2 built-in (bypass + gain) + 2 plugin params (Level, CC Assign)
+  save_load_save_roundtrip_with_plugin (*descriptor, 4);
 }
 
 /**
@@ -926,5 +923,132 @@ TEST_F (
         << "). Plugin state blob should be the source of truth over the host's baseValue.";
     }
 }
+
+/**
+ * @brief Parametrized over the test GUI plugins of each native protocol.
+ */
+class ProjectPluginUiRestoreTest
+    : public ProjectSerializationRoundtripTest,
+      public testing::WithParamInterface<std::string_view>
+{
+};
+
+/**
+ * @brief A plugin saved with a visible editor gets its editor restored on
+ * project load, but only after loading finishes.
+ *
+ * Native window creation requires a fully loaded project, so the editor
+ * restore triggered by a plugin deserialized with visible UI is delivered
+ * via a queued invocation rather than synchronously during deserialization.
+ */
+TEST_P (ProjectPluginUiRestoreTest, LoadWithVisibleUiRestoresEditorDeferred)
+{
+  const auto plugin_name = juce::String::fromUTF8 (
+    GetParam ().data (), static_cast<int> (GetParam ().size ()));
+
+  auto juce_desc = test_helpers::find_test_clap_plugin_by_name (plugin_name);
+  if (juce_desc == nullptr)
+    juce_desc = test_helpers::find_test_vst3_plugin_by_name (plugin_name);
+  ASSERT_NE (juce_desc, nullptr)
+    << "Test GUI plugin '" << plugin_name << "' not found";
+
+  auto descriptor =
+    plugins::PluginDescriptor::from_juce_description (*juce_desc);
+  ASSERT_NE (descriptor, nullptr);
+
+  // === Step 1: Create a project with the plugin's editor shown ===
+  auto original_window_state =
+    std::make_shared<test_helpers::MockPluginHostWindowState> ();
+  auto bundle = std::make_unique<ProjectBundle> ();
+  bundle->project = create_minimal_project (
+    test_helpers::make_mock_plugin_host_window_factory (original_window_state));
+  ASSERT_NE (bundle->project, nullptr);
+  bundle->project->add_default_tracks ();
+  bundle->ui_state = utils::make_qobject_unique<
+    structure::project::ProjectUiState> (*bundle->project, *app_settings_);
+  bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [proj = bundle->project.get ()] (
+      const std::function<void ()> &action, bool recalculate_graph) {
+      proj->engine ()->execute_function_with_paused_processing_synchronously (
+        action, recalculate_graph);
+    },
+    nullptr);
+
+  bool instantiation_finished = false;
+  auto handler = [&instantiation_finished] (plugins::PluginUuidReference) {
+    instantiation_finished = true;
+  };
+
+  auto * tracklist = bundle->project->tracklist ();
+  auto   track_creator = std::make_unique<actions::TrackCreator> (
+    *bundle->undo_stack, *bundle->project->track_factory_,
+    *tracklist->collection (), *tracklist->trackRouting (),
+    *tracklist->singletonTracks (), bundle->project.get ());
+  auto importer = std::make_unique<actions::PluginImporter> (
+    *bundle->undo_stack, *bundle->project->plugin_factory_, *track_creator,
+    std::move (handler), bundle->project.get ());
+
+  importer->importPluginToNewTrack (&*descriptor);
+  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (instantiation_finished);
+
+  auto &registry = bundle->project->get_registry ();
+  ASSERT_EQ (registry.count_matching<plugins::Plugin> (), 1);
+  plugins::Plugin * plugin = nullptr;
+  registry.for_each_matching<plugins::Plugin> ([&] (plugins::Plugin &pl) {
+    plugin = &pl;
+  });
+  ASSERT_NE (plugin, nullptr);
+
+  plugin->setUiVisible (true);
+  ASSERT_TRUE (original_window_state->visible)
+    << "Editor did not appear after requesting visible UI";
+
+  // === Step 2: Serialize, then deserialize into a fresh project ===
+  const auto json = ProjectJsonSerializer::serialize (
+    *bundle->project, *bundle->ui_state, *bundle->undo_stack, TEST_APP_VERSION,
+    "test");
+
+  importer.reset ();
+  track_creator.reset ();
+  bundle.reset ();
+
+  auto loaded_window_state =
+    std::make_shared<test_helpers::MockPluginHostWindowState> ();
+  auto loaded_bundle = std::make_unique<ProjectBundle> ();
+  loaded_bundle->project = create_minimal_project (
+    test_helpers::make_mock_plugin_host_window_factory (loaded_window_state));
+  loaded_bundle->ui_state =
+    utils::make_qobject_unique<structure::project::ProjectUiState> (
+      *loaded_bundle->project, *app_settings_);
+  loaded_bundle->undo_stack = utils::make_qobject_unique<undo::UndoStack> (
+    [proj = loaded_bundle->project.get ()] (
+      const std::function<void ()> &action, bool recalculate_graph) {
+      proj->engine ()->execute_function_with_paused_processing_synchronously (
+        action, recalculate_graph);
+    },
+    nullptr);
+
+  ProjectLoader::deserialize (
+    json, *loaded_bundle->project, *loaded_bundle->ui_state,
+    *loaded_bundle->undo_stack);
+
+  // Native windows must not be created during deserialization: the editor
+  // restore is queued so that project loading finishes first
+  EXPECT_EQ (loaded_window_state->window, nullptr);
+  EXPECT_FALSE (loaded_window_state->visible);
+  process_events_until_true ([&] { return loaded_window_state->visible; });
+}
+
+INSTANTIATE_TEST_SUITE_P (
+  GuiPlugins,
+  ProjectPluginUiRestoreTest,
+  testing::
+    Values (std::string_view ("Test GUI CLAP"), std::string_view ("Test GUI")),
+  [] (const testing::TestParamInfo<std::string_view> &info) {
+    return info.param.find ("CLAP") != std::string_view::npos
+             ? std::string ("Clap")
+             : std::string ("Vst3");
+  });
 
 } // namespace zrythm::controllers

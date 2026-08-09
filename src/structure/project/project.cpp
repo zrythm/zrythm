@@ -73,6 +73,16 @@ Project::Project (
                        ProjectPath::AudioFilePoolDir);
           },
           [this] () { return audio_engine_->sample_rate (); })),
+      main_thread_dispatcher_ (*this, std::chrono::milliseconds{ 20 }),
+      main_thread_callbacks_ (
+        plugins::PluginHostMainThreadCallbacks{
+          .latency_recalc_ = [this] { graph_dispatcher_.recalc_graph (true); },
+          .with_paused_processing_ =
+            [this] (std::function<void ()> func) {
+              audio_engine_
+                ->execute_function_with_paused_processing_synchronously (
+                  std::move (func), false);
+            } }),
       tracklist_ (
         utils::make_qobject_unique<
           structure::tracks::Tracklist> (project_registry_, this)),
@@ -126,6 +136,8 @@ Project::Project (
             .buffer_size_provider_ =
               [this] () { return audio_engine_->block_length (); },
             .top_level_window_provider_ = plugin_host_window_provider_,
+            .main_thread_dispatcher_ = main_thread_dispatcher_,
+            .main_thread_callbacks_ = main_thread_callbacks_,
           },
           this)),
       track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {
@@ -166,6 +178,23 @@ Project::Project (
         }())
 {
   audio_engine_->set_monitor_out_source (monitor_fader_.get_stereo_out_port ());
+
+  // Flush plugin-reported parameter values to Zrythm params for all
+  // plugins on a single shared timer. This also visits plugins not
+  // currently in the project (e.g. held by the undo stack), which is a
+  // no-op for them: pending values can only be stored while the plugin is
+  // prepared (entries are bounds-checked against live params and cleared
+  // on release)
+  // TODO: the registry grows with undo history, so this iteration gets
+  // slower over a session — eventually iterate only the plugins of tracks
+  // currently in the project instead (needs a tracklist->plugins accessor)
+  plugin_param_flush_timer_ = utils::make_qobject_unique<QTimer> (this);
+  QObject::connect (
+    plugin_param_flush_timer_.get (), &QTimer::timeout, this, [this] {
+      project_registry_.for_each_matching<plugins::Plugin> (
+        [] (plugins::Plugin &plugin) { plugin.flush_plugin_values (); });
+    });
+  plugin_param_flush_timer_->start (std::chrono::milliseconds{ 20 });
 
   QObject::connect (
     audio_engine_.get (), &dsp::AudioEngine::sampleRateChanged,

@@ -5,6 +5,7 @@
 
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/plugin_scan_manager.h"
+#include "plugins/vst3_plugin_format.h"
 #include "utils/file_path_list.h"
 #include "utils/logger.h"
 #include "utils/qt.h"
@@ -38,7 +39,7 @@ protected:
   void                              SetUp () override
   {
     format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
-    format_manager_->addFormat (std::make_unique<juce::VST3PluginFormat> ());
+    format_manager_->addFormat (std::make_unique<Vst3PluginFormat> ());
     format_manager_->addFormat (std::make_unique<CLAPPluginFormat> ());
 
     known_plugins_ = std::make_shared<juce::KnownPluginList> ();
@@ -136,42 +137,6 @@ TEST_F (TestPluginsScanTest, ScanAllTestVst3Plugins)
     }
 
   EXPECT_EQ (successful_scans, TEST_VST3_PLUGINS_COUNT);
-}
-
-TEST_F (TestPluginsScanTest, InstantiateTestVst3Plugins)
-{
-  auto search_paths = get_vst3_search_paths ();
-  ASSERT_FALSE (search_paths->empty ());
-
-  auto * vst3_format = find_format ("VST3");
-  ASSERT_NE (vst3_format, nullptr);
-
-  auto juce_search_paths = search_paths->get_as_juce_file_search_path ();
-  auto plugin_identifiers =
-    vst3_format->searchPathsForPlugins (juce_search_paths, false, false);
-
-  int successful_instantiations = 0;
-  for (const auto &identifier : plugin_identifiers)
-    {
-      juce::OwnedArray<juce::PluginDescription> descriptions;
-      vst3_format->findAllTypesForFile (descriptions, identifier);
-
-      for (const auto * desc : descriptions)
-        {
-          juce::String error;
-          auto         instance =
-            format_manager_->createPluginInstance (*desc, 44100.0, 512, error);
-
-          if (instance)
-            {
-              successful_instantiations++;
-              EXPECT_GT (instance->getTotalNumOutputChannels (), 0);
-            }
-        }
-    }
-
-  EXPECT_EQ (successful_instantiations, TEST_VST3_PLUGINS_COUNT)
-    << "Not all test VST3 plugins could be instantiated";
 }
 
 // ============================================================================

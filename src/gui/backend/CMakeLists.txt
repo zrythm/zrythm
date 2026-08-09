@@ -22,12 +22,12 @@ target_sources(zrythm_gui_lib
     global_state.h
     plugin_collections.h
     plugin_collections.cpp
-    plugin_host_window.h
-    plugin_host_window.cpp
     plugin_manager.h
     plugin_manager.cpp
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
+    plugin_header_qml.h
+    plugin_header_qml.cpp
     project_exporter.h
     project_exporter.cpp
     project_info.h
@@ -38,6 +38,8 @@ target_sources(zrythm_gui_lib
     project_session.cpp
     project_templates_model.h
     project_templates_model.cpp
+    qt_plugin_host_window.h
+    qt_plugin_host_window.cpp
     # realtime_property.h
     recent_projects_model.h
     recent_projects_model.cpp
@@ -49,8 +51,17 @@ target_sources(zrythm_gui_lib
     ui.cpp
     unified_proxy_model.h
     unified_proxy_model.cpp
+    x11_plugin_host_window.h
+    x11_plugin_host_window.cpp
     zrythm_application.h
     zrythm_application.cpp
+)
+
+# X11 headers define macros like None/Bool/Status that break other
+# translation units when unity builds batch this file together with them
+set_source_files_properties(
+  x11_plugin_host_window.cpp
+  PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON
 )
 
 add_subdirectory(io)

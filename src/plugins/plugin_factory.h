@@ -39,7 +39,13 @@ public:
   struct InstantiationFinishOptions
   {
     InstantiationFinishedHandler handler_;
-    QObject *                    handler_context_{};
+
+    /**
+     * Context object for the handler connection (the handler is invoked on
+     * this object's thread, and the connection is removed when it is
+     * destroyed). May be nullptr, in which case the plugin itself is used.
+     */
+    QObject * handler_context_{};
   };
 
   struct CommonFactoryDependencies
@@ -50,6 +56,8 @@ public:
     std::function<units::sample_rate_t ()> sample_rate_provider_;
     std::function<units::sample_u32_t ()>  buffer_size_provider_;
     plugins::PluginHostWindowFactory       top_level_window_provider_;
+    utils::MainThreadClosureDispatcher    &main_thread_dispatcher_;
+    PluginHostMainThreadCallbacks          main_thread_callbacks_{};
   };
 
   PluginFactory () = delete;
@@ -88,7 +96,9 @@ private:
     auto build ()
     {
       auto obj_ref = [&] () {
-        if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
+        if constexpr (
+          std::is_same_v<PluginT, plugins::ClapPlugin>
+          || std::is_same_v<PluginT, plugins::Vst3Plugin>)
           {
             return utils::create_object<PluginT> (
               dependencies_.registry, dependencies_.registry,
@@ -106,10 +116,13 @@ private:
               dependencies_.registry, dependencies_.registry,
               dependencies_.create_plugin_instance_async_func_,
               dependencies_.sample_rate_provider_,
-              dependencies_.buffer_size_provider_,
-              dependencies_.top_level_window_provider_);
+              dependencies_.buffer_size_provider_);
           }
       }();
+
+      obj_ref.template get_object_as<PluginT> ()->set_main_thread_services (
+        dependencies_.main_thread_dispatcher_,
+        dependencies_.main_thread_callbacks_);
 
       if (instantiation_finish_options_.has_value ())
         {
@@ -121,7 +134,9 @@ private:
           auto * plugin = obj_ref.get ();
           QObject::connect (
             plugin, &zrythm::plugins::Plugin::instantiationFinished,
-            instantiation_finish_opts.handler_context_,
+            instantiation_finish_opts.handler_context_ != nullptr
+              ? instantiation_finish_opts.handler_context_
+              : plugin,
             [obj_ref,
              instantiation_finish_opts] (bool successful, const QString &error) {
               instantiation_finish_opts.handler_ (obj_ref, successful, error);
@@ -158,24 +173,31 @@ public:
   template <typename PluginT>
   std::unique_ptr<PluginT> build_for_deserialization () const
   {
-    if constexpr (std::is_same_v<PluginT, plugins::ClapPlugin>)
-      {
-        return std::make_unique<PluginT> (
-          dependencies_.registry, dependencies_.top_level_window_provider_);
-      }
-    else if constexpr (std::derived_from<PluginT, plugins::InternalPluginBase>)
-      {
-        return std::make_unique<PluginT> (dependencies_.registry);
-      }
-    else
-      {
-        return std::make_unique<PluginT> (
-          dependencies_.registry,
-          dependencies_.create_plugin_instance_async_func_,
-          dependencies_.sample_rate_provider_,
-          dependencies_.buffer_size_provider_,
-          dependencies_.top_level_window_provider_);
-      }
+    auto obj = [&] () -> std::unique_ptr<PluginT> {
+      if constexpr (
+        std::is_same_v<PluginT, plugins::ClapPlugin>
+        || std::is_same_v<PluginT, plugins::Vst3Plugin>)
+        {
+          return std::make_unique<PluginT> (
+            dependencies_.registry, dependencies_.top_level_window_provider_);
+        }
+      else if constexpr (std::derived_from<PluginT, plugins::InternalPluginBase>)
+        {
+          return std::make_unique<PluginT> (dependencies_.registry);
+        }
+      else
+        {
+          return std::make_unique<PluginT> (
+            dependencies_.registry,
+            dependencies_.create_plugin_instance_async_func_,
+            dependencies_.sample_rate_provider_,
+            dependencies_.buffer_size_provider_);
+        }
+    }();
+    obj->set_main_thread_services (
+      dependencies_.main_thread_dispatcher_,
+      dependencies_.main_thread_callbacks_);
+    return obj;
   }
 
 public:
@@ -193,6 +215,13 @@ public:
     if (protocol == plugins::Protocol::ProtocolType::CLAP)
       {
         return get_builder<plugins::ClapPlugin> ()
+          .with_setting (setting)
+          .with_instantiation_finished_options (instantiation_finish_options)
+          .build ();
+      }
+    if (protocol == plugins::Protocol::ProtocolType::VST3)
+      {
+        return get_builder<plugins::Vst3Plugin> ()
           .with_setting (setting)
           .with_instantiation_finished_options (instantiation_finish_options)
           .build ();

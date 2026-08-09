@@ -644,7 +644,7 @@ CarlaNativePlugin::process_impl (const ProcessBlockInfo time_nfo)
   }
 
   /* get main midi port */
-  auto port = midi_in_port_;
+  auto * port = midi_in_ports_.empty () ? nullptr : midi_in_ports_.front ();
 
   constexpr int                           MAX_EVENTS = 4000;
   std::array<NativeMidiEvent, MAX_EVENTS> events;

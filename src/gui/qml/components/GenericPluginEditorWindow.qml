@@ -11,12 +11,15 @@ import Zrythm
 Window {
   id: root
 
+  // Nullable: assigned by the Instantiator after delegate construction.
+  // The content components require a non-null plugin and are only
+  // instantiated while one is set (see the Loader below)
   property Plugin plugin: null
 
   color: palette.window
-  // Tool windows are always kept on top of their (transient) parent while
-  // leaving the parent focusable
-  flags: Qt.Tool
+  // Match the native plugin host windows: normal frame, kept above the
+  // main window
+  flags: Qt.Window | Qt.WindowStaysOnTopHint
   height: 480
   minimumHeight: 160
   minimumWidth: 280
@@ -32,22 +35,24 @@ Window {
     });
   }
 
-  ColumnLayout {
+  Loader {
     anchors.fill: parent
-    anchors.margins: 8
-    spacing: 4
+    active: root.plugin !== null
 
-    Label {
-      Layout.fillWidth: true
-      elide: Text.ElideRight
-      font.bold: true
-      text: root.plugin ? root.plugin.configuration.descriptor.name : ""
-    }
+    sourceComponent: ColumnLayout {
+      spacing: 0
 
-    PluginParameterListView {
-      Layout.fillHeight: true
-      Layout.fillWidth: true
-      plugin: root.plugin
+      PluginWindowHeaderBar {
+        Layout.fillWidth: true
+        plugin: root.plugin
+      }
+
+      PluginParameterListView {
+        Layout.fillHeight: true
+        Layout.fillWidth: true
+        Layout.margins: 8
+        plugin: root.plugin
+      }
     }
   }
 }

@@ -40,7 +40,8 @@ TEST_F (MidiEventTest, EventComparison)
 {
   auto ev1 = dsp::midi_event::make_note_on (0, 60, 100, units::samples (42));
   auto ev2 = dsp::midi_event::make_note_on (0, 60, 100, units::samples (42));
-  auto ev3 = dsp::midi_event::make_note_off (0, 60, units::samples (42));
+  auto ev3 = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 60, units::samples (42));
 
   EXPECT_TRUE (ev1 == ev2);
   EXPECT_FALSE (ev1 == ev3);
@@ -51,10 +52,14 @@ TEST_F (MidiEventTest, SortWithNoteOffPriorityNoteOffBeforeNoteOn)
   std::vector<SampleBasedMidiEvent> events;
   events.push_back (
     dsp::midi_event::make_note_on (0, 60, 100, units::samples (10)));
-  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (10)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (10)));
   events.push_back (
     dsp::midi_event::make_note_on (0, 64, 80, units::samples (10)));
-  events.push_back (dsp::midi_event::make_note_off (0, 64, units::samples (20)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (20)));
 
   dsp::midi_event::sort_with_note_off_priority (events);
 
@@ -86,7 +91,9 @@ TEST_F (MidiEventTest, SortWithNoteOffPriorityMixedOffTypesBeforeNoteOn)
   std::vector<SampleBasedMidiEvent> events;
   events.push_back (
     dsp::midi_event::make_note_on (0, 60, 100, units::samples (10)));
-  events.push_back (dsp::midi_event::make_note_off (0, 64, units::samples (10)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (10)));
   events.push_back (
     dsp::midi_event::make_note_on (0, 67, 90, units::samples (10)));
   events.push_back (
@@ -105,7 +112,9 @@ TEST_F (MidiEventTest, SortWithNoteOffPriorityDifferentTimestampsPreserved)
   std::vector<SampleBasedMidiEvent> events;
   events.push_back (
     dsp::midi_event::make_note_on (0, 64, 80, units::samples (20)));
-  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (10)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (10)));
   events.push_back (
     dsp::midi_event::make_note_on (0, 60, 100, units::samples (10)));
 
@@ -176,7 +185,9 @@ TEST_F (MidiEventTest, EventSorting)
   std::vector<SampleBasedMidiEvent> vec;
   vec.push_back (
     dsp::midi_event::make_note_on (0, 60, 100, units::samples (20)));
-  vec.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (10)));
+  vec.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (10)));
   vec.push_back (dsp::midi_event::make_note_on (0, 62, 90, units::samples (5)));
 
   dsp::midi_event::sort (vec);
@@ -187,8 +198,8 @@ TEST_F (MidiEventTest, EventSorting)
   EXPECT_EQ (vec.at (2).time_, units::samples (20));
 
   // Verify stable sort preserves insertion order at same time
-  auto same_time_note_off =
-    dsp::midi_event::make_note_off (0, 64, units::samples (10));
+  auto same_time_note_off = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 64, units::samples (10));
   auto same_time_note_on =
     dsp::midi_event::make_note_on (0, 64, 80, units::samples (10));
   vec.push_back (same_time_note_off);
@@ -534,7 +545,8 @@ TEST (TemplatedMidiEventTest, MixedInlineAndExternalSortByTime)
     ev.time_ = units::samples (100);
     events.push_back (ev);
   }
-  events.push_back (midi_event::make_note_off (0, 60, units::samples (50)));
+  events.push_back (
+    midi_event::make_note_off_with_default_velocity (0, 60, units::samples (50)));
   events.push_back (midi_event::make_note_on (0, 64, 80, units::samples (150)));
 
   midi_event::sort (events);

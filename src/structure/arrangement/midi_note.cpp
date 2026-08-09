@@ -53,7 +53,7 @@ MidiNote::listen (bool listen)
               if (currently_listened_ && pitch_ != last_listened_pitch_)
                 {
                   /* create midi note off */
-                  events.push_back (dsp::midi_event::make_note_off (0, last_listened_pitch_, 0));
+                  events.push_back (dsp::midi_event::make_note_off_with_default_velocity (0, last_listened_pitch_, 0));
 
                   /* create note on at the new value */
                   events.push_back (dsp::midi_event::make_note_on (0, pitch_, vel_->vel_, 0));
@@ -77,7 +77,7 @@ MidiNote::listen (bool listen)
           else if (currently_listened_)
             {
               /* create midi note off */
-              events.push_back (dsp::midi_event::make_note_off (0, last_listened_pitch_, 0));
+              events.push_back (dsp::midi_event::make_note_off_with_default_velocity (0, last_listened_pitch_, 0));
               currently_listened_ = false;
               last_listened_pitch_ = 255;
             }
@@ -140,7 +140,7 @@ MidiNote::set_pitch (const uint8_t val)
                 track->processor_->get_piano_roll_port ().buffer_;
 
               uint8_t midi_ch = clip->get_midi_ch ();
-              midi_events.push_back (dsp::midi_event::make_note_off (midi_ch, pitch_, 0));
+              midi_events.push_back (dsp::midi_event::make_note_off_with_default_velocity (midi_ch, pitch_, 0));
             }
         },
         track_var);

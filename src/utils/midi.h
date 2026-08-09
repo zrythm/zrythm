@@ -67,6 +67,12 @@ static constexpr uint8_t MIDI_CLOCK_BEAT = 0xF8;
 static constexpr uint8_t MIDI_CLOCK_STOP = 0xFC;
 static constexpr uint8_t MIDI_META_EVENT = 0xFF;
 
+/**
+ * Neutral velocity for synthesized note off events: the MIDI spec's
+ * default for devices that do not sense (release) velocity.
+ */
+static constexpr midi_byte_t DEFAULT_NOTE_OFF_VELOCITY = 64;
+
 constexpr size_t
 midi_max_sysex_size ()
 {

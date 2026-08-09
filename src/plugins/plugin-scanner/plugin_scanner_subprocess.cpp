@@ -38,6 +38,7 @@
  */
 
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/vst3_plugin_format.h"
 
 #include "plugin_scanner_subprocess.h"
 
@@ -166,6 +167,7 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   juce::Logger::writeToLog ("Adding default formats");
   juce::addDefaultFormatsToManager (format_manager_);
   format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
+  format_manager_.addFormat (std::make_unique<plugins::Vst3PluginFormat> ());
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());

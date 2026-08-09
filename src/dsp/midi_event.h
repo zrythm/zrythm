@@ -168,21 +168,45 @@ make_note_on (
  * @brief Creates a note off event.
  *
  * @param channel MIDI channel (0-based, 0-15).
+ * @param velocity Release velocity.
  */
 template <typename TimeType>
 MidiEvent<TimeType>
-make_note_off (midi_byte_t channel, midi_byte_t note_pitch, TimeType time)
+make_note_off (
+  midi_byte_t channel,
+  midi_byte_t note_pitch,
+  midi_byte_t velocity,
+  TimeType    time)
 {
   assert (channel <= 15);
   const std::array<midi_byte_t, 3> raw = {
     static_cast<midi_byte_t> (utils::midi::MIDI_CH1_NOTE_OFF | channel),
-    note_pitch, 0
+    note_pitch, velocity
   };
   MidiEvent<TimeType> ev;
   ev.set_inline_rt (raw);
   ev.time_ = time;
   assert (utils::midi::midi_is_note_off (ev.data ()));
   return ev;
+}
+
+/**
+ * @brief Creates a note off event with the neutral default release
+ * velocity (utils::midi::DEFAULT_NOTE_OFF_VELOCITY).
+ *
+ * For synthesized note offs, where no real release velocity exists.
+ *
+ * @param channel MIDI channel (0-based, 0-15).
+ */
+template <typename TimeType>
+MidiEvent<TimeType>
+make_note_off_with_default_velocity (
+  midi_byte_t channel,
+  midi_byte_t note_pitch,
+  TimeType    time)
+{
+  return make_note_off (
+    channel, note_pitch, utils::midi::DEFAULT_NOTE_OFF_VELOCITY, time);
 }
 
 /**

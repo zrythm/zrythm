@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 qt_add_library(zrythm_gui_lib STATIC)
@@ -71,8 +71,16 @@ target_link_libraries(zrythm_gui_lib
     zrythm::include_dirs
     zrythm::all_compile_options
     Qt6::CanvasPainter
+    Qt6::GuiPrivate
 )
 target_precompile_headers(zrythm_gui_lib REUSE_FROM zrythm_actions_lib)
+
+# libX11 for the X11 plugin host window (native plugin embedding on
+# GNU/Linux); already a runtime requirement via JUCE (which dlopens it)
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  find_package(X11 REQUIRED)
+  target_link_libraries(zrythm_gui_lib PRIVATE X11::X11)
+endif ()
 
 # add resource file with icon
 if(WIN32)

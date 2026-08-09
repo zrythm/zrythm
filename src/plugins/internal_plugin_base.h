@@ -40,7 +40,7 @@ protected:
   void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override;
 
   std::string save_state_impl () const override { return {}; }
-  void        load_state_impl (const std::string &) override { }
+  bool        load_state_impl (const std::string &) override { return true; }
 
 protected Q_SLOTS:
   /**

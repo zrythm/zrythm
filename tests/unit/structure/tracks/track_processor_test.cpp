@@ -489,7 +489,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransform)
   const auto _e2 =
     dsp::midi_event::make_note_on (0, 64, 90, units::samples (10u));
   midi_in.buffer_.push_back (_e2.time_, _e2.data ());
-  const auto _e3 = dsp::midi_event::make_note_off (0, 60, units::samples (20u));
+  const auto _e3 = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 60, units::samples (20u));
   midi_in.buffer_.push_back (_e3.time_, _e3.data ());
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
@@ -658,7 +659,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithAppendFunc)
   const auto _e2 =
     dsp::midi_event::make_note_on (0, 64, 90, units::samples (10u));
   midi_in.buffer_.push_back (_e2.time_, _e2.data ());
-  const auto _e3 = dsp::midi_event::make_note_off (0, 60, units::samples (20u));
+  const auto _e3 = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 60, units::samples (20u));
   midi_in.buffer_.push_back (_e3.time_, _e3.data ());
 
   processor.process_block (time_nfo, *transport_, *tempo_map_);
@@ -1247,8 +1249,8 @@ TEST_F (TrackProcessorTest, MidiTrackProcessingWithTransformAndAppend)
     midi_in.buffer_.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (20u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (20u));
     midi_in.buffer_.push_back (_ev.time_, _ev.data ());
   }
 
@@ -2161,7 +2163,8 @@ TEST_F (TrackProcessorTest, MidiOutputSortedNoteOffBeforeNoteOnAtSameTimestamp)
   const auto _e1 =
     dsp::midi_event::make_note_on (0, 60, 100, units::samples (10));
   midi_in.buffer_.push_back (_e1.time_, _e1.data ());
-  const auto _e2 = dsp::midi_event::make_note_off (0, 60, units::samples (10));
+  const auto _e2 = dsp::midi_event::make_note_off_with_default_velocity (
+    0, 60, units::samples (10));
   midi_in.buffer_.push_back (_e2.time_, _e2.data ());
   const auto _e3 =
     dsp::midi_event::make_note_on (0, 64, 80, units::samples (10));

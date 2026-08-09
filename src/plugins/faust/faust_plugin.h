@@ -42,7 +42,7 @@ protected:
     [[clang::nonblocking]] override;
 
   std::string save_state_impl () const override { return {}; }
-  void        load_state_impl (const std::string &) override { }
+  bool        load_state_impl (const std::string &) override { return true; }
 
 protected Q_SLOTS:
   void on_configuration_changed (

@@ -713,8 +713,8 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffCreatesNote)
 
   auto note_off = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     note_off.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, note_off);
@@ -741,8 +741,8 @@ TEST_F (RecordingMaterializerTest, MidiNoteOnOffInSamePacket)
     events.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (200u));
     events.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events);
@@ -776,13 +776,13 @@ TEST_F (RecordingMaterializerTest, MidiMultipleNotesCreateMultipleNotes)
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 64, units::samples (150u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (150u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
@@ -980,8 +980,8 @@ TEST_F (RecordingMaterializerTest, MidiTransportRecordingFalseDiscardsEvents)
     events.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), false, events);
@@ -1004,8 +1004,8 @@ TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewClip)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1018,8 +1018,8 @@ TEST_F (RecordingMaterializerTest, MidiDiscontinuityCreatesNewClip)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 62, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
@@ -1041,8 +1041,8 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1060,8 +1060,8 @@ TEST_F (RecordingMaterializerTest, MidiTakesMutedModeMutesPrevious)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 62, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
@@ -1085,8 +1085,8 @@ TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewClip)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1099,8 +1099,8 @@ TEST_F (RecordingMaterializerTest, MidiLaneIndexIncrementsOnNewClip)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 62, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
@@ -1126,8 +1126,8 @@ TEST_F (RecordingMaterializerTest, MidiNoteAndCCShareClip)
     events.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (200u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (200u));
     events.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events);
@@ -1161,8 +1161,8 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsRecordedAsSamples)
 
   auto note_off = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     note_off.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, note_off);
@@ -1196,13 +1196,13 @@ TEST_F (
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (1, 60, units::samples (200u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      1, 60, units::samples (200u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
@@ -1232,8 +1232,8 @@ TEST_F (RecordingMaterializerTest, MidiHighBitDataBytesMasked)
     events.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 0x80, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 0x80, units::samples (100u));
     events.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events);
@@ -1259,8 +1259,8 @@ TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameClip)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
@@ -1278,8 +1278,8 @@ TEST_F (RecordingMaterializerTest, MidiContiguousPacketsShareSameClip)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (200u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
@@ -1304,8 +1304,8 @@ TEST_F (RecordingMaterializerTest, MidiEmptyPacketsMaintainContiguity)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1321,8 +1321,8 @@ TEST_F (RecordingMaterializerTest, MidiEmptyPacketsMaintainContiguity)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 62, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 62, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (512), true, events2);
@@ -1346,8 +1346,8 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsAreClipRelative)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1370,13 +1370,13 @@ TEST_F (RecordingMaterializerTest, MidiNotePositionsAreClipRelative)
 
   auto events3 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events3.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 64, units::samples (200u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (200u));
     events3.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1256), true, events3);
@@ -1405,8 +1405,8 @@ TEST_F (RecordingMaterializerTest, MidiCCPositionIsClipRelative)
     events1.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (50u));
     events1.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events1);
@@ -1448,15 +1448,16 @@ TEST_F (RecordingMaterializerTest, MidiStaleNotesForceCompletedOnDiscontinuity)
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 64, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 64, units::samples (100u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000), true, events2);
 
   auto events3 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev = dsp::midi_event::make_note_off (0, 60, units::samples (0u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (0u));
     events3.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (1000 + 256), true, events3);
@@ -1547,8 +1548,8 @@ TEST_F (RecordingMaterializerTest, MidiClipExtendsWithEveryContiguousPacket)
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (50u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (768), true, events2);
@@ -1583,13 +1584,13 @@ TEST_F (
 
   auto events2 = dsp::MidiEventBuffer::make_reserved ();
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (50u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (50u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (150u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (150u));
     events2.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (256), true, events2);
@@ -1647,8 +1648,8 @@ TEST_F (RecordingMaterializerTest, ChordNoteOffIgnored)
     events.push_back (_ev.time_, _ev.data ());
   }
   {
-    const auto _ev =
-      dsp::midi_event::make_note_off (0, 60, units::samples (100u));
+    const auto _ev = dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (100u));
     events.push_back (_ev.time_, _ev.data ());
   }
   write_midi_and_drain (track_id, units::samples (0), true, events);

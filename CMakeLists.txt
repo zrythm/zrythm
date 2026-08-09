@@ -1017,6 +1017,9 @@ find_package(Qt6 6.11
     Test
     CanvasPainter
     Svg
+    # for QRhi (offscreen QML rendering for X11 plugin window headers);
+    # limited-compatibility API - fine since we pin the Qt version
+    GuiPrivate
   REQUIRED
 )
 qt_standard_project_setup(

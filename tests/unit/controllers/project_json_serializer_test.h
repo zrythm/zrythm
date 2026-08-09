@@ -211,7 +211,7 @@ protected:
       };
 
     plugins::PluginHostWindowFactory window_factory =
-      [] (plugins::Plugin &) -> std::unique_ptr<plugins::IPluginHostWindow> {
+      [] (plugins::Plugin &) -> std::unique_ptr<plugins::PluginHostWindow> {
       return nullptr;
     };
 

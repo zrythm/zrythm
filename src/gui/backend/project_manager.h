@@ -110,8 +110,11 @@ private:
    * @brief Creates a toplevel window for the given plugin
    *
    * This method can be used as a PluginHostWindowFactory.
+   *
+   * @return The window, or nullptr if no usable windowing connection is
+   * available (e.g., no X server under a Wayland session).
    */
-  std::unique_ptr<plugins::IPluginHostWindow>
+  std::unique_ptr<plugins::PluginHostWindow>
   create_window_for_plugin (plugins::Plugin &plugin) const;
 
 private:

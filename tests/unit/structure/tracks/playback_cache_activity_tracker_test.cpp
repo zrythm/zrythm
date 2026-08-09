@@ -225,7 +225,9 @@ TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesUpdatedOnFinalize)
   std::vector<dsp::SampleBasedMidiEvent> events;
   events.push_back (
     dsp::midi_event::make_note_on (0, 60, 127, units::samples (0)));
-  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (50)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (50)));
 
   cache_->add_midi_sequence (
     { units::samples (0), units::samples (100) }, events);
@@ -251,7 +253,9 @@ TEST_F (PlaybackCacheActivityTrackerTest, CachedRangesClearedOnCacheClear)
   std::vector<dsp::SampleBasedMidiEvent> events;
   events.push_back (
     dsp::midi_event::make_note_on (0, 60, 127, units::samples (0)));
-  events.push_back (dsp::midi_event::make_note_off (0, 60, units::samples (50)));
+  events.push_back (
+    dsp::midi_event::make_note_off_with_default_velocity (
+      0, 60, units::samples (50)));
   cache_->add_midi_sequence (
     { units::samples (0), units::samples (100) }, events);
   cache_->finalize_changes ();

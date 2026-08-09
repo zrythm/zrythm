@@ -86,7 +86,7 @@ ChordAuditionState::process (
     {
       for (const auto &entry : sounding)
         {
-          const auto ev = dsp::midi_event::make_note_off (
+          const auto ev = dsp::midi_event::make_note_off_with_default_velocity (
             0, entry.pitch, time_nfo.buffer_offset_);
           if (!out_events.push_back (ev.time_, ev.data ()))
             return;

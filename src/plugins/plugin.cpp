@@ -6,25 +6,42 @@
 #include "utils/serialization.h"
 #include "utils/tracy.h"
 
-#include <QTimer>
-
 namespace zrythm::plugins
 {
 
 Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
     : utils::UuidIdentifiableObject<Plugin> (parent),
-      zrythm::dsp::ProcessorBase (registry, u8"Plugin"),
-      param_flush_timer_ (utils::make_qobject_unique<QTimer> (this))
+      zrythm::dsp::ProcessorBase (registry, u8"Plugin"), self_guard_ (this)
 {
-  QObject::connect (
-    param_flush_timer_.get (), &QTimer::timeout, this,
-    &Plugin::flush_plugin_values);
-
   QObject::connect (
     this, &Plugin::instantiationFinished, this, [this] (bool successful) {
       instantiation_status_ =
         successful ? InstantiationStatus::Successful : InstantiationStatus::Failed;
       Q_EMIT instantiationStatusChanged (instantiation_status_);
+    });
+
+  QObject::connect (
+    this, &Plugin::uiVisibleChanged, this, &Plugin::on_ui_visibility_changed);
+}
+
+void
+Plugin::set_bypass_id (dsp::ProcessorParameter::Uuid id)
+{
+  bypass_id_ = id;
+  arm_bypassed_relay ();
+}
+
+void
+Plugin::arm_bypassed_relay ()
+{
+  disconnect (bypassed_relay_connection_);
+  if (!bypass_id_.has_value ())
+    return;
+  auto * bypass = bypassParameter ();
+  bypassed_relay_connection_ = connect (
+    bypass, &dsp::ProcessorParameter::baseValueChanged, this,
+    [this, bypass] (float value) {
+      Q_EMIT bypassedChanged (bypass->range ().isToggled (value));
     });
 }
 
@@ -91,6 +108,15 @@ Plugin::set_configuration (const PluginConfiguration &setting)
   const bool generate_new =
     get_input_ports ().empty () && get_output_ports ().empty ();
   Q_EMIT configurationChanged (configuration_.get (), generate_new);
+
+  // If the UI was marked visible before loading completed (e.g., during
+  // project deserialization), queue the UI restore so that callers finish
+  // setting up before native windows are created
+  if (uiVisible ())
+    {
+      QMetaObject::invokeMethod (
+        this, [this] () { on_ui_visibility_changed (); }, Qt::QueuedConnection);
+    }
 }
 
 // ============================================================================
@@ -106,7 +132,6 @@ Plugin::custom_prepare_for_processing (
   init_param_caches ();
   param_sync_.prepare (get_parameters ().size ());
   prepare_plugin_for_processing (sample_rate, max_block_length);
-  param_flush_timer_->start (std::chrono::milliseconds (20));
 }
 
 void
@@ -133,7 +158,6 @@ Plugin::custom_process_block (
 void
 Plugin::custom_release_resources ()
 {
-  param_flush_timer_->stop ();
   param_sync_.entries.clear ();
   release_resources_impl ();
 }
@@ -156,6 +180,8 @@ Plugin::init_param_caches ()
   audio_in_ports_.clear ();
   cv_in_ports_.clear ();
   audio_out_ports_.clear ();
+  midi_in_ports_.clear ();
+  midi_out_ports_.clear ();
 
   for (const auto &port_ref : get_input_ports ())
     {
@@ -165,7 +191,7 @@ Plugin::init_param_caches ()
       else if (auto * cv = qobject_cast<dsp::CVPort *> (port))
         cv_in_ports_.push_back (cv);
       else if (auto * midi = qobject_cast<dsp::MidiPort *> (port))
-        midi_in_port_ = midi;
+        midi_in_ports_.push_back (midi);
     }
 
   for (const auto &port_ref : get_output_ports ())
@@ -174,10 +200,12 @@ Plugin::init_param_caches ()
       if (auto * audio = qobject_cast<dsp::AudioPort *> (port))
         audio_out_ports_.push_back (audio);
       else if (auto * midi = qobject_cast<dsp::MidiPort *> (port))
-        midi_out_port_ = midi;
+        midi_out_ports_.push_back (midi);
     }
 
-  bypass_param_rt_ = bypassParameter ();
+  bypass_param_rt_ = bypass_id_.has_value () ? bypassParameter () : nullptr;
+
+  arm_bypassed_relay ();
 }
 
 std::string
@@ -186,15 +214,81 @@ Plugin::save_state () const
   return save_state_impl ();
 }
 
-void
+bool
 Plugin::load_state (const std::string &base64_state)
 {
-  load_state_impl (base64_state);
+  return load_state_impl (base64_state);
+}
+
+bool
+Plugin::bypassed () const
+{
+  // No bypass parameter: possible transiently during deserialization
+  // (visible_ is restored before the parameter IDs are re-resolved)
+  if (!bypass_id_.has_value ())
+    return false;
+  const auto * bypass = bypassParameter ();
+  return bypass->range ().isToggled (bypass->baseValue ());
+}
+
+void
+Plugin::setBypassed (bool bypassed)
+{
+  if (!bypass_id_.has_value ())
+    {
+      z_warning (
+        "Plugin '{}': no bypass parameter registered", get_node_name ());
+      return;
+    }
+  auto * bypass = bypassParameter ();
+  bypass->setBaseValue (bypassed ? 1.f : 0.f);
+}
+
+void
+Plugin::switchAbState ()
+{
+  const auto current = save_state ();
+  if (current.empty ())
+    {
+      z_warning ("A/B: plugin '{}' has no state to save", get_node_name ());
+      return;
+    }
+
+  auto &active_slot = ab_b_active_ ? ab_state_b_ : ab_state_a_;
+  auto &other_slot = ab_b_active_ ? ab_state_a_ : ab_state_b_;
+  active_slot = current;
+  if (other_slot.empty ())
+    other_slot = current;
+  else if (!load_state (other_slot))
+    {
+      // The plugin rejected the other slot's state: stay on the current
+      // slot or the UI would show a state that isn't playing
+      z_warning (
+        "A/B: plugin '{}' failed to load the other slot's state; staying on "
+        "slot {}",
+        get_node_name (), ab_b_active_ ? "B" : "A");
+      return;
+    }
+  ab_b_active_ = !ab_b_active_;
+  Q_EMIT abActiveChanged (ab_b_active_);
+}
+
+void
+Plugin::set_param_pending_from_plugin (size_t index, float value) noexcept
+{
+  if (index >= param_sync_.entries.size ()) [[unlikely]]
+    return;
+  param_sync_.entries[index].pending_value.store (
+    value, std::memory_order_release);
+  param_sync_.dirty.store (true, std::memory_order_release);
 }
 
 void
 Plugin::flush_plugin_values ()
 {
+  if (!param_sync_.dirty.exchange (false, std::memory_order_acq_rel))
+    return;
+
   for (
     size_t i = 0;
     i < param_sync_.entries.size () && i < get_parameters ().size (); ++i)
@@ -209,6 +303,18 @@ Plugin::flush_plugin_values ()
         }
     }
 }
+
+void
+Plugin::notify_latency_changed () noexcept
+{
+  if (!main_thread_callbacks_.latency_recalc_)
+    return;
+
+  post_main_thread_action ([this] {
+    main_thread_callbacks_.latency_recalc_ ();
+  });
+}
+
 void
 to_json (nlohmann::json &j, const Plugin &p)
 {
@@ -255,7 +361,7 @@ from_json (const nlohmann::json &j, Plugin &p)
         param->get_unique_id ()
         == dsp::ProcessorParameter::UniqueId (u8"/zrythm-bypass"))
         {
-          p.bypass_id_ = param->get_uuid ();
+          p.set_bypass_id (param->get_uuid ());
         }
 
       if (p.gain_id_.has_value () && p.bypass_id_.has_value ())

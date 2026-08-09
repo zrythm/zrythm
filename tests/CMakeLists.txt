@@ -49,6 +49,7 @@ target_sources(zrythm_test_helpers_lib
       helpers/in_memory_settings_backend.h
       helpers/mock_hardware_audio_interface.h
       helpers/mock_hardware_audio_interface_threaded.h
+      helpers/mock_plugin_host_window.h
       helpers/mock_qobject.h
       helpers/mock_uuid_object.h
       helpers/mock_settings_backend.h
@@ -103,14 +104,18 @@ add_subdirectory(test_plugins)
 # on Windows with SMTG_CUSTOM_BINARY_LOCATION they are directly at VST3/.
 get_target_property(vst3_pkg_path test_gain_vst3 SMTG_PLUGIN_PACKAGE_PATH)
 get_filename_component(vst3_search_path "${vst3_pkg_path}" DIRECTORY)
+# One bundle per VST3 fixture (1 plugin class per bundle)
+list(LENGTH zrythm_test_vst3_fixture_targets vst3_plugins_count)
+# One bundle per CLAP fixture, except the synth bundle which contains both
+# note dialect variants of the synth (2 plugins)
+list(LENGTH zrythm_test_clap_fixture_targets clap_plugins_count)
+math(EXPR clap_plugins_count "${clap_plugins_count} + 1")
 target_compile_definitions(zrythm_test_helpers_lib
   PUBLIC
     TEST_VST3_SEARCH_PATHS="${vst3_search_path}"
     TEST_CLAP_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/CLAP/$<CONFIG>"
-    # 2 VST3 bundles; CLAP: Test Gain bundle + Test Synth bundle containing
-    # both dialect variants of the synth
-    TEST_VST3_PLUGINS_COUNT=2
-    TEST_CLAP_PLUGINS_COUNT=3
+    TEST_VST3_PLUGINS_COUNT=${vst3_plugins_count}
+    TEST_CLAP_PLUGINS_COUNT=${clap_plugins_count}
 )
 
 # Ensure test plugins are built before running tests
