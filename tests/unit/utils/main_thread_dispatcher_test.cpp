@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <ranges>
+#include <stdexcept>
 #include <thread>
 
 #include "utils/main_thread_dispatcher.h"
@@ -61,6 +62,29 @@ TEST_F (MainThreadDispatcherTest, PostFromContextThreadIsSynchronous)
   ASSERT_EQ (handled_.size (), 1);
   EXPECT_EQ (handled_[0].a, 1u);
   EXPECT_EQ (handled_[0].b, 2u);
+}
+
+TEST_F (MainThreadDispatcherTest, PostDeferredFromContextThreadWaitsForPump)
+{
+  EXPECT_TRUE (dispatcher_->post_deferred ({ .a = 1, .b = 2 }));
+  EXPECT_TRUE (handled_.empty ());
+
+  dispatcher_->process_pending ();
+  ASSERT_EQ (handled_.size (), 1);
+  EXPECT_EQ (handled_[0].a, 1u);
+  EXPECT_EQ (handled_[0].b, 2u);
+}
+
+TEST_F (MainThreadDispatcherTest, PostDeferredKeepsOrderingWithPost)
+{
+  EXPECT_TRUE (dispatcher_->post_deferred ({ .a = 1, .b = 0 }));
+  // An inline post drains what is already queued before handling its own
+  // request
+  EXPECT_TRUE (dispatcher_->post ({ .a = 2, .b = 0 }));
+
+  ASSERT_EQ (handled_.size (), 2);
+  EXPECT_EQ (handled_[0].a, 1u);
+  EXPECT_EQ (handled_[1].a, 2u);
 }
 
 TEST_F (MainThreadDispatcherTest, PostFromOtherThreadIsDeliveredOnPump)
@@ -176,6 +200,37 @@ TEST_F (MainThreadDispatcherTest, ReentrantPostDoesNotRecurse)
   EXPECT_EQ (handled_[0].a, 1u);
   EXPECT_EQ (handled_[1].a, 2u);
   EXPECT_EQ (handled_[2].a, 3u);
+}
+
+TEST_F (MainThreadDispatcherTest, ThrowingHandlerDoesNotBrickDispatcher)
+{
+  std::vector<uint32_t>             handled;
+  MainThreadDispatcher<TestRequest> local_dispatcher (
+    *context_, 10s, [&handled] (const TestRequest &request) {
+      if (request.a == 42)
+        throw std::runtime_error ("boom");
+      handled.push_back (request.a);
+    });
+
+  // Synchronous path: the throw is contained and post() returns normally
+  EXPECT_TRUE (local_dispatcher.post ({ .a = 42, .b = 0 }));
+
+  // The dispatcher keeps handling afterwards (a stuck reentrancy flag
+  // would silently queue everything forever)
+  EXPECT_TRUE (local_dispatcher.post ({ .a = 1, .b = 0 }));
+  ASSERT_EQ (handled.size (), 1);
+  EXPECT_EQ (handled[0], 1u);
+
+  // Pump path: a throwing request in the queue doesn't wedge the drain
+  {
+    std::jthread poster ([&] {
+      EXPECT_TRUE (local_dispatcher.post ({ .a = 42, .b = 0 }));
+      EXPECT_TRUE (local_dispatcher.post ({ .a = 2, .b = 0 }));
+    });
+  }
+  local_dispatcher.process_pending ();
+  ASSERT_EQ (handled.size (), 2);
+  EXPECT_EQ (handled[1], 2u);
 }
 
 } // namespace zrythm::utils

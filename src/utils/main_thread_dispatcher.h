@@ -5,12 +5,15 @@
 
 #include <cassert>
 #include <chrono>
+#include <exception>
 #include <functional>
 #include <type_traits>
 #include <utility>
 
 #include "utils/inplace_function.h"
+#include "utils/logger.h"
 #include "utils/qt.h"
+#include "utils/raii_utils.h"
 
 #include <QThread>
 #include <QTimer>
@@ -71,7 +74,8 @@ public:
    * @param context QObject whose thread requests are dispatched to.
    * @param pump_interval Interval at which pending requests are drained.
    * @param handler Invoked for each request on @p context's thread. Must not
-   * throw.
+   * throw; violations are caught, logged and swallowed so the dispatcher
+   * keeps draining.
    */
   MainThreadDispatcher (
     QObject                  &context,
@@ -135,11 +139,26 @@ public:
             return queue_.try_push (std::move (request));
           }
         process_pending ();
-        handling_ = true;
-        handler_ (request);
-        handling_ = false;
+        handle_safely (request);
         return true;
       }
+    return queue_.try_push (std::move (request));
+  }
+
+  /**
+   * @brief Posts a request that is always handled by a later pump, never
+   * inline.
+   *
+   * Unlike @ref post, the handler runs after the posting call stack has
+   * unwound, even when posted from the context's own thread.
+   *
+   * Realtime-safe, same as @ref post. Both use the same queue, so FIFO
+   * ordering between the two is preserved.
+   *
+   * @return False if the request was dropped because the queue was full.
+   */
+  bool post_deferred (T request) noexcept
+  {
     return queue_.try_push (std::move (request));
   }
 
@@ -156,15 +175,39 @@ public:
     if (handling_)
       return;
 
-    handling_ = true;
     T           request{};
     std::size_t handled = 0;
     while (handled++ < max_requests_per_pump && queue_.try_pop (request))
-      handler_ (request);
-    handling_ = false;
+      handle_safely (request);
   }
 
 private:
+  /**
+   * @brief Invokes the handler with the reentrancy flag set, containing
+   * any exception the handler throws.
+   *
+   * Handlers must not throw (see the constructor contract); a violation is
+   * logged and swallowed so the exception can neither escape into Qt's
+   * event loop or a poster's call stack (which may be a plugin's C-ABI
+   * frame), nor wedge the dispatcher via the reentrancy flag.
+   */
+  void handle_safely (const T &request)
+  {
+    const ScopedBool handling_guard{ handling_ };
+    try
+      {
+        handler_ (request);
+      }
+    catch (const std::exception &e)
+      {
+        z_warning ("MainThreadDispatcher: handler threw: {}", e.what ());
+      }
+    catch (...)
+      {
+        z_warning ("MainThreadDispatcher: handler threw an unknown exception");
+      }
+  }
+
   QObject &context_;
   Handler  handler_;
 
