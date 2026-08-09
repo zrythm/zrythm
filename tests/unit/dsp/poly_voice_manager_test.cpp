@@ -12,8 +12,6 @@
 namespace zrythm::dsp
 {
 
-namespace
-{
 /** Records calls for verification. Vectors are pre-reserved so recording is
  * allocation-free in RT context. */
 class MockVoice : public SynthVoice
@@ -92,8 +90,6 @@ protected:
   PolyVoiceManager         manager_;
   juce::AudioBuffer<float> output_{ 2, 512 };
 };
-
-} // namespace
 
 TEST_F (PolyVoiceManagerTest, NoteOnAllocatesFreeVoicesInOrder)
 {

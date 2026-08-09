@@ -620,19 +620,20 @@ ClapPlugin::show_editor ()
               return pimpl_->plugin_->guiCanResize ();
             },
           .adjust_size =
-            [this] (int &width, int &height) {
+            [this] (int &view_width, int &view_height) {
               const ScopedGlContextRelease gl_release;
-              auto physical_width = static_cast<uint32_t> (width);
-              auto physical_height = static_cast<uint32_t> (height);
+              auto physical_width = static_cast<uint32_t> (view_width);
+              auto physical_height = static_cast<uint32_t> (view_height);
               pimpl_->plugin_->guiAdjustSize (&physical_width, &physical_height);
-              width = static_cast<int> (physical_width);
-              height = static_cast<int> (physical_height);
+              view_width = static_cast<int> (physical_width);
+              view_height = static_cast<int> (physical_height);
             },
           .apply_size =
-            [this] (int width, int height) {
+            [this] (int view_width, int view_height) {
               const ScopedGlContextRelease gl_release;
               pimpl_->plugin_->guiSetSize (
-                static_cast<uint32_t> (width), static_cast<uint32_t> (height));
+                static_cast<uint32_t> (view_width),
+                static_cast<uint32_t> (view_height));
             },
         });
 

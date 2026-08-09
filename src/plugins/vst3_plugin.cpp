@@ -59,8 +59,9 @@
 namespace zrythm::plugins
 {
 
-namespace
-{
+// The helpers below are deliberately not in an anonymous namespace:
+// Vst3PluginImpl holds them as members, and members with internal linkage
+// make it ill-formed to use the enclosing class across translation units
 using namespace Steinberg;
 
 /**
@@ -202,31 +203,6 @@ public:
   }
 
   /**
-   * @brief Removes all fd watches and timers registered through this
-   * context.
-   *
-   * Called when the owning plugin unloads: plug-ins may destroy their
-   * handlers and close their fds without unregistering them, and the
-   * watches would otherwise fire into dead handlers or observe closed
-   * fds.
-   */
-  void unregister_all ()
-  {
-    if (run_loop_ == nullptr)
-      return;
-    for (const auto token : event_handler_tokens_ | std::views::values)
-      {
-        run_loop_->unregister_fd (token);
-      }
-    event_handler_tokens_.clear ();
-    for (const auto token : timer_handler_tokens_ | std::views::values)
-      {
-        run_loop_->unregister_timer (token);
-      }
-    timer_handler_tokens_.clear ();
-  }
-
-  /**
    * @brief Run loop for this context's IRunLoop registrations, created on
    * demand.
    *
@@ -242,6 +218,36 @@ public:
     return run_loop_.get ();
   }
 #endif // SMTG_OS_LINUX
+
+  /**
+   * @brief Removes all fd watches and timers registered through this
+   * context.
+   *
+   * Called when the owning plugin unloads: plug-ins may destroy their
+   * handlers and close their fds without unregistering them, and the
+   * watches would otherwise fire into dead handlers or observe closed
+   * fds.
+   *
+   * Only GNU/Linux hands plug-ins a run loop, so there is nothing to
+   * remove elsewhere and this does nothing.
+   */
+  void unregister_all ()
+  {
+#if SMTG_OS_LINUX
+    if (run_loop_ == nullptr)
+      return;
+    for (const auto token : event_handler_tokens_ | std::views::values)
+      {
+        run_loop_->unregister_fd (token);
+      }
+    event_handler_tokens_.clear ();
+    for (const auto token : timer_handler_tokens_ | std::views::values)
+      {
+        run_loop_->unregister_timer (token);
+      }
+    timer_handler_tokens_.clear ();
+#endif
+  }
 
 private:
   IPtr<Vst::PlugInterfaceSupport> plug_interface_support_;
@@ -547,7 +553,7 @@ private:
  * (VSTGUI) query the context during view lifecycle calls, so this must be
  * called immediately before createView()/attached()/removed().
  */
-void
+static void
 claim_plugin_context (Vst::IHostApplication * host_app)
 {
   Vst::PluginContextFactory::instance ().setPluginContext (host_app);
@@ -561,13 +567,12 @@ claim_plugin_context (Vst::IHostApplication * host_app)
  * stale pointer behind would let a later getPluginContext() observe freed
  * memory.
  */
-void
+static void
 clear_plugin_context_if_current (Vst::IHostApplication * host_app)
 {
   if (Vst::PluginContextFactory::instance ().getPluginContext () == host_app)
     Vst::PluginContextFactory::instance ().setPluginContext (nullptr);
 }
-} // namespace
 
 /**
  * Parameter routing state read on the audio thread.

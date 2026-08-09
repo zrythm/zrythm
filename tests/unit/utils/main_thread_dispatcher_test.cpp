@@ -185,7 +185,9 @@ TEST_F (MainThreadDispatcherTest, ReentrantPostDoesNotRecurse)
       handled_.push_back (request);
       // Chain reentrant posts: 1 -> 2 -> 3
       if (request.a >= 1 && request.a < 3)
-        EXPECT_TRUE (local_dispatcher.post ({ .a = request.a + 1, .b = 0 }));
+        {
+          EXPECT_TRUE (local_dispatcher.post ({ .a = request.a + 1, .b = 0 }));
+        }
       --depth;
     });
 
