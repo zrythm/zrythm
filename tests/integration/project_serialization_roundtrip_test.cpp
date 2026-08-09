@@ -1045,8 +1045,8 @@ INSTANTIATE_TEST_SUITE_P (
   ProjectPluginUiRestoreTest,
   testing::
     Values (std::string_view ("Test GUI CLAP"), std::string_view ("Test GUI")),
-  [] (const testing::TestParamInfo<std::string_view> &info) {
-    return info.param.find ("CLAP") != std::string_view::npos
+  [] (const testing::TestParamInfo<std::string_view> &param_info) {
+    return param_info.param.find ("CLAP") != std::string_view::npos
              ? std::string ("Clap")
              : std::string ("Vst3");
   });

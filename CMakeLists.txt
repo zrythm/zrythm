@@ -687,6 +687,8 @@ if(ZRYTHM_STRICT)
       -Werror=endif-labels
       -Werror=logical-not-parentheses
       -Werror=parentheses
+      # GCC reports this through -Wparentheses, clang needs it named
+      -Werror=dangling-else
       -Werror=comment
       -Werror=sizeof-pointer-div
       -Werror=shift-count-overflow
@@ -784,6 +786,10 @@ if(ZRYTHM_STRICT)
       -Werror=abstract-final-class
       -Werror=null-dereference
       -Werror=defaulted-function-deleted
+
+      # GCC's -Wshadow already reports a lambda parameter that hides a local
+      # of the enclosing function, clang's does not
+      -Werror=shadow-uncaptured-local
       # -Wexit-time-destructors
       # -Wglobal-constructors
       -fsafe-buffer-usage-suggestions

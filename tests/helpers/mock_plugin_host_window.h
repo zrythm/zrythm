@@ -102,9 +102,11 @@ make_mock_plugin_host_window_factory (
   plugins::WindowSystem                      window_system =
     plugins::PluginHostWindow::currentWindowSystem ())
 {
-  return [state = std::move (state), window_system] (plugins::Plugin &plugin) {
-    return std::make_unique<MockPluginHostWindow> (plugin, state, window_system);
-  };
+  return
+    [held_state = std::move (state), window_system] (plugins::Plugin &plugin) {
+      return std::make_unique<MockPluginHostWindow> (
+        plugin, held_state, window_system);
+    };
 }
 
 } // namespace zrythm::test_helpers
