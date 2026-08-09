@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <stdexcept>
+
 #include "dsp/engine.h"
 #include "dsp/graph_builder.h"
 #include "dsp/midi_device_buffer.h"
@@ -834,6 +836,35 @@ TEST_F (AudioEngineTest, GetProcessingLockReturnsValidLock)
   EXPECT_TRUE (lock.is_acquired ());
 }
 
+TEST_F (AudioEngineTest, ReentrantProcessingLockAcquisitionFails)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  auto lock = engine->get_processing_lock ();
+  ASSERT_TRUE (lock.is_acquired ());
+
+  // The processing lock is non-recursive: re-acquiring it from the thread
+  // that already holds it must fail loudly instead of deadlocking
+  EXPECT_DEATH (
+    { std::ignore = engine->get_processing_lock (); }, "non-recursive");
+}
+
+TEST_F (AudioEngineTest, ProcessingLockIsReacquirableAfterRelease)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  {
+    auto lock = engine->get_processing_lock ();
+  }
+
+  auto lock2 = engine->get_processing_lock ();
+  EXPECT_TRUE (lock2.is_acquired ());
+}
+
 TEST_F (AudioEngineTest, LoadPercentageReturnsValidValue)
 {
   auto engine = std::make_unique<AudioEngine> (
@@ -884,6 +915,25 @@ TEST_F (AudioEngineTest, DestructorDeactivatesIfActive)
     // We can't easily verify this without exposing more internals,
     // but the destructor should be called without crashing
   }
+}
+
+TEST_F (AudioEngineTest, ExecuteFunctionWithPausedProcessingResumesOnThrow)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->activate ();
+  engine->set_running (true);
+
+  // The exception propagates to the caller...
+  EXPECT_THROW (
+    engine->execute_function_with_paused_processing_synchronously (
+      [] () { throw std::runtime_error ("boom"); }, false),
+    std::runtime_error);
+
+  // ...but the engine must be resumed regardless
+  EXPECT_TRUE (engine->running ());
 }
 
 } // namespace zrythm::dsp

@@ -28,6 +28,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <thread>
 
 #include "dsp/engine.h"
 #include "dsp/midi_device_buffer.h"
@@ -351,47 +354,36 @@ AudioEngine::activate_impl (const bool activate)
   z_debug ("New engine status: {}", new_state);
 }
 
-bool
-AudioEngine::process_prepare (
-  dsp::Transport::TransportSnapshot               &transport_snapshot,
-  units::sample_u32_t                              nframes,
-  SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
+EngineProcessingLockGuard::EngineProcessingLockGuard (
+  moodycamel::LightweightSemaphore &sem,
+  std::atomic<std::thread::id>     &owner)
+    : owner_ (owner)
 {
-  assert (cached_device_info_.has_value ());
-  const auto block_length = cached_device_info_->block_length;
-
-  const auto update_transport_play_state =
-    [&] (dsp::ITransport::PlayState play_state) {
-      transport_.set_play_state_rt_safe (play_state);
-      transport_snapshot.set_play_state (play_state);
-    };
-
-  if (
-    transport_snapshot.get_play_state ()
-    == dsp::Transport::PlayState::PauseRequested)
+  // Check before blocking: the offending thread can never make progress
+  if (owner_.load (std::memory_order_acquire) == std::this_thread::get_id ())
     {
-      update_transport_play_state (dsp::Transport::PlayState::Paused);
+      static constexpr auto message =
+        "re-entrant acquisition of the non-recursive engine processing lock";
+      // Logged for the thread name, source location and backtrace, then
+      // repeated on stderr: the log's console sink writes to stdout, and
+      // the error sink only aborts outside test builds
+      z_error ("{}", message);
+      std::fprintf (stderr, "%s\n", message);
+      std::abort ();
     }
-  else if (
-    transport_snapshot.get_play_state ()
-      == dsp::Transport::PlayState::RollRequested
-    && transport_snapshot.metronome_countin_frames_remaining ()
-         == units::samples (0))
-    {
-      update_transport_play_state (dsp::Transport::PlayState::Rolling);
-      remaining_latency_preroll_ =
-        graph_dispatcher_.get_max_route_playback_latency ();
-    }
+  lock_.emplace (sem, true);
+  owner_.store (std::this_thread::get_id (), std::memory_order_release);
+}
 
-  if (!exporting_ && !sem.is_acquired ())
-    {
-      return true;
-    }
+EngineProcessingLockGuard::~EngineProcessingLockGuard ()
+{
+  owner_.store (std::thread::id{}, std::memory_order_release);
+}
 
-  // Clear all buffers
-  midi_in_->clear_buffer (0, block_length.in (units::samples));
-
-  return false;
+EngineProcessingLockGuard
+AudioEngine::get_processing_lock ()
+{
+  return EngineProcessingLockGuard (process_lock_, process_lock_owner_);
 }
 
 auto
@@ -626,10 +618,21 @@ AudioEngine::execute_function_with_paused_processing_synchronously (
 {
   EngineState state{};
   wait_for_pause (state, false, true);
-  func ();
-  if (recalculate_graph)
+
+  // Resume on all paths: a throwing function must not strand the engine in
+  // the paused state
+  try
     {
-      graph_dispatcher_.recalc_graph (false);
+      func ();
+      if (recalculate_graph)
+        {
+          graph_dispatcher_.recalc_graph (false);
+        }
+    }
+  catch (...)
+    {
+      resume (state);
+      throw;
     }
   resume (state);
 }

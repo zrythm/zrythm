@@ -1,9 +1,11 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
+#include <atomic>
 #include <optional>
+#include <thread>
 
 #include "dsp/audio_callback.h"
 #include "dsp/audio_input_processor.h"
@@ -20,6 +22,36 @@
 
 namespace zrythm::dsp
 {
+
+/**
+ * @brief Guard for the engine processing lock.
+ *
+ * The underlying semaphore is non-recursive: re-acquiring it from the thread
+ * that already holds it would wait forever, so the guard records the owning
+ * thread and re-entrant acquisition fails loudly instead of deadlocking.
+ *
+ * Obtained from AudioEngine::get_processing_lock().
+ */
+class EngineProcessingLockGuard
+{
+public:
+  EngineProcessingLockGuard (
+    moodycamel::LightweightSemaphore &sem,
+    std::atomic<std::thread::id>     &owner);
+  ~EngineProcessingLockGuard ();
+
+  EngineProcessingLockGuard (const EngineProcessingLockGuard &) = delete;
+  EngineProcessingLockGuard &
+  operator= (const EngineProcessingLockGuard &) = delete;
+  EngineProcessingLockGuard (EngineProcessingLockGuard &&) = delete;
+  EngineProcessingLockGuard &operator= (EngineProcessingLockGuard &&) = delete;
+
+  bool is_acquired () const { return lock_->is_acquired (); }
+
+private:
+  std::atomic<std::thread::id>                                  &owner_;
+  std::optional<SemaphoreRAII<moodycamel::LightweightSemaphore>> lock_;
+};
 
 /**
  * The audio engine.
@@ -136,15 +168,53 @@ public:
    *
    * Clears buffers, marks all as unprocessed, etc.
    *
-   * @param sem SemamphoreRAII to check if acquired. If not acquired before
-   * calling this function, it will only clear output buffers and return true.
+   * @param sem Processing lock guard to check if acquired. If not acquired
+   * before calling this function, it will only clear output buffers and
+   * return true.
    * @return Whether the cycle should be skipped.
    */
+  template <typename ProcessingLock>
   [[gnu::hot]] bool process_prepare (
-    dsp::Transport::TransportSnapshot               &transport_snapshot,
-    units::sample_u32_t                              nframes,
-    SemaphoreRAII<moodycamel::LightweightSemaphore> &sem) noexcept
-    [[clang::nonblocking]];
+    dsp::Transport::TransportSnapshot &transport_snapshot,
+    units::sample_u32_t                nframes,
+    ProcessingLock                    &sem) noexcept [[clang::nonblocking]]
+  {
+    assert (cached_device_info_.has_value ());
+    const auto block_length = cached_device_info_->block_length;
+
+    const auto update_transport_play_state =
+      [&] (dsp::ITransport::PlayState play_state) {
+        transport_.set_play_state_rt_safe (play_state);
+        transport_snapshot.set_play_state (play_state);
+      };
+
+    if (
+      transport_snapshot.get_play_state ()
+      == dsp::Transport::PlayState::PauseRequested)
+      {
+        update_transport_play_state (dsp::Transport::PlayState::Paused);
+      }
+    else if (
+      transport_snapshot.get_play_state ()
+        == dsp::Transport::PlayState::RollRequested
+      && transport_snapshot.metronome_countin_frames_remaining ()
+           == units::samples (0))
+      {
+        update_transport_play_state (dsp::Transport::PlayState::Rolling);
+        remaining_latency_preroll_ =
+          graph_dispatcher_.get_max_route_playback_latency ();
+      }
+
+    if (!exporting_ && !sem.is_acquired ())
+      {
+        return true;
+      }
+
+    // Clear all buffers
+    midi_in_->clear_buffer (0, block_length.in (units::samples));
+
+    return false;
+  }
 
   enum class ProcessReturnStatus : std::uint8_t
   {
@@ -211,10 +281,14 @@ public:
   bool exporting () const { return exporting_; }
   void set_exporting (bool exporting) { exporting_.store (exporting); }
 
-  auto get_processing_lock () [[clang::blocking]]
-  {
-    return SemaphoreRAII (process_lock_, true);
-  }
+  /**
+   * @brief Acquires the processing lock, blocking until the audio thread
+   * releases it.
+   *
+   * The lock is non-recursive: re-entrant acquisition from the same thread
+   * fails loudly instead of deadlocking.
+   */
+  EngineProcessingLockGuard get_processing_lock () [[clang::blocking]];
 
   /**
    * @brief Executes the given function after pausing processing and then
@@ -294,6 +368,9 @@ private:
    * Semaphore acquired during processing.
    */
   moodycamel::LightweightSemaphore process_lock_{ 1 };
+
+  /** Thread currently holding @ref process_lock_ (default ID when free). */
+  std::atomic<std::thread::id> process_lock_owner_{};
 
   /** Ok to process or not. */
   std::atomic_bool run_{ false };

@@ -1,7 +1,8 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <ranges>
+#include <utility>
 
 #include "dsp/graph_builder.h"
 #include "dsp/graph_dispatcher.h"
@@ -189,6 +190,140 @@ TEST_F (DspGraphDispatcherTest, RecalcGraphWithSoftTrue)
 
   // Now do a soft recalculation (should not call build_graph_impl)
   dispatcher_->recalc_graph (true);
+}
+
+TEST_F (DspGraphDispatcherTest, ReentrantSoftRecalcIsSubsumedByInProgressRecalc)
+{
+  // The production engine processing lock is non-recursive; model it here
+  // so nested acquisitions fail (without deadlocking the test)
+  bool engine_lock_held = false;
+  int  engine_lock_acquisitions = 0;
+  run_function_with_engine_lock_ = [&] (std::function<void ()> func) {
+    ++engine_lock_acquisitions;
+    EXPECT_FALSE (engine_lock_held) << "engine lock acquired re-entrantly";
+    engine_lock_held = true;
+    func ();
+    engine_lock_held = false;
+  };
+
+  int  build_count = 0;
+  bool trigger_reentrant_soft_recalc = false;
+  EXPECT_CALL (*mock_graph_builder_, build_graph_impl (_))
+    .WillRepeatedly ([&] (graph::Graph &graph) {
+      ++build_count;
+      auto * node1 = graph.add_node_for_processable (*processables_[0]);
+      auto * node2 = graph.add_node_for_processable (*processables_[1]);
+      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
+      node1->connect_to (*node2);
+      if (trigger_reentrant_soft_recalc)
+        {
+          trigger_reentrant_soft_recalc = false;
+          // A plugin reporting a latency change from within activation
+          // surfaces here as a re-entrant soft recalculation request
+          dispatcher_->recalc_graph (true);
+        }
+    });
+
+  create_dispatcher ();
+
+  // First recalculation creates the scheduler (bypasses the lock runner)
+  dispatcher_->recalc_graph (false);
+  ASSERT_EQ (build_count, 1);
+  ASSERT_EQ (engine_lock_acquisitions, 0);
+
+  trigger_reentrant_soft_recalc = true;
+  dispatcher_->recalc_graph (false);
+
+  // The in-progress hard recalculation already re-prepares all nodes and
+  // refreshes their latencies, so the re-entrant soft request must be
+  // subsumed: no nested lock acquisition, no extra recalculation pass
+  EXPECT_EQ (engine_lock_acquisitions, 1);
+  EXPECT_EQ (build_count, 2);
+}
+
+TEST_F (DspGraphDispatcherTest, ReentrantHardRecalcIsSkipped)
+{
+  bool engine_lock_held = false;
+  int  engine_lock_acquisitions = 0;
+  run_function_with_engine_lock_ = [&] (std::function<void ()> func) {
+    ++engine_lock_acquisitions;
+    EXPECT_FALSE (engine_lock_held) << "engine lock acquired re-entrantly";
+    engine_lock_held = true;
+    func ();
+    engine_lock_held = false;
+  };
+
+  int  build_count = 0;
+  bool trigger_reentrant_hard_recalc = false;
+  EXPECT_CALL (*mock_graph_builder_, build_graph_impl (_))
+    .WillRepeatedly ([&] (graph::Graph &graph) {
+      ++build_count;
+      auto * node1 = graph.add_node_for_processable (*processables_[0]);
+      auto * node2 = graph.add_node_for_processable (*processables_[1]);
+      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
+      node1->connect_to (*node2);
+      if (trigger_reentrant_hard_recalc)
+        {
+          trigger_reentrant_hard_recalc = false;
+          dispatcher_->recalc_graph (false);
+        }
+    });
+
+  create_dispatcher ();
+
+  dispatcher_->recalc_graph (false);
+  ASSERT_EQ (build_count, 1);
+  ASSERT_EQ (engine_lock_acquisitions, 0);
+
+  trigger_reentrant_hard_recalc = true;
+  dispatcher_->recalc_graph (false);
+
+  // Re-entrant requests must not nest or trigger a follow-up rebuild
+  EXPECT_EQ (engine_lock_acquisitions, 1);
+  EXPECT_EQ (build_count, 2);
+}
+
+TEST_F (DspGraphDispatcherTest, HardRecalcRequestedDuringSoftRecalcRunsAfter)
+{
+  bool engine_lock_held = false;
+  int  engine_lock_acquisitions = 0;
+  bool trigger_reentrant_hard_recalc = false;
+  run_function_with_engine_lock_ = [&] (std::function<void ()> func) {
+    ++engine_lock_acquisitions;
+    EXPECT_FALSE (engine_lock_held) << "engine lock acquired re-entrantly";
+    engine_lock_held = true;
+    func ();
+    if (std::exchange (trigger_reentrant_hard_recalc, false))
+      {
+        dispatcher_->recalc_graph (false);
+      }
+    engine_lock_held = false;
+  };
+
+  int build_count = 0;
+  EXPECT_CALL (*mock_graph_builder_, build_graph_impl (_))
+    .WillRepeatedly ([&] (graph::Graph &graph) {
+      ++build_count;
+      auto * node1 = graph.add_node_for_processable (*processables_[0]);
+      auto * node2 = graph.add_node_for_processable (*processables_[1]);
+      node2->connect_to (*graph.add_node_for_processable (*processables_[2]));
+      node1->connect_to (*node2);
+    });
+
+  create_dispatcher ();
+
+  // First recalculation creates the scheduler (bypasses the lock runner)
+  dispatcher_->recalc_graph (false);
+  ASSERT_EQ (build_count, 1);
+  ASSERT_EQ (engine_lock_acquisitions, 0);
+
+  // A soft recalculation only refreshes latencies, so a rebuild requested
+  // from within one must still happen once it finishes
+  trigger_reentrant_hard_recalc = true;
+  dispatcher_->recalc_graph (true);
+
+  EXPECT_EQ (build_count, 2) << "the deferred rebuild did not run";
+  EXPECT_EQ (engine_lock_acquisitions, 2);
 }
 
 TEST_F (DspGraphDispatcherTest, StartCycleInRealtimeContext)

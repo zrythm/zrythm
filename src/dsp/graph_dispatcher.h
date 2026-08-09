@@ -1,7 +1,9 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
+
+#include <atomic>
 
 #include "dsp/graph_builder.h"
 #include "dsp/graph_scheduler.h"
@@ -41,6 +43,19 @@ public:
 
   /**
    * Recalculates the process acyclic directed graph.
+   *
+   * Non-reentrant (main thread only): nesting would deadlock on the
+   * non-recursive engine processing lock, so a request arriving while a
+   * recalculation is in progress is never run inline.
+   *
+   * A hard recalculation re-prepares all nodes and then refreshes their
+   * latencies (GraphScheduler::prepare_nodes_for_processing), so it covers
+   * both nested soft and nested hard requests, which are dropped. A soft
+   * recalculation only refreshes latencies, so it cannot stand in for a
+   * rebuild: a hard request arriving during one is run once it finishes.
+   *
+   * Soft re-entrant requests are an expected pattern (e.g., a plugin
+   * reporting a latency change from within activation).
    *
    * @param soft If true, only readjusts latencies.
    */
@@ -184,6 +199,16 @@ private:
   std::optional<unsigned int> process_kickoff_thread_;
 
   graph::GraphScheduler::RunOnMainThreadFunc run_on_main_thread_;
+
+  /** Whether a recalculation is currently in progress (main thread only). */
+  std::atomic<bool> recalc_in_progress_{ false };
+
+  /** Whether the in-progress recalculation is a soft one. */
+  bool soft_recalc_in_progress_ = false;
+
+  /** Whether a hard recalculation was requested during a soft one, to be
+   * run once it finishes. */
+  bool hard_recalc_pending_ = false;
 };
 
 }

@@ -7,6 +7,7 @@
 #include "dsp/graph_dispatcher.h"
 #include "dsp/graph_export.h"
 #include "dsp/graph_pruner.h"
+#include "utils/concurrency.h"
 #include "utils/logger.h"
 #include "utils/tracy.h"
 
@@ -133,61 +134,102 @@ DspGraphDispatcher::start_cycle (
 void
 DspGraphDispatcher::recalc_graph (bool soft)
 {
-  z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
-
-  const auto device_info = hw_interface_.get_device_info ();
-  const auto sample_rate = device_info.sample_rate;
-  const auto buffer_size = device_info.block_length;
-
-  const auto rebuild_graph = [&] () {
-    graph::Graph graph;
-
-    // Build graph
-    graph_builder_->build_graph (graph);
-    z_debug (
-      "Built graph (before pruning): {}",
-      graph::GraphExport::export_to_dot (graph, true));
-
-    // Prune graph
+  // A recalculation in progress handles the re-entrant requests it covers
+  // (see the header for the contract)
+  if (recalc_in_progress_.load (std::memory_order_acquire))
     {
-      std::vector<std::reference_wrapper<graph::GraphNode>> terminals;
-      for (const auto &processable : terminal_processables_provider_ ())
+      if (soft)
         {
-          auto * node =
-            graph.get_nodes ().find_node_for_processable (*processable);
-          terminals.emplace_back (*node);
+          z_debug (
+            "Subsuming re-entrant soft graph recalculation into the "
+            "in-progress recalculation");
         }
-      graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
-      z_debug (
-        "Built graph (pruned): {}",
-        graph::GraphExport::export_to_dot (graph, true));
-    }
-
-    scheduler_->rechain_from_node_collection (
-      graph.steal_nodes (), sample_rate, buffer_size);
-  };
-
-  if (!scheduler_ && !soft)
-    {
-      scheduler_ = std::make_unique<graph::GraphScheduler> (
-        run_on_main_thread_, sample_rate, buffer_size, true, workgroup_);
-      rebuild_graph ();
-      scheduler_->start_threads ();
+      else if (soft_recalc_in_progress_)
+        {
+          // A soft recalculation only refreshes latencies, so it cannot
+          // stand in for a rebuild
+          z_debug (
+            "Deferring re-entrant hard graph recalculation until the "
+            "in-progress soft recalculation finishes");
+          hard_recalc_pending_ = true;
+        }
+      else
+        {
+          z_warning (
+            "Ignoring re-entrant graph recalculation request: a hard "
+            "recalculation is already in progress");
+        }
       return;
     }
 
-  run_function_with_engine_lock_ ([&] () {
-    if (soft)
+  {
+    const AtomicBoolRAII recalc_guard (recalc_in_progress_);
+    soft_recalc_in_progress_ = soft;
+
+    z_info ("Recalculating processing graph{}...", soft ? " (soft)" : "");
+
+    const auto device_info = hw_interface_.get_device_info ();
+    const auto sample_rate = device_info.sample_rate;
+    const auto buffer_size = device_info.block_length;
+
+    const auto rebuild_graph = [&] () {
+      graph::Graph graph;
+
+      // Build graph
+      graph_builder_->build_graph (graph);
+      z_debug (
+        "Built graph (before pruning): {}",
+        graph::GraphExport::export_to_dot (graph, true));
+
+      // Prune graph
       {
-        scheduler_->get_nodes ().update_latencies ();
+        std::vector<std::reference_wrapper<graph::GraphNode>> terminals;
+        for (const auto &processable : terminal_processables_provider_ ())
+          {
+            auto * node =
+              graph.get_nodes ().find_node_for_processable (*processable);
+            terminals.emplace_back (*node);
+          }
+        graph::GraphPruner::prune_graph_to_terminals (graph, terminals);
+        z_debug (
+          "Built graph (pruned): {}",
+          graph::GraphExport::export_to_dot (graph, true));
+      }
+
+      scheduler_->rechain_from_node_collection (
+        graph.steal_nodes (), sample_rate, buffer_size);
+    };
+
+    if (!scheduler_ && !soft)
+      {
+        scheduler_ = std::make_unique<graph::GraphScheduler> (
+          run_on_main_thread_, sample_rate, buffer_size, true, workgroup_);
+        rebuild_graph ();
+        scheduler_->start_threads ();
       }
     else
       {
-        rebuild_graph ();
-      }
-  });
+        run_function_with_engine_lock_ ([&] () {
+          if (soft)
+            {
+              scheduler_->get_nodes ().update_latencies ();
+            }
+          else
+            {
+              rebuild_graph ();
+            }
+        });
 
-  z_info ("Processing graph ready");
+        z_info ("Processing graph ready");
+      }
+  }
+
+  // Run a rebuild that was requested while a soft recalculation held the
+  // guard, now that it has been released
+  if (std::exchange (hard_recalc_pending_, false))
+    {
+      recalc_graph (false);
+    }
 }
 
 void
