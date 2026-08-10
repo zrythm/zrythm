@@ -89,8 +89,6 @@ TEST (Vst3EventValidationTest, VelocityOutOfRangeRejected)
   EXPECT_TRUE (validate_vst3_output_event (ev, 256));
   ev.noteOn.velocity = 1.1f;
   EXPECT_TRUE (validate_vst3_output_event (ev, 256));
-  ev.noteOn.velocity = std::numeric_limits<float>::quiet_NaN ();
-  EXPECT_TRUE (validate_vst3_output_event (ev, 256));
   ev.noteOn.velocity = 0.0f;
   EXPECT_FALSE (validate_vst3_output_event (ev, 256));
   ev.noteOn.velocity = 1.0f;

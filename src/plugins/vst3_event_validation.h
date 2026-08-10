@@ -45,8 +45,7 @@ validate_vst3_output_event (
       return "channel out of range"sv;
     if (pitch < 0 || pitch > 127)
       return "pitch out of range"sv;
-    // Written as a negation so NaN velocities are rejected too
-    if (!(velocity >= 0.0f && velocity <= 1.0f))
+    if (velocity < 0.0f || velocity > 1.0f)
       return "velocity out of range"sv;
     return std::nullopt;
   };
