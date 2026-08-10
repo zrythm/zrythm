@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /*
@@ -17,16 +17,6 @@
 #define BUILD_TYPE "${CMAKE_BUILD_TYPE}"
 
 #define LATEST_RELEASE_VER_URL "@latest_release_ver_url@"
-
-#define CARLA_BINARIES_DIR "@ZRYTHM_CARLA_BINARIES_DIR@"
-
-#cmakedefine01 CARLA_HAVE_AUDIO_PORT_HINTS
-
-#cmakedefine01 CARLA_HAVE_CLAP_SUPPORT
-
-#cmakedefine01 CARLA_HAVE_CV8_PATCHBAY_VARIANT
-
-#cmakedefine01 CARLA_HAVE_CV32_PATCHBAY_VARIANT
 
 #cmakedefine CHANGELOG_DATE "@CHANGELOG_DATE@"
 
@@ -63,18 +53,6 @@
 #define COPYRIGHT_YEARS "@copyright_years@"
 
 #define DONATION_URL "@donation_url@"
-
-#cmakedefine01 HAVE_CARLA
-
-#cmakedefine01 HAVE_CARLA_BRIDGE_LV2_GTK2
-
-#cmakedefine01 HAVE_CARLA_BRIDGE_LV2_GTK3
-
-#cmakedefine01 HAVE_CARLA_BRIDGE_LV2_QT5
-
-#cmakedefine01 HAVE_CARLA_BRIDGE_LV2_X11
-
-#cmakedefine01 HAVE_CARLA_BRIDGE_NATIVE
 
 #cmakedefine01 HAVE_CHANGELOG
 
@@ -142,8 +120,6 @@
 
 // target major version (what this branch targets)
 #define ZRYTHM_TARGET_VER_MAJ @ZRYTHM_VERSION_MAJOR@
-
-#define Z_CARLA_VERSION_STRING "@CARLA_VERSION@"
 
 // Developer build (with extra checks enabled)
 #cmakedefine01 ZRYTHM_DEV_BUILD

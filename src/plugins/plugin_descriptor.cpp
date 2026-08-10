@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -140,7 +140,6 @@ init_from (
   obj.protocol_ = other.protocol_;
   obj.path_or_id_ = other.path_or_id_;
   obj.unique_id_ = other.unique_id_;
-  obj.min_bridge_mode_ = other.min_bridge_mode_;
   obj.has_custom_ui_ = other.has_custom_ui_;
 }
 
@@ -320,12 +319,7 @@ PluginDescriptor::has_custom_ui () const
     case Protocol::ProtocolType::AudioUnit:
     case Protocol::ProtocolType::CLAP:
     case Protocol::ProtocolType::JSFX:
-#if HAVE_CARLA
-      return zrythm::gui::old_dsp::plugins::CarlaNativePlugin::has_custom_ui (
-        *this);
-#else
       return false;
-#endif
       break;
     default:
       return false;
@@ -333,19 +327,6 @@ PluginDescriptor::has_custom_ui () const
     }
 
   z_return_val_if_reached (false);
-}
-
-BridgeMode
-PluginDescriptor::get_min_bridge_mode () const
-{
-  zrythm::plugins::BridgeMode mode = zrythm::plugins::BridgeMode::None;
-
-  if (arch_ == PluginArchitecture::ARCH_32_BIT)
-    {
-      mode = zrythm::plugins::BridgeMode::Full;
-    }
-
-  return mode;
 }
 
 utils::Utf8String
@@ -373,132 +354,6 @@ PluginDescriptor::get_icon_name () const
     }
 }
 
-#if 0
-GMenuModel *
-PluginDescriptor::generate_context_menu () const
-{
-  GMenu * menu = g_menu_new ();
-
-  GMenuItem * menuitem;
-  char        tmp[600];
-
-  /* TODO */
-#  if 0
-  /* add option for native generic LV2 UI */
-  if (this->protocol == ProtocolType::LV2
-      &&
-      this->min_bridge_mode_ == zrythm::plugins::BridgeMode::None)
-    {
-      menuitem =
-        z_gtk_create_menu_item (
-          _("Add to project (native generic UI)"),
-          nullptr,
-          "app.plugin-browser-add-to-project");
-      g_menu_append_item (menu, menuitem);
-    }
-#  endif
-
-#  if HAVE_CARLA
-  sprintf (tmp, "app.plugin-browser-add-to-project-carla::%p", this);
-  menuitem = z_gtk_create_menu_item (QObject::tr ("Add to project"), nullptr, tmp);
-  g_menu_append_item (menu, menuitem);
-
-  PluginConfiguration new_setting (*this);
-  if (
-    has_custom_ui_
-    && this->min_bridge_mode_ == zrythm::plugins::BridgeMode::None
-    && !new_setting.force_generic_ui_)
-    {
-      sprintf (
-        tmp,
-        "app.plugin-browser-add-to-project-"
-        "bridged-ui::%p",
-        this);
-      menuitem = z_gtk_create_menu_item (
-        QObject::tr ("Add to project (bridged UI)"), nullptr, tmp);
-      g_menu_append_item (menu, menuitem);
-    }
-
-  sprintf (
-    tmp,
-    "app.plugin-browser-add-to-project-bridged-"
-    "full::%p",
-    this);
-  menuitem =
-    z_gtk_create_menu_item (QObject::tr ("Add to project (bridged full)"), nullptr, tmp);
-  g_menu_append_item (menu, menuitem);
-#  endif
-
-#  if 0
-  menuitem =
-    GTK_MENU_ITEM (
-      gtk_check_menu_item_new_with_mnemonic (
-        _("Use _Generic UI")));
-  APPEND;
-  gtk_check_menu_item_set_active (
-    GTK_CHECK_MENU_ITEM (menuitem),
-    new_setting->force_generic_ui);
-  g_signal_connect (
-    G_OBJECT (menuitem), "toggled",
-    G_CALLBACK (on_use_generic_ui_toggled), this);
-#  endif
-
-  /* add to collection */
-  GMenu * add_collections_submenu = g_menu_new ();
-  int     num_added = 0;
-  for (auto &coll : zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
-    {
-      if (coll->contains_descriptor (*this))
-        {
-          continue;
-        }
-
-      sprintf (tmp, "app.plugin-browser-add-to-collection::%p,%p", &coll, this);
-      menuitem = z_gtk_create_menu_item (coll->name_.c_str (), nullptr, tmp);
-      g_menu_append_item (add_collections_submenu, menuitem);
-      num_added++;
-    }
-  if (num_added > 0)
-    {
-      g_menu_append_section (
-        menu, QObject::tr ("Add to collection"), G_MENU_MODEL (add_collections_submenu));
-    }
-  else
-    {
-      g_object_unref (add_collections_submenu);
-    }
-
-  /* remove from collection */
-  GMenu * remove_collections_submenu = g_menu_new ();
-  num_added = 0;
-  for (auto &coll : zrythm::gui::old_dsp::plugins::PluginManager::get_active_instance ()->collections_->collections_)
-    {
-      if (!coll->contains_descriptor (*this))
-        {
-          continue;
-        }
-
-      sprintf (
-        tmp, "app.plugin-browser-remove-from-collection::%p,%p", &coll, this);
-      menuitem = z_gtk_create_menu_item (coll->name_.c_str (), nullptr, tmp);
-      g_menu_append_item (remove_collections_submenu, menuitem);
-      num_added++;
-    }
-  if (num_added > 0)
-    {
-      g_menu_append_section (
-        menu, QObject::tr ("Remove from collection"),
-        G_MENU_MODEL (remove_collections_submenu));
-    }
-  else
-    {
-      g_object_unref (remove_collections_submenu);
-    }
-
-  return G_MENU_MODEL (menu);
-}
-#endif
-
 bool
 PluginDescriptor::is_same_plugin (
   const zrythm::plugins::PluginDescriptor &other) const
@@ -510,27 +365,26 @@ void
 to_json (nlohmann::json &j, const PluginDescriptor &p)
 {
   j = nlohmann::json{
-    { PluginDescriptor::kAuthorKey,             p.author_          },
-    { PluginDescriptor::kNameKey,               p.name_            },
-    { PluginDescriptor::kWebsiteKey,            p.website_         },
-    { PluginDescriptor::kCategoryKey,           p.category_        },
-    { PluginDescriptor::kCategoryStringKey,     p.category_str_    },
-    { PluginDescriptor::kNumAudioInsKey,        p.num_audio_ins_   },
-    { PluginDescriptor::kNumAudioOutsKey,       p.num_audio_outs_  },
-    { PluginDescriptor::kNumMidiInsKey,         p.num_midi_ins_    },
-    { PluginDescriptor::kNumMidiOutsKey,        p.num_midi_outs_   },
-    { PluginDescriptor::kNumCtrlInsKey,         p.num_ctrl_ins_    },
-    { PluginDescriptor::kNumCtrlOutsKey,        p.num_ctrl_outs_   },
-    { PluginDescriptor::kNumCvInsKey,           p.num_cv_ins_      },
-    { PluginDescriptor::kNumCvOutsKey,          p.num_cv_outs_     },
-    { PluginDescriptor::kUniqueIdKey,           p.unique_id_       },
+    { PluginDescriptor::kAuthorKey,             p.author_         },
+    { PluginDescriptor::kNameKey,               p.name_           },
+    { PluginDescriptor::kWebsiteKey,            p.website_        },
+    { PluginDescriptor::kCategoryKey,           p.category_       },
+    { PluginDescriptor::kCategoryStringKey,     p.category_str_   },
+    { PluginDescriptor::kNumAudioInsKey,        p.num_audio_ins_  },
+    { PluginDescriptor::kNumAudioOutsKey,       p.num_audio_outs_ },
+    { PluginDescriptor::kNumMidiInsKey,         p.num_midi_ins_   },
+    { PluginDescriptor::kNumMidiOutsKey,        p.num_midi_outs_  },
+    { PluginDescriptor::kNumCtrlInsKey,         p.num_ctrl_ins_   },
+    { PluginDescriptor::kNumCtrlOutsKey,        p.num_ctrl_outs_  },
+    { PluginDescriptor::kNumCvInsKey,           p.num_cv_ins_     },
+    { PluginDescriptor::kNumCvOutsKey,          p.num_cv_outs_    },
+    { PluginDescriptor::kUniqueIdKey,           p.unique_id_      },
     { PluginDescriptor::kDeprecatedUniqueIdKey,
-     p.juce_compat_deprecated_unique_id_                           },
-    { PluginDescriptor::kArchitectureKey,       p.arch_            },
-    { PluginDescriptor::kProtocolKey,           p.protocol_        },
-    { PluginDescriptor::kPathOrIdKey,           p.path_or_id_      },
-    { PluginDescriptor::kMinBridgeModeKey,      p.min_bridge_mode_ },
-    { PluginDescriptor::kHasCustomUIKey,        p.has_custom_ui_   },
+     p.juce_compat_deprecated_unique_id_                          },
+    { PluginDescriptor::kArchitectureKey,       p.arch_           },
+    { PluginDescriptor::kProtocolKey,           p.protocol_       },
+    { PluginDescriptor::kPathOrIdKey,           p.path_or_id_     },
+    { PluginDescriptor::kHasCustomUIKey,        p.has_custom_ui_  },
   };
 }
 
@@ -568,7 +422,6 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
             .get<utils::Utf8String> ();
       }
   }
-  j.at (PluginDescriptor::kMinBridgeModeKey).get_to (p.min_bridge_mode_);
   j.at (PluginDescriptor::kHasCustomUIKey).get_to (p.has_custom_ui_);
 }
 } // namespace zrythm::plugins

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 target_sources(zrythm_gui_lib
@@ -9,8 +9,6 @@ target_sources(zrythm_gui_lib
     chord_preset_manager.cpp
     alert_manager.h
     alert_manager.cpp
-    # carla_discovery.h
-    # carla_discovery.cpp
     cursor_manager.h
     cursor_manager.cpp
     curve_preset.h

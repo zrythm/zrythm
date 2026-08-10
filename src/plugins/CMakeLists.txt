@@ -40,7 +40,6 @@ qt_add_library(zrythm_plugins_lib STATIC)
 
 target_sources(zrythm_plugins_lib
   PRIVATE
-    # carla_native_plugin.cpp
     CLAPPluginFormat.cpp
     clap_plugin.cpp
     host_window_units.cpp
@@ -64,7 +63,6 @@ target_sources(zrythm_plugins_lib
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
-      # carla_native_plugin.h
       CLAPPluginFormat.h
       clap_plugin.h
       gl_context_utils.h

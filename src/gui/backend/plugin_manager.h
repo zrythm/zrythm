@@ -87,12 +87,6 @@ public:
     const zrythm::plugins::PluginDescriptor &src_descr) const;
 
   /**
-   * Returns if the plugin manager supports the given plugin protocol.
-   */
-  static bool
-  supports_protocol (zrythm::plugins::Protocol::ProtocolType protocol);
-
-  /**
    * Returns an instrument plugin, if any.
    */
   std::unique_ptr<zrythm::plugins::PluginDescriptor> pick_instrument () const;

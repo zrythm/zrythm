@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 HERE="$(dirname "$(readlink -f "${0}")")"
@@ -15,9 +15,9 @@ if [ "$flatpak_build" != "1" ]; then
   # used by the universal installer
   # if [ "@ZRYTHM_IS_INSTALLER_VER_ONE_OR_ZERO@" = "1" ]; then
     # export PATH="@CMAKE_INSTALL_PREFIX@/libexec:$PATH"
-    # export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:@CMAKE_INSTALL_FULL_LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
+    # export @LD_LIBRARY_PATH_ENV@="@zrythm_libdir@:@CMAKE_INSTALL_FULL_LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
   # else
-    # export @LD_LIBRARY_PATH_ENV@="@zrythm_carla_libdir@:@zrythm_libdir@:$jack_path:@CMAKE_INSTALL_FULL_LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
+    # export @LD_LIBRARY_PATH_ENV@="@zrythm_libdir@:$jack_path:@CMAKE_INSTALL_FULL_LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
   # fi
 fi
 

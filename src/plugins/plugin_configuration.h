@@ -80,7 +80,6 @@ public:
 private:
   static constexpr auto kDescriptorKey = "descriptor"sv;
   static constexpr auto kForceGenericUIKey = "forceGenericUI"sv;
-  static constexpr auto kBridgeModeKey = "bridgeMode"sv;
   friend void to_json (nlohmann::json &j, const PluginConfiguration &p);
   friend void from_json (const nlohmann::json &j, PluginConfiguration &p);
 
@@ -93,13 +92,10 @@ public:
   /** Whether to force a generic UI. */
   bool force_generic_ui_{};
 
-  /** Requested carla bridge mode. */
-  zrythm::plugins::BridgeMode bridge_mode_{};
-
   BOOST_DESCRIBE_CLASS (
     PluginConfiguration,
     (),
-    (descr_, hosting_type_, force_generic_ui_, bridge_mode_),
+    (descr_, hosting_type_, force_generic_ui_),
     (),
     ())
 };

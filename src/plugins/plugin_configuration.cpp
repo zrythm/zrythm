@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_configuration.h"
@@ -15,7 +15,6 @@ PluginConfiguration::copy_fields_from (const PluginConfiguration &other)
   descr_ = utils::clone_unique (*other.descr_);
   hosting_type_ = other.hosting_type_;
   force_generic_ui_ = other.force_generic_ui_;
-  bridge_mode_ = other.bridge_mode_;
 }
 
 void
@@ -53,7 +52,6 @@ to_json (nlohmann::json &j, const PluginConfiguration &p)
   j = nlohmann::json{
     { PluginConfiguration::kDescriptorKey,     p.descr_            },
     { PluginConfiguration::kForceGenericUIKey, p.force_generic_ui_ },
-    { PluginConfiguration::kBridgeModeKey,     p.bridge_mode_      },
   };
 }
 
@@ -63,6 +61,5 @@ from_json (const nlohmann::json &j, PluginConfiguration &p)
   p.descr_ = std::make_unique<zrythm::plugins::PluginDescriptor> ();
   j.at (PluginConfiguration::kDescriptorKey).get_to (*p.descr_);
   j.at (PluginConfiguration::kForceGenericUIKey).get_to (p.force_generic_ui_);
-  j.at (PluginConfiguration::kBridgeModeKey).get_to (p.bridge_mode_);
 }
 }

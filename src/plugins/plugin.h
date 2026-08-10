@@ -724,7 +724,6 @@ private:
   QPointer<const Plugin> self_guard_;
 };
 
-class CarlaNativePlugin;
 class JucePlugin;
 class ClapPlugin;
 class Vst3Plugin;

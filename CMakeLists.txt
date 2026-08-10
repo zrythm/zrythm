@@ -208,10 +208,6 @@ cmake_dependent_option(ZRYTHM_EXTRA_EXTRA_OPTIMIZATIONS "Compile and link with m
 cmake_dependent_option(ZRYTHM_NATIVE_OPTIMIZATIONS "Compile and link with native (-march/-mtune=native) optimizations (for performance)" OFF "ZRYTHM_EXTRA_OPTIMIZATIONS" OFF)
 option(ZRYTHM_EXTRA_DEBUG_INFO "Compile and link with extra debug info (for debugging) (-g3)" OFF)
 option(ZRYTHM_TIME_TRACE "Generate Clang time trace files (-ftime-trace) for performance profiling" OFF)
-set(ZRYTHM_CARLA_BINARIES_DIR "" CACHE STRING "Location to collect carla discovery and bridge binaries")
-if (WIN32)
-  set(ZRYTHM_CARLA_BINARIES_32_BIT_DIR "" CACHE STRING "Location to collect carla discovery and bridge binaries for 32 bit")
-endif()
 set(ZRYTHM_ASIO_SDK_PATH "C:\\ASIOSDK\\2.3.4" CACHE STRING "Root path of ASIO SDK (there should be a 'common` directory here)" )
 option(ZRYTHM_CHECK_UPDATES "Check for updates on startup" ON)
 option(ZRYTHM_DEBUG_QML "Enable QML debugging service (opens a debug port)" OFF)
@@ -224,7 +220,6 @@ option(ZRYTHM_ENABLE_SANITIZER_THREAD "Compile with thread sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_MEMORY "Compile with memory sanitizer" OFF)
 option(ZRYTHM_ENABLE_SANITIZER_REALTIME "Compile with realtime sanitizer" OFF)
 option(ZRYTHM_TRACY "Enable Tracy profiling instrumentation" OFF)
-option(ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT "Enable support for CV32 patchbay variant in carla" ON)
 option(ZRYTHM_UNITY_BUILD "Enable unity builds where possible" OFF)
 option(ZRYTHM_VERIFY_INTERFACE_HEADER_SETS OFF)
 option(ZRYTHM_COVERAGE "Build with --coverage" OFF)
@@ -875,49 +870,6 @@ if(CHROMAPRINT_FOUND AND FALSE) # disable for now
 endif()
 add_library(zrythm::chromaprint_lib ALIAS _zrythm_chromaprint_lib)
 
-# Carla
-if(false)
-  pkg_check_modules(CARLA carla-host-plugin>=2.6.0 REQUIRED IMPORTED_TARGET)
-  set(HAVE_CARLA TRUE)
-  if(ZRYTHM_CARLA_BINARIES_DIR)
-    string(REPLACE "\\" "/" ZRYTHM_CARLA_BINARIES_DIR ${ZRYTHM_CARLA_BINARIES_DIR})
-  else()
-    pkg_get_variable(carla_lib_dir carla-host-plugin "carla_libdir")
-    set(ZRYTHM_CARLA_BINARIES_DIR ${carla_lib_dir})
-  endif()
-  find_program(CARLA_DISCOVERY_NATIVE_EXECUTABLE
-    NAMES "carla-discovery-native" "carla-discovery-native.exe"
-    PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
-    REQUIRED)
-  set(zrythm_carla_libdir "${zrythm_libdir}/carla")
-  install(PROGRAMS ${CARLA_DISCOVERY_NATIVE_EXECUTABLE}
-    DESTINATION "${zrythm_carla_libdir}")
-  set(CARLA_HAVE_CLAP_SUPPORT TRUE)
-  set(CARLA_HAVE_CV32_PATCHBAY_VARIANT ${ZRYTHM_CARLA_WITH_CV32_PATCHBAY_VARIANT})
-
-  # install gnu/linux bridges
-  set(bridge_types
-    native lv2-gtk2 lv2-gtk3 lv2-qt4 lv2-qt5 lv2-x11)
-  foreach(bridge_type ${bridge_types})
-    find_program(CARLA_BRIDGE_${bridge_type}
-      NAMES "carla-bridge-${bridge_type}"
-      PATHS "${ZRYTHM_CARLA_BINARIES_DIR}"
-      NO_DEFAULT_PATH)
-    if(CARLA_BRIDGE_${bridge_type} AND (OS_GNU))
-      string(TOUPPER ${bridge_type} bridge_type_upper)
-      string(REPLACE "-" "_" bridge_type_upper ${bridge_type_upper})
-      set(HAVE_CARLA_BRIDGE_${bridge_type_upper} 1)
-      install(PROGRAMS ${CARLA_BRIDGE_${bridge_type}}
-        DESTINATION "${zrythm_libdir}/carla")
-    endif()
-  endforeach()
-  set(CMAKE_REQUIRED_LIBRARIES ${CARLA_LIBRARIES})
-  check_symbol_exists(carla_get_native_patchbay_cv8_plugin "carla/CarlaHost.h" CARLA_HAVE_CV8_PATCHBAY_VARIANT)
-  check_symbol_exists(carla_get_audio_port_hints "carla/CarlaHost.h" CARLA_HAVE_AUDIO_PORT_HINTS)
-  set(CMAKE_REQUIRED_LIBRARIES)
-endif()
-set(HAVE_CARLA FALSE)
-
 find_package(zstd REQUIRED)
 
 find_package(xxHash REQUIRED)
@@ -1064,7 +1016,6 @@ add_library(zrythm::qt_libs ALIAS qt_libs)
 list(APPEND zrythm_link_libs
   zita-resampler::zita-resampler
   zrythm::soxr
-  # PkgConfig::CARLA
   # PkgConfig::RTAUDIO
   # PkgConfig::RTMIDI
   zstd::libzstd_static
@@ -1120,31 +1071,6 @@ configure_file(
 
 # Trick to automatically git-ignore any build dir
 file(WRITE ${CMAKE_BINARY_DIR}/.gitignore "*")
-
-# Plugins for testing
-set(ext_lv2_plugins
-  "ams_lfo|AMS LFO|http://github.com/blablack/ams-lv2/lfo"
-  "calf_monosynth|Calf Monosynth|http://calf.sourceforge.net/plugins/Monosynth"
-  "helm|Helm|http://tytel.org/helm"
-  "sherlock_atom_inspector|Sherlock Atom Inspector|http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector"
-  "lsp_compressor_mono|LSP Compressor Mono|http://lsp-plug.in/plugins/lv2/compressor_mono"
-  "lsp_compressor|LSP Compressor|http://lsp-plug.in/plugins/lv2/compressor_stereo"
-  "lsp_sidechain_compressor|LSP Sidechain Compressor|http://lsp-plug.in/plugins/lv2/sc_compressor_stereo"
-  "lsp_multisampler_24_do|LSP MultiSampler x24 Direct Out|http://lsp-plug.in/plugins/lv2/multisampler_x24_do"
-  "carla_rack|Carla Rack|http://kxstudio.sf.net/carla/plugins/carlarack"
-  "no_delay_line|No Delay Line|http://gareus.org/oss/lv2/nodelay"
-  "mda_ambience|mda Ambience|http://drobilla.net/plugins/mda/Ambience"
-  "midi_cc_map|MIDI CC Map|http://gareus.org/oss/lv2/midifilter#mapcc"
-  "noize_maker|NoizeMak3r|http://kunz.corrupt.ch/products/tal-noisemaker"
-  "tal_filter|TAL Filter|urn:juce:TalFilter"
-  "geonkick|Geonkick|http://geontime.com/geonkick/single"
-  "chipwave|ChipWave|https://github.com/linuxmao-org/shiru-plugins/chipwave"
-  "calf_compressor|Calf Compressor|http://calf.sourceforge.net/plugins/Compressor"
-  "mverb|MVerb|http://distrho.sf.net/plugins/MVerb"
-  "sfizz|Sfizz|http://sfztools.github.io/sfizz"
-  "drops|Drops|http://github.com/clearly-broken-software/drops"
-  "test_signal|Test Signal|http://gareus.org/oss/lv2/testsignal"
-  "kxstudio_lfo|KXStudio LFO|http://kxstudio.sf.net/carla/plugins/lfo")
 
 # When using the lilv subproject, we can't use lv2ls and lv2info
 find_program(LV2INFO_EXECUTABLE lv2info)

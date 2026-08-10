@@ -77,16 +77,6 @@ enum class PluginArchitecture : std::uint8_t
 };
 
 /**
- * Plugin bridge mode.
- */
-enum class BridgeMode : std::uint8_t
-{
-  None,
-  UI,
-  Full,
-};
-
-/**
  * The PluginDescriptor class provides a set of static utility functions and
  * member functions to work with plugin descriptors. It contains information
  * about a plugin such as its name, author, category, protocol, and various port
@@ -159,11 +149,6 @@ public:
   bool has_custom_ui () const;
 
   /**
-   * Returns the minimum bridge mode required for this plugin.
-   */
-  BridgeMode get_min_bridge_mode () const;
-
-  /**
    * Gets an appropriate icon name.
    */
   utils::Utf8String get_icon_name () const;
@@ -194,7 +179,6 @@ private:
   static constexpr auto kArchitectureKey = "architecture"sv;
   static constexpr auto kProtocolKey = "protocol"sv;
   static constexpr auto kPathOrIdKey = "pathOrId"sv;
-  static constexpr auto kMinBridgeModeKey = "minBridgeMode"sv;
   static constexpr auto kHasCustomUIKey = "hasCustomUI"sv;
   friend void           to_json (nlohmann::json &j, const PluginDescriptor &p);
   friend void from_json (const nlohmann::json &j, PluginDescriptor &p);
@@ -204,8 +188,7 @@ private:
     constexpr auto tie = [] (const auto &p) {
       return std::tie (
         p.arch_, p.protocol_, p.path_or_id_, p.unique_id_,
-        p.juce_compat_deprecated_unique_id_, p.min_bridge_mode_,
-        p.has_custom_ui_);
+        p.juce_compat_deprecated_unique_id_, p.has_custom_ui_);
     };
     return tie (a) == tie (b);
   }
@@ -250,9 +233,6 @@ public:
   /** This is additionally needed by JUCE for some plugin formats. */
   int juce_compat_deprecated_unique_id_{};
 
-  /** Minimum required bridge mode. */
-  BridgeMode min_bridge_mode_ = BridgeMode::None;
-
   bool has_custom_ui_{};
 
   BOOST_DESCRIBE_CLASS (
@@ -270,7 +250,6 @@ public:
      num_cv_ins_,
      num_cv_outs_,
      arch_,
-     min_bridge_mode_,
      has_custom_ui_),
     (),
     ())

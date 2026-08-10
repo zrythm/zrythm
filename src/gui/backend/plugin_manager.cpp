@@ -43,10 +43,6 @@ PluginManager::PluginManager (
         known_plugin_list_,
         this)),
       collections_ (PluginCollections::read_or_new ())
-#if HAVE_CARLA
-      ,
-      carla_discovery_ (std::make_unique<ZCarlaDiscovery> (*this))
-#endif
 {
   juce::addDefaultFormatsToManager (*format_manager_);
   format_manager_->addFormat (
@@ -105,56 +101,6 @@ PluginManager::add_category_and_author (
           plugin_authors_.emplace_back (author);
         }
     }
-}
-
-bool
-PluginManager::supports_protocol (Protocol::ProtocolType protocol)
-{
-  // List of protocols that are always supported
-  const auto always_supported = {
-    Protocol::ProtocolType::Internal, Protocol::ProtocolType::LV2,
-    Protocol::ProtocolType::LADSPA,   Protocol::ProtocolType::VST,
-    Protocol::ProtocolType::VST3,     Protocol::ProtocolType::SFZ,
-    Protocol::ProtocolType::JSFX,     Protocol::ProtocolType::CLAP
-  };
-
-  // Check if the protocol is in the always supported list
-  if (
-    std::ranges::find (always_supported, protocol)
-    != std::ranges::end (always_supported))
-    {
-#if HAVE_CARLA
-      return true;
-#else
-      return false;
-#endif
-    }
-
-#if HAVE_CARLA
-  // Get the list of features supported by Carla
-  const StringArray carla_supported_features (carla_get_supported_features ());
-
-  // Map of protocols to their corresponding Carla feature names
-  const auto feature_map = std::map<PluginProtocol, std::string>{
-    { ProtocolType::SF2,  "sf2"  },
-    { ProtocolType::DSSI, "osc"  },
-    { ProtocolType::VST3, "vst3" },
-    { ProtocolType::AU,   "au"   }
-  };
-
-  // Check if the protocol is in the feature map
-  if (auto it = feature_map.find (protocol); it != feature_map.end ())
-    {
-      // Check if the corresponding feature is supported by Carla
-      return std::ranges::any_of (
-        carla_supported_features, [&] (const auto &feature) {
-          return utils::to_std_string (feature) == it->second;
-        });
-    }
-#endif
-
-  // If not found in any of the above cases, return false
-  return false;
 }
 
 void
@@ -291,30 +237,6 @@ PluginManager::beginScan ()
   deserialize_known_plugins ();
 
   scanner_->beginScan ();
-
-#if 0
-  for (
-    size_t i = ENUM_VALUE_TO_INT (ProtocolType::LV2);
-    i <= ENUM_VALUE_TO_INT (ProtocolType::JSFX); i++)
-    {
-      PluginProtocol cur = ENUM_INT_TO_VALUE (PluginProtocol, i);
-      if (!supports_protocol (cur))
-        continue;
-
-      carla_discovery_->start (CarlaBackend::BINARY_NATIVE, cur);
-      /* also scan 32-bit on windows */
-#  ifdef _WIN32
-      carla_discovery_->start (CarlaBackend::BINARY_WIN32, cur);
-#  endif
-    }
-
-  // Connect to the event loop using QTimer
-  auto * timer = new QTimer (this);
-  connect (
-    timer, &QTimer::timeout, this, &PluginManager::call_carla_discovery_idle);
-  timer->start (
-    0); // 0 ms interval means it will be called on every event loop iteration
-#endif
 }
 
 std::unique_ptr<zrythm::plugins::PluginDescriptor>

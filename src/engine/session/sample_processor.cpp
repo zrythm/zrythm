@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
@@ -407,11 +407,10 @@ SampleProcessor::queue_file_or_chord_preset (
         {
           auto pl_ref = PROJECT->getPluginFactory ()->create_plugin_from_setting (
             *instrument_setting_);
-          auto * pl = pl_ref.get_object_as<CarlaNativePlugin> ();
+          auto * pl = pl_ref.get_object_as<plugins::Plugin> ();
           pl->instantiate ();
           pl->activate (true);
-          z_return_if_fail (
-            !pl->midi_in_ports_.empty () && pl->l_out_ && pl->r_out_);
+          z_return_if_fail (!pl->midi_in_ports_.empty ());
 
           instrument_track->channel_->add_plugin (
             pl_ref,
