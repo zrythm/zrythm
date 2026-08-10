@@ -58,9 +58,14 @@ target_sources(zrythm_gui_lib
 )
 
 # X11 headers define macros like None/Bool/Status that break other
-# translation units when unity builds batch this file together with them
+# translation units when unity builds batch this file together with them.
+# zrythm_gui_lib is created in src/, a different directory scope than this
+# file, so the property must be set in the target's scope via TARGET_DIRECTORY
+# (per CMake docs: source file properties are only visible to targets added in
+# the same directory).
 set_source_files_properties(
   x11_plugin_host_window.cpp
+  TARGET_DIRECTORY zrythm_gui_lib
   PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON
 )
 
