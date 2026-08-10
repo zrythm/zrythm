@@ -47,7 +47,7 @@ ChannelSend::ChannelSend (
       {
         auto port = utils::create_object<dsp::AudioPort> (
           registry (), u8"Audio Input", dsp::PortFlow::Input,
-          dsp::AudioPort::BusLayout::Stereo, 2);
+          dsp::SpeakerArrangement::stereo ());
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
             fmt::format ("channel_send_{}_audio_in", slot + 1)));
@@ -57,7 +57,7 @@ ChannelSend::ChannelSend (
       {
         auto port = utils::create_object<dsp::AudioPort> (
           registry (), u8"Audio Output", dsp::PortFlow::Output,
-          dsp::AudioPort::BusLayout::Stereo, 2);
+          dsp::SpeakerArrangement::stereo ());
         port.get_object_as<dsp::AudioPort> ()->set_symbol (
           utils::Utf8String::from_utf8_encoded_string (
             fmt::format ("channel_send_{}_audio_out", slot + 1)));

@@ -450,10 +450,10 @@ TEST_F (PluginTest, ProcessPassthroughImpl)
   // Create ports for passthrough
   auto audio_in = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Audio In", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Mono, 1);
+    dsp::SpeakerArrangement::mono ());
   auto audio_out = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Audio Out", dsp::PortFlow::Output,
-    dsp::AudioPort::BusLayout::Mono, 1);
+    dsp::SpeakerArrangement::mono ());
 
   plugin_->add_input_port (audio_in);
   plugin_->add_output_port (audio_out);
@@ -573,7 +573,7 @@ TEST_F (
 {
   auto audio_out = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Audio Out", dsp::PortFlow::Output,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
   plugin_->add_output_port (audio_out);
 
   auto descriptor = std::make_unique<PluginDescriptor> ();

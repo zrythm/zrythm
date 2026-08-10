@@ -62,7 +62,7 @@ TEST_F (PortObservationManagerTest, InitiallyEmpty)
 TEST_F (PortObservationManagerTest, GetObserverReturnsNullForUnknown)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   EXPECT_EQ (manager_.get_observer (*port), nullptr);
 }
@@ -70,7 +70,7 @@ TEST_F (PortObservationManagerTest, GetObserverReturnsNullForUnknown)
 TEST_F (PortObservationManagerTest, ObservesCorrectPort)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   ObservationToken token (manager_, *port);
@@ -83,11 +83,11 @@ TEST_F (PortObservationManagerTest, ObservesCorrectPort)
 TEST_F (PortObservationManagerTest, MultiplePortsObservedIndependently)
 {
   auto port1_ref = utils::create_object<AudioPort> (
-    registry_, u8"Port1", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Port1", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port1 = port1_ref.get_object_as<AudioPort> ();
 
   auto port2_ref = utils::create_object<AudioPort> (
-    registry_, u8"Port2", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Port2", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port2 = port2_ref.get_object_as<AudioPort> ();
 
   ObservationToken token1 (manager_, *port1);
@@ -102,7 +102,7 @@ TEST_F (PortObservationManagerTest, MultiplePortsObservedIndependently)
 TEST_F (PortObservationManagerTest, SignalOnlyOnFirstAndLastToken)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   auto token1 = std::make_unique<ObservationToken> (manager_, *port);
@@ -127,11 +127,11 @@ TEST_F (PortObservationManagerTest, ObserversMapReflectsRegistrations)
   EXPECT_TRUE (manager_.observers ().empty ());
 
   auto port1_ref = utils::create_object<AudioPort> (
-    registry_, u8"P1", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"P1", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port1 = port1_ref.get_object_as<AudioPort> ();
 
   auto port2_ref = utils::create_object<AudioPort> (
-    registry_, u8"P2", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"P2", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port2 = port2_ref.get_object_as<AudioPort> ();
 
   auto token1 = std::make_unique<ObservationToken> (manager_, *port1);
@@ -192,7 +192,7 @@ TEST_F (PortObservationManagerTest, DrainFillsMidiCache)
 TEST_F (PortObservationManagerTest, DrainTrimsAudioCacheWhenBatchExceedsCap)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -263,7 +263,7 @@ TEST_F (PortObservationManagerTest, DrainTrimsMidiCacheWhenBatchExceedsCap)
 TEST_F (PortObservationManagerTest, TokenRAII)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   EXPECT_EQ (recalc_count_, 0);
@@ -282,7 +282,7 @@ TEST_F (PortObservationManagerTest, TokenRAII)
 TEST_F (PortObservationManagerTest, TokenReturnsCorrectPortUuid)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   auto   port_uuid = port->get_uuid ();
 
@@ -294,7 +294,7 @@ TEST_F (PortObservationManagerTest, TokenReturnsCorrectPortUuid)
 TEST_F (PortObservationManagerTest, TokenCacheInitiallyEmpty)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   ObservationToken token (manager_, *port);
@@ -307,7 +307,7 @@ TEST_F (PortObservationManagerTest, TokenCacheInitiallyEmpty)
 TEST_F (PortObservationManagerTest, DrainCopiesAudioToCache)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -333,7 +333,7 @@ TEST_F (PortObservationManagerTest, DrainCopiesAudioToCache)
 TEST_F (PortObservationManagerTest, TokenCacheClear)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -358,7 +358,7 @@ TEST_F (PortObservationManagerTest, TokenCacheClear)
 TEST_F (PortObservationManagerTest, MultipleTokensForSamePortGetIndependentCaches)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -386,7 +386,7 @@ TEST_F (PortObservationManagerTest, MultipleTokensForSamePortGetIndependentCache
 TEST_F (PortObservationManagerTest, TokenMoveTransfersOwnership)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   EXPECT_EQ (recalc_count_, 0);
@@ -421,11 +421,11 @@ TEST_F (PortObservationManagerTest, TokenMoveTransfersOwnership)
 TEST_F (PortObservationManagerTest, TokenMoveAssignmentTransfersOwnership)
 {
   auto port1_ref = utils::create_object<AudioPort> (
-    registry_, u8"P1", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"P1", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port1 = port1_ref.get_object_as<AudioPort> ();
 
   auto port2_ref = utils::create_object<AudioPort> (
-    registry_, u8"P2", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"P2", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port2 = port2_ref.get_object_as<AudioPort> ();
 
   auto token1 = std::make_unique<ObservationToken> (manager_, *port1);
@@ -451,7 +451,7 @@ TEST_F (PortObservationManagerTest, TokenMoveAssignmentTransfersOwnership)
 TEST_F (PortObservationManagerTest, MultiCycleDrainAccumulatesData)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 

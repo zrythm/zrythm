@@ -236,7 +236,7 @@ TrackProcessor::TrackProcessor (
         auto port_ref = utils::create_object<dsp::AudioPort> (
           registry (), in ? u8"TP Stereo in" : u8"TP Stereo out",
           in ? dsp::PortFlow::Input : dsp::PortFlow::Output,
-          dsp::AudioPort::BusLayout::Stereo, 2);
+          dsp::SpeakerArrangement::stereo ());
         auto * port = port_ref.get_object_as<dsp::AudioPort> ();
         port->set_full_designation_provider (this);
         port->set_symbol (

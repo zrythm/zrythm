@@ -92,7 +92,7 @@ protected:
 TEST_F (PortObserverIntegrationTest, ObserverCapturesDataThroughGraphCycle)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Graph Audio", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Graph Audio", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   auto observer = std::make_unique<PortObserver> (registry_, *port);
@@ -129,7 +129,7 @@ TEST_F (PortObserverIntegrationTest, ObserverCapturesDataThroughGraphCycle)
 TEST_F (PortObserverIntegrationTest, ObserverDrainPopulatesTokenCache)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Drain Audio", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Drain Audio", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   PortObservationManager manager (registry_);

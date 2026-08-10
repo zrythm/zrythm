@@ -40,7 +40,8 @@ protected:
 TEST_F (ProjectRegistryTest, RegisterAudioPort)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"test", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"test", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto uuid = port->raw_uuid ();
   registry_->register_object (*port);
@@ -106,7 +107,8 @@ TEST_F (ProjectRegistryTest, RegisterFileAudioSource)
 TEST_F (ProjectRegistryTest, RegisterMultipleCategories)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto port_uuid = port->raw_uuid ();
   registry_->register_object (*port);
@@ -142,7 +144,8 @@ TEST_F (ProjectRegistryTest, RegisterMultipleCategories)
 TEST_F (ProjectRegistryTest, DuplicateRegistrationThrows)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   registry_->register_object (*port);
   EXPECT_THROW (registry_->register_object (*port), std::runtime_error);
@@ -156,7 +159,8 @@ TEST_F (ProjectRegistryTest, DuplicateRegistrationThrows)
 TEST_F (ProjectRegistryTest, FindByRawUuidReturnsCorrectObject)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto uuid = port->raw_uuid ();
   registry_->register_object (*port);
@@ -194,7 +198,8 @@ TEST_F (ProjectRegistryTest, EmptyRegistrySizeIsZero)
 TEST_F (ProjectRegistryTest, ReleaseReferenceDeletesObject)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto uuid = port->raw_uuid ();
   registry_->register_object (*port);
@@ -210,7 +215,8 @@ TEST_F (ProjectRegistryTest, ReleaseReferenceDeletesObject)
 TEST_F (ProjectRegistryTest, AcquireReferenceKeepsObjectAlive)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto uuid = port->raw_uuid ();
   registry_->register_object (*port);
@@ -233,7 +239,8 @@ TEST_F (ProjectRegistryTest, AcquireReferenceKeepsObjectAlive)
 TEST_F (ProjectRegistryTest, ForEachPortIteratesOnlyPorts)
 {
   auto port1 = std::make_unique<dsp::AudioPort> (
-    u8"port1", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port1", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto port2 = std::make_unique<dsp::MidiPort> (u8"port2", dsp::PortFlow::Input);
   auto param = std::make_unique<dsp::ProcessorParameter> (
@@ -255,7 +262,8 @@ TEST_F (ProjectRegistryTest, ForEachPortIteratesOnlyPorts)
 TEST_F (ProjectRegistryTest, ForEachParamIteratesOnlyParams)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto param = std::make_unique<dsp::ProcessorParameter> (
     *registry_, dsp::ProcessorParameter::UniqueId{},
@@ -289,7 +297,8 @@ TEST_F (ProjectRegistryTest, ForEachEmptyBucketIsNoOp)
 TEST_F (ProjectRegistryTest, CountAcrossAllCategories)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto param = std::make_unique<dsp::ProcessorParameter> (
     *registry_, dsp::ProcessorParameter::UniqueId{},
@@ -317,7 +326,8 @@ TEST_F (ProjectRegistryTest, CountAcrossAllCategories)
 TEST_F (ProjectRegistryTest, ToJsonProducesValidJson)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   registry_->register_object (*port);
   port.release ();
@@ -348,7 +358,8 @@ TEST_F (ProjectRegistryTest, ToJsonEmptyRegistry)
 TEST_F (ProjectRegistryTest, RegisteredObjectParentIsRegistry)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"port", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"port", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto * raw = port.get ();
   registry_->register_object (*port);
@@ -364,7 +375,8 @@ TEST_F (ProjectRegistryTest, RegisteredObjectParentIsRegistry)
 TEST_F (ProjectRegistryTest, CountMatchingDerivedType)
 {
   auto audio_port = std::make_unique<dsp::AudioPort> (
-    u8"audio", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"audio", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   registry_->register_object (*audio_port);
   audio_port.release ();
@@ -387,7 +399,8 @@ TEST_F (ProjectRegistryTest, CountMatchingDerivedType)
 TEST_F (ProjectRegistryTest, ForEachMatchingDerivedType)
 {
   auto audio_port = std::make_unique<dsp::AudioPort> (
-    u8"audio", dsp::PortFlow::Input, dsp::AudioPort::BusLayout{}, 2,
+    u8"audio", dsp::PortFlow::Input,
+    dsp::SpeakerArrangement::discrete_channels (2),
     dsp::AudioPort::Purpose::Main);
   auto * audio_raw = audio_port.get ();
   registry_->register_object (*audio_port);
@@ -426,7 +439,7 @@ TEST_F (ProjectRegistryTest, ForEachMatchingEmptyIsNoOp)
 TEST_F (ProjectRegistryTest, ToJsonRoundTripPreservesPort)
 {
   auto port = std::make_unique<dsp::AudioPort> (
-    u8"roundtrip", dsp::PortFlow::Output, dsp::AudioPort::BusLayout::Stereo, 2,
+    u8"roundtrip", dsp::PortFlow::Output, dsp::SpeakerArrangement::stereo (),
     dsp::AudioPort::Purpose::Main);
   auto uuid = port->raw_uuid ();
   registry_->register_object (*port);

@@ -41,8 +41,7 @@ protected:
 TEST_F (PortObserverTest, AudioCaptureToRingBuffer)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test Audio", PortFlow::Output, AudioPort::BusLayout::Stereo,
-    2);
+    registry_, u8"Test Audio", PortFlow::Output, SpeakerArrangement::stereo ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -68,7 +67,7 @@ TEST_F (PortObserverTest, AudioCaptureToRingBuffer)
 TEST_F (PortObserverTest, AudioMultiChannel)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Stereo", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+    registry_, u8"Stereo", PortFlow::Output, SpeakerArrangement::stereo ());
   auto * port = port_ref.get_object_as<AudioPort> ();
   port->prepare_for_processing (nullptr, sample_rate_, block_length_);
 
@@ -93,7 +92,7 @@ TEST_F (PortObserverTest, AudioMultiChannel)
 TEST_F (PortObserverTest, AudioEmptyBufferNoop)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Empty", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Empty", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   auto observer = std::make_unique<PortObserver> (registry_, *port);
@@ -198,7 +197,7 @@ TEST_F (PortObserverTest, CVCaptureToRingBuffer)
 TEST_F (PortObserverTest, ObserverStoresPortUuid)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   PortObserver observer (registry_, *port);
@@ -208,7 +207,7 @@ TEST_F (PortObserverTest, ObserverStoresPortUuid)
 TEST_F (PortObserverTest, HasRingBuffersByPortType)
 {
   auto audio_ref = utils::create_object<AudioPort> (
-    registry_, u8"Audio", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Audio", PortFlow::Output, SpeakerArrangement::mono ());
   auto * audio_port = audio_ref.get_object_as<AudioPort> ();
 
   PortObserver audio_obs (registry_, *audio_port);
@@ -229,7 +228,7 @@ TEST_F (PortObserverTest, HasRingBuffersByPortType)
 TEST_F (PortObserverTest, ReleaseResourcesClearsRings)
 {
   auto port_ref = utils::create_object<AudioPort> (
-    registry_, u8"Test", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    registry_, u8"Test", PortFlow::Output, SpeakerArrangement::mono ());
   auto * port = port_ref.get_object_as<AudioPort> ();
 
   auto observer = std::make_unique<PortObserver> (registry_, *port);

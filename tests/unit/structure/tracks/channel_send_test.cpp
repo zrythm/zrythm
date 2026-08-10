@@ -149,7 +149,7 @@ TEST_F (ChannelSendTest, DestinationPort)
   // Create a destination audio input port
   auto dest_port_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Destination Input", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
 
   // Set destination
   audio_send_->set_destination_port (dest_port_ref);
@@ -167,7 +167,7 @@ TEST_F (ChannelSendTest, DestinationPortTypeValidation)
   // Create an audio input port
   auto audio_input_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Audio Input", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
 
   // Create a MIDI input port
   auto midi_input_ref = utils::create_object<dsp::MidiPort> (
@@ -193,7 +193,7 @@ TEST_F (ChannelSendTest, DestinationPortFlowValidation)
   // Create an audio OUTPUT port (wrong flow)
   auto audio_output_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Audio Output", dsp::PortFlow::Output,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
 
   // Audio send should reject output ports
   EXPECT_THROW (
@@ -372,7 +372,7 @@ TEST_F (ChannelSendTest, JsonSerializationRoundtrip)
   // Set a destination port
   auto dest_port_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Destination Input", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
   audio_send_->set_destination_port (dest_port_ref);
 
   // Serialize

@@ -130,7 +130,7 @@ TEST_F (Vst3ChannelMappingTest, UnmappedOutputChannelsAbsorbWrites)
   EXPECT_FLOAT_EQ (scratch[0][0][3], 0.5f);
 }
 
-TEST_F (Vst3ChannelMappingTest, ScratchAllocationMatchesBusLayout)
+TEST_F (Vst3ChannelMappingTest, ScratchAllocationMatchesSpeakerArrangement)
 {
   auto buses = make_buses ({ 2, 1 });
   auto scratch = make_vst3_scratch_buffers (

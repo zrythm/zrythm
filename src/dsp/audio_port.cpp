@@ -14,13 +14,12 @@
 namespace zrythm::dsp
 {
 AudioPort::AudioPort (
-  utils::Utf8String label,
-  PortFlow          flow,
-  BusLayout         layout,
-  uint8_t           num_channels,
-  Purpose           purpose)
-    : Port (std::move (label), PortType::Audio, flow), layout_ (layout),
-      purpose_ (purpose), num_channels_ (num_channels)
+  utils::Utf8String  label,
+  PortFlow           flow,
+  SpeakerArrangement arrangement,
+  Purpose            purpose)
+    : Port (std::move (label), PortType::Audio, flow),
+      arrangement_ (arrangement), purpose_ (purpose)
 {
 }
 
@@ -32,115 +31,85 @@ init_from (
 {
   init_from (
     static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
-  obj.layout_ = other.layout_;
+  obj.arrangement_ = other.arrangement_;
   obj.purpose_ = other.purpose_;
 }
 
 void
 AudioPort::add_source_rt (
-  const AudioPort             &src,
-  dsp::graph::ProcessBlockInfo time_nfo,
-  float                        multiplier)
+  const AudioPort              &src,
+  const AudioBusChannelRouting &routing,
+  dsp::graph::ProcessBlockInfo  time_nfo,
+  float                         multiplier)
 {
-  const auto add_src =
-    [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
-      buf_->addFrom (
-        static_cast<int> (dest_ch),
-        time_nfo.buffer_offset_.in<int> (units::samples), *src.buf_,
-        static_cast<int> (src_ch),
-        time_nfo.buffer_offset_.in<int> (units::samples),
-        time_nfo.nframes_.in<int> (units::samples), gain);
-    };
+  assert (buf_ != nullptr && src.buf_ != nullptr);
 
-  if (src.num_channels_ == num_channels_)
-    {
-      // Copy each port
-      for (const auto ch : std::views::iota (0u, num_channels_))
-        {
-          add_src (ch, ch, multiplier);
-        }
-    }
-  else if (src.layout_ == BusLayout::Mono && layout_ == BusLayout::Stereo)
-    {
-      // Copy mono signal to both L and R
-      for (const auto ch : std::views::iota (0u, num_channels_))
-        {
-          add_src (ch, 0, multiplier);
-        }
-    }
-  else if (src.layout_ == BusLayout::Stereo && layout_ == BusLayout::Mono)
-    {
-      // Sum L+R at -6dB
-      const auto multipliers =
-        calculate_panning (PanLaw::Minus6dB, PanAlgorithm::SquareRoot, 0.5f);
-      add_src (0, 0, multipliers.first * multiplier);
-      add_src (0, 1, multipliers.second * multiplier);
-    }
-  else
-    {
-      // unsupported...
-      buf_->clear ();
-    }
+  const auto offset = time_nfo.buffer_offset_.in<int> (units::samples);
+  const auto nframes = time_nfo.nframes_.in<int> (units::samples);
+
+  // destination channels with no contribution keep the signal already summed
+  // into them by other sources
+  routing.for_each_route (
+    src.arrangement_, arrangement_,
+    [&] (unsigned dest_ch, unsigned src_ch, float gain) {
+      assert (dest_ch < num_channels () && src_ch < src.num_channels ());
+      buf_->addFrom (
+        static_cast<int> (dest_ch), offset, *src.buf_,
+        static_cast<int> (src_ch), offset, nframes, gain * multiplier);
+    });
 }
 
 void
 AudioPort::copy_source_rt (
-  const AudioPort             &src,
-  dsp::graph::ProcessBlockInfo time_nfo,
-  float                        multiplier)
+  const AudioPort              &src,
+  const AudioBusChannelRouting &routing,
+  dsp::graph::ProcessBlockInfo  time_nfo,
+  float                         multiplier)
 {
-  const auto add_src =
-    [time_nfo, &src, this] (const auto dest_ch, const auto src_ch, float gain) {
-      if (utils::math::floats_near (gain, 1.f, 0.00001f))
-        {
-          buf_->copyFrom (
-            static_cast<int> (dest_ch),
-            time_nfo.buffer_offset_.in<int> (units::samples), *src.buf_,
-            static_cast<int> (src_ch),
-            time_nfo.buffer_offset_.in<int> (units::samples),
-            time_nfo.nframes_.in<int> (units::samples));
-        }
-      else
-        {
-          buf_->copyFrom (
-            static_cast<int> (dest_ch),
-            time_nfo.buffer_offset_.in<int> (units::samples),
-            src.buf_->getReadPointer (
-              static_cast<int> (src_ch),
-              time_nfo.buffer_offset_.in<int> (units::samples)),
-            time_nfo.nframes_.in<int> (units::samples), gain);
-        }
-    };
+  assert (buf_ != nullptr && src.buf_ != nullptr);
 
-  if (src.num_channels_ == num_channels_)
+  const auto offset = time_nfo.buffer_offset_.in<int> (units::samples);
+  const auto nframes = time_nfo.nframes_.in<int> (units::samples);
+
+  // a channel for channel routing writes every destination channel exactly
+  // once, so it can overwrite in place
+  if (routing.is_channel_for_channel (src.arrangement_, arrangement_))
     {
-      // Copy each port
-      for (const auto ch : std::views::iota (0u, num_channels_))
+      const auto unity_gain =
+        utils::math::floats_near (multiplier, 1.f, 0.00001f);
+      for (const auto ch : std::views::iota (0u, num_channels ()))
         {
-          add_src (ch, ch, multiplier);
+          if (unity_gain)
+            {
+              buf_->copyFrom (
+                static_cast<int> (ch), offset, *src.buf_, static_cast<int> (ch),
+                offset, nframes);
+            }
+          else
+            {
+              buf_->copyFrom (
+                static_cast<int> (ch), offset,
+                src.buf_->getReadPointer (static_cast<int> (ch), offset),
+                nframes, multiplier);
+            }
         }
+      return;
     }
-  else if (src.layout_ == BusLayout::Mono && layout_ == BusLayout::Stereo)
+
+  // otherwise a destination channel may take several contributions or none at
+  // all, so start from silence and accumulate
+  for (const auto ch : std::views::iota (0u, num_channels ()))
     {
-      // Copy mono signal to both L and R
-      for (const auto ch : std::views::iota (0u, num_channels_))
-        {
-          add_src (ch, 0, multiplier);
-        }
+      buf_->clear (static_cast<int> (ch), offset, nframes);
     }
-  else if (src.layout_ == BusLayout::Stereo && layout_ == BusLayout::Mono)
-    {
-      // Sum L+R at -6dB
-      const auto multipliers =
-        calculate_panning (PanLaw::Minus6dB, PanAlgorithm::SquareRoot, 0.5f);
-      add_src (0, 0, multipliers.first * multiplier);
-      add_src (0, 1, multipliers.second * multiplier);
-    }
-  else
-    {
-      // unsupported...
-      buf_->clear ();
-    }
+  routing.for_each_route (
+    src.arrangement_, arrangement_,
+    [&] (unsigned dest_ch, unsigned src_ch, float gain) {
+      assert (dest_ch < num_channels () && src_ch < src.num_channels ());
+      buf_->addFrom (
+        static_cast<int> (dest_ch), offset, *src.buf_,
+        static_cast<int> (src_ch), offset, nframes, gain * multiplier);
+    });
 }
 
 void
@@ -174,7 +143,7 @@ AudioPort::prepare_for_processing_impl (
 
   auto max = std::max (max_block_length, units::samples (1u));
   buf_ = std::make_unique<juce::AudioSampleBuffer> (
-    num_channels_, max.in<int> (units::samples));
+    num_channels (), max.in<int> (units::samples));
   buf_->clear ();
 }
 
@@ -199,25 +168,10 @@ AudioPort::process_block (
             continue;
 
           const auto * src_port = dynamic_cast<const AudioPort *> (_src_port);
-          const float  multiplier = conn->multiplier_;
 
-          if (conn->source_ch_to_destination_ch_mapping_.has_value ())
-            {
-              const auto [source_ch, dest_ch] =
-                conn->source_ch_to_destination_ch_mapping_.value ();
-
-              /* sum the signals */
-              buf_->addFrom (
-                static_cast<int> (dest_ch),
-                time_nfo.buffer_offset_.in<int> (units::samples),
-                *src_port->buf_, static_cast<int> (source_ch),
-                time_nfo.buffer_offset_.in<int> (units::samples),
-                time_nfo.nframes_.in<int> (units::samples), multiplier);
-            }
-          else
-            {
-              add_source_rt (*src_port, time_nfo, multiplier);
-            }
+          add_source_rt (
+            *src_port, conn->audio_bus_channel_routing_, time_nfo,
+            conn->multiplier_);
         }
     }
 
@@ -230,7 +184,7 @@ AudioPort::process_block (
         time_nfo.nframes_.in<int> (units::samples));
       if (abs_peak > max_allowed_peak)
         {
-          for (const auto ch : std::views::iota (0u, num_channels_))
+          for (const auto ch : std::views::iota (0u, num_channels ()))
             {
               /* this limiting wastes around 50% of port processing so only do
                * it if we exceed maxf */
@@ -249,19 +203,17 @@ void
 to_json (nlohmann::json &j, const AudioPort &port)
 {
   to_json (j, static_cast<const Port &> (port));
-  j[AudioPort::kBusLayoutId] = port.layout_;
+  j[AudioPort::kSpeakerArrangementId] = port.arrangement_;
   j[AudioPort::kPurposeId] = port.purpose_;
   j[AudioPort::kRequiresLimitingId] = port.requires_limiting_;
-  j[AudioPort::kChannels] = port.num_channels_;
 }
 
 void
 from_json (const nlohmann::json &j, AudioPort &port)
 {
   from_json (j, static_cast<Port &> (port));
-  j.at (AudioPort::kBusLayoutId).get_to (port.layout_);
+  j.at (AudioPort::kSpeakerArrangementId).get_to (port.arrangement_);
   j.at (AudioPort::kPurposeId).get_to (port.purpose_);
   j.at (AudioPort::kRequiresLimitingId).get_to (port.requires_limiting_);
-  j.at (AudioPort::kChannels).get_to (port.num_channels_);
 }
 } // namespace zrythm::dsp

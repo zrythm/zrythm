@@ -146,20 +146,22 @@ FaustPlugin::create_ports_and_params (bool instrument, int num_ins, int num_outs
     {
       auto port_ref = utils::create_object<dsp::AudioPort> (
         registry (), u8"audio_in", dsp::PortFlow::Input,
-        num_ins == 1
-          ? dsp::AudioPort::BusLayout::Mono
-          : dsp::AudioPort::BusLayout::Stereo,
-        static_cast<uint8_t> (num_ins));
+        num_ins == 1 ? dsp::SpeakerArrangement::mono ()
+        : num_ins == 2
+          ? dsp::SpeakerArrangement::stereo ()
+          : dsp::SpeakerArrangement::discrete_channels (
+              static_cast<uint8_t> (num_ins)));
       add_input_port (port_ref);
     }
   if (num_outs > 0)
     {
       auto port_ref = utils::create_object<dsp::AudioPort> (
         registry (), u8"audio_out", dsp::PortFlow::Output,
-        num_outs == 1
-          ? dsp::AudioPort::BusLayout::Mono
-          : dsp::AudioPort::BusLayout::Stereo,
-        static_cast<uint8_t> (num_outs));
+        num_outs == 1 ? dsp::SpeakerArrangement::mono ()
+        : num_outs == 2
+          ? dsp::SpeakerArrangement::stereo ()
+          : dsp::SpeakerArrangement::discrete_channels (
+              static_cast<uint8_t> (num_outs)));
       add_output_port (port_ref);
     }
 

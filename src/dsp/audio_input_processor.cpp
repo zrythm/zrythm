@@ -27,7 +27,7 @@ AudioInputProcessor::AudioInputProcessor (
         registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("Input {}-{}", i + 1, i + 2)),
-        PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+        PortFlow::Output, SpeakerArrangement::stereo ());
       add_output_port (port_ref);
       port_mappings_.push_back (
         { port_ref.get_object_as<AudioPort> (), i, units::channels (2) });
@@ -39,7 +39,7 @@ AudioInputProcessor::AudioInputProcessor (
         registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("Input {}", i + 1)),
-        PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+        PortFlow::Output, SpeakerArrangement::mono ());
       add_output_port (port_ref);
       port_mappings_.push_back (
         { port_ref.get_object_as<AudioPort> (), i, units::channels (1) });

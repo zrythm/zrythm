@@ -37,8 +37,7 @@ class AudioPassthroughProcessor : public ProcessorBase
 public:
   AudioPassthroughProcessor (
     utils::IObjectRegistry &registry,
-    AudioPort::BusLayout    bus_layout,
-    size_t                  num_channels);
+    SpeakerArrangement      arrangement);
 
   ~AudioPassthroughProcessor () override;
 

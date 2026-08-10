@@ -175,7 +175,11 @@
                     "description": "Position in ticks"
                   }
                 },
-                "required": ["tickPosition", "numerator", "denominator"]
+                "required": [
+                  "tickPosition",
+                  "numerator",
+                  "denominator"
+                ]
               }
             },
             "tempoChanges": {
@@ -194,7 +198,10 @@
                     "maximum": 1000
                   }
                 },
-                "required": ["tickPosition", "bpm"]
+                "required": [
+                  "tickPosition",
+                  "bpm"
+                ]
               }
             }
           }
@@ -335,6 +342,36 @@
                   },
                   "enabled": {
                     "type": "boolean"
+                  },
+                  "audioBusChannelRouting": {
+                    "type": "object",
+                    "description": "Per-connection audio bus channel matrix. Absent 'routes' means the routing is derived from the two ports' speaker arrangements.",
+                    "properties": {
+                      "routes": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "sourceChannel": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "destinationChannel": {
+                              "type": "integer",
+                              "minimum": 0
+                            },
+                            "gain": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "sourceChannel",
+                            "destinationChannel",
+                            "gain"
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -695,11 +732,51 @@
             "type": {
               "const": 1
             },
-            "busLayout": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "0=mono, 1=stereo"
+            "speakerArrangement": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "speakers",
+                    "ambisonics",
+                    "discrete"
+                  ]
+                },
+                "speakers": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Speaker bitmask (when kind=speakers)"
+                },
+                "ambisonicOrder": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 7,
+                  "description": "Ambisonic order (when kind=ambisonics)"
+                },
+                "ambisonicOrdering": {
+                  "enum": [
+                    "acn",
+                    "fuma"
+                  ],
+                  "description": "Ambisonic channel ordering (when kind=ambisonics)"
+                },
+                "ambisonicNormalization": {
+                  "enum": [
+                    "sn3d",
+                    "n3d",
+                    "maxn"
+                  ],
+                  "description": "Ambisonic normalization (when kind=ambisonics)"
+                },
+                "channels": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Channel count (when kind=discrete)"
+                }
+              },
+              "required": [
+                "kind"
+              ]
             },
             "purpose": {
               "type": "integer",
@@ -709,15 +786,10 @@
             },
             "requiresLimiting": {
               "type": "boolean"
-            },
-            "channels": {
-              "type": "integer",
-              "description": "Number of channels"
             }
           },
           "required": [
-            "busLayout",
-            "channels"
+            "speakerArrangement"
           ]
         }
       ]

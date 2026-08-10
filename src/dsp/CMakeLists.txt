@@ -5,6 +5,7 @@ qt_add_library(zrythm_dsp_lib STATIC)
 
 target_sources(zrythm_dsp_lib
   PRIVATE
+    audio_bus_channel_routing.cpp
     audio_callback.cpp
     audio_input_selection.cpp
     audio_input_processor.cpp
@@ -61,6 +62,7 @@ target_sources(zrythm_dsp_lib
     position.cpp
     processor_base.cpp
     snap_grid.cpp
+    speaker_arrangement.cpp
     timestretch_engine.cpp
     timebase.cpp
     rubberband_timestretch_engine.cpp
@@ -75,6 +77,7 @@ target_sources(zrythm_dsp_lib
     FILE_SET HEADERS
     BASE_DIRS ".."
     FILES
+      audio_bus_channel_routing.h
       audio_callback.h
       audio_device_info.h
       audio_input_selection.h
@@ -139,6 +142,7 @@ target_sources(zrythm_dsp_lib
       position.h
       processor_base.h
       snap_grid.h
+      speaker_arrangement.h
       synth_voice.h
       timestretch_engine.h
       timebase.h

@@ -434,7 +434,7 @@ struct PortBuilder
       {
         return std::make_unique<T> (
           utils::Utf8String{}, dsp::PortFlow::Input,
-          dsp::AudioPort::BusLayout::Mono, 1);
+          dsp::SpeakerArrangement::mono ());
       }
     else if constexpr (std::is_same_v<T, dsp::MidiPort>)
       {

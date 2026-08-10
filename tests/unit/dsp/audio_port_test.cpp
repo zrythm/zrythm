@@ -21,9 +21,9 @@ protected:
   {
     // Create ports
     mono_input = std::make_unique<AudioPort> (
-      u8"MonoIn", PortFlow::Input, AudioPort::BusLayout::Mono, 1);
+      u8"MonoIn", PortFlow::Input, SpeakerArrangement::mono ());
     stereo_output = std::make_unique<AudioPort> (
-      u8"StereoOut", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+      u8"StereoOut", PortFlow::Output, SpeakerArrangement::stereo ());
 
     // Prepare for processing
     mono_input->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
@@ -60,13 +60,13 @@ TEST_F (AudioPortTest, BasicProperties)
 {
   EXPECT_TRUE (mono_input->is_audio ());
   EXPECT_TRUE (mono_input->is_input ());
-  EXPECT_EQ (mono_input->layout (), AudioPort::BusLayout::Mono);
+  EXPECT_EQ (mono_input->arrangement (), SpeakerArrangement::mono ());
   EXPECT_EQ (mono_input->purpose (), AudioPort::Purpose::Main);
   EXPECT_EQ (mono_input->num_channels (), 1);
 
   EXPECT_TRUE (stereo_output->is_audio ());
   EXPECT_TRUE (stereo_output->is_output ());
-  EXPECT_EQ (stereo_output->layout (), AudioPort::BusLayout::Stereo);
+  EXPECT_EQ (stereo_output->arrangement (), SpeakerArrangement::stereo ());
   EXPECT_EQ (stereo_output->purpose (), AudioPort::Purpose::Main);
   EXPECT_EQ (stereo_output->num_channels (), 2);
 }
@@ -103,7 +103,7 @@ TEST_F (AudioPortTest, StereoPortsHelper)
 TEST_F (AudioPortTest, LimitingFunctionality)
 {
   auto port = std::make_unique<AudioPort> (
-    u8"TestPort", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    u8"TestPort", PortFlow::Output, SpeakerArrangement::mono ());
   port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
   // Initially should not require limiting
@@ -114,16 +114,16 @@ TEST_F (AudioPortTest, LimitingFunctionality)
   EXPECT_TRUE (port->requires_limiting ());
 }
 
-TEST_F (AudioPortTest, DifferentBusLayouts)
+TEST_F (AudioPortTest, DifferentSpeakerArrangements)
 {
   // Test creating ports with different bus layouts
   auto mono_port = std::make_unique<AudioPort> (
-    u8"Mono", PortFlow::Output, AudioPort::BusLayout::Mono, 1);
+    u8"Mono", PortFlow::Output, SpeakerArrangement::mono ());
   auto stereo_port = std::make_unique<AudioPort> (
-    u8"Stereo", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+    u8"Stereo", PortFlow::Output, SpeakerArrangement::stereo ());
 
-  EXPECT_EQ (mono_port->layout (), AudioPort::BusLayout::Mono);
-  EXPECT_EQ (stereo_port->layout (), AudioPort::BusLayout::Stereo);
+  EXPECT_EQ (mono_port->arrangement (), SpeakerArrangement::mono ());
+  EXPECT_EQ (stereo_port->arrangement (), SpeakerArrangement::stereo ());
 
   EXPECT_EQ (mono_port->num_channels (), 1);
   EXPECT_EQ (stereo_port->num_channels (), 2);
@@ -133,10 +133,10 @@ TEST_F (AudioPortTest, DifferentPurposes)
 {
   // Test creating ports with different purposes
   auto main_port = std::make_unique<AudioPort> (
-    u8"Main", PortFlow::Output, AudioPort::BusLayout::Mono, 1,
+    u8"Main", PortFlow::Output, SpeakerArrangement::mono (),
     AudioPort::Purpose::Main);
   auto sidechain_port = std::make_unique<AudioPort> (
-    u8"Sidechain", PortFlow::Output, AudioPort::BusLayout::Mono, 1,
+    u8"Sidechain", PortFlow::Output, SpeakerArrangement::mono (),
     AudioPort::Purpose::Sidechain);
 
   EXPECT_EQ (main_port->purpose (), AudioPort::Purpose::Main);
@@ -168,6 +168,269 @@ TEST_F (AudioPortTest, OutputPortPreservesDataThroughProcessBlock)
         stereo_output->buffers ()->getSample (1, static_cast<int> (i)),
         -expected, 1e-6f);
     }
+}
+
+/**
+ * @brief Covers how a source port's channels are mapped onto a destination
+ * port's channels for every combination of speaker arrangements.
+ */
+class AudioPortRoutingTest : public ::testing::Test
+{
+protected:
+  static constexpr auto SAMPLE_RATE = units::sample_rate (44100);
+  static constexpr auto BLOCK_LENGTH = units::samples (64);
+
+  static void fill (const AudioPort &port, float value)
+  {
+    for (const auto ch : std::views::iota (0, int{ port.num_channels () }))
+      {
+        for (
+          const auto i :
+          std::views::iota (0, BLOCK_LENGTH.in<int> (units::samples)))
+          {
+            port.buffers ()->setSample (ch, i, value);
+          }
+      }
+  }
+
+  /** Creates a prepared port whose channel @c ch holds the constant @c ch + 1. */
+  static std::unique_ptr<AudioPort> make_source (SpeakerArrangement arrangement)
+  {
+    auto port =
+      std::make_unique<AudioPort> (u8"Src", PortFlow::Output, arrangement);
+    port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    for (const auto ch : std::views::iota (0, int{ port->num_channels () }))
+      {
+        for (
+          const auto i :
+          std::views::iota (0, BLOCK_LENGTH.in<int> (units::samples)))
+          {
+            port->buffers ()->setSample (ch, i, static_cast<float> (ch + 1));
+          }
+      }
+    return port;
+  }
+
+  static std::unique_ptr<AudioPort>
+  make_destination (SpeakerArrangement arrangement)
+  {
+    auto port =
+      std::make_unique<AudioPort> (u8"Dest", PortFlow::Input, arrangement);
+    port->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+    port->buffers ()->clear ();
+    return port;
+  }
+
+  static float first_sample (const AudioPort &port, int channel)
+  {
+    return port.buffers ()->getSample (channel, 0);
+  }
+
+  static dsp::graph::ProcessBlockInfo whole_block ()
+  {
+    return dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+      units::samples (0), BLOCK_LENGTH);
+  }
+
+  /** Gains a two-channel source is summed with when folded down to one. */
+  static std::pair<float, float> downmix_gains ()
+  {
+    return calculate_panning (PanLaw::Minus6dB, PanAlgorithm::SquareRoot, 0.5f);
+  }
+};
+
+TEST_F (AudioPortRoutingTest, MatchingChannelCountsRouteOneToOne)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
+}
+
+TEST_F (AudioPortRoutingTest, MonoSourceFillsEveryDestinationChannel)
+{
+  auto src = make_source (SpeakerArrangement::mono ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (
+  AudioPortRoutingTest,
+  SingleChannelSourceWithoutLayoutFillsEveryDestinationChannel)
+{
+  auto src = make_source (SpeakerArrangement::discrete_channels (1));
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (AudioPortRoutingTest, StereoSourceSumsIntoSingleChannelDestination)
+{
+  const auto gains = downmix_gains ();
+  auto       src = make_source (SpeakerArrangement::stereo ());
+  auto       dest = make_destination (SpeakerArrangement::mono ());
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (
+    first_sample (*dest, 0), (gains.first * 1.f) + (gains.second * 2.f));
+}
+
+TEST_F (
+  AudioPortRoutingTest,
+  TwoChannelSourceWithoutLayoutSumsIntoSingleChannelDestination)
+{
+  const auto gains = downmix_gains ();
+  auto       src = make_source (SpeakerArrangement::discrete_channels (2));
+  auto dest = make_destination (SpeakerArrangement::discrete_channels (1));
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (
+    first_sample (*dest, 0), (gains.first * 1.f) + (gains.second * 2.f));
+}
+
+TEST_F (AudioPortRoutingTest, SourceChannelsBeyondDestinationCountAreDropped)
+{
+  auto src = make_source (SpeakerArrangement::discrete_channels (4));
+  auto dest = make_destination (SpeakerArrangement::discrete_channels (2));
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
+}
+
+TEST_F (AudioPortRoutingTest, CopyClearsDestinationChannelsWithNoSource)
+{
+  auto src = make_source (SpeakerArrangement::discrete_channels (2));
+  auto dest = make_destination (SpeakerArrangement::discrete_channels (4));
+  fill (*dest, 9.f);
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 2), 0.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 3), 0.f);
+}
+
+TEST_F (AudioPortRoutingTest, CopyReplacesExistingDestinationContents)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+  fill (*dest, 9.f);
+
+  dest->copy_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
+}
+
+TEST_F (AudioPortRoutingTest, MultiplierScalesRoutedSignal)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  dest->copy_source_rt (*src, whole_block (), 0.5f);
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 0.5f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (AudioPortRoutingTest, AddAccumulatesIntoDestination)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+  fill (*dest, 10.f);
+
+  dest->add_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 11.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 12.f);
+}
+
+TEST_F (AudioPortRoutingTest, AddLeavesDestinationChannelsWithNoSourceUntouched)
+{
+  auto src = make_source (SpeakerArrangement::discrete_channels (2));
+  auto dest = make_destination (SpeakerArrangement::discrete_channels (4));
+  fill (*dest, 10.f);
+
+  dest->add_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 11.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 12.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 2), 10.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 3), 10.f);
+}
+
+TEST_F (AudioPortRoutingTest, ExplicitRoutingOverridesArrangements)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  // swap the channels, which the arrangements alone would never do
+  const AudioBusChannelRouting routing{
+    { { .source_channel = 1, .destination_channel = 0 },
+     { .source_channel = 0, .destination_channel = 1 } }
+  };
+  dest->copy_source_rt (*src, routing, whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 2.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (AudioPortRoutingTest, ExplicitRoutingCanSumSeveralSourcesIntoOneChannel)
+{
+  auto src = make_source (SpeakerArrangement::discrete_channels (3));
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  const AudioBusChannelRouting routing{
+    { { .source_channel = 0, .destination_channel = 0 },
+     { .source_channel = 1, .destination_channel = 0 },
+     { .source_channel = 2, .destination_channel = 0, .gain = 0.5f } }
+  };
+  dest->copy_source_rt (*src, routing, whole_block ());
+
+  // 1 + 2 + (3 * 0.5)
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 4.5f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 0.f);
+}
+
+TEST_F (AudioPortRoutingTest, CopyWithEmptyExplicitRoutingSilencesDestination)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+  fill (*dest, 9.f);
+
+  dest->copy_source_rt (
+    *src, AudioBusChannelRouting{ std::vector<AudioBusChannelRoute>{} },
+    whole_block ());
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 0.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 0.f);
+}
+
+TEST_F (AudioPortRoutingTest, AddSumsStereoSourceIntoSingleChannelDestination)
+{
+  const auto gains = downmix_gains ();
+  auto       src = make_source (SpeakerArrangement::stereo ());
+  auto       dest = make_destination (SpeakerArrangement::mono ());
+
+  dest->add_source_rt (*src, whole_block ());
+
+  EXPECT_FLOAT_EQ (
+    first_sample (*dest, 0), (gains.first * 1.f) + (gains.second * 2.f));
 }
 
 } // namespace zrythm::dsp

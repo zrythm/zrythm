@@ -34,6 +34,8 @@ init_from (
   obj.multiplier_ = other.multiplier_;
   obj.locked_ = other.locked_;
   obj.enabled_ = other.enabled_;
+  obj.bipolar_ = other.bipolar_;
+  obj.audio_bus_channel_routing_ = other.audio_bus_channel_routing_;
 }
 
 void
@@ -45,8 +47,8 @@ to_json (nlohmann::json &j, const PortConnection &port_connection)
   j[PortConnection::kLockedKey] = port_connection.locked_;
   j[PortConnection::kEnabledKey] = port_connection.enabled_;
   j[PortConnection::kBipolarKey] = port_connection.bipolar_;
-  j[PortConnection::kSourceDestMappingKey] =
-    port_connection.source_ch_to_destination_ch_mapping_;
+  j[PortConnection::kAudioBusChannelRoutingKey] =
+    port_connection.audio_bus_channel_routing_;
 }
 
 void
@@ -58,7 +60,7 @@ from_json (const nlohmann::json &j, PortConnection &port_connection)
   j.at (PortConnection::kLockedKey).get_to (port_connection.locked_);
   j.at (PortConnection::kEnabledKey).get_to (port_connection.enabled_);
   j.at (PortConnection::kBipolarKey).get_to (port_connection.bipolar_);
-  j.at (PortConnection::kSourceDestMappingKey)
-    .get_to (port_connection.source_ch_to_destination_ch_mapping_);
+  j.at (PortConnection::kAudioBusChannelRoutingKey)
+    .get_to (port_connection.audio_bus_channel_routing_);
 }
 }

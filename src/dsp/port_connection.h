@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "dsp/audio_bus_channel_routing.h"
 #include "dsp/port_fwd.h"
 
 #include <QtQmlIntegration/qqmlintegration.h>
@@ -40,14 +41,21 @@ public:
 
   void set_bipolar (bool bipolar) { bipolar_ = bipolar; }
 
-  void set_channel_mapping (uint8_t source_channel, uint8_t destination_channel)
+  /**
+   * @brief Overrides the channel routing with an explicit set of routes.
+   *
+   * @throw std::invalid_argument if two routes describe the same source and
+   * destination channel pair.
+   */
+  void set_audio_bus_channel_routing (std::vector<AudioBusChannelRoute> routes)
   {
-    source_ch_to_destination_ch_mapping_ =
-      std::make_pair (source_channel, destination_channel);
+    audio_bus_channel_routing_ = AudioBusChannelRouting{ std::move (routes) };
   }
-  void unset_channel_mapping ()
+
+  /** Reverts to routing derived from the two ports' speaker arrangements. */
+  void reset_audio_bus_channel_routing ()
   {
-    source_ch_to_destination_ch_mapping_.reset ();
+    audio_bus_channel_routing_.reset_to_derived ();
   }
 
 private:
@@ -57,8 +65,8 @@ private:
   static constexpr std::string_view kLockedKey = "locked";
   static constexpr std::string_view kEnabledKey = "enabled";
   static constexpr std::string_view kBipolarKey = "bipolar";
-  static constexpr std::string_view kSourceDestMappingKey =
-    "sourceChannelToDestinationChannelMapping";
+  static constexpr std::string_view kAudioBusChannelRoutingKey =
+    "audioBusChannelRouting";
   friend void
   to_json (nlohmann::json &j, const PortConnection &port_connection);
   friend void
@@ -114,13 +122,13 @@ public:
   bool bipolar_{};
 
   /**
-   * @brief Optional source channel to destination channel mapping.
+   * @brief How the source port's channels feed the destination port's
+   * channels.
    *
-   * Used for audio ports. If this is nullopt for an audio port connection then
-   * the destination port is expected to use a reasonable approach to merge the
-   * source channels into the destination channels.
+   * Used for audio ports. Derived from the two ports' speaker arrangements
+   * unless the user has edited this connection's channel matrix.
    */
-  std::optional<std::pair<uint8_t, uint8_t>> source_ch_to_destination_ch_mapping_;
+  AudioBusChannelRouting audio_bus_channel_routing_;
 
   BOOST_DESCRIBE_CLASS (
     PortConnection,
@@ -131,7 +139,7 @@ public:
      locked_,
      enabled_,
      bipolar_,
-     source_ch_to_destination_ch_mapping_),
+     audio_bus_channel_routing_),
     (),
     ())
 };

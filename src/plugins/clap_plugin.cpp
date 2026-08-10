@@ -1892,24 +1892,24 @@ ClapPlugin::create_ports_from_clap_plugin ()
       const auto create_port = [&] (bool is_input, auto index) {
         clap_audio_port_info_t nfo{};
         pimpl_->plugin_->audioPortsGet (index, is_input, &nfo);
-        const dsp::AudioPort::BusLayout layout = [nfo] () {
+        const dsp::SpeakerArrangement arrangement = [nfo] () {
           if (nfo.port_type != nullptr)
             {
               if (std::string (nfo.port_type) == std::string (CLAP_PORT_STEREO))
                 {
-                  return dsp::AudioPort::BusLayout::Stereo;
+                  return dsp::SpeakerArrangement::stereo ();
                 }
               if (std::string (nfo.port_type) == std::string (CLAP_PORT_MONO))
                 {
-                  return dsp::AudioPort::BusLayout::Mono;
+                  return dsp::SpeakerArrangement::mono ();
                 }
             }
-          return dsp::AudioPort::BusLayout{};
+          return dsp::SpeakerArrangement::discrete_channels (
+            static_cast<uint8_t> (nfo.channel_count));
         }();
         auto port_ref = utils::create_object<dsp::AudioPort> (
           registry (), utils::Utf8String::from_utf8_encoded_string (nfo.name),
-          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout,
-          nfo.channel_count,
+          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, arrangement,
           index == 0
             ? dsp::AudioPort::Purpose::Main
             : dsp::AudioPort::Purpose::Sidechain);

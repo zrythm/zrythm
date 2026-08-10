@@ -34,7 +34,7 @@ TEST_F (PortConnectionTest, DefaultConstruction)
   EXPECT_FALSE (conn.locked_);
   EXPECT_TRUE (conn.enabled_);
   EXPECT_FALSE (conn.bipolar_);
-  EXPECT_FALSE (conn.source_ch_to_destination_ch_mapping_.has_value ());
+  EXPECT_TRUE (conn.audio_bus_channel_routing_.is_derived ());
 }
 
 TEST_F (PortConnectionTest, ParameterizedConstruction)
@@ -49,7 +49,7 @@ TEST_F (PortConnectionTest, ParameterizedConstruction)
   EXPECT_TRUE (conn.locked_);
   EXPECT_FALSE (conn.enabled_);
   EXPECT_FALSE (conn.bipolar_);
-  EXPECT_FALSE (conn.source_ch_to_destination_ch_mapping_.has_value ());
+  EXPECT_TRUE (conn.audio_bus_channel_routing_.is_derived ());
 }
 
 TEST_F (PortConnectionTest, UpdateMethod)
@@ -92,30 +92,73 @@ TEST_F (PortConnectionTest, JsonSerialization)
   EXPECT_FALSE (deserialized.locked_);
   EXPECT_TRUE (deserialized.enabled_);
   EXPECT_TRUE (deserialized.bipolar_);
-  EXPECT_FALSE (deserialized.source_ch_to_destination_ch_mapping_.has_value ());
+  EXPECT_TRUE (deserialized.audio_bus_channel_routing_.is_derived ());
 }
 
-TEST_F (PortConnectionTest, ChannelMapping)
+TEST_F (PortConnectionTest, AudioBusChannelRouting)
 {
-  // Test setting channel mapping
-  default_connection_->set_channel_mapping (2, 1);
-  EXPECT_TRUE (
-    default_connection_->source_ch_to_destination_ch_mapping_.has_value ());
-  EXPECT_EQ (
-    default_connection_->source_ch_to_destination_ch_mapping_->first, 2);
-  EXPECT_EQ (
-    default_connection_->source_ch_to_destination_ch_mapping_->second, 1);
+  EXPECT_TRUE (default_connection_->audio_bus_channel_routing_.is_derived ());
 
-  // Test unsetting channel mapping
-  default_connection_->unset_channel_mapping ();
-  EXPECT_FALSE (
-    default_connection_->source_ch_to_destination_ch_mapping_.has_value ());
+  default_connection_->set_audio_bus_channel_routing (
+    {
+      { .source_channel = 2, .destination_channel = 1, .gain = 0.5f }
+  });
+  EXPECT_FALSE (default_connection_->audio_bus_channel_routing_.is_derived ());
+  ASSERT_EQ (
+    default_connection_->audio_bus_channel_routing_.routes ().size (), 1);
+  EXPECT_EQ (
+    default_connection_->audio_bus_channel_routing_.routes ()
+      .front ()
+      .source_channel,
+    2);
+  EXPECT_EQ (
+    default_connection_->audio_bus_channel_routing_.routes ()
+      .front ()
+      .destination_channel,
+    1);
+
+  default_connection_->reset_audio_bus_channel_routing ();
+  EXPECT_TRUE (default_connection_->audio_bus_channel_routing_.is_derived ());
+}
+
+TEST_F (PortConnectionTest, DuplicateAudioBusChannelRoutesRejected)
+{
+  EXPECT_THROW (
+    default_connection_->set_audio_bus_channel_routing (
+      {
+        { .source_channel = 0, .destination_channel = 1 },
+        { .source_channel = 0, .destination_channel = 1 }
+  }),
+    std::invalid_argument);
+}
+
+TEST_F (PortConnectionTest, AudioBusChannelRoutingSurvivesSerialization)
+{
+  default_connection_->set_audio_bus_channel_routing (
+    {
+      { .source_channel = 1, .destination_channel = 0, .gain = 0.25f }
+  });
+
+  nlohmann::json j;
+  to_json (j, *default_connection_);
+  PortConnection deserialized;
+  from_json (j, deserialized);
+
+  EXPECT_EQ (
+    deserialized.audio_bus_channel_routing_,
+    default_connection_->audio_bus_channel_routing_);
 }
 
 TEST_F (PortConnectionTest, CloneBehavior)
 {
-  // Create a modified connection to clone
+  // Create a modified connection to clone, with every field away from its
+  // default so that a field the clone forgets is visible
   PortConnection original (kTestSrcId, kTestDestId, 0.8f, true, false);
+  original.set_bipolar (true);
+  original.set_audio_bus_channel_routing (
+    {
+      { .source_channel = 1, .destination_channel = 0, .gain = 0.5f }
+  });
 
   // Clone it
   auto clone = utils::clone_unique (original);
@@ -128,8 +171,7 @@ TEST_F (PortConnectionTest, CloneBehavior)
   EXPECT_EQ (clone->enabled_, original.enabled_);
   EXPECT_EQ (clone->bipolar_, original.bipolar_);
   EXPECT_EQ (
-    clone->source_ch_to_destination_ch_mapping_,
-    original.source_ch_to_destination_ch_mapping_);
+    clone->audio_bus_channel_routing_, original.audio_bus_channel_routing_);
 }
 
 } // namespace zrythm::dsp

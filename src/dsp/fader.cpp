@@ -146,7 +146,7 @@ Fader::Fader (
         /* stereo in */
         auto port = utils::create_object<dsp::AudioPort> (
           registry, name, dsp::PortFlow::Input,
-          dsp::AudioPort::BusLayout::Stereo, 2);
+          dsp::SpeakerArrangement::stereo ());
         port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
         add_input_port (port);
       }
@@ -161,7 +161,7 @@ Fader::Fader (
           /* stereo out */
           auto port = utils::create_object<dsp::AudioPort> (
             registry, name, dsp::PortFlow::Output,
-            dsp::AudioPort::BusLayout::Stereo, 2);
+            dsp::SpeakerArrangement::stereo ());
           port.get_object_as<dsp::AudioPort> ()->set_symbol (sym);
           add_output_port (port);
         }

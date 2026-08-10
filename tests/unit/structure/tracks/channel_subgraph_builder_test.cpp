@@ -150,7 +150,7 @@ protected:
     if (type == dsp::PortType::Audio)
       {
         return utils::create_object<dsp::AudioPort> (
-          *registry_, name, flow, dsp::AudioPort::BusLayout::Mono, 1);
+          *registry_, name, flow, dsp::SpeakerArrangement::mono ());
       }
     else if (type == dsp::PortType::Midi)
       {
@@ -205,9 +205,8 @@ protected:
         auto port_ref = utils::create_object<dsp::AudioPort> (
           *registry_, u8"Track Out", dsp::PortFlow::Output,
           num_channels == 1
-            ? dsp::AudioPort::BusLayout::Mono
-            : dsp::AudioPort::BusLayout::Stereo,
-          num_channels);
+            ? dsp::SpeakerArrangement::mono ()
+            : dsp::SpeakerArrangement::stereo ());
         processor->add_output_port (port_ref);
       }
     else if (type == dsp::PortType::Midi)
@@ -579,7 +578,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPreFaderSends)
   // Create a destination audio input port and set it on the send BEFORE building
   auto dest_port_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
 
   auto &send = audio_channel_->pre_fader_sends ().front ();
   send->set_destination_port (dest_port_ref);
@@ -624,7 +623,7 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithPostFaderSends)
   // Create a destination audio input port and set it on the send BEFORE building
   auto dest_port_ref = utils::create_object<dsp::AudioPort> (
     *registry_, u8"Destination Track Input", dsp::PortFlow::Input,
-    dsp::AudioPort::BusLayout::Stereo, 2);
+    dsp::SpeakerArrangement::stereo ());
 
   auto &send = audio_channel_->post_fader_sends ().front ();
   send->set_destination_port (dest_port_ref);

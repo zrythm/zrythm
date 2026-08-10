@@ -198,19 +198,19 @@ JucePlugin::create_ports_from_juce_plugin ()
             bus->isMain ()
               ? dsp::AudioPort::Purpose::Main
               : dsp::AudioPort::Purpose::Sidechain;
-          dsp::AudioPort::BusLayout layout = [chSet] {
+          dsp::SpeakerArrangement arrangement = [chSet, nCh] {
             if (chSet == juce::AudioChannelSet::mono ())
-              return dsp::AudioPort::BusLayout::Mono;
+              return dsp::SpeakerArrangement::mono ();
             if (chSet == juce::AudioChannelSet::stereo ())
-              return dsp::AudioPort::BusLayout::Stereo;
-            return dsp::AudioPort::BusLayout{};
+              return dsp::SpeakerArrangement::stereo ();
+            return dsp::SpeakerArrangement::discrete_channels (nCh);
           }();
 
           auto name = bus->getName ();
 
           auto port = utils::create_object<dsp::AudioPort> (
             registry (), utils::Utf8String::from_juce_string (name),
-            isInput ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout, nCh,
+            isInput ? dsp::PortFlow::Input : dsp::PortFlow::Output, arrangement,
             purpose);
 
           if (isInput)

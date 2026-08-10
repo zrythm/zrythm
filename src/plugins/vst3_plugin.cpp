@@ -1582,17 +1582,16 @@ Vst3Plugin::create_ports_from_vst3_component ()
             return false;
           }
         const auto channel_count = static_cast<uint8_t> (bus_info.channelCount);
-        const dsp::AudioPort::BusLayout layout =
-          channel_count == 1 ? dsp::AudioPort::BusLayout::Mono
+        const dsp::SpeakerArrangement arrangement =
+          channel_count == 1 ? dsp::SpeakerArrangement::mono ()
           : channel_count == 2
-            ? dsp::AudioPort::BusLayout::Stereo
-            : dsp::AudioPort::BusLayout{};
+            ? dsp::SpeakerArrangement::stereo ()
+            : dsp::SpeakerArrangement::discrete_channels (channel_count);
         const auto name = utils::Utf8String::from_utf8_encoded_string (
           Steinberg::Vst::StringConvert::convert (bus_info.name));
         auto port_ref = utils::create_object<dsp::AudioPort> (
           registry (), name,
-          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, layout,
-          channel_count,
+          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, arrangement,
           bus_info.busType == Vst::BusTypes::kMain
             ? dsp::AudioPort::Purpose::Main
             : dsp::AudioPort::Purpose::Sidechain);

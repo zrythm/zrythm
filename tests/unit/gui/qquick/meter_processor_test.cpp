@@ -28,7 +28,7 @@ protected:
     port_refs_.push_back (
       utils::create_object<dsp::AudioPort> (
         registry_, u8"Test", dsp::PortFlow::Output,
-        dsp::AudioPort::BusLayout::Mono, 1));
+        dsp::SpeakerArrangement::mono ()));
     return port_refs_.back ().get_object_as<dsp::AudioPort> ();
   }
 

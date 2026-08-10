@@ -110,12 +110,11 @@ protected:
 
     // Create audio ports for testing
     audio_port_ = std::make_unique<AudioPort> (
-      u8"TestAudioOut", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+      u8"TestAudioOut", PortFlow::Output, SpeakerArrangement::stereo ());
     extra_audio_port_ = std::make_unique<AudioPort> (
-      u8"TestAudioOut2", PortFlow::Output, AudioPort::BusLayout::Stereo, 2);
+      u8"TestAudioOut2", PortFlow::Output, SpeakerArrangement::stereo ());
     extra_audio_port_for_summing_ = std::make_unique<AudioPort> (
-      u8"TestAudioInForSumming", PortFlow::Input, AudioPort::BusLayout::Stereo,
-      2);
+      u8"TestAudioInForSumming", PortFlow::Input, SpeakerArrangement::stereo ());
 
     // Create mock processable with default behavior
     processable_ = std::make_unique<MockProcessable> ();

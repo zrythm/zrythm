@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_unit_tests
+  audio_bus_channel_routing_test.cpp
   audio_callback_test.cpp
   audio_pool_test.cpp
   audio_input_processor_test.cpp
@@ -56,6 +57,7 @@ add_executable(zrythm_dsp_unit_tests
   processor_base_test.cpp
   rubberband_timestretch_engine_test.cpp
   snap_grid_test.cpp
+  speaker_arrangement_test.cpp
   tick_types_test.cpp
   tempo_map_test.cpp
   tempo_map_qml_adapter_test.cpp

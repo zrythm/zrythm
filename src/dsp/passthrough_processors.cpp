@@ -34,26 +34,23 @@ MidiPassthroughProcessor::~MidiPassthroughProcessor () = default;
 
 AudioPassthroughProcessor::AudioPassthroughProcessor (
   utils::IObjectRegistry &registry,
-  AudioPort::BusLayout    bus_layout,
-  size_t                  num_channels)
+  SpeakerArrangement      arrangement)
     : ProcessorBase (registry)
 {
   set_name (u8"Audio Passthrough");
   add_input_port (
     utils::create_object<AudioPort> (
-      registry, get_node_name () + u8" In", PortFlow::Input, bus_layout,
-      num_channels));
+      registry, get_node_name () + u8" In", PortFlow::Input, arrangement));
   add_output_port (
     utils::create_object<AudioPort> (
-      registry, get_node_name () + u8" Out", PortFlow::Output, bus_layout,
-      num_channels));
+      registry, get_node_name () + u8" Out", PortFlow::Output, arrangement));
 }
 
 AudioPassthroughProcessor::~AudioPassthroughProcessor () = default;
 
 StereoPassthroughProcessor::StereoPassthroughProcessor (
   utils::IObjectRegistry &registry)
-    : AudioPassthroughProcessor (registry, AudioPort::BusLayout::Stereo, 2)
+    : AudioPassthroughProcessor (registry, SpeakerArrangement::stereo ())
 {
 }
 

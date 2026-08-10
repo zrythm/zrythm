@@ -3,7 +3,9 @@
 
 #pragma once
 
+#include "dsp/audio_bus_channel_routing.h"
 #include "dsp/port.h"
+#include "dsp/speaker_arrangement.h"
 #include "utils/icloneable.h"
 #include "utils/monotonic_time_provider.h"
 
@@ -24,22 +26,6 @@ class AudioPort final
 
 public:
   /**
-   * @brief Description of the channel layout of this port.
-   */
-  enum class BusLayout : uint8_t
-  {
-    // Implies a single channel
-    Mono,
-
-    // Implies 2 channels: L + R
-    Stereo,
-
-    // Unimplemented
-    Surround,
-    Ambisonic,
-  };
-
-  /**
    * @brief Purpose of this port.
    */
   enum class Purpose : uint8_t
@@ -49,11 +35,10 @@ public:
   };
 
   AudioPort (
-    utils::Utf8String label,
-    PortFlow          flow,
-    BusLayout         layout,
-    uint8_t           num_channels,
-    Purpose           purpose = Purpose::Main);
+    utils::Utf8String  label,
+    PortFlow           flow,
+    SpeakerArrangement arrangement,
+    Purpose            purpose = Purpose::Main);
 
   [[gnu::hot]] void process_block (
     dsp::graph::ProcessBlockInfo time_nfo,
@@ -62,26 +47,51 @@ public:
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
-  [[nodiscard]] auto  layout () const { return layout_; }
+  [[nodiscard]] auto  arrangement () const { return arrangement_; }
   [[nodiscard]] auto  purpose () const { return purpose_; }
   [[nodiscard]] auto &buffers () const { return buf_; }
-  auto                num_channels () const { return num_channels_; }
+  auto num_channels () const { return arrangement_.channel_count (); }
 
   void mark_as_requires_limiting () { requires_limiting_ = true; }
   auto requires_limiting () const { return requires_limiting_; }
 
   /**
-   * @brief Adds the contents of @p src to this port.
+   * @brief Adds the contents of @p src to this port, leaving destination
+   * channels that @p routing does not feed as they are.
    */
+  void add_source_rt (
+    const AudioPort              &src,
+    const AudioBusChannelRouting &routing,
+    dsp::graph::ProcessBlockInfo  time_nfo,
+    float                         multiplier = 1.f);
+
+  /** Adds the contents of @p src using routing derived from the arrangements. */
   void add_source_rt (
     const AudioPort             &src,
     dsp::graph::ProcessBlockInfo time_nfo,
-    float                        multiplier = 1.f);
+    float                        multiplier = 1.f)
+  {
+    add_source_rt (src, AudioBusChannelRouting{}, time_nfo, multiplier);
+  }
 
+  /**
+   * @brief Replaces the contents of this port with @p src, clearing
+   * destination channels that @p routing does not feed.
+   */
+  void copy_source_rt (
+    const AudioPort              &src,
+    const AudioBusChannelRouting &routing,
+    dsp::graph::ProcessBlockInfo  time_nfo,
+    float                         multiplier = 1.f);
+
+  /** Replaces the contents using routing derived from the arrangements. */
   void copy_source_rt (
     const AudioPort             &src,
     dsp::graph::ProcessBlockInfo time_nfo,
-    float                        multiplier = 1.f);
+    float                        multiplier = 1.f)
+  {
+    copy_source_rt (src, AudioBusChannelRouting{}, time_nfo, multiplier);
+  }
 
   friend void init_from (
     AudioPort             &obj,
@@ -95,18 +105,15 @@ public:
   void release_resources () override;
 
 private:
-  static constexpr auto kBusLayoutId = "busLayout"sv;
+  static constexpr auto kSpeakerArrangementId = "speakerArrangement"sv;
   static constexpr auto kPurposeId = "purpose"sv;
   static constexpr auto kRequiresLimitingId = "requiresLimiting"sv;
-  static constexpr auto kChannels = "channels"sv;
   friend void           to_json (nlohmann::json &j, const AudioPort &port);
   friend void           from_json (const nlohmann::json &j, AudioPort &port);
 
 private:
-  BusLayout layout_{};
-  Purpose   purpose_{};
-
-  uint8_t num_channels_{};
+  SpeakerArrangement arrangement_;
+  Purpose            purpose_{};
 
   /**
    * @brief Whether to clip the port's data to the range [-2, 2] (3dB).
@@ -126,7 +133,7 @@ private:
     (Port),
     (),
     (),
-    (layout_, purpose_, requires_limiting_))
+    (arrangement_, purpose_, requires_limiting_))
 };
 
 /**

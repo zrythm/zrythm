@@ -27,15 +27,13 @@ public:
             registry,
             u8"Input",
             PortFlow::Input,
-            AudioPort::BusLayout::Mono,
-            1)),
+            SpeakerArrangement::mono ())),
         output_port_ (
           utils::create_object<dsp::AudioPort> (
             registry,
             u8"Output",
             PortFlow::Output,
-            AudioPort::BusLayout::Mono,
-            1))
+            SpeakerArrangement::mono ()))
   {
     add_input_port (input_port_);
     add_output_port (output_port_);

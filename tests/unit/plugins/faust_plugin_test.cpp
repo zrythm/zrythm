@@ -280,7 +280,7 @@ TEST_F (FaustPluginTest, ParamMappingSurvivesDeserialization)
   // White noise: 0 audio ins, 1 stereo audio out.
   auto out_port_ref = utils::create_object<dsp::AudioPort> (
     *registry2, u8"audio_out", dsp::PortFlow::Output,
-    dsp::AudioPort::BusLayout::Stereo, static_cast<uint8_t> (2));
+    dsp::SpeakerArrangement::stereo ());
   plugin2->add_output_port (out_port_ref);
 
   auto amp_ref = utils::create_object<dsp::ProcessorParameter> (
