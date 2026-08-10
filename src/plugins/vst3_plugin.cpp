@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include <fmt/std.h>
+
 #include "dsp/midi_event.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
@@ -30,7 +32,6 @@
 #include "utils/views.h"
 
 #include <farbot/RealtimeObject.hpp>
-#include <fmt/format.h>
 
 #if defined(__has_feature) && __has_feature(realtime_sanitizer)
 #  include <sanitizer/rtsan_interface.h>

@@ -57,6 +57,7 @@
 #include "utils/qt.h"
 #include "utils/raii_utils.h"
 #include "utils/registry_utils.h"
+#include "utils/serialization.h"
 #include "utils/views.h"
 
 #include <QFile>
