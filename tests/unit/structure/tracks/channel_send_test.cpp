@@ -79,8 +79,8 @@ TEST_F (ChannelSendTest, ConstructionAndBasicProperties)
 TEST_F (ChannelSendTest, PortConfiguration)
 {
   // Test audio send ports
-  EXPECT_EQ (audio_send_->get_input_ports ().size (), 1);
-  EXPECT_EQ (audio_send_->get_output_ports ().size (), 1);
+  EXPECT_EQ (audio_send_->get_all_input_ports ().size (), 1);
+  EXPECT_EQ (audio_send_->get_all_output_ports ().size (), 1);
 
   auto &stereo_in = audio_send_->get_stereo_in_port ();
   auto &stereo_out = audio_send_->get_stereo_out_port ();
@@ -89,8 +89,8 @@ TEST_F (ChannelSendTest, PortConfiguration)
   EXPECT_EQ (stereo_out.get_node_name (), u8"Pre-Fader Send 1/Audio Output");
 
   // Test MIDI send ports
-  EXPECT_EQ (midi_send_->get_input_ports ().size (), 1);
-  EXPECT_EQ (midi_send_->get_output_ports ().size (), 1);
+  EXPECT_EQ (midi_send_->get_all_input_ports ().size (), 1);
+  EXPECT_EQ (midi_send_->get_all_output_ports ().size (), 1);
 
   auto &midi_in = midi_send_->get_midi_in_port ();
   auto &midi_out = midi_send_->get_midi_out_port ();

@@ -3,6 +3,7 @@
 
 add_executable(zrythm_dsp_unit_tests
   audio_bus_channel_routing_test.cpp
+  audio_bus_configuration_test.cpp
   audio_callback_test.cpp
   audio_pool_test.cpp
   audio_input_processor_test.cpp

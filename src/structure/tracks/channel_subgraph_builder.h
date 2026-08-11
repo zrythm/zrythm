@@ -68,15 +68,13 @@ public:
    * @return Whether any connections were made.
    */
   static bool connect_like_ports (
-    dsp::graph::Graph                                 &graph,
-    const utils::RangeOf<dsp::PortUuidReference> auto &src_refs,
-    const utils::RangeOf<dsp::PortUuidReference> auto &dest_refs)
+    dsp::graph::Graph                          &graph,
+    utils::RangeOf<dsp::PortUuidReference> auto src_refs,
+    utils::RangeOf<dsp::PortUuidReference> auto dest_refs)
   {
     const auto object_getter = [] (auto &&port_ref) { return port_ref.get (); };
-    const auto src_output_ports =
-      src_refs | std::views::transform (object_getter);
-    const auto dest_input_ports =
-      dest_refs | std::views::transform (object_getter);
+    auto src_output_ports = src_refs | std::views::transform (object_getter);
+    auto dest_input_ports = dest_refs | std::views::transform (object_getter);
 
     using utils::views::qobject_cast_and_filter;
     auto src_midi_out_ports =

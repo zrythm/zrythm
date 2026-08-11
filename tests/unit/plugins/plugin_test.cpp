@@ -192,8 +192,8 @@ TEST_F (PluginTest, AbSwitchSwapsStateSlots)
 TEST_F (PluginTest, ConstructionAndBasicProperties)
 {
   EXPECT_EQ (plugin_->get_node_name (), u8"Plugin");
-  EXPECT_EQ (plugin_->get_input_ports ().size (), 0);
-  EXPECT_EQ (plugin_->get_output_ports ().size (), 0);
+  EXPECT_EQ (plugin_->get_all_input_ports ().size (), 0);
+  EXPECT_EQ (plugin_->get_all_output_ports ().size (), 0);
   EXPECT_EQ (plugin_->get_parameters ().size (), 2);
   EXPECT_FALSE (plugin_->uiVisible ());
   EXPECT_EQ (plugin_->programIndex (), -1);

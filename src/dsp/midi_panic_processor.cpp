@@ -12,7 +12,7 @@ namespace zrythm::dsp
 MidiPanicProcessor::MidiPanicProcessor (
   utils::IObjectRegistry &registry,
   QObject *               parent)
-    : QObject (parent), dsp::ProcessorBase (registry, u8"MIDI Panic")
+    : dsp::ProcessorBase (registry, u8"MIDI Panic", parent)
 {
   add_output_port (
     utils::create_object<dsp::MidiPort> (

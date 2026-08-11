@@ -579,7 +579,7 @@ TEST_F (ProjectSerializationRoundtripTest, SaveLoadSaveRoundtripWithFaustPlugin)
               if (param->label ().contains (u8"Amp"))
                 amp_param = param;
             }
-          for (const auto &port_ref : pl->get_output_ports ())
+          for (const auto &port_ref : pl->get_all_output_ports ())
             {
               if (
                 auto * port = port_ref.template get_object_as<dsp::AudioPort> ())

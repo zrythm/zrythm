@@ -73,12 +73,12 @@ protected:
         [&] (dsp::graph::ProcessBlockInfo time_nfo, auto &, auto &) {
           // Simple passthrough
           auto &in =
-            processor_->get_input_ports ()
+            processor_->get_all_input_ports ()
               .front ()
               .get_object_as<dsp::AudioPort> ()
               ->buffers ();
           auto &out =
-            processor_->get_output_ports ()
+            processor_->get_all_output_ports ()
               .front ()
               .get_object_as<dsp::AudioPort> ()
               ->buffers ();
@@ -114,8 +114,8 @@ protected:
 TEST_F (ProcessorBaseTest, ConstructionAndBasicProperties)
 {
   EXPECT_EQ (processor_->get_node_name (), u8"TestProcessor");
-  EXPECT_EQ (processor_->get_input_ports ().size (), 1);
-  EXPECT_EQ (processor_->get_output_ports ().size (), 1);
+  EXPECT_EQ (processor_->get_all_input_ports ().size (), 1);
+  EXPECT_EQ (processor_->get_all_output_ports ().size (), 1);
   EXPECT_EQ (processor_->get_parameters ().size (), 0);
 }
 
@@ -125,7 +125,7 @@ TEST_F (ProcessorBaseTest, PrepareAndReleaseResources)
 
   // Verify ports are prepared
   auto input_port =
-    processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_input_ports ()[0].get_object_as<dsp::AudioPort> ();
   EXPECT_GE (
     input_port->buffers ()->getNumSamples (),
     max_block_length_.in<int> (units::samples));
@@ -139,9 +139,9 @@ TEST_F (ProcessorBaseTest, Processing)
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto input_port =
-    processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_input_ports ()[0].get_object_as<dsp::AudioPort> ();
   auto output_port =
-    processor_->get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_output_ports ()[0].get_object_as<dsp::AudioPort> ();
 
   // Fill input buffer
   for (int i = 0; i < 512; i++)
@@ -170,9 +170,9 @@ TEST_F (ProcessorBaseTest, InputBufferClearedBetweenProcessCalls)
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto input_port =
-    processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_input_ports ()[0].get_object_as<dsp::AudioPort> ();
   auto output_port =
-    processor_->get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_output_ports ()[0].get_object_as<dsp::AudioPort> ();
 
   // Fill input buffer with test data
   for (int i = 0; i < 512; i++)
@@ -260,11 +260,11 @@ TEST_F (ProcessorBaseTest, JsonSerializationRoundtrip)
     processor_->get_parameters ().front ().id (),
     deserialized.get_parameters ().front ().id ());
   EXPECT_EQ (
-    processor_->get_input_ports ()[0].id (),
-    deserialized.get_input_ports ()[0].id ());
+    processor_->get_all_input_ports ()[0].id (),
+    deserialized.get_all_input_ports ()[0].id ());
   EXPECT_EQ (
-    processor_->get_output_ports ()[0].id (),
-    deserialized.get_output_ports ()[0].id ());
+    processor_->get_all_output_ports ()[0].id (),
+    deserialized.get_all_output_ports ()[0].id ());
 }
 
 TEST_F (ProcessorBaseTest, GraphBuilderIntegration)
@@ -490,7 +490,7 @@ TEST_F (ProcessorBaseTest, EdgeCases)
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
   auto * input_port =
-    processor_->get_input_ports ()[0].get_object_as<dsp::AudioPort> ();
+    processor_->get_all_input_ports ()[0].get_object_as<dsp::AudioPort> ();
 
   // Fill input buffer with test data
   for (

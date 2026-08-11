@@ -3,10 +3,13 @@
 
 #pragma once
 
+#include <ranges>
+
 #include "dsp/graph.h"
 #include "dsp/graph_node.h"
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
+#include "utils/uuid_identifiable_object.h"
 
 #include <QObject>
 
@@ -16,11 +19,19 @@ namespace zrythm::dsp
 /**
  * @brief A base class for processors in the DSP graph.
  *
+ * Processors are UUID-identifiable QObjects: plugin hosts reference them by
+ * UUID (e.g. track insert slots), and the QObject base lets them take part in
+ * signal/slot connections and expose QML API.
+ *
  * @note Custom connections to processors should only be made on their output
  * ports (because input ports are clared after processing processors).
  */
-class ProcessorBase : public dsp::graph::IProcessable
+class ProcessorBase
+    : public utils::UuidIdentifiableObject<ProcessorBase>,
+      public dsp::graph::IProcessable
 {
+  Q_OBJECT
+
 public:
   /**
    * @brief Tracks parameter value changes across processing cycles.
@@ -117,21 +128,63 @@ private:
 public:
   ProcessorBase (
     utils::IObjectRegistry &registry,
-    utils::Utf8String       name = { u8"ProcessorBase" });
+    utils::Utf8String       name = { u8"ProcessorBase" },
+    QObject *               parent = nullptr);
 
   ~ProcessorBase () override;
 
   /**
    * @brief Set a custom name to be used in the DSP graph.
+   *
+   * Port designation providers read the name at call time, so owned ports
+   * pick up the new name automatically.
    */
   void set_name (const utils::Utf8String &name);
 
+  /**
+   * @brief Adds an input port and installs the default designation provider
+   * ("<processor name>/<port label>").
+   *
+   * Set any custom designation provider after adding the port, or it will be
+   * overwritten by the default.
+   */
   void add_input_port (const dsp::PortUuidReference &uuid);
+  /**
+   * @brief Adds an output port and installs the default designation provider
+   * ("<processor name>/<port label>").
+   *
+   * Set any custom designation provider after adding the port, or it will be
+   * overwritten by the default.
+   */
   void add_output_port (const dsp::PortUuidReference &uuid);
   void add_parameter (const dsp::ProcessorParameterUuidReference &uuid);
 
-  auto &get_input_ports () const { return input_ports_; }
-  auto &get_output_ports () const { return output_ports_; }
+  /**
+   * @brief All ports of the processor, including detached ones, in bus order.
+   *
+   * The authoritative port lists: position within them is the bus index used
+   * to match ports against bus configurations during reconciliation, and the
+   * lists are serialized as-is. Processing/graph consumers should use
+   * get_attached_input_ports() / get_attached_output_ports() instead.
+   */
+  auto &get_all_input_ports () const { return input_ports_; }
+  auto &get_all_output_ports () const { return output_ports_; }
+
+  /**
+   * @brief View of the attached subset of the port lists (detached ports
+   * excluded).
+   *
+   * Derived on read; this is what processing and graph code should consume.
+   */
+  auto get_attached_input_ports () const
+  {
+    return input_ports_ | std::views::filter (attached_only);
+  }
+  auto get_attached_output_ports () const
+  {
+    return output_ports_ | std::views::filter (attached_only);
+  }
+
   auto &get_parameters () const { return params_; }
 
   /**
@@ -202,9 +255,24 @@ private:
   friend void           to_json (nlohmann::json &j, const ProcessorBase &p);
   friend void           from_json (const nlohmann::json &j, ProcessorBase &p);
 
+  static constexpr auto attached_only = [] (const auto &port_ref) {
+    return !port_ref.get ()->detached ();
+  };
+
+  /**
+   * @brief The designation provider given to owned ports, producing
+   * "<processor name>/<port label>".
+   *
+   * Reads the processor's current name at call time.
+   */
+  Port::FullDesignationProvider designation_provider_for_ports () const;
+
 private:
-  utils::IObjectRegistry                           &registry_;
-  utils::Utf8String                                 name_;
+  utils::IObjectRegistry &registry_;
+  utils::Utf8String       name_;
+
+  /** All ports, including detached ones, in bus order (see
+   * get_all_input_ports()). */
   std::vector<dsp::PortUuidReference>               input_ports_;
   std::vector<dsp::PortUuidReference>               output_ports_;
   std::vector<dsp::ProcessorParameterUuidReference> params_;
@@ -221,7 +289,12 @@ private:
    */
   ParameterChangeTracker change_tracker_;
 
-  BOOST_DESCRIBE_CLASS (ProcessorBase, (), (), (), (name_))
+  BOOST_DESCRIBE_CLASS (
+    ProcessorBase,
+    (utils::UuidIdentifiableObject<ProcessorBase>),
+    (),
+    (),
+    (name_))
 };
 
 /**
@@ -239,4 +312,7 @@ public:
   static void
   add_connections (dsp::graph::Graph &graph, ProcessorBase &processor);
 };
+
 } // namespace zrythm::dsp
+
+DEFINE_UUID_HASH_SPECIALIZATION (zrythm::dsp::ProcessorBase::Uuid)

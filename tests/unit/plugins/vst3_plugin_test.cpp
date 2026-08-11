@@ -101,7 +101,7 @@ protected:
       test_helpers::make_mock_plugin_host_window_factory (window_state_));
     plugin_->set_main_thread_services (*main_dispatcher_, {});
     plugin_->set_configuration (*config);
-    ASSERT_FALSE (plugin_->get_output_ports ().empty ())
+    ASSERT_FALSE (plugin_->get_all_output_ports ().empty ())
       << "Plugin failed to load";
 
     plugin_->prepare_for_processing (
@@ -111,7 +111,7 @@ protected:
   dsp::AudioPort * find_audio_port (bool input)
   {
     const auto &port_refs =
-      input ? plugin_->get_input_ports () : plugin_->get_output_ports ();
+      input ? plugin_->get_all_input_ports () : plugin_->get_all_output_ports ();
     for (const auto &port_ref : port_refs)
       {
         if (auto * port = port_ref.get_object_as<dsp::AudioPort> ())
@@ -305,7 +305,7 @@ TEST_F (Vst3PluginTest, MidiCcReachesPluginAsParamChange)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test MIDI CC"));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
@@ -349,7 +349,7 @@ TEST_F (Vst3PluginTest, NoteOnProducesAudio)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Synth"));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
@@ -382,7 +382,7 @@ TEST_F (Vst3PluginTest, NoteOffVelocityReachesPlugin)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Synth"));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
@@ -414,14 +414,14 @@ TEST_F (Vst3PluginTest, NoteOutputIsForwardedToMidiOut)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Synth"));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
         break;
     }
   dsp::MidiPort * midi_out = nullptr;
-  for (const auto &port_ref : plugin_->get_output_ports ())
+  for (const auto &port_ref : plugin_->get_all_output_ports ())
     {
       midi_out = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_out != nullptr)
@@ -614,7 +614,7 @@ TEST_F (Vst3PluginTest, StateSaveLoadRoundtrip)
     test_helpers::make_mock_plugin_host_window_factory (window_state_));
   plugin2->load_state (saved_state);
   plugin2->set_configuration (*config2);
-  ASSERT_FALSE (plugin2->get_output_ports ().empty ());
+  ASSERT_FALSE (plugin2->get_all_output_ports ().empty ());
 
   // The loaded state must be reflected in the parameter
   dsp::ProcessorParameter * level_param2 = nullptr;
@@ -727,7 +727,7 @@ TEST_F (Vst3PluginTest, MidiCcAssignmentChangeRebuildsMapping)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)

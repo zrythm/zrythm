@@ -6,6 +6,7 @@ qt_add_library(zrythm_dsp_lib STATIC)
 target_sources(zrythm_dsp_lib
   PRIVATE
     audio_bus_channel_routing.cpp
+    audio_bus_configuration.cpp
     audio_callback.cpp
     audio_input_selection.cpp
     audio_input_processor.cpp
@@ -78,6 +79,7 @@ target_sources(zrythm_dsp_lib
     BASE_DIRS ".."
     FILES
       audio_bus_channel_routing.h
+      audio_bus_configuration.h
       audio_callback.h
       audio_device_info.h
       audio_input_selection.h

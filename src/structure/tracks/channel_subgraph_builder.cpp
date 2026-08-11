@@ -94,7 +94,7 @@ ChannelSubgraphBuilder::add_connections (
             track_processor_output
           };
           bool connection_made = connect_like_ports (
-            graph, processor_outputs, pl->get_input_ports ());
+            graph, processor_outputs, pl->get_attached_input_ports ());
 
           // if no connection was made (plugin had no matching inputs), connect
           // the track processor outputs directly to the plugin processor
@@ -113,11 +113,11 @@ ChannelSubgraphBuilder::add_connections (
             [&] (plugins::Plugin &src, plugins::Plugin &dest) {
               using utils::views::qobject_cast_and_filter;
               auto src_audio_outs =
-                src.get_output_ports ()
+                src.get_attached_output_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
                 | qobject_cast_and_filter<dsp::AudioPort>;
               auto dest_audio_ins =
-                dest.get_input_ports ()
+                dest.get_attached_input_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
                 | qobject_cast_and_filter<dsp::AudioPort>;
 
@@ -161,11 +161,11 @@ ChannelSubgraphBuilder::add_connections (
 
               // Handle MIDI connections
               auto src_midi_outs =
-                src.get_output_ports ()
+                src.get_attached_output_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
                 | qobject_cast_and_filter<dsp::MidiPort>;
               auto dest_midi_ins =
-                dest.get_input_ports ()
+                dest.get_attached_input_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
                 | qobject_cast_and_filter<dsp::MidiPort>;
 
@@ -216,11 +216,11 @@ ChannelSubgraphBuilder::add_connections (
         {
           using utils::views::qobject_cast_and_filter;
           auto prefader_audio_ins =
-            ch.get_audio_pre_fader ().get_input_ports ()
+            ch.get_audio_pre_fader ().get_attached_input_ports ()
             | std::views::transform (&dsp::PortUuidReference::get)
             | qobject_cast_and_filter<dsp::AudioPort>;
           auto pl_audio_outs =
-            last_pl->get_output_ports ()
+            last_pl->get_attached_output_ports ()
             | std::views::transform (&dsp::PortUuidReference::get)
             | qobject_cast_and_filter<dsp::AudioPort>;
 
@@ -235,11 +235,11 @@ ChannelSubgraphBuilder::add_connections (
         {
           using utils::views::qobject_cast_and_filter;
           auto prefader_midi_ins =
-            ch.get_midi_pre_fader ().get_input_ports ()
+            ch.get_midi_pre_fader ().get_attached_input_ports ()
             | std::views::transform (&dsp::PortUuidReference::get)
             | qobject_cast_and_filter<dsp::MidiPort>;
           auto pl_midi_outs =
-            last_pl->get_output_ports ()
+            last_pl->get_attached_output_ports ()
             | std::views::transform (&dsp::PortUuidReference::get)
             | qobject_cast_and_filter<dsp::MidiPort>;
 

@@ -80,7 +80,7 @@ protected:
 
   dsp::AudioPort * get_audio_out ()
   {
-    for (const auto &port_ref : plugin_->get_output_ports ())
+    for (const auto &port_ref : plugin_->get_all_output_ports ())
       {
         if (auto * port = port_ref.get_object_as<dsp::AudioPort> ())
           return port;
@@ -90,7 +90,7 @@ protected:
 
   dsp::MidiPort * get_midi_in ()
   {
-    for (const auto &port_ref : plugin_->get_input_ports ())
+    for (const auto &port_ref : plugin_->get_all_input_ports ())
       {
         if (auto * port = port_ref.get_object_as<dsp::MidiPort> ())
           return port;
@@ -143,7 +143,7 @@ TEST_F (FaustPluginTest, PortsMatchDspInsOuts)
   EXPECT_EQ (get_audio_out ()->num_channels (), 2u);
   EXPECT_EQ (get_midi_in (), nullptr);
   int audio_ins = 0;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       if (port_ref.get_object_as<dsp::AudioPort> () != nullptr)
         ++audio_ins;
@@ -153,7 +153,7 @@ TEST_F (FaustPluginTest, PortsMatchDspInsOuts)
   // Generator (0 ins, 2 outs)
   load_faust_plugin (u8"zrythm.faust.white_noise");
   audio_ins = 0;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       if (port_ref.get_object_as<dsp::AudioPort> () != nullptr)
         ++audio_ins;
@@ -166,7 +166,7 @@ TEST_F (FaustPluginTest, PortsMatchDspInsOuts)
   load_faust_plugin (u8"zrythm.faust.triple_synth");
   EXPECT_NE (get_midi_in (), nullptr);
   audio_ins = 0;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       if (port_ref.get_object_as<dsp::AudioPort> () != nullptr)
         ++audio_ins;

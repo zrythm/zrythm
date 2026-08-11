@@ -18,13 +18,13 @@ ModulatorMacroProcessor::ModulatorMacroProcessor (
   utils::IObjectRegistry &registry,
   int                     idx,
   QObject *               parent)
-    : QObject (parent),
-      ProcessorBase (
+    : ProcessorBase (
         registry,
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format (
             "{} Modulator Macro Processor",
-            format_qstr (QObject::tr ("Macro {}"), idx + 1)))),
+            format_qstr (QObject::tr ("Macro {}"), idx + 1))),
+        parent),
       name_ (
         utils::Utf8String::from_qstring (
           format_qstr (QObject::tr ("Macro {}"), idx + 1)))

@@ -113,13 +113,15 @@ protected:
 
   static dsp::MidiPort * find_midi_input_port (plugins::Plugin &plugin)
   {
-    return find_first_port_of_type<dsp::MidiPort> (plugin.get_input_ports ());
+    return find_first_port_of_type<dsp::MidiPort> (
+      plugin.get_all_input_ports ());
   }
 
   static std::vector<dsp::AudioPort *>
   find_audio_output_ports (plugins::Plugin &plugin)
   {
-    return find_all_ports_of_type<dsp::AudioPort> (plugin.get_output_ports ());
+    return find_all_ports_of_type<dsp::AudioPort> (
+      plugin.get_all_output_ports ());
   }
 
   static dsp::graph::ProcessBlockInfo make_time_info (uint32_t num_frames = 256)
@@ -512,7 +514,7 @@ TEST_P (PluginChunkGainTest, ProcessesCorrectChunkWhenBufferOffsetIsNonZero)
   ASSERT_NE (plugin, nullptr);
 
   auto * audio_in =
-    find_first_port_of_type<dsp::AudioPort> (plugin->get_input_ports ());
+    find_first_port_of_type<dsp::AudioPort> (plugin->get_all_input_ports ());
   const auto audio_outs = find_audio_output_ports (*plugin);
   ASSERT_NE (audio_in, nullptr);
   ASSERT_FALSE (audio_outs.empty ());
@@ -584,7 +586,7 @@ TEST_P (PluginChunkSynthTest, NoteEventsAreFilteredAndRebasedAroundChunkSplits)
 
   auto * midi_in = find_midi_input_port (*plugin);
   auto * midi_out =
-    find_first_port_of_type<dsp::MidiPort> (plugin->get_output_ports ());
+    find_first_port_of_type<dsp::MidiPort> (plugin->get_all_output_ports ());
   const auto audio_outs = find_audio_output_ports (*plugin);
   ASSERT_NE (midi_in, nullptr);
   ASSERT_NE (midi_out, nullptr);

@@ -144,11 +144,25 @@ TEST_F (TrackProcessorTest, AudioTrackInitialState)
   EXPECT_EQ (processor.get_node_name (), u8"Test Audio Track Processor");
 
   // Check audio ports
-  EXPECT_EQ (processor.get_input_ports ().size (), 1);
-  EXPECT_EQ (processor.get_output_ports ().size (), 1);
+  EXPECT_EQ (processor.get_all_input_ports ().size (), 1);
+  EXPECT_EQ (processor.get_all_output_ports ().size (), 1);
 
   // Check audio-specific parameters
   EXPECT_EQ (processor.get_parameters ().size (), 4);
+}
+
+TEST_F (TrackProcessorTest, AudioPortDesignationsUseTrackName)
+{
+  TrackProcessor processor (
+    *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Audio Track"; },
+    [] { return true; }, TrackProcessor::Capabilities::AudioTrack, *registry_);
+
+  EXPECT_EQ (
+    processor.get_stereo_in_port ().get_full_designation (),
+    u8"Test Audio Track/TP Stereo in");
+  EXPECT_EQ (
+    processor.get_stereo_out_port ().get_full_designation (),
+    u8"Test Audio Track/TP Stereo out");
 }
 
 TEST_F (TrackProcessorTest, MidiTrackInitialState)
@@ -162,9 +176,9 @@ TEST_F (TrackProcessorTest, MidiTrackInitialState)
   EXPECT_EQ (processor.get_node_name (), u8"Test MIDI Track Processor");
 
   // Check MIDI ports
-  EXPECT_EQ (processor.get_input_ports ().size (), 3); // MIDI in + Piano roll +
-                                                       // HW MIDI in
-  EXPECT_EQ (processor.get_output_ports ().size (), 1); // MIDI out
+  EXPECT_EQ (processor.get_all_input_ports ().size (), 3);  // MIDI in + Piano
+                                                            // roll + HW MIDI in
+  EXPECT_EQ (processor.get_all_output_ports ().size (), 1); // MIDI out
 
   // Check no audio-specific parameters
   EXPECT_EQ (processor.get_parameters ().size (), 0);
@@ -765,7 +779,7 @@ TEST_F (TrackProcessorTest, GetFullDesignationForPort)
     *tempo_map_, dsp::PortType::Audio, [] { return u8"Test Track"; },
     [] { return true; }, TrackProcessor::Capabilities::AudioTrack, *registry_);
 
-  const auto &ports = processor.get_input_ports ();
+  const auto &ports = processor.get_all_input_ports ();
   ASSERT_FALSE (ports.empty ());
   auto designation = processor.get_full_designation_for_port (
     *ports[0].get_object_as<dsp::AudioPort> ());

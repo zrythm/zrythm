@@ -33,7 +33,7 @@ Fader::Fader (
   std::optional<std::function<utils::Utf8String ()>> owner_name_provider,
   ShouldBeMutedCallback                              should_be_muted_cb,
   QObject *                                          parent)
-    : QObject (parent), dsp::ProcessorBase (registry, u8"Fader"),
+    : dsp::ProcessorBase (registry, u8"Fader", parent),
       signal_type_ (signal_type), hard_limit_output_ (hard_limit_output),
       should_be_muted_cb_ (std::move (should_be_muted_cb))
 {

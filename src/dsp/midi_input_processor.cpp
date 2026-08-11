@@ -29,10 +29,10 @@ MidiInputProcessor::MidiInputProcessor (
   std::shared_ptr<dsp::MidiDeviceBuffer> buffer,
   utils::IObjectRegistry                &registry,
   QObject *                              parent)
-    : QObject (parent),
-      ProcessorBase (
+    : ProcessorBase (
         registry,
-        utils::Utf8String::from_utf8_encoded_string ("MIDI Input Processor")),
+        utils::Utf8String::from_utf8_encoded_string ("MIDI Input Processor"),
+        parent),
       impl_ (std::make_unique<Impl> (std::move (buffer)))
 {
   auto port_ref = utils::create_object<MidiPort> (

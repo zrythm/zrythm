@@ -35,7 +35,7 @@ using ObservedPortPtr =
  *
  * @note Only made a QObject so that GraphExport can get its class name.
  */
-class PortObserver : public QObject, public ProcessorBase
+class PortObserver : public ProcessorBase
 {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE (PortObserver)

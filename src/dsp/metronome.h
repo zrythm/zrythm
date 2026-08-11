@@ -15,7 +15,7 @@ namespace zrythm::dsp
 /**
  * Metronome processor.
  */
-class Metronome : public QObject, public AudioSampleProcessor
+class Metronome : public AudioSampleProcessor
 {
   Q_OBJECT
   Q_PROPERTY (float volume READ volume WRITE setVolume NOTIFY volumeChanged)

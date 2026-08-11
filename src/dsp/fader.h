@@ -13,7 +13,7 @@ namespace zrythm::dsp
 /**
  * A Fader is a processor that is used for volume controls and pan.
  */
-class Fader : public QObject, public dsp::ProcessorBase
+class Fader : public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -265,7 +265,7 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    return *get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    return *get_all_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
   dsp::AudioPort &get_stereo_out_port () const
   {
@@ -273,15 +273,15 @@ public:
       {
         throw std::runtime_error ("Not an audio fader");
       }
-    return *get_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    return *get_all_output_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_in_port () const
   {
-    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
   dsp::MidiPort &get_midi_out_port () const
   {
-    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
   auto currently_soloed_rt () const noexcept [[clang::nonblocking]]

@@ -151,11 +151,11 @@ TrackProcessor::TrackProcessor (
   std::optional<AppendMidiInputsToOutputsFunc> append_midi_inputs_to_outputs_func,
   RecordingCallbackRT recording_cb,
   QObject *           parent)
-    : QObject (parent),
-      dsp::ProcessorBase (
+    : dsp::ProcessorBase (
         object_registry,
         utils::Utf8String::from_utf8_encoded_string (
-          fmt::format ("{} Processor", track_name_provider ()))),
+          fmt::format ("{} Processor", track_name_provider ())),
+        parent),
       is_midi_ (signal_type == dsp::PortType::Midi),
       is_audio_ (signal_type == dsp::PortType::Audio),
       capabilities_ (capabilities),
@@ -238,7 +238,6 @@ TrackProcessor::TrackProcessor (
           in ? dsp::PortFlow::Input : dsp::PortFlow::Output,
           dsp::SpeakerArrangement::stereo ());
         auto * port = port_ref.get_object_as<dsp::AudioPort> ();
-        port->set_full_designation_provider (this);
         port->set_symbol (
           utils::Utf8String (u8"track_processor_stereo_")
           + (in ? u8"in" : u8"out"));
@@ -251,6 +250,9 @@ TrackProcessor::TrackProcessor (
           {
             add_output_port (port_ref);
           }
+        // custom designation: add_*_port installs the generic provider, so
+        // this must come after the add
+        port->set_full_designation_provider (this);
       };
       init_stereo_out_ports (true);
       init_stereo_out_ports (false);
@@ -971,7 +973,7 @@ TrackProcessor::get_hw_midi_in_port () const
 {
   assert (is_midi ());
   auto ports =
-    get_input_ports () | std::views::transform ([] (const auto &ref) {
+    get_all_input_ports () | std::views::transform ([] (const auto &ref) {
       return ref.template get_object_as<dsp::MidiPort> ();
     })
     | utils::views::filter_null;
@@ -987,7 +989,7 @@ TrackProcessor::get_piano_roll_port () const
 {
   assert (is_midi ());
   auto ports =
-    get_input_ports () | std::views::transform ([] (const auto &ref) {
+    get_all_input_ports () | std::views::transform ([] (const auto &ref) {
       return ref.template get_object_as<dsp::MidiPort> ();
     })
     | utils::views::filter_null;

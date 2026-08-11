@@ -18,7 +18,7 @@ ChannelSend::ChannelSend (
   int                     slot,
   bool                    is_prefader,
   QObject *               parent)
-    : QObject (parent), dsp::ProcessorBase (object_registry),
+    : dsp::ProcessorBase (object_registry, u8"Channel Send", parent),
       signal_type_ (signal_type), is_prefader_ (is_prefader)
 {
   // Amount parameter (volume/gain)

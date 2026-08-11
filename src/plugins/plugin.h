@@ -66,7 +66,7 @@ struct PluginHostMainThreadCallbacks
  * `state_to_apply_`), then applied after the plugin instance is fully
  * initialized. No filesystem paths or state directories are involved.
  */
-class Plugin : public utils::UuidIdentifiableObject<Plugin>, public dsp::ProcessorBase
+class Plugin : public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -739,5 +739,3 @@ using PluginHostWindowFactory =
   std::function<std::unique_ptr<plugins::PluginHostWindow> (Plugin &)>;
 
 } // namespace zrythm::plugins
-
-DEFINE_UUID_HASH_SPECIALIZATION (zrythm::plugins::Plugin::Uuid)

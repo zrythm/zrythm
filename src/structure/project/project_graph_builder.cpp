@@ -36,7 +36,7 @@ process_track_connections (
 
   // connect initial processor to track processor inputs (or track
   // processor itself if no inputs)
-  if (track_processor->get_input_ports ().empty ())
+  if (track_processor->get_attached_input_ports ().empty ())
     {
       initial_processor_node->connect_to (*track_processor_node);
     }
@@ -44,7 +44,7 @@ process_track_connections (
     {
       for (
         const auto &tp_in_port :
-        track_processor->get_input_ports ()
+        track_processor->get_attached_input_ports ()
           | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get))
         {
           // MIDI input port goes via MIDI panic
@@ -54,7 +54,7 @@ process_track_connections (
             {
               graph.get_nodes ()
                 .find_node_for_processable (
-                  *midi_panic_processor.get_output_ports ()
+                  *midi_panic_processor.get_attached_output_ports ()
                      .front ()
                      .get_object_as<dsp::MidiPort> ())
                 ->connect_to (
@@ -77,7 +77,7 @@ process_track_connections (
         {
           auto * pl = pl_ref.get ();
           dsp::ProcessorGraphBuilder::add_connections (graph, *pl);
-          for (const auto &pl_port_ref : pl->get_input_ports ())
+          for (const auto &pl_port_ref : pl->get_attached_input_ports ())
             {
               auto port_node = graph.get_nodes ().find_node_for_processable (
                 *pl_port_ref.get ());
@@ -128,7 +128,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 // TODO
 #if 0
   add_node_for_processable (*sample_processor);
-  for (const auto &fader_out : sample_processor->fader_->get_output_ports ())
+  for (const auto &fader_out : sample_processor->fader_->get_all_output_ports ())
     {
       add_node_for_processable (*fader_out.get_object_as<dsp::AudioPort> ());
     }
@@ -249,8 +249,8 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
 // hear the samples
 #if 0
   {
-    const auto &sp_fader_outs = sample_processor->fader_->get_output_ports ();
-    const auto &monitor_fader_outs = monitor_fader_->get_output_ports ();
+    const auto &sp_fader_outs = sample_processor->fader_->get_all_output_ports ();
+    const auto &monitor_fader_outs = monitor_fader_->get_all_output_ports ();
     for (
       const auto &[sp_out, mf_out] :
       std::views::zip (sp_fader_outs, monitor_fader_outs))
@@ -395,7 +395,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
             {
               structure::tracks::ChannelSubgraphBuilder::add_connections (
                 graph, *ch,
-                tr->get_track_processor ()->get_output_ports ().front ());
+                tr->get_track_processor ()->get_attached_output_ports ().front ());
 
               // connect to target track
               auto route_target =
@@ -462,6 +462,16 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
           utils::get_typed<dsp::Port> (project->get_registry (), conn->src_id_);
         auto &dest_port_base = utils::get_typed<dsp::Port> (
           project->get_registry (), conn->dest_id_);
+        // connections to/from detached ports are dormant: the ports (and
+        // this connection) revive when the ports are re-attached
+        if (src_port_base.detached () || dest_port_base.detached ())
+          {
+            z_debug (
+              "Skipping connection {} -> {}: endpoint port is detached",
+              src_port_base.get_full_designation (),
+              dest_port_base.get_full_designation ());
+            continue;
+          }
         auto src_port_var =
           convert_to_variant_qobj<dsp::PortPtrVariant> (&src_port_base);
         auto dest_port_var =

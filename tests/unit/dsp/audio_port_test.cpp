@@ -56,6 +56,24 @@ protected:
   std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
+TEST_F (AudioPortTest, ArrangementChangeReleasesBufferUntilReprepare)
+{
+  ASSERT_NE (stereo_output->buffers ().get (), nullptr);
+  EXPECT_EQ (stereo_output->num_channels (), 2);
+
+  stereo_output->set_arrangement (SpeakerArrangement::mono ());
+
+  // The buffer keeps no stale channel count: it is released until the next
+  // prepare, so misuse trips the null-buffer assertions in the processing
+  // path
+  EXPECT_EQ (stereo_output->num_channels (), 1);
+  EXPECT_EQ (stereo_output->buffers ().get (), nullptr);
+
+  stereo_output->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
+  ASSERT_NE (stereo_output->buffers ().get (), nullptr);
+  EXPECT_EQ (stereo_output->buffers ()->getNumChannels (), 1);
+}
+
 TEST_F (AudioPortTest, BasicProperties)
 {
   EXPECT_TRUE (mono_input->is_audio ());

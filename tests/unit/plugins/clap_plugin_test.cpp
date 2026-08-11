@@ -74,7 +74,7 @@ protected:
     plugin_->set_main_thread_services (*main_dispatcher_, {});
     // CLAP instantiation is synchronous
     plugin_->set_configuration (*config);
-    ASSERT_FALSE (plugin_->get_output_ports ().empty ())
+    ASSERT_FALSE (plugin_->get_all_output_ports ().empty ())
       << "Plugin failed to load";
 
     plugin_->prepare_for_processing (
@@ -123,7 +123,7 @@ protected:
   void expect_note_on_produces_audio ()
   {
     dsp::MidiPort * midi_in = nullptr;
-    for (const auto &port_ref : plugin_->get_input_ports ())
+    for (const auto &port_ref : plugin_->get_all_input_ports ())
       {
         midi_in = port_ref.get_object_as<dsp::MidiPort> ();
         if (midi_in != nullptr)
@@ -144,7 +144,7 @@ protected:
       plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
     bool has_audio = false;
-    for (const auto &port_ref : plugin_->get_output_ports ())
+    for (const auto &port_ref : plugin_->get_all_output_ports ())
       {
         if (auto * port = port_ref.get_object_as<dsp::AudioPort> ())
           {
@@ -358,14 +358,14 @@ TEST_P (ClapPluginTest, NoteOutputIsForwardedToMidiOut)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin (GetParam ()));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
         break;
     }
   dsp::MidiPort * midi_out = nullptr;
-  for (const auto &port_ref : plugin_->get_output_ports ())
+  for (const auto &port_ref : plugin_->get_all_output_ports ())
     {
       midi_out = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_out != nullptr)
@@ -412,14 +412,14 @@ TEST_P (ClapPluginTest, OutputEventWithOutOfBlockTimeIsDropped)
   ASSERT_NO_FATAL_FAILURE (load_test_plugin (GetParam ()));
 
   dsp::MidiPort * midi_in = nullptr;
-  for (const auto &port_ref : plugin_->get_input_ports ())
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
     {
       midi_in = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_in != nullptr)
         break;
     }
   dsp::MidiPort * midi_out = nullptr;
-  for (const auto &port_ref : plugin_->get_output_ports ())
+  for (const auto &port_ref : plugin_->get_all_output_ports ())
     {
       midi_out = port_ref.get_object_as<dsp::MidiPort> ();
       if (midi_out != nullptr)

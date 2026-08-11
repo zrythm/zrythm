@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/panning.h"
@@ -21,6 +21,18 @@ AudioPort::AudioPort (
     : Port (std::move (label), PortType::Audio, flow),
       arrangement_ (arrangement), purpose_ (purpose)
 {
+}
+
+void
+AudioPort::set_arrangement (SpeakerArrangement new_arrangement)
+{
+  if (arrangement_ == new_arrangement)
+    return;
+  arrangement_ = new_arrangement;
+  // drop the buffer so that a missed re-prepare trips the null-buffer
+  // assertions in the processing path instead of indexing a buffer with the
+  // old channel count
+  buf_.reset ();
 }
 
 void
@@ -159,6 +171,10 @@ AudioPort::process_block (
   const dsp::ITransport       &transport,
   const dsp::TempoMap         &tempo_map) noexcept
 {
+  // detached ports are excluded from the graph and from their owner's
+  // processing, so reaching this is a programmer error
+  assert (!detached ());
+
   /* Input ports: aggregate from sources. */
   if (flow () == PortFlow::Input)
     {

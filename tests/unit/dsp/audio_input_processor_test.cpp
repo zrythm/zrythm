@@ -73,14 +73,14 @@ TEST_F (AudioInputProcessorTest, CreatesCorrectNumberOfOutputPorts)
 {
   setup_processor_with_4_channels ();
   // 4 channels: 2 stereo + 4 mono = 6
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   EXPECT_EQ (outputs.size (), 6);
 }
 
 TEST_F (AudioInputProcessorTest, StereoPortNames)
 {
   setup_processor_with_4_channels ();
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   auto *      port0 = outputs[0].get_object_as<AudioPort> ();
   auto *      port1 = outputs[1].get_object_as<AudioPort> ();
   EXPECT_TRUE (port0->get_label ().view ().contains ("1-2"));
@@ -90,7 +90,7 @@ TEST_F (AudioInputProcessorTest, StereoPortNames)
 TEST_F (AudioInputProcessorTest, MonoPortNames)
 {
   setup_processor_with_4_channels ();
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   auto *      mono0 = outputs.at (2).get_object_as<AudioPort> ();
   EXPECT_TRUE (mono0->get_label ().view ().contains ("1"));
 }
@@ -102,7 +102,7 @@ TEST_F (AudioInputProcessorTest, OddChannelCountCreatesFewerStereoPorts)
     provider, units::channels (3), *registry_);
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   // 3 channels: 1 stereo (1-2) + 3 mono = 4 ports
   EXPECT_EQ (outputs.size (), 4);
 
@@ -120,7 +120,7 @@ TEST_F (AudioInputProcessorTest, ZeroChannelsCreatesNoPorts)
     provider, units::channels (0), *registry_);
   processor_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   EXPECT_EQ (outputs.size (), 0);
 
   auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
@@ -145,7 +145,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockCopiesDataToStereoPorts)
     units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   // Stereo port "1-2" (index 0): channels 0 and 1
   auto * stereo_12 = outputs[0].get_object_as<AudioPort> ();
   EXPECT_FLOAT_EQ (stereo_12->buffers ()->getSample (0, 0), 0.1f);
@@ -170,7 +170,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockCopiesDataToMonoPorts)
     units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   // Mono ports start at index 2: channel 0, 1, 2, 3
   auto * mono0 = outputs[2].get_object_as<AudioPort> ();
   auto * mono1 = outputs[3].get_object_as<AudioPort> ();
@@ -195,7 +195,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithEmptyProviderIsNoOp)
   // Should not crash or modify any buffers
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   auto *      stereo = outputs[0].get_object_as<AudioPort> ();
   // Output buffer should remain zeroed
   EXPECT_FLOAT_EQ (stereo->buffers ()->getSample (0, 0), 0.f);
@@ -220,7 +220,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithOffset)
   };
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   auto *      stereo = outputs[0].get_object_as<AudioPort> ();
 
   // Before offset: should be 0 (untouched)
@@ -245,7 +245,7 @@ TEST_F (AudioInputProcessorTest, ProcessBlockWithFewerChannelsThanPorts)
     units::samples (0), max_block_length_);
   processor_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   // Stereo "1-2" (channels 0,1): should have data
   auto * stereo_12 = outputs[0].get_object_as<AudioPort> ();
   EXPECT_FLOAT_EQ (stereo_12->buffers ()->getSample (0, 0), 0.1f);

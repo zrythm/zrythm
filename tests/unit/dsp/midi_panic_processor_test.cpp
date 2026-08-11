@@ -27,7 +27,9 @@ protected:
       nullptr, sample_rate_, max_block_length_);
 
     midi_out_ =
-      panic_proc_->get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+      panic_proc_->get_all_output_ports ()
+        .front ()
+        .get_object_as<dsp::MidiPort> ();
 
     // Set up mock transport
     mock_transport_ = std::make_unique<graph_test::MockTransport> ();

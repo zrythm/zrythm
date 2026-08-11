@@ -17,7 +17,7 @@ namespace zrythm::dsp
  *
  * Intended to be used in ModulatorTrack.
  */
-class ModulatorMacroProcessor final : public QObject, public dsp::ProcessorBase
+class ModulatorMacroProcessor final : public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (QString name READ name CONSTANT)
@@ -77,7 +77,7 @@ public:
   /** CV input port for connecting CV signals to. */
   auto &get_cv_in_port ()
   {
-    return *get_input_ports ().front ().get_object_as<dsp::CVPort> ();
+    return *get_all_input_ports ().front ().get_object_as<dsp::CVPort> ();
   }
 
   /**
@@ -87,7 +87,7 @@ public:
    */
   auto &get_cv_out_port ()
   {
-    return *get_output_ports ().front ().get_object_as<dsp::CVPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::CVPort> ();
   }
 
   /** Control port controlling the amount. */

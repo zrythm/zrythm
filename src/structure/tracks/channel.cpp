@@ -14,7 +14,7 @@ namespace zrythm::structure::tracks
 ChannelMidiPassthroughProcessor::ChannelMidiPassthroughProcessor (
   utils::IObjectRegistry &registry,
   QObject *               parent)
-    : QObject (parent), dsp::MidiPassthroughProcessor (registry)
+    : dsp::MidiPassthroughProcessor (registry, 1, parent)
 {
   set_name (u8"MIDI PreFader");
 }
@@ -22,7 +22,7 @@ ChannelMidiPassthroughProcessor::ChannelMidiPassthroughProcessor (
 ChannelAudioPassthroughProcessor::ChannelAudioPassthroughProcessor (
   utils::IObjectRegistry &registry,
   QObject *               parent)
-    : QObject (parent), dsp::StereoPassthroughProcessor (registry)
+    : dsp::StereoPassthroughProcessor (registry, parent)
 {
   set_name (u8"Audio PreFader");
 }

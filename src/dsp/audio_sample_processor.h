@@ -15,7 +15,9 @@ namespace zrythm::dsp
 class AudioSampleProcessor : public dsp::ProcessorBase
 {
 public:
-  AudioSampleProcessor (utils::IObjectRegistry &registry);
+  AudioSampleProcessor (
+    utils::IObjectRegistry &registry,
+    QObject *               parent = nullptr);
 
   /**
    * A sample playback handle to be used by the engine.
@@ -91,7 +93,7 @@ public:
 
   auto get_output_audio_port_non_rt () const
   {
-    return get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
+    return get_all_output_ports ()[0].get_object_as<dsp::AudioPort> ();
   }
 
   auto get_output_audio_port_rt () const { return audio_out_; }
@@ -107,7 +109,7 @@ public:
     units::sample_u32_t      max_block_length) override
   {
     samples_to_play_.clear ();
-    audio_out_ = get_output_ports ()[0].get_object_as<dsp::AudioPort> ();
+    audio_out_ = get_all_output_ports ()[0].get_object_as<dsp::AudioPort> ();
   }
 
   void custom_release_resources () override

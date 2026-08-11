@@ -58,7 +58,7 @@ TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)
   EXPECT_NE (processor_, nullptr);
 
   // Test port configuration
-  EXPECT_EQ (processor_->get_output_ports ().size (), 1);
+  EXPECT_EQ (processor_->get_all_output_ports ().size (), 1);
 
   auto output_port = processor_->get_output_audio_port_non_rt ();
   EXPECT_EQ (
@@ -67,7 +67,7 @@ TEST_F (AudioSampleProcessorTest, ConstructionAndBasicProperties)
 
 TEST_F (AudioSampleProcessorTest, PortConfiguration)
 {
-  auto output_ports = processor_->get_output_ports ();
+  auto output_ports = processor_->get_all_output_ports ();
   EXPECT_EQ (output_ports.size (), 1);
 
   const auto port = processor_->get_output_audio_port_non_rt ();

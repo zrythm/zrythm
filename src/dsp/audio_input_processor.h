@@ -20,7 +20,7 @@ namespace zrythm::dsp
  * During processing, copies data from the hardware input provider into the
  * appropriate output port buffers.
  */
-class AudioInputProcessor final : public QObject, public ProcessorBase
+class AudioInputProcessor final : public ProcessorBase
 {
   Q_OBJECT
 

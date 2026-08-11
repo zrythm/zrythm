@@ -222,7 +222,7 @@ protected:
   dsp::PortUuidReference
   getProcessorOutputPort (const dsp::ProcessorBase &processor)
   {
-    return processor.get_output_ports ().front ();
+    return processor.get_all_output_ports ().front ();
   }
 
   void addTrackProcessorToGraph (
@@ -231,7 +231,7 @@ protected:
   {
     auto track_processor_node =
       graph_.add_node_for_processable (track_processor);
-    for (const auto &port_ref : track_processor.get_output_ports ())
+    for (const auto &port_ref : track_processor.get_all_output_ports ())
       {
         auto * port = port_ref.get ();
         auto * node = graph_.add_node_for_processable (*port);
@@ -247,10 +247,10 @@ protected:
     const dsp::ProcessorBase &dest_processor)
   {
     const auto src_output_ports =
-      src_processor.get_output_ports ()
+      src_processor.get_all_output_ports ()
       | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get);
     const auto dest_input_ports =
-      dest_processor.get_input_ports ()
+      dest_processor.get_all_input_ports ()
       | std::views::transform (&utils::TypedUuidReference<dsp::Port>::get);
 
     auto src_midi_out_ports =
@@ -743,14 +743,14 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsWithAsymmetricAudioPlugins)
   verifyProcessorsConnected (*track_processor, *plugins.front ());
   verifyProcessorsConnected (*plugins[0], *plugins[1]);
   EXPECT_TRUE (hasConnection (
-    *plugins[0]->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
-    *plugins[1]->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_all_output_ports ().front ().get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_all_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
   EXPECT_TRUE (hasConnection (
-    *plugins[0]->get_output_ports ().front ().get_object_as<dsp::AudioPort> (),
-    *plugins[1]->get_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_all_output_ports ().front ().get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_all_input_ports ().front ().get_object_as<dsp::AudioPort> ()));
   EXPECT_FALSE (hasConnection (
-    *plugins[0]->get_output_ports ().at (0).get_object_as<dsp::AudioPort> (),
-    *plugins[1]->get_input_ports ().at (1).get_object_as<dsp::AudioPort> ()));
+    *plugins[0]->get_all_output_ports ().at (0).get_object_as<dsp::AudioPort> (),
+    *plugins[1]->get_all_input_ports ().at (1).get_object_as<dsp::AudioPort> ()));
   verifyProcessorsConnected (
     *plugins[1], audio_channel_->get_audio_pre_fader ());
   verifyProcessorsConnected (

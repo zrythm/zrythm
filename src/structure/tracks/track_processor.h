@@ -26,7 +26,7 @@ class ClipPlaybackDataProvider;
  *
  * @see Channel and ChannelTrack.
  */
-class TrackProcessor final : public QObject, public dsp::ProcessorBase
+class TrackProcessor final : public dsp::ProcessorBase
 {
   Q_OBJECT
   QML_ELEMENT
@@ -200,12 +200,12 @@ public:
   dsp::AudioPort &get_stereo_in_port () const
   {
     assert (is_audio ());
-    return *get_input_ports ().front ().get_object_as<dsp::AudioPort> ();
+    return *get_all_input_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
   dsp::AudioPort &get_stereo_out_port () const
   {
     assert (is_audio ());
-    return *get_output_ports ().front ().get_object_as<dsp::AudioPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
 
   dsp::ProcessorParameter &get_mono_param () const;
@@ -229,7 +229,7 @@ public:
   dsp::MidiPort &get_midi_in_port () const
   {
     assert (is_midi ());
-    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
   /**
@@ -238,7 +238,7 @@ public:
   dsp::MidiPort &get_midi_out_port () const
   {
     assert (is_midi ());
-    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
   /**

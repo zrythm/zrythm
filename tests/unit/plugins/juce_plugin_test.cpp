@@ -187,14 +187,14 @@ TEST_F (JucePluginTest, AsyncInstantiationSuccess)
   EXPECT_TRUE (instantiation_finished);
   EXPECT_TRUE (successful);
 
-  const auto &in_ports = plugin_->get_input_ports ();
+  const auto &in_ports = plugin_->get_all_input_ports ();
   EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
     qobject_cast<dsp::AudioPort *> (in_ports.at (0).get ()) != nullptr);
   EXPECT_TRUE (
     qobject_cast<dsp::MidiPort *> (in_ports.at (1).get ()) != nullptr);
 
-  const auto &out_ports = plugin_->get_output_ports ();
+  const auto &out_ports = plugin_->get_all_output_ports ();
   EXPECT_EQ (out_ports.size (), 2);
   EXPECT_TRUE (
     qobject_cast<dsp::AudioPort *> (out_ports.at (0).get ()) != nullptr);
@@ -462,7 +462,7 @@ TEST_F (JucePluginTest, MidiProcessing)
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &midi_out =
-    plugin_->get_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
+    plugin_->get_all_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
   ASSERT_EQ (midi_out->buffer_.size (), 1);
   EXPECT_TRUE (
     utils::midi::midi_is_note_on (midi_out->buffer_.front ().data ()));
@@ -508,7 +508,7 @@ TEST_F (JucePluginTest, OutputMidiEventWithOutOfBlockPositionIsDropped)
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   const auto &midi_out =
-    plugin_->get_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
+    plugin_->get_all_output_ports ().at (1).get_object_as<dsp::MidiPort> ();
   EXPECT_TRUE (midi_out->buffer_.empty ()) << "Out-of-block event was forwarded";
 }
 
@@ -834,14 +834,14 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   EXPECT_TRUE (deserialized_plugin->uiVisible ());
 
   // Verify ports were preserved
-  const auto &in_ports = deserialized_plugin->get_input_ports ();
+  const auto &in_ports = deserialized_plugin->get_all_input_ports ();
   EXPECT_EQ (in_ports.size (), 2);
   EXPECT_TRUE (
     qobject_cast<dsp::AudioPort *> (in_ports.at (0).get ()) != nullptr);
   EXPECT_TRUE (
     qobject_cast<dsp::MidiPort *> (in_ports.at (1).get ()) != nullptr);
 
-  const auto &out_ports = deserialized_plugin->get_output_ports ();
+  const auto &out_ports = deserialized_plugin->get_all_output_ports ();
   EXPECT_EQ (out_ports.size (), 2);
 
   // Verify parameters were preserved
@@ -1056,8 +1056,8 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
     }
 
   // Get audio ports
-  const auto &in_ports = plugin_->get_input_ports ();
-  const auto &out_ports = plugin_->get_output_ports ();
+  const auto &in_ports = plugin_->get_all_input_ports ();
+  const auto &out_ports = plugin_->get_all_output_ports ();
 
   auto * stereo_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
   auto * stereo_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();
@@ -1157,8 +1157,8 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
     }
 
   // Get audio ports
-  const auto &in_ports = plugin_->get_input_ports ();
-  const auto &out_ports = plugin_->get_output_ports ();
+  const auto &in_ports = plugin_->get_all_input_ports ();
+  const auto &out_ports = plugin_->get_all_output_ports ();
 
   auto * stereo_in = in_ports.at (0).get_object_as<dsp::AudioPort> ();
   auto * stereo_out = out_ports.at (0).get_object_as<dsp::AudioPort> ();

@@ -712,6 +712,10 @@
             },
             "portGroup": {
               "type": "string"
+            },
+            "detached": {
+              "type": "boolean",
+              "description": "Whether the port is detached from processing (kept for its identity and connections but excluded from the graph); absent means false"
             }
           },
           "required": [

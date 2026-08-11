@@ -92,8 +92,8 @@ TEST_F (FaderTest, ConstructionAndBasicProperties)
 TEST_F (FaderTest, PortConfiguration)
 {
   // Test audio fader ports
-  EXPECT_EQ (audio_fader_->get_input_ports ().size (), 1);
-  EXPECT_EQ (audio_fader_->get_output_ports ().size (), 1);
+  EXPECT_EQ (audio_fader_->get_all_input_ports ().size (), 1);
+  EXPECT_EQ (audio_fader_->get_all_output_ports ().size (), 1);
 
   auto &stereo_in = audio_fader_->get_stereo_in_port ();
   auto &stereo_out = audio_fader_->get_stereo_out_port ();
@@ -102,8 +102,8 @@ TEST_F (FaderTest, PortConfiguration)
   EXPECT_EQ (stereo_out.get_node_name (), u8"Test Track Fader/Fader output");
 
   // Test MIDI fader ports
-  EXPECT_EQ (midi_fader_->get_input_ports ().size (), 1);
-  EXPECT_EQ (midi_fader_->get_output_ports ().size (), 1);
+  EXPECT_EQ (midi_fader_->get_all_input_ports ().size (), 1);
+  EXPECT_EQ (midi_fader_->get_all_output_ports ().size (), 1);
 
   auto &midi_in = midi_fader_->get_midi_in_port ();
   auto &midi_out = midi_fader_->get_midi_out_port ();

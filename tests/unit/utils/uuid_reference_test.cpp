@@ -641,6 +641,15 @@ TEST (GetTypedTest, ReturnsCorrectObject)
   EXPECT_EQ (obj.name (), "typed");
 }
 
+TEST (GetTypedTest, WorksWithInheritedIdentity)
+{
+  utils::ObjectRegistry registry;
+  auto                  ref = utils::create_object<DerivedUuidRefTestObject> (
+    registry, DerivedUuidRefTestObject::Uuid{ QUuid::createUuid () }, "derived");
+  auto &obj = utils::get_typed<DerivedUuidRefTestObject> (registry, ref.id ());
+  EXPECT_EQ (obj.name (), "derived");
+}
+
 TEST (TypedUuidReferenceConversionTest, DerivedToBaseConversion)
 {
   utils::ObjectRegistry registry;

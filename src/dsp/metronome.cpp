@@ -15,7 +15,7 @@ Metronome::Metronome (
   bool                    initially_enabled,
   float                   initial_volume,
   QObject *               parent)
-    : QObject (parent), dsp::AudioSampleProcessor (registry),
+    : dsp::AudioSampleProcessor (registry, parent),
       emphasis_sample_buffer_ (std::move (emphasis_sample)),
       normal_sample_buffer_ (std::move (normal_sample)),
       volume_ (initial_volume), enabled_ (initially_enabled)

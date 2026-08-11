@@ -54,7 +54,7 @@ protected:
 TEST_F (MidiInputProcessorTest, CreatesSingleOutputPort)
 {
   create_processor ();
-  const auto &outputs = processor_->get_output_ports ();
+  const auto &outputs = processor_->get_all_output_ports ();
   EXPECT_EQ (outputs.size (), 1);
 }
 

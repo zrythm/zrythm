@@ -13,7 +13,7 @@ namespace zrythm::dsp
 /**
  * @brief A simple processor that outputs panic MIDI events when requested to.
  */
-class MidiPanicProcessor final : public QObject, public dsp::ProcessorBase
+class MidiPanicProcessor final : public dsp::ProcessorBase
 {
   Q_OBJECT
 
@@ -43,7 +43,7 @@ public:
     units::sample_rate_t     sample_rate,
     units::sample_u32_t      max_block_length) override
   {
-    midi_out_ = get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+    midi_out_ = get_all_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
   void custom_release_resources () override { midi_out_ = nullptr; }

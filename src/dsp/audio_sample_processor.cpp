@@ -8,8 +8,10 @@
 namespace zrythm::dsp
 {
 
-AudioSampleProcessor::AudioSampleProcessor (utils::IObjectRegistry &registry)
-    : dsp::ProcessorBase (registry)
+AudioSampleProcessor::AudioSampleProcessor (
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : dsp::ProcessorBase (registry, u8"AudioSampleProcessor", parent)
 {
   auto out_ref = utils::create_object<dsp::AudioPort> (
     registry, u8"Stereo Out", PortFlow::Output, SpeakerArrangement::stereo ());

@@ -21,7 +21,7 @@ class MidiDeviceBuffer;
  * During processing, drains events from a MidiDeviceBuffer into the
  * output MidiPort's queued events buffer.
  */
-class MidiInputProcessor final : public QObject, public ProcessorBase
+class MidiInputProcessor final : public ProcessorBase
 {
   Q_OBJECT
 

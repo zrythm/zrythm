@@ -9,8 +9,9 @@ namespace zrythm::dsp
 
 MidiPassthroughProcessor::MidiPassthroughProcessor (
   utils::IObjectRegistry &registry,
-  size_t                  num_ports)
-    : ProcessorBase (registry)
+  size_t                  num_ports,
+  QObject *               parent)
+    : ProcessorBase (registry, u8"MidiPassthroughProcessor", parent)
 {
   set_name (u8"MIDI Passthrough");
   for (const auto i : std::views::iota (0u, num_ports))
@@ -34,8 +35,9 @@ MidiPassthroughProcessor::~MidiPassthroughProcessor () = default;
 
 AudioPassthroughProcessor::AudioPassthroughProcessor (
   utils::IObjectRegistry &registry,
-  SpeakerArrangement      arrangement)
-    : ProcessorBase (registry)
+  SpeakerArrangement      arrangement,
+  QObject *               parent)
+    : ProcessorBase (registry, u8"AudioPassthroughProcessor", parent)
 {
   set_name (u8"Audio Passthrough");
   add_input_port (
@@ -49,8 +51,9 @@ AudioPassthroughProcessor::AudioPassthroughProcessor (
 AudioPassthroughProcessor::~AudioPassthroughProcessor () = default;
 
 StereoPassthroughProcessor::StereoPassthroughProcessor (
-  utils::IObjectRegistry &registry)
-    : AudioPassthroughProcessor (registry, SpeakerArrangement::stereo ())
+  utils::IObjectRegistry &registry,
+  QObject *               parent)
+    : AudioPassthroughProcessor (registry, SpeakerArrangement::stereo (), parent)
 {
 }
 

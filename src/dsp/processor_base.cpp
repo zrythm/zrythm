@@ -40,8 +40,10 @@ ProcessorBase::ParameterChangeTracker::prepare (
 
 ProcessorBase::ProcessorBase (
   utils::IObjectRegistry &registry,
-  utils::Utf8String       name)
-    : registry_ (registry), name_ (std::move (name))
+  utils::Utf8String       name,
+  QObject *               parent)
+    : UuidIdentifiableObject<ProcessorBase> (parent), registry_ (registry),
+      name_ (std::move (name))
 {
 }
 
@@ -49,33 +51,29 @@ void
 ProcessorBase::set_name (const utils::Utf8String &name)
 {
   name_ = name;
+}
 
-  const auto full_designation_provider =
-    [this] (const Port &port) -> utils::Utf8String {
+dsp::Port::FullDesignationProvider
+ProcessorBase::designation_provider_for_ports () const
+{
+  return [this] (const Port &port) -> utils::Utf8String {
     return name_ + u8"/" + port.get_label ();
   };
-
-  for (const auto &in_ref : input_ports_)
-    {
-      if (auto * port = in_ref.get ())
-        port->set_full_designation_provider (full_designation_provider);
-    }
-  for (const auto &out_ref : output_ports_)
-    {
-      if (auto * port = out_ref.get ())
-        port->set_full_designation_provider (full_designation_provider);
-    }
 }
 
 void
 ProcessorBase::add_input_port (const dsp::PortUuidReference &uuid)
 {
+  if (auto * port = uuid.get ())
+    port->set_full_designation_provider (designation_provider_for_ports ());
   input_ports_.push_back (uuid);
 }
 
 void
 ProcessorBase::add_output_port (const dsp::PortUuidReference &uuid)
 {
+  if (auto * port = uuid.get ())
+    port->set_full_designation_provider (designation_provider_for_ports ());
   output_ports_.push_back (uuid);
 }
 
@@ -99,14 +97,14 @@ ProcessorBase::prepare_for_processing_impl (
   processing_caches_->live_input_ports_.clear ();
   processing_caches_->live_output_ports_.clear ();
 
-  for (const auto &in_ref : input_ports_)
+  for (const auto &in_ref : get_attached_input_ports ())
     {
       auto * raw = in_ref.get ();
       auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
       raw->prepare_for_processing (nullptr, sample_rate, max_block_length);
       processing_caches_->live_input_ports_.push_back (var);
     }
-  for (const auto &out_ref : output_ports_)
+  for (const auto &out_ref : get_attached_output_ports ())
     {
       auto * raw = out_ref.get ();
       auto   var = utils::convert_to_variant_qobj<dsp::PortPtrVariant> (raw);
@@ -128,14 +126,14 @@ ProcessorBase::prepare_for_processing_impl (
 void
 ProcessorBase::release_resources ()
 {
-  for (const auto &in_var : input_ports_)
-    {
-      in_var.get ()->release_resources ();
-    }
-  for (const auto &out_var : output_ports_)
-    {
-      out_var.get ()->release_resources ();
-    }
+  const auto release_all = [] (const auto &port_refs) {
+    for (const auto &port_ref : port_refs)
+      {
+        port_ref.get ()->release_resources ();
+      }
+  };
+  release_all (input_ports_);
+  release_all (output_ports_);
 
   custom_release_resources ();
 
@@ -273,11 +271,11 @@ ProcessorGraphBuilder::add_nodes (
   };
 
   add_node_for_processable (processor);
-  for (const auto &port_ref : processor.get_input_ports ())
+  for (const auto &port_ref : processor.get_attached_input_ports ())
     {
       add_node_for_processable (*port_ref.get ());
     }
-  for (const auto &port_ref : processor.get_output_ports ())
+  for (const auto &port_ref : processor.get_attached_output_ports ())
     {
       add_node_for_processable (*port_ref.get ());
     }
@@ -291,14 +289,14 @@ ProcessorGraphBuilder::add_connections (
   auto * processor_node =
     graph.get_nodes ().find_node_for_processable (processor);
   z_return_if_fail (processor_node);
-  for (const auto &port_ref : processor.get_input_ports ())
+  for (const auto &port_ref : processor.get_attached_input_ports ())
     {
       auto * port_node =
         graph.get_nodes ().find_node_for_processable (*port_ref.get ());
       assert (port_node);
       port_node->connect_to (*processor_node);
     }
-  for (const auto &port_ref : processor.get_output_ports ())
+  for (const auto &port_ref : processor.get_attached_output_ports ())
     {
       auto * port_node =
         graph.get_nodes ().find_node_for_processable (*port_ref.get ());

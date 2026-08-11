@@ -13,9 +13,7 @@
 namespace zrythm::structure::tracks
 {
 
-class ChannelMidiPassthroughProcessor final
-    : public QObject,
-      public dsp::MidiPassthroughProcessor
+class ChannelMidiPassthroughProcessor final : public dsp::MidiPassthroughProcessor
 {
   Q_OBJECT
   QML_ELEMENT
@@ -28,8 +26,7 @@ public:
 };
 
 class ChannelAudioPassthroughProcessor final
-    : public QObject,
-      public dsp::StereoPassthroughProcessor
+    : public dsp::StereoPassthroughProcessor
 {
   Q_OBJECT
   QML_ELEMENT

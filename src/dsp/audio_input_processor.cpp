@@ -14,10 +14,10 @@ AudioInputProcessor::AudioInputProcessor (
   units::channel_count_t  hw_input_channel_count,
   utils::IObjectRegistry &registry,
   QObject *               parent)
-    : QObject (parent),
-      ProcessorBase (
+    : ProcessorBase (
         registry,
-        utils::Utf8String::from_utf8_encoded_string ("Audio Input Processor")),
+        utils::Utf8String::from_utf8_encoded_string ("Audio Input Processor"),
+        parent),
       provider_ (std::move (provider))
 {
   const auto hw_chans = hw_input_channel_count.in<int> (units::channels);

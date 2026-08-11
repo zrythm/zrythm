@@ -10,8 +10,7 @@ namespace zrythm::plugins
 {
 
 Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
-    : utils::UuidIdentifiableObject<Plugin> (parent),
-      zrythm::dsp::ProcessorBase (registry, u8"Plugin"), self_guard_ (this)
+    : dsp::ProcessorBase (registry, u8"Plugin", parent), self_guard_ (this)
 {
   QObject::connect (
     this, &Plugin::instantiationFinished, this, [this] (bool successful) {
@@ -106,7 +105,7 @@ Plugin::set_configuration (const PluginConfiguration &setting)
    * tell handlers to skip generation and only reinitialize the underlying
    * plugin instance. */
   const bool generate_new =
-    get_input_ports ().empty () && get_output_ports ().empty ();
+    get_all_input_ports ().empty () && get_all_output_ports ().empty ();
   Q_EMIT configurationChanged (configuration_.get (), generate_new);
 
   // If the UI was marked visible before loading completed (e.g., during
@@ -183,7 +182,7 @@ Plugin::init_param_caches ()
   midi_in_ports_.clear ();
   midi_out_ports_.clear ();
 
-  for (const auto &port_ref : get_input_ports ())
+  for (const auto &port_ref : get_attached_input_ports ())
     {
       auto * port = port_ref.get ();
       if (auto * audio = qobject_cast<dsp::AudioPort *> (port))
@@ -194,7 +193,7 @@ Plugin::init_param_caches ()
         midi_in_ports_.push_back (midi);
     }
 
-  for (const auto &port_ref : get_output_ports ())
+  for (const auto &port_ref : get_attached_output_ports ())
     {
       auto * port = port_ref.get ();
       if (auto * audio = qobject_cast<dsp::AudioPort *> (port))

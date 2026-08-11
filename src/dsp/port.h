@@ -38,6 +38,8 @@ class Port : public utils::UuidIdentifiableObject<Port>, public dsp::graph::IPro
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  Q_PROPERTY (bool detached READ detached NOTIFY detachedChanged)
+  Q_PROPERTY (QString label READ label NOTIFY labelChanged)
 
   Q_DISABLE_COPY_MOVE (Port)
 public:
@@ -71,6 +73,12 @@ public:
 
   utils::Utf8String get_label () const { return label_; }
 
+  /**
+   * @brief Sets the label, emitting @ref labelChanged if it differs from the
+   * current one.
+   */
+  void set_label (utils::Utf8String new_label);
+
   auto get_symbol () const { return sym_; }
   void set_symbol (const utils::Utf8String &sym) { sym_ = sym; }
 
@@ -103,6 +111,40 @@ public:
   PortType type () const { return type_; }
   PortFlow flow () const { return flow_; }
 
+  /**
+   * @brief Sets the detached state.
+   *
+   * Owning processors derive their attached port subset from this flag on
+   * read, so this is the single source of truth for the detached state. The
+   * signal exists for property bindings and other observers.
+   *
+   * Must only be called on the main thread with the engine paused (e.g.
+   * during bus configuration reconciliation), never concurrently with
+   * processing.
+   */
+  void set_detached (bool new_detached) [[clang::blocking]];
+
+  // ========================================================================
+  // QML Interface
+  // ========================================================================
+
+  /**
+   * @brief Whether this port is detached from processing.
+   *
+   * Detached ports stay in their owner's port list but are excluded from the
+   * graph and from processing, while keeping their identity (UUID),
+   * connections and serialization. Re-attaching the same port object revives
+   * its connections.
+   *
+   * Can only be changed via @ref set_detached() on the main thread with the
+   * engine paused, never concurrently with processing.
+   */
+  bool          detached () const { return detached_; }
+  Q_SIGNAL void detachedChanged (bool detached);
+
+  QString       label () const { return label_.to_qstring (); }
+  Q_SIGNAL void labelChanged (const QString &label);
+
 protected:
   Port (
     utils::Utf8String label,
@@ -118,6 +160,7 @@ private:
   static constexpr auto kLabelId = "label"sv;
   static constexpr auto kSymbolId = "symbol"sv;
   static constexpr auto kPortGroupId = "portGroup"sv;
+  static constexpr auto kDetachedId = "detached"sv;
   friend void           to_json (nlohmann::json &j, const Port &p);
   friend void           from_json (const nlohmann::json &j, Port &p);
 
@@ -143,12 +186,15 @@ private:
   /** Port group this port is part of (only applicable for LV2 plugin ports). */
   std::optional<utils::Utf8String> port_group_;
 
+  /** Whether this port is detached from processing (see detached()). */
+  bool detached_{};
+
   BOOST_DESCRIBE_CLASS (
     Port,
     (utils::UuidIdentifiableObject<Port>),
     (),
     (),
-    (label_, sym_, port_group_))
+    (label_, sym_, port_group_, detached_))
 };
 
 template <typename PortT> class PortConnectionsCacheMixin

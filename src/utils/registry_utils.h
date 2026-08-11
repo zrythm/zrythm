@@ -39,9 +39,7 @@ clone_object (
 
 template <UuidIdentifiable T>
 T &
-get_typed (
-  IObjectRegistry                                &registry,
-  const typename UuidIdentifiableObject<T>::Uuid &id)
+get_typed (IObjectRegistry &registry, const typename T::Uuid &id)
 {
   auto * typed =
     qobject_cast<T *> (registry.find_by_raw_uuid (type_safe::get (id)));

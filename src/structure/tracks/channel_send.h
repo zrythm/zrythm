@@ -19,7 +19,7 @@ namespace zrythm::structure::tracks
  * Sends route audio or MIDI signals from a channel to a destination port.
  * The destination must be an input port of the same type (Audio or MIDI).
  */
-class ChannelSend : public QObject, public dsp::ProcessorBase
+class ChannelSend : public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
@@ -110,22 +110,22 @@ public:
   dsp::AudioPort &get_stereo_in_port () const
   {
     assert (is_audio ());
-    return *get_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
+    return *get_all_input_ports ().at (0).get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_in_port () const
   {
     assert (is_midi ());
-    return *get_input_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_input_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
   dsp::AudioPort &get_stereo_out_port () const
   {
     assert (is_audio ());
-    return *get_output_ports ().front ().get_object_as<dsp::AudioPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::AudioPort> ();
   }
   dsp::MidiPort &get_midi_out_port () const
   {
     assert (is_midi ());
-    return *get_output_ports ().front ().get_object_as<dsp::MidiPort> ();
+    return *get_all_output_ports ().front ().get_object_as<dsp::MidiPort> ();
   }
 
   /**

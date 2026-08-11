@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -23,6 +23,7 @@ class AudioPort final
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
+  Q_PROPERTY (zrythm::dsp::AudioPort::Purpose purpose READ purpose CONSTANT)
 
 public:
   /**
@@ -33,6 +34,7 @@ public:
     Main,
     Sidechain,
   };
+  Q_ENUM (Purpose)
 
   AudioPort (
     utils::Utf8String  label,
@@ -51,6 +53,18 @@ public:
   [[nodiscard]] auto  purpose () const { return purpose_; }
   [[nodiscard]] auto &buffers () const { return buf_; }
   auto num_channels () const { return arrangement_.channel_count (); }
+
+  /**
+   * @brief Changes the speaker arrangement in place.
+   *
+   * The port's identity (UUID) and connections are preserved; the buffer is
+   * released immediately and reallocated at the next prepare, so a missed
+   * re-prepare fails the null-buffer assertions in the processing path
+   * instead of indexing a buffer with the old channel count. Must be called
+   * with the engine paused, followed by a graph recalculation before
+   * processing resumes.
+   */
+  void set_arrangement (SpeakerArrangement new_arrangement) [[clang::blocking]];
 
   void mark_as_requires_limiting () { requires_limiting_ = true; }
   auto requires_limiting () const { return requires_limiting_; }
