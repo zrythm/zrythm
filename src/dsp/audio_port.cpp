@@ -1,6 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <mutex>
+#include <set>
+#include <tuple>
+
 #include "dsp/panning.h"
 #include "dsp/port_all.h"
 #include "utils/float_ranges.h"
@@ -13,6 +17,48 @@
 
 namespace zrythm::dsp
 {
+
+namespace
+{
+using RoutingDropWarningKey = std::
+  tuple<SpeakerArrangement::Kind, uint64_t, SpeakerArrangement::Kind, uint64_t>;
+
+uint64_t
+arrangement_payload_for_key (const SpeakerArrangement &arrangement)
+{
+  return arrangement.kind () == SpeakerArrangement::Kind::Speakers
+           ? arrangement.speaker_bits ()
+           : arrangement.channel_count ();
+}
+
+void
+warn_once_if_routing_drops_content (const AudioPort &src, const AudioPort &dest)
+{
+  // arrangement pairs that a dropped-content warning was already emitted
+  // for (warnings are one-time)
+  static std::mutex                      warnings_mutex;
+  static std::set<RoutingDropWarningKey> warnings_given;
+
+  if (!derived_routing_drops_content (src.arrangement (), dest.arrangement ()))
+    return;
+
+  const RoutingDropWarningKey key{
+    src.arrangement ().kind (), arrangement_payload_for_key (src.arrangement ()),
+    dest.arrangement ().kind (),
+    arrangement_payload_for_key (dest.arrangement ())
+  };
+  std::lock_guard lock (warnings_mutex);
+  if (warnings_given.insert (key).second)
+    {
+      z_warning (
+        "Routing from '{}' ({}) to '{}' ({}) discards or mis-maps source "
+        "channels; set an explicit channel matrix on the connection to "
+        "control the mapping",
+        src.get_full_designation (), src.arrangement (),
+        dest.get_full_designation (), dest.arrangement ());
+    }
+}
+} // namespace
 AudioPort::AudioPort (
   utils::Utf8String  label,
   PortFlow           flow,
@@ -151,6 +197,17 @@ AudioPort::prepare_for_processing_impl (
         })
         | utils::views::filter_null;
       set_port_sources (source_audio_ports);
+
+      for (const auto &[src_port, conn] : port_sources ())
+        {
+          // the cached connections are fabricated with default (derived)
+          // routings, so this check always passes until real connection
+          // state is plumbed into the cache
+          if (conn->audio_bus_channel_routing_.is_derived ())
+            {
+              warn_once_if_routing_drops_content (*src_port, *this);
+            }
+        }
     }
 
   auto max = std::max (max_block_length, units::samples (1u));

@@ -54,7 +54,17 @@ AudioBusChannelRouting::is_channel_for_channel (
     return false;
 
   if (!routes_.has_value ())
-    return true;
+    {
+      // a derived routing between speaker layouts folds per speaker, so it
+      // is only channel for channel when the layouts are identical
+      if (
+        src.kind () == SpeakerArrangement::Kind::Speakers
+        && dest.kind () == SpeakerArrangement::Kind::Speakers)
+        {
+          return src.speaker_bits () == dest.speaker_bits ();
+        }
+      return true;
+    }
 
   if (routes_->size () != dest.channel_count ())
     return false;

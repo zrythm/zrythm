@@ -268,15 +268,15 @@ TEST_F (AudioPortRoutingTest, MatchingChannelCountsRouteOneToOne)
   EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
 }
 
-TEST_F (AudioPortRoutingTest, MonoSourceFillsEveryDestinationChannel)
+TEST_F (AudioPortRoutingTest, MonoSourceFoldsIntoFrontPairAtMinus3dB)
 {
   auto src = make_source (SpeakerArrangement::mono ());
   auto dest = make_destination (SpeakerArrangement::stereo ());
 
   dest->copy_source_rt (*src, whole_block ());
 
-  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
-  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 0.70710678f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 0.70710678f);
 }
 
 TEST_F (
