@@ -443,10 +443,10 @@ private:
   auto guard_main_thread_action (F &&action) noexcept [[clang::nonblocking]]
   {
     auto guarded_action =
-      [guard = self_guard_, action = std::forward<F> (action)] () mutable {
+      [guard = self_guard_, inner_action = std::forward<F> (action)] () mutable {
         if (guard == nullptr)
           return;
-        std::invoke (action);
+        std::invoke (inner_action);
       };
     static_assert (
       std::is_constructible_v<
