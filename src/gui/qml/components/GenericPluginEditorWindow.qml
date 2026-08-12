@@ -4,7 +4,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Zrythm
 
@@ -18,8 +17,10 @@ Window {
 
   color: palette.window
   // Match the native plugin host windows: normal frame, kept above the
-  // main window
-  flags: Qt.Window | Qt.WindowStaysOnTopHint
+  // main window. The decoration hints must be spelled out: Windows only
+  // expands bare Qt.Window into a decorated frame when no other hint is
+  // set (no-ops on other platforms, which default to a decorated frame)
+  flags: Qt.Window | Qt.WindowTitleHint | Qt.WindowSystemMenuHint | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint | Qt.WindowStaysOnTopHint
   height: 480
   minimumHeight: 160
   minimumWidth: 280
@@ -36,8 +37,8 @@ Window {
   }
 
   Loader {
-    anchors.fill: parent
     active: root.plugin !== null
+    anchors.fill: parent
 
     sourceComponent: ColumnLayout {
       spacing: 0
