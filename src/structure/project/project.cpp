@@ -17,6 +17,7 @@
 #include "structure/tracks/tracklist.h"
 #include "utils/app_settings.h"
 #include "utils/logger.h"
+#include "utils/registry_utils.h"
 
 #include <juce_audio_processors/juce_audio_processors.h>
 
@@ -287,6 +288,29 @@ Project::install_recording_callback (
   track_recording_callback_ = std::move (callback);
 }
 
+void
+Project::drop_port_connections_with_missing_ports ()
+{
+  std::vector<std::pair<dsp::PortUuid, dsp::PortUuid>> dangling;
+  for (const auto &conn : port_connections_manager_->connections ())
+    {
+      const auto port_exists = [this] (const dsp::PortUuid &id) {
+        return utils::try_get_typed<dsp::Port> (project_registry_, id) != nullptr;
+      };
+      if (!port_exists (conn->src_id_) || !port_exists (conn->dest_id_))
+        {
+          z_warning (
+            "Dropping connection {} -> {}: referenced port does not exist",
+            conn->src_id_, conn->dest_id_);
+          dangling.emplace_back (conn->src_id_, conn->dest_id_);
+        }
+    }
+  for (const auto &[src, dest] : dangling)
+    {
+      port_connections_manager_->remove_connection (src, dest);
+    }
+}
+
 structure::tracks::FinalTrackDependencies
 Project::get_final_track_dependencies ()
 {
@@ -531,5 +555,8 @@ from_json (const nlohmann::json &j, Project &project)
 
   /* chord track MIDI expansion wiring is done in ProjectSession after
    * ProjectUiState is deserialized. */
+
+  // drop connections referencing nonexistent ports
+  project.drop_port_connections_with_missing_ports ();
 }
 }

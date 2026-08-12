@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/audio_input_selection.h"
+#include "dsp/audio_port.h"
 #include "dsp/graph.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
@@ -10,6 +11,7 @@
 #include "utils/app_settings.h"
 #include "utils/io_utils.h"
 #include "utils/object_registry.h"
+#include "utils/registry_utils.h"
 
 #include "helpers/mock_hardware_audio_interface.h"
 #include "helpers/mock_hardware_midi_interface.h"
@@ -333,6 +335,41 @@ TEST_F (ProjectGraphBuilderTest, AudioInputNotConnectedWhenDeviceNameEmpty)
   graph.finalize_nodes ();
 
   EXPECT_FALSE (has_audio_input_connection (graph, *project, *track));
+}
+
+TEST_F (ProjectGraphBuilderTest, ConnectionsWithMissingEndpointsAreHandled)
+{
+  auto project = create_project ();
+  project->add_default_tracks ();
+  auto * track = add_audio_bus_track (*project);
+
+  auto *      mgr = project->port_connections_manager_.get ();
+  const auto &dest_port = track->get_track_processor ()->get_stereo_in_port ();
+
+  // connection whose source port does not exist in the registry: skipped
+  // with a one-time warning (kept — graph building has no side effects on
+  // project state)
+  const auto bogus_src = dsp::PortUuid{ QUuid::createUuid () };
+  mgr->add_default_connection (bogus_src, dest_port.get_uuid (), false);
+
+  // connection from a registered port that has no graph node: skipped with
+  // a one-time warning and kept (the port exists, so the wiring is still
+  // meaningful)
+  auto orphan_port_ref = utils::create_object<dsp::AudioPort> (
+    project->get_registry (),
+    utils::Utf8String::from_utf8_encoded_string ("Orphan"),
+    dsp::PortFlow::Output, dsp::SpeakerArrangement::stereo ());
+  const auto orphan_src = orphan_port_ref.id ();
+  mgr->add_default_connection (orphan_src, dest_port.get_uuid (), false);
+
+  dsp::graph::Graph   graph;
+  ProjectGraphBuilder builder (*project, *metronome_, *monitor_fader_);
+  builder.build_graph (graph);
+  graph.finalize_nodes ();
+
+  EXPECT_TRUE (graph.is_valid ());
+  EXPECT_TRUE (mgr->connection_exists (bogus_src, dest_port.get_uuid ()));
+  EXPECT_TRUE (mgr->connection_exists (orphan_src, dest_port.get_uuid ()));
 }
 
 } // namespace zrythm::structure::project

@@ -38,11 +38,17 @@ clone_object (
 }
 
 template <UuidIdentifiable T>
+T *
+try_get_typed (IObjectRegistry &registry, const typename T::Uuid &id)
+{
+  return qobject_cast<T *> (registry.find_by_raw_uuid (type_safe::get (id)));
+}
+
+template <UuidIdentifiable T>
 T &
 get_typed (IObjectRegistry &registry, const typename T::Uuid &id)
 {
-  auto * typed =
-    qobject_cast<T *> (registry.find_by_raw_uuid (type_safe::get (id)));
+  auto * typed = try_get_typed<T> (registry, id);
   assert (typed != nullptr);
   return *typed;
 }

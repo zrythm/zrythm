@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <set>
+
 #include "utils/format_qt.h"
 
 #include "dsp/fader.h"
@@ -456,26 +458,46 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
   // add additional custom connections from the PortConnectionsManager
   {
     const auto &mgr = *project->port_connections_manager_;
+
+    // connections that were skipped with a warning (one-time per connection
+    // per session; graph building is main-thread-only)
+    static std::set<std::pair<dsp::PortUuid, dsp::PortUuid>> skip_warnings_given;
+
+    const auto warn_once_skipped =
+      [] (const dsp::PortConnection &conn, std::string_view reason) {
+        if (skip_warnings_given.emplace (conn.src_id_, conn.dest_id_).second)
+          {
+            z_warning (
+              "Skipping connection {} -> {}: {}", conn.src_id_, conn.dest_id_,
+              reason);
+          }
+      };
+
     for (const auto &conn : mgr.connections ())
       {
-        auto &src_port_base =
-          utils::get_typed<dsp::Port> (project->get_registry (), conn->src_id_);
-        auto &dest_port_base = utils::get_typed<dsp::Port> (
+        auto * src_port_base = utils::try_get_typed<dsp::Port> (
+          project->get_registry (), conn->src_id_);
+        auto * dest_port_base = utils::try_get_typed<dsp::Port> (
           project->get_registry (), conn->dest_id_);
+        if (src_port_base == nullptr || dest_port_base == nullptr)
+          {
+            warn_once_skipped (*conn, "referenced port does not exist"sv);
+            continue;
+          }
         // connections to/from detached ports are dormant: the ports (and
         // this connection) revive when the ports are re-attached
-        if (src_port_base.detached () || dest_port_base.detached ())
+        if (src_port_base->detached () || dest_port_base->detached ())
           {
             z_debug (
               "Skipping connection {} -> {}: endpoint port is detached",
-              src_port_base.get_full_designation (),
-              dest_port_base.get_full_designation ());
+              src_port_base->get_full_designation (),
+              dest_port_base->get_full_designation ());
             continue;
           }
         auto src_port_var =
-          convert_to_variant_qobj<dsp::PortPtrVariant> (&src_port_base);
+          convert_to_variant_qobj<dsp::PortPtrVariant> (src_port_base);
         auto dest_port_var =
-          convert_to_variant_qobj<dsp::PortPtrVariant> (&dest_port_base);
+          convert_to_variant_qobj<dsp::PortPtrVariant> (dest_port_base);
         std::visit (
           [&] (auto &&src_port, auto &&dest_port) {
             using SourcePortT = utils::base_type<decltype (src_port)>;
@@ -486,6 +508,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                   graph.get_nodes ().find_node_for_processable (*src_port);
                 auto * dest_node =
                   graph.get_nodes ().find_node_for_processable (*dest_port);
+                if (src_node == nullptr || dest_node == nullptr)
+                  {
+                    warn_once_skipped (
+                      *conn,
+                      "endpoint port has no node in the processing graph"sv);
+                    return;
+                  }
                 src_node->connect_to (*dest_node);
               }
           },

@@ -399,4 +399,33 @@ TEST_F (ProjectTest, InstallRecordingCallbackThrowsOnDoubleInstall)
         units::sample_u32_t) { }),
     std::runtime_error);
 }
+
+// ============================================================================
+// Port Connection Sanitation Tests
+// ============================================================================
+
+TEST_F (ProjectTest, DropPortConnectionsWithMissingPorts)
+{
+  auto project = create_minimal_project ();
+  project->add_default_tracks ();
+
+  auto * master_processor =
+    project->tracklist ()
+      ->singletonTracks ()
+      ->masterTrack ()
+      ->get_track_processor ();
+  auto &out_port = master_processor->get_stereo_out_port ();
+  auto &in_port = master_processor->get_stereo_in_port ();
+
+  auto * mgr = project->port_connections_manager_.get ();
+  mgr->add_default_connection (out_port.get_uuid (), in_port.get_uuid (), false);
+  const auto bogus_src = dsp::PortUuid{ QUuid::createUuid () };
+  mgr->add_default_connection (bogus_src, in_port.get_uuid (), false);
+
+  project->drop_port_connections_with_missing_ports ();
+
+  EXPECT_TRUE (
+    mgr->connection_exists (out_port.get_uuid (), in_port.get_uuid ()));
+  EXPECT_FALSE (mgr->connection_exists (bogus_src, in_port.get_uuid ()));
+}
 }

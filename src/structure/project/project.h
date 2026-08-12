@@ -189,6 +189,14 @@ public:
   void install_recording_callback (
     structure::tracks::TrackRecordingCallback callback);
 
+  /**
+   * @brief Removes connections referencing nonexistent ports from
+   * @ref port_connections_manager_, with a warning for each one removed.
+   *
+   * Main thread only.
+   */
+  void drop_port_connections_with_missing_ports () [[clang::blocking]];
+
 private:
   static constexpr auto kTempoMapKey = "tempoMap"sv;
   static constexpr auto kRegistryKey = "registry"sv;
