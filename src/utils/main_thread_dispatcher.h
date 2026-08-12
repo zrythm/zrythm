@@ -14,6 +14,7 @@
 #include "utils/logger.h"
 #include "utils/qt.h"
 #include "utils/raii_utils.h"
+#include "utils/rt_thread_id.h"
 
 #include <QThread>
 #include <QTimer>
@@ -81,7 +82,8 @@ public:
     QObject                  &context,
     std::chrono::milliseconds pump_interval,
     Handler                   handler)
-      : context_ (context), handler_ (std::move (handler)), queue_ (fifo_capacity)
+      : context_ (context), handler_ (std::move (handler)),
+        context_thread_id_ (current_thread_id.get ()), queue_ (fifo_capacity)
   {
     assert (QThread::currentThread () == context_.thread ());
 
@@ -129,7 +131,10 @@ public:
    */
   bool post (T request) noexcept
   {
-    if (QThread::currentThread () == context_.thread ())
+    // RTThreadId comparison instead of QThread::currentThread(): the Qt
+    // call lazily allocates QThreadData on first use per thread, which is
+    // not realtime-safe
+    if (current_thread_id.get () == context_thread_id_)
       {
         if (handling_)
           {
@@ -168,7 +173,7 @@ public:
    */
   void process_pending ()
   {
-    assert (QThread::currentThread () == context_.thread ());
+    assert (current_thread_id.get () == context_thread_id_);
 
     // Reentrant call from a running handler: the in-progress drain keeps
     // handling queued requests
@@ -210,6 +215,9 @@ private:
 
   QObject &context_;
   Handler  handler_;
+
+  /** Identity of @ref context_'s thread, captured at construction. */
+  RTThreadId::IdType context_thread_id_;
 
   rigtorp::MPMCQueue<T>           queue_;
   utils::QObjectUniquePtr<QTimer> pump_timer_;
