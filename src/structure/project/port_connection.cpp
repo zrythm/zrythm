@@ -1,21 +1,21 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_connection.h"
+#include "structure/project/port_connection.h"
 #include "utils/serialization.h"
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 PortConnection::PortConnection (QObject * parent) : QObject (parent) { }
 
 PortConnection::PortConnection (
-  const PortUuid &src,
-  const PortUuid &dest,
-  float           multiplier,
-  bool            locked,
-  bool            enabled,
-  QObject *       parent)
+  const dsp::PortUuid &src,
+  const dsp::PortUuid &dest,
+  float                multiplier,
+  bool                 locked,
+  bool                 enabled,
+  QObject *            parent)
     : QObject (parent), src_id_ (src), dest_id_ (dest),
       multiplier_ (multiplier), locked_ (locked), enabled_ (enabled)
 {

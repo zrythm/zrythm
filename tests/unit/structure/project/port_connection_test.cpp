@@ -1,19 +1,19 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_connection.h"
+#include "structure/project/port_connection.h"
 #include "utils/serialization.h"
 
 #include <gtest/gtest.h>
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 class PortConnectionTest : public ::testing::Test
 {
 protected:
-  const PortUuid kTestSrcId{ QUuid::createUuid () };
-  const PortUuid kTestDestId{ QUuid::createUuid () };
+  const dsp::PortUuid kTestSrcId{ QUuid::createUuid () };
+  const dsp::PortUuid kTestDestId{ QUuid::createUuid () };
 
   void SetUp () override
   {
@@ -39,9 +39,9 @@ TEST_F (PortConnectionTest, DefaultConstruction)
 
 TEST_F (PortConnectionTest, ParameterizedConstruction)
 {
-  const PortUuid src{ QUuid::createUuid () };
-  const PortUuid dest{ QUuid::createUuid () };
-  PortConnection conn (src, dest, 0.5f, true, false);
+  const dsp::PortUuid src{ QUuid::createUuid () };
+  const dsp::PortUuid dest{ QUuid::createUuid () };
+  PortConnection      conn (src, dest, 0.5f, true, false);
 
   EXPECT_EQ (conn.src_id_, src);
   EXPECT_EQ (conn.dest_id_, dest);
@@ -66,7 +66,7 @@ TEST_F (PortConnectionTest, EqualityOperator)
   PortConnection same1 (kTestSrcId, kTestDestId, 1.0f, false, true);
   PortConnection same2 (kTestSrcId, kTestDestId, 1.0f, false, true);
   PortConnection different (
-    kTestSrcId, PortUuid{ QUuid::createUuid () }, 0.5f, true, false);
+    kTestSrcId, dsp::PortUuid{ QUuid::createUuid () }, 0.5f, true, false);
 
   EXPECT_TRUE (same1 == same2);
   EXPECT_FALSE (same1 == different);
@@ -174,4 +174,4 @@ TEST_F (PortConnectionTest, CloneBehavior)
     clone->audio_bus_channel_routing_, original.audio_bus_channel_routing_);
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::structure::project

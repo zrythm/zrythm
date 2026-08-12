@@ -6,7 +6,7 @@
 
 #include <fmt/std.h>
 
-#include "dsp/port_connections_manager.h"
+#include "structure/project/port_connections_manager.h"
 #include "utils/format.h"
 #include "utils/format_boost.h"
 #include "utils/logger.h"
@@ -14,7 +14,7 @@
 
 #include <fmt/format.h>
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 PortConnectionsManager::PortConnectionsManager (QObject * parent)
@@ -39,7 +39,7 @@ init_from (
 void
 PortConnectionsManager::add_or_replace_connection (
   ConnectionHashTable  &ht,
-  const PortUuid       &id,
+  const dsp::PortUuid  &id,
   const PortConnection &conn)
 {
   auto   it = ht.find (id);
@@ -74,11 +74,11 @@ PortConnectionsManager::update_connection (
 
 bool
 PortConnectionsManager::update_connection (
-  const PortUuid &src,
-  const PortUuid &dest,
-  float           multiplier,
-  bool            locked,
-  bool            enabled)
+  const dsp::PortUuid &src,
+  const dsp::PortUuid &dest,
+  float                multiplier,
+  bool                 locked,
+  bool                 enabled)
 {
   auto * conn = get_connection (src, dest);
   if (conn == nullptr)
@@ -147,9 +147,9 @@ PortConnectionsManager::update_connections (
 
 int
 PortConnectionsManager::get_sources_or_dests (
-  ConnectionsVector * arr,
-  const PortUuid     &id,
-  bool                sources) const
+  ConnectionsVector *  arr,
+  const dsp::PortUuid &id,
+  bool                 sources) const
 {
   /* note: we look at the opposite hashtable */
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
@@ -175,9 +175,9 @@ PortConnectionsManager::get_sources_or_dests (
 
 int
 PortConnectionsManager::get_unlocked_sources_or_dests (
-  ConnectionsVector * arr,
-  const PortUuid     &id,
-  bool                sources) const
+  ConnectionsVector *  arr,
+  const dsp::PortUuid &id,
+  bool                 sources) const
 {
   const ConnectionHashTable &ht = sources ? dest_ht_ : src_ht_;
   auto                       it = ht.find (id);
@@ -203,7 +203,9 @@ PortConnectionsManager::get_unlocked_sources_or_dests (
 }
 
 PortConnection *
-PortConnectionsManager::get_source_or_dest (const PortUuid &id, bool sources) const
+PortConnectionsManager::get_source_or_dest (
+  const dsp::PortUuid &id,
+  bool                 sources) const
 {
   ConnectionsVector conns;
   int               num_conns = get_sources_or_dests (&conns, id, sources);
@@ -220,8 +222,8 @@ PortConnectionsManager::get_source_or_dest (const PortUuid &id, bool sources) co
 
 PortConnection *
 PortConnectionsManager::get_connection (
-  const PortUuid &src,
-  const PortUuid &dest) const
+  const dsp::PortUuid &src,
+  const dsp::PortUuid &dest) const
 {
   auto it = std::ranges::find_if (connections_, [&] (const auto &conn) {
     return conn->src_id_ == src && conn->dest_id_ == dest;
@@ -231,11 +233,11 @@ PortConnectionsManager::get_connection (
 
 const PortConnection *
 PortConnectionsManager::add_connection (
-  const PortUuid &src,
-  const PortUuid &dest,
-  float           multiplier,
-  bool            locked,
-  bool            enabled)
+  const dsp::PortUuid &src,
+  const dsp::PortUuid &dest,
+  float                multiplier,
+  bool                 locked,
+  bool                 enabled)
 {
   for (auto &conn : connections_)
     {
@@ -275,8 +277,8 @@ PortConnectionsManager::remove_connection (const size_t idx)
 
 bool
 PortConnectionsManager::remove_connection (
-  const PortUuid &src,
-  const PortUuid &dest)
+  const dsp::PortUuid &src,
+  const dsp::PortUuid &dest)
 {
   for (size_t i = 0; i < connections_.size (); i++)
     {
@@ -292,7 +294,7 @@ PortConnectionsManager::remove_connection (
 }
 
 void
-PortConnectionsManager::remove_all_connections (const PortUuid &pi)
+PortConnectionsManager::remove_all_connections (const dsp::PortUuid &pi)
 {
   for (size_t i = 0; i < connections_.size (); i++)
     {
@@ -377,4 +379,4 @@ from_json (const nlohmann::json &j, PortConnectionsManager &pcm)
   pcm.regenerate_hashtables ();
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::structure::project

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -10,7 +10,7 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 /**
@@ -25,12 +25,12 @@ public:
   PortConnection (QObject * parent = nullptr);
 
   PortConnection (
-    const PortUuid &src,
-    const PortUuid &dest,
-    float           multiplier,
-    bool            locked,
-    bool            enabled,
-    QObject *       parent = nullptr);
+    const dsp::PortUuid &src,
+    const dsp::PortUuid &dest,
+    float                multiplier,
+    bool                 locked,
+    bool                 enabled,
+    QObject *            parent = nullptr);
 
   void update (float multiplier, bool locked, bool enabled)
   {
@@ -47,9 +47,11 @@ public:
    * @throw std::invalid_argument if two routes describe the same source and
    * destination channel pair.
    */
-  void set_audio_bus_channel_routing (std::vector<AudioBusChannelRoute> routes)
+  void
+  set_audio_bus_channel_routing (std::vector<dsp::AudioBusChannelRoute> routes)
   {
-    audio_bus_channel_routing_ = AudioBusChannelRouting{ std::move (routes) };
+    audio_bus_channel_routing_ =
+      dsp::AudioBusChannelRouting{ std::move (routes) };
   }
 
   /** Reverts to routing derived from the two ports' speaker arrangements. */
@@ -83,8 +85,8 @@ private:
   }
 
 public:
-  PortUuid src_id_;
-  PortUuid dest_id_;
+  dsp::PortUuid src_id_;
+  dsp::PortUuid dest_id_;
 
   /**
    * Multiplier to apply, where applicable.
@@ -128,7 +130,7 @@ public:
    * Used for audio ports. Derived from the two ports' speaker arrangements
    * unless the user has edited this connection's channel matrix.
    */
-  AudioBusChannelRouting audio_bus_channel_routing_;
+  dsp::AudioBusChannelRouting audio_bus_channel_routing_;
 
   BOOST_DESCRIBE_CLASS (
     PortConnection,
@@ -144,4 +146,4 @@ public:
     ())
 };
 
-} // namespace zrythm::dsp
+} // namespace zrythm::structure::project

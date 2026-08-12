@@ -1,15 +1,15 @@
-// SPDX-FileCopyrightText: © 2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
 
-#include "dsp/port_connection.h"
+#include "structure/project/port_connection.h"
 #include "utils/icloneable.h"
 #include "utils/qt.h"
 
 #include <nlohmann/json_fwd.hpp>
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 /**
@@ -21,7 +21,6 @@ class PortConnectionsManager : public QObject
   QML_ELEMENT
 
 public:
-  using PortConnection = dsp::PortConnection;
   using ConnectionsVector = std::vector<PortConnection *>;
 
   explicit PortConnectionsManager (QObject * parent = nullptr);
@@ -30,10 +29,11 @@ private:
   /**
    * Hashtable to speedup lookups by port identifier.
    *
-   * Key: PortUuid
+   * Key: dsp::PortUuid
    * Value: A vector of PortConnection references from @ref connections_.
    */
-  using ConnectionHashTable = std::unordered_map<PortUuid, ConnectionsVector>;
+  using ConnectionHashTable =
+    std::unordered_map<dsp::PortUuid, ConnectionsVector>;
 
   static const auto &
   connection_ref_predicate (const utils::QObjectUniquePtr<PortConnection> &conn)
@@ -61,25 +61,26 @@ public:
    *
    * @return The number of ports found.
    */
-  int
-  get_sources_or_dests (ConnectionsVector * arr, const PortUuid &id, bool sources)
-    const;
+  int get_sources_or_dests (
+    ConnectionsVector *  arr,
+    const dsp::PortUuid &id,
+    bool                 sources) const;
 
-  int get_sources (ConnectionsVector * arr, const PortUuid &id) const
+  int get_sources (ConnectionsVector * arr, const dsp::PortUuid &id) const
   {
     return get_sources_or_dests (arr, id, true);
   }
 
-  int get_dests (ConnectionsVector * arr, const PortUuid &id) const
+  int get_dests (ConnectionsVector * arr, const dsp::PortUuid &id) const
   {
     return get_sources_or_dests (arr, id, false);
   }
 
-  int get_num_sources (const PortUuid &id) const
+  int get_num_sources (const dsp::PortUuid &id) const
   {
     return get_sources (nullptr, id);
   }
-  int get_num_dests (const PortUuid &id) const
+  int get_num_dests (const dsp::PortUuid &id) const
   {
     return get_dests (nullptr, id);
   }
@@ -99,9 +100,9 @@ public:
    * @return The number of ports found.
    */
   int get_unlocked_sources_or_dests (
-    ConnectionsVector * arr,
-    const PortUuid     &id,
-    bool                sources) const;
+    ConnectionsVector *  arr,
+    const dsp::PortUuid &id,
+    bool                 sources) const;
 
   /**
    * Wrapper over @ref get_sources_or_dests() that returns the first connection.
@@ -111,7 +112,8 @@ public:
    *
    * @return The connection, owned by this, or null.
    */
-  PortConnection * get_source_or_dest (const PortUuid &id, bool sources) const;
+  PortConnection *
+  get_source_or_dest (const dsp::PortUuid &id, bool sources) const;
 
   /**
    * @brief
@@ -121,9 +123,10 @@ public:
    * @return The connection, owned by this, or null.
    */
   PortConnection *
-  get_connection (const PortUuid &src, const PortUuid &dest) const;
+  get_connection (const dsp::PortUuid &src, const dsp::PortUuid &dest) const;
 
-  bool connection_exists (const PortUuid &src, const PortUuid &dest) const
+  bool
+  connection_exists (const dsp::PortUuid &src, const dsp::PortUuid &dest) const
   {
     return get_connection (src, dest) != nullptr;
   }
@@ -137,11 +140,11 @@ public:
   update_connection (const PortConnection &before, const PortConnection &after);
 
   bool update_connection (
-    const PortUuid &src,
-    const PortUuid &dest,
-    float           multiplier,
-    bool            locked,
-    bool            enabled);
+    const dsp::PortUuid &src,
+    const dsp::PortUuid &dest,
+    float                multiplier,
+    bool                 locked,
+    bool                 enabled);
 
   /**
    * Stores the connection for the given ports if it doesn't exist, otherwise
@@ -152,17 +155,19 @@ public:
    * @return The connection.
    */
   const PortConnection * add_connection (
-    const PortUuid &src,
-    const PortUuid &dest,
-    float           multiplier,
-    bool            locked,
-    bool            enabled);
+    const dsp::PortUuid &src,
+    const dsp::PortUuid &dest,
+    float                multiplier,
+    bool                 locked,
+    bool                 enabled);
 
   /**
    * @brief Overload for default settings (multiplier = 1.0, enabled = true).
    */
-  const PortConnection *
-  add_default_connection (const PortUuid &src, const PortUuid &dest, bool locked)
+  const PortConnection * add_default_connection (
+    const dsp::PortUuid &src,
+    const dsp::PortUuid &dest,
+    bool                 locked)
   {
     return add_connection (src, dest, 1.0f, locked, true);
   }
@@ -181,14 +186,14 @@ public:
    *
    * @return Whether a connection was removed.
    */
-  bool remove_connection (const PortUuid &src, const PortUuid &dest);
+  bool remove_connection (const dsp::PortUuid &src, const dsp::PortUuid &dest);
 
   /**
    * Disconnect all sources and dests of the given port identifier.
    *
    * @note To be called from the main thread only.
    */
-  void remove_all_connections (const PortUuid &pi);
+  void remove_all_connections (const dsp::PortUuid &pi);
 
   /**
    * Removes all connections from this.
@@ -222,7 +227,7 @@ private:
 
   void add_or_replace_connection (
     ConnectionHashTable  &ht,
-    const PortUuid       &id,
+    const dsp::PortUuid  &id,
     const PortConnection &conn);
 
   void remove_connection (size_t idx);
@@ -248,4 +253,4 @@ private:
   ConnectionHashTable dest_ht_;
 };
 
-} // namespace zrythm::dsp
+} // namespace zrythm::structure::project

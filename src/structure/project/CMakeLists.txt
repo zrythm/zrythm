@@ -41,6 +41,8 @@ target_sources(zrythm_structure_project_lib
     clip_editor.cpp
     editor_settings.cpp
     midi_editor.cpp
+    port_connection.cpp
+    port_connections_manager.cpp
     project.cpp
     project_graph_builder.cpp
     project_path_provider.cpp
@@ -59,6 +61,8 @@ target_sources(zrythm_structure_project_lib
       clip_editor.h
       editor_settings.h
       midi_editor.h
+      port_connection.h
+      port_connections_manager.h
       project.h
       project_graph_builder.h
       project_path_provider.h

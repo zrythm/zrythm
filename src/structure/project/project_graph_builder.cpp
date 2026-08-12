@@ -464,7 +464,7 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
     static std::set<std::pair<dsp::PortUuid, dsp::PortUuid>> skip_warnings_given;
 
     const auto warn_once_skipped =
-      [] (const dsp::PortConnection &conn, std::string_view reason) {
+      [] (const PortConnection &conn, std::string_view reason) {
         if (skip_warnings_given.emplace (conn.src_id_, conn.dest_id_).second)
           {
             z_warning (

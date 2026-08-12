@@ -1,21 +1,21 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/port_connections_manager.h"
+#include "structure/project/port_connections_manager.h"
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-namespace zrythm::dsp
+namespace zrythm::structure::project
 {
 
 class PortConnectionsManagerTest : public ::testing::Test
 {
 protected:
-  const PortUuid kTestSrc1{ QUuid::createUuid () };
-  const PortUuid kTestSrc2{ QUuid::createUuid () };
-  const PortUuid kTestDest1{ QUuid::createUuid () };
-  const PortUuid kTestDest2{ QUuid::createUuid () };
+  const dsp::PortUuid kTestSrc1{ QUuid::createUuid () };
+  const dsp::PortUuid kTestSrc2{ QUuid::createUuid () };
+  const dsp::PortUuid kTestDest1{ QUuid::createUuid () };
+  const dsp::PortUuid kTestDest2{ QUuid::createUuid () };
 
   void SetUp () override
   {
@@ -89,8 +89,8 @@ TEST_F (PortConnectionsManagerTest, UpdateConnection)
   EXPECT_FALSE (conn->enabled_);
 
   // Try updating non-existent connection
-  EXPECT_FALSE (
-    manager_->update_connection (PortUuid{}, PortUuid{}, 1.0f, false, true));
+  EXPECT_FALSE (manager_->update_connection (
+    dsp::PortUuid{}, dsp::PortUuid{}, 1.0f, false, true));
 }
 
 TEST_F (PortConnectionsManagerTest, GetSourceOrDest)
@@ -154,8 +154,8 @@ TEST_F (PortConnectionsManagerTest, ContainsConnection)
   EXPECT_TRUE (manager_->contains_connection (conn));
 
   PortConnection non_existent (
-    PortUuid{ QUuid::createUuid () }, PortUuid{ QUuid::createUuid () }, 1.0f,
-    false, true);
+    dsp::PortUuid{ QUuid::createUuid () },
+    dsp::PortUuid{ QUuid::createUuid () }, 1.0f, false, true);
   EXPECT_FALSE (manager_->contains_connection (non_existent));
 }
 
@@ -180,4 +180,4 @@ TEST_F (PortConnectionsManagerTest, ClearAll)
   EXPECT_EQ (manager_->get_connection_count (), 0);
 }
 
-} // namespace zrythm::dsp
+} // namespace zrythm::structure::project

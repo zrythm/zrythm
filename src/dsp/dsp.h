@@ -15,5 +15,4 @@
 #include "./note_type.h"
 #include "./parameter.h"
 #include "./port_all.h"
-#include "./port_connection.h"
 #include "./tempo_map_qml_adapter.h"

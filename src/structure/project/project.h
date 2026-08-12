@@ -9,7 +9,6 @@
 #include "dsp/hardware_audio_interface.h"
 #include "dsp/metronome.h"
 #include "dsp/midi_input_selection.h"
-#include "dsp/port_connections_manager.h"
 #include "dsp/port_observation_manager.h"
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
@@ -17,6 +16,7 @@
 #include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/tempo_object_manager.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/project/project_registry.h"
 #include "structure/scenes/clip_launcher.h"
 #include "structure/scenes/clip_playback_service.h"
@@ -232,7 +232,7 @@ public:
    *
    * Must be free'd after engine.
    */
-  utils::QObjectUniquePtr<dsp::PortConnectionsManager> port_connections_manager_;
+  utils::QObjectUniquePtr<PortConnectionsManager> port_connections_manager_;
 
 public:
   /**

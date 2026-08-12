@@ -3,7 +3,6 @@
 
 #include "dsp/modulator_macro_processor.h"
 #include "dsp/port.h"
-#include "dsp/port_connection.h"
 #include "utils/object_registry.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"

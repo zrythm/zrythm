@@ -8,9 +8,9 @@
 #include "dsp/engine.h"
 #include "dsp/hardware_midi_interface.h"
 #include "dsp/juce_hardware_audio_interface.h"
-#include "dsp/port_connections_manager.h"
 #include "dsp/port_observer.h"
 #include "dsp/transport.h"
+#include "structure/project/port_connections_manager.h"
 #include "structure/project/project.h"
 #include "structure/project/project_graph_builder.h"
 #include "structure/project/project_path_provider.h"
@@ -43,7 +43,7 @@ Project::Project (
         std::move (project_directory_path_provider)),
       hw_interface_ (hw_interface),
       plugin_format_manager_ (plugin_format_manager),
-      port_connections_manager_ (new dsp::PortConnectionsManager (this)),
+      port_connections_manager_ (new PortConnectionsManager (this)),
       transport_ (
         utils::make_qobject_unique<dsp::Transport> (
           *tempo_map_wrapper_,

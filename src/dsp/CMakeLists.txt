@@ -56,8 +56,6 @@ target_sources(zrythm_dsp_lib
     playhead_qml_adapter.cpp
     poly_voice_manager.cpp
     port.cpp
-    port_connection.cpp
-    port_connections_manager.cpp
     port_observation_manager.cpp
     port_observer.cpp
     position.cpp
@@ -135,8 +133,6 @@ target_sources(zrythm_dsp_lib
       poly_voice_manager.h
       port.h
       port_all.h
-      port_connection.h
-      port_connections_manager.h
       port_observation_cache.h
       port_observation_manager.h
       port_observation_token.h
