@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/fader.h"
@@ -145,12 +145,13 @@ protected:
   dsp::PortUuidReference createMockPort (
     dsp::PortType            type,
     const utils::Utf8String &name,
-    dsp::PortFlow            flow)
+    dsp::PortFlow            flow,
+    dsp::AudioPort::Purpose  purpose = dsp::AudioPort::Purpose::Main)
   {
     if (type == dsp::PortType::Audio)
       {
         return utils::create_object<dsp::AudioPort> (
-          *registry_, name, flow, dsp::SpeakerArrangement::mono ());
+          *registry_, name, flow, dsp::SpeakerArrangement::mono (), purpose);
       }
     else if (type == dsp::PortType::Midi)
       {
@@ -863,6 +864,202 @@ TEST_F (ChannelSubgraphBuilderTest, AddConnectionsThrowsWhenOutputsNotInGraph)
         graph_, *audio_channel_, track_output);
     },
     std::invalid_argument);
+}
+
+TEST_F (ChannelSubgraphBuilderTest, FirstPluginSidechainInputIsNotAutoConnected)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  // Plugin declares its sidechain bus before the main bus
+  auto plugin_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 0, 1);
+  auto * pl = plugin_ref.get_object_as<plugins::FaustPlugin> ();
+  auto   sidechain_in_ref = createMockPort (
+    dsp::PortType::Audio, u8"Sidechain In", dsp::PortFlow::Input,
+    dsp::AudioPort::Purpose::Sidechain);
+  auto main_in_ref =
+    createMockPort (dsp::PortType::Audio, u8"Main In", dsp::PortFlow::Input);
+  pl->add_input_port (sidechain_in_ref);
+  pl->add_input_port (main_in_ref);
+  audio_channel_->inserts ()->append_plugin (plugin_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *audio_channel_, track_output);
+
+  auto &track_out_port = *track_output.get_object_as<dsp::AudioPort> ();
+  auto &main_in_port = *main_in_ref.get_object_as<dsp::AudioPort> ();
+  auto &sidechain_in_port = *sidechain_in_ref.get_object_as<dsp::AudioPort> ();
+
+  EXPECT_TRUE (hasConnection (track_out_port, main_in_port));
+  EXPECT_FALSE (hasConnection (track_out_port, sidechain_in_port));
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  PluginToPluginSidechainInputIsNotAutoConnected)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  auto plugin1_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 1, 1);
+  auto plugin2_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 0, 1);
+  auto * pl2 = plugin2_ref.get_object_as<plugins::FaustPlugin> ();
+  auto   sidechain_in_ref = createMockPort (
+    dsp::PortType::Audio, u8"Sidechain In", dsp::PortFlow::Input,
+    dsp::AudioPort::Purpose::Sidechain);
+  auto main_in_ref =
+    createMockPort (dsp::PortType::Audio, u8"Main In", dsp::PortFlow::Input);
+  pl2->add_input_port (sidechain_in_ref);
+  pl2->add_input_port (main_in_ref);
+
+  audio_channel_->inserts ()->append_plugin (plugin1_ref);
+  audio_channel_->inserts ()->append_plugin (plugin2_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *audio_channel_, track_output);
+
+  auto &pl1_main_out =
+    *plugin1_ref.get ()
+       ->get_all_output_ports ()
+       .front ()
+       .get_object_as<dsp::AudioPort> ();
+  auto &main_in_port = *main_in_ref.get_object_as<dsp::AudioPort> ();
+  auto &sidechain_in_port = *sidechain_in_ref.get_object_as<dsp::AudioPort> ();
+
+  EXPECT_TRUE (hasConnection (pl1_main_out, main_in_port));
+  EXPECT_FALSE (hasConnection (pl1_main_out, sidechain_in_port));
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  PluginToPluginSidechainOutputIsNotAutoConnected)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  // First plugin declares a sidechain (aux) output before its main output
+  auto plugin1_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 1, 0);
+  auto * pl1 = plugin1_ref.get_object_as<plugins::FaustPlugin> ();
+  auto   sidechain_out_ref = createMockPort (
+    dsp::PortType::Audio, u8"Sidechain Out", dsp::PortFlow::Output,
+    dsp::AudioPort::Purpose::Sidechain);
+  auto main_out_ref =
+    createMockPort (dsp::PortType::Audio, u8"Main Out", dsp::PortFlow::Output);
+  pl1->add_output_port (sidechain_out_ref);
+  pl1->add_output_port (main_out_ref);
+
+  auto plugin2_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 1, 1);
+
+  audio_channel_->inserts ()->append_plugin (plugin1_ref);
+  audio_channel_->inserts ()->append_plugin (plugin2_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *audio_channel_, track_output);
+
+  auto &pl2_main_in =
+    *plugin2_ref.get ()
+       ->get_all_input_ports ()
+       .front ()
+       .get_object_as<dsp::AudioPort> ();
+  auto &main_out_port = *main_out_ref.get_object_as<dsp::AudioPort> ();
+  auto &sidechain_out_port = *sidechain_out_ref.get_object_as<dsp::AudioPort> ();
+
+  EXPECT_TRUE (hasConnection (main_out_port, pl2_main_in));
+  EXPECT_FALSE (hasConnection (sidechain_out_port, pl2_main_in));
+}
+
+TEST_F (
+  ChannelSubgraphBuilderTest,
+  LastPluginSidechainOutputIsNotConnectedToPrefader)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  // Last plugin declares a sidechain (aux) output before its main output
+  auto plugin_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 1, 0);
+  auto * pl = plugin_ref.get_object_as<plugins::FaustPlugin> ();
+  auto   sidechain_out_ref = createMockPort (
+    dsp::PortType::Audio, u8"Sidechain Out", dsp::PortFlow::Output,
+    dsp::AudioPort::Purpose::Sidechain);
+  auto main_out_ref =
+    createMockPort (dsp::PortType::Audio, u8"Main Out", dsp::PortFlow::Output);
+  pl->add_output_port (sidechain_out_ref);
+  pl->add_output_port (main_out_ref);
+  audio_channel_->inserts ()->append_plugin (plugin_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *audio_channel_, track_output);
+
+  auto &prefader_in =
+    audio_channel_->get_audio_pre_fader ().get_audio_in_port ();
+  auto &main_out_port = *main_out_ref.get_object_as<dsp::AudioPort> ();
+  auto &sidechain_out_port = *sidechain_out_ref.get_object_as<dsp::AudioPort> ();
+
+  EXPECT_TRUE (hasConnection (main_out_port, prefader_in));
+  EXPECT_FALSE (hasConnection (sidechain_out_port, prefader_in));
+}
+
+TEST_F (ChannelSubgraphBuilderTest, SidechainOnlyFirstPluginGetsNoAudioConnection)
+{
+  audio_channel_ = createAudioChannel ();
+  ASSERT_NE (audio_channel_, nullptr);
+
+  // Plugin whose only audio input is a sidechain bus: nothing may be
+  // auto-wired into it
+  auto plugin_ref =
+    createMockPlugin (dsp::PortType::Audio, dsp::PortType::Audio, 0, 1);
+  auto * pl = plugin_ref.get_object_as<plugins::FaustPlugin> ();
+  auto   sidechain_in_ref = createMockPort (
+    dsp::PortType::Audio, u8"Sidechain In", dsp::PortFlow::Input,
+    dsp::AudioPort::Purpose::Sidechain);
+  pl->add_input_port (sidechain_in_ref);
+  audio_channel_->inserts ()->append_plugin (plugin_ref);
+
+  ChannelSubgraphBuilder::add_nodes (graph_, *audio_channel_);
+
+  auto track_processor = createMockTrackProcessor (dsp::PortType::Audio, 2);
+  auto track_output = getProcessorOutputPort (*track_processor);
+  addTrackProcessorToGraph (*track_processor);
+
+  ChannelSubgraphBuilder::add_connections (
+    graph_, *audio_channel_, track_output);
+
+  auto &track_out_port = *track_output.get_object_as<dsp::AudioPort> ();
+  auto &sidechain_in_port = *sidechain_in_ref.get_object_as<dsp::AudioPort> ();
+
+  EXPECT_FALSE (hasConnection (track_out_port, sidechain_in_port));
+  // with no port connection made, the plugin still gets a scheduling edge
+  EXPECT_TRUE (hasConnection (track_out_port, *pl));
 }
 
 } // namespace zrythm::structure::tracks

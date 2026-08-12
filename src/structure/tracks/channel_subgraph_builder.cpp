@@ -5,6 +5,16 @@
 
 namespace zrythm::structure::tracks
 {
+
+namespace
+{
+/** Only main-bus audio ports take part in automatic chain wiring; sidechain
+ * buses are connected explicitly by the user. */
+const auto is_main_bus_audio_port = [] (const dsp::AudioPort * port) {
+  return port->purpose () == dsp::AudioPort::Purpose::Main;
+};
+}
+
 void
 ChannelSubgraphBuilder::add_nodes (dsp::graph::Graph &graph, Channel &ch)
 {
@@ -94,7 +104,14 @@ ChannelSubgraphBuilder::add_connections (
             track_processor_output
           };
           bool connection_made = connect_like_ports (
-            graph, processor_outputs, pl->get_attached_input_ports ());
+            graph, processor_outputs,
+            pl->get_attached_input_ports ()
+              | std::views::filter ([] (const auto &port_ref) {
+                  const auto * audio_port =
+                    qobject_cast<dsp::AudioPort *> (port_ref.get ());
+                  return (audio_port == nullptr)
+                         || is_main_bus_audio_port (audio_port);
+                }));
 
           // if no connection was made (plugin had no matching inputs), connect
           // the track processor outputs directly to the plugin processor
@@ -115,11 +132,13 @@ ChannelSubgraphBuilder::add_connections (
               auto src_audio_outs =
                 src.get_attached_output_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
-                | qobject_cast_and_filter<dsp::AudioPort>;
+                | qobject_cast_and_filter<dsp::AudioPort>
+                | std::views::filter (is_main_bus_audio_port);
               auto dest_audio_ins =
                 dest.get_attached_input_ports ()
                 | std::views::transform (&dsp::PortUuidReference::get)
-                | qobject_cast_and_filter<dsp::AudioPort>;
+                | qobject_cast_and_filter<dsp::AudioPort>
+                | std::views::filter (is_main_bus_audio_port);
 
               const size_t num_src_outs = std::ranges::distance (src_audio_outs);
               const size_t num_dest_ins = std::ranges::distance (dest_audio_ins);
@@ -222,7 +241,8 @@ ChannelSubgraphBuilder::add_connections (
           auto pl_audio_outs =
             last_pl->get_attached_output_ports ()
             | std::views::transform (&dsp::PortUuidReference::get)
-            | qobject_cast_and_filter<dsp::AudioPort>;
+            | qobject_cast_and_filter<dsp::AudioPort>
+            | std::views::filter (is_main_bus_audio_port);
 
           for (
             const auto &[pl_audio_out, prefader_audio_in] :
