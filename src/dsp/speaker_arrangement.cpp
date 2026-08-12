@@ -7,6 +7,7 @@
 #include "dsp/speaker_arrangement.h"
 
 #include <fmt/format.h>
+#include <magic_enum/magic_enum_format.hpp>
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
