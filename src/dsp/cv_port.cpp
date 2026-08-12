@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/cv_port.h"
 #include "utils/float_ranges.h"
 #include "utils/math_utils.h"
-#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -28,10 +27,16 @@ CVPort::prepare_for_processing_impl (
   if (node != nullptr && flow () == PortFlow::Input)
     {
       auto source_ports =
-        node->depends () | std::views::transform ([] (const auto &child_node) {
-          return dynamic_cast<CVPort *> (&child_node.get ().get_processable ());
-        })
-        | utils::views::filter_null;
+        node->depends ()
+        | std::views::transform ([node] (const auto &child_node) {
+            return std::pair{
+              dynamic_cast<CVPort *> (&child_node.get ().get_processable ()),
+              node->connection_for_dependency (child_node.get ())
+            };
+          })
+        | std::views::filter ([] (const auto &pair) {
+            return pair.first != nullptr;
+          });
       set_port_sources (source_ports);
     }
 
@@ -56,12 +61,12 @@ CVPort::process_block (
   /* Input ports: aggregate from sources. */
   if (flow () == PortFlow::Input)
     {
-      for (const auto &[src_port, conn] : port_sources ())
+      for (const auto &[src_port, config] : port_sources ())
         {
-          if (!conn->enabled_)
+          if (!config.enabled_)
             continue;
 
-          const float multiplier = conn->multiplier_;
+          const float multiplier = config.multiplier_;
 
           /* sum the signals */
           if (utils::math::floats_near (multiplier, 1.f, 0.00001f)) [[likely]]

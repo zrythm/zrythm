@@ -4,15 +4,17 @@
 #pragma once
 
 #include <functional>
+#include <optional>
 #include <stdexcept>
 #include <string_view>
 
 #include "dsp/graph_node.h"
-#include "dsp/port_connection.h"
 #include "dsp/port_fwd.h"
 #include "utils/typed_uuid_reference.h"
 #include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
+
+#include <QtQmlIntegration/qqmlintegration.h>
 
 #include <fmt/format.h>
 
@@ -199,16 +201,23 @@ private:
 
 template <typename PortT> class PortConnectionsCacheMixin
 {
-  using ElementType =
-    std::pair<const PortT *, std::unique_ptr<dsp::PortConnection>>;
+  using ElementType = std::pair<const PortT *, graph::ConnectionConfig>;
 
 public:
   virtual ~PortConnectionsCacheMixin () = default;
 
   auto &port_sources () const { return port_sources_; }
 
-  void
-  set_port_sources (this auto &self, utils::RangeOf<PortT *> auto source_ports)
+  /**
+   * @brief Rebuilds the cache of upstream sources and their connection
+   * configurations from the given (source port, configuration) pairs.
+   *
+   * A nullopt configuration means the edge carries no user connection and
+   * gets the default unity/derived configuration.
+   */
+  void set_port_sources (
+    this auto                                          &self,
+    utils::RangeOf<graph::PortSourceConfig<PortT>> auto source_ports)
     [[clang::blocking]]
   {
     self.port_sources_.clear ();
@@ -220,7 +229,7 @@ public:
             self.get_full_designation (),
             self.flow () == PortFlow::Output ? "Output" : "Unknown"));
       }
-    for (const auto &source_port : source_ports)
+    for (const auto &[source_port, config] : source_ports)
       {
         if (source_port->flow () != PortFlow::Output)
           {
@@ -233,9 +242,7 @@ public:
           }
         self.port_sources_.push_back (
           std::make_pair (
-            source_port,
-            std::make_unique<dsp::PortConnection> (
-              source_port->get_uuid (), self.get_uuid (), 1.f, true, true)));
+            source_port, config.value_or (graph::ConnectionConfig{})));
       }
   }
 

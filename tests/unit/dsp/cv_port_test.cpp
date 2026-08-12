@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/cv_port.h"
@@ -113,6 +113,41 @@ TEST_F (CVPortTest, OutputPortPreservesDataThroughProcessBlock)
     {
       EXPECT_NEAR (output_port->buf_[i], static_cast<float> (i) * 0.01f, 1e-6f);
     }
+}
+
+TEST_F (CVPortTest, CachedConnectionMultiplierIsApplied)
+{
+  std::ranges::fill (output_port->buf_, 1.0f);
+
+  graph::GraphNode src_node{ 0, *output_port };
+  graph::GraphNode dest_node{ 1, *input_port };
+  src_node.connect_to (
+    dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
+  input_port->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+  std::ranges::fill (input_port->buf_, 0.0f);
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  input_port->process_block (time_info, *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (input_port->buf_[0], 0.5f);
+}
+
+TEST_F (CVPortTest, DisabledCachedConnectionSkipsSource)
+{
+  std::ranges::fill (output_port->buf_, 1.0f);
+
+  graph::GraphNode src_node{ 0, *output_port };
+  graph::GraphNode dest_node{ 1, *input_port };
+  src_node.connect_to (dest_node, graph::ConnectionConfig{ .enabled_ = false });
+  input_port->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+  std::ranges::fill (input_port->buf_, 0.0f);
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  input_port->process_block (time_info, *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (input_port->buf_[0], 0.0f);
 }
 
 } // namespace zrythm::dsp

@@ -10,7 +10,6 @@
 #include "utils/float_ranges.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
-#include "utils/views.h"
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -191,19 +190,23 @@ AudioPort::prepare_for_processing_impl (
   if (node != nullptr && flow () == PortFlow::Input)
     {
       auto source_audio_ports =
-        node->depends () | std::views::transform ([] (const auto &child_node) {
-          return dynamic_cast<AudioPort *> (
-            &child_node.get ().get_processable ());
-        })
-        | utils::views::filter_null;
+        node->depends ()
+        | std::views::transform ([node] (const auto &child_node) {
+            return std::pair{
+              dynamic_cast<AudioPort *> (&child_node.get ().get_processable ()),
+              node->connection_for_dependency (child_node.get ())
+            };
+          })
+        | std::views::filter ([] (const auto &pair) {
+            return pair.first != nullptr;
+          });
       set_port_sources (source_audio_ports);
 
-      for (const auto &[src_port, conn] : port_sources ())
+      for (const auto &[src_port, config] : port_sources ())
         {
-          // the cached connections are fabricated with default (derived)
-          // routings, so this check always passes until real connection
-          // state is plumbed into the cache
-          if (conn->audio_bus_channel_routing_.is_derived ())
+          // only derived routings drop content unintentionally; explicit
+          // matrices are user intent
+          if (config.routing_.is_derived ())
             {
               warn_once_if_routing_drops_content (*src_port, *this);
             }
@@ -235,16 +238,13 @@ AudioPort::process_block (
   /* Input ports: aggregate from sources. */
   if (flow () == PortFlow::Input)
     {
-      for (const auto &[_src_port, conn] : port_sources ())
+      for (const auto &[_src_port, config] : port_sources ())
         {
-          if (!conn->enabled_)
+          if (!config.enabled_)
             continue;
 
-          const auto * src_port = dynamic_cast<const AudioPort *> (_src_port);
-
           add_source_rt (
-            *src_port, conn->audio_bus_channel_routing_, time_nfo,
-            conn->multiplier_);
+            *_src_port, config.routing_, time_nfo, config.multiplier_);
         }
     }
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/modulator_macro_processor.h"
@@ -101,7 +101,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockNoInput)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
 {
   // Create connection between mod source and CV input
-  std::array<CVPort *, 1> sources{ mod_source };
+  std::array sources{
+    graph::PortSourceConfig<CVPort>{ mod_source, std::nullopt }
+  };
   cv_in->set_port_sources (sources);
 
   // Set macro parameter value
@@ -125,7 +127,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockWithInput)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
 {
   // Create first connection
-  std::vector<CVPort *> sources{ mod_source };
+  std::vector<graph::PortSourceConfig<CVPort>> sources{
+    { mod_source, std::nullopt }
+  };
   cv_in->set_port_sources (sources);
 
   // Create second modulation source
@@ -142,7 +146,7 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
     }
 
   // Create second connection
-  sources.push_back (mod_source2);
+  sources.emplace_back (mod_source2, std::nullopt);
   cv_in->set_port_sources (sources);
 
   // Set macro parameter value
@@ -167,7 +171,9 @@ TEST_F (ModulatorMacroProcessorTest, ProcessBlockMultipleInputs)
 TEST_F (ModulatorMacroProcessorTest, ProcessBlockZeroMacro)
 {
   // Create connection
-  std::array<CVPort *, 1> sources{ mod_source };
+  std::array sources{
+    graph::PortSourceConfig<CVPort>{ mod_source, std::nullopt }
+  };
   cv_in->set_port_sources (sources);
 
   // Set macro to zero

@@ -515,7 +515,13 @@ ProjectGraphBuilder::build_graph_impl (dsp::graph::Graph &graph)
                       "endpoint port has no node in the processing graph"sv);
                     return;
                   }
-                src_node->connect_to (*dest_node);
+                src_node->connect_to (
+                  *dest_node,
+                  dsp::graph::ConnectionConfig{
+                    .multiplier_ = conn->multiplier_,
+                    .enabled_ = conn->enabled_,
+                    .bipolar_ = conn->bipolar_,
+                    .routing_ = conn->audio_bus_channel_routing_ });
               }
           },
           src_port_var, dest_port_var);

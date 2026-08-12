@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
@@ -102,6 +102,59 @@ TEST_F (GraphNodeTest, NodeConnections)
   EXPECT_FALSE (node2.initial_);
   EXPECT_EQ (node2.init_refcount_, 1);
   EXPECT_EQ (node2.refcount_, 1);
+}
+
+TEST_F (GraphNodeTest, ConnectionConfigStoredOnTargetNode)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+  auto node3 = create_test_node ();
+
+  const ConnectionConfig config{ .multiplier_ = 0.5f };
+  node1.connect_to (node2, config);
+  node3.connect_to (node2);
+
+  const auto stored = node2.connection_for_dependency (node1);
+  ASSERT_TRUE (stored.has_value ());
+  EXPECT_EQ (*stored, config);
+
+  // edges created without a configuration carry none
+  EXPECT_FALSE (node2.connection_for_dependency (node3).has_value ());
+}
+
+TEST_F (GraphNodeTest, RemoveDependClearsConnectionConfig)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+
+  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.5f });
+  ASSERT_TRUE (node2.connection_for_dependency (node1).has_value ());
+
+  node2.remove_depend (node1);
+  EXPECT_FALSE (node2.connection_for_dependency (node1).has_value ());
+}
+
+TEST_F (GraphNodeTest, ConnectionConfigReplacedOnDuplicateEdge)
+{
+  auto node1 = create_test_node ();
+  auto node2 = create_test_node ();
+
+  // edge created without a configuration, then re-connected with one
+  node1.connect_to (node2);
+  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.5f });
+
+  const auto stored = node2.connection_for_dependency (node1);
+  ASSERT_TRUE (stored.has_value ());
+  EXPECT_FLOAT_EQ (stored->multiplier_, 0.5f);
+
+  // a later configuration replaces the previous one
+  node1.connect_to (node2, ConnectionConfig{ .multiplier_ = 0.25f });
+  const auto replaced = node2.connection_for_dependency (node1);
+  ASSERT_TRUE (replaced.has_value ());
+  EXPECT_FLOAT_EQ (replaced->multiplier_, 0.25f);
+
+  // still a single edge
+  EXPECT_EQ (node2.depends ().size (), 1u);
 }
 
 TEST_F (GraphNodeTest, SkipProcessing)

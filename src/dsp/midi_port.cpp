@@ -1,9 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/midi_port.h"
 #include "utils/midi.h"
-#include "utils/views.h"
 
 namespace zrythm::dsp
 {
@@ -33,11 +32,16 @@ MidiPort::prepare_for_processing_impl (
   if (node != nullptr && flow () == PortFlow::Input)
     {
       auto source_ports =
-        node->depends () | std::views::transform ([] (const auto &child_node) {
-          return dynamic_cast<MidiPort *> (
-            &child_node.get ().get_processable ());
-        })
-        | utils::views::filter_null;
+        node->depends ()
+        | std::views::transform ([node] (const auto &child_node) {
+            return std::pair{
+              dynamic_cast<MidiPort *> (&child_node.get ().get_processable ()),
+              node->connection_for_dependency (child_node.get ())
+            };
+          })
+        | std::views::filter ([] (const auto &pair) {
+            return pair.first != nullptr;
+          });
       set_port_sources (source_ports);
     }
 
@@ -69,9 +73,9 @@ MidiPort::process_block (
     {
       buffer_.clear ();
 
-      for (const auto &[src_port, conn] : port_sources ())
+      for (const auto &[src_port, config] : port_sources ())
         {
-          if (!conn->enabled_)
+          if (!config.enabled_)
             continue;
 
           dsp::midi_event::append_in_range (

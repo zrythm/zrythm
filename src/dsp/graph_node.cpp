@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -219,6 +219,9 @@ GraphNode::remove_feed (const GraphNode &feed)
 bool
 GraphNode::remove_depend (const GraphNode &depend)
 {
+  std::erase_if (dependency_configs_, [&] (const auto &entry) {
+    return entry.first == std::addressof (depend);
+  });
   const auto erased_elements =
     std::erase_if (parentnodes_, [&] (const auto &parent_node) {
       return std::addressof (parent_node.get ()) == std::addressof (depend);
@@ -260,7 +263,7 @@ GraphNode::set_route_playback_latency (units::sample_u32_t dest_latency)
 }
 
 void
-GraphNode::connect_to (GraphNode &target)
+GraphNode::connect_to (GraphNode &target, std::optional<ConnectionConfig> config)
 {
   if (std::addressof (target) == this)
     {
@@ -273,12 +276,51 @@ GraphNode::connect_to (GraphNode &target)
   if (std::ranges::any_of (childnodes_, [&target] (const auto &cur) {
         return std::addressof (cur.get ()) == &target;
       }))
-    return;
+    {
+      if (config.has_value ())
+        {
+          target.store_config_for_dependency (*this, std::move (*config));
+        }
+      return;
+    }
 
   add_feeds (target);
   target.add_depends (*this);
+  if (config.has_value ())
+    {
+      target.store_config_for_dependency (*this, std::move (*config));
+    }
 
   assert (!terminal_ && !target.initial_);
+}
+
+std::optional<ConnectionConfig>
+GraphNode::connection_for_dependency (const GraphNode &parent) const
+{
+  const auto it = std::ranges::find (
+    dependency_configs_, &parent,
+    &std::pair<GraphNode *, ConnectionConfig>::first);
+  return it != dependency_configs_.end ()
+           ? std::optional<ConnectionConfig> (it->second)
+           : std::nullopt;
+}
+
+void
+GraphNode::store_config_for_dependency (
+  GraphNode       &parent,
+  ConnectionConfig config)
+{
+  const auto it = std::ranges::find (
+    dependency_configs_, &parent,
+    &std::pair<GraphNode *, ConnectionConfig>::first);
+  if (it != dependency_configs_.end ())
+    {
+      it->second = std::move (config);
+    }
+  else
+    {
+      dependency_configs_.emplace_back (&parent, std::move (config));
+    }
 }
 
 units::sample_u32_t

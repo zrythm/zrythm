@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/panning.h"
@@ -255,6 +255,15 @@ protected:
   {
     return calculate_panning (PanLaw::Minus6dB, PanAlgorithm::SquareRoot, 0.5f);
   }
+
+  void SetUp () override
+  {
+    mock_transport_ = std::make_unique<graph_test::MockTransport> ();
+    tempo_map_ = std::make_unique<dsp::TempoMap> (SAMPLE_RATE);
+  }
+
+  std::unique_ptr<graph_test::MockTransport> mock_transport_;
+  std::unique_ptr<dsp::TempoMap>             tempo_map_;
 };
 
 TEST_F (AudioPortRoutingTest, MatchingChannelCountsRouteOneToOne)
@@ -449,6 +458,78 @@ TEST_F (AudioPortRoutingTest, AddSumsStereoSourceIntoSingleChannelDestination)
 
   EXPECT_FLOAT_EQ (
     first_sample (*dest, 0), (gains.first * 1.f) + (gains.second * 2.f));
+}
+
+TEST_F (AudioPortRoutingTest, CachedConnectionMultiplierIsApplied)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  graph::GraphNode src_node{ 0, *src };
+  graph::GraphNode dest_node{ 1, *dest };
+  src_node.connect_to (
+    dest_node, graph::ConnectionConfig{ .multiplier_ = 0.5f });
+  dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+
+  dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 0.5f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (AudioPortRoutingTest, DisabledCachedConnectionSkipsSource)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  graph::GraphNode src_node{ 0, *src };
+  graph::GraphNode dest_node{ 1, *dest };
+  src_node.connect_to (dest_node, graph::ConnectionConfig{ .enabled_ = false });
+  dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+
+  dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 0.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 0.f);
+}
+
+TEST_F (AudioPortRoutingTest, CachedExplicitRoutingOverridesArrangements)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  // swap the channels, which the arrangements alone would never do
+  graph::ConnectionConfig config;
+  config.routing_ = AudioBusChannelRouting{
+    { { .source_channel = 1, .destination_channel = 0 },
+     { .source_channel = 0, .destination_channel = 1 } }
+  };
+
+  graph::GraphNode src_node{ 0, *src };
+  graph::GraphNode dest_node{ 1, *dest };
+  src_node.connect_to (dest_node, config);
+  dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+
+  dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 2.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 1.f);
+}
+
+TEST_F (AudioPortRoutingTest, EdgeWithoutConnectionUsesUnityDefaults)
+{
+  auto src = make_source (SpeakerArrangement::stereo ());
+  auto dest = make_destination (SpeakerArrangement::stereo ());
+
+  graph::GraphNode src_node{ 0, *src };
+  graph::GraphNode dest_node{ 1, *dest };
+  src_node.connect_to (dest_node);
+  dest->prepare_for_processing (&dest_node, SAMPLE_RATE, BLOCK_LENGTH);
+
+  dest->process_block (whole_block (), *mock_transport_, *tempo_map_);
+
+  EXPECT_FLOAT_EQ (first_sample (*dest, 0), 1.f);
+  EXPECT_FLOAT_EQ (first_sample (*dest, 1), 2.f);
 }
 
 } // namespace zrythm::dsp

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <utility>
@@ -174,9 +174,9 @@ ProcessorParameter::process_block (
 
   /* whether this is the first CV processed on this control port */
   const auto * cv_mod_in = modulation_input_;
-  for (const auto &[src_port, conn] : cv_mod_in->port_sources ())
+  for (const auto &[src_port, config] : cv_mod_in->port_sources ())
     {
-      if (!conn->enabled_) [[unlikely]]
+      if (!config.enabled_) [[unlikely]]
         continue;
 
       // modulation value [0, 1]
@@ -184,13 +184,13 @@ ProcessorParameter::process_block (
         src_port->buf_[time_nfo.buffer_offset_.in (units::samples)];
 
       // if bipolar, convert to [-1, 1]
-      if (conn->bipolar_)
+      if (config.bipolar_)
         {
           modulation_base_val = modulation_base_val * 2.f - 1.f;
         }
 
       current_val = std::clamp<float> (
-        current_val + (modulation_base_val * conn->multiplier_), 0.f, 1.f);
+        current_val + (modulation_base_val * config.multiplier_), 0.f, 1.f);
     }
 
   last_modulated_value_.store (current_val);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <numbers>
@@ -8,7 +8,6 @@
 
 #include "dsp/cv_port.h"
 #include "dsp/parameter.h"
-#include "dsp/port_connection.h"
 #include "dsp/tempo_map.h"
 #include "utils/enum_utils.h"
 #include "utils/format_boost.h"
@@ -56,7 +55,7 @@ protected:
     mod_source->prepare_for_processing (nullptr, SAMPLE_RATE, BLOCK_LENGTH);
 
     // Create connection between CV port and parameter
-    mod_sources.push_back (mod_source);
+    mod_sources.emplace_back (mod_source, graph::ConnectionConfig{});
     param_mod_input->set_port_sources (mod_sources);
 
     // Fill modulation source with test signal
@@ -82,9 +81,16 @@ protected:
   CVPort *                                         param_mod_input{};
   std::optional<utils::TypedUuidReference<CVPort>> mod_source_ref;
   CVPort *                                         mod_source{};
-  std::vector<CVPort *>                            mod_sources;
+  std::vector<graph::PortSourceConfig<CVPort>>     mod_sources;
   std::unique_ptr<graph_test::MockTransport>       mock_transport_;
   std::unique_ptr<dsp::TempoMap>                   tempo_map_;
+
+  /** Re-applies the single modulation source with the given configuration. */
+  void set_mod_source_config (const graph::ConnectionConfig &config)
+  {
+    mod_sources[0].second = config;
+    param_mod_input->set_port_sources (mod_sources);
+  }
 };
 
 TEST_F (ProcessorParameterTest, BasicParameterSetup)
@@ -95,7 +101,7 @@ TEST_F (ProcessorParameterTest, BasicParameterSetup)
 TEST_F (ProcessorParameterTest, AutomationValueApplication)
 {
   // disable modulation
-  param_mod_input->port_sources ().front ().second->enabled_ = false;
+  set_mod_source_config ({ .enabled_ = false });
 
   const float auto_value = 0.8f;
   param->set_automation_provider ([&] (auto) {
@@ -114,16 +120,8 @@ TEST_F (ProcessorParameterTest, AutomationValueApplication)
 
 TEST_F (ProcessorParameterTest, ModulationApplication)
 {
-  // Enable modulation
-  param_mod_input->port_sources ().front ().second->enabled_ = true;
-
   // Set base value to 0.5 (normalized)
   param->setBaseValue (0.5f);
-
-  // Set modulation multiplier to 1.0 and bipolar to false
-  auto &conn = param_mod_input->port_sources ().front ().second;
-  conn->multiplier_ = 1.0f;
-  conn->bipolar_ = false;
 
   // Process block with modulation
   param->process_block (
@@ -138,13 +136,8 @@ TEST_F (ProcessorParameterTest, ModulationApplication)
 
 TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
 {
-  param_mod_input->port_sources ().front ().second->enabled_ = true;
   param->setBaseValue (0.5f);
-
-  // Set modulation multiplier to 0.5
-  auto &conn = param_mod_input->port_sources ().front ().second;
-  conn->multiplier_ = 0.5f;
-  conn->bipolar_ = false;
+  set_mod_source_config ({ .multiplier_ = 0.5f });
 
   param->process_block (
     { .transport_position_ = units::samples (0),
@@ -158,13 +151,8 @@ TEST_F (ProcessorParameterTest, ModulationWithMultiplier)
 
 TEST_F (ProcessorParameterTest, BipolarModulation)
 {
-  param_mod_input->port_sources ().front ().second->enabled_ = true;
   param->setBaseValue (0.5f);
-
-  // Set bipolar modulation
-  auto &conn = param_mod_input->port_sources ().front ().second;
-  conn->multiplier_ = 1.0f;
-  conn->bipolar_ = true;
+  set_mod_source_config ({ .bipolar_ = true });
 
   param->process_block (
     { .transport_position_ = units::samples (0),
@@ -183,11 +171,6 @@ TEST_F (ProcessorParameterTest, ModulationWithAutomation)
   param->set_automation_provider ([&] (auto) {
     return 0.7f; // Automation value
   });
-  param_mod_input->port_sources ().front ().second->enabled_ = true;
-
-  auto &conn = param_mod_input->port_sources ().front ().second;
-  conn->multiplier_ = 1.0f;
-  conn->bipolar_ = false;
 
   param->process_block (
     { .transport_position_ = units::samples (0),
@@ -217,15 +200,11 @@ TEST_F (ProcessorParameterTest, MultipleModulationSources)
     }
 
   // Add second connection
-  mod_sources.push_back (mod_source2);
+  mod_sources.emplace_back (
+    mod_source2, graph::ConnectionConfig{ .multiplier_ = 0.5f });
   param_mod_input->set_port_sources (mod_sources);
-  param_mod_input->port_sources ().back ().second->multiplier_ = 0.5f;
 
   param->setBaseValue (0.5f);
-
-  // Enable both connections
-  param_mod_input->port_sources ()[0].second->enabled_ = true;
-  param_mod_input->port_sources ()[1].second->enabled_ = true;
 
   param->process_block (
     { .transport_position_ = units::samples (0),
@@ -259,9 +238,6 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
 {
   param->beginUserGesture ();
   param->setBaseValue (0.5f);
-
-  // Enable modulation
-  param_mod_input->port_sources ().front ().second->enabled_ = true;
 
   param->process_block (
     { .transport_position_ = units::samples (0),
@@ -378,8 +354,8 @@ TEST_F (ProcessorParameterTest, DisabledAutomation)
 
 TEST_F (ProcessorParameterTest, NoModulationSources)
 {
-  std::vector<CVPort *> sources;
-  param_mod_input->set_port_sources (sources);
+  mod_sources.clear ();
+  param_mod_input->set_port_sources (mod_sources);
   param->setBaseValue (0.5f);
   param->process_block ({}, *mock_transport_, *tempo_map_);
   EXPECT_FLOAT_EQ (param->currentValue (), 0.5f);

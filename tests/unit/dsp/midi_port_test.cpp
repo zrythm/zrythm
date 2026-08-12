@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/format_qt.h"
@@ -99,7 +99,10 @@ TEST_F (MidiPortTest, OutputPortPreservesEventsThroughProcessBlock)
 TEST_F (MidiPortTest, InputPortClearsAndAggregatesFromSources)
 {
   // Set up: output_port feeds into input_port
-  input_port->set_port_sources (std::array<MidiPort *, 1>{ output_port.get () });
+  input_port->set_port_sources (
+    std::array{
+      graph::PortSourceConfig<MidiPort>{ output_port.get (), std::nullopt }
+  });
 
   auto ev = dsp::midi_event::make_note_on (0, 64, 80, units::samples (5));
   output_port->buffer_.push_back (ev.time_, ev.data ());
@@ -113,6 +116,24 @@ TEST_F (MidiPortTest, InputPortClearsAndAggregatesFromSources)
   auto ev_data = ev.data ();
   ASSERT_EQ (out_data.size (), ev_data.size ());
   EXPECT_TRUE (std::ranges::equal (out_data, ev_data));
+}
+
+TEST_F (MidiPortTest, DisabledCachedConnectionSkipsSource)
+{
+  std::array sources{
+    graph::PortSourceConfig<MidiPort>{
+                                      output_port.get (), graph::ConnectionConfig{ .enabled_ = false } }
+  };
+  input_port->set_port_sources (sources);
+
+  auto ev = dsp::midi_event::make_note_on (0, 64, 80, units::samples (5));
+  output_port->buffer_.push_back (ev.time_, ev.data ());
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), BLOCK_LENGTH);
+  input_port->process_block (time_info, *mock_transport_, *tempo_map_);
+
+  EXPECT_TRUE (input_port->buffer_.empty ());
 }
 
 } // namespace zrythm::dsp

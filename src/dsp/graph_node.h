@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021, 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -28,6 +28,10 @@
 
 #pragma once
 
+#include <optional>
+#include <utility>
+
+#include "dsp/audio_bus_channel_routing.h"
 #include "dsp/itransport.h"
 #include "dsp/tempo_map.h"
 #include "utils/units.h"
@@ -42,6 +46,42 @@ class Utf8String;
 namespace zrythm::dsp::graph
 {
 class GraphNode;
+
+/**
+ * @brief Processing-relevant configuration of a connection between two ports.
+ *
+ * Carried by graph edges at build time and cached by destination ports for
+ * processing. The default-constructed configuration is the unity/derived
+ * configuration used for automatic wiring (edges without a user connection).
+ */
+struct ConnectionConfig
+{
+  /** Gain applied to the source's contribution (0 to 1). */
+  float multiplier_ = 1.f;
+
+  /** Whether the source's contribution is applied at all. */
+  bool enabled_ = true;
+
+  /**
+   * @brief Whether CV modulation from the source is applied in bipolar
+   * fashion ([-1, 1] around the base value) rather than unipolar.
+   */
+  bool bipolar_ = false;
+
+  /**
+   * @brief How the source port's channels feed the destination port's
+   * channels (audio only; derived from the two speaker arrangements unless
+   * the connection has an explicit channel matrix).
+   */
+  AudioBusChannelRouting routing_{};
+
+  friend bool
+  operator== (const ConnectionConfig &, const ConnectionConfig &) = default;
+};
+
+/** (Port, optional connection configuration) pair. */
+template <typename PortT>
+using PortSourceConfig = std::pair<PortT *, std::optional<ConnectionConfig>>;
 
 /**
  * Common struct to pass around during processing to avoid repeating the data in
@@ -224,7 +264,27 @@ public:
    */
   void set_route_playback_latency (units::sample_u32_t dest_latency);
 
-  void connect_to (GraphNode &target);
+  /**
+   * @brief Connects this node to @p target (this node feeds target).
+   *
+   * If the edge already exists it is not duplicated; a passed configuration
+   * still replaces any configuration previously stored for the edge.
+   *
+   * @param config Configuration carried by the edge; std::nullopt means the
+   * edge carries no configuration and consumers apply their defaults.
+   */
+  void connect_to (
+    GraphNode                      &target,
+    std::optional<ConnectionConfig> config = std::nullopt);
+
+  /**
+   * @brief Returns the configuration carried by the edge from @p parent, or
+   * std::nullopt if the edge carries none.
+   *
+   * Main-thread only.
+   */
+  std::optional<ConnectionConfig>
+  connection_for_dependency (const GraphNode &parent) const;
 
   /**
    * Sets whether processing should be skipped for this node.
@@ -249,12 +309,20 @@ public:
    */
   auto &depends () const { return parentnodes_; }
 
+  /**
+   * Removes the outgoing edge to @p feed. The configuration carried by the
+   * edge lives on the target node and is cleared by its remove_depend() —
+   * teardown must invoke both.
+   */
   bool remove_feed (const GraphNode &feed);
   bool remove_depend (const GraphNode &depend);
 
 private:
   void add_feeds (GraphNode &dest);
   void add_depends (GraphNode &src);
+
+  /** Stores or replaces the configuration for the edge from @p parent. */
+  void store_config_for_dependency (GraphNode &parent, ConnectionConfig config);
 
   /**
    * Handles latency compensation when transport is rolling.
@@ -328,6 +396,15 @@ private:
    * latencies.
    */
   std::vector<std::reference_wrapper<GraphNode>> parentnodes_;
+
+  /**
+   * @brief Connection configurations carried by edges from dependency nodes.
+   *
+   * Sparse: only edges created with a configuration have an entry. Written
+   * at graph-build time on the main thread and read during the following
+   * prepare pass; never accessed during processing.
+   */
+  std::vector<std::pair<GraphNode *, ConnectionConfig>> dependency_configs_;
 
   /**
    * @brief Outgoing nodes.
