@@ -29,6 +29,8 @@ class TestRestart : public SingleComponentEffect
 public:
   static constexpr ParamID kTriggerIoChangeParamId = 0;
   static constexpr ParamID kTriggerReloadParamId = 1;
+  static constexpr ParamID kTriggerGrowOutputParamId = 2;
+  static constexpr ParamID kTriggerShrinkOutputParamId = 3;
 
   /** initialize() calls across all instances of this class (the module
    * stays loaded in the host process), so hosts can verify that
@@ -57,6 +59,14 @@ public:
     parameters.addParameter (
       STR16 ("Trigger Reload"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
       kTriggerReloadParamId);
+    // Toggles that add/remove an audio output bus before requesting the IO
+    // restart, so hosts can verify runtime bus reconciliation
+    parameters.addParameter (
+      STR16 ("Grow Output"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
+      kTriggerGrowOutputParamId);
+    parameters.addParameter (
+      STR16 ("Shrink Output"), STR16 (""), 1, 0.0, ParameterInfo::kCanAutomate,
+      kTriggerShrinkOutputParamId);
     return kResultOk;
   }
 
@@ -100,6 +110,16 @@ public:
           fire (RestartFlags::kIoChanged, io_change_fired_);
         else if (tag == kTriggerReloadParamId)
           fire (RestartFlags::kReloadComponent, reload_fired_);
+        else if (tag == kTriggerGrowOutputParamId && audioOutputs.size () == 1)
+          {
+            addAudioOutput (STR16 ("Out 2"), SpeakerArr::kStereo);
+            fire (RestartFlags::kIoChanged, grow_fired_);
+          }
+        else if (tag == kTriggerShrinkOutputParamId && audioOutputs.size () > 1)
+          {
+            audioOutputs.erase (audioOutputs.begin () + 1);
+            fire (RestartFlags::kIoChanged, shrink_fired_);
+          }
       }
     return kResultOk;
   }
@@ -165,6 +185,8 @@ private:
   bool bus_activated_while_active_ = false;
   bool io_change_fired_ = false;
   bool reload_fired_ = false;
+  bool grow_fired_ = false;
+  bool shrink_fired_ = false;
 };
 
 } // namespace zrythm_test_plugins

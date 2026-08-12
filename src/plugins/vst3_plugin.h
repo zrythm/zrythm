@@ -3,6 +3,11 @@
 
 #pragma once
 
+#include <span>
+#include <vector>
+
+#include "dsp/audio_bus_configuration.h"
+#include "dsp/speaker_arrangement.h"
 #include "plugins/plugin.h"
 
 namespace zrythm::plugins
@@ -43,6 +48,35 @@ public:
   units::sample_u32_t get_single_playback_latency () const override;
 
   bool hasNativeUi () const override;
+
+  /**
+   * @brief Returns the hosted component's live audio bus configuration for
+   * @p flow, in bus order.
+   *
+   * Every bus is reported active (this host activates all buses). Returns an
+   * empty list when no plugin is loaded.
+   */
+  std::vector<dsp::AudioBusConfig>
+  get_audio_bus_configs (dsp::PortFlow flow) const;
+
+  /**
+   * @brief Pushes the given bus arrangements into the plugin via
+   * IAudioProcessor::setBusArrangements.
+   *
+   * Per the VST3 contract this requires an inactive component: if the plugin
+   * is processing it is deactivated first and re-prepared afterwards.
+   * Arrangements with no VST3 representation (discrete, ambisonics beyond
+   * 4th order) leave the corresponding bus unchanged. Must be called on the
+   * main thread with the engine paused.
+   *
+   * @return true if the plugin accepted the request in full. On refusal (or
+   * partial acceptance), the accepted per-bus state can be read back with
+   * get_audio_bus_configs().
+   */
+  bool set_bus_arrangements (
+    std::span<const dsp::SpeakerArrangement> input_arrangements,
+    std::span<const dsp::SpeakerArrangement> output_arrangements)
+    [[clang::blocking]];
 
 protected:
   void prepare_plugin_for_processing (
@@ -121,6 +155,17 @@ private:
    *   incomplete in that case and the load must be aborted.
    */
   bool create_ports_from_vst3_component ();
+
+  /**
+   * @brief Pushes the restored ports' bus arrangements into the plugin and
+   * reconciles the ports with the accepted configuration.
+   *
+   * Called at load when the ports were restored from a project instead of
+   * created from the component. When the plugin refuses the restored
+   * topology, the ports are reconciled to the live layout instead and a
+   * warning is logged.
+   */
+  void restore_saved_bus_arrangements ();
 
   /**
    * @brief Creates Zrythm parameters from the controller's parameter list.

@@ -25,6 +25,7 @@
 #include "plugins/vst3_event_validation.h"
 #include "plugins/vst3_plugin.h"
 #include "plugins/vst3_plugin_format.h"
+#include "plugins/vst3_speaker_arrangement.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/qt.h"
@@ -1346,9 +1347,12 @@ Vst3Plugin::load_plugin (
           {
             // The bus layout changed: re-activate buses and re-prepare the
             // process data (including scratch buffers) with processing
-            // paused. The Zrythm port topology stays as-is; the channel
-            // mapping bridges any disagreement until the plugin is reloaded
-            const auto reactivate = [this] {
+            // paused, and reconcile the Zrythm port topology with the live
+            // bus layout (ports are reconfigured/detached/created, never
+            // destroyed). The scratch channel mapping bridges any transient
+            // disagreement until the graph is rebuilt
+            bool       ports_changed = false;
+            const auto reactivate = [this, &ports_changed] {
               if (pimpl_->processor_ == nullptr || pimpl_->component_ == nullptr)
                 return;
               // Per the kIoChanged contract, the component is deactivated
@@ -1375,6 +1379,13 @@ Vst3Plugin::load_plugin (
                 pimpl_->component_->getBusCount (
                   Vst::MediaTypes::kEvent, Vst::kInput),
                 std::memory_order_release);
+              for (
+                const auto flow :
+                { dsp::PortFlow::Input, dsp::PortFlow::Output })
+                {
+                  ports_changed |= dsp::reconcile_audio_bus_configuration (
+                    registry (), *this, flow, get_audio_bus_configs (flow));
+                }
               if (was_processing)
                 {
                   prepare_plugin_for_processing (
@@ -1386,6 +1397,8 @@ Vst3Plugin::load_plugin (
             if (main_thread_callbacks_.with_paused_processing_)
               {
                 main_thread_callbacks_.with_paused_processing_ (reactivate);
+                if (ports_changed && main_thread_callbacks_.graph_recalc_)
+                  main_thread_callbacks_.graph_recalc_ ();
               }
             else
               {
@@ -1441,6 +1454,12 @@ Vst3Plugin::load_plugin (
         "VST3: refusing to load '{}': invalid bus layout", get_node_name ());
       unload_current_plugin ();
       return false;
+    }
+  if (!generate_new_ports)
+    {
+      // Ports were restored from the project: negotiate the saved bus
+      // topology into the (still inactive) component
+      restore_saved_bus_arrangements ();
     }
 
   // Build the MIDI CC -> ParamID translation table from the plugin's
@@ -1582,12 +1601,15 @@ Vst3Plugin::create_ports_from_vst3_component ()
               bus_info.channelCount);
             return false;
           }
-        const auto channel_count = static_cast<uint8_t> (bus_info.channelCount);
-        const dsp::SpeakerArrangement arrangement =
-          channel_count == 1 ? dsp::SpeakerArrangement::mono ()
-          : channel_count == 2
-            ? dsp::SpeakerArrangement::stereo ()
-            : dsp::SpeakerArrangement::discrete_channels (channel_count);
+        Vst::SpeakerArrangement vst3_arrangement = 0;
+        if (
+          pimpl_->processor_->getBusArrangement (dir, i, vst3_arrangement)
+          != kResultOk)
+          {
+            vst3_arrangement = 0;
+          }
+        const dsp::SpeakerArrangement arrangement = vst3_speaker_arrangement::
+          to_dsp (vst3_arrangement, bus_info.channelCount);
         const auto name = utils::Utf8String::from_utf8_encoded_string (
           Steinberg::Vst::StringConvert::convert (bus_info.name));
         auto port_ref = utils::create_object<dsp::AudioPort> (
@@ -1606,6 +1628,166 @@ Vst3Plugin::create_ports_from_vst3_component ()
   create_midi_ports (Vst::kInput);
   create_midi_ports (Vst::kOutput);
   return create_audio_ports (Vst::kInput) && create_audio_ports (Vst::kOutput);
+}
+
+std::vector<dsp::AudioBusConfig>
+Vst3Plugin::get_audio_bus_configs (dsp::PortFlow flow) const
+{
+  std::vector<dsp::AudioBusConfig> configs;
+  if (pimpl_->processor_ == nullptr || pimpl_->component_ == nullptr)
+    return configs;
+
+  const auto dir = flow == dsp::PortFlow::Input ? Vst::kInput : Vst::kOutput;
+  const bool is_input = dir == Vst::kInput;
+  const auto bus_count =
+    pimpl_->component_->getBusCount (Vst::MediaTypes::kAudio, dir);
+  for (const auto i : std::views::iota (0, bus_count))
+    {
+      Vst::BusInfo bus_info{};
+      if (
+        pimpl_->component_->getBusInfo (Vst::MediaTypes::kAudio, dir, i, bus_info)
+        != kResultOk)
+        {
+          z_warning (
+            "VST3: getBusInfo failed for audio {} bus {} of '{}'",
+            is_input ? "input" : "output", i, get_node_name ());
+          continue;
+        }
+      Vst::SpeakerArrangement vst3_arrangement = 0;
+      if (
+        pimpl_->processor_->getBusArrangement (dir, i, vst3_arrangement)
+        != kResultOk)
+        {
+          vst3_arrangement = 0;
+        }
+      configs.push_back (
+        dsp::AudioBusConfig{
+          .name = utils::Utf8String::from_utf8_encoded_string (
+            Steinberg::Vst::StringConvert::convert (bus_info.name)),
+          .arrangement = vst3_speaker_arrangement::to_dsp (
+            vst3_arrangement, bus_info.channelCount),
+          .purpose =
+            bus_info.busType == Vst::BusTypes::kMain
+              ? dsp::AudioPort::Purpose::Main
+              : dsp::AudioPort::Purpose::Sidechain,
+          .active = true });
+    }
+  return configs;
+}
+
+bool
+Vst3Plugin::set_bus_arrangements (
+  std::span<const dsp::SpeakerArrangement> input_arrangements,
+  std::span<const dsp::SpeakerArrangement> output_arrangements)
+{
+  if (pimpl_->processor_ == nullptr || pimpl_->component_ == nullptr)
+    return false;
+
+  // Build one request entry per live bus; arrangements with no VST3
+  // representation keep the bus's current arrangement
+  const auto build_request =
+    [this] (
+      Vst::BusDirection dir, std::span<const dsp::SpeakerArrangement> desired) {
+      const auto bus_count =
+        pimpl_->component_->getBusCount (Vst::MediaTypes::kAudio, dir);
+      std::vector<Vst::SpeakerArrangement> request;
+      request.reserve (static_cast<size_t> (bus_count));
+      for (const auto i : std::views::iota (0, bus_count))
+        {
+          Vst::SpeakerArrangement current = 0;
+          if (
+            pimpl_->processor_->getBusArrangement (dir, i, current) != kResultOk)
+            {
+              current = 0;
+            }
+          auto requested =
+            i < static_cast<Steinberg::int32> (desired.size ())
+              ? vst3_speaker_arrangement::from_dsp (
+                  desired[static_cast<size_t> (i)])
+              : Vst::SpeakerArrangement{ 0 };
+          request.push_back (requested != 0 ? requested : current);
+        }
+      return request;
+    };
+  auto input_request = build_request (Vst::kInput, input_arrangements);
+  auto output_request = build_request (Vst::kOutput, output_arrangements);
+
+  // setBusArrangements is only valid while the component is inactive
+  const auto was_processing = pimpl_->processing_active_;
+  if (was_processing)
+    release_resources_impl ();
+
+  const auto result = pimpl_->processor_->setBusArrangements (
+    input_request.data (), static_cast<Steinberg::int32> (input_request.size ()),
+    output_request.data (),
+    static_cast<Steinberg::int32> (output_request.size ()));
+
+  if (was_processing)
+    {
+      prepare_plugin_for_processing (
+        units::sample_rate (static_cast<int> (pimpl_->sample_rate_)),
+        units::samples (static_cast<uint32_t> (pimpl_->max_block_samples_)));
+    }
+
+  return result == kResultOk;
+}
+
+void
+Vst3Plugin::restore_saved_bus_arrangements ()
+{
+  if (pimpl_->processor_ == nullptr || pimpl_->component_ == nullptr)
+    return;
+
+  const auto saved_arrangements = [this] (dsp::PortFlow flow) {
+    const auto port_refs =
+      flow == dsp::PortFlow::Input
+        ? get_all_input_ports ()
+        : get_all_output_ports ();
+    return port_refs | std::views::transform (&dsp::PortUuidReference::get)
+           | utils::views::qobject_cast_and_filter<dsp::AudioPort>
+           | std::views::transform (&dsp::AudioPort::arrangement)
+           | std::ranges::to<std::vector> ();
+  };
+  const auto saved_inputs = saved_arrangements (dsp::PortFlow::Input);
+  const auto saved_outputs = saved_arrangements (dsp::PortFlow::Output);
+
+  // Skip the negotiation when the live layout already matches the restored
+  // topology
+  const auto matches_live =
+    [this] (
+      dsp::PortFlow flow, const std::vector<dsp::SpeakerArrangement> &saved) {
+      const auto live = get_audio_bus_configs (flow);
+      return std::ranges::equal (
+        saved, live | std::views::transform (&dsp::AudioBusConfig::arrangement));
+    };
+  if (
+    matches_live (dsp::PortFlow::Input, saved_inputs)
+    && matches_live (dsp::PortFlow::Output, saved_outputs))
+    return;
+
+  const auto accepted = set_bus_arrangements (saved_inputs, saved_outputs);
+  if (!accepted)
+    {
+      z_warning (
+        "VST3: plugin '{}' refused the saved bus configuration; adopting its "
+        "current layout",
+        get_node_name ());
+    }
+
+  // Sync the ports to the accepted (live) configuration. No graph recalc
+  // request here: loading always recalculates the graph afterwards
+  bool ports_changed = false;
+  for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
+    {
+      ports_changed |= dsp::reconcile_audio_bus_configuration (
+        registry (), *this, flow, get_audio_bus_configs (flow));
+    }
+  if (ports_changed)
+    {
+      z_debug (
+        "VST3: reconciled ports of '{}' with the accepted bus configuration",
+        get_node_name ());
+    }
 }
 
 void

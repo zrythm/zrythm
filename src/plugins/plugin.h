@@ -39,6 +39,15 @@ struct PluginHostMainThreadCallbacks
   std::function<void ()> latency_recalc_;
 
   /**
+   * @brief Requests a hard rebuild of the processing graph (port topology
+   * changes).
+   *
+   * Unlike latency_recalc_, this re-prepares all nodes; required after a
+   * bus reconciliation created, detached or reconfigured ports.
+   */
+  std::function<void ()> graph_recalc_;
+
+  /**
    * @brief Runs the given function with audio processing paused, resuming
    * afterwards (e.g. for plugin-initiated restarts).
    *

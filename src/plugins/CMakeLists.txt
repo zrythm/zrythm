@@ -84,6 +84,7 @@ target_sources(zrythm_plugins_lib
       plugin_run_loop.h
       plugin_scan_manager.h
       vst3_channel_mapping.h
+      vst3_speaker_arrangement.h
       vst3_event_validation.h
       vst3_plugin.h
       vst3_plugin_format.h

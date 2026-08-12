@@ -78,6 +78,7 @@ Project::Project (
       main_thread_callbacks_ (
         plugins::PluginHostMainThreadCallbacks{
           .latency_recalc_ = [this] { graph_dispatcher_.recalc_graph (true); },
+          .graph_recalc_ = [this] { graph_dispatcher_.recalc_graph (false); },
           .with_paused_processing_ =
             [this] (std::function<void ()> func) {
               audio_engine_

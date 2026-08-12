@@ -3,6 +3,8 @@
 
 #include <array>
 #include <ranges>
+#include <utility>
+#include <vector>
 
 #include "dsp/midi_event.h"
 #include "plugins/plugin_configuration.h"
@@ -11,6 +13,7 @@
 #include "plugins/vst3_plugin_format.h"
 #include "utils/audio.h"
 #include "utils/object_registry.h"
+#include "utils/views.h"
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -142,7 +145,24 @@ protected:
       }
     return nullptr;
   }
+  std::vector<dsp::AudioPort *> all_audio_ports (bool input)
+  {
+    auto port_refs =
+      input ? plugin_->get_all_input_ports () : plugin_->get_all_output_ports ();
+    return port_refs | std::views::transform (&dsp::PortUuidReference::get)
+           | utils::views::qobject_cast_and_filter<dsp::AudioPort>
+           | std::ranges::to<std::vector> ();
+  }
 
+  std::vector<dsp::AudioPort *> attached_audio_ports (bool input)
+  {
+    auto port_refs =
+      input ? plugin_->get_attached_input_ports ()
+            : plugin_->get_attached_output_ports ();
+    return port_refs | std::views::transform (&dsp::PortUuidReference::get)
+           | utils::views::qobject_cast_and_filter<dsp::AudioPort>
+           | std::ranges::to<std::vector> ();
+  }
   void process_blocks (int num_blocks)
   {
     const dsp::graph::ProcessBlockInfo time_nfo{
@@ -837,6 +857,114 @@ TEST_F (Vst3PluginTest, ReloadComponentRecreatesInstance)
 
   EXPECT_DOUBLE_EQ (
     read_controller_state_double (*plugin_, 1), count_before + 1.0);
+}
+
+// The fixture only accepts a stereo/stereo bus configuration; a matching
+// request succeeds and leaves the ports as they are
+TEST_F (Vst3PluginTest, SetBusArrangementsAcceptedForMatchingLayout)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  const std::array layouts{ dsp::SpeakerArrangement::stereo () };
+  EXPECT_TRUE (plugin_->set_bus_arrangements (layouts, layouts));
+
+  const auto audio_outs = attached_audio_ports (false);
+  ASSERT_EQ (audio_outs.size (), 1);
+  EXPECT_EQ (
+    audio_outs.front ()->arrangement (), dsp::SpeakerArrangement::stereo ());
+}
+
+// The fixture refuses anything but stereo/stereo; the host reports the
+// refusal and the ports stay untouched
+TEST_F (Vst3PluginTest, SetBusArrangementsRefusedForUnsupportedLayout)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  constexpr auto surround51 = dsp::SpeakerArrangement::from_speaker_bits (
+    std::to_underlying (dsp::SpeakerArrangement::Speaker::Left)
+    | std::to_underlying (dsp::SpeakerArrangement::Speaker::Right)
+    | std::to_underlying (dsp::SpeakerArrangement::Speaker::Center)
+    | std::to_underlying (dsp::SpeakerArrangement::Speaker::Lfe)
+    | std::to_underlying (dsp::SpeakerArrangement::Speaker::LeftSurround)
+    | std::to_underlying (dsp::SpeakerArrangement::Speaker::RightSurround));
+  const std::array layouts{ surround51 };
+  EXPECT_FALSE (plugin_->set_bus_arrangements (layouts, layouts));
+
+  const auto audio_outs = attached_audio_ports (false);
+  ASSERT_EQ (audio_outs.size (), 1);
+  EXPECT_EQ (
+    audio_outs.front ()->arrangement (), dsp::SpeakerArrangement::stereo ());
+}
+
+// Discrete arrangements have no VST3 representation, so the request keeps
+// the bus's current arrangement and the (stereo) fixture accepts it
+TEST_F (Vst3PluginTest, SetBusArrangementsLeavesBusUnchangedForDiscrete)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
+
+  const std::array layouts{ dsp::SpeakerArrangement::discrete_channels (2) };
+  EXPECT_TRUE (plugin_->set_bus_arrangements (layouts, layouts));
+
+  const auto audio_outs = attached_audio_ports (false);
+  ASSERT_EQ (audio_outs.size (), 1);
+  EXPECT_EQ (
+    audio_outs.front ()->arrangement (), dsp::SpeakerArrangement::stereo ());
+}
+
+// When the plugin grows a bus and reports kIoChanged, the host reconciles
+// its port topology with the live layout: a new port appears with the new
+// bus's name and arrangement
+TEST_F (Vst3PluginTest, IoChangeWithNewBusCreatesPort)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Restart"));
+  install_direct_paused_processing ();
+
+  ASSERT_EQ (attached_audio_ports (false).size (), 1);
+
+  auto * trigger = find_param_by_label ("Grow Output");
+  ASSERT_NE (trigger, nullptr);
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+
+  // The restart request is handled asynchronously on the main thread
+  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+
+  const auto audio_outs = attached_audio_ports (false);
+  ASSERT_EQ (audio_outs.size (), 2);
+  EXPECT_EQ (audio_outs.at (1)->get_label (), u8"Out 2");
+  EXPECT_EQ (
+    audio_outs.at (1)->arrangement (), dsp::SpeakerArrangement::stereo ());
+}
+
+// When the plugin removes a bus and reports kIoChanged, the corresponding
+// port is detached, not destroyed: the object (and any connections to it)
+// survives and revives if the bus returns
+TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Restart"));
+  install_direct_paused_processing ();
+
+  auto * grow = find_param_by_label ("Grow Output");
+  ASSERT_NE (grow, nullptr);
+  grow->setBaseValue (1.0f);
+  process_blocks (1);
+  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+
+  const auto audio_outs_after_grow = attached_audio_ports (false);
+  ASSERT_EQ (audio_outs_after_grow.size (), 2);
+  auto * const added_port = audio_outs_after_grow.at (1);
+
+  auto * shrink = find_param_by_label ("Shrink Output");
+  ASSERT_NE (shrink, nullptr);
+  shrink->setBaseValue (1.0f);
+  process_blocks (1);
+  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+
+  EXPECT_EQ (attached_audio_ports (false).size (), 1);
+  const auto all_outs = all_audio_ports (false);
+  ASSERT_EQ (all_outs.size (), 2);
+  EXPECT_EQ (all_outs.at (1), added_port);
+  EXPECT_TRUE (added_port->detached ());
 }
 
 } // namespace zrythm::plugins

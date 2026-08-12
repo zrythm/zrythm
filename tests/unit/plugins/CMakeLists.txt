@@ -16,6 +16,7 @@ add_executable(zrythm_plugins_unit_tests
   plugin_run_loop_test.cpp
   plugin_scan_manager_test.cpp
   vst3_channel_mapping_test.cpp
+  vst3_speaker_arrangement_test.cpp
   vst3_event_validation_test.cpp
   vst3_plugin_test.cpp
 )
