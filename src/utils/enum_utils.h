@@ -3,6 +3,10 @@
 
 #pragma once
 
+/* must come before magic_enum_format.hpp, which only defines its fmt
+ * formatter when FMT_VERSION is already visible */
+#include <fmt/format.h>
+
 #if defined(__GNUC__) || defined(__clang__)
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored "-Wshadow"
@@ -25,7 +29,16 @@
 #include <QObject>
 #include <QVariant>
 
-#include <fmt/format.h>
+/* the magic_enum fmt formatter must be available in every TU that includes
+ * this header, regardless of include order or precompiled headers */
+namespace zrythm::utils::detail
+{
+enum class EnumFmtProbe : uint8_t
+{
+  A
+};
+}
+static_assert (fmt::formattable<zrythm::utils::detail::EnumFmtProbe>);
 
 using namespace magic_enum::bitwise_operators;
 
