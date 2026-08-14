@@ -2311,10 +2311,12 @@ Vst3Plugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
 
       // Also notify the edit controller on the main thread, or a
       // separate-component plugin (and its own UI) never learns about
-      // host-initiated changes
+      // host-initiated changes. Deferred so the controller call never runs
+      // inline inside process_impl's realtime context when processing
+      // happens to run on the main thread (e.g. in tests)
       const auto  param_id = it->second;
       const float value = change.modulated_value;
-      if (!post_main_thread_action ([this, param_id, value] {
+      if (!post_main_thread_action_deferred ([this, param_id, value] {
             if (pimpl_->controller_ == nullptr)
               return;
             if (pimpl_->controller_host_editing_ != nullptr)
