@@ -4,6 +4,7 @@
 #include "gui/backend/plugin_header_qml.h"
 #include "gui/backend/x11_plugin_host_window.h"
 #include "plugins/host_window_units.h"
+#include "plugins/plugin.h"
 #include "utils/logger.h"
 #include "utils/qt.h"
 
