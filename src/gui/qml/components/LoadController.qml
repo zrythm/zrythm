@@ -23,15 +23,23 @@ Item {
     title: qsTr("Open Project")
 
     onAccepted: {
-      root.loadProgressDialog.resetValues();
-      root.loadProgressDialog.open();
-      root.loadFuture = GlobalState.application.projectManager.loadProject(QmlUtils.toPathString(selectedFolder));
+      root.loadProject(QmlUtils.toPathString(selectedFolder));
     }
   }
   property QFutureQmlWrapper loadFuture
   property ProgressDialogWithFuture loadProgressDialog: ProgressDialogWithFuture {
     future: root.loadFuture
     labelText: qsTr("Loading project...")
+  }
+
+  function loadProject(path: string) {
+    const future = GlobalState.application.projectManager.loadProject(path);
+    if (!future)
+      return;
+
+    root.loadProgressDialog.resetValues();
+    root.loadProgressDialog.open();
+    root.loadFuture = future;
   }
 
   function openLoadDialog() {

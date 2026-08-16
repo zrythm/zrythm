@@ -62,7 +62,7 @@ public:
    *
    * @param filepath The project directory path.
    * @return A QFutureQmlWrapper that resolves to the loaded project path on
-   * success.
+   * success, or nullptr if another project load is already in progress.
    */
   Q_INVOKABLE qquick::QFutureQmlWrapper * loadProject (const QString &filepath);
 
@@ -143,6 +143,13 @@ private:
    * This is used to notify the UI when the project is loaded.
    */
   QFutureWatcher<ProjectLoadResult> project_watcher_;
+
+  /**
+   * @brief Future of the project load currently in progress, if any.
+   *
+   * A load request is refused while this future is running.
+   */
+  QFuture<QString> load_future_;
 };
 
 } /// namespace zrythm::gui

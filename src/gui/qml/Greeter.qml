@@ -19,10 +19,10 @@ ApplicationWindow {
   readonly property AppSettings appSettings: app?.appSettings ?? null
   property ProjectWindow currentProjectWindow: null
   readonly property DeviceManager deviceManager: app?.deviceManager ?? null
+  readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
   readonly property PluginManager pluginManager: app?.pluginManager ?? null
   readonly property PluginScanManager pluginScanner: pluginManager?.scanner ?? null
   readonly property ProjectManager projectManager: app?.projectManager ?? null
-  readonly property string pendingProjectPath: app?.pendingProjectFile ?? ""
 
   function openProjectWindow(session) {
     let newWindow = projectWindowComponent.createObject(session, {
@@ -62,12 +62,10 @@ ApplicationWindow {
 
   AboutDialog {
     id: aboutDialog
-
   }
 
   LoadController {
     id: loadController
-
   }
 
   Component {
@@ -285,7 +283,7 @@ ApplicationWindow {
           if (root.pendingProjectPath.length > 0) {
             // open the project requested on the command line or via a
             // file-open request from the OS
-            loadController.loadFuture = root.projectManager.loadProject(root.pendingProjectPath);
+            loadController.loadProject(root.pendingProjectPath);
           } else {
             // move on to project selection page immediately
             stack.push(projectSelectorPage);
@@ -298,13 +296,14 @@ ApplicationWindow {
         }
 
         ColumnLayout {
+          spacing: 12
+
           anchors {
             bottom: parent.bottom
             left: parent.left
             margins: 26
             right: parent.right
           }
-          spacing: 12
 
           Text {
             id: scanProgressLabel
@@ -398,9 +397,7 @@ ApplicationWindow {
               verticalAlignment: Qt.AlignVCenter
             }
 
-            onClicked: {
-              loadController.loadFuture = root.projectManager.loadProject(projectItem.path);
-            }
+            onClicked: loadController.loadProject(projectItem.path)
           }
 
           Component.onCompleted: {

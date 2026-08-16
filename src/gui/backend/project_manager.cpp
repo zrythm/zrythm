@@ -290,6 +290,12 @@ ProjectManager::createNewProject (
 gui::qquick::QFutureQmlWrapper *
 ProjectManager::loadProject (const QString &filepath)
 {
+  if (load_future_.isRunning ())
+    {
+      z_warning ("A project load is already in progress, ignoring request");
+      return nullptr;
+    }
+
   const auto project_dir = utils::Utf8String::from_qstring (filepath).to_path ();
 
   z_debug ("Loading project from {}", project_dir);
@@ -457,6 +463,8 @@ ProjectManager::loadProject (const QString &filepath)
         },
         Qt::BlockingQueuedConnection);
     });
+
+  load_future_ = future;
 
   future.onCanceled (this, [] () {
     z_debug ("Project load cancelled");
