@@ -1,26 +1,18 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include <cstring>
-
-#include <clap/all.h>
-#include <clap/helpers/plugin.hh>
-#include <clap/helpers/plugin.hxx>
+#include "clap_fixture_factory.h"
 
 namespace zrythm_test_plugins
 {
 
-using ClapPluginBase = clap::helpers::Plugin<
-  clap::helpers::MisbehaviourHandler::Terminate,
-  clap::helpers::CheckingLevel::Maximal>;
-
-class TestLatencyClap final : public ClapPluginBase
+class TestLatencyClap final : public ClapFixturePluginBase
 {
 public:
   static constexpr uint32_t kLatencySamples = 256;
 
   explicit TestLatencyClap (const clap_host * host)
-      : ClapPluginBase (descriptor (), host)
+      : ClapFixturePluginBase (descriptor (), host)
   {
   }
 
@@ -42,12 +34,6 @@ public:
       .features = features,
     };
     return &desc;
-  }
-
-  static const clap_plugin * createInstance (const clap_host * host) noexcept
-  {
-    auto * p = new TestLatencyClap (host);
-    return p->clapPlugin ();
   }
 
   bool activate (double, uint32_t, uint32_t) noexcept override
@@ -89,34 +75,9 @@ public:
   }
 };
 
-static const clap_plugin_factory plugin_factory = {
-  .get_plugin_count = [] (const clap_plugin_factory *) -> uint32_t { return 1; },
-  .get_plugin_descriptor = [] (const clap_plugin_factory *, uint32_t index)
-    -> const clap_plugin_descriptor * {
-    return index == 0 ? TestLatencyClap::descriptor () : nullptr;
-  },
-  .create_plugin =
-    [] (const clap_plugin_factory *, const clap_host * host, const char * plugin_id)
-    -> const clap_plugin * {
-    if (host == nullptr || !clap_version_is_compatible (host->clap_version))
-      return nullptr;
-    if (std::strcmp (plugin_id, TestLatencyClap::descriptor ()->id) != 0)
-      return nullptr;
-    return TestLatencyClap::createInstance (host);
-  },
-};
-
 } // namespace zrythm_test_plugins
 
 extern "C" {
-CLAP_EXPORT const clap_plugin_entry clap_entry = {
-  .clap_version = CLAP_VERSION,
-  .init = [] (const char *) -> bool { return true; },
-  .deinit = [] () { },
-  .get_factory = [] (const char * factory_id) -> const void * {
-    return std::strcmp (factory_id, CLAP_PLUGIN_FACTORY_ID) == 0
-             ? static_cast<const void *> (&zrythm_test_plugins::plugin_factory)
-             : nullptr;
-  },
-};
+CLAP_EXPORT const clap_plugin_entry clap_entry =
+  zrythm_test_plugins::clap_fixture_entry<zrythm_test_plugins::TestLatencyClap>;
 }

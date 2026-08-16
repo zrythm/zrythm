@@ -28,6 +28,11 @@ add_subdirectory(
 )
 zrythm_target_disable_warnings(moduleinfotool)
 
+# The validator and moduleinfotool load the fixture bundles in their own
+# processes, so they need the sanitizer runtimes the fixtures are built with
+target_link_libraries(validator PRIVATE zrythm::sanitizers)
+target_link_libraries(moduleinfotool PRIVATE zrythm::sanitizers)
+
 # Place the plugin bundles under this directory
 # (<binary_dir>/VST3/<config>/<name>.vst3 and <binary_dir>/CLAP/<name>.clap)
 set(SMTG_CUSTOM_BINARY_LOCATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -79,7 +84,10 @@ smtg_add_vst3plugin(test_gui_vst3
 )
 
 foreach(vst3_fixture ${vst3_fixtures})
-  target_link_libraries(${vst3_fixture} PRIVATE sdk)
+  # Sanitizers (when enabled) let violations inside the fixture be caught;
+  # the fixtures are only ever loaded by the sanitizer-enabled test binaries
+  # and tools above
+  target_link_libraries(${vst3_fixture} PRIVATE sdk zrythm::sanitizers)
   target_include_directories(${vst3_fixture} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   zrythm_target_disable_warnings(${vst3_fixture})
   set_target_properties(${vst3_fixture} PROPERTIES
@@ -90,9 +98,13 @@ foreach(vst3_fixture ${vst3_fixtures})
 endforeach()
 
 set(clap_fixtures
+  test_bad_ports_clap
+  test_configurable_clap
   test_gain_clap
   test_gui_clap
   test_latency_clap
+  test_rescan_misuse_clap
+  test_restart_clap
   test_synth_clap
 )
 # Exported so the parent scope can derive the plugin count for test compile
@@ -101,7 +113,9 @@ set(zrythm_test_clap_fixture_targets ${clap_fixtures} PARENT_SCOPE)
 
 foreach(clap_fixture ${clap_fixtures})
   add_library(${clap_fixture} MODULE ${clap_fixture}.cpp)
-  target_link_libraries(${clap_fixture} PRIVATE clap-helpers)
+  # Sanitizers (when enabled) let violations inside the fixture be caught;
+  # the fixtures are only ever loaded by the sanitizer-enabled test binaries
+  target_link_libraries(${clap_fixture} PRIVATE clap-helpers zrythm::sanitizers)
   target_include_directories(${clap_fixture} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   zrythm_target_disable_warnings(${clap_fixture})
   set_target_properties(${clap_fixture} PROPERTIES

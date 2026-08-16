@@ -964,7 +964,48 @@ TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
   const auto all_outs = all_audio_ports (false);
   ASSERT_EQ (all_outs.size (), 2);
   EXPECT_EQ (all_outs.at (1), added_port);
-  EXPECT_TRUE (added_port->detached ());
+  EXPECT_TRUE (all_outs.at (1)->detached ());
+}
+
+// Reconciling ports drops the buffers of ports whose arrangement changed
+// and creates new ports unprepared; the graph recalculation that prepares
+// them must happen before processing resumes, not after
+TEST_F (Vst3PluginTest, IoChangeLeavesPortBuffersPreparedBeforeResume)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Restart"));
+
+  PluginHostMainThreadCallbacks callbacks{};
+  // Stand in for the graph recalculation: it re-prepares the plugin,
+  // reallocating the port buffers
+  callbacks.graph_recalc_ = [this] {
+    plugin_->prepare_for_processing (
+      nullptr, units::sample_rate (48000), units::samples (256));
+  };
+  callbacks.with_paused_processing_ = [this] (const std::function<void ()> &fn) {
+    ++paused_processing_calls_;
+    fn ();
+    // Processing may resume as soon as this returns: every attached port
+    // must already have a buffer matching its arrangement
+    for (const auto * port : attached_audio_ports (false))
+      {
+        EXPECT_NE (port->buffers (), nullptr);
+        if (port->buffers () != nullptr)
+          {
+            EXPECT_EQ (
+              port->buffers ()->getNumChannels (),
+              static_cast<int> (port->arrangement ().channel_count ()));
+          }
+      }
+  };
+  plugin_->set_main_thread_services (*main_dispatcher_, callbacks);
+
+  auto * trigger = find_param_by_label ("Grow Output");
+  ASSERT_NE (trigger, nullptr);
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+
+  EXPECT_EQ (attached_audio_ports (false).size (), 2);
 }
 
 } // namespace zrythm::plugins

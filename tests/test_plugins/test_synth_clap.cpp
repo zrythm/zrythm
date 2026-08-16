@@ -6,20 +6,13 @@
 #include <atomic>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <string_view>
 
+#include "clap_fixture_factory.h"
 #include "sine_synth.h"
-#include <clap/all.h>
-#include <clap/helpers/plugin.hh>
-#include <clap/helpers/plugin.hxx>
 
 namespace zrythm_test_plugins
 {
-
-using ClapPluginBase = clap::helpers::Plugin<
-  clap::helpers::MisbehaviourHandler::Terminate,
-  clap::helpers::CheckingLevel::Maximal>;
 
 /**
  * Test synth exposed in two variants: one that only accepts the CLAP note
@@ -27,13 +20,13 @@ using ClapPluginBase = clap::helpers::Plugin<
  * dialects are ignored so that tests fail if a host sends the wrong dialect.
  */
 template <uint32_t SupportedDialects>
-class TestSynthClap final : public ClapPluginBase
+class TestSynthClap final : public ClapFixturePluginBase
 {
 public:
   static constexpr clap_id kLevelParamId = 0;
 
   explicit TestSynthClap (const clap_host * host)
-      : ClapPluginBase (descriptor (), host)
+      : ClapFixturePluginBase (descriptor (), host)
   {
   }
 
@@ -65,12 +58,6 @@ public:
       : "org.zrythm.TestSynth";
   static constexpr std::string_view kPluginName =
     SupportedDialects == CLAP_NOTE_DIALECT_MIDI ? "Test Synth MIDI" : "Test Synth";
-
-  static const clap_plugin * createInstance (const clap_host * host) noexcept
-  {
-    auto * p = new TestSynthClap (host);
-    return p->clapPlugin ();
-  }
 
   bool activate (
     double sampleRate,
@@ -321,42 +308,11 @@ private:
 using TestSynthClapNotes = TestSynthClap<CLAP_NOTE_DIALECT_CLAP>;
 using TestSynthClapMidi = TestSynthClap<CLAP_NOTE_DIALECT_MIDI>;
 
-static const std::array<const clap_plugin_descriptor *, 2> kDescriptors = {
-  TestSynthClapNotes::descriptor (), TestSynthClapMidi::descriptor ()
-};
-
-static const clap_plugin_factory plugin_factory = {
-  .get_plugin_count = [] (const clap_plugin_factory *) -> uint32_t {
-    return kDescriptors.size ();
-  },
-  .get_plugin_descriptor = [] (const clap_plugin_factory *, uint32_t index)
-    -> const clap_plugin_descriptor * {
-    return index < kDescriptors.size () ? kDescriptors[index] : nullptr;
-  },
-  .create_plugin =
-    [] (const clap_plugin_factory *, const clap_host * host, const char * plugin_id)
-    -> const clap_plugin * {
-    if (host == nullptr || !clap_version_is_compatible (host->clap_version))
-      return nullptr;
-    if (TestSynthClapNotes::kPluginId == plugin_id)
-      return TestSynthClapNotes::createInstance (host);
-    if (TestSynthClapMidi::kPluginId == plugin_id)
-      return TestSynthClapMidi::createInstance (host);
-    return nullptr;
-  },
-};
-
 } // namespace zrythm_test_plugins
 
 extern "C" {
-CLAP_EXPORT const clap_plugin_entry clap_entry = {
-  .clap_version = CLAP_VERSION,
-  .init = [] (const char *) -> bool { return true; },
-  .deinit = [] () { },
-  .get_factory = [] (const char * factory_id) -> const void * {
-    return std::strcmp (factory_id, CLAP_PLUGIN_FACTORY_ID) == 0
-             ? static_cast<const void *> (&zrythm_test_plugins::plugin_factory)
-             : nullptr;
-  },
-};
+CLAP_EXPORT const clap_plugin_entry clap_entry =
+  zrythm_test_plugins::clap_fixture_entry<
+    zrythm_test_plugins::TestSynthClapNotes,
+    zrythm_test_plugins::TestSynthClapMidi>;
 }

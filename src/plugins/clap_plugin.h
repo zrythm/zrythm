@@ -69,6 +69,11 @@ public:
   bool implementsLatency () const noexcept override { return true; }
   void latencyChanged () noexcept override;
 
+  // clap_host_audio_ports
+  bool implementsAudioPorts () const noexcept override { return true; }
+  bool audioPortsIsRescanFlagSupported (uint32_t flag) noexcept override;
+  void audioPortsRescan (uint32_t flags) noexcept override;
+
   // clap_host_thread_check
   bool threadCheckIsMainThread () const noexcept override;
   bool threadCheckIsAudioThread () const noexcept override;
@@ -122,6 +127,20 @@ public:
 
   bool hasNativeUi () const override;
 
+  /**
+   * @brief Negotiates the saved (restored) port topology into the plugin, or
+   * adopts the live layout when negotiation is impossible or refused.
+   *
+   * Must be called on the main thread with the engine paused while the
+   * plugin is deactivated (the reconciliation mutates engine-visible ports
+   * and drops buffers, and configuration pushes are only valid on
+   * deactivated plugins). When any port changed, the graph must be
+   * recalculated and all nodes re-prepared before processing resumes:
+   * reconciliation may have dropped port buffers or created unprepared
+   * ports.
+   */
+  void restore_saved_bus_arrangements ();
+
 protected:
   void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
@@ -166,6 +185,15 @@ private:
   void unload_current_plugin ();
 
   void create_ports_from_clap_plugin ();
+
+  /**
+   * @brief Applies the port topology pending from audioPortsRescan() calls.
+   *
+   * Runs on the main thread after any in-flight restart completes; reconciles
+   * the ports with the scanned configuration and requests a graph rebuild
+   * when the change is graph-affecting (see dsp::AudioBusReconcileResult).
+   */
+  void apply_audio_ports_rescan ();
 
   void show_editor ();
   void hide_editor ();

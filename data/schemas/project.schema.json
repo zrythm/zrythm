@@ -790,6 +790,11 @@
             },
             "requiresLimiting": {
               "type": "boolean"
+            },
+            "externalPortId": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Stable id the hosting SDK assigns to this bus (e.g. the CLAP audio port id); absent when the SDK assigns none"
             }
           },
           "required": [

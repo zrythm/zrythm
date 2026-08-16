@@ -1351,8 +1351,8 @@ Vst3Plugin::load_plugin (
             // bus layout (ports are reconfigured/detached/created, never
             // destroyed). The scratch channel mapping bridges any transient
             // disagreement until the graph is rebuilt
-            bool       ports_changed = false;
-            const auto reactivate = [this, &ports_changed] {
+            bool       graph_changed = false;
+            const auto reactivate = [this, &graph_changed] {
               if (pimpl_->processor_ == nullptr || pimpl_->component_ == nullptr)
                 return;
               // Per the kIoChanged contract, the component is deactivated
@@ -1383,8 +1383,10 @@ Vst3Plugin::load_plugin (
                 const auto flow :
                 { dsp::PortFlow::Input, dsp::PortFlow::Output })
                 {
-                  ports_changed |= dsp::reconcile_audio_bus_configuration (
-                    registry (), *this, flow, get_audio_bus_configs (flow));
+                  graph_changed |=
+                    dsp::reconcile_audio_bus_configuration (
+                      registry (), *this, flow, get_audio_bus_configs (flow))
+                      .graph_changed;
                 }
               if (was_processing)
                 {
@@ -1393,12 +1395,28 @@ Vst3Plugin::load_plugin (
                     units::samples (
                       static_cast<uint32_t> (pimpl_->max_block_samples_)));
                 }
+              if (graph_changed)
+                {
+                  if (main_thread_callbacks_.graph_recalc_ != nullptr)
+                    {
+                      // Reconciling drops the buffers of ports whose
+                      // arrangement changed and creates new ports unprepared;
+                      // the recalculation's node preparation reallocates
+                      // them, and must happen before processing resumes
+                      main_thread_callbacks_.graph_recalc_ ();
+                    }
+                  else
+                    {
+                      z_warning (
+                        "VST3: ports of '{}' changed but the host cannot "
+                        "recalculate the processing graph; reload the plugin",
+                        get_node_name ());
+                    }
+                }
             };
             if (main_thread_callbacks_.with_paused_processing_)
               {
                 main_thread_callbacks_.with_paused_processing_ (reactivate);
-                if (ports_changed && main_thread_callbacks_.graph_recalc_)
-                  main_thread_callbacks_.graph_recalc_ ();
               }
             else
               {
@@ -1670,7 +1688,9 @@ Vst3Plugin::get_audio_bus_configs (dsp::PortFlow flow) const
             bus_info.busType == Vst::BusTypes::kMain
               ? dsp::AudioPort::Purpose::Main
               : dsp::AudioPort::Purpose::Sidechain,
-          .active = true });
+          .active = true,
+          // VST3 buses have no stable ids; matching is positional
+          .external_id = std::nullopt });
     }
   return configs;
 }
@@ -1779,8 +1799,9 @@ Vst3Plugin::restore_saved_bus_arrangements ()
   bool ports_changed = false;
   for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
     {
-      ports_changed |= dsp::reconcile_audio_bus_configuration (
+      const auto result = dsp::reconcile_audio_bus_configuration (
         registry (), *this, flow, get_audio_bus_configs (flow));
+      ports_changed |= result.graph_changed || result.metadata_changed;
     }
   if (ports_changed)
     {

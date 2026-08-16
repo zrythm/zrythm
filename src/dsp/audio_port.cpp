@@ -90,6 +90,7 @@ init_from (
     static_cast<Port &> (obj), static_cast<const Port &> (other), clone_type);
   obj.arrangement_ = other.arrangement_;
   obj.purpose_ = other.purpose_;
+  obj.external_port_id_ = other.external_port_id_;
 }
 
 void
@@ -279,6 +280,10 @@ to_json (nlohmann::json &j, const AudioPort &port)
   j[AudioPort::kSpeakerArrangementId] = port.arrangement_;
   j[AudioPort::kPurposeId] = port.purpose_;
   j[AudioPort::kRequiresLimitingId] = port.requires_limiting_;
+  if (port.external_port_id_.has_value ())
+    {
+      j[AudioPort::kExternalPortIdId] = *port.external_port_id_;
+    }
 }
 
 void
@@ -288,5 +293,7 @@ from_json (const nlohmann::json &j, AudioPort &port)
   j.at (AudioPort::kSpeakerArrangementId).get_to (port.arrangement_);
   j.at (AudioPort::kPurposeId).get_to (port.purpose_);
   j.at (AudioPort::kRequiresLimitingId).get_to (port.requires_limiting_);
+  port.external_port_id_ =
+    j.value (AudioPort::kExternalPortIdId, std::optional<uint32_t>{});
 }
 } // namespace zrythm::dsp

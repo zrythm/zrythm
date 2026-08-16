@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <optional>
+
 #include "dsp/audio_bus_channel_routing.h"
 #include "dsp/port.h"
 #include "dsp/speaker_arrangement.h"
@@ -23,7 +25,8 @@ class AudioPort final
   Q_OBJECT
   QML_ELEMENT
   QML_UNCREATABLE ("")
-  Q_PROPERTY (zrythm::dsp::AudioPort::Purpose purpose READ purpose CONSTANT)
+  Q_PROPERTY (
+    zrythm::dsp::AudioPort::Purpose purpose READ purpose NOTIFY purposeChanged)
 
 public:
   /**
@@ -49,8 +52,22 @@ public:
 
   void clear_buffer (std::size_t offset, std::size_t nframes) override;
 
-  [[nodiscard]] auto  arrangement () const { return arrangement_; }
-  [[nodiscard]] auto  purpose () const { return purpose_; }
+  [[nodiscard]] auto arrangement () const { return arrangement_; }
+  [[nodiscard]] auto purpose () const { return purpose_; }
+
+  /**
+   * @brief Sets the purpose.
+   *
+   * The hosting environment may re-assign a bus's role during the port's
+   * lifetime; the new value takes effect immediately.
+   */
+  void set_purpose (Purpose new_purpose) [[clang::blocking]]
+  {
+    if (purpose_ == new_purpose)
+      return;
+    purpose_ = new_purpose;
+    Q_EMIT purposeChanged ();
+  }
   [[nodiscard]] auto &buffers () const { return buf_; }
   auto num_channels () const { return arrangement_.channel_count (); }
 
@@ -68,6 +85,20 @@ public:
 
   void mark_as_requires_limiting () { requires_limiting_ = true; }
   auto requires_limiting () const { return requires_limiting_; }
+
+  /**
+   * @brief Stable id the hosting SDK assigns to the bus this port was created
+   * for (e.g. the CLAP audio port id), if any.
+   *
+   * Used to re-associate ports with plugin buses across rescan events whose
+   * removals shift positional indices. Absent for ports not created from an
+   * SDK bus enumeration.
+   */
+  [[nodiscard]] auto external_port_id () const { return external_port_id_; }
+  void set_external_port_id (std::optional<uint32_t> id) [[clang::blocking]]
+  {
+    external_port_id_ = id;
+  }
 
   /**
    * @brief Adds the contents of @p src to this port, leaving destination
@@ -118,16 +149,23 @@ public:
     units::sample_u32_t      max_block_length) override;
   void release_resources () override;
 
+Q_SIGNALS:
+  void purposeChanged ();
+
 private:
   static constexpr auto kSpeakerArrangementId = "speakerArrangement"sv;
   static constexpr auto kPurposeId = "purpose"sv;
   static constexpr auto kRequiresLimitingId = "requiresLimiting"sv;
+  static constexpr auto kExternalPortIdId = "externalPortId"sv;
   friend void           to_json (nlohmann::json &j, const AudioPort &port);
   friend void           from_json (const nlohmann::json &j, AudioPort &port);
 
 private:
   SpeakerArrangement arrangement_;
   Purpose            purpose_{};
+
+  /** See external_port_id(). */
+  std::optional<uint32_t> external_port_id_;
 
   /**
    * @brief Whether to clip the port's data to the range [-2, 2] (3dB).
@@ -147,7 +185,7 @@ private:
     (Port),
     (),
     (),
-    (arrangement_, purpose_, requires_limiting_))
+    (arrangement_, purpose_, external_port_id_, requires_limiting_))
 };
 
 /**

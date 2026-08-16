@@ -7,6 +7,7 @@
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
 {
@@ -87,6 +88,40 @@ TEST_F (AudioPortTest, BasicProperties)
   EXPECT_EQ (stereo_output->arrangement (), SpeakerArrangement::stereo ());
   EXPECT_EQ (stereo_output->purpose (), AudioPort::Purpose::Main);
   EXPECT_EQ (stereo_output->num_channels (), 2);
+}
+
+TEST_F (AudioPortTest, ExternalPortIdSerialization)
+{
+  // absent by default, and absent from the JSON
+  EXPECT_EQ (mono_input->external_port_id (), std::nullopt);
+  nlohmann::json j;
+  to_json (j, *mono_input);
+  EXPECT_FALSE (j.contains ("externalPortId"));
+
+  AudioPort deserialized (
+    u8"Placeholder", PortFlow::Input, SpeakerArrangement::mono ());
+  from_json (j, deserialized);
+  EXPECT_EQ (deserialized.external_port_id (), std::nullopt);
+
+  // a set id round-trips
+  stereo_output->set_external_port_id (42);
+  nlohmann::json j_with_id;
+  to_json (j_with_id, *stereo_output);
+  EXPECT_EQ (j_with_id.at ("externalPortId").get<uint32_t> (), 42);
+
+  AudioPort round_tripped (
+    u8"Placeholder", PortFlow::Output, SpeakerArrangement::stereo ());
+  from_json (j_with_id, round_tripped);
+  EXPECT_EQ (round_tripped.external_port_id (), 42);
+}
+
+TEST_F (AudioPortTest, ExternalPortIdSurvivesClone)
+{
+  stereo_output->set_external_port_id (7);
+  const auto clone = utils::clone_unique (
+    *stereo_output, utils::ObjectCloneType::Snapshot, u8"Clone",
+    PortFlow::Output, SpeakerArrangement::stereo ());
+  EXPECT_EQ (clone->external_port_id (), 7);
 }
 
 TEST_F (AudioPortTest, ResourceManagement)

@@ -4,12 +4,14 @@
 #pragma once
 
 #include <ranges>
+#include <vector>
 
 #include "dsp/graph.h"
 #include "dsp/graph_node.h"
 #include "dsp/parameter.h"
 #include "dsp/port_all.h"
 #include "utils/uuid_identifiable_object.h"
+#include "utils/views.h"
 
 #include <QObject>
 
@@ -185,6 +187,30 @@ public:
     return output_ports_ | std::views::filter (attached_only);
   }
 
+  /**
+   * @brief All audio ports of the processor for @p flow, including detached
+   * ones, in bus order.
+   */
+  std::vector<AudioPort *> get_all_audio_ports (PortFlow flow) const
+  {
+    return audio_ports_of (
+      flow == PortFlow::Input
+        ? std::views::all (input_ports_)
+        : std::views::all (output_ports_));
+  }
+
+  /**
+   * @brief The attached audio ports of the processor for @p flow, in bus
+   * order (see get_attached_input_ports()).
+   */
+  std::vector<AudioPort *> get_attached_audio_ports (PortFlow flow) const
+  {
+    return audio_ports_of (
+      flow == PortFlow::Input
+        ? get_attached_input_ports ()
+        : get_attached_output_ports ());
+  }
+
   auto &get_parameters () const { return params_; }
 
   /**
@@ -258,6 +284,20 @@ private:
   static constexpr auto attached_only = [] (const auto &port_ref) {
     return !port_ref.get ()->detached ();
   };
+
+  /**
+   * @brief Transforms a port-reference view into the AudioPort pointers it
+   * holds.
+   *
+   * The port lists are heterogeneous (MIDI/CV ports included); non-audio
+   * ports are filtered out here.
+   */
+  static std::vector<AudioPort *> audio_ports_of (auto refs_view)
+  {
+    return refs_view | std::views::transform (&dsp::PortUuidReference::get)
+           | utils::views::qobject_cast_and_filter<AudioPort>
+           | std::ranges::to<std::vector> ();
+  }
 
   /**
    * @brief The designation provider given to owned ports, producing

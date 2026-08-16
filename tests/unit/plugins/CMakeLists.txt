@@ -3,6 +3,7 @@
 
 add_executable(zrythm_plugins_unit_tests
   clap_plugin_test.cpp
+  clap_speaker_arrangement_test.cpp
   faust_plugin_test.cpp
   faust_synth_voice_test.cpp
   host_window_units_test.cpp

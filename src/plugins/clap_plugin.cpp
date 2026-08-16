@@ -36,7 +36,10 @@
 #include "zrythm-config.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <deque>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
@@ -45,9 +48,11 @@
 #include "utils/format_qt.h"
 #include <fmt/std.h>
 
+#include "dsp/audio_bus_configuration.h"
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
+#include "plugins/clap_speaker_arrangement.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
 #include "plugins/plugin_library.h"
@@ -238,7 +243,126 @@ public:
     units::sample_u32_t local_offset,
     units::sample_u32_t nframes) noexcept [[clang::nonblocking]];
 
-  void setup_audio_ports_for_processing (units::sample_u32_t block_size);
+  /**
+   * @brief Sizes the scratch buffers and pairs the enumerated buses with the
+   * engine ports, for both flows.
+   *
+   * @return false when a flow's port report is untrustworthy (see
+   * enumerate_validated_audio_port_infos()); the plugin must not be
+   * activated then.
+   */
+  [[nodiscard]] bool
+  setup_audio_ports_for_processing (units::sample_u32_t block_size);
+
+  /**
+   * @brief Resolves the arrangement for the audio port at @p index from the
+   * plugin's port type and the surround/ambisonic extensions.
+   *
+   * Falls back to a discrete arrangement with the port's channel count when
+   * the port type is empty or unknown, when the extension lookup fails or
+   * reports something unrepresentable, or when the port type implies a
+   * different channel count than reported.
+   */
+  dsp::SpeakerArrangement resolve_audio_port_arrangement (
+    dsp::PortFlow                 flow,
+    uint32_t                      index,
+    const clap_audio_port_info_t &nfo) const;
+
+  /**
+   * @brief The surround channel map for the port at @p index, when the
+   * port's type is surround and the plugin's surround extension provides a
+   * complete map.
+   */
+  std::optional<std::vector<uint8_t>> get_surround_channel_map (
+    dsp::PortFlow flow,
+    uint32_t      index,
+    uint32_t      channel_count) const;
+
+  /**
+   * @brief The current audio bus configuration for the given flow, one entry
+   * per enumerated audio port.
+   *
+   * Arrangements reflect the plugin's port type and the surround/ambisonic
+   * extensions; the first enumerated port is the main bus (misplaced or
+   * absent CLAP_AUDIO_PORT_IS_MAIN flags are warned about and ignored);
+   * entries carry the stable CLAP port ids as external ids.
+   *
+   * @return std::nullopt when the plugin's report is untrustworthy (see
+   * enumerate_validated_audio_port_infos()).
+   */
+  std::optional<std::vector<dsp::AudioBusConfig>>
+  build_audio_bus_configs (dsp::PortFlow flow) const;
+
+  /**
+   * @brief Pushes the saved bus configuration into the plugin via the
+   * configurable audio ports extension.
+   *
+   * Builds one configuration request per saved bus, matched to live
+   * enumeration indices by stable id (positionally for ports saved before
+   * ids were recorded).
+   *
+   * @return std::nullopt when the plugin implements no configurable audio
+   * ports extension; otherwise whether a configuration was applied and the
+   * accepted layout must be re-scanned (false also when no saved bus matched
+   * a live bus and nothing was submitted).
+   */
+  std::optional<bool> push_saved_bus_configuration (
+    const std::vector<dsp::AudioBusConfig> &saved_inputs,
+    const std::vector<dsp::AudioBusConfig> &saved_outputs,
+    const std::vector<dsp::AudioBusConfig> &live_inputs,
+    const std::vector<dsp::AudioBusConfig> &live_outputs);
+
+  /**
+   * @brief Syncs the engine ports to the accepted bus configuration after a
+   * restore.
+   *
+   * The accepted layout only differs from the live one after a successful
+   * configuration push, so the live configurations are reused when @p pushed
+   * is false.
+   *
+   * @return What changed; see dsp::AudioBusReconcileResult for the caller's
+   * obligations.
+   */
+  dsp::AudioBusReconcileResult sync_ports_to_live_configuration (
+    const std::vector<dsp::AudioBusConfig> &live_inputs,
+    const std::vector<dsp::AudioBusConfig> &live_outputs,
+    bool                                    pushed);
+
+  /** Maximum audio buses per flow the host supports. */
+  static constexpr uint32_t kMaxAudioBusesPerFlow = 128;
+
+  /**
+   * @brief The validated audio port info for every port in the given flow,
+   * in enumeration order.
+   *
+   * The report is untrustworthy — and std::nullopt returned — when the
+   * plugin declares more buses than @ref kMaxAudioBusesPerFlow, stops
+   * reporting below its declared count, reports duplicate stable ids, or
+   * reports a bus with fewer than 1 or more channels than SpeakerArrangement
+   * models. (Misused main-port flags are warned about and normalized during
+   * configuration building instead: they only affect purpose assignment.)
+   *
+   * An empty vector (not an error) is returned when the plugin lacks the
+   * audio ports extension.
+   */
+  std::optional<std::vector<clap_audio_port_info_t>>
+  enumerate_validated_audio_port_infos (dsp::PortFlow flow) const;
+
+  /**
+   * @brief The plugin's extension with the given id, falling back to the
+   * pre-1.4 compatibility id.
+   *
+   * @return nullptr when the plugin implements neither id.
+   */
+  template <typename Ext>
+  const Ext * get_extension (const char * id, const char * compat_id) const
+  {
+    const Ext * ext = nullptr;
+    plugin_->getExtension (ext, id);
+    if (ext == nullptr && compat_id != nullptr)
+      plugin_->getExtension (ext, compat_id);
+    return ext;
+  }
 
   void set_plugin_window_visibility (bool isVisible);
 
@@ -282,11 +406,79 @@ private:
 
   std::vector<juce::AudioSampleBuffer> audio_out_bufs_;
 
+  /**
+   * Per-port channel pointer arrays backing clap_audio_buffer::data32.
+   *
+   * Most ports use the identity order (pointers straight from the JUCE
+   * buffer); ports whose plugin wire order is not canonical (surround
+   * channel maps) get a permuted order so the plugin's channel i maps to the
+   * buffer's canonical channel permutation[i], with no sample copies.
+   */
+  std::vector<std::vector<float *>> audio_in_channel_ptrs_;
+  std::vector<std::vector<float *>> audio_out_channel_ptrs_;
+
+  /**
+   * Engine ports for each audio bus, in the plugin's bus enumeration order
+   * (index-aligned with the scratch buffers).
+   *
+   * Ports are paired with buses by stable external id; the plugin's
+   * enumeration order is independent of the engine's port list order.
+   * Holds nullptr for buses no port carries (yet) while a rescan awaits its
+   * deferred reconciliation.
+   *
+   * The raw pointers stay valid across process blocks because the
+   * reconciler never destroys ports; the vectors are only read while the
+   * plugin is active and are repopulated on every prepare (and cleared on
+   * release).
+   */
+  std::vector<dsp::AudioPort *> audio_in_ports_by_bus_;
+  std::vector<dsp::AudioPort *> audio_out_ports_by_bus_;
+
   clap::helpers::EventList evIn_;
   clap::helpers::EventList evOut_;
 
   /** Always-empty input event list for scheduled audio-thread flushes. */
   clap::helpers::EventList evFlushIn_;
+
+  /**
+   * @brief Pending audio ports rescan state (see ClapPlugin::audioPortsRescan).
+   *
+   * The port scan is done eagerly in the rescan callback (only valid while
+   * the plugin reports the change, e.g. inside its deactivate() during a
+   * restart) and the engine-side reconciliation is deferred. The state is
+   * cleared when the plugin instance is recreated so a stale scan never
+   * reaches a fresh instance.
+   */
+  std::array<std::vector<dsp::AudioBusConfig>, 2> pending_audio_port_configs_;
+  bool pending_audio_port_scan_ = false;
+
+  /** The index of a flow in the per-flow arrays below. */
+  static constexpr size_t flow_index (dsp::PortFlow flow)
+  {
+    return flow == dsp::PortFlow::Input ? 0 : 1;
+  }
+
+  std::vector<dsp::AudioBusConfig> &
+  pending_audio_port_configs_for (dsp::PortFlow flow)
+  {
+    return pending_audio_port_configs_[flow_index (flow)];
+  }
+
+  /** Drops any pending rescan state (see pending_audio_port_scan_). */
+  void clear_pending_audio_port_scan ()
+  {
+    pending_audio_port_scan_ = false;
+    pending_audio_port_configs_[flow_index (dsp::PortFlow::Input)].clear ();
+    pending_audio_port_configs_[flow_index (dsp::PortFlow::Output)].clear ();
+  }
+
+  /**
+   * Misplaced/absent CLAP_AUDIO_PORT_IS_MAIN flags are warned about once per
+   * flow per instance: the scans that would re-report them run several times
+   * per load and per rescan.
+   */
+  mutable std::array<bool, 2> misplaced_main_warning_emitted_{};
+  mutable std::array<bool, 2> no_main_warning_emitted_{};
 
   clap_process process_{};
 
@@ -322,8 +514,10 @@ private:
    */
   size_t param_count_ = 0;
 
-  PluginState state_{ Inactive };
-  bool        stateIsDirty_ = false;
+  // Written on the audio thread (processing state changes), read on the
+  // main thread (rescan gating, latency notification)
+  std::atomic<PluginState> state_{ Inactive };
+  bool                     stateIsDirty_ = false;
 
   /** Latency change reported while being-activated (latencyGet() is only
    * allowed once activate() returns) - queried at the end of
@@ -987,7 +1181,14 @@ ClapPlugin::prepare_plugin_for_processing (
   pimpl_->last_sample_rate_ = sample_rate;
   pimpl_->last_max_block_length_ = max_block_length;
 
-  pimpl_->setup_audio_ports_for_processing (max_block_length);
+  if (!pimpl_->setup_audio_ports_for_processing (max_block_length))
+    {
+      // The port report is untrustworthy (warned about during enumeration).
+      // Activating would hand the plugin a process struct contradicting its
+      // own declaration, risking out-of-bounds access inside the plugin
+      pimpl_->set_plugin_state (ClapPluginImpl::InactiveWithError);
+      return;
+    }
 
   const size_t max_midi_events =
     static_cast<size_t> (get_descriptor ().num_midi_ins_)
@@ -1049,6 +1250,11 @@ ClapPlugin::release_resources_impl ()
 
   pimpl_->plugin_->deactivate ();
   pimpl_->set_plugin_state (ClapPluginImpl::Inactive);
+
+  // Stale bus pairings are never read while inactive; clear them so a
+  // missed prepare cannot pair new buses with old ports
+  pimpl_->audio_in_ports_by_bus_.clear ();
+  pimpl_->audio_out_ports_by_bus_.clear ();
 }
 
 void
@@ -1148,17 +1354,40 @@ ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
       const auto nframes = time_info.nframes_;
 
       // Copy the chunk's input audio to the scratch buffers the plugin
-      // reads from offset 0 (data32 points at the scratch base)
+      // reads from offset 0 (data32 points at the scratch base). Buses are
+      // paired with ports by stable id (enumeration order may differ from
+      // the port list order after a list rescan). The scratch channel count
+      // can exceed the port's while a channel-count rescan awaits its
+      // deferred reconciliation, so the copy is clamped to both and the
+      // unfed channels are cleared
       for (
         const auto &[in_buf, port] :
-        std::views::zip (pimpl_->audio_in_bufs_, audio_in_ports_))
+        std::views::zip (pimpl_->audio_in_bufs_, pimpl_->audio_in_ports_by_bus_))
         {
-          for (const auto ch : std::views::iota (0, in_buf.getNumChannels ()))
+          // A bus without a port while a rescan awaits reconciliation: its
+          // input is silence
+          if (port == nullptr)
+            {
+              in_buf.clear (0, nframes.in<int> (units::samples));
+              continue;
+            }
+          // Reconciliation drops port buffers; a missed re-prepare (which
+          // must never happen: the graph recalculation precedes the resume)
+          // surfaces here instead of dereferencing null
+          assert (port->buffers () != nullptr);
+          const auto scratch_channels = in_buf.getNumChannels ();
+          const auto fed_channels =
+            std::min (scratch_channels, port->buffers ()->getNumChannels ());
+          for (const auto ch : std::views::iota (0, fed_channels))
             {
               in_buf.copyFrom (
                 ch, 0, *port->buffers (), ch,
                 local_offset.in<int> (units::samples),
                 nframes.in<int> (units::samples));
+            }
+          for (const auto ch : std::views::iota (fed_channels, scratch_channels))
+            {
+              in_buf.clear (ch, 0, nframes.in<int> (units::samples));
             }
         }
 
@@ -1174,26 +1403,31 @@ ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
       }
 
       // Copy the chunk's output audio from the scratch buffers back to the
-      // chunk's position in the port buffers
+      // chunk's position in the port buffers (paired by stable id, like the
+      // input copy above)
       for (
-        const auto &[buf, port] :
-        std::views::zip (pimpl_->audio_out_bufs_, audio_out_ports_))
+        const auto &[buf, port] : std::views::zip (
+          pimpl_->audio_out_bufs_, pimpl_->audio_out_ports_by_bus_))
         {
-          if (status == CLAP_PROCESS_ERROR) [[unlikely]]
+          // A bus without a port while a rescan awaits reconciliation has
+          // its output dropped; on a processing error the port buffers keep
+          // the silence process_block cleared into them before this block
+          if (port == nullptr || status == CLAP_PROCESS_ERROR) [[unlikely]]
+            continue;
+          // Same tripwire as the input copy above
+          assert (port->buffers () != nullptr);
+
+          // TODO: handle other states
+          // Clamp like the input copy above: the scratch channel count
+          // can exceed the port's while a channel-count rescan awaits
+          // its deferred reconciliation
+          const auto port_channels = port->buffers ()->getNumChannels ();
+          const auto channels = std::min (buf.getNumChannels (), port_channels);
+          for (const auto ch : std::views::iota (0, channels))
             {
-              port->buffers ()->clear (
-                local_offset.in<int> (units::samples),
+              port->buffers ()->copyFrom (
+                ch, local_offset.in<int> (units::samples), buf, ch, 0,
                 nframes.in<int> (units::samples));
-            }
-          else
-            {
-              // TODO: handle other states
-              for (const auto ch : std::views::iota (0, buf.getNumChannels ()))
-                {
-                  port->buffers ()->copyFrom (
-                    ch, local_offset.in<int> (units::samples), buf, ch, 0,
-                    nframes.in<int> (units::samples));
-                }
             }
         }
     }
@@ -1332,6 +1566,15 @@ ClapPlugin::load_plugin (
       z_debug ("CLAP: no saved state to apply");
     }
 
+  if (!generate_new_ports)
+    {
+      // Ports were restored from the project: negotiate the saved bus
+      // topology into the (still inactive) plugin, after its state is
+      // applied so the negotiation acts on the final state. Loading always
+      // recalculates the graph afterwards, so the result is discarded
+      restore_saved_bus_arrangements ();
+    }
+
   Q_EMIT pluginLoadedChanged (true);
 
   Q_EMIT hasNativeUiChanged ();
@@ -1372,6 +1615,10 @@ ClapPlugin::unload_current_plugin ()
       pimpl_->fd_tokens_.clear ();
       pimpl_->timer_tokens_.clear ();
     }
+
+  // A rescan scanned from the destroyed instance is stale; its deferred
+  // action must not reconcile ports against dead configurations
+  pimpl_->clear_pending_audio_port_scan ();
 
   pimpl_->pluginEntry_->deinit ();
   pimpl_->pluginEntry_ = nullptr;
@@ -1848,6 +2095,259 @@ ClapPlugin::logLog (clap_log_severity severity, const char * message)
     }
 }
 
+dsp::SpeakerArrangement
+ClapPlugin::ClapPluginImpl::resolve_audio_port_arrangement (
+  dsp::PortFlow                 flow,
+  uint32_t                      index,
+  const clap_audio_port_info_t &nfo) const
+{
+  const bool is_input = flow == dsp::PortFlow::Input;
+  const auto discrete_fallback = [&nfo] {
+    return dsp::SpeakerArrangement::discrete_channels (
+      static_cast<uint8_t> (nfo.channel_count));
+  };
+
+  const auto arrangement = [&] {
+    if (nfo.port_type == nullptr || nfo.port_type[0] == '\0')
+      // An absent port type is "unspecified (arbitrary audio)" by
+      // definition, not a failure
+      return discrete_fallback ();
+    const std::string_view port_type = nfo.port_type;
+    if (port_type == CLAP_PORT_MONO)
+      return dsp::SpeakerArrangement::mono ();
+    if (port_type == CLAP_PORT_STEREO)
+      return dsp::SpeakerArrangement::stereo ();
+
+    if (port_type == CLAP_PORT_SURROUND)
+      {
+        const auto map =
+          get_surround_channel_map (flow, index, nfo.channel_count);
+        if (!map.has_value ())
+          {
+            z_warning (
+              "CLAP: plugin '{}' reports {} audio port {} as surround but "
+              "provided no complete channel map; treating it as discrete",
+              owner_.get_name (), is_input ? "input" : "output", index);
+            return discrete_fallback ();
+          }
+        const auto resolved =
+          clap_speaker_arrangement::arrangement_from_surround_channel_map (*map);
+        if (!resolved.has_value ())
+          {
+            z_warning (
+              "CLAP: plugin '{}' reports {} audio port {} with a channel "
+              "map containing unknown or duplicate speaker ids; treating "
+              "it as discrete",
+              owner_.get_name (), is_input ? "input" : "output", index);
+            return discrete_fallback ();
+          }
+        return *resolved;
+      }
+
+    if (port_type == CLAP_PORT_AMBISONIC)
+      {
+        const auto * ext = get_extension<clap_plugin_ambisonic> (
+          CLAP_EXT_AMBISONIC, CLAP_EXT_AMBISONIC_COMPAT);
+        clap_ambisonic_config config{};
+        if (
+          ext == nullptr
+          || !ext->get_config (plugin_->clapPlugin (), is_input, index, &config))
+          {
+            z_warning (
+              "CLAP: plugin '{}' reports {} audio port {} as ambisonic but "
+              "provided no configuration; treating it as discrete",
+              owner_.get_name (), is_input ? "input" : "output", index);
+            return discrete_fallback ();
+          }
+        const auto resolved =
+          clap_speaker_arrangement::arrangement_from_ambisonic_config (
+            nfo.channel_count, config.ordering, config.normalization);
+        if (!resolved.has_value ())
+          {
+            z_warning (
+              "CLAP: plugin '{}' reports {} audio port {} with an ambisonic "
+              "configuration this host cannot represent (SN2D/N2D, a "
+              "non-square channel count or FuMa above 3rd order); treating "
+              "it as discrete",
+              owner_.get_name (), is_input ? "input" : "output", index);
+            return discrete_fallback ();
+          }
+        return *resolved;
+      }
+
+    z_warning (
+      "CLAP: plugin '{}' reports {} audio port {} with the unknown port "
+      "type '{}'; treating it as discrete",
+      owner_.get_name (), is_input ? "input" : "output", index, port_type);
+    return discrete_fallback ();
+  }();
+
+  // Mono and stereo port types imply the channel count; when the reported
+  // count disagrees, the plugin's actual channel count is what flows on the
+  // wire
+  if (arrangement.channel_count () != nfo.channel_count)
+    {
+      z_warning (
+        "CLAP: plugin '{}' reports {} audio port {} as {} channel(s) with a "
+        "port type implying {} channel(s); treating it as discrete",
+        owner_.get_name (), is_input ? "input" : "output", index,
+        nfo.channel_count, arrangement.channel_count ());
+      return discrete_fallback ();
+    }
+  return arrangement;
+}
+
+std::optional<std::vector<uint8_t>>
+ClapPlugin::ClapPluginImpl::get_surround_channel_map (
+  dsp::PortFlow flow,
+  uint32_t      index,
+  uint32_t      channel_count) const
+{
+  // TODO: implement the clap_host_surround and clap_host_ambisonic
+  // extensions: a plugin that changes only its channel map or ambisonic
+  // configuration signals it via the host extension's changed(), not via
+  // audio_ports.rescan(). Until then such a change leaves the arrangement
+  // and the wire-order permutation stale until the next rescan
+  const bool   is_input = flow == dsp::PortFlow::Input;
+  const auto * ext = get_extension<clap_plugin_surround> (
+    CLAP_EXT_SURROUND, CLAP_EXT_SURROUND_COMPAT);
+  if (ext == nullptr)
+    return std::nullopt;
+  std::vector<uint8_t> map (channel_count);
+  const auto           stored = ext->get_channel_map (
+    plugin_->clapPlugin (), is_input, index, map.data (),
+    static_cast<uint32_t> (map.size ()));
+  // a partial map leaves channels without speaker semantics: no honest layout
+  if (stored != channel_count)
+    return std::nullopt;
+  return map;
+}
+
+std::optional<std::vector<clap_audio_port_info_t>>
+ClapPlugin::ClapPluginImpl::enumerate_validated_audio_port_infos (
+  dsp::PortFlow flow) const
+{
+  const bool is_input = flow == dsp::PortFlow::Input;
+  if (!plugin_->canUseAudioPorts ())
+    return std::vector<clap_audio_port_info_t>{};
+  const auto count = plugin_->audioPortsCount (is_input);
+  if (count > kMaxAudioBusesPerFlow)
+    {
+      z_warning (
+        "CLAP: plugin '{}' declares {} {} audio buses, above the supported "
+        "{}; ignoring the report",
+        owner_.get_name (), count, is_input ? "input" : "output",
+        kMaxAudioBusesPerFlow);
+      return std::nullopt;
+    }
+  std::vector<clap_audio_port_info_t> infos;
+  infos.reserve (count);
+  std::vector<uint32_t> seen_ids;
+  seen_ids.reserve (count);
+  for (const auto i : std::views::iota (0u, count))
+    {
+      clap_audio_port_info_t nfo{};
+      if (!plugin_->audioPortsGet (i, is_input, &nfo))
+        {
+          // A plugin must report info for every index below its declared
+          // count
+          z_warning (
+            "CLAP: plugin '{}' did not report {} audio port {} below its "
+            "declared count of {}",
+            owner_.get_name (), is_input ? "input" : "output", i, count);
+          return std::nullopt;
+        }
+      // A bus carries at least one channel; SpeakerArrangement models at
+      // most 255
+      if (
+        nfo.channel_count < 1
+        || nfo.channel_count > std::numeric_limits<uint8_t>::max ())
+        {
+          z_warning (
+            "CLAP: plugin '{}' reports {} audio port {} with {} channels; "
+            "ignoring the report",
+            owner_.get_name (), is_input ? "input" : "output", i,
+            nfo.channel_count);
+          return std::nullopt;
+        }
+      // Stable ids must be unique per flow: duplicates would alias two
+      // buses onto the same engine port
+      if (std::ranges::find (seen_ids, nfo.id) != seen_ids.end ())
+        {
+          z_warning (
+            "CLAP: plugin '{}' reports duplicate {} audio port id {}",
+            owner_.get_name (), is_input ? "input" : "output", nfo.id);
+          return std::nullopt;
+        }
+      seen_ids.push_back (nfo.id);
+      infos.push_back (nfo);
+    }
+  return infos;
+}
+
+std::optional<std::vector<dsp::AudioBusConfig>>
+ClapPlugin::ClapPluginImpl::build_audio_bus_configs (dsp::PortFlow flow) const
+{
+  const auto infos = enumerate_validated_audio_port_infos (flow);
+  if (!infos.has_value ())
+    return std::nullopt;
+
+  const bool is_input = flow == dsp::PortFlow::Input;
+  // Only the first port may be flagged main (audio-ports.h). Misplaced or
+  // duplicate main flags only affect the Main/Sidechain purpose assignment,
+  // so they are warned about and normalized rather than rejecting the
+  // report; likewise a flow with no main flag gets its first port treated
+  // as main so automatic chain wiring can connect it
+  if (!infos->empty ())
+    {
+      const auto is_main_flagged = [] (const auto &nfo) {
+        return (nfo.flags & CLAP_AUDIO_PORT_IS_MAIN) != 0;
+      };
+      auto &misplaced_warned =
+        misplaced_main_warning_emitted_[flow_index (flow)];
+      auto &no_main_warned = no_main_warning_emitted_[flow_index (flow)];
+      if (std::ranges::any_of (*infos | std::views::drop (1), is_main_flagged))
+        {
+          if (!misplaced_warned)
+            {
+              misplaced_warned = true;
+              z_warning (
+                "CLAP: plugin '{}' flags {} audio ports other than the first "
+                "as main; ignoring the flags",
+                owner_.get_name (), is_input ? "input" : "output");
+            }
+        }
+      else if (std::ranges::none_of (*infos, is_main_flagged))
+        {
+          if (!no_main_warned)
+            {
+              no_main_warned = true;
+              z_warning (
+                "CLAP: plugin '{}' flags no {} audio port as main; treating "
+                "the first port as main",
+                owner_.get_name (), is_input ? "input" : "output");
+            }
+        }
+    }
+
+  std::vector<dsp::AudioBusConfig> configs;
+  configs.reserve (infos->size ());
+  for (const auto &[i, nfo] : utils::views::enumerate (*infos))
+    {
+      configs.push_back (
+        dsp::AudioBusConfig{
+          .name = utils::Utf8String::from_utf8_encoded_string (nfo.name),
+          .arrangement = resolve_audio_port_arrangement (
+            flow, static_cast<uint32_t> (i), nfo),
+          .purpose =
+            i == 0 ? dsp::AudioPort::Purpose::Main
+                   : dsp::AudioPort::Purpose::Sidechain,
+          .active = true,
+          .external_id = nfo.id });
+    }
+  return configs;
+}
+
 void
 ClapPlugin::create_ports_from_clap_plugin ()
 {
@@ -1890,82 +2390,640 @@ ClapPlugin::create_ports_from_clap_plugin ()
 
   if (pimpl_->plugin_->canUseAudioPorts ())
     {
-      const auto create_port = [&] (bool is_input, auto index) {
-        clap_audio_port_info_t nfo{};
-        pimpl_->plugin_->audioPortsGet (index, is_input, &nfo);
-        const dsp::SpeakerArrangement arrangement = [nfo] () {
-          if (nfo.port_type != nullptr)
-            {
-              if (std::string (nfo.port_type) == std::string (CLAP_PORT_STEREO))
-                {
-                  return dsp::SpeakerArrangement::stereo ();
-                }
-              if (std::string (nfo.port_type) == std::string (CLAP_PORT_MONO))
-                {
-                  return dsp::SpeakerArrangement::mono ();
-                }
-            }
-          return dsp::SpeakerArrangement::discrete_channels (
-            static_cast<uint8_t> (nfo.channel_count));
-        }();
-        auto port_ref = utils::create_object<dsp::AudioPort> (
-          registry (), utils::Utf8String::from_utf8_encoded_string (nfo.name),
-          is_input ? dsp::PortFlow::Input : dsp::PortFlow::Output, arrangement,
-          index == 0
-            ? dsp::AudioPort::Purpose::Main
-            : dsp::AudioPort::Purpose::Sidechain);
-        if (is_input)
-          {
-            add_input_port (port_ref);
-          }
-        else
-          {
-            add_output_port (port_ref);
-          }
-      };
-
-      const auto audio_in_ports = pimpl_->plugin_->audioPortsCount (true);
-      const auto audio_out_ports = pimpl_->plugin_->audioPortsCount (false);
-      for (const auto i : std::views::iota (0u, audio_in_ports))
+      // No audio ports exist yet, so reconciliation reduces to its create
+      // branch (MIDI ports are not audio ports and are left alone)
+      for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
         {
-          create_port (true, i);
-        }
-      for (const auto i : std::views::iota (0u, audio_out_ports))
-        {
-          create_port (false, i);
+          const auto configs = pimpl_->build_audio_bus_configs (flow);
+          if (!configs.has_value ())
+            continue;
+          static_cast<void> (dsp::reconcile_audio_bus_configuration (
+            registry (), *this, flow, *configs));
         }
     }
 }
 
+bool
+ClapPlugin::audioPortsIsRescanFlagSupported (uint32_t flag) noexcept
+{
+  switch (flag)
+    {
+    case CLAP_AUDIO_PORTS_RESCAN_NAMES:
+    case CLAP_AUDIO_PORTS_RESCAN_FLAGS:
+    case CLAP_AUDIO_PORTS_RESCAN_CHANNEL_COUNT:
+    case CLAP_AUDIO_PORTS_RESCAN_PORT_TYPE:
+    case CLAP_AUDIO_PORTS_RESCAN_LIST:
+      return true;
+    // We never process in place, so pairing changes are inert to us
+    case CLAP_AUDIO_PORTS_RESCAN_IN_PLACE_PAIR:
+      return true;
+    default:
+      return false;
+    }
+}
+
 void
+ClapPlugin::audioPortsRescan (uint32_t flags) noexcept
+{
+  z_return_if_fail (is_main_thread);
+
+  if (pimpl_->plugin_ == nullptr)
+    return;
+
+  // Requesting a rescan with a flag is_rescan_flag_supported() rejected is
+  // illegal (clap/ext/audio-ports.h)
+  constexpr uint32_t known_flags =
+    CLAP_AUDIO_PORTS_RESCAN_NAMES | CLAP_AUDIO_PORTS_RESCAN_FLAGS
+    | CLAP_AUDIO_PORTS_RESCAN_CHANNEL_COUNT | CLAP_AUDIO_PORTS_RESCAN_PORT_TYPE
+    | CLAP_AUDIO_PORTS_RESCAN_IN_PLACE_PAIR | CLAP_AUDIO_PORTS_RESCAN_LIST;
+  if ((flags & ~known_flags) != 0u)
+    {
+      z_warning (
+        "CLAP: plugin '{}' requested an audio ports rescan with unsupported "
+        "flags {:#x}; ignoring it",
+        get_name (), flags);
+      return;
+    }
+  if (flags == 0)
+    {
+      // No aspect flagged: nothing to do
+      z_debug (
+        "CLAP: plugin '{}' requested an audio ports rescan without flags; "
+        "ignoring it",
+        get_name ());
+      return;
+    }
+  // A plugin may not request a rescan of an extension it does not implement
+  if (!pimpl_->plugin_->canUseAudioPorts ())
+    {
+      z_warning (
+        "CLAP: plugin '{}' requested an audio ports rescan without "
+        "implementing the audio ports extension",
+        get_name ());
+      return;
+    }
+
+  // Only RESCAN_NAMES may be requested while the plugin is up and running
+  // (clap/ext/audio-ports.h); topology changes require deactivation first.
+  // The restart flow legitimately reaches this from within the plugin's
+  // deactivate() (state ActiveAndReadyToDeactivate), so refuse only the
+  // running states
+  const bool running =
+    pimpl_->state_ == ClapPluginImpl::ActiveAndSleeping
+    || pimpl_->state_ == ClapPluginImpl::ActiveAndProcessing;
+  if (running && (flags & ~CLAP_AUDIO_PORTS_RESCAN_NAMES) != 0u)
+    {
+      z_warning (
+        "CLAP: plugin '{}' requested a topology-changing audio ports rescan "
+        "while active; ignoring it (the plugin must be restarted first)",
+        get_name ());
+      return;
+    }
+
+  // Scan eagerly: topology-changing rescans are only reported while the
+  // plugin is deactivated (e.g. from within its deactivate() during a
+  // restart), so the scan must happen inside that window
+  pimpl_->pending_audio_port_scan_ = true;
+  for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
+    {
+      auto configs = pimpl_->build_audio_bus_configs (flow);
+      if (!configs.has_value ())
+        {
+          // A failed scan yields no trustworthy configuration; the
+          // reconciler detaches ports absent from a configuration, so the
+          // request is dropped
+          z_warning (
+            "CLAP: plugin '{}' failed to report its audio ports; ignoring "
+            "the rescan request",
+            get_name ());
+          pimpl_->clear_pending_audio_port_scan ();
+          return;
+        }
+      pimpl_->pending_audio_port_configs_for (flow) = std::move (*configs);
+    }
+
+  // The reconciliation mutates engine objects, which requires the processing
+  // pause the restart handler may already hold: defer so it runs after any
+  // in-flight restart completes
+  if (
+    !post_main_thread_action_deferred ([this] { apply_audio_ports_rescan (); }))
+    {
+      z_warning (
+        "CLAP: dropping the audio ports rescan of '{}': the main thread "
+        "action queue is full",
+        get_name ());
+      pimpl_->clear_pending_audio_port_scan ();
+    }
+}
+
+void
+ClapPlugin::apply_audio_ports_rescan ()
+{
+  assert (is_main_thread);
+
+  if (!std::exchange (pimpl_->pending_audio_port_scan_, false))
+    return;
+  std::array<std::vector<dsp::AudioBusConfig>, 2> scanned_configs;
+  for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
+    {
+      scanned_configs[ClapPluginImpl::flow_index (flow)] =
+        std::exchange (pimpl_->pending_audio_port_configs_for (flow), {});
+    }
+
+  if (main_thread_callbacks_.graph_recalc_ == nullptr)
+    {
+      // Reconciling drops the buffers of ports whose arrangement changed
+      // and creates new ports unprepared, and only a graph recalculation
+      // reallocates them: without one the current topology keeps running
+      z_warning (
+        "CLAP: ports of '{}' changed but the host cannot recalculate the "
+        "processing graph; keeping the current port topology",
+        get_name ());
+      return;
+    }
+
+  dsp::AudioBusReconcileResult result{
+    .graph_changed = false, .metadata_changed = false
+  };
+  const auto apply = [&] {
+    for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
+      {
+        const auto flow_result = dsp::reconcile_audio_bus_configuration (
+          registry (), *this, flow,
+          scanned_configs[ClapPluginImpl::flow_index (flow)]);
+        result.graph_changed |= flow_result.graph_changed;
+        result.metadata_changed |= flow_result.metadata_changed;
+      }
+    if (result.graph_changed)
+      {
+        // The recalculation's node preparation reallocates the dropped and
+        // new port buffers, and must happen before processing resumes.
+        // Metadata-only changes (labels, id adoption) need neither the
+        // recalculation nor the plugin restart it would cause
+        main_thread_callbacks_.graph_recalc_ ();
+      }
+  };
+  if (main_thread_callbacks_.with_paused_processing_)
+    {
+      main_thread_callbacks_.with_paused_processing_ (apply);
+    }
+  else
+    {
+      z_warning (
+        "CLAP: plugin '{}' changed its audio ports but the host cannot pause "
+        "processing to apply the change; reload the plugin",
+        get_name ());
+      return;
+    }
+
+  if (result.graph_changed || result.metadata_changed)
+    {
+      z_debug (
+        "CLAP: reconciled ports of '{}' after audio ports rescan", get_name ());
+    }
+}
+
+void
+ClapPlugin::restore_saved_bus_arrangements ()
+{
+  assert (is_main_thread);
+  assert (!pimpl_->is_plugin_active ());
+
+  if (pimpl_->plugin_ == nullptr || !pimpl_->plugin_->canUseAudioPorts ())
+    return;
+
+  // A rescan requested before this negotiation (e.g. while the plugin's
+  // state loaded) or during it (from inside apply_configuration, which is
+  // legal while deactivated) is superseded by it: the negotiation
+  // enumerates the live topology directly and syncs the ports to the
+  // accepted layout, so the rescan's deferred action must not reconcile
+  // them back
+  pimpl_->clear_pending_audio_port_scan ();
+  [this] {
+    // Negotiation is done per flow over the *audio* ports; their position in
+    // the bus-ordered lists is the enumeration index. Detached ports are left
+    // out: they hold buses the plugin removed, which are not pushed again (the
+    // final reconciliation re-attaches them if the bus returns)
+    const auto saved_configs = [this] (dsp::PortFlow flow) {
+      return get_attached_audio_ports (flow)
+             | std::views::transform ([] (const dsp::AudioPort * port) {
+                 return dsp::AudioBusConfig{
+                   .name = port->get_label (),
+                   .arrangement = port->arrangement (),
+                   .purpose = port->purpose (),
+                   .external_id = port->external_port_id ()
+                 };
+               })
+             | std::ranges::to<std::vector> ();
+    };
+    const auto saved_inputs = saved_configs (dsp::PortFlow::Input);
+    const auto saved_outputs = saved_configs (dsp::PortFlow::Output);
+
+    const auto live_inputs =
+      pimpl_->build_audio_bus_configs (dsp::PortFlow::Input);
+    const auto live_outputs =
+      pimpl_->build_audio_bus_configs (dsp::PortFlow::Output);
+    if (!live_inputs.has_value () || !live_outputs.has_value ())
+      {
+        // Without a trustworthy scan the restored ports carry no stable ids
+        // and cannot be paired with the plugin's buses: the plugin is fed
+        // silence and its output is dropped until it reports a valid
+        // configuration
+        z_warning (
+          "CLAP: plugin '{}' failed to report its audio ports; its buses "
+          "cannot be paired with the restored ports",
+          get_name ());
+        return;
+      }
+
+    // Skip the negotiation when the live layout already matches the restored
+    // topology; the sync below still runs to sync labels, purposes and
+    // detached states. Ports created from a bus enumeration always carry its
+    // stable id, so the comparison is strict on ids. It is also
+    // order-independent: the saved list is in port-list order while the live
+    // list is in enumeration order, and a reordering list rescan diverges the
+    // two permanently (stable ids are unique per flow)
+    const auto sorted_topology =
+      [] (const std::vector<dsp::AudioBusConfig> &configs) {
+        auto pairs =
+          configs
+          | std::views::transform ([] (const dsp::AudioBusConfig &config) {
+              return std::pair{ config.external_id, config.arrangement };
+            })
+          | std::ranges::to<std::vector> ();
+        std::ranges::stable_sort (pairs, [] (const auto &a, const auto &b) {
+          return a.first < b.first;
+        });
+        return pairs;
+      };
+    const auto matches_live =
+      [&] (
+        const std::vector<dsp::AudioBusConfig> &saved,
+        const std::vector<dsp::AudioBusConfig> &live) {
+        return std::ranges::equal (
+          sorted_topology (saved), sorted_topology (live));
+      };
+    const bool topology_matches =
+      matches_live (saved_inputs, *live_inputs)
+      && matches_live (saved_outputs, *live_outputs);
+
+    // Ports saved before ids were recorded carry no id, so the comparison
+    // above always fails for them. When their arrangements already match the
+    // live layout positionally there is nothing to negotiate; the sync below
+    // adopts the live ids
+    const auto has_no_ids = [] (const std::vector<dsp::AudioBusConfig> &saved) {
+      return std::ranges::none_of (saved, [] (const dsp::AudioBusConfig &config) {
+        return config.external_id.has_value ();
+      });
+    };
+    const auto arrangements_match_live =
+      [&] (
+        const std::vector<dsp::AudioBusConfig> &saved,
+        const std::vector<dsp::AudioBusConfig> &live) {
+        return std::ranges::equal (
+          saved, live, {}, &dsp::AudioBusConfig::arrangement,
+          &dsp::AudioBusConfig::arrangement);
+      };
+    const bool legacy_layout_matches =
+      has_no_ids (saved_inputs) && has_no_ids (saved_outputs)
+      && arrangements_match_live (saved_inputs, *live_inputs)
+      && arrangements_match_live (saved_outputs, *live_outputs);
+
+    bool pushed = false;
+    if (!topology_matches && !legacy_layout_matches)
+      {
+        const auto push_result = pimpl_->push_saved_bus_configuration (
+          saved_inputs, saved_outputs, *live_inputs, *live_outputs);
+        if (!push_result.has_value ())
+          {
+            z_warning (
+              "CLAP: plugin '{}' does not implement configurable audio ports; "
+              "adopting its current layout",
+              get_name ());
+          }
+        // A refused or empty push is warned about / logged inside
+        pushed = push_result.value_or (false);
+      }
+
+    static_cast<void> (pimpl_->sync_ports_to_live_configuration (
+      *live_inputs, *live_outputs, pushed));
+  }();
+  pimpl_->clear_pending_audio_port_scan ();
+}
+
+std::optional<bool>
+ClapPlugin::ClapPluginImpl::push_saved_bus_configuration (
+  const std::vector<dsp::AudioBusConfig> &saved_inputs,
+  const std::vector<dsp::AudioBusConfig> &saved_outputs,
+  const std::vector<dsp::AudioBusConfig> &live_inputs,
+  const std::vector<dsp::AudioBusConfig> &live_outputs)
+{
+  const auto * configurable = get_extension<clap_plugin_configurable_audio_ports> (
+    CLAP_EXT_CONFIGURABLE_AUDIO_PORTS, CLAP_EXT_CONFIGURABLE_AUDIO_PORTS_COMPAT);
+  if (configurable == nullptr)
+    return std::nullopt;
+
+  // Requests point into these deques, whose elements never relocate
+  std::deque<std::vector<uint8_t>>                   channel_maps;
+  std::deque<clap_ambisonic_config>                  ambisonic_configs;
+  std::vector<clap_audio_port_configuration_request> requests;
+  const auto                                         build_requests =
+    [&] (
+      const std::vector<dsp::AudioBusConfig> &saved,
+      const std::vector<dsp::AudioBusConfig> &live, dsp::PortFlow flow) {
+      // Id-less saved buses match positionally; detached ports filtered out
+      // of the saved list shift positions when one sat before a surviving
+      // bus
+      const bool any_idless =
+        std::ranges::any_of (saved, [] (const dsp::AudioBusConfig &config) {
+          return !config.external_id.has_value ();
+        });
+      const bool any_detached = std::ranges::any_of (
+        owner_.get_all_audio_ports (flow),
+        [] (const auto * port) { return port->detached (); });
+      if (any_idless && any_detached)
+        {
+          z_warning (
+            "CLAP: plugin '{}': saved {} buses without stable ids are "
+            "matched positionally, but a removed bus shifts the positions; "
+            "bus assignments may be wrong",
+            owner_.get_name (),
+            flow == dsp::PortFlow::Input ? "input" : "output");
+        }
+      std::vector<bool> claimed (live.size (), false);
+      for (const auto &[saved_index, config] : utils::views::enumerate (saved))
+        {
+          if (config.arrangement.channel_count () == 0)
+            {
+              // Only reachable via a hand-edited project; a channel-less
+              // bus cannot be expressed in a configuration request
+              z_warning (
+                "CLAP: saved bus '{}' of plugin '{}' has no channels; "
+                "skipping it",
+                config.name, owner_.get_name ());
+              continue;
+            }
+
+          // A saved bus with a stable id only ever targets the live bus
+          // carrying that id; only ports saved before ids were recorded
+          // match by position. Positional matching assumes the saved list
+          // order (detached ports filtered out) still matches the live
+          // enumeration order
+          std::optional<size_t> index;
+          if (config.external_id.has_value ())
+            {
+              const auto live_index = std::ranges::find_if (
+                live, [&] (const dsp::AudioBusConfig &live_config) {
+                  return live_config.external_id == config.external_id;
+                });
+              if (live_index != live.end ())
+                {
+                  index = static_cast<size_t> (
+                    std::distance (live.begin (), live_index));
+                }
+            }
+          else
+            {
+              index = static_cast<size_t> (saved_index);
+            }
+          if (!index.has_value () || *index >= live.size () || claimed[*index])
+            {
+              // No live bus to push this saved bus onto, or another request
+              // already targets it
+              z_debug (
+                "CLAP: saved bus '{}' of plugin '{}' matches no unclaimed "
+                "live {} bus; not pushing it",
+                config.name, owner_.get_name (),
+                flow == dsp::PortFlow::Input ? "input" : "output");
+              continue;
+            }
+
+          const auto * port_type = clap_speaker_arrangement::
+            port_type_from_arrangement (config.arrangement);
+          const void * details = nullptr;
+          if (
+            config.arrangement.kind () == dsp::SpeakerArrangement::Kind::Speakers
+            && !config.arrangement.is_mono ()
+            && !config.arrangement.is_stereo ())
+            {
+              auto map = clap_speaker_arrangement::
+                surround_channel_map_from_arrangement (config.arrangement);
+              if (!map.has_value ())
+                {
+                  z_warning (
+                    "CLAP: saved bus '{}' of plugin '{}' has no CLAP channel "
+                    "map encoding; skipping it",
+                    config.name, owner_.get_name ());
+                  continue;
+                }
+              channel_maps.push_back (std::move (*map));
+              details = channel_maps.back ().data ();
+            }
+          else if (
+            config.arrangement.kind ()
+            == dsp::SpeakerArrangement::Kind::Ambisonics)
+            {
+              const auto ambisonic = clap_speaker_arrangement::
+                ambisonic_config_from_arrangement (config.arrangement);
+              if (!ambisonic.has_value ())
+                {
+                  z_warning (
+                    "CLAP: saved bus '{}' of plugin '{}' has no CLAP "
+                    "ambisonic encoding; skipping it",
+                    config.name, owner_.get_name ());
+                  continue;
+                }
+              ambisonic_configs.push_back (
+                clap_ambisonic_config{
+                  .ordering = ambisonic->first,
+                  .normalization = ambisonic->second });
+              details = &ambisonic_configs.back ();
+            }
+
+          claimed[*index] = true;
+          requests.push_back (
+            clap_audio_port_configuration_request{
+              .is_input = flow == dsp::PortFlow::Input,
+              .port_index = static_cast<uint32_t> (*index),
+              .channel_count = config.arrangement.channel_count (),
+              .port_type = port_type,
+              .port_details = details });
+        }
+    };
+  build_requests (saved_inputs, live_inputs, dsp::PortFlow::Input);
+  build_requests (saved_outputs, live_outputs, dsp::PortFlow::Output);
+
+  if (requests.empty ())
+    {
+      // No saved bus could be matched to a live bus, so there is nothing to
+      // negotiate; the live layout is adopted as-is
+      z_info (
+        "CLAP: no saved bus of plugin '{}' matches a live bus; adopting the "
+        "live layout",
+        owner_.get_name ());
+      return false;
+    }
+
+  if (
+    !configurable->can_apply_configuration (
+      plugin_->clapPlugin (), requests.data (),
+      static_cast<uint32_t> (requests.size ()))
+    || !configurable->apply_configuration (
+      plugin_->clapPlugin (), requests.data (),
+      static_cast<uint32_t> (requests.size ())))
+    {
+      z_warning (
+        "CLAP: plugin '{}' refused to restore the saved bus configuration; "
+        "adopting its current layout",
+        owner_.get_name ());
+      return false;
+    }
+  return true;
+}
+
+dsp::AudioBusReconcileResult
+ClapPlugin::ClapPluginImpl::sync_ports_to_live_configuration (
+  const std::vector<dsp::AudioBusConfig> &live_inputs,
+  const std::vector<dsp::AudioBusConfig> &live_outputs,
+  bool                                    pushed)
+{
+  // The accepted layout only differs from the live one after a successful
+  // configuration push, so the live configurations are reused when nothing
+  // was pushed
+  dsp::AudioBusReconcileResult result{
+    .graph_changed = false, .metadata_changed = false
+  };
+  for (const auto flow : { dsp::PortFlow::Input, dsp::PortFlow::Output })
+    {
+      const auto &live =
+        flow == dsp::PortFlow::Input ? live_inputs : live_outputs;
+      if (!pushed)
+        {
+          const auto flow_result = dsp::reconcile_audio_bus_configuration (
+            owner_.registry (), owner_, flow, live);
+          result.graph_changed |= flow_result.graph_changed;
+          result.metadata_changed |= flow_result.metadata_changed;
+          continue;
+        }
+      const auto accepted = build_audio_bus_configs (flow);
+      if (!accepted.has_value ())
+        {
+          // A failed scan yields no trustworthy configuration; the
+          // reconciler detaches ports absent from a configuration, so the
+          // flow is skipped
+          z_warning (
+            "CLAP: plugin '{}' failed to report its audio ports after "
+            "configuration; keeping the current port topology",
+            owner_.get_name ());
+          continue;
+        }
+      const auto flow_result = dsp::reconcile_audio_bus_configuration (
+        owner_.registry (), owner_, flow, *accepted);
+      result.graph_changed |= flow_result.graph_changed;
+      result.metadata_changed |= flow_result.metadata_changed;
+    }
+  if (result.graph_changed || result.metadata_changed)
+    {
+      z_debug (
+        "CLAP: reconciled ports of '{}' with the accepted bus configuration",
+        owner_.get_name ());
+    }
+  return result;
+}
+
+bool
 ClapPlugin::ClapPluginImpl::setup_audio_ports_for_processing (
   units::sample_u32_t block_size)
 {
-  const auto setup_for_direction = [&] (bool is_input) {
-    auto &audio_bufs = is_input ? audio_in_bufs_ : audio_out_bufs_;
+  const auto setup_for_direction = [&] (dsp::PortFlow flow) {
+    auto &audio_bufs =
+      flow == dsp::PortFlow::Input ? audio_in_bufs_ : audio_out_bufs_;
     auto &audio_clap_bufs =
-      is_input ? audio_in_clap_bufs_ : audio_out_clap_bufs_;
-    audio_bufs.resize (plugin_->audioPortsCount (is_input));
-    audio_clap_bufs.resize (plugin_->audioPortsCount (is_input));
+      flow == dsp::PortFlow::Input ? audio_in_clap_bufs_ : audio_out_clap_bufs_;
+    auto &channel_ptrs =
+      flow == dsp::PortFlow::Input
+        ? audio_in_channel_ptrs_
+        : audio_out_channel_ptrs_;
+    auto &ports_by_bus =
+      flow == dsp::PortFlow::Input
+        ? audio_in_ports_by_bus_
+        : audio_out_ports_by_bus_;
+    const auto infos = enumerate_validated_audio_port_infos (flow);
+    if (!infos.has_value ())
+      {
+        // The report is untrustworthy (warned about during enumeration);
+        // the flow gets no buses and the plugin must not be activated
+        audio_bufs.clear ();
+        audio_clap_bufs.clear ();
+        channel_ptrs.clear ();
+        ports_by_bus.clear ();
+        return false;
+      }
+    const auto attached_ports = owner_.get_attached_audio_ports (flow);
+    audio_bufs.resize (infos->size ());
+    audio_clap_bufs.resize (infos->size ());
+    channel_ptrs.resize (infos->size ());
+    ports_by_bus.clear ();
+    ports_by_bus.reserve (infos->size ());
     for (const auto &[i, juce_buf] : utils::views::enumerate (audio_bufs))
       {
-        clap_audio_port_info_t nfo;
-        plugin_->audioPortsGet (static_cast<uint32_t> (i), is_input, &nfo);
+        const auto &nfo = infos->at (i);
+
+        // Pair the bus with the engine port carrying its stable id; null
+        // while a rescan awaits its deferred reconciliation
+        const auto port_it =
+          std::ranges::find_if (attached_ports, [&] (const auto * port) {
+            return port->external_port_id () == nfo.id;
+          });
+        ports_by_bus.push_back (
+          port_it != attached_ports.end () ? *port_it : nullptr);
+
         juce_buf.setSize (
           static_cast<int> (nfo.channel_count),
           block_size.in<int> (units::samples));
+
+        // Permute the channel pointers handed to the plugin when its wire
+        // order is not canonical (surround channel maps only: ambisonic
+        // ports carry their ordering inside the arrangement). The scratch
+        // buffer itself stays canonical so the port buffer copies are
+        // untouched.
+        const auto permutation = [&] () -> std::optional<std::vector<uint8_t>> {
+          if (
+            nfo.port_type == nullptr
+            || std::string_view (nfo.port_type) != CLAP_PORT_SURROUND)
+            return std::nullopt;
+          const auto map = get_surround_channel_map (
+            flow, static_cast<uint32_t> (i), nfo.channel_count);
+          if (!map.has_value ())
+            return std::nullopt;
+          return clap_speaker_arrangement::surround_channel_permutation (*map);
+        }();
+
+        auto &ptrs = channel_ptrs.at (i);
+        ptrs.resize (nfo.channel_count);
+        for (const auto ch : std::views::iota (0u, nfo.channel_count))
+          {
+            const auto canonical_ch =
+              permutation.has_value () ? (*permutation)[ch] : ch;
+            ptrs[ch] =
+              juce_buf.getWritePointer (static_cast<int> (canonical_ch));
+          }
+
         auto &clap_buf = audio_clap_bufs.at (i);
         clap_buf.channel_count = nfo.channel_count;
-        clap_buf.data32 =
-          const_cast<float **> (juce_buf.getArrayOfWritePointers ());
+        clap_buf.data32 = ptrs.data ();
         clap_buf.data64 = nullptr;
         clap_buf.constant_mask = 0;
         clap_buf.latency = 0;
       }
+    return true;
   };
 
-  setup_for_direction (true);
-  setup_for_direction (false);
+  // Evaluate both flows unconditionally: a failed flow's buffers must be
+  // cleared even when the other flow failed first
+  const bool inputs_ok = setup_for_direction (dsp::PortFlow::Input);
+  const bool outputs_ok = setup_for_direction (dsp::PortFlow::Output);
+  return inputs_ok && outputs_ok;
 }
 
 bool
@@ -2311,7 +3369,10 @@ ClapPlugin::ClapPluginImpl::set_plugin_state (PluginState state)
       break;
 
     case InactiveWithError:
-      Q_ASSERT (state_ == Inactive);
+      // A failed activation or an untrustworthy port report can repeat on
+      // the next prepare (nothing resets the state while the plugin never
+      // became active), so re-entering the error state is valid
+      Q_ASSERT (state_ == Inactive || state_ == InactiveWithError);
       break;
 
     case ActiveAndSleeping:

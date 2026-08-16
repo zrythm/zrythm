@@ -65,6 +65,7 @@ target_sources(zrythm_plugins_lib
     FILES
       CLAPPluginFormat.h
       clap_plugin.h
+      clap_speaker_arrangement.h
       gl_context_utils.h
       host_window_units.h
       internal_plugin_base.h
