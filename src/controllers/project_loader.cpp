@@ -160,7 +160,7 @@ ProjectLoader::wait_for_plugin_instantiations (
                 "Timed out waiting for plugin instantiations after 30 seconds");
               break;
             }
-          QCoreApplication::processEvents ();
+          QCoreApplication::processEvents (QEventLoop::ExcludeUserInputEvents);
         }
     }
 }

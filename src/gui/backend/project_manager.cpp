@@ -18,6 +18,7 @@
 #include "utils/io_utils.h"
 #include "utils/version.h"
 
+#include <QCoreApplication>
 #include <QGuiApplication>
 #include <QtConcurrentRun>
 
@@ -139,9 +140,15 @@ ProjectManager::getRecentProjects () const
 std::unique_ptr<plugins::PluginHostWindow>
 ProjectManager::create_window_for_plugin (plugins::Plugin &plugin) const
 {
-  auto track_ref =
-    this->active_session_->project ()->tracklist ()->get_track_for_plugin (
-      plugin.get_uuid ());
+  // While a project is being loaded, the active session is null or still
+  // points at the previous project, but a plugin editor restore queued
+  // during deserialization can already arrive here; the track lookup then
+  // misses and the window title falls back to "<no track>"
+  const auto track_ref =
+    active_session_ != nullptr
+      ? active_session_->project ()->tracklist ()->get_track_for_plugin (
+          plugin.get_uuid ())
+      : std::optional<structure::tracks::TrackUuidReference>{};
   const auto title = utils::Utf8String::from_utf8_encoded_string (
     fmt::format (
       "{} - {} [{}]",
@@ -300,169 +307,202 @@ ProjectManager::loadProject (const QString &filepath)
 
   z_debug ("Loading project from {}", project_dir);
 
-  // Progress stages (0-100):
-  // 0-40: Loading JSON from disk
-  // 40-50: Creating project object
+  // Progress values (0-100) and the step each one is shown during:
+  // 5-40: Verifying the directory, reading and parsing the project file
+  // 40-50: Creating the project object
   // 50-70: Deserializing data
-  // 70-85: Setting up project
-  // 85-100: Rebuilding graph and starting engine
-  constexpr int kProgressRange = 100;
-  constexpr int kStage1End = 40;  // Loading JSON
-  constexpr int kStage2End = 50;  // Creating project
-  constexpr int kStage3End = 70;  // Deserializing
-  constexpr int kStage4End = 85;  // Setup
-  constexpr int kStage5End = 100; // Graph + engine
+  // 70-85: Setting up the project
+  // 85-100: Rebuilding the graph and starting the engine
+  constexpr int kStageVerifyDir = 5;
+  constexpr int kStageReadFile = 15;
+  constexpr int kStageParseJson = 25;
+  constexpr int kStageCreateProject = 40;
+  constexpr int kStageDeserialize = 50;
+  constexpr int kStageSetup = 70;
+  constexpr int kStageRebuildGraph = 85;
+  constexpr int kStageStartEngine = 95;
+  constexpr int kStageDone = 100;
 
-  auto future =
-    QtConcurrent::run ([this, project_dir] (QPromise<QString> &promise) {
-      promise.setProgressRange (0, kProgressRange);
-      promise.setProgressValueAndText (0, tr ("Loading project file..."));
+  auto future = QtConcurrent::run ([this, project_dir] (QPromise<QString> &promise) {
+    promise.setProgressRange (0, kStageDone);
 
-      auto load_future =
-        controllers::ProjectLoader::load_from_directory (project_dir);
+    nlohmann::json    json;
+    utils::Utf8String title;
 
-      // Scale subtask progress to 0-kStage1End range
-      QFutureWatcher<controllers::ProjectLoader::LoadResult> load_watcher;
-      QObject::connect (
-        &load_watcher, &QFutureWatcherBase::progressValueChanged, &load_watcher,
-        [&promise, &load_future] (int value) {
-          const auto range =
-            load_future.progressMaximum () - load_future.progressMinimum ();
-          const int scaled =
-            range > 0
-              ? (value - load_future.progressMinimum ()) * kStage1End / range
-              : kStage1End / 2;
-          promise.setProgressValue (scaled);
-        });
-      QObject::connect (
-        &load_watcher, &QFutureWatcherBase::progressTextChanged, &load_watcher,
-        [&promise] (const QString &text) {
-          promise.setProgressValueAndText (
-            promise.future ().progressValue (), text);
-        });
-      load_watcher.setFuture (load_future);
-
-      try
-        {
-          load_future.waitForFinished ();
-        }
-      catch (const std::exception &e)
-        {
-          // FIXME: I can't get the original exception message here
-          z_warning ("Failed to load project: {}", e.what ());
-          Q_EMIT projectLoadingFailed (
-            "Failed to load project data. See the log for details.");
-          promise.setException (std::make_exception_ptr (e));
-        }
-
-      if (load_future.isCanceled ())
-        {
-          promise.future ().cancel ();
+    try
+      {
+        // Run the file-loading steps inline instead of via a nested
+        // QFuture: progress is reported directly, and no pool thread is
+        // held while waiting on a second task
+        promise.setProgressValueAndText (
+          kStageVerifyDir, tr ("Verifying project directory..."));
+        if (promise.isCanceled ())
           return;
-        }
+        if (!std::filesystem::is_directory (project_dir))
+          {
+            throw ZrythmException (
+              fmt::format ("Project directory does not exist: {}", project_dir));
+          }
 
-      // Run main thread work via invokeMethod
-      QMetaObject::invokeMethod (
-        this,
-        [this, &load_future, &project_dir, &promise] () {
-          try
-            {
-              promise.setProgressValueAndText (
-                kStage1End, tr ("Creating project..."));
+        promise.setProgressValueAndText (
+          kStageReadFile, tr ("Reading project file..."));
+        if (promise.isCanceled ())
+          return;
+        const auto json_str =
+          controllers::ProjectLoader::get_uncompressed_project_text (project_dir);
 
-              const auto &load_result = load_future.result ();
+        promise.setProgressValueAndText (
+          kStageParseJson, tr ("Parsing project data..."));
+        if (promise.isCanceled ())
+          return;
+        json = controllers::ProjectLoader::parse_and_validate (json_str);
+        title = controllers::ProjectLoader::extract_title (json);
+      }
+    catch (const ZrythmException &e)
+      {
+        z_warning ("Failed to load project: {}", e.what ());
+        Q_EMIT projectLoadingFailed (e.what_string ());
+        promise.setException (std::current_exception ());
+        return;
+      }
+    catch (const std::exception &e)
+      {
+        z_warning ("Failed to load project: {}", e.what ());
+        Q_EMIT projectLoadingFailed (
+          tr ("Failed to load project data. See the log for details."));
+        promise.setException (std::current_exception ());
+        return;
+      }
 
-              // Create project with all required dependencies
-              auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
-              auto prj = utils::make_qobject_unique<structure::project::Project> (
-                app_settings_,
-                [project_dir] (bool /*for_backup*/) { return project_dir; },
-                zapp->hw_audio_interface (), *zapp->deviceManager (),
-                zapp->pluginManager ()->get_format_manager (),
-                [this] (plugins::Plugin &plugin) {
-                  return create_window_for_plugin (plugin);
-                },
-                *zapp->controlRoom ()->metronome (),
-                *zapp->controlRoom ()->monitorFader ());
+    // Run main thread work via invokeMethod
+    QMetaObject::invokeMethod (
+      this,
+      [this, &json, &title, &project_dir, &promise] () {
+        try
+          {
+            const auto report_progress =
+              [&promise] (int value, const QString &text) {
+                promise.setProgressValueAndText (value, text);
+              };
+            // The main event loop is blocked while this lambda runs, so
+            // progress updates would only reach the UI after everything
+            // finishes. Pump events after the early updates so the dialog
+            // repaints before the next step begins (user input is excluded,
+            // so the dialog's Cancel button stays inert). Updates from
+            // deserialization onwards must not pump: queued plugin editor
+            // restores must only run once the new session is active
+            const auto report_progress_and_repaint =
+              [&report_progress] (int value, const QString &text) {
+                report_progress (value, text);
+                QCoreApplication::processEvents (
+                  QEventLoop::ExcludeUserInputEvents);
+              };
 
-              promise.setProgressValueAndText (
-                kStage2End, tr ("Deserializing project data..."));
+            report_progress_and_repaint (
+              kStageCreateProject, tr ("Creating project..."));
+            if (promise.isCanceled ())
+              return;
 
-              auto project_session = utils::make_qobject_unique<ProjectSession> (
-                app_settings_, std::move (prj));
+            // Create project with all required dependencies
+            auto * zapp = dynamic_cast<ZrythmApplication *> (qApp);
+            auto prj = utils::make_qobject_unique<structure::project::Project> (
+              app_settings_,
+              [project_dir] (bool /*for_backup*/) { return project_dir; },
+              zapp->hw_audio_interface (), *zapp->deviceManager (),
+              zapp->pluginManager ()->get_format_manager (),
+              [this] (plugins::Plugin &plugin) {
+                return create_window_for_plugin (plugin);
+              },
+              *zapp->controlRoom ()->metronome (),
+              *zapp->controlRoom ()->monitorFader ());
 
-              // Deserialize JSON into Project, ProjectUiState, and UndoStack
-              controllers::ProjectLoader::deserialize (
-                load_result.json, *project_session->project (),
-                *project_session->uiState (), *project_session->undoStack ());
+            report_progress_and_repaint (
+              kStageDeserialize, tr ("Deserializing project data..."));
+            if (promise.isCanceled ())
+              return;
 
-              promise.setProgressValueAndText (
-                kStage3End, tr ("Setting up project..."));
+            auto project_session = utils::make_qobject_unique<ProjectSession> (
+              app_settings_, std::move (prj));
 
-              // Set title from loaded project
-              project_session->setTitle (load_result.title.to_qstring ());
+            // Deserialize JSON into Project, ProjectUiState, and UndoStack
+            controllers::ProjectLoader::deserialize (
+              json, *project_session->project (), *project_session->uiState (),
+              *project_session->undoStack ());
 
-              // Initialize clip editor
-              project_session->uiState ()->clipEditor ()->init ();
+            report_progress (kStageSetup, tr ("Setting up project..."));
+            if (promise.isCanceled ())
+              return;
 
-              // Set up project
-              auto * session = project_session.release ();
-              session->setParent (this);
-              session->setProjectDirectory (
-                utils::Utf8String::from_path (project_dir).to_qstring ());
+            // Set title from loaded project
+            project_session->setTitle (title.to_qstring ());
 
-              // Set as active project
-              setActiveSession (session);
+            // Initialize clip editor
+            project_session->uiState ()->clipEditor ()->init ();
 
-              // Re-attach generic UI tracking for all deserialized plugins in
-              // the project's tracks (restores generic windows for plugins
-              // saved with visible UI)
-              for (
-                const auto &tr_ref :
-                session->project ()->tracklist ()->collection ()->tracks ())
-                {
-                  std::vector<plugins::PluginUuidReference> plugins;
-                  tr_ref.get ()->collect_plugins (plugins);
-                  for (const auto &pl_ref : plugins)
-                    {
-                      session->genericPluginUiController ()
-                        ->trackPluginUiVisibility (pl_ref.get ());
-                    }
-                }
+            // Set up project
+            auto * session = project_session.release ();
+            session->setParent (this);
+            session->setProjectDirectory (
+              utils::Utf8String::from_path (project_dir).to_qstring ());
 
-              promise.setProgressValueAndText (
-                kStage4End, tr ("Rebuilding audio graph..."));
+            // Re-attach generic UI tracking for all deserialized plugins in
+            // the project's tracks (restores generic windows for plugins
+            // saved with visible UI)
+            for (
+              const auto &tr_ref :
+              session->project ()->tracklist ()->collection ()->tracks ())
+              {
+                std::vector<plugins::PluginUuidReference> plugins;
+                tr_ref.get ()->collect_plugins (plugins);
+                for (const auto &pl_ref : plugins)
+                  {
+                    session->genericPluginUiController ()
+                      ->trackPluginUiVisibility (pl_ref.get ());
+                  }
+              }
 
-              // Rebuild graph and start engine
-              session->project ()->engine ()->graph_dispatcher ().recalc_graph (
-                false);
+            report_progress (
+              kStageRebuildGraph, tr ("Rebuilding audio graph..."));
 
-              promise.setProgressValueAndText (
-                kStage5End - 5, tr ("Starting engine..."));
+            // Rebuild graph and start engine
+            session->project ()->engine ()->graph_dispatcher ().recalc_graph (
+              false);
 
-              session->project ()->engine ()->set_running (true);
+            report_progress (kStageStartEngine, tr ("Starting engine..."));
 
-              // Add to recent projects
-              recent_projects_model_->addRecentProject (
-                utils::Utf8String::from_path (project_dir).to_qstring ());
+            session->project ()->engine ()->set_running (true);
 
-              // Emit success signal
-              Q_EMIT projectLoaded (session);
+            // Add to recent projects
+            recent_projects_model_->addRecentProject (
+              utils::Utf8String::from_path (project_dir).to_qstring ());
 
-              promise.setProgressValueAndText (
-                kStage5End, tr ("Project loaded"));
-              promise.addResult (
-                utils::Utf8String::from_path (project_dir).to_qstring ());
-            }
-          catch (const ZrythmException &e)
-            {
-              z_warning ("Failed to load project: {}", e.what ());
-              Q_EMIT projectLoadingFailed (e.what_string ());
-              promise.setException (std::make_exception_ptr (e));
-            }
-        },
-        Qt::BlockingQueuedConnection);
-    });
+            // Expose the session as active only once it is fully set up,
+            // so no event delivery can observe a half-initialized session
+            setActiveSession (session);
+
+            // Emit success signal
+            Q_EMIT projectLoaded (session);
+
+            report_progress (kStageDone, tr ("Project loaded"));
+            promise.addResult (
+              utils::Utf8String::from_path (project_dir).to_qstring ());
+          }
+        catch (const ZrythmException &e)
+          {
+            z_warning ("Failed to load project: {}", e.what ());
+            Q_EMIT projectLoadingFailed (e.what_string ());
+            promise.setException (std::current_exception ());
+          }
+        catch (const std::exception &e)
+          {
+            z_warning ("Failed to load project: {}", e.what ());
+            Q_EMIT projectLoadingFailed (
+              tr ("Failed to load project data. See the log for details."));
+            promise.setException (std::current_exception ());
+          }
+      },
+      Qt::BlockingQueuedConnection);
+  });
 
   load_future_ = future;
 
