@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -31,7 +31,7 @@ Control {
     anchors.centerIn: parent
     border.color: root.palette.mid
     border.width: 1
-    color: root.palette.base
+    color: "transparent"
     height: 20
     radius: 2
     width: 6
