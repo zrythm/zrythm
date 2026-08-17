@@ -320,12 +320,13 @@ public:
     dsp::MidiEventBuffer               &midi_events);
 
   /**
-   * Wrapper for audio tracks to fill in StereoPorts from the timeline data.
+   * Wrapper for audio tracks to fill in the stereo channel buffers from the
+   * timeline data.
    *
    * @note The engine splits the cycle so transport loop related logic is not
    * needed.
    *
-   * @param stereo_ports StereoPorts to fill.
+   * @param stereo_ports Left/right channel buffers to fill.
    */
   void fill_audio_events (
     const dsp::graph::ProcessBlockInfo &time_nfo,

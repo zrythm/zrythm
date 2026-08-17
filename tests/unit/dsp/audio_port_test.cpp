@@ -139,20 +139,6 @@ TEST_F (AudioPortTest, ResourceManagement)
   EXPECT_EQ (stereo_output->buffers (), nullptr);
 }
 
-TEST_F (AudioPortTest, StereoPortsHelper)
-{
-  // Test the StereoPorts::get_name_and_symbols helper function
-  auto [left_name, left_symbol] =
-    StereoPorts::get_name_and_symbols (true, u8"Stereo", u8"stereo");
-  auto [right_name, right_symbol] =
-    StereoPorts::get_name_and_symbols (false, u8"Stereo", u8"stereo");
-
-  EXPECT_EQ (left_name.str (), "Stereo L");
-  EXPECT_EQ (right_name.str (), "Stereo R");
-  EXPECT_EQ (left_symbol.str (), "stereo_l");
-  EXPECT_EQ (right_symbol.str (), "stereo_r");
-}
-
 TEST_F (AudioPortTest, LimitingFunctionality)
 {
   auto port = std::make_unique<AudioPort> (
