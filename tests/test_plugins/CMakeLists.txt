@@ -87,7 +87,7 @@ foreach(vst3_fixture ${vst3_fixtures})
   # Sanitizers (when enabled) let violations inside the fixture be caught;
   # the fixtures are only ever loaded by the sanitizer-enabled test binaries
   # and tools above
-  target_link_libraries(${vst3_fixture} PRIVATE sdk zrythm::sanitizers)
+  target_link_libraries(${vst3_fixture} PRIVATE sdk nlohmann_json::nlohmann_json zrythm::sanitizers)
   target_include_directories(${vst3_fixture} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   zrythm_target_disable_warnings(${vst3_fixture})
   set_target_properties(${vst3_fixture} PROPERTIES
@@ -115,7 +115,7 @@ foreach(clap_fixture ${clap_fixtures})
   add_library(${clap_fixture} MODULE ${clap_fixture}.cpp)
   # Sanitizers (when enabled) let violations inside the fixture be caught;
   # the fixtures are only ever loaded by the sanitizer-enabled test binaries
-  target_link_libraries(${clap_fixture} PRIVATE clap-helpers zrythm::sanitizers)
+  target_link_libraries(${clap_fixture} PRIVATE clap-helpers nlohmann_json::nlohmann_json zrythm::sanitizers)
   target_include_directories(${clap_fixture} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
   zrythm_target_disable_warnings(${clap_fixture})
   set_target_properties(${clap_fixture} PROPERTIES

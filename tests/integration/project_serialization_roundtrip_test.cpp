@@ -30,8 +30,10 @@
 #include "helpers/qt_helpers.h"
 #include "helpers/test_plugin_finder.h"
 
+#include <base/source/fstreamer.h>
 #include <gtest/gtest.h>
 #include <juce_core/juce_core.h>
+#include <nlohmann/json.hpp>
 #include <public.sdk/source/vst/utility/memoryibstream.h>
 #include <public.sdk/source/vst/vstpresetfile.h>
 
@@ -41,18 +43,20 @@ namespace zrythm::controllers
 /**
  * @brief Decodes a CLAP test plugin state blob.
  *
- * CLAP test plugin state blobs are a single raw little-endian double (the
- * Level parameter value).
+ * CLAP test plugin state blobs are JSON text written by the fixture's
+ * stateSave; the Level parameter value is the "gain" key.
  */
 static std::map<std::string, float>
 decode_test_clap_state (const QByteArray &raw_state)
 {
-  if (raw_state.size () != sizeof (double))
+  const auto j = nlohmann::json::parse (
+    std::string_view (
+      raw_state.constData (), static_cast<size_t> (raw_state.size ())),
+    nullptr, false);
+  if (j.is_discarded () || !j.contains ("gain"))
     return {};
-  double value = 0.0;
-  std::memcpy (&value, raw_state.constData (), sizeof (value));
   return {
-    { "level", static_cast<float> (value) }
+    { "level", j["gain"].get<float> () }
   };
 }
 
@@ -60,8 +64,9 @@ decode_test_clap_state (const QByteArray &raw_state)
  * @brief Decodes a VST3 test plugin state blob.
  *
  * VST3 state blobs use the standard .vstpreset container format
- * (Vst::PresetFile); the controller state chunk holds a single raw
- * little-endian double written by the test plugin via IBStreamer.
+ * (Vst::PresetFile); the controller state chunk holds length-prefixed JSON
+ * text written by the test plugin via IBStreamer, with the Level parameter
+ * value under the "gain" key.
  */
 static std::map<std::string, float>
 decode_test_vst3_state (const QByteArray &raw_state)
@@ -74,16 +79,18 @@ decode_test_vst3_state (const QByteArray &raw_state)
   Steinberg::Vst::PresetFile preset (&stream);
   if (!preset.readChunkList () || !preset.seekToControllerState ())
     return {};
-  double           value = 0.0;
-  Steinberg::int32 bytes_read = 0;
-  if (
-    stream.read (
-      &value, static_cast<Steinberg::int32> (sizeof (value)), &bytes_read)
-      != Steinberg::kResultOk
-    || bytes_read != static_cast<Steinberg::int32> (sizeof (value)))
+  Steinberg::IBStreamer streamer (&stream, kLittleEndian);
+  Steinberg::int32      length = 0;
+  if (!streamer.readInt32 (length) || length <= 0)
+    return {};
+  std::string json_text (static_cast<size_t> (length), '\0');
+  if (streamer.readRaw (json_text.data (), length) != length)
+    return {};
+  const auto j = nlohmann::json::parse (json_text, nullptr, false);
+  if (j.is_discarded () || !j.contains ("gain"))
     return {};
   return {
-    { "level", static_cast<float> (value) }
+    { "level", j["gain"].get<float> () }
   };
 }
 

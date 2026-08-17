@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <string>
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstevents.h"
@@ -9,6 +10,7 @@
 #include "public.sdk/source/main/pluginfactory.h"
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h"
 #include "sine_synth.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -73,17 +75,47 @@ public:
   tresult PLUGIN_API setEditorState (IBStream * state) SMTG_OVERRIDE
   {
     IBStreamer streamer (state, kLittleEndian);
-    double     saved_gain = 0.0;
-    if (!streamer.readDouble (saved_gain))
+    int32      length = 0;
+    if (!streamer.readInt32 (length))
       return kResultFalse;
-    setParamNormalized (kLevelParamId, saved_gain);
+    if (length <= 0)
+      return kResultFalse;
+    std::string json_text (static_cast<size_t> (length), '\0');
+    if (streamer.readRaw (json_text.data (), length) != length)
+      return kResultFalse;
+    const auto j = nlohmann::json::parse (json_text, nullptr, false);
+    if (j.is_discarded () || !j.contains ("gain"))
+      return kResultFalse;
+    setParamNormalized (kLevelParamId, j["gain"].get<double> ());
     return kResultOk;
   }
 
   tresult PLUGIN_API getEditorState (IBStream * state) SMTG_OVERRIDE
   {
+    // Structured fixture state: the gain plus the last received
+    // ProcessContext, so hosts can verify transport delivery
+    const nlohmann::json j{
+      { "gain",      gain_.load () },
+      { "transport",
+       nlohmann::json{
+          { "present", ctx_present_.load () != 0.0 },
+          { "state", static_cast<uint32_t> (ctx_state_.load ()) },
+          { "tempo", ctx_tempo_.load () },
+          { "projectTimeMusic", ctx_project_time_music_.load () },
+          { "barPositionMusic", ctx_bar_position_music_.load () },
+          { "cycleStartMusic", ctx_cycle_start_music_.load () },
+          { "cycleEndMusic", ctx_cycle_end_music_.load () },
+          { "timeSigNumerator",
+            static_cast<int> (ctx_time_sig_numerator_.load ()) },
+          { "timeSigDenominator",
+            static_cast<int> (ctx_time_sig_denominator_.load ()) },
+        }                          },
+    };
+    const auto json_text = j.dump ();
     IBStreamer streamer (state, kLittleEndian);
-    streamer.writeDouble (gain_.load ());
+    streamer.writeInt32 (static_cast<int32> (json_text.size ()));
+    streamer.writeRaw (
+      json_text.data (), static_cast<int32> (json_text.size ()));
     return kResultOk;
   }
 
@@ -107,6 +139,28 @@ public:
                   gain_.store (value);
               }
           }
+      }
+
+    // Capture the received ProcessContext so hosts can verify transport
+    // delivery via the state chunk
+    if (data.processContext != nullptr)
+      {
+        const auto &ctx = *data.processContext;
+        ctx_present_.store (1.0);
+        ctx_state_.store (static_cast<double> (ctx.state));
+        ctx_tempo_.store (ctx.tempo);
+        ctx_project_time_music_.store (ctx.projectTimeMusic);
+        ctx_bar_position_music_.store (ctx.barPositionMusic);
+        ctx_cycle_start_music_.store (ctx.cycleStartMusic);
+        ctx_cycle_end_music_.store (ctx.cycleEndMusic);
+        ctx_time_sig_numerator_.store (
+          static_cast<double> (ctx.timeSigNumerator));
+        ctx_time_sig_denominator_.store (
+          static_cast<double> (ctx.timeSigDenominator));
+      }
+    else
+      {
+        ctx_present_.store (0.0);
       }
 
     if (data.inputEvents != nullptr)
@@ -176,6 +230,18 @@ private:
   SineSynth           synth_;
   std::atomic<double> gain_{ 1.0 };
   std::atomic<double> note_off_level_{ 0.0 };
+
+  // Last received ProcessContext, captured during process() and serialized
+  // into the state chunk so hosts can verify transport delivery
+  std::atomic<double> ctx_present_{ 0.0 };
+  std::atomic<double> ctx_state_{ 0.0 };
+  std::atomic<double> ctx_tempo_{ 0.0 };
+  std::atomic<double> ctx_project_time_music_{ 0.0 };
+  std::atomic<double> ctx_bar_position_music_{ 0.0 };
+  std::atomic<double> ctx_cycle_start_music_{ 0.0 };
+  std::atomic<double> ctx_cycle_end_music_{ 0.0 };
+  std::atomic<double> ctx_time_sig_numerator_{ 0.0 };
+  std::atomic<double> ctx_time_sig_denominator_{ 0.0 };
 };
 
 } // namespace zrythm_test_plugins

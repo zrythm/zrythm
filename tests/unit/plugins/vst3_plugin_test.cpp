@@ -20,8 +20,11 @@
 #include "helpers/test_plugin_finder.h"
 
 #include "unit/dsp/graph_helpers.h"
+#include <base/source/fstreamer.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
+#include <pluginterfaces/vst/ivstprocesscontext.h>
 #include <public.sdk/source/vst/hosting/module.h>
 #include <public.sdk/source/vst/hosting/plugprovider.h>
 #include <public.sdk/source/vst/utility/memoryibstream.h>
@@ -33,15 +36,15 @@ namespace zrythm::plugins
 namespace
 {
 /**
- * @brief Reads the double at the given index from the plugin's controller
- * state chunk (0.0 if unavailable).
+ * @brief Reads the plugin's controller state chunk and parses it as JSON
+ * (empty object if unavailable).
  */
-double
-read_controller_state_double (Vst3Plugin &plugin, size_t index)
+nlohmann::json
+read_controller_state_json (Vst3Plugin &plugin)
 {
   const auto state = plugin.save_state ();
   if (state.empty ())
-    return 0.0;
+    return {};
   auto raw = QByteArray::fromBase64 (QByteArray::fromStdString (state));
   Steinberg::ResizableMemoryIBStream stream;
   stream.write (
@@ -49,15 +52,15 @@ read_controller_state_double (Vst3Plugin &plugin, size_t index)
   stream.rewind ();
   Steinberg::Vst::PresetFile preset (&stream);
   if (!preset.readChunkList () || !preset.seekToControllerState ())
-    return 0.0;
-  std::array<double, 8> values{};
-  Steinberg::int32      bytes_read = 0;
-  stream.read (
-    values.data (),
-    static_cast<Steinberg::int32> (sizeof (double) * (index + 1)), &bytes_read);
-  if (bytes_read < static_cast<Steinberg::int32> (sizeof (double) * (index + 1)))
-    return 0.0;
-  return values[index];
+    return {};
+  Steinberg::IBStreamer streamer (&stream, kLittleEndian);
+  Steinberg::int32      length = 0;
+  if (!streamer.readInt32 (length) || length <= 0)
+    return {};
+  std::string json_text (static_cast<size_t> (length), '\0');
+  if (streamer.readRaw (json_text.data (), length) != length)
+    return {};
+  return nlohmann::json::parse (json_text, nullptr, false);
 }
 } // namespace
 
@@ -69,7 +72,22 @@ protected:
   void SetUp () override
   {
     registry_ = std::make_unique<utils::ObjectRegistry> ();
-    mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    mock_transport_ =
+      std::make_unique<::testing::NiceMock<dsp::graph_test::MockTransport>> ();
+    // Plugins query the transport every process block: NiceMock keeps the
+    // logs clean, and these give the queries paused defaults
+    ON_CALL (*mock_transport_, get_play_state ())
+      .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Paused));
+    ON_CALL (*mock_transport_, recording_enabled ())
+      .WillByDefault (::testing::Return (false));
+    ON_CALL (*mock_transport_, recording_preroll_frames_remaining ())
+      .WillByDefault (::testing::Return (units::samples (0)));
+    ON_CALL (*mock_transport_, loop_enabled ())
+      .WillByDefault (::testing::Return (false));
+    ON_CALL (*mock_transport_, get_loop_range_positions ())
+      .WillByDefault (
+        ::testing::Return (
+          std::make_pair (units::samples (0), units::samples (0))));
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000));
     dispatcher_context_ = std::make_unique<QObject> ();
     main_dispatcher_ = std::make_unique<utils::MainThreadClosureDispatcher> (
@@ -174,8 +192,9 @@ protected:
       plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
-  std::unique_ptr<utils::ObjectRegistry>                   registry_;
-  std::unique_ptr<dsp::graph_test::MockTransport>          mock_transport_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<::testing::NiceMock<dsp::graph_test::MockTransport>>
+                                                           mock_transport_;
   std::unique_ptr<dsp::TempoMap>                           tempo_map_;
   std::unique_ptr<QObject>                                 dispatcher_context_;
   std::unique_ptr<utils::MainThreadClosureDispatcher>      main_dispatcher_;
@@ -424,6 +443,71 @@ TEST_F (Vst3PluginTest, NoteOffVelocityReachesPlugin)
   auto * audio_out = find_audio_port (false);
   ASSERT_NE (audio_out, nullptr);
   EXPECT_NEAR (audio_out->buffers ()->getSample (0, 255), 100.f / 127.f, 0.01f);
+}
+
+// The process context must carry the host transport (play state, tempo,
+// musical position, time signature, loop range) so tempo-synced plugins can
+// follow it. The fixture reports the last received ProcessContext in its
+// state chunk.
+TEST_F (Vst3PluginTest, TransportContextCarriesHostTransport)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Synth"));
+
+  ON_CALL (*mock_transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*mock_transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*mock_transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*mock_transport_, get_loop_range_positions ())
+    .WillByDefault (
+      ::testing::Return (
+        std::make_pair (units::samples (96000), units::samples (192000))));
+
+  // 240000 samples at 48kHz = 5s = 10 quarter notes at the default 120 BPM
+  const dsp::graph::ProcessBlockInfo time_nfo{
+    .transport_position_ = units::samples (240000),
+    .buffer_offset_ = units::samples (0),
+    .nframes_ = units::samples (256),
+  };
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  const auto state = read_controller_state_json (*plugin_);
+  ASSERT_TRUE (state.contains ("transport"));
+  const auto &transport = state["transport"];
+  ASSERT_TRUE (transport["present"].get<bool> ());
+
+  using VstContext = Steinberg::Vst::ProcessContext;
+  const auto flags = transport["state"].get<uint32_t> ();
+  EXPECT_TRUE (flags & VstContext::kPlaying);
+  EXPECT_TRUE (flags & VstContext::kCycleActive);
+  EXPECT_TRUE (flags & VstContext::kProjectTimeMusicValid);
+  EXPECT_TRUE (flags & VstContext::kTempoValid);
+  EXPECT_TRUE (flags & VstContext::kBarPositionValid);
+  EXPECT_TRUE (flags & VstContext::kCycleValid);
+  EXPECT_TRUE (flags & VstContext::kTimeSigValid);
+
+  // Default tempo map: 120 BPM, 4/4 - 5s is quarter 10, inside bar 3
+  // (0-based bar 2) which starts at quarter 8
+  EXPECT_DOUBLE_EQ (transport["tempo"].get<double> (), 120.0);
+  EXPECT_DOUBLE_EQ (transport["projectTimeMusic"].get<double> (), 10.0);
+  EXPECT_DOUBLE_EQ (transport["barPositionMusic"].get<double> (), 8.0);
+  EXPECT_EQ (transport["timeSigNumerator"].get<int> (), 4);
+  EXPECT_EQ (transport["timeSigDenominator"].get<int> (), 4);
+
+  // Loop at 96000..192000 samples = quarters 4..8
+  EXPECT_DOUBLE_EQ (transport["cycleStartMusic"].get<double> (), 4.0);
+  EXPECT_DOUBLE_EQ (transport["cycleEndMusic"].get<double> (), 8.0);
+
+  // The recording state must also reach the plugin (VST3 has no preroll
+  // concept; that flag is covered in the CLAP transport test)
+  ON_CALL (*mock_transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (true));
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+  const auto recording_state = read_controller_state_json (*plugin_);
+  const auto recording_flags =
+    recording_state["transport"]["state"].get<uint32_t> ();
+  EXPECT_TRUE (recording_flags & VstContext::kRecording);
 }
 
 // Note events emitted on the plugin's event output bus must be forwarded
@@ -706,7 +790,7 @@ TEST_F (Vst3PluginTest, PluginContextTracksInstanceLifetime)
 // beginEdit/setParamNormalized/endEdit on the main thread), not just the
 // processor-side queues, or the plugin's own UI never learns about them.
 // The fixture counts controller-side setParamNormalized calls and exposes
-// the count as the second double in its state chunk
+// the count in its structured (JSON) state
 TEST_F (Vst3PluginTest, HostParamChangesReachEditController)
 {
   ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Gain"));
@@ -716,25 +800,11 @@ TEST_F (Vst3PluginTest, HostParamChangesReachEditController)
   level_param->setBaseValue (0.5f);
   process_blocks (1);
 
-  const auto read_edit_count = [this] () -> double {
-    const auto state = plugin_->save_state ();
-    if (state.empty ())
-      return 0.0;
-    auto raw = QByteArray::fromBase64 (QByteArray::fromStdString (state));
-    Steinberg::ResizableMemoryIBStream stream;
-    stream.write (
-      raw.data (), static_cast<Steinberg::int32> (raw.size ()), nullptr);
-    stream.rewind ();
-    Steinberg::Vst::PresetFile preset (&stream);
-    if (!preset.readChunkList () || !preset.seekToControllerState ())
-      return 0.0;
-    double           values[2]{};
-    Steinberg::int32 bytes_read = 0;
-    stream.read (
-      values, static_cast<Steinberg::int32> (sizeof (values)), &bytes_read);
-    return values[1];
+  const auto read_edit_count = [this] () -> int {
+    const auto state = read_controller_state_json (*plugin_);
+    return state.value ("controllerEditCount", 0);
   };
-  process_events_until_true ([&] { return read_edit_count () >= 1.0; });
+  process_events_until_true ([&] { return read_edit_count () >= 1; });
 }
 
 // A plugin that changes its MIDI-CC mapping at runtime (MIDI learn) reports
@@ -757,27 +827,11 @@ TEST_F (Vst3PluginTest, MidiCcAssignmentChangeRebuildsMapping)
   auto * cc_assign = find_param_by_label ("CC Assign");
   ASSERT_NE (cc_assign, nullptr);
 
-  // The fixture exposes its current gain as the first double of the
-  // controller state chunk
+  // The fixture exposes its current gain in its structured (JSON)
+  // controller state
   const auto read_gain = [this] () -> double {
-    const auto state = plugin_->save_state ();
-    if (state.empty ())
-      return -1.0;
-    auto raw = QByteArray::fromBase64 (QByteArray::fromStdString (state));
-    Steinberg::ResizableMemoryIBStream stream;
-    stream.write (
-      raw.data (), static_cast<Steinberg::int32> (raw.size ()), nullptr);
-    stream.rewind ();
-    Steinberg::Vst::PresetFile preset (&stream);
-    if (!preset.readChunkList () || !preset.seekToControllerState ())
-      return -1.0;
-    double           values[2]{};
-    Steinberg::int32 bytes_read = 0;
-    stream.read (
-      values, static_cast<Steinberg::int32> (sizeof (values)), &bytes_read);
-    return bytes_read >= static_cast<Steinberg::int32> (sizeof (double))
-             ? values[0]
-             : -1.0;
+    const auto state = read_controller_state_json (*plugin_);
+    return state.contains ("gain") ? state["gain"].get<double> () : -1.0;
   };
 
   // No mapping yet: CC 7 changes nothing
@@ -822,7 +876,9 @@ TEST_F (Vst3PluginTest, IoChangeDeactivatesBeforeReactivatingBuses)
   process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
   process_blocks (1);
 
-  EXPECT_DOUBLE_EQ (read_controller_state_double (*plugin_, 0), 0.0)
+  const auto state = read_controller_state_json (*plugin_);
+  ASSERT_TRUE (state.contains ("busesActivatedWhileActive"));
+  EXPECT_FALSE (state["busesActivatedWhileActive"].get<bool> ())
     << "Buses were re-activated while the component was still active";
 }
 
@@ -844,8 +900,9 @@ TEST_F (Vst3PluginTest, ReloadComponentRecreatesInstance)
     utils::Utf8String::from_path (path).str (), module_error);
   ASSERT_NE (module_pin, nullptr) << module_error;
 
-  const auto count_before = read_controller_state_double (*plugin_, 1);
-  ASSERT_GE (count_before, 1.0);
+  const auto count_before =
+    read_controller_state_json (*plugin_).at ("initializeCount").get<int> ();
+  ASSERT_GE (count_before, 1);
 
   auto * trigger = find_param_by_label ("Trigger Reload");
   ASSERT_NE (trigger, nullptr);
@@ -855,8 +912,9 @@ TEST_F (Vst3PluginTest, ReloadComponentRecreatesInstance)
   process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
   process_blocks (1);
 
-  EXPECT_DOUBLE_EQ (
-    read_controller_state_double (*plugin_, 1), count_before + 1.0);
+  EXPECT_EQ (
+    read_controller_state_json (*plugin_).at ("initializeCount").get<int> (),
+    count_before + 1);
 }
 
 // The fixture only accepts a stereo/stereo bus configuration; a matching

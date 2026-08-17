@@ -57,6 +57,7 @@
 #include "plugins/host_window_units.h"
 #include "plugins/plugin_library.h"
 #include "plugins/plugin_run_loop.h"
+#include "plugins/plugin_transport_context.h"
 #include "utils/concurrency.h"
 #include "utils/logger.h"
 #include "utils/qt.h"
@@ -481,6 +482,12 @@ private:
   mutable std::array<bool, 2> no_main_warning_emitted_{};
 
   clap_process process_{};
+
+  /**
+   * Transport info passed to the plugin via process_.transport, filled
+   * per block on the audio thread in process_impl().
+   */
+  clap_event_transport_t transport_{};
 
   /**
    * @brief Supported note dialects of each input note port (bitmask of
@@ -1258,7 +1265,10 @@ ClapPlugin::release_resources_impl ()
 }
 
 void
-ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
+ClapPlugin::process_impl (
+  dsp::graph::ProcessBlockInfo time_info,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   ScopedBool audio_thread_guard{ is_audio_thread };
 
@@ -1286,7 +1296,51 @@ ClapPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
   if (pimpl_->state_ == ClapPluginImpl::ActiveWithError)
     return;
 
-  pimpl_->process_.transport = nullptr;
+  {
+    const auto transport_context = build_plugin_transport_context (
+      transport, tempo_map, time_info.transport_position_);
+    const auto to_beattime = [] (units::quarter_note_t quarters) {
+      return static_cast<clap_beattime> (std::lround (
+        quarters.in (units::quarter_notes)
+        * static_cast<double> (CLAP_BEATTIME_FACTOR)));
+    };
+    const auto to_sectime = [] (units::precise_second_t seconds) {
+      return static_cast<clap_sectime> (std::lround (
+        seconds.in (units::seconds)
+        * static_cast<double> (CLAP_SECTIME_FACTOR)));
+    };
+    auto &transport_info = pimpl_->transport_;
+    transport_info = {};
+    transport_info.header.size = sizeof (transport_info);
+    transport_info.header.type = CLAP_EVENT_TRANSPORT;
+    transport_info.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    transport_info.flags =
+      CLAP_TRANSPORT_HAS_TEMPO | CLAP_TRANSPORT_HAS_BEATS_TIMELINE
+      | CLAP_TRANSPORT_HAS_SECONDS_TIMELINE | CLAP_TRANSPORT_HAS_TIME_SIGNATURE
+      | (transport_context.playing_ ? CLAP_TRANSPORT_IS_PLAYING : 0u)
+      | (transport_context.recording_ ? CLAP_TRANSPORT_IS_RECORDING : 0u)
+      | (transport_context.loop_enabled_ ? CLAP_TRANSPORT_IS_LOOP_ACTIVE : 0u)
+      | (transport_context.within_preroll_ ? CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL : 0u);
+    transport_info.song_pos_beats = to_beattime (transport_context.position_);
+    transport_info.song_pos_seconds =
+      to_sectime (transport_context.position_seconds_);
+    transport_info.tempo = transport_context.tempo_.in (units::bpm);
+    transport_info.tempo_inc = 0.0;
+    transport_info.loop_start_beats =
+      to_beattime (transport_context.loop_start_);
+    transport_info.loop_end_beats = to_beattime (transport_context.loop_end_);
+    transport_info.loop_start_seconds =
+      to_sectime (transport_context.loop_start_seconds_);
+    transport_info.loop_end_seconds =
+      to_sectime (transport_context.loop_end_seconds_);
+    transport_info.bar_start = to_beattime (transport_context.bar_start_);
+    transport_info.bar_number = transport_context.bar_number_;
+    transport_info.tsig_num =
+      static_cast<uint16_t> (transport_context.time_sig_numerator_);
+    transport_info.tsig_denom =
+      static_cast<uint16_t> (transport_context.time_sig_denominator_);
+    pimpl_->process_.transport = &transport_info;
+  }
 
   pimpl_->process_.in_events = pimpl_->evIn_.clapInputEvents ();
   pimpl_->process_.out_events = pimpl_->evOut_.clapOutputEvents ();

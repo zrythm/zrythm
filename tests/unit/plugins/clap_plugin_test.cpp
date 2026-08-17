@@ -22,12 +22,33 @@
 #include "helpers/test_plugin_finder.h"
 
 #include "unit/dsp/graph_helpers.h"
+#include <clap/events.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 namespace zrythm::plugins
 {
 using namespace std::literals;
+
+namespace
+{
+/**
+ * @brief Reads the plugin's saved state and parses it as JSON (empty object
+ * if unavailable).
+ */
+nlohmann::json
+read_plugin_state_json (Plugin &plugin)
+{
+  const auto state = plugin.save_state ();
+  if (state.empty ())
+    return {};
+  const auto raw = QByteArray::fromBase64 (QByteArray::fromStdString (state));
+  return nlohmann::json::parse (
+    std::string_view (raw.constData (), static_cast<size_t> (raw.size ())),
+    nullptr, false);
+}
+} // namespace
 
 class ClapPluginTest
     : public ::testing::Test,
@@ -38,7 +59,22 @@ protected:
   void SetUp () override
   {
     registry_ = std::make_unique<utils::ObjectRegistry> ();
-    mock_transport_ = std::make_unique<dsp::graph_test::MockTransport> ();
+    mock_transport_ =
+      std::make_unique<::testing::NiceMock<dsp::graph_test::MockTransport>> ();
+    // Plugins query the transport every process block: NiceMock keeps the
+    // logs clean, and these give the queries paused defaults
+    ON_CALL (*mock_transport_, get_play_state ())
+      .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Paused));
+    ON_CALL (*mock_transport_, recording_enabled ())
+      .WillByDefault (::testing::Return (false));
+    ON_CALL (*mock_transport_, recording_preroll_frames_remaining ())
+      .WillByDefault (::testing::Return (units::samples (0)));
+    ON_CALL (*mock_transport_, loop_enabled ())
+      .WillByDefault (::testing::Return (false));
+    ON_CALL (*mock_transport_, get_loop_range_positions ())
+      .WillByDefault (
+        ::testing::Return (
+          std::make_pair (units::samples (0), units::samples (0))));
     tempo_map_ = std::make_unique<dsp::TempoMap> (units::sample_rate (48000));
     dispatcher_context_ = std::make_unique<QObject> ();
     main_dispatcher_ = std::make_unique<utils::MainThreadClosureDispatcher> (
@@ -160,8 +196,9 @@ protected:
       plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
   }
 
-  std::unique_ptr<utils::ObjectRegistry>                   registry_;
-  std::unique_ptr<dsp::graph_test::MockTransport>          mock_transport_;
+  std::unique_ptr<utils::ObjectRegistry> registry_;
+  std::unique_ptr<::testing::NiceMock<dsp::graph_test::MockTransport>>
+                                                           mock_transport_;
   std::unique_ptr<dsp::TempoMap>                           tempo_map_;
   std::unique_ptr<QObject>                                 dispatcher_context_;
   std::unique_ptr<utils::MainThreadClosureDispatcher>      main_dispatcher_;
@@ -453,6 +490,73 @@ TEST_P (ClapPluginTest, NoteOutputIsForwardedToMidiOut)
   EXPECT_THAT (
     received,
     ::testing::UnorderedElementsAre (expected_note_on, expected_note_off));
+}
+
+// The process transport must carry the host transport (play state, tempo,
+// musical position, time signature, loop range) so tempo-synced plugins can
+// follow it. The fixture reports the last received transport in its state.
+TEST_P (ClapPluginTest, TransportContextCarriesHostTransport)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin (GetParam ()));
+
+  ON_CALL (*mock_transport_, get_play_state ())
+    .WillByDefault (::testing::Return (dsp::ITransport::PlayState::Rolling));
+  ON_CALL (*mock_transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (false));
+  ON_CALL (*mock_transport_, loop_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*mock_transport_, get_loop_range_positions ())
+    .WillByDefault (
+      ::testing::Return (
+        std::make_pair (units::samples (96000), units::samples (192000))));
+
+  // 240000 samples at 48kHz = 5s = 10 beats (quarter notes) at the default
+  // 120 BPM
+  const dsp::graph::ProcessBlockInfo time_nfo{
+    .transport_position_ = units::samples (240000),
+    .buffer_offset_ = units::samples (0),
+    .nframes_ = units::samples (256),
+  };
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  const auto state = read_plugin_state_json (*plugin_);
+  ASSERT_TRUE (state.contains ("transport"));
+  const auto &transport = state["transport"];
+  ASSERT_TRUE (transport["present"].get<bool> ());
+
+  const auto flags = transport["flags"].get<uint32_t> ();
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_HAS_TEMPO);
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_HAS_BEATS_TIMELINE);
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_HAS_SECONDS_TIMELINE);
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_HAS_TIME_SIGNATURE);
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_IS_PLAYING);
+  EXPECT_TRUE (flags & CLAP_TRANSPORT_IS_LOOP_ACTIVE);
+
+  // Default tempo map: 120 BPM, 4/4 - 5s is beat 10, inside bar 3 (0-based
+  // bar 2) which starts at beat 8
+  EXPECT_DOUBLE_EQ (transport["tempo"].get<double> (), 120.0);
+  EXPECT_DOUBLE_EQ (transport["songPosBeats"].get<double> (), 10.0);
+  EXPECT_DOUBLE_EQ (transport["songPosSeconds"].get<double> (), 5.0);
+  EXPECT_DOUBLE_EQ (transport["barStartBeats"].get<double> (), 8.0);
+  EXPECT_EQ (transport["barNumber"].get<int> (), 2);
+  EXPECT_EQ (transport["timeSigNum"].get<int> (), 4);
+  EXPECT_EQ (transport["timeSigDenom"].get<int> (), 4);
+
+  // Loop at 96000..192000 samples = beats 4..8
+  EXPECT_DOUBLE_EQ (transport["loopStartBeats"].get<double> (), 4.0);
+  EXPECT_DOUBLE_EQ (transport["loopEndBeats"].get<double> (), 8.0);
+
+  // The recording and preroll states must also reach the plugin
+  ON_CALL (*mock_transport_, recording_enabled ())
+    .WillByDefault (::testing::Return (true));
+  ON_CALL (*mock_transport_, recording_preroll_frames_remaining ())
+    .WillByDefault (::testing::Return (units::samples (256)));
+  plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+  const auto recording_state = read_plugin_state_json (*plugin_);
+  const auto recording_flags =
+    recording_state["transport"]["flags"].get<uint32_t> ();
+  EXPECT_TRUE (recording_flags & CLAP_TRANSPORT_IS_RECORDING);
+  EXPECT_TRUE (recording_flags & CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL);
 }
 
 // Events the plugin emits with a timestamp outside the processed block

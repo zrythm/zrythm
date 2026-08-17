@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <string>
 
 #include "base/source/fstreamer.h"
 #include "public.sdk/source/main/pluginfactory.h"
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -20,9 +22,10 @@ static const FUID
  * @brief Effect that asks the host to restart it, for testing the host's
  * restartComponent handling.
  *
- * Exposes two results as doubles in the controller state chunk: whether a
- * bus was (re)activated while the component was active (index 0) and the
- * total initialize() call count of this class (index 1).
+ * Exposes its results as a structured (JSON) controller state: whether a
+ * bus was (re)activated while the component was active
+ * ("busesActivatedWhileActive") and the total initialize() call count of
+ * this class ("initializeCount").
  */
 class TestRestart : public SingleComponentEffect
 {
@@ -126,19 +129,30 @@ public:
 
   tresult PLUGIN_API setEditorState (IBStream * state) SMTG_OVERRIDE
   {
-    // Informational chunk only - nothing to restore
+    // Informational state only - nothing to restore
     IBStreamer streamer (state, kLittleEndian);
-    double     ignored = 0.0;
-    streamer.readDouble (ignored);
-    streamer.readDouble (ignored);
+    int32      length = 0;
+    if (!streamer.readInt32 (length))
+      return kResultFalse;
+    if (length <= 0)
+      return kResultFalse;
+    std::string json_text (static_cast<size_t> (length), '\0');
+    if (streamer.readRaw (json_text.data (), length) != length)
+      return kResultFalse;
     return kResultOk;
   }
 
   tresult PLUGIN_API getEditorState (IBStream * state) SMTG_OVERRIDE
   {
+    const nlohmann::json j{
+      { "busesActivatedWhileActive", bus_activated_while_active_ },
+      { "initializeCount",           initialize_count ().load () },
+    };
+    const auto json_text = j.dump ();
     IBStreamer streamer (state, kLittleEndian);
-    streamer.writeDouble (bus_activated_while_active_ ? 1.0 : 0.0);
-    streamer.writeDouble (initialize_count ().load ());
+    streamer.writeInt32 (static_cast<int32> (json_text.size ()));
+    streamer.writeRaw (
+      json_text.data (), static_cast<int32> (json_text.size ()));
     return kResultOk;
   }
 

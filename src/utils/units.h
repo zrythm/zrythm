@@ -69,6 +69,7 @@ struct QuarterNote : decltype (Tick{} * au::mag<PPQ.in (units::ticks)> ())
 };
 constexpr auto quarter_note = au::SingularNameFor<QuarterNote>{};
 constexpr auto quarter_notes = au::QuantityMaker<QuarterNote>{};
+using quarter_note_t = au::QuantityD<QuarterNote>;
 
 // Define BPM as quarter notes per minute (compound unit in TickDim × TimeDim⁻¹).
 //

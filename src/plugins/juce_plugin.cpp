@@ -380,7 +380,10 @@ JucePlugin::prepare_plugin_for_processing (
 }
 
 void
-JucePlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
+JucePlugin::process_impl (
+  dsp::graph::ProcessBlockInfo time_info,
+  const dsp::ITransport &,
+  const dsp::TempoMap &) noexcept
 {
   if (!juce_plugin_ || !juce_initialized_)
     return;

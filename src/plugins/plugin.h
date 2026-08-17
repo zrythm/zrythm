@@ -497,8 +497,10 @@ private:
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) { };
 
-  virtual void
-  process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept = 0;
+  virtual void process_impl (
+    dsp::graph::ProcessBlockInfo time_info,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept = 0;
 
   virtual void release_resources_impl () { }
 

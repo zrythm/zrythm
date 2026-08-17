@@ -83,7 +83,10 @@ protected:
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;
 
-  void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override;
+  void process_impl (
+    dsp::graph::ProcessBlockInfo time_info,
+    const dsp::ITransport       &transport,
+    const dsp::TempoMap         &tempo_map) noexcept override;
 
   void release_resources_impl () override;
 

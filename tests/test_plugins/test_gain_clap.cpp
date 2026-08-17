@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 
 #include "clap_fixture_factory.h"
 #include "gain_dsp.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -122,15 +125,29 @@ public:
   bool implementsState () const noexcept override { return true; }
   bool stateSave (const clap_ostream * stream) noexcept override
   {
-    const double v = gain_.load ();
-    return stream->write (stream, &v, sizeof (v)) == sizeof (v);
+    const nlohmann::json j{
+      { "gain", gain_.load () }
+    };
+    const auto json_text = j.dump ();
+    const auto text_size = json_text.size ();
+    return stream->write (stream, json_text.data (), text_size)
+           == static_cast<int64_t> (text_size);
   }
   bool stateLoad (const clap_istream * stream) noexcept override
   {
-    double v = 0.0;
-    if (stream->read (stream, &v, sizeof (v)) != sizeof (v))
+    std::string           json_text;
+    std::array<char, 256> chunk{};
+    while (true)
+      {
+        const auto bytes = stream->read (stream, chunk.data (), chunk.size ());
+        if (bytes <= 0)
+          break;
+        json_text.append (chunk.data (), static_cast<size_t> (bytes));
+      }
+    const auto j = nlohmann::json::parse (json_text, nullptr, false);
+    if (j.is_discarded () || !j.contains ("gain"))
       return false;
-    gain_.store (std::clamp (v, 0.0, 1.0));
+    gain_.store (std::clamp (j["gain"].get<double> (), 0.0, 1.0));
     return true;
   }
 

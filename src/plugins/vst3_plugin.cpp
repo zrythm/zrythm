@@ -21,6 +21,7 @@
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
 #include "plugins/plugin_run_loop.h"
+#include "plugins/plugin_transport_context.h"
 #include "plugins/vst3_channel_mapping.h"
 #include "plugins/vst3_event_validation.h"
 #include "plugins/vst3_plugin.h"
@@ -2057,7 +2058,10 @@ Vst3Plugin::release_resources_impl ()
 }
 
 void
-Vst3Plugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
+Vst3Plugin::process_impl (
+  dsp::graph::ProcessBlockInfo time_info,
+  const dsp::ITransport       &transport,
+  const dsp::TempoMap         &tempo_map) noexcept
 {
   auto &impl = *pimpl_;
 
@@ -2365,6 +2369,29 @@ Vst3Plugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
   impl.process_context_.sampleRate = impl.sample_rate_;
   impl.process_context_.projectTimeSamples =
     time_info.transport_position_.in<int64_t> (units::samples);
+
+  const auto transport_context = build_plugin_transport_context (
+    transport, tempo_map, time_info.transport_position_);
+  impl.process_context_.state =
+    Vst::ProcessContext::kProjectTimeMusicValid
+    | Vst::ProcessContext::kBarPositionValid | Vst::ProcessContext::kTempoValid
+    | Vst::ProcessContext::kTimeSigValid | Vst::ProcessContext::kCycleValid
+    | (transport_context.playing_ ? Vst::ProcessContext::kPlaying : 0)
+    | (transport_context.recording_ ? Vst::ProcessContext::kRecording : 0)
+    | (transport_context.loop_enabled_ ? Vst::ProcessContext::kCycleActive : 0);
+  impl.process_context_.projectTimeMusic =
+    transport_context.position_.in (units::quarter_notes);
+  impl.process_context_.barPositionMusic =
+    transport_context.bar_start_.in (units::quarter_notes);
+  impl.process_context_.cycleStartMusic =
+    transport_context.loop_start_.in (units::quarter_notes);
+  impl.process_context_.cycleEndMusic =
+    transport_context.loop_end_.in (units::quarter_notes);
+  impl.process_context_.tempo = transport_context.tempo_.in (units::bpm);
+  impl.process_context_.timeSigNumerator = transport_context.time_sig_numerator_;
+  impl.process_context_.timeSigDenominator =
+    transport_context.time_sig_denominator_;
+
   impl.process_data_.processContext = &impl.process_context_;
 
   {

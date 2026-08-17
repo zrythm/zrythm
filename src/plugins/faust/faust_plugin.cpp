@@ -334,7 +334,10 @@ FaustPlugin::sync_params_to_zones () noexcept
 }
 
 void
-FaustPlugin::process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept
+FaustPlugin::process_impl (
+  dsp::graph::ProcessBlockInfo time_info,
+  const dsp::ITransport &,
+  const dsp::TempoMap &) noexcept
 {
   if (dsp_ == nullptr)
     return;

@@ -37,7 +37,10 @@ protected:
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) override;
 
-  void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override;
+  void process_impl (
+    dsp::graph::ProcessBlockInfo time_info,
+    const dsp::ITransport &,
+    const dsp::TempoMap &) noexcept override;
 
   std::string save_state_impl () const override { return {}; }
   bool        load_state_impl (const std::string &) override { return true; }

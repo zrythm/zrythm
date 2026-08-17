@@ -6,10 +6,12 @@
 #include <atomic>
 #include <cstdio>
 #include <cstdlib>
+#include <string>
 #include <string_view>
 
 #include "clap_fixture_factory.h"
 #include "sine_synth.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -172,15 +174,45 @@ public:
   bool implementsState () const noexcept override { return true; }
   bool stateSave (const clap_ostream * stream) noexcept override
   {
-    const double v = gain_.load ();
-    return stream->write (stream, &v, sizeof (v)) == sizeof (v);
+    // Structured fixture state: the gain plus the last received transport,
+    // so hosts can verify transport delivery
+    const nlohmann::json j{
+      { "gain",      gain_.load () },
+      { "transport",
+       nlohmann::json{
+          { "present", ctx_present_.load () != 0.0 },
+          { "flags", static_cast<uint32_t> (ctx_flags_.load ()) },
+          { "tempo", ctx_tempo_.load () },
+          { "songPosBeats", ctx_song_pos_beats_.load () },
+          { "songPosSeconds", ctx_song_pos_seconds_.load () },
+          { "barStartBeats", ctx_bar_start_beats_.load () },
+          { "barNumber", static_cast<int> (ctx_bar_number_.load ()) },
+          { "loopStartBeats", ctx_loop_start_beats_.load () },
+          { "loopEndBeats", ctx_loop_end_beats_.load () },
+          { "timeSigNum", static_cast<int> (ctx_time_sig_num_.load ()) },
+          { "timeSigDenom", static_cast<int> (ctx_time_sig_denom_.load ()) },
+        }                          },
+    };
+    const auto json_text = j.dump ();
+    const auto text_size = json_text.size ();
+    return stream->write (stream, json_text.data (), text_size)
+           == static_cast<int64_t> (text_size);
   }
   bool stateLoad (const clap_istream * stream) noexcept override
   {
-    double v = 0.0;
-    if (stream->read (stream, &v, sizeof (v)) != sizeof (v))
+    std::string           json_text;
+    std::array<char, 256> chunk{};
+    while (true)
+      {
+        const auto bytes = stream->read (stream, chunk.data (), chunk.size ());
+        if (bytes <= 0)
+          break;
+        json_text.append (chunk.data (), static_cast<size_t> (bytes));
+      }
+    const auto j = nlohmann::json::parse (json_text, nullptr, false);
+    if (j.is_discarded () || !j.contains ("gain"))
       return false;
-    gain_.store (std::clamp (v, 0.0, 1.0));
+    gain_.store (std::clamp (j["gain"].get<double> (), 0.0, 1.0));
     return true;
   }
 
@@ -189,6 +221,36 @@ public:
     apply_events (process->in_events);
     echo_note_events (
       process->in_events, process->out_events, process->frames_count);
+
+    // Capture the received transport so hosts can verify transport delivery
+    // via the state
+    if (process->transport != nullptr)
+      {
+        const auto &transport = *process->transport;
+        const auto  beats = [] (clap_beattime t) {
+          return static_cast<double> (t)
+                 / static_cast<double> (CLAP_BEATTIME_FACTOR);
+        };
+        const auto secs = [] (clap_sectime t) {
+          return static_cast<double> (t)
+                 / static_cast<double> (CLAP_SECTIME_FACTOR);
+        };
+        ctx_present_.store (1.0);
+        ctx_flags_.store (static_cast<double> (transport.flags));
+        ctx_tempo_.store (transport.tempo);
+        ctx_song_pos_beats_.store (beats (transport.song_pos_beats));
+        ctx_song_pos_seconds_.store (secs (transport.song_pos_seconds));
+        ctx_bar_start_beats_.store (beats (transport.bar_start));
+        ctx_bar_number_.store (static_cast<double> (transport.bar_number));
+        ctx_loop_start_beats_.store (beats (transport.loop_start_beats));
+        ctx_loop_end_beats_.store (beats (transport.loop_end_beats));
+        ctx_time_sig_num_.store (static_cast<double> (transport.tsig_num));
+        ctx_time_sig_denom_.store (static_cast<double> (transport.tsig_denom));
+      }
+    else
+      {
+        ctx_present_.store (0.0);
+      }
 
     const auto num_frames = process->frames_count;
     if (process->audio_outputs_count < 1)
@@ -303,6 +365,20 @@ private:
 
   SineSynth           synth_;
   std::atomic<double> gain_{ 1.0 };
+
+  // Last received transport, captured during process() and serialized into
+  // the state so hosts can verify transport delivery
+  std::atomic<double> ctx_present_{ 0.0 };
+  std::atomic<double> ctx_flags_{ 0.0 };
+  std::atomic<double> ctx_tempo_{ 0.0 };
+  std::atomic<double> ctx_song_pos_beats_{ 0.0 };
+  std::atomic<double> ctx_song_pos_seconds_{ 0.0 };
+  std::atomic<double> ctx_bar_start_beats_{ 0.0 };
+  std::atomic<double> ctx_bar_number_{ 0.0 };
+  std::atomic<double> ctx_loop_start_beats_{ 0.0 };
+  std::atomic<double> ctx_loop_end_beats_{ 0.0 };
+  std::atomic<double> ctx_time_sig_num_{ 0.0 };
+  std::atomic<double> ctx_time_sig_denom_{ 0.0 };
 };
 
 using TestSynthClapNotes = TestSynthClap<CLAP_NOTE_DIALECT_CLAP>;

@@ -49,7 +49,10 @@ public:
     last_max_block_length_ = max_block_length;
   }
 
-  void process_impl (dsp::graph::ProcessBlockInfo time_info) noexcept override
+  void process_impl (
+    dsp::graph::ProcessBlockInfo time_info,
+    const dsp::ITransport &,
+    const dsp::TempoMap &) noexcept override
   {
     process_called_ = true;
     last_time_info_ = time_info;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <string>
 
 #include "base/source/fstreamer.h"
 #include "gain_dsp.h"
@@ -9,6 +10,7 @@
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "public.sdk/source/main/pluginfactory.h"
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -117,21 +119,32 @@ public:
   tresult PLUGIN_API setEditorState (IBStream * state) SMTG_OVERRIDE
   {
     IBStreamer streamer (state, kLittleEndian);
-    double     saved_gain = 0.0;
-    if (!streamer.readDouble (saved_gain))
+    int32      length = 0;
+    if (!streamer.readInt32 (length))
       return kResultFalse;
-    // Second chunk double (edit counter) is optional
-    double ignored = 0.0;
-    streamer.readDouble (ignored);
-    setParamNormalized (kLevelParamId, saved_gain);
+    if (length <= 0)
+      return kResultFalse;
+    std::string json_text (static_cast<size_t> (length), '\0');
+    if (streamer.readRaw (json_text.data (), length) != length)
+      return kResultFalse;
+    const auto j = nlohmann::json::parse (json_text, nullptr, false);
+    if (j.is_discarded () || !j.contains ("gain"))
+      return kResultFalse;
+    setParamNormalized (kLevelParamId, j["gain"].get<double> ());
     return kResultOk;
   }
 
   tresult PLUGIN_API getEditorState (IBStream * state) SMTG_OVERRIDE
   {
+    const nlohmann::json j{
+      { "gain",                gain_.load ()                  },
+      { "controllerEditCount", controller_edit_count_.load () },
+    };
+    const auto json_text = j.dump ();
     IBStreamer streamer (state, kLittleEndian);
-    streamer.writeDouble (gain_.load ());
-    streamer.writeDouble (controller_edit_count_.load ());
+    streamer.writeInt32 (static_cast<int32> (json_text.size ()));
+    streamer.writeRaw (
+      json_text.data (), static_cast<int32> (json_text.size ()));
     return kResultOk;
   }
 

@@ -151,7 +151,7 @@ Plugin::custom_process_block (
       return;
     }
 
-  process_impl (time_nfo);
+  process_impl (time_nfo, transport, tempo_map);
 }
 
 void
