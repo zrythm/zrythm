@@ -15,6 +15,7 @@
 #include "dsp/speaker_arrangement.h"
 
 #include <clap/ext/ambisonic.h>
+#include <clap/ext/audio-ports.h>
 #include <clap/ext/surround.h>
 
 namespace zrythm::plugins
