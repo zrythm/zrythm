@@ -1,16 +1,21 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#include <optional>
+
 #include "plugins/plugin.h"
 #include "utils/enum_utils.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
 #include "utils/tracy.h"
 
+#include <juce_audio_basics/juce_audio_basics.h>
+
 namespace zrythm::plugins
 {
 
 Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
-    : dsp::ProcessorBase (registry, u8"Plugin", parent), self_guard_ (this)
+    : dsp::ProcessorBase (registry, u8"Plugin", parent), self_guard_ (this),
+      load_measurer_ (std::make_unique<juce::AudioProcessLoadMeasurer> ())
 {
   QObject::connect (
     this, &Plugin::instantiationFinished, this, [this] (bool successful) {
@@ -130,7 +135,17 @@ Plugin::custom_prepare_for_processing (
 {
   init_param_caches ();
   param_sync_.prepare (get_parameters ().size ());
+  load_measurer_->reset (
+    static_cast<double> (sample_rate.in (units::sample_rate)),
+    static_cast<int> (max_block_length.in (units::samples)));
+  const auto latency_before = latencySamples ();
   prepare_plugin_for_processing (sample_rate, max_block_length);
+  if (latencySamples () != latency_before)
+    {
+      post_main_thread_action ([this] {
+        Q_EMIT latencySamplesChanged (latencySamples ());
+      });
+    }
 }
 
 void
@@ -141,6 +156,19 @@ Plugin::custom_process_block (
 {
   ZoneScopedN ("Plugin process");
   ZoneText (get_name ().c_str (), strlen (get_name ().c_str ()));
+
+  // Measure every path (including passthrough) against the actual block
+  // length so the reported load reflects the current block and decays
+  // while bypassed. ProcessorBase can rewrite a bad block to 0 frames;
+  // measuring that would divide by a zero budget. The measurer's internal
+  // spinlock is uncontended: the audio thread is its only writer
+  std::optional<juce::AudioProcessLoadMeasurer::ScopedTimer> scoped_timer;
+  if (time_nfo.nframes_ > units::samples (0)) [[likely]]
+    {
+      scoped_timer.emplace (
+        *load_measurer_,
+        static_cast<int> (time_nfo.nframes_.in (units::samples)));
+    }
 
   if (instantiation_failed_)
     return;
@@ -158,6 +186,7 @@ void
 Plugin::custom_release_resources ()
 {
   param_sync_.entries.clear ();
+  load_measurer_->reset ();
   release_resources_impl ();
 }
 
@@ -303,14 +332,27 @@ Plugin::flush_plugin_values ()
     }
 }
 
+double
+Plugin::dspLoadPercentage () const
+{
+  return load_measurer_->getLoadAsPercentage ();
+}
+
+int
+Plugin::latencySamples () const
+{
+  return static_cast<int> (get_single_playback_latency ().in (units::samples));
+}
+
 void
 Plugin::notify_latency_changed () noexcept
 {
-  if (!main_thread_callbacks_.latency_recalc_)
-    return;
-
   post_main_thread_action ([this] {
-    main_thread_callbacks_.latency_recalc_ ();
+    if (main_thread_callbacks_.latency_recalc_)
+      {
+        main_thread_callbacks_.latency_recalc_ ();
+      }
+    Q_EMIT latencySamplesChanged (latencySamples ());
   });
 }
 

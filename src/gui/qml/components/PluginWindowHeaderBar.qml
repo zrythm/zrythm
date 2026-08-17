@@ -3,6 +3,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Zrythm
 import ZrythmStyle
 
@@ -16,32 +17,63 @@ import ZrythmStyle
 Rectangle {
   id: root
 
-  // Must be non-null: bindings dereference it unconditionally
-  required property Plugin plugin
-
-  readonly property color themeTextColor: ZrythmTheme.textColor
-  readonly property color themeWindowColor: ZrythmTheme.pageColor
   // Margin around the controls row and name label
   readonly property int contentMargin: 4
+  // Whether the diagnostics row (DSP load + latency) is shown below the
+  // controls; toggled by the disclosure button
+  property bool detailsExpanded: false
+  // Last polled DSP load (refreshed by the timer below)
+  property double dspLoadPercent: 0
+  // Engine sample rate for the ms conversion (0 when no project is loaded,
+  // e.g. in test harnesses using a fallback engine)
+  readonly property int engineSampleRate: GlobalState.application?.projectManager?.activeSession?.project?.engine?.sampleRate ?? 0
+  // Reactively bound to the plugin's latencySamples property
+  readonly property int latencySamples: root.plugin.latencySamples
   // Width reserved for the name label in the implicit width
   readonly property int minimumNameWidth: 40
+
+  // Must be non-null: bindings dereference it unconditionally
+  required property Plugin plugin
+  readonly property color themeTextColor: ZrythmTheme.textColor
+  readonly property color themeWindowColor: ZrythmTheme.pageColor
 
   signal colorsChanged
   signal presetSelectorRequested
 
-  color: themeWindowColor
-  implicitHeight: controlsRow.implicitHeight + 2 * contentMargin
-  implicitWidth: controlsRow.implicitWidth + 3 * contentMargin + minimumNameWidth
+  function refreshDiagnostics() {
+    dspLoadPercent = plugin.dspLoadPercentage();
+  }
 
+  color: themeWindowColor
+  implicitHeight: controlsRow.implicitHeight + 2 * contentMargin + (detailsExpanded ? detailsRow.implicitHeight + contentMargin : 0)
+  implicitWidth: controlsRow.implicitWidth + minimumNameWidth + disclosureButton.implicitWidth + 4 * contentMargin
+
+  onDetailsExpandedChanged: {
+    if (detailsExpanded)
+      refreshDiagnostics();
+  }
   onThemeTextColorChanged: colorsChanged()
   onThemeWindowColorChanged: colorsChanged()
+
+  // Refresh immediately when the window re-appears with the row open
+  // (the poll timer is stopped while hidden)
+  Connections {
+    function onUiVisibleChanged() {
+      if (root.plugin.uiVisible && root.detailsExpanded)
+        root.refreshDiagnostics();
+    }
+
+    target: root.plugin
+  }
 
   Row {
     id: controlsRow
 
     anchors.left: parent.left
     anchors.leftMargin: root.contentMargin
-    anchors.verticalCenter: parent.verticalCenter
+    // Top-anchored so the diagnostics row extends the strip downwards
+    anchors.top: parent.top
+    anchors.topMargin: root.contentMargin
     spacing: 4
 
     ToolButton {
@@ -97,12 +129,70 @@ Rectangle {
 
     anchors.left: controlsRow.right
     anchors.leftMargin: root.contentMargin
-    anchors.right: parent.right
+    anchors.right: disclosureButton.left
     anchors.rightMargin: root.contentMargin
-    anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenter: controlsRow.verticalCenter
     color: root.themeTextColor
     elide: Label.ElideRight
     // The configuration is only set once the plugin is instantiated
     text: root.plugin.configuration?.descriptor.name ?? ""
+  }
+
+  // Disclosure toggle for the diagnostics row, right end of the strip
+  ToolButton {
+    id: disclosureButton
+
+    Accessible.name: qsTr("Toggle plugin diagnostics")
+    anchors.right: parent.right
+    anchors.rightMargin: root.contentMargin
+    anchors.verticalCenter: controlsRow.verticalCenter
+    display: AbstractButton.IconOnly
+    flat: true
+    focusPolicy: Qt.NoFocus
+    icon.color: root.themeTextColor
+    icon.source: root.detailsExpanded ? ResourceManager.getIconUrl("gnome-icon-library", "go-up-symbolic.svg") : ResourceManager.getIconUrl("gnome-icon-library", "go-down-symbolic.svg")
+
+    onClicked: root.detailsExpanded = !root.detailsExpanded
+  }
+
+  // Diagnostics line (DSP load + latency), shown on demand; a layout so
+  // more diagnostics can be added later
+  RowLayout {
+    id: detailsRow
+
+    anchors.left: parent.left
+    anchors.leftMargin: root.contentMargin
+    anchors.right: parent.right
+    anchors.rightMargin: root.contentMargin
+    anchors.top: controlsRow.bottom
+    anchors.topMargin: root.contentMargin
+    spacing: 8
+    visible: root.detailsExpanded
+
+    Label {
+      id: detailsText
+
+      Layout.fillWidth: true
+      color: root.themeTextColor
+      elide: Label.ElideRight
+      opacity: 0.8
+      text: {
+        const roundedLoad = Math.round(root.dspLoadPercent);
+        if (root.engineSampleRate > 0) {
+          const ms = Qt.locale().toString(root.latencySamples * 1000.0 / root.engineSampleRate, 'f', 1);
+          return qsTr("Load: %1% · Latency: %2 samples (%3 ms)").arg(roundedLoad).arg(root.latencySamples).arg(ms);
+        }
+        return qsTr("Load: %1% · Latency: %2 samples").arg(roundedLoad).arg(root.latencySamples);
+      }
+    }
+  }
+
+  // Poll only while the diagnostics row is shown and the window is visible
+  Timer {
+    interval: 600
+    repeat: true
+    running: root.detailsExpanded && root.plugin.uiVisible
+
+    onTriggered: root.refreshDiagnostics()
   }
 }

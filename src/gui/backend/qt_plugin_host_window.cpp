@@ -174,19 +174,25 @@ public:
     auto &offscreen_header = header_qml_->offscreen_header ();
     header_height_ = std::max (1, offscreen_header.implicit_height ());
     // Follow height changes from the QML scene (e.g., theme font
-    // changes), keeping the plugin view area untouched. Fixed-size
-    // windows cannot grow to accommodate a new header height, so the
-    // header is kept at its initial height there
+    // changes or the header's expandable diagnostics row), keeping the
+    // plugin view area untouched. Non-resizable windows move their fixed
+    // height with the header instead
     QObject::connect (
       &offscreen_header, &OffscreenQmlHeader::implicitHeightChanged,
       window_.get (), [this] (int height) {
-        if (window_->maximumHeight () != QWIDGETSIZE_MAX)
-          return;
         const auto new_height = std::max (1, height);
         const auto delta = new_height - header_height_;
         if (delta == 0)
           return;
         header_height_ = new_height;
+        if (!resizable_)
+          {
+            window_->setFixedHeight (window_->height () + delta);
+            return;
+          }
+        // Keep the minimum height in sync with the header (see
+        // apply_size())
+        window_->setMinimumHeight (new_height);
         window_->resize (window_->width (), window_->height () + delta);
       });
     // Keep the window's minimum width in sync with the header's controls;
@@ -194,7 +200,7 @@ public:
     QObject::connect (
       &offscreen_header, &OffscreenQmlHeader::implicitWidthChanged,
       window_.get (), [this] {
-        if (window_->maximumWidth () != QWIDGETSIZE_MAX)
+        if (!resizable_)
           return;
         window_->setMinimumWidth (header_qml_->minimumWidth ());
       });

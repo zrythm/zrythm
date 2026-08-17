@@ -21,6 +21,11 @@
 
 #include <QPointer>
 
+namespace juce
+{
+class AudioProcessLoadMeasurer;
+}
+
 namespace zrythm::plugins
 {
 
@@ -98,6 +103,8 @@ class Plugin : public dsp::ProcessorBase
   Q_PROPERTY (
     InstantiationStatus instantiationStatus READ instantiationStatus NOTIFY
       instantiationStatusChanged)
+  Q_PROPERTY (
+    int latencySamples READ latencySamples NOTIFY latencySamplesChanged)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -194,6 +201,30 @@ public:
    * use).
    */
   Q_INVOKABLE void switchAbState ();
+
+  /**
+   * @brief Returns the plugin's recent processing load as a percentage of
+   * the block budget.
+   *
+   * Exponential moving average over recent blocks (measured against each
+   * block's actual length, including passthrough while bypassed but
+   * excluding parameter processing), clamped to 0-100, so it is not
+   * directly comparable to the engine-wide DSP meter. No change
+   * notification is emitted; the value must be polled.
+   */
+  Q_INVOKABLE double dspLoadPercentage () const;
+
+  /**
+   * @brief Returns the plugin's own playback latency in samples (not
+   * including route latency).
+   */
+  int latencySamples () const;
+
+  /**
+   * @brief Emitted on the main thread when the plugin's reported latency
+   * changed.
+   */
+  Q_SIGNAL void latencySamplesChanged (int latency_samples);
 
   bool uiVisible () const { return visible_; }
   void setUiVisible (bool visible)
@@ -469,9 +500,9 @@ public:
    * @brief Notifies the host that the plugin's playback latency changed.
    *
    * Safe to call from any thread: the request is posted to the main thread
-   * via the shared dispatcher. The request is dropped if no latency-recalc
-   * callback is installed, or if the plugin no longer exists when the
-   * request runs.
+   * via the shared dispatcher, which invokes the latency-recalc callback
+   * (if installed) and emits latencySamplesChanged(). The request is
+   * dropped if the plugin no longer exists when the request runs.
    */
   void notify_latency_changed () noexcept [[clang::nonblocking]];
 
@@ -733,6 +764,13 @@ private:
    * realtime code is then just an atomic increment (no allocations).
    */
   QPointer<const Plugin> self_guard_;
+
+  /**
+   * @brief Measures this plugin's share of the audio block budget.
+   *
+   * Kept behind a pointer to avoid pulling JUCE headers into this header.
+   */
+  std::unique_ptr<juce::AudioProcessLoadMeasurer> load_measurer_;
 };
 
 class JucePlugin;

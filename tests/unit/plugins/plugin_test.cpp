@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin.h"
@@ -7,6 +7,8 @@
 
 #include <QSignalSpy>
 #include <QTest>
+
+#include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
 #include <gtest/gtest.h>
@@ -58,6 +60,11 @@ public:
     last_time_info_ = time_info;
   }
 
+  units::sample_u32_t get_single_playback_latency () const override
+  {
+    return units::samples (384);
+  }
+
   std::string save_state_impl () const override
   {
     if (return_empty_state_)
@@ -82,7 +89,7 @@ public:
     from_position_and_nframes (units::samples (0), units::samples (0));
 };
 
-class PluginTest : public ::testing::Test
+class PluginTest : public ::testing::Test, public test_helpers::ScopedQCoreApplication
 {
 protected:
   void SetUp () override
@@ -311,6 +318,41 @@ TEST_F (PluginTest, ProcessingWhenEnabled)
   EXPECT_EQ (plugin_->last_time_info_.nframes_, units::samples (512));
 }
 
+TEST_F (PluginTest, ProcessingRegistersDspLoadAndLatency)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  plugin_->prepare_for_processing (nullptr, sample_rate_, max_block_length_);
+
+  // Nothing measured yet
+  EXPECT_DOUBLE_EQ (plugin_->dspLoadPercentage (), 0.0);
+
+  // The query returns the latency reported by the plugin
+  EXPECT_EQ (plugin_->latencySamples (), 384);
+
+  // Processing must register nonzero load (the only way the measurement
+  // stays at exactly zero is if it is broken); block durations below the
+  // clock resolution read as zero, so retry a bounded number of times
+  const auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (512));
+  double load = 0.0;
+  for (int i = 0; i < 100 && load <= 0.0; ++i)
+    {
+      plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+      load = plugin_->dspLoadPercentage ();
+    }
+  EXPECT_TRUE (plugin_->process_called_);
+  EXPECT_GT (load, 0.0);
+
+  // Releasing resources resets the measurement
+  plugin_->release_resources ();
+  EXPECT_DOUBLE_EQ (plugin_->dspLoadPercentage (), 0.0);
+}
+
 TEST_F (PluginTest, ProcessingWhenBypassed)
 {
   // Set configuration
@@ -333,6 +375,17 @@ TEST_F (PluginTest, ProcessingWhenBypassed)
   plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
 
   EXPECT_FALSE (plugin_->process_called_);
+
+  // The passthrough path is measured too, so a nonzero load must register
+  // while bypassed (retry: a short block can read as zero duration at
+  // clock resolution)
+  double load = 0.0;
+  for (int i = 0; i < 100 && load <= 0.0; ++i)
+    {
+      plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+      load = plugin_->dspLoadPercentage ();
+    }
+  EXPECT_GT (load, 0.0);
 }
 
 TEST_F (PluginTest, ProcessingWhenInstantiationFailed)
