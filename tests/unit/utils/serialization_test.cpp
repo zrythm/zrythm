@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <numbers>
@@ -199,6 +199,60 @@ TEST (SerializationTest, VariantMixedTypes)
   EXPECT_EQ (std::get<SimpleObject> (deserialized_obj).int_value, 999);
   EXPECT_EQ (
     std::get<SimpleObject> (deserialized_obj).str_value, "mixed variant");
+}
+
+TEST (SerializationTest, VariantInvalidTypeIndexThrows)
+{
+  using VariantT = std::variant<int, std::string, SimpleObject>;
+
+  // an out-of-range type index (e.g. from a corrupt file) must throw instead
+  // of leaving the variant holding a null pointer; 2^32 would wrap to 0 and
+  // silently deserialize as the first alternative if read as int
+  auto json_with_index = [] (std::int64_t index) {
+    nlohmann::json j = nlohmann::json::object ();
+    j[kVariantTypeKey] = index;
+    j[kVariantNonObjectValueKey] = 42;
+    return j;
+  };
+
+  for (
+    const std::int64_t invalid_index :
+    { std::int64_t{ -1 }, std::int64_t{ 3 }, std::int64_t{ 100 },
+      std::int64_t{ 4294967296 } })
+    {
+      VariantT deserialized;
+      EXPECT_THROW (
+        variant_from_json_with_builder (
+          json_with_index (invalid_index), deserialized,
+          SerializationTestVariantBuilder{}),
+        utils::exceptions::ZrythmException);
+    }
+
+  // a missing or non-integer type key must also throw ZrythmException so
+  // callers handle all corrupt-file shapes uniformly
+  {
+    nlohmann::json missing_key = nlohmann::json::object ();
+    VariantT       deserialized;
+    EXPECT_THROW (
+      variant_from_json_with_builder (
+        missing_key, deserialized, SerializationTestVariantBuilder{}),
+      utils::exceptions::ZrythmException);
+  }
+  {
+    nlohmann::json non_integer = nlohmann::json::object ();
+    non_integer[kVariantTypeKey] = "zero";
+    VariantT deserialized;
+    EXPECT_THROW (
+      variant_from_json_with_builder (
+        non_integer, deserialized, SerializationTestVariantBuilder{}),
+      utils::exceptions::ZrythmException);
+  }
+
+  // valid indices still work
+  VariantT deserialized;
+  variant_from_json_with_builder (
+    json_with_index (0), deserialized, SerializationTestVariantBuilder{});
+  EXPECT_EQ (std::get<int> (deserialized), 42);
 }
 
 TEST (SerializationTest, PointerSerialization)

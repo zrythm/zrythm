@@ -128,7 +128,7 @@ AudioPool::write_clip (const FileAudioSource * clip, bool parts, bool backup)
             "reflinking clip from main project ('{}' to '{}')",
             path_in_main_project, new_path);
 
-          if (!utils::io::reflink_file (path_in_main_project, new_path))
+          if (!utils::io::reflink_file (new_path, path_in_main_project))
             {
               z_debug ("failed to reflink, copying instead");
               z_debug (

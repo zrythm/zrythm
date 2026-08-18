@@ -1,5 +1,5 @@
 // clang-format off
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -25,6 +25,7 @@
 #include <cinttypes>
 #include <cmath>
 #include <cstdlib>
+#include <iterator>
 
 #include "utils/logger.h"
 #include "utils/midi.h"
@@ -172,10 +173,16 @@ namespace zrythm::utils::midi
 
 /**
  * Return the name of the given cc (0-127).
+ *
+ * Out-of-range values return "Unknown".
  */
 std::string_view
 midi_get_controller_name (const midi_byte_t cc)
 {
+  if (cc >= std::size (midi_cc_names))
+    {
+      return "Unknown";
+    }
   return midi_cc_names[cc];
 }
 

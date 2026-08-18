@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "utils/exceptions.h"
 #include "utils/qt.h"
@@ -71,8 +73,28 @@ variant_create_object_only (
   Variant              &var,
   const BuilderT       &builder)
 {
-  const auto index =
-    j.at (zrythm::utils::serialization::kVariantTypeKey).get<int> ();
+  std::int64_t index = 0;
+  try
+    {
+      index =
+        j.at (zrythm::utils::serialization::kVariantTypeKey).get<std::int64_t> ();
+    }
+  catch (const nlohmann::json::exception &e)
+    {
+      throw ZrythmException (
+        "Failed to read variant type index: " + std::string (e.what ()));
+    }
+
+  if (
+    index < 0
+    || index >= static_cast<std::int64_t> (std::variant_size_v<Variant>))
+    {
+      throw ZrythmException (
+        "Invalid variant type index " + std::to_string (index) + " (expected 0.."
+        + std::to_string (std::variant_size_v<Variant> - 1) + ")");
+    }
+
+  const auto unsigned_index = static_cast<std::size_t> (index);
 
   auto creator = [&]<size_t... I> (std::index_sequence<I...>) {
     Variant result{};
@@ -80,7 +102,7 @@ variant_create_object_only (
     auto create_type_if_current_index = [&]<size_t N> () {
       using Type = std::variant_alternative_t<N, Variant>;
       using StrippedType = std::remove_pointer_t<Type>;
-      if (N == index)
+      if (N == unsigned_index)
         {
           auto object_ptr = builder.template build<StrippedType> ();
 

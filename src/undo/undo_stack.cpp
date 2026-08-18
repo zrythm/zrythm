@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <utility>
 
 #include "utils/format_qt.h"
@@ -173,10 +174,18 @@ UndoStack::redo ()
       z_warning ("Ignoring redo() while a macro is open");
       return;
     }
-  assert (canRedo ());
-  assert (stack_->canRedo ());
+  if (!stack_->canRedo ())
+    {
+      z_warning ("Ignoring redo() with nothing to redo");
+      return;
+    }
   z_debug ("Redoing");
   const auto * cmd = stack_->command (stack_->index ());
+  if (cmd == nullptr)
+    {
+      z_warning ("Ignoring redo(): command not found");
+      return;
+    }
   execute_with_engine_pause_if_needed (*cmd, [this] () { stack_->redo (); });
 }
 
@@ -188,10 +197,18 @@ UndoStack::undo ()
       z_warning ("Ignoring undo() while a macro is open");
       return;
     }
-  assert (canUndo ());
+  if (!stack_->canUndo ())
+    {
+      z_warning ("Ignoring undo() with nothing to undo");
+      return;
+    }
   z_debug ("Undoing");
   const auto * cmd = stack_->command (stack_->index () - 1);
-  assert (cmd != nullptr);
+  if (cmd == nullptr)
+    {
+      z_warning ("Ignoring undo(): command not found");
+      return;
+    }
   execute_with_engine_pause_if_needed (*cmd, [this] () { stack_->undo (); });
 }
 
@@ -227,6 +244,13 @@ UndoStack::redoActions ()
 void
 UndoStack::setIndex (int idx)
 {
+  if (idx < 0 || idx > stack_->count ())
+    {
+      z_warning (
+        "Clamping undo stack index {} to valid range 0..{}", idx,
+        stack_->count ());
+      idx = std::clamp (idx, 0, stack_->count ());
+    }
   if (idx == index ())
     return;
 

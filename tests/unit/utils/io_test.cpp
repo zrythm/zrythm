@@ -306,3 +306,49 @@ TEST (IoTest, MoveFile)
     EXPECT_EQ (read_data, QByteArray::fromStdString (src_content.str ()));
   }
 }
+
+// reflink_file behavior depends on filesystem support: FICLONE succeeds on
+// reflink-capable filesystems (btrfs, XFS) and fails elsewhere (ext4, tmpfs).
+// Both outcomes are asserted so the test is deterministic on any filesystem.
+TEST (IoTest, ReflinkFile)
+{
+  auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+  auto dir_path = utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+  auto src_file = dir_path / "source.txt";
+  auto dest_file = dir_path / "destination.txt";
+  utils::io::set_file_contents (src_file, u8"reflink source content");
+
+  const bool result = utils::io::reflink_file (dest_file, src_file);
+  if (result)
+    {
+      // destination must contain the source content
+      auto read_data = utils::io::read_file_contents (dest_file);
+      EXPECT_EQ (read_data, QByteArray ("reflink source content"));
+    }
+  else
+    {
+      // on failure, the file created by this call must be removed
+      EXPECT_FALSE (std::filesystem::exists (dest_file));
+    }
+}
+
+TEST (IoTest, ReflinkFileFailurePreservesPreexistingDest)
+{
+  auto tmp_dir = zrythm::utils::io::make_tmp_dir ();
+  auto dir_path = utils::Utf8String::from_qstring (tmp_dir->path ()).to_path ();
+
+  auto src_file = dir_path / "source.txt";
+  auto dest_file = dir_path / "destination.txt";
+  utils::io::set_file_contents (src_file, u8"reflink source content");
+  utils::io::set_file_contents (dest_file, u8"pre-existing content");
+
+  const bool result = utils::io::reflink_file (dest_file, src_file);
+  if (!result)
+    {
+      // a pre-existing destination must be kept with its original content
+      EXPECT_TRUE (std::filesystem::exists (dest_file));
+      auto read_data = utils::io::read_file_contents (dest_file);
+      EXPECT_EQ (read_data, QByteArray ("pre-existing content"));
+    }
+}

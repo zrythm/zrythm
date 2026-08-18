@@ -283,4 +283,36 @@ TEST_F (UndoStackTest, ScopedMacroWithoutPush)
   EXPECT_FALSE (undo_stack_->canUndo ());
 }
 
+TEST_F (UndoStackTest, SetIndexClampsOutOfRangeValues)
+{
+  bool flag1 = false;
+  bool flag2 = false;
+  undo_stack_->push (new ToggleCommand (flag1, QStringLiteral ("Cmd 1")));
+  undo_stack_->push (new ToggleCommand (flag2, QStringLiteral ("Cmd 2")));
+  ASSERT_EQ (undo_stack_->index (), 2);
+
+  // negative index clamps to 0 (everything undone)
+  undo_stack_->setIndex (-5);
+  EXPECT_EQ (undo_stack_->index (), 0);
+  EXPECT_FALSE (flag1);
+  EXPECT_FALSE (flag2);
+
+  // index past the end clamps to count() (everything redone)
+  undo_stack_->setIndex (undo_stack_->count () + 10);
+  EXPECT_EQ (undo_stack_->index (), undo_stack_->count ());
+  EXPECT_TRUE (flag1);
+  EXPECT_TRUE (flag2);
+}
+
+TEST_F (UndoStackTest, UndoRedoOnEmptyStackIsIgnored)
+{
+  // must warn and return instead of dereferencing a null command
+  undo_stack_->undo ();
+  undo_stack_->redo ();
+
+  EXPECT_EQ (undo_stack_->index (), 0);
+  EXPECT_FALSE (undo_stack_->canUndo ());
+  EXPECT_FALSE (undo_stack_->canRedo ());
+}
+
 } // namespace zrythm::undo

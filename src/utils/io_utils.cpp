@@ -48,6 +48,7 @@ using zrythm::utils::exceptions::ZrythmException;
 
 #  include <fcntl.h>
 #  include <linux/fs.h>
+#  include <unistd.h>
 #endif
 
 #ifdef _WIN32
@@ -539,6 +540,15 @@ bool
 reflink_file (const std::filesystem::path &dest, const std::filesystem::path &src)
 {
 #ifdef __linux__
+  // whether the destination exists before this call (a pre-existing file
+  // must not be removed on failure)
+  std::error_code exists_ec;
+  const bool      dest_existed = std::filesystem::exists (dest, exists_ec);
+  if (exists_ec)
+    {
+      z_warning ("Failed to stat {}: {}", dest, exists_ec.message ());
+      return false;
+    }
   int src_fd = open (src.c_str (), O_RDONLY);
   if (src_fd == -1)
     {
@@ -549,13 +559,29 @@ reflink_file (const std::filesystem::path &dest, const std::filesystem::path &sr
   if (dest_fd == -1)
     {
       z_warning ("Failed to open destination file {}", dest);
+      close (src_fd);
       return false;
     }
   if (ioctl (dest_fd, FICLONE, src_fd) != 0)
     {
       z_warning ("Failed to reflink '{}' to '{}'", src, dest);
+      close (dest_fd);
+      close (src_fd);
+      if (!dest_existed)
+        {
+          // remove the empty file this call created
+          std::error_code ec;
+          std::filesystem::remove (dest, ec);
+          if (ec)
+            {
+              z_warning (
+                "Failed to remove partial file {}: {}", dest, ec.message ());
+            }
+        }
       return false;
     }
+  close (dest_fd);
+  close (src_fd);
   return true;
 #else
   z_warning ("Reflink not supported on this platform");
