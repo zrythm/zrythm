@@ -100,7 +100,6 @@ OffscreenQmlHeader::OffscreenQmlHeader (plugins::Plugin &plugin, QObject * paren
     Q_EMIT implicitWidthChanged (controls_implicit_width ());
   });
 }
-
 OffscreenQmlHeader::~OffscreenQmlHeader () = default;
 
 void

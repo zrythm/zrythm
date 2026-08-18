@@ -92,7 +92,7 @@ set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontro
 set(icon_dirs
   arena gnome-builder gnome-icon-library fork-awesome font-awesome
   fluentui jam-icons box-icons iconpark iconoir material-design
-  untitled-ui css.gg codicons lucide zrythm-dark
+  untitled-ui css.gg codicons lucide zrythm-dark noto-glyphs
 )
 
 set(icon_files)
@@ -188,6 +188,7 @@ set(rel_qml_file_paths
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
+  components/basic/PresetSelector.qml
   components/basic/RecordButton.qml
   components/basic/ResizeHandle.qml
   components/basic/RotatedLabel.qml

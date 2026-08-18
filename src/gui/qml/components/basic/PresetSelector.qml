@@ -1,0 +1,185 @@
+// SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+pragma ComponentBehavior: Bound
+
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Zrythm
+import ZrythmStyle
+
+/**
+ * Prev/next item selector with a dropdown list.
+ *
+ * Shows the current item's name between previous and next buttons;
+ * clicking the name opens a popup with all items. The control never
+ * changes currentIndex itself: user actions only emit activated(), and
+ * the parent applies the selection (typically via a binding on
+ * currentIndex), so external bindings stay intact.
+ */
+LinkedButtons {
+  id: root
+
+  // The popup's ListView also knows the count, but it can go stale while
+  // the popup has never been shown, so prefer the model's own count
+  readonly property int count: (root.model && root.model.count !== undefined) ? root.model.count : listView.count
+  // Index of the current item, or -1 when nothing is selected
+  property int currentIndex: -1
+  // Name of the current item, resolved by the parent from the model;
+  // placeholderText is shown instead when empty
+  property string currentText: ""
+
+  // Model providing the items (ListModel, QAbstractListModel, ...); a
+  // model with a count property (e.g. ListModel) gives the most
+  // up-to-date item count
+  property var model: null
+  readonly property alias nameButton: nameButton
+  readonly property alias nextButton: nextButton
+  // Text shown when there is no current item
+  property string placeholderText: qsTr("No Preset")
+
+  // Assigned to a property explicitly: the root's default property is
+  // the linked button group, which only accepts items
+  readonly property Popup popup: Popup {
+    id: presetPopup
+
+    // Take focus so the list can be navigated with the keyboard
+    focus: true
+    height: Math.min(listView.contentHeight, 360) + topPadding + bottomPadding
+    padding: 2
+    width: Math.max(nameButton.width, 180)
+    y: nameButton.height
+
+    background: PopupBackgroundRect {
+    }
+    contentItem: ListView {
+      id: listView
+
+      clip: true
+      currentIndex: root.currentIndex
+      highlightMoveDuration: 0
+      implicitHeight: contentHeight
+      model: root.model
+
+      ScrollIndicator.vertical: ScrollIndicator {
+      }
+      delegate: ItemDelegate {
+        required property int index
+        required property var model
+
+        highlighted: listView.currentIndex === index
+        text: model[root.textRole]
+        width: listView.width
+
+        onClicked: {
+          root.activated(index);
+          root.popup.close();
+        }
+      }
+
+      Keys.onEnterPressed: {
+        root.activated(listView.currentIndex);
+        root.popup.close();
+      }
+      Keys.onReturnPressed: {
+        root.activated(listView.currentIndex);
+        root.popup.close();
+      }
+    }
+    enter: Transition {
+      ParallelAnimation {
+        PropertyAnimation {
+          duration: ZrythmTheme.animationDuration
+          easing.type: ZrythmTheme.animationEasingType
+          from: nameButton.height / 2
+          property: "y"
+          to: nameButton.height
+        }
+
+        PropertyAnimation {
+          duration: ZrythmTheme.animationDuration
+          easing.type: ZrythmTheme.animationEasingType
+          from: 0
+          property: "opacity"
+          to: 1
+        }
+      }
+    }
+    exit: Transition {
+      PropertyAnimation {
+        duration: ZrythmTheme.animationDuration
+        easing.type: ZrythmTheme.animationEasingType
+        property: "opacity"
+        to: 0
+      }
+    }
+
+    onOpened: {
+      if (root.currentIndex >= 0 && listView.contentHeight > listView.height)
+        listView.positionViewAtIndex(root.currentIndex, ListView.Center);
+      listView.forceActiveFocus();
+    }
+  }
+  // The popup's parent item; override (with popupType: Popup.Window) to
+  // anchor the popup's window to a different window's scene
+  property alias popupParent: presetPopup.parent
+  // Popup.Item (in-scene) by default; set to Popup.Window to show the
+  // popup in its own top-level window, e.g. over embedded plugin
+  // windows that would otherwise cover or clip it
+  property alias popupType: presetPopup.popupType
+  readonly property bool popupVisible: popup.visible
+  readonly property alias prevButton: prevButton
+  // Role on the model that holds each item's name
+  property string textRole: "display"
+
+  // Emitted when the user picks an item via the arrows or the popup
+  signal activated(int index)
+
+  spacing: 0
+
+  ToolButton {
+    id: prevButton
+
+    Accessible.name: qsTr("Previous Item")
+    display: AbstractButton.IconOnly
+    enabled: root.currentIndex > 0
+    flat: true
+    icon.source: ResourceManager.getIconUrl("noto-glyphs", "triangle-left.svg")
+
+    onClicked: root.activated(root.currentIndex - 1)
+  }
+
+  ToolButton {
+    id: nameButton
+
+    Layout.fillWidth: true
+    Layout.minimumWidth: 120
+    enabled: root.count > 0
+    flat: true
+    text: root.currentIndex >= 0 && root.currentText.length > 0 ? root.currentText : root.placeholderText
+
+    contentItem: Label {
+      color: nameButton.palette.buttonText
+      elide: Text.ElideRight
+      font: nameButton.font
+      horizontalAlignment: Text.AlignHCenter
+      text: nameButton.text
+      verticalAlignment: Text.AlignVCenter
+    }
+
+    onClicked: root.popup.open()
+  }
+
+  ToolButton {
+    id: nextButton
+
+    Accessible.name: qsTr("Next Item")
+    display: AbstractButton.IconOnly
+    enabled: root.currentIndex < root.count - 1
+    flat: true
+    icon.source: ResourceManager.getIconUrl("noto-glyphs", "triangle-right.svg")
+
+    onClicked: root.activated(root.currentIndex + 1)
+  }
+}

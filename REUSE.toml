@@ -177,6 +177,13 @@ SPDX-License-Identifier = "ISC"
 SPDX-FileComment = "Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2022.\n  The files have been slightly modified.\n  From https://github.com/microsoft/fluentui-system-icons."
 
 [[annotations]]
+path = ["**/resources/icons/noto-glyphs/**.svg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/symbols)"
+SPDX-License-Identifier = "OFL-1.1"
+SPDX-FileComment = "\n  Glyph outlines extracted from NotoSansSymbols2-Regular.ttf by scripts/noto_glyph_to_svg.py."
+
+[[annotations]]
 path = "**/resources/icons/box-icons/**.svg"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2015-2021 Aniket Suvarna"

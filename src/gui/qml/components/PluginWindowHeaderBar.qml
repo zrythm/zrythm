@@ -17,7 +17,7 @@ import ZrythmStyle
 Rectangle {
   id: root
 
-  // Margin around the controls row and name label
+  // Margin around the controls row
   readonly property int contentMargin: 4
   // Whether the diagnostics row (DSP load + latency) is shown below the
   // controls; toggled by the disclosure button
@@ -29,8 +29,6 @@ Rectangle {
   readonly property int engineSampleRate: GlobalState.application?.projectManager?.activeSession?.project?.engine?.sampleRate ?? 0
   // Reactively bound to the plugin's latencySamples property
   readonly property int latencySamples: root.plugin.latencySamples
-  // Width reserved for the name label in the implicit width
-  readonly property int minimumNameWidth: 40
 
   // Must be non-null: bindings dereference it unconditionally
   required property Plugin plugin
@@ -38,7 +36,6 @@ Rectangle {
   readonly property color themeWindowColor: ZrythmTheme.pageColor
 
   signal colorsChanged
-  signal presetSelectorRequested
 
   function refreshDiagnostics() {
     dspLoadPercent = plugin.dspLoadPercentage();
@@ -46,7 +43,8 @@ Rectangle {
 
   color: themeWindowColor
   implicitHeight: controlsRow.implicitHeight + 2 * contentMargin + (detailsExpanded ? detailsRow.implicitHeight + contentMargin : 0)
-  implicitWidth: controlsRow.implicitWidth + minimumNameWidth + disclosureButton.implicitWidth + 4 * contentMargin
+  implicitWidth: controlsRow.implicitWidth + disclosureButton.implicitWidth + 3 * contentMargin
+  palette.text: root.themeTextColor
 
   onDetailsExpandedChanged: {
     if (detailsExpanded)
@@ -66,7 +64,7 @@ Rectangle {
     target: root.plugin
   }
 
-  Row {
+  ToolBar {
     id: controlsRow
 
     anchors.left: parent.left
@@ -74,68 +72,82 @@ Rectangle {
     // Top-anchored so the diagnostics row extends the strip downwards
     anchors.top: parent.top
     anchors.topMargin: root.contentMargin
-    spacing: 4
+    // The strip background is painted by the root rectangle
+    background: null
+    padding: 0
 
-    ToolButton {
-      id: bypassButton
+    contentItem: Row {
+      spacing: 4
 
-      Accessible.name: qsTr("Bypass")
-      checkable: true
-      checked: root.plugin.bypassed
-      flat: true
-      focusPolicy: Qt.NoFocus
-      font.family: ZrythmTheme.notoSansSymbols2Font.name
-      palette.buttonText: root.themeTextColor
-      text: "⏻"
+      ToolButton {
+        id: bypassButton
 
-      onClicked: {
-        root.plugin.bypassed = !root.plugin.bypassed;
-        // The control writes checked on click - restore the binding
-        checked = Qt.binding(function () {
-          return root.plugin.bypassed;
-        });
+        Accessible.name: qsTr("Bypass")
+        checkable: true
+        checked: root.plugin.bypassed
+        display: AbstractButton.IconOnly
+        flat: true
+        focusPolicy: Qt.NoFocus
+        icon.source: ResourceManager.getIconUrl("noto-glyphs", "power.svg")
+        palette.buttonText: root.themeTextColor
+
+        onClicked: {
+          root.plugin.bypassed = !root.plugin.bypassed;
+          // The control writes checked on click - restore the binding
+          checked = Qt.binding(function () {
+            return root.plugin.bypassed;
+          });
+        }
+      }
+
+      ToolSeparator {
+        anchors.verticalCenter: parent.verticalCenter
+      }
+
+      PresetSelector {
+        id: presetSelector
+
+        // Dummy content until the plugin preset backend lands; selection
+        // is local only and not applied to the plugin
+        property int localIndex: 0
+
+        currentIndex: localIndex
+        currentText: dummyPresetModel.get(localIndex).name
+        palette.buttonText: root.themeTextColor
+        textRole: "name"
+
+        model: ListModel {
+          id: dummyPresetModel
+
+          ListElement {
+            name: "Default"
+          }
+          ListElement {
+            name: "Bright Lead"
+          }
+          ListElement {
+            name: "Soft Pad"
+          }
+        }
+
+        onActivated: idx => localIndex = idx
+      }
+
+      ToolButton {
+        id: abButton
+
+        Accessible.name: qsTr("Compare two plugin states")
+        display: AbstractButton.IconOnly
+        flat: true
+        focusPolicy: Qt.NoFocus
+        icon.color: root.themeTextColor
+        icon.source: root.plugin.abActive ? "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ba.svg" : "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ab.svg"
+        palette.buttonText: root.themeTextColor
+        text: qsTr("A/B")
+
+        onClicked: root.plugin.switchAbState()
       }
     }
-
-    ToolButton {
-      id: presetButton
-
-      flat: true
-      focusPolicy: Qt.NoFocus
-      palette.buttonText: root.themeTextColor
-      text: qsTr("Preset")
-
-      onClicked: root.presetSelectorRequested()
-    }
-
-    ToolButton {
-      id: abButton
-
-      Accessible.name: qsTr("Compare two plugin states")
-      display: AbstractButton.IconOnly
-      flat: true
-      focusPolicy: Qt.NoFocus
-      icon.color: root.themeTextColor
-      icon.source: root.plugin.abActive ? "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ba.svg" : "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ab.svg"
-      palette.buttonText: root.themeTextColor
-      text: qsTr("A/B")
-
-      onClicked: root.plugin.switchAbState()
-    }
-  }
-
-  Label {
-    id: nameLabel
-
-    anchors.left: controlsRow.right
-    anchors.leftMargin: root.contentMargin
-    anchors.right: disclosureButton.left
-    anchors.rightMargin: root.contentMargin
-    anchors.verticalCenter: controlsRow.verticalCenter
-    color: root.themeTextColor
-    elide: Label.ElideRight
-    // The configuration is only set once the plugin is instantiated
-    text: root.plugin.configuration?.descriptor.name ?? ""
   }
 
   // Disclosure toggle for the diagnostics row, right end of the strip

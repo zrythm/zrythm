@@ -36,5 +36,8 @@ gprof2dot
 # HTML parsing (for docs/scripts)
 beautifulsoup4
 
+# Font glyph to SVG conversion (scripts/noto_glyph_to_svg.py)
+fonttools
+
 # GitHub operations
 PyGithub
