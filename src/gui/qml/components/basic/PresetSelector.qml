@@ -21,14 +21,19 @@ import ZrythmStyle
 LinkedButtons {
   id: root
 
-  // The popup's ListView also knows the count, but it can go stale while
+  // The popup's list also knows the count, but it can go stale while
   // the popup has never been shown, so prefer the model's own count
-  readonly property int count: (root.model && root.model.count !== undefined) ? root.model.count : listView.count
+  readonly property int count: (root.model && root.model.count !== undefined) ? root.model.count : popupContent.count
   // Index of the current item, or -1 when nothing is selected
   property int currentIndex: -1
   // Name of the current item, resolved by the parent from the model;
   // placeholderText is shown instead when empty
   property string currentText: ""
+  // When true, the name button emits popupRequested() instead of opening
+  // the in-scene popup; the host shows the list in a separate window (used
+  // in native plugin strips, where an in-scene popup would be clipped by
+  // the strip height)
+  property bool externalPopup: false
 
   // Model providing the items (ListModel, QAbstractListModel, ...); a
   // model with a count property (e.g. ListModel) gives the most
@@ -44,47 +49,24 @@ LinkedButtons {
   readonly property Popup popup: Popup {
     id: presetPopup
 
+    background: null
+
     // Take focus so the list can be navigated with the keyboard
     focus: true
-    height: Math.min(listView.contentHeight, 360) + topPadding + bottomPadding
-    padding: 2
+    padding: 0
     width: Math.max(nameButton.width, 180)
     y: nameButton.height
 
-    background: PopupBackgroundRect {
-    }
-    contentItem: ListView {
-      id: listView
+    contentItem: PresetListPopup {
+      id: popupContent
 
-      clip: true
       currentIndex: root.currentIndex
-      highlightMoveDuration: 0
-      implicitHeight: contentHeight
       model: root.model
+      textRole: root.textRole
 
-      ScrollIndicator.vertical: ScrollIndicator {
-      }
-      delegate: ItemDelegate {
-        required property int index
-        required property var model
-
-        highlighted: listView.currentIndex === index
-        text: model[root.textRole]
-        width: listView.width
-
-        onClicked: {
-          root.activated(index);
-          root.popup.close();
-        }
-      }
-
-      Keys.onEnterPressed: {
-        root.activated(listView.currentIndex);
-        root.popup.close();
-      }
-      Keys.onReturnPressed: {
-        root.activated(listView.currentIndex);
-        root.popup.close();
+      onActivated: idx => {
+        root.activated(idx);
+        presetPopup.close();
       }
     }
     enter: Transition {
@@ -114,12 +96,6 @@ LinkedButtons {
         to: 0
       }
     }
-
-    onOpened: {
-      if (root.currentIndex >= 0 && listView.contentHeight > listView.height)
-        listView.positionViewAtIndex(root.currentIndex, ListView.Center);
-      listView.forceActiveFocus();
-    }
   }
   // The popup's parent item; override (with popupType: Popup.Window) to
   // anchor the popup's window to a different window's scene
@@ -135,6 +111,8 @@ LinkedButtons {
 
   // Emitted when the user picks an item via the arrows or the popup
   signal activated(int index)
+  // Emitted instead of opening the popup when externalPopup is true
+  signal popupRequested
 
   spacing: 0
 
@@ -168,7 +146,12 @@ LinkedButtons {
       verticalAlignment: Text.AlignVCenter
     }
 
-    onClicked: root.popup.open()
+    onClicked: {
+      if (root.externalPopup)
+        root.popupRequested();
+      else
+        root.popup.open();
+    }
   }
 
   ToolButton {

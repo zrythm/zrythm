@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "gui/backend/plugin_header_qml.h"
+#include "gui/backend/offscreen_qml_scene.h"
+#include "gui/backend/preset_popup_controller.h"
 #include "gui/backend/x11_plugin_host_window.h"
 #include "plugins/host_window_units.h"
 #include "plugins/plugin.h"
@@ -38,10 +39,12 @@
 #  include <QGuiApplication>
 #  include <QHoverEvent>
 #  include <QImage>
+#  include <QKeyEvent>
 #  include <QMouseEvent>
 #  include <QPainter>
 #  include <QPalette>
 #  include <QQuickWindow>
+#  include <QRectF>
 #  include <QSocketNotifier>
 #  include <QTimer>
 
@@ -50,6 +53,12 @@
 #  include <X11/Xlib.h>
 #  include <X11/Xresource.h>
 #  include <X11/Xutil.h>
+#  include <X11/keysym.h>
+
+// X.h defines KeyPress as a macro (2), which collides with
+// QEvent::KeyPress; keep the X constant under a new name
+constexpr int x11_key_press_event = KeyPress;
+#  undef KeyPress
 
 namespace zrythm::gui
 {
@@ -165,6 +174,58 @@ public:
   }
 
   /**
+   * @brief Blits an RGB32 image onto one of our windows with XPutImage.
+   *
+   * The windows inherit the root's visual (CopyFromParent), so the blit
+   * format is the default one. QImage::Format_RGB32 only matches a
+   * 24/32-bit TrueColor visual; on anything else the window keeps its
+   * plain background color instead of being painted with wrong pixels.
+   */
+  void blit_image (Display &dpy, ::Window win, QImage &img)
+  {
+    const auto   screen = DefaultScreen (&dpy);
+    const auto   depth = DefaultDepth (&dpy, screen);
+    auto * const visual = DefaultVisual (&dpy, screen);
+    if (
+      (depth != 24 && depth != 32) || visual->red_mask != 0xFF0000
+      || visual->green_mask != 0xFF00 || visual->blue_mask != 0xFF)
+      {
+        if (!unsupported_visual_logged_)
+          {
+            unsupported_visual_logged_ = true;
+            z_warning (
+              "X11PluginHostWindow: cannot paint on a depth-{} "
+              "visual with masks {:#x}/{:#x}/{:#x}",
+              depth, visual->red_mask, visual->green_mask, visual->blue_mask);
+          }
+        return;
+      }
+
+    if (gc_ == nullptr)
+      gc_ = XCreateGC (&dpy, win, 0, nullptr);
+
+    auto * ximg = XCreateImage (
+      &dpy, visual, static_cast<unsigned> (depth), ZPixmap, 0,
+      reinterpret_cast<char *> (img.bits ()),
+      static_cast<unsigned> (img.width ()),
+      static_cast<unsigned> (img.height ()), 32,
+      static_cast<int> (img.bytesPerLine ()));
+    if (ximg == nullptr)
+      return;
+    ximg->byte_order = LSBFirst;
+    ximg->red_mask = 0xFF0000;
+    ximg->green_mask = 0xFF00;
+    ximg->blue_mask = 0xFF;
+    XPutImage (
+      &dpy, win, gc_, ximg, 0, 0, 0, 0, static_cast<unsigned> (img.width ()),
+      static_cast<unsigned> (img.height ()));
+    // The pixel buffer is owned by the QImage
+    ximg->data = nullptr;
+    XDestroyImage (ximg);
+    XFlush (&dpy);
+  }
+
+  /**
    * @brief Repaints the header strip.
    *
    * Fills the background from the application palette and blits the latest
@@ -192,48 +253,119 @@ public:
           }
       }
 
-    // The windows inherit the root's visual (CopyFromParent), so the blit
-    // format is the default one. QImage::Format_RGB32 only matches a
-    // 24/32-bit TrueColor visual; on anything else the header keeps its
-    // plain background color instead of being painted with wrong pixels
-    const auto   screen = DefaultScreen (&dpy);
-    const auto   depth = DefaultDepth (&dpy, screen);
-    auto * const visual = DefaultVisual (&dpy, screen);
-    if (
-      (depth != 24 && depth != 32) || visual->red_mask != 0xFF0000
-      || visual->green_mask != 0xFF00 || visual->blue_mask != 0xFF)
+    blit_image (dpy, header_win_, img);
+  }
+
+  /**
+   * @brief Shows the preset list in an override-redirect popup window
+   * below the given strip rect.
+   *
+   * The strip's QML scene renders offscreen, so an in-scene popup would
+   * be clipped by the strip height; the popup renders in a second
+   * offscreen scene blitted onto its own top-level window (XWayland has
+   * no Wayland-side popup primitive to use instead).
+   *
+   * @param anchor_logical Name button rect in strip scene (logical)
+   *   coordinates; the popup opens below it.
+   */
+  void open_preset_popup (
+    Display       &dpy,
+    const QRectF  &anchor_logical,
+    QObject *      model,
+    int            current_index,
+    const QString &text_role);
+
+  /** Closes the preset popup, if open. */
+  void close_preset_popup (Display &dpy);
+
+  /** Dispatches X events on the preset popup window. */
+  void handle_popup_event (const XEvent &ev);
+
+  /** Repaints the preset popup window. */
+  void paint_popup (Display &dpy)
+  {
+    if (popup_win_ == 0 || popup_scene_ == nullptr || !popup_scene_->is_valid ())
+      return;
+    QImage img (popup_width_px_, popup_height_px_, QImage::Format_RGB32);
+    img.fill (QGuiApplication::palette ().color (QPalette::Window));
+    const auto frame = popup_scene_->grab_frame ();
+    if (!frame.isNull ())
       {
-        if (!unsupported_visual_logged_)
-          {
-            unsupported_visual_logged_ = true;
-            z_warning (
-              "X11PluginHostWindow: cannot paint the header on a depth-{} "
-              "visual with masks {:#x}/{:#x}/{:#x}",
-              depth, visual->red_mask, visual->green_mask, visual->blue_mask);
-          }
+        QPainter painter (&img);
+        painter.drawImage (0, 0, frame);
+      }
+    blit_image (dpy, popup_win_, img);
+  }
+
+  /**
+   * @brief Forwards an X button event to the popup scene as a QMouseEvent.
+   *
+   * X coordinates are physical pixels; the scene uses logical pixels.
+   */
+  void forward_popup_button_event (const XEvent &ev)
+  {
+    if (popup_scene_ == nullptr || !popup_scene_->is_valid ())
+      return;
+    const bool press = ev.type == ButtonPress;
+    popup_button_pressed_ = press;
+    const QPointF pos (
+      ev.xbutton.x / scale_factor_, ev.xbutton.y / scale_factor_);
+    const QPointF global_pos (
+      ev.xbutton.x_root / scale_factor_, ev.xbutton.y_root / scale_factor_);
+    QMouseEvent mouse_ev (
+      press ? QEvent::MouseButtonPress : QEvent::MouseButtonRelease, pos, pos,
+      global_pos, Qt::LeftButton, press ? Qt::LeftButton : Qt::NoButton,
+      Qt::NoModifier);
+    QCoreApplication::sendEvent (popup_scene_->quick_window (), &mouse_ev);
+  }
+
+  /** Forwards X pointer motion to the popup scene as a mouse move
+   * (coordinates are converted from physical to logical pixels). */
+  void forward_popup_motion_event (int x, int y, int x_root, int y_root)
+  {
+    if (popup_scene_ == nullptr || !popup_scene_->is_valid ())
+      return;
+    const QPointF pos (x / scale_factor_, y / scale_factor_);
+    QMouseEvent   move_ev (
+      QEvent::MouseMove, pos, pos,
+      QPointF (x_root / scale_factor_, y_root / scale_factor_), Qt::NoButton,
+      popup_button_pressed_ ? Qt::LeftButton : Qt::NoButton, Qt::NoModifier);
+    QCoreApplication::sendEvent (popup_scene_->quick_window (), &move_ev);
+  }
+
+  /**
+   * @brief Forwards an X key event to the popup scene as a QKeyEvent.
+   *
+   * Only the keys the list handles are mapped (Escape, Return, Up, Down).
+   */
+  void forward_popup_key_event (const XEvent &ev)
+  {
+    if (popup_scene_ == nullptr || !popup_scene_->is_valid ())
+      return;
+    const auto keysym = XLookupKeysym (const_cast<XKeyEvent *> (&ev.xkey), 0);
+    int        qt_key = 0;
+    switch (keysym)
+      {
+      case XK_Escape:
+        qt_key = Qt::Key_Escape;
+        break;
+      case XK_Return:
+        qt_key = Qt::Key_Return;
+        break;
+      case XK_KP_Enter:
+        qt_key = Qt::Key_Enter;
+        break;
+      case XK_Up:
+        qt_key = Qt::Key_Up;
+        break;
+      case XK_Down:
+        qt_key = Qt::Key_Down;
+        break;
+      default:
         return;
       }
-
-    if (gc_ == nullptr)
-      gc_ = XCreateGC (&dpy, header_win_, 0, nullptr);
-
-    auto * ximg = XCreateImage (
-      &dpy, visual, static_cast<unsigned> (depth), ZPixmap, 0,
-      reinterpret_cast<char *> (img.bits ()), static_cast<unsigned> (w),
-      static_cast<unsigned> (h), 32, static_cast<int> (img.bytesPerLine ()));
-    if (ximg == nullptr)
-      return;
-    ximg->byte_order = LSBFirst;
-    ximg->red_mask = 0xFF0000;
-    ximg->green_mask = 0xFF00;
-    ximg->blue_mask = 0xFF;
-    XPutImage (
-      &dpy, header_win_, gc_, ximg, 0, 0, 0, 0, static_cast<unsigned> (w),
-      static_cast<unsigned> (h));
-    // The pixel buffer is owned by the QImage
-    ximg->data = nullptr;
-    XDestroyImage (ximg);
-    XFlush (&dpy);
+    QKeyEvent key_ev (QEvent::KeyPress, qt_key, Qt::NoModifier);
+    QCoreApplication::sendEvent (popup_scene_->quick_window (), &key_ev);
   }
 
   /**
@@ -288,7 +420,18 @@ public:
   ::Window embed_win_ = 0;
   GC       gc_ = nullptr;
   /** Offscreen QML header blitted onto the header strip. */
-  utils::QObjectUniquePtr<OffscreenQmlHeader> header_;
+  utils::QObjectUniquePtr<OffscreenQmlScene> header_;
+  /** Override-redirect preset popup window (0 when closed). */
+  ::Window popup_win_ = 0;
+  /** Popup window size in physical pixels. */
+  int popup_width_px_ = 0;
+  int popup_height_px_ = 0;
+  /** Offscreen scene rendered onto the popup window. */
+  utils::QObjectUniquePtr<OffscreenQmlScene> popup_scene_;
+  /** Invokable surface passed to the popup scene. */
+  utils::QObjectUniquePtr<PresetPopupController> popup_controller_;
+  /** Whether the left mouse button is currently held over the popup. */
+  bool popup_button_pressed_ = false;
   /** Whether the left mouse button is currently held over the header. */
   bool button_pressed_ = false;
   bool repaint_pending_ = false;
@@ -722,6 +865,184 @@ x11_scale_factor ()
 } // namespace
 
 void
+X11PluginHostWindow::Impl::open_preset_popup (
+  Display       &dpy,
+  const QRectF  &anchor_logical,
+  QObject *      model,
+  int            current_index,
+  const QString &text_role)
+{
+  if (model == nullptr || header_win_ == 0)
+    return;
+  // One popup at a time
+  close_preset_popup (dpy);
+
+  if (popup_controller_ == nullptr)
+    {
+      popup_controller_ =
+        utils::make_qobject_unique<PresetPopupController> (&q_ptr_);
+      QObject::connect (
+        popup_controller_.get (), &PresetPopupController::activated, &q_ptr_,
+        [this] (int index) {
+          header_->applyPresetSelection (index);
+          if (auto * d = X11DisplayManager::instance ().display ())
+            close_preset_popup (*d);
+        });
+      QObject::connect (
+        popup_controller_.get (), &PresetPopupController::dismissed, &q_ptr_,
+        [this] {
+          if (auto * d = X11DisplayManager::instance ().display ())
+            close_preset_popup (*d);
+        });
+    }
+
+  popup_scene_ = utils::make_qobject_unique<OffscreenQmlScene> (
+    QUrl (QStringLiteral (
+      "qrc:/qt/qml/Zrythm/components/basic/PresetListPopup.qml")),
+    QVariantMap{
+      { QStringLiteral ("model"),        QVariant::fromValue (model) },
+      { QStringLiteral ("currentIndex"), current_index               },
+      { QStringLiteral ("textRole"),     text_role                   },
+      { QStringLiteral ("popupHost"),
+       QVariant::fromValue<QObject *> (popup_controller_.get ())     },
+  },
+    &q_ptr_);
+  if (!popup_scene_->is_valid ())
+    {
+      popup_scene_.reset ();
+      return;
+    }
+  QObject::connect (
+    popup_scene_.get (), &OffscreenQmlScene::repaintNeeded, &q_ptr_, [this] {
+      if (auto * d = X11DisplayManager::instance ().display ())
+        paint_popup (*d);
+    });
+
+  const auto width_logical = std::max (
+    qCeil (anchor_logical.width ()), popup_scene_->controls_implicit_width ());
+  const auto height_logical = popup_scene_->implicit_height ();
+  popup_scene_->set_device_pixel_ratio (scale_factor_);
+  popup_scene_->resize (width_logical, height_logical);
+
+  popup_width_px_ =
+    plugins::host_window_logical_to_physical (width_logical, scale_factor_);
+  popup_height_px_ =
+    plugins::host_window_logical_to_physical (height_logical, scale_factor_);
+
+  // Scene (logical) coordinates -> strip physical pixels -> root
+  // coordinates (X11 has global coordinates, unlike Wayland)
+  const auto anchor_px = plugins::host_window_logical_to_physical (
+    qFloor (anchor_logical.x ()), scale_factor_);
+  const auto anchor_py = plugins::host_window_logical_to_physical (
+    qCeil (anchor_logical.bottom ()), scale_factor_);
+  int      root_x = 0, root_y = 0;
+  ::Window unused_child = 0;
+  XTranslateCoordinates (
+    &dpy, header_win_, DefaultRootWindow (&dpy), anchor_px, anchor_py, &root_x,
+    &root_y, &unused_child);
+
+  // Keep the popup inside the root window
+  XWindowAttributes root_attrs{};
+  XGetWindowAttributes (&dpy, DefaultRootWindow (&dpy), &root_attrs);
+  root_x =
+    std::clamp (root_x, 0, std::max (0, root_attrs.width - popup_width_px_));
+  root_y =
+    std::clamp (root_y, 0, std::max (0, root_attrs.height - popup_height_px_));
+
+  XSetWindowAttributes attrs{};
+  attrs.override_redirect = True;
+  attrs.background_pixel =
+    QGuiApplication::palette ().color (QPalette::Window).rgb () & 0xFFFFFF;
+  popup_win_ = XCreateWindow (
+    &dpy, DefaultRootWindow (&dpy), root_x, root_y,
+    static_cast<unsigned> (popup_width_px_),
+    static_cast<unsigned> (popup_height_px_), 0, CopyFromParent, InputOutput,
+    CopyFromParent, CWOverrideRedirect | CWBackPixel, &attrs);
+  XSelectInput (
+    &dpy, popup_win_,
+    ExposureMask | ButtonPressMask | ButtonReleaseMask | PointerMotionMask
+      | KeyPressMask);
+  X11DisplayManager::instance ().register_window (
+    popup_win_, [this] (const XEvent &ev) { handle_popup_event (ev); });
+  XMapRaised (&dpy, popup_win_);
+  // Grab pointer and keyboard so the popup receives all input and clicks
+  // outside it can be dismissed (classic override-redirect menu
+  // technique). PointerMotionMask is what delivers plain hover motion
+  // during the grab (ButtonMotionMask only covers drags)
+  XGrabPointer (
+    &dpy, popup_win_, False,
+    ButtonPressMask | ButtonReleaseMask | PointerMotionMask | ButtonMotionMask,
+    GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+  XGrabKeyboard (
+    &dpy, popup_win_, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  paint_popup (dpy);
+}
+
+void
+X11PluginHostWindow::Impl::close_preset_popup (Display &dpy)
+{
+  if (popup_win_ == 0)
+    return;
+  XUngrabPointer (&dpy, CurrentTime);
+  XUngrabKeyboard (&dpy, CurrentTime);
+  X11DisplayManager::instance ().unregister_window (popup_win_);
+  XDestroyWindow (&dpy, popup_win_);
+  popup_win_ = 0;
+  // Called from paths that may run inside the popup scene's own QML
+  // signal handlers (selection, dismiss); destroying a QML object
+  // synchronously while one of its signal handlers is on the stack is
+  // fatal, so the scene is destroyed via deleteLater() instead
+  if (auto * scene = popup_scene_.release ())
+    scene->deleteLater ();
+  XFlush (&dpy);
+}
+
+void
+X11PluginHostWindow::Impl::handle_popup_event (const XEvent &ev)
+{
+  auto * d = X11DisplayManager::instance ().display ();
+  if (d == nullptr || popup_win_ == 0)
+    return;
+  switch (ev.type)
+    {
+    case Expose:
+      if (ev.xexpose.count == 0)
+        paint_popup (*d);
+      break;
+    case ButtonPress:
+    case ButtonRelease:
+      {
+        // With the pointer grabbed and owner_events off, all button events
+        // arrive here with coordinates relative to the popup window; a
+        // press outside it dismisses the popup
+        const bool inside =
+          ev.xbutton.x >= 0 && ev.xbutton.y >= 0
+          && ev.xbutton.x < popup_width_px_ && ev.xbutton.y < popup_height_px_;
+        if (!inside)
+          {
+            if (ev.type == ButtonPress)
+              close_preset_popup (*d);
+            break;
+          }
+        forward_popup_button_event (ev);
+        paint_popup (*d);
+        break;
+      }
+    case MotionNotify:
+      forward_popup_motion_event (
+        ev.xmotion.x, ev.xmotion.y, ev.xmotion.x_root, ev.xmotion.y_root);
+      paint_popup (*d);
+      break;
+    case x11_key_press_event:
+      forward_popup_key_event (ev);
+      paint_popup (*d);
+      break;
+    default:
+      break;
+    }
+}
+
+void
 X11PluginHostWindow::Impl::send_focus_to_client (long opcode, long detail)
 {
   if (!embedded_client_.has_value () || xembed_atom_ == None)
@@ -856,7 +1177,7 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
   // forwarding X events as Qt events to its scene. Created before the X
   // windows so sizes can be derived from the QML scene
   pimpl_->header_ =
-    utils::make_qobject_unique<OffscreenQmlHeader> (this->plugin (), this);
+    utils::make_qobject_unique<OffscreenQmlScene> (this->plugin (), this);
 
   pimpl_->view_width_logical_ = 640;
   pimpl_->view_height_logical_ =
@@ -896,13 +1217,22 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
   pimpl_->header_->resize (
     pimpl_->view_width_logical_, pimpl_->header_->implicit_height ());
   connect (
-    pimpl_->header_.get (), &OffscreenQmlHeader::repaintNeeded, this, [this] {
+    pimpl_->header_.get (), &OffscreenQmlScene::repaintNeeded, this, [this] {
       auto * d = X11DisplayManager::instance ().display ();
       if (d != nullptr)
         pimpl_->paint_header (*d);
     });
   connect (
-    pimpl_->header_.get (), &OffscreenQmlHeader::implicitHeightChanged, this,
+    pimpl_->header_.get (), &OffscreenQmlScene::presetPopupRequested, this,
+    [this] (
+      const QRectF &anchor, QObject * model, int current_index,
+      const QString &text_role) {
+      auto * d = X11DisplayManager::instance ().display ();
+      if (d != nullptr)
+        pimpl_->open_preset_popup (*d, anchor, model, current_index, text_role);
+    });
+  connect (
+    pimpl_->header_.get (), &OffscreenQmlScene::implicitHeightChanged, this,
     [this] {
       auto * d = X11DisplayManager::instance ().display ();
       if (d == nullptr || pimpl_->win_ == 0)
@@ -1035,6 +1365,11 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
       ev.type == ConfigureNotify && ev.xconfigure.window == pimpl_->win_
       && ev.xconfigure.event == pimpl_->win_)
       {
+        // Popups don't follow their anchor: close the preset popup when
+        // the host window moves or resizes
+        auto * display = X11DisplayManager::instance ().display ();
+        if (display != nullptr)
+          pimpl_->close_preset_popup (*display);
         // Track external (WM-initiated) resizes of the toplevel window,
         // converting the physical toplevel size to the logical view size
         // (SubstructureNotifyMask also delivers ConfigureNotify for child
@@ -1113,6 +1448,7 @@ X11PluginHostWindow::~X11PluginHostWindow ()
   auto * dpy = mgr.display ();
   if (dpy != nullptr && pimpl_->win_ != 0)
     {
+      pimpl_->close_preset_popup (*dpy);
       mgr.unregister_window (pimpl_->win_);
       mgr.unregister_window (pimpl_->header_win_);
       mgr.unregister_window (pimpl_->embed_win_);

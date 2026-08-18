@@ -9,7 +9,9 @@
 #include <QPointer>
 #include <QQmlComponent>
 #include <QQmlEngine>
+#include <QRectF>
 #include <QSize>
+#include <QVariantMap>
 
 class QQuickItem;
 class QQuickWindow;
@@ -48,30 +50,50 @@ void
 set_plugin_header_qml_engine (QQmlEngine * engine);
 
 /**
- * @brief Renders the plugin host window header bar QML offscreen.
+ * @brief Renders a QML scene offscreen.
  *
  * Renders via QQuickRenderControl into an RHI texture with an explicitly
- * controlled device pixel ratio; the plugin host windows paint grab_frame()
- * onto their header strip and forward input events to quick_window().
+ * controlled device pixel ratio; consumers paint grab_frame() and forward
+ * input events to quick_window(). Used for the plugin host window header
+ * strips and for windowed popups over the native strips.
  *
  * All sizes are in logical pixels; grab_frame() returns physical pixels
  * (logical size x device pixel ratio).
  */
-class OffscreenQmlHeader final : public QObject
+class OffscreenQmlScene final : public QObject
 {
   Q_OBJECT
 
 public:
-  explicit OffscreenQmlHeader (
+  /**
+   * @brief Header bar scene for a plugin (see plugin_header_bar_qml_url()).
+   *
+   * Loads the header bar with `plugin` and `sceneController` initial
+   * properties; the header calls back into this object via its invokables
+   * (requestPresetPopup(), scheduleRepaint()).
+   */
+  explicit OffscreenQmlScene (
     plugins::Plugin &plugin,
     QObject *        parent = nullptr);
-  ~OffscreenQmlHeader () override;
+  /**
+   * @brief Generic scene: loads the component at @a qml_url with the
+   * given initial properties.
+   */
+  explicit OffscreenQmlScene (
+    const QUrl &qml_url,
+    QVariantMap initial_properties,
+    QObject *   parent = nullptr);
+  ~OffscreenQmlScene () override;
 
   /** Whether the QML component loaded successfully. */
   bool is_valid () const;
 
   /** The window input events should be sent to (in logical pixels). */
   QQuickWindow * quick_window () const { return quick_window_.get (); }
+
+  /** The engine the scene was created in (the shared application engine
+   * when set). */
+  QQmlEngine * qml_engine () const { return engine_; }
 
   /**
    * @brief Renders the current scene and returns it in physical pixels.
@@ -116,7 +138,58 @@ Q_SIGNALS:
   /** Emitted when the QML scene's implicit width changed. */
   void implicitWidthChanged (int width);
 
-private Q_SLOTS:
+  /**
+   * @brief Emitted when a header bar scene asks for the preset list to be
+   * shown in a separate window.
+   *
+   * @param anchor_strip_rect Name button rect in scene (logical)
+   *   coordinates; the popup should open below it.
+   * @param model The selector's model (a snapshot; ownership stays with
+   *   the scene).
+   * @param current_index Index to highlight.
+   * @param text_role Model role holding each item's name.
+   */
+  void presetPopupRequested (
+    const QRectF  &anchor_strip_rect,
+    QObject *      model,
+    int            current_index,
+    const QString &text_role);
+
+public Q_SLOTS:
+  /**
+   * @brief Applies a selection coming back from an externally hosted
+   * preset popup.
+   *
+   * No-op for scenes whose root has no applyPresetSelection() function.
+   */
+  void applyPresetSelection (int index);
+
+public:
+  /**
+   * @brief Called by the header bar scene when the preset list should be
+   * shown in a separate window.
+   *
+   * Emits presetPopupRequested(); the host window backend does the actual
+   * work. Invoked from QML (the header's signals are QML-declared, which
+   * C++ cannot connect to with member-function-pointer connects).
+   *
+   * @param anchor_strip_rect Name button rect in scene (logical)
+   *   coordinates; the popup should open below it.
+   * @param model The selector's model (a snapshot; ownership stays with
+   *   the scene).
+   * @param current_index Index to highlight.
+   * @param text_role Model role holding each item's name.
+   */
+  Q_INVOKABLE void requestPresetPopup (
+    const QRectF  &anchor_strip_rect,
+    QObject *      model,
+    int            current_index,
+    const QString &text_role)
+  {
+    Q_EMIT presetPopupRequested (
+      anchor_strip_rect, model, current_index, text_role);
+  }
+
   /**
    * @brief Emits repaintNeeded() on the next event loop iteration,
    * coalescing bursts into a single emission.
@@ -127,10 +200,21 @@ private Q_SLOTS:
    * within the scene graph's dirty-list bookkeeping, and re-entering the
    * renderer from there (e.g. a consumer calling grab_frame()) corrupts
    * that bookkeeping and trips QQuickItemPrivate's assertions.
+   *
+   * Public and invokable so the scene can request repaints itself
+   * (e.g. the header bar on theme color changes).
    */
-  void scheduleRepaint ();
+  Q_INVOKABLE void scheduleRepaint ();
 
 private:
+  /**
+   * @brief Shared scene setup for both constructors.
+   *
+   * Loads the component, parents the root item into the offscreen window
+   * and wires the generic change notifications.
+   */
+  void init (const QUrl &qml_url, const QVariantMap &initial_properties);
+
   /**
    * @brief (Re)creates the RHI render target for the current logical size
    * and device pixel ratio, initializing the renderer on first use.
@@ -142,7 +226,9 @@ private:
 private:
   /** Fallback engine when no shared engine was set (theme state will not
    * follow the application). */
-  utils::QObjectUniquePtr<QQmlEngine>       fallback_engine_;
+  utils::QObjectUniquePtr<QQmlEngine> fallback_engine_;
+  /** The engine the scene was created in. */
+  QPointer<QQmlEngine>                      engine_;
   std::unique_ptr<QQuickRenderControl>      render_control_;
   utils::QObjectUniquePtr<QQmlComponent>    component_;
   QPointer<QQuickItem>                      root_item_;

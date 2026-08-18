@@ -24,8 +24,9 @@ target_sources(zrythm_gui_lib
     plugin_manager.cpp
     plugin_protocol_paths.h
     plugin_protocol_paths.cpp
-    plugin_header_qml.h
-    plugin_header_qml.cpp
+    offscreen_qml_scene.h
+    offscreen_qml_scene.cpp
+    preset_popup_controller.h
     project_exporter.h
     project_exporter.cpp
     project_info.h

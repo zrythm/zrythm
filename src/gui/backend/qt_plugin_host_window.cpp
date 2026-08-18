@@ -3,8 +3,10 @@
 
 #include <cassert>
 
-#include "gui/backend/plugin_header_qml.h"
+#include "gui/backend/offscreen_qml_scene.h"
+#include "gui/backend/preset_popup_controller.h"
 #include "gui/backend/qt_plugin_host_window.h"
+#include "utils/logger.h"
 #include "utils/qt.h"
 
 #include <QCloseEvent>
@@ -12,6 +14,8 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPalette>
+#include <QQmlComponent>
+#include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
@@ -56,6 +60,10 @@ private:
  * whole top-level window for RHI compositing (usesRhiFlush): its GLX/DRI3
  * swap can block indefinitely waiting for a Present event from the X
  * server during resizes under XWayland.
+ *
+ * Also hosts the preset popup: the strip's QML scene renders offscreen,
+ * so an in-scene popup would be clipped by the strip height; the popup is
+ * a real popup window transient to the host window instead.
  */
 class PluginHeaderWidget final : public QWidget
 {
@@ -64,24 +72,55 @@ public:
     plugins::Plugin &plugin,
     QWidget *        parent = nullptr)
       : QWidget (parent),
-        header_ (utils::make_qobject_unique<OffscreenQmlHeader> (plugin, this))
+        header_ (utils::make_qobject_unique<OffscreenQmlScene> (plugin, this))
   {
     // The scene drives hover from plain mouse moves
     setMouseTracking (true);
     setFixedHeight (header_->implicit_height ());
     setMinimumWidth (header_->controls_implicit_width ());
-    connect (header_.get (), &OffscreenQmlHeader::repaintNeeded, this, [this] {
+    connect (header_.get (), &OffscreenQmlScene::repaintNeeded, this, [this] {
       update ();
     });
     connect (
-      header_.get (), &OffscreenQmlHeader::implicitHeightChanged, this,
+      header_.get (), &OffscreenQmlScene::implicitHeightChanged, this,
       [this] (int height) { setFixedHeight (std::max (1, height)); });
     connect (
-      header_.get (), &OffscreenQmlHeader::implicitWidthChanged, this,
+      header_.get (), &OffscreenQmlScene::implicitWidthChanged, this,
       [this] (int width) { setMinimumWidth (std::max (1, width)); });
+    connect (
+      header_.get (), &OffscreenQmlScene::presetPopupRequested, this,
+      [this] (
+        const QRectF &anchor, QObject * model, int current_index,
+        const QString &text_role) {
+        open_preset_popup (anchor, model, current_index, text_role);
+      });
   }
 
-  OffscreenQmlHeader &offscreen_header () const { return *header_; }
+  OffscreenQmlScene &offscreen_header () const { return *header_; }
+
+  /** Closes the preset popup, if open. */
+  void close_preset_popup ()
+  {
+    if (preset_popup_window_ == nullptr)
+      return;
+    preset_popup_window_->hide ();
+    release_preset_popup_item ();
+  }
+
+private:
+  /**
+   * @brief Releases the popup scene item, deferring its destruction.
+   *
+   * Called from paths that may run inside the item's own QML signal
+   * handlers (selection, dismiss); destroying a QML object synchronously
+   * while one of its signal handlers is on the stack is fatal, so the
+   * item is destroyed via deleteLater() instead.
+   */
+  void release_preset_popup_item ()
+  {
+    if (auto * item = preset_popup_item_.release ())
+      item->deleteLater ();
+  }
 
 protected:
   void paintEvent (QPaintEvent *) override
@@ -145,10 +184,141 @@ private:
     schedule_repaint ();
   }
 
+  /** Shows the preset list popup below the given strip rect. */
+  void open_preset_popup (
+    const QRectF  &anchor_strip_rect,
+    QObject *      model,
+    int            current_index,
+    const QString &text_role)
+  {
+    if (model == nullptr)
+      return;
+
+    const bool on_wayland =
+      QGuiApplication::platformName ().startsWith (QLatin1String ("wayland"));
+
+    if (preset_popup_window_ == nullptr)
+      {
+        preset_popup_window_ = utils::make_qobject_unique<QQuickWindow> ();
+        preset_popup_window_->setFlags (
+          Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
+        preset_popup_window_->setColor (QColorConstants::Transparent);
+        // The transient parent is baked into the shell surface when the
+        // window is first shown, so it must be set up-front
+        preset_popup_window_->setTransientParent (window ()->windowHandle ());
+        // QtWayland faux API: allow flipping above the anchor when the
+        // popup would go off-screen (plain popups only slide by default)
+        preset_popup_window_->setProperty (
+          "_q_waylandPopupConstraintAdjustment",
+          // constraint_adjustment_slide_x | slide_y | flip_y
+          QVariant::fromValue (1u | 2u | 8u));
+
+        preset_popup_component_ = utils::make_qobject_unique<QQmlComponent> (
+          header_->qml_engine (),
+          QUrl (QStringLiteral (
+            "qrc:/qt/qml/Zrythm/components/basic/PresetListPopup.qml")));
+
+        preset_popup_controller_ =
+          utils::make_qobject_unique<PresetPopupController> (this);
+        connect (
+          preset_popup_controller_.get (), &PresetPopupController::activated,
+          this, [this] (int index) {
+            header_->applyPresetSelection (index);
+            close_preset_popup ();
+          });
+        connect (
+          preset_popup_controller_.get (), &PresetPopupController::dismissed,
+          this, [this] { close_preset_popup (); });
+
+        // Release the scene item when the window system closes the popup
+        // (e.g. Wayland popup_done after an outside click)
+        connect (
+          preset_popup_window_.get (), &QWindow::visibleChanged, this,
+          [this] (bool visible) {
+            if (!visible)
+              release_preset_popup_item ();
+          });
+        if (!on_wayland)
+          {
+            // X11 has no popup grab for bare QWindows; close when the
+            // popup loses activation (click anywhere else)
+            connect (
+              preset_popup_window_.get (), &QWindow::activeChanged, this, [this] {
+                if (
+                  preset_popup_window_ != nullptr
+                  && !preset_popup_window_->isActive ()
+                  && preset_popup_window_->isVisible ())
+                  close_preset_popup ();
+              });
+          }
+      }
+
+    release_preset_popup_item ();
+    auto * item = qobject_cast<
+      QQuickItem *> (preset_popup_component_->createWithInitialProperties (
+      {
+        { QStringLiteral ("model"),        QVariant::fromValue (model)    },
+        { QStringLiteral ("currentIndex"), current_index                  },
+        { QStringLiteral ("textRole"),     text_role                      },
+        { QStringLiteral ("popupHost"),
+         QVariant::fromValue<QObject *> (preset_popup_controller_.get ()) },
+    }));
+    if (item == nullptr)
+      {
+        z_warning (
+          "Failed to load preset list popup QML: {}",
+          preset_popup_component_->errors ().isEmpty ()
+            ? QStringLiteral ("unknown error")
+            : preset_popup_component_->errors ().constFirst ().toString ());
+        return;
+      }
+    QQmlEngine::setObjectOwnership (item, QQmlEngine::CppOwnership);
+    auto * content_item = preset_popup_window_->contentItem ();
+    item->setParentItem (content_item);
+    item->setParent (content_item);
+    preset_popup_item_.reset (item);
+
+    const auto width = std::max (
+      qCeil (anchor_strip_rect.width ()), qCeil (item->implicitWidth ()));
+    const auto height = qCeil (item->implicitHeight ());
+    preset_popup_window_->resize (width, height);
+    item->setSize (QSizeF (width, height));
+
+    const auto anchor_bottom_left = QPoint (
+      qFloor (anchor_strip_rect.x ()), qCeil (anchor_strip_rect.bottom ()));
+    if (on_wayland)
+      {
+        // QtWayland positions popups relative to the transient parent
+        preset_popup_window_->setPosition (pos () + anchor_bottom_left);
+      }
+    else
+      {
+        auto popup_pos = mapToGlobal (anchor_bottom_left);
+        if (const auto * screen = window ()->windowHandle ()->screen ())
+          {
+            const auto avail = screen->availableGeometry ();
+            popup_pos.setX (
+              std::clamp (
+                popup_pos.x (), avail.left (),
+                std::max (avail.left (), avail.right () - width + 1)));
+            popup_pos.setY (
+              std::clamp (
+                popup_pos.y (), avail.top (),
+                std::max (avail.top (), avail.bottom () - height + 1)));
+          }
+        preset_popup_window_->setPosition (popup_pos);
+      }
+    preset_popup_window_->show ();
+  }
+
 private:
-  utils::QObjectUniquePtr<OffscreenQmlHeader> header_;
-  QPointF                                     last_mouse_pos_{ -1, -1 };
-  bool                                        repaint_pending_ = false;
+  utils::QObjectUniquePtr<OffscreenQmlScene>     header_;
+  utils::QObjectUniquePtr<QQuickWindow>          preset_popup_window_;
+  utils::QObjectUniquePtr<QQmlComponent>         preset_popup_component_;
+  utils::QObjectUniquePtr<QQuickItem>            preset_popup_item_;
+  utils::QObjectUniquePtr<PresetPopupController> preset_popup_controller_;
+  QPointF                                        last_mouse_pos_{ -1, -1 };
+  bool                                           repaint_pending_ = false;
 };
 } // namespace
 
@@ -178,7 +348,7 @@ public:
     // plugin view area untouched. Non-resizable windows move their fixed
     // height with the header instead
     QObject::connect (
-      &offscreen_header, &OffscreenQmlHeader::implicitHeightChanged,
+      &offscreen_header, &OffscreenQmlScene::implicitHeightChanged,
       window_.get (), [this] (int height) {
         const auto new_height = std::max (1, height);
         const auto delta = new_height - header_height_;
@@ -198,7 +368,7 @@ public:
     // Keep the window's minimum width in sync with the header's controls;
     // fixed-size windows cannot grow, so only resizable ones track it
     QObject::connect (
-      &offscreen_header, &OffscreenQmlHeader::implicitWidthChanged,
+      &offscreen_header, &OffscreenQmlScene::implicitWidthChanged,
       window_.get (), [this] {
         if (!resizable_)
           return;
@@ -299,6 +469,7 @@ QtPluginHostWindow::QtPluginHostWindow (plugins::Plugin &plugin)
     : plugins::PluginHostWindow (plugin), pimpl_ (std::make_unique<Impl> (*this))
 {
   pimpl_->content_->installEventFilter (this);
+  pimpl_->window_->installEventFilter (this);
 }
 
 QtPluginHostWindow::~QtPluginHostWindow ()
@@ -307,6 +478,7 @@ QtPluginHostWindow::~QtPluginHostWindow ()
   // filter must not observe content_ while the Impl members are being
   // torn down
   pimpl_->content_->removeEventFilter (this);
+  pimpl_->window_->removeEventFilter (this);
 }
 
 bool
@@ -316,6 +488,14 @@ QtPluginHostWindow::eventFilter (QObject * obj, QEvent * ev)
     {
       const auto size = pimpl_->content_->size ();
       Q_EMIT embedSizeChanged (size.width (), size.height ());
+    }
+  // Popups don't follow their anchor across hosts/platforms, so close the
+  // preset popup when the host window moves, resizes or hides
+  if (
+    obj == pimpl_->window_.get ()
+    && (ev->type () == QEvent::Move || ev->type () == QEvent::Resize || ev->type () == QEvent::Hide))
+    {
+      pimpl_->header_qml_->close_preset_popup ();
     }
   return QObject::eventFilter (obj, ev);
 }

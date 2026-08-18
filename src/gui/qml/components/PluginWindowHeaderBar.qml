@@ -29,13 +29,25 @@ Rectangle {
   readonly property int engineSampleRate: GlobalState.application?.projectManager?.activeSession?.project?.engine?.sampleRate ?? 0
   // Reactively bound to the plugin's latencySamples property
   readonly property int latencySamples: root.plugin.latencySamples
+  // True when rendered offscreen into a native plugin host window strip:
+  // popups are then requested from the host (separate window) instead of
+  // being shown in-scene, where the strip height would clip them
+  readonly property bool nativeStrip: sceneController !== null
 
   // Must be non-null: bindings dereference it unconditionally
   required property Plugin plugin
+  // OffscreenQmlScene hosting this scene offscreen, or null when used
+  // in-scene (generic editor). The header calls its invokables to talk to
+  // the host (popup requests, repaint requests)
+  property var sceneController: null
   readonly property color themeTextColor: ZrythmTheme.textColor
   readonly property color themeWindowColor: ZrythmTheme.pageColor
 
-  signal colorsChanged
+  // Applies a selection coming back from an externally hosted popup
+  // (untyped parameter: invoked from C++ via QMetaObject::invokeMethod)
+  function applyPresetSelection(index) {
+    presetSelector.localIndex = index;
+  }
 
   function refreshDiagnostics() {
     dspLoadPercent = plugin.dspLoadPercentage();
@@ -44,14 +56,47 @@ Rectangle {
   color: themeWindowColor
   implicitHeight: controlsRow.implicitHeight + 2 * contentMargin + (detailsExpanded ? detailsRow.implicitHeight + contentMargin : 0)
   implicitWidth: controlsRow.implicitWidth + disclosureButton.implicitWidth + 3 * contentMargin
-  palette.text: root.themeTextColor
 
   onDetailsExpandedChanged: {
     if (detailsExpanded)
       refreshDiagnostics();
   }
-  onThemeTextColorChanged: colorsChanged()
-  onThemeWindowColorChanged: colorsChanged()
+  onThemeTextColorChanged: {
+    if (sceneController)
+      sceneController.scheduleRepaint();
+  }
+  onThemeWindowColorChanged: {
+    if (sceneController)
+      sceneController.scheduleRepaint();
+  }
+
+  // Offscreen-rendered strips don't inherit the main window's palette.
+  // Bind each role instead of assigning the whole palette object:
+  // whole-palette assignment copies the colors once and never follows
+  // theme changes
+  palette {
+    accent: ZrythmTheme.colorPalette.accent
+    alternateBase: ZrythmTheme.colorPalette.alternateBase
+    base: ZrythmTheme.colorPalette.base
+    brightText: ZrythmTheme.colorPalette.brightText
+    button: ZrythmTheme.colorPalette.button
+    buttonText: ZrythmTheme.colorPalette.buttonText
+    dark: ZrythmTheme.colorPalette.dark
+    highlight: ZrythmTheme.colorPalette.highlight
+    highlightedText: ZrythmTheme.colorPalette.highlightedText
+    light: ZrythmTheme.colorPalette.light
+    link: ZrythmTheme.colorPalette.link
+    linkVisited: ZrythmTheme.colorPalette.linkVisited
+    mid: ZrythmTheme.colorPalette.mid
+    midlight: ZrythmTheme.colorPalette.midlight
+    placeholderText: ZrythmTheme.colorPalette.placeholderText
+    shadow: ZrythmTheme.colorPalette.shadow
+    text: ZrythmTheme.colorPalette.text
+    toolTipBase: ZrythmTheme.colorPalette.toolTipBase
+    toolTipText: ZrythmTheme.colorPalette.toolTipText
+    window: ZrythmTheme.colorPalette.window
+    windowText: ZrythmTheme.colorPalette.windowText
+  }
 
   // Refresh immediately when the window re-appears with the row open
   // (the poll timer is stopped while hidden)
@@ -89,7 +134,6 @@ Rectangle {
         flat: true
         focusPolicy: Qt.NoFocus
         icon.source: ResourceManager.getIconUrl("noto-glyphs", "power.svg")
-        palette.buttonText: root.themeTextColor
 
         onClicked: {
           root.plugin.bypassed = !root.plugin.bypassed;
@@ -113,7 +157,7 @@ Rectangle {
 
         currentIndex: localIndex
         currentText: dummyPresetModel.get(localIndex).name
-        palette.buttonText: root.themeTextColor
+        externalPopup: root.nativeStrip
         textRole: "name"
 
         model: ListModel {
@@ -122,15 +166,21 @@ Rectangle {
           ListElement {
             name: "Default"
           }
+
           ListElement {
             name: "Bright Lead"
           }
+
           ListElement {
             name: "Soft Pad"
           }
         }
 
         onActivated: idx => localIndex = idx
+        onPopupRequested: {
+          const topLeft = presetSelector.nameButton.mapToItem(root, 0, 0);
+          root.sceneController.requestPresetPopup(Qt.rect(topLeft.x, topLeft.y, presetSelector.nameButton.width, presetSelector.nameButton.height), presetSelector.model, localIndex, presetSelector.textRole);
+        }
       }
 
       ToolButton {
@@ -142,7 +192,6 @@ Rectangle {
         focusPolicy: Qt.NoFocus
         icon.color: root.themeTextColor
         icon.source: root.plugin.abActive ? "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ba.svg" : "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ab.svg"
-        palette.buttonText: root.themeTextColor
         text: qsTr("A/B")
 
         onClicked: root.plugin.switchAbState()

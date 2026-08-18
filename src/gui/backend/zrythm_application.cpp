@@ -8,7 +8,7 @@
 
 #include "dsp/juce_hardware_audio_interface.h"
 #include "engine/session/midi_mapping.h"
-#include "gui/backend/plugin_header_qml.h"
+#include "gui/backend/offscreen_qml_scene.h"
 #include "gui/backend/plugin_protocol_paths.h"
 #include "utils/backtrace.h"
 #include "utils/directory_manager.h"

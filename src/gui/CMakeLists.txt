@@ -188,6 +188,7 @@ set(rel_qml_file_paths
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
+  components/basic/PresetListPopup.qml
   components/basic/PresetSelector.qml
   components/basic/RecordButton.qml
   components/basic/ResizeHandle.qml

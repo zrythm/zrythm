@@ -54,6 +54,18 @@ TestCase {
     verify(!selector.nameButton.enabled);
   }
 
+  function test_external_popup_requests_instead_of_opening() {
+    const selector = createTemporaryObject(selectorComponent, test);
+    selector.externalPopup = true;
+    requestSpy.target = selector;
+    requestSpy.signalName = "popupRequested";
+
+    mouseClick(selector.nameButton);
+    compare(requestSpy.count, 1);
+    // The in-scene popup stays closed; the host shows its own window
+    compare(selector.popupVisible, false);
+  }
+
   function test_initial_state() {
     const selector = createTemporaryObject(selectorComponent, test);
     verify(selector);
@@ -76,7 +88,7 @@ TestCase {
     tryCompare(selector, "popupVisible", true);
     // Focus is set when the popup finishes opening (after the enter
     // transition), so wait for it before sending keys
-    const listView = selector.popup.contentItem;
+    const listView = selector.popup.contentItem.listView;
     tryVerify(() => listView.activeFocus);
 
     // Highlight follows currentIndex on open; Down moves to the next item
@@ -111,7 +123,7 @@ TestCase {
 
     mouseClick(selector.nameButton);
     tryCompare(selector, "popupVisible", true);
-    const listView = selector.popup.contentItem;
+    const listView = selector.popup.contentItem.listView;
     tryVerify(() => listView.activeFocus);
 
     keyClick(Qt.Key_Return);
@@ -130,6 +142,10 @@ TestCase {
 
   SignalSpy {
     id: activatedSpy
+  }
+
+  SignalSpy {
+    id: requestSpy
   }
 
   Component {

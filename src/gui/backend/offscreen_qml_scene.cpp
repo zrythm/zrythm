@@ -3,7 +3,7 @@
 
 #include "utils/format_qt.h"
 
-#include "gui/backend/plugin_header_qml.h"
+#include "gui/backend/offscreen_qml_scene.h"
 #include "plugins/plugin.h"
 #include "plugins/plugin_host_window.h"
 #include "utils/logger.h"
@@ -41,31 +41,54 @@ set_plugin_header_qml_engine (QQmlEngine * engine)
   shared_qml_engine = engine;
 }
 
-OffscreenQmlHeader::OffscreenQmlHeader (plugins::Plugin &plugin, QObject * parent)
+OffscreenQmlScene::OffscreenQmlScene (plugins::Plugin &plugin, QObject * parent)
     : QObject (parent)
 {
-  auto * engine = shared_qml_engine.data ();
-  if (engine == nullptr)
+  init (
+    plugin_header_bar_qml_url (),
+    {
+      { QStringLiteral ("plugin"),          QVariant::fromValue<QObject *> (&plugin) },
+      // The header calls back into this object via its invokables
+      { QStringLiteral ("sceneController"),
+       QVariant::fromValue<QObject *> (this)                                         },
+  });
+}
+
+OffscreenQmlScene::OffscreenQmlScene (
+  const QUrl &qml_url,
+  QVariantMap initial_properties,
+  QObject *   parent)
+    : QObject (parent)
+{
+  init (qml_url, initial_properties);
+}
+
+OffscreenQmlScene::~OffscreenQmlScene () = default;
+
+void
+OffscreenQmlScene::init (
+  const QUrl        &qml_url,
+  const QVariantMap &initial_properties)
+{
+  engine_ = shared_qml_engine.data ();
+  if (engine_ == nullptr)
     {
       fallback_engine_ = utils::make_qobject_unique<QQmlEngine> ();
-      engine = fallback_engine_.get ();
+      engine_ = fallback_engine_.get ();
     }
 
   render_control_ = std::make_unique<QQuickRenderControl> ();
   quick_window_ = std::make_unique<QQuickWindow> (render_control_.get ());
   quick_window_->setColor (QGuiApplication::palette ().color (QPalette::Window));
 
-  component_ = utils::make_qobject_unique<QQmlComponent> (
-    engine, plugin_header_bar_qml_url ());
-  auto * root_object = component_->createWithInitialProperties (
-    {
-      { QStringLiteral ("plugin"), QVariant::fromValue<QObject *> (&plugin) }
-  });
+  component_ = utils::make_qobject_unique<QQmlComponent> (engine_, qml_url);
+  auto * root_object =
+    component_->createWithInitialProperties (initial_properties);
   root_item_ = qobject_cast<QQuickItem *> (root_object);
   if (!is_valid ())
     {
       z_warning (
-        "Failed to load plugin window header bar QML: {}",
+        "Failed to load QML scene {}: {}", qml_url.toString (),
         component_->errors ().isEmpty ()
           ? QStringLiteral ("unknown error")
           : component_->errors ().constFirst ().toString ());
@@ -80,19 +103,17 @@ OffscreenQmlHeader::OffscreenQmlHeader (plugins::Plugin &plugin, QObject * paren
   root_item_->setParentItem (quick_window_->contentItem ());
   root_item_->setParent (quick_window_->contentItem ());
 
-  // Repaint when theme-dependent colors change or on any scene change
-  // (hover/pressed visuals, binding-driven text changes, ...). The scene
-  // only renders on demand. All notifications go through scheduleRepaint(),
-  // which defers and coalesces them as required by the
-  // QQuickRenderControl::sceneChanged()/renderRequested() docs
-  connect (
-    root_item_, SIGNAL (colorsChanged ()), this, SLOT (scheduleRepaint ()));
+  // Repaint on any scene change (hover/pressed visuals, binding-driven
+  // text changes, ...). The scene only renders on demand. All
+  // notifications go through scheduleRepaint(), which defers and coalesces
+  // them as required by the QQuickRenderControl::sceneChanged()/
+  // renderRequested() docs
   connect (
     render_control_.get (), &QQuickRenderControl::sceneChanged, this,
-    &OffscreenQmlHeader::scheduleRepaint);
+    &OffscreenQmlScene::scheduleRepaint);
   connect (
     render_control_.get (), &QQuickRenderControl::renderRequested, this,
-    &OffscreenQmlHeader::scheduleRepaint);
+    &OffscreenQmlScene::scheduleRepaint);
   connect (root_item_, &QQuickItem::implicitHeightChanged, this, [this] {
     Q_EMIT implicitHeightChanged (implicit_height ());
   });
@@ -100,10 +121,18 @@ OffscreenQmlHeader::OffscreenQmlHeader (plugins::Plugin &plugin, QObject * paren
     Q_EMIT implicitWidthChanged (controls_implicit_width ());
   });
 }
-OffscreenQmlHeader::~OffscreenQmlHeader () = default;
 
 void
-OffscreenQmlHeader::scheduleRepaint ()
+OffscreenQmlScene::applyPresetSelection (int index)
+{
+  if (root_item_ == nullptr)
+    return;
+  QMetaObject::invokeMethod (
+    root_item_, "applyPresetSelection", Q_ARG (QVariant, index));
+}
+
+void
+OffscreenQmlScene::scheduleRepaint ()
 {
   if (repaint_pending_)
     return;
@@ -116,14 +145,14 @@ OffscreenQmlHeader::scheduleRepaint ()
 }
 
 bool
-OffscreenQmlHeader::is_valid () const
+OffscreenQmlScene::is_valid () const
 {
   return component_ != nullptr && component_->status () == QQmlComponent::Ready
          && root_item_ != nullptr;
 }
 
 bool
-OffscreenQmlHeader::ensure_render_target ()
+OffscreenQmlScene::ensure_render_target ()
 {
   if (!is_valid () || logical_size_.isEmpty () || dpr_ <= 0.)
     return false;
@@ -133,7 +162,7 @@ OffscreenQmlHeader::ensure_render_target ()
       if (!render_control_->initialize ())
         {
           z_warning (
-            "OffscreenQmlHeader: QQuickRenderControl::initialize failed");
+            "OffscreenQmlScene: QQuickRenderControl::initialize failed");
           return false;
         }
       renderer_initialized_ = true;
@@ -151,7 +180,7 @@ OffscreenQmlHeader::ensure_render_target ()
     QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource));
   if (!texture_->create ())
     {
-      z_warning ("OffscreenQmlHeader: failed to create render texture");
+      z_warning ("OffscreenQmlScene: failed to create render texture");
       texture_.reset ();
       return false;
     }
@@ -159,7 +188,7 @@ OffscreenQmlHeader::ensure_render_target ()
     rhi->newRenderBuffer (QRhiRenderBuffer::DepthStencil, pixel_size, 1));
   if (!depth_stencil_->create ())
     {
-      z_warning ("OffscreenQmlHeader: failed to create depth-stencil buffer");
+      z_warning ("OffscreenQmlScene: failed to create depth-stencil buffer");
       texture_.reset ();
       depth_stencil_.reset ();
       return false;
@@ -173,7 +202,7 @@ OffscreenQmlHeader::ensure_render_target ()
   render_target_->setRenderPassDescriptor (render_pass_.get ());
   if (!render_target_->create ())
     {
-      z_warning ("OffscreenQmlHeader: failed to create render target");
+      z_warning ("OffscreenQmlScene: failed to create render target");
       texture_.reset ();
       depth_stencil_.reset ();
       render_target_.reset ();
@@ -190,7 +219,7 @@ OffscreenQmlHeader::ensure_render_target ()
 }
 
 QImage
-OffscreenQmlHeader::grab_frame ()
+OffscreenQmlScene::grab_frame ()
 {
   if (!ensure_render_target ())
     return {};
@@ -218,7 +247,7 @@ OffscreenQmlHeader::grab_frame ()
 }
 
 void
-OffscreenQmlHeader::resize (int width, int height)
+OffscreenQmlScene::resize (int width, int height)
 {
   if (!is_valid ())
     return;
@@ -231,7 +260,7 @@ OffscreenQmlHeader::resize (int width, int height)
 }
 
 void
-OffscreenQmlHeader::set_device_pixel_ratio (qreal dpr)
+OffscreenQmlScene::set_device_pixel_ratio (qreal dpr)
 {
   if (dpr <= 0. || dpr == dpr_)
     return;
@@ -240,7 +269,7 @@ OffscreenQmlHeader::set_device_pixel_ratio (qreal dpr)
 }
 
 int
-OffscreenQmlHeader::controls_implicit_width () const
+OffscreenQmlScene::controls_implicit_width () const
 {
   if (!is_valid ())
     return 64;
@@ -248,7 +277,7 @@ OffscreenQmlHeader::controls_implicit_width () const
 }
 
 int
-OffscreenQmlHeader::implicit_height () const
+OffscreenQmlScene::implicit_height () const
 {
   if (!is_valid ())
     return plugins::PluginHostWindow::kHeaderHeight;
