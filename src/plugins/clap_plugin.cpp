@@ -1299,13 +1299,15 @@ ClapPlugin::process_impl (
   {
     const auto transport_context = build_plugin_transport_context (
       transport, tempo_map, time_info.transport_position_);
+    // CLAP times are 64-bit fixed point; llround keeps 64 bits on all
+    // platforms (long is 32-bit on Windows and overflows past 1 beat/second)
     const auto to_beattime = [] (units::quarter_note_t quarters) {
-      return static_cast<clap_beattime> (std::lround (
+      return static_cast<clap_beattime> (std::llround (
         quarters.in (units::quarter_notes)
         * static_cast<double> (CLAP_BEATTIME_FACTOR)));
     };
     const auto to_sectime = [] (units::precise_second_t seconds) {
-      return static_cast<clap_sectime> (std::lround (
+      return static_cast<clap_sectime> (std::llround (
         seconds.in (units::seconds)
         * static_cast<double> (CLAP_SECTIME_FACTOR)));
     };
