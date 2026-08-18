@@ -47,9 +47,10 @@ public:
    * @return A QFuture that resolves to the project path on success.
    * @throw ZrythmException If any step failed.
    *
-   * @warning The returned QFuture uses continuations that run on the main
-   *          thread. Do NOT call waitForFinished() on the main thread without
-   *          processing Qt events, as this will cause a deadlock. Instead:
+   * @warning The returned future performs steps on the engine's (main)
+   *          thread via blocking invocations. Do NOT call waitForFinished()
+   *          on the main thread without processing Qt events, as this will
+   *          cause a deadlock. Instead:
    *          - Use QFutureWatcher with signals/slots, or
    *          - Process events while waiting (e.g., QEventLoop), or
    *          - Wait from a non-main thread

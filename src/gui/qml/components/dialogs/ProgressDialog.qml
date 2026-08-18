@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 pragma ComponentBehavior: Bound
@@ -15,7 +15,8 @@ Dialog {
   property string labelText: ""
   property int maximum: 100
   property int minimum: 0
-  readonly property real progress: (value - minimum) / (maximum - minimum)
+  // Guard against futures that report no progress range (0/0 would be NaN)
+  readonly property real progress: maximum > minimum ? (value - minimum) / (maximum - minimum) : 0
   property int value: 0
 
   signal canceled

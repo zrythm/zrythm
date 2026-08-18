@@ -420,33 +420,108 @@ ProjectSaver::save (
     utils::io::move_file (project_file_path, temp_project_file_path, true);
   };
 
-  return QtConcurrent::run (create_dirs_task)
-    .then (engine, write_pool_task)
-    .then (engine, build_json_task)
-    .then (QtFuture::Launch::Async, validate_json_task)
-    .then (QtFuture::Launch::Sync, write_json_task)
-    .then (QtFuture::Launch::Sync, rename_file_task)
-    .then (
-      engine,
-      [path, is_backup, resume_engine] () {
-        z_info (
-          "Successfully saved project at {}, is backup: {}", path, is_backup);
-        resume_engine ();
-        return utils::Utf8String::from_path (path).to_qstring ();
-      })
-    .onCanceled (
-      engine,
-      [resume_engine] () {
-        z_debug ("Project save canceled");
-        resume_engine ();
-        return QString{};
-      })
-    .onFailed (engine, [resume_engine] () {
-      constexpr auto msg = "Project save failed"sv;
-      z_warning (msg);
-      resume_engine ();
-      throw ZrythmException (msg);
-      return QString{};
+  // Progress stages (0-100):
+  // 0-10: Creating directories
+  // 10-30: Writing audio pool files
+  // 30-60: Serializing to JSON
+  // 60-70: Validating JSON
+  // 70-90: Compressing and writing the project file
+  // 90-100: Finalizing
+  constexpr int kStageCreateDirs = 10;
+  constexpr int kStageWritePool = 30;
+  constexpr int kStageSerialize = 60;
+  constexpr int kStageValidate = 70;
+  constexpr int kStageWriteFile = 90;
+  constexpr int kStageDone = 100;
+
+  return QtConcurrent::run (
+    [engine, resume_engine, create_dirs_task, write_pool_task, build_json_task,
+     validate_json_task, write_json_task, rename_file_task, path,
+     is_backup] (QPromise<QString> &promise) {
+      // The pool write and serialization access live project data, so they
+      // must run on the engine's thread. Any exception is rethrown on this
+      // thread: exceptions must not escape into the main event loop
+      const auto run_on_engine_thread = [engine] (const auto &func) {
+        std::exception_ptr eptr;
+        QMetaObject::invokeMethod (
+          engine,
+          [&eptr, &func] {
+            try
+              {
+                func ();
+              }
+            catch (...)
+              {
+                eptr = std::current_exception ();
+              }
+          },
+          Qt::BlockingQueuedConnection);
+        if (eptr != nullptr)
+          std::rethrow_exception (eptr);
+      };
+      // Resumes the engine and reports whether cancellation was requested
+      const auto cancel_if_requested =
+        [&run_on_engine_thread, &promise, resume_engine] () {
+          if (!promise.isCanceled ())
+            return false;
+          z_debug ("Project save canceled");
+          run_on_engine_thread (resume_engine);
+          return true;
+        };
+
+      promise.setProgressRange (0, kStageDone);
+
+      try
+        {
+          create_dirs_task ();
+          if (cancel_if_requested ())
+            return;
+
+          promise.setProgressValueAndText (
+            kStageCreateDirs, QObject::tr ("Writing audio files..."));
+          run_on_engine_thread (write_pool_task);
+          if (cancel_if_requested ())
+            return;
+
+          promise.setProgressValueAndText (
+            kStageWritePool, QObject::tr ("Serializing project..."));
+          nlohmann::json json;
+          run_on_engine_thread ([&json, &build_json_task] {
+            json = build_json_task ();
+          });
+          if (cancel_if_requested ())
+            return;
+
+          promise.setProgressValueAndText (
+            kStageSerialize, QObject::tr ("Validating project data..."));
+          json = validate_json_task (json);
+
+          promise.setProgressValueAndText (
+            kStageValidate, QObject::tr ("Writing project file..."));
+          write_json_task (json);
+
+          promise.setProgressValueAndText (
+            kStageWriteFile, QObject::tr ("Finalizing save..."));
+          rename_file_task ();
+
+          run_on_engine_thread ([path, is_backup, resume_engine] {
+            z_info (
+              "Successfully saved project at {}, is backup: {}", path,
+              is_backup);
+            resume_engine ();
+          });
+
+          promise.setProgressValueAndText (
+            kStageDone, QObject::tr ("Project saved"));
+          promise.addResult (utils::Utf8String::from_path (path).to_qstring ());
+        }
+      catch (const std::exception &e)
+        {
+          z_warning ("Project save failed: {}", e.what ());
+          run_on_engine_thread (resume_engine);
+          promise.setException (
+            std::make_exception_ptr (ZrythmException ("Project save failed")));
+        }
     });
 }
 }

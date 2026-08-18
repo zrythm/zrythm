@@ -48,6 +48,10 @@ Item {
 
   Connections {
     function onFinished() {
+      // resultVar() asserts when the future has no result (e.g. on cancel)
+      if (root.saveFuture.isCanceled())
+        return;
+
       const savedPath = root.saveFuture.resultVar();
       if (savedPath && savedPath !== "") {
         GlobalState.application.projectManager.recentProjects.addRecentProject(savedPath);
