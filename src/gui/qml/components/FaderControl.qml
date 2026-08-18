@@ -12,7 +12,7 @@ Item {
   readonly property int bgRadius: ZrythmTheme.toolButtonRadius
   property real currentAutomatedValue: faderValue
   property real currentModulatedValue: faderValue
-  readonly property real defaultFaderValue: 0.8
+  readonly property real defaultFaderValue: faderGain?.range.defaultNormalizedValue ?? 0.8
   readonly property bool dragging: mouseArea.dragging
   required property ProcessorParameter faderGain
   property real faderValue: faderGain.baseValue
@@ -170,7 +170,7 @@ Item {
     font.pixelSize: 10
     horizontalAlignment: Text.AlignHCenter
     text: {
-      var db = 20 * Math.log10(root.faderGain.baseValue);
+      let db = 20 * Math.log10(root.faderGain.range.convertFrom0To1(root.faderGain.baseValue));
       if (db < -100)
         return "-∞";
       return db.toFixed(1) + " dB";

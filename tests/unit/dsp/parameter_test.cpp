@@ -345,6 +345,27 @@ TEST_F (ProcessorParameterTest, UnitConversion)
     ParameterRange::unit_to_string (ParameterRange::Unit::Us).view (), "μs");
 }
 
+TEST_F (ProcessorParameterTest, DefaultNormalizedValue)
+{
+  // gain amplitude: default 1.0 (0 dB) maps to (192/198)^8 on the fader
+  // curve
+  const auto gain_range = ParameterRange::make_gain (2.f);
+  EXPECT_NEAR (
+    gain_range.defaultNormalizedValue (), std::pow (192.f / 198.f, 8.f), 1e-6f);
+
+  // linear: default 0.5 maps to the middle
+  const auto linear_range =
+    ParameterRange (ParameterRange::Type::Linear, 0.f, 1.f, 0.5f, 0.5f);
+  EXPECT_FLOAT_EQ (linear_range.defaultNormalizedValue (), 0.5f);
+
+  // logarithmic: default 1000 Hz maps proportionally in log space
+  const auto log_range = ParameterRange (
+    ParameterRange::Type::Logarithmic, 20.f, 20000.f, 20.f, 1000.f);
+  EXPECT_NEAR (
+    log_range.defaultNormalizedValue (),
+    std::log (1000.f / 20.f) / std::log (20000.f / 20.f), 1e-6f);
+}
+
 TEST_F (ProcessorParameterTest, DisabledAutomation)
 {
   param->unset_automation_provider ();

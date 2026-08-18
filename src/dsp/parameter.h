@@ -27,6 +27,7 @@ class ParameterRange
 {
   Q_GADGET
   QML_VALUE_TYPE (parameterRange)
+  Q_PROPERTY (float defaultNormalizedValue READ defaultNormalizedValue CONSTANT)
 
 public:
   enum class Type : std::uint8_t
@@ -196,6 +197,11 @@ public:
   Q_INVOKABLE float convertFrom0To1 (float normalized_val) const;
   Q_INVOKABLE float convertTo0To1 (float real_val) const;
 
+  /**
+   * @brief The default value converted to the normalized 0-1 range.
+   */
+  float defaultNormalizedValue () const { return convertTo0To1 (deff_); }
+
   Q_INVOKABLE bool isToggled (float normalized_val) const
   {
     assert (type_ == ParameterRange::Type::Toggle);
@@ -326,7 +332,7 @@ public:
   }
   Q_INVOKABLE void resetBaseValueToDefault ()
   {
-    setBaseValue (range_.convertTo0To1 (range_.deff_));
+    setBaseValue (range_.defaultNormalizedValue ());
   }
   Q_SIGNAL void baseValueChanged (float value);
 

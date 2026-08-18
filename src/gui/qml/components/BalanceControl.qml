@@ -11,7 +11,7 @@ Item {
 
   required property ProcessorParameter balanceParameter
   property real balanceValue: balanceParameter.baseValue
-  readonly property real defaultBalanceValue: 0.5
+  readonly property real defaultBalanceValue: balanceParameter?.range.defaultNormalizedValue ?? 0.5
   readonly property bool dragging: mouseArea.dragging
   property bool hovered: false
   required property UndoStack undoStack
