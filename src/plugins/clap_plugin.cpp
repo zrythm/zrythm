@@ -1309,18 +1309,25 @@ ClapPlugin::process_impl (
         seconds.in (units::seconds)
         * static_cast<double> (CLAP_SECTIME_FACTOR)));
     };
+    // The CLAP transport flags are a C enum; combine them as the uint32_t
+    // field type
+    const auto flag_if = [] (bool condition, clap_transport_flags flag) {
+      return condition ? static_cast<uint32_t> (flag) : 0u;
+    };
     auto &transport_info = pimpl_->transport_;
     transport_info = {};
     transport_info.header.size = sizeof (transport_info);
     transport_info.header.type = CLAP_EVENT_TRANSPORT;
     transport_info.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     transport_info.flags =
-      CLAP_TRANSPORT_HAS_TEMPO | CLAP_TRANSPORT_HAS_BEATS_TIMELINE
-      | CLAP_TRANSPORT_HAS_SECONDS_TIMELINE | CLAP_TRANSPORT_HAS_TIME_SIGNATURE
-      | (transport_context.playing_ ? CLAP_TRANSPORT_IS_PLAYING : 0u)
-      | (transport_context.recording_ ? CLAP_TRANSPORT_IS_RECORDING : 0u)
-      | (transport_context.loop_enabled_ ? CLAP_TRANSPORT_IS_LOOP_ACTIVE : 0u)
-      | (transport_context.within_preroll_ ? CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL : 0u);
+      static_cast<uint32_t> (
+        CLAP_TRANSPORT_HAS_TEMPO | CLAP_TRANSPORT_HAS_BEATS_TIMELINE
+        | CLAP_TRANSPORT_HAS_SECONDS_TIMELINE | CLAP_TRANSPORT_HAS_TIME_SIGNATURE)
+      | flag_if (transport_context.playing_, CLAP_TRANSPORT_IS_PLAYING)
+      | flag_if (transport_context.recording_, CLAP_TRANSPORT_IS_RECORDING)
+      | flag_if (transport_context.loop_enabled_, CLAP_TRANSPORT_IS_LOOP_ACTIVE)
+      | flag_if (
+        transport_context.within_preroll_, CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL);
     transport_info.song_pos_beats = to_beattime (transport_context.position_);
     transport_info.song_pos_seconds =
       to_sectime (transport_context.position_seconds_);
