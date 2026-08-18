@@ -229,6 +229,9 @@ ProjectSession::ProjectSession (
     if (track->lanes () == nullptr)
       return std::nullopt;
     assert (!track->lanes ()->lanes ().empty ());
+    // recordings always go on the last lane: the requested index is only
+    // used when it lies past the current end (successive takes append new
+    // lanes, and create_missing_lanes() keeps one spare lane at the end)
     const auto actual_lane_idx =
       std::max (lane_index, track->lanes ()->lanes ().size () - 1);
     track->lanes ()->create_missing_lanes (actual_lane_idx);

@@ -377,7 +377,8 @@ Fader::custom_process_block (
         for (
           const auto i : std::views::iota (
             time_nfo.buffer_offset_.in<int> (units::samples),
-            out_buf->getNumSamples ()))
+            (time_nfo.buffer_offset_ + time_nfo.nframes_)
+              .in<int> (units::samples)))
           {
             const auto gain = current_gain_.getCurrentValue ();
             for (

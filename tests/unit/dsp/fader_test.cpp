@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/fader.h"
@@ -244,6 +244,58 @@ TEST_F (FaderTest, AudioProcessing)
       EXPECT_NEAR (stereo_out.buffers ()->getSample (0, i), 2.0f, 0.05f);
       EXPECT_NEAR (stereo_out.buffers ()->getSample (1, i), 4.0f, 0.05f);
     }
+}
+
+// A cycle split into multiple chunks must advance the gain smoothing by
+// the number of frames in each chunk only: the smoother follows real
+// time, so a ramp reached mid-cycle lands at the same value regardless
+// of how the cycle is chunked.
+TEST_F (FaderTest, SplitCycleAdvancesGainSmootherPerFrame)
+{
+  audio_fader_->prepare_for_processing (
+    nullptr, sample_rate_, max_block_length_);
+
+  auto &stereo_in = audio_fader_->get_stereo_in_port ();
+  auto &stereo_out = audio_fader_->get_stereo_out_port ();
+
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (0.5f));
+
+  // Let smoothing settle at 0.5
+  const auto settle_time_nfo = dsp::graph::ProcessBlockInfo::
+    from_position_and_nframes (units::samples (0), units::samples (512));
+  for (int block = 0; block < 10; block++)
+    {
+      stereo_in.buffers ()->clear ();
+      audio_fader_->process_block (
+        settle_time_nfo, *mock_transport_, *tempo_map_);
+    }
+
+  // Start a ramp to 1.0 and process one 512-frame cycle as two
+  // 256-frame chunks; the ramp length is 0.01 s = 480 samples at 48 kHz
+  audio_fader_->gain ()->setBaseValue (
+    audio_fader_->gain ()->range ().convertTo0To1 (1.0f));
+  for (const auto chunk_offset : { 0, 256 })
+    {
+      for (int i = 0; i < 512; i++)
+        {
+          stereo_in.buffers ()->setSample (0, i, 1.f);
+          stereo_in.buffers ()->setSample (1, i, 1.f);
+        }
+      const auto split_time_nfo = dsp::graph::ProcessBlockInfo{
+        .transport_position_ = units::samples (chunk_offset),
+        .buffer_offset_ = units::samples (chunk_offset),
+        .nframes_ = units::samples (256)
+      };
+      audio_fader_->process_block (
+        split_time_nfo, *mock_transport_, *tempo_map_);
+    }
+
+  // At the first frame of the second chunk the smoother has advanced 256
+  // of the 480 ramp samples: 0.5 + 0.5 * 256/480
+  EXPECT_NEAR (
+    stereo_out.buffers ()->getSample (0, 256), 0.5f + 0.5f * 256.f / 480.f,
+    0.02f);
 }
 
 TEST_F (FaderTest, MidiProcessing)
