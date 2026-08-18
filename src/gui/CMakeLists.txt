@@ -83,10 +83,6 @@ set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/js/config.js"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "config.js"
   )
-set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
-  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  PROPERTIES QT_RESOURCE_ALIAS "qtquickcontrols2.conf"
-  )
 
 # Icons
 set(icon_dirs
@@ -362,7 +358,6 @@ qt_add_qml_module(zrythm_qml_lib
     ${qml_file_paths}
     ${CMAKE_CURRENT_BINARY_DIR}/js/config.js
   RESOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf
     ${icon_files}
     ${wav_files}
     ${license_files}
@@ -372,6 +367,15 @@ qt_add_qml_module(zrythm_qml_lib
   # ENABLE_TYPE_COMPILER
 )
 set_target_properties(zrythm_qml_libplugin PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+
+# Qt Quick Controls style configuration. Qt only reads this file from the
+# qrc root (":/qtquickcontrols2.conf"), so it must not be added via the QML
+# module's RESOURCES (those are prefixed with "/qt/qml/Zrythm")
+qt_add_resources(zrythm_qml_lib "qtquickcontrols2_conf"
+  PREFIX "/"
+  BASE "${CMAKE_CURRENT_SOURCE_DIR}/resources"
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/resources/qtquickcontrols2.conf"
+)
 
 target_link_libraries(zrythm_qml_lib
   PUBLIC
