@@ -6,6 +6,7 @@
 #include <atomic>
 #include <optional>
 #include <thread>
+#include <vector>
 
 #include "dsp/audio_callback.h"
 #include "dsp/audio_input_processor.h"
@@ -316,8 +317,13 @@ private:
    * @note Must only be called with processing paused.
    *
    * @param active_buffers Map of device identifier to MidiDeviceBuffer.
+   * @return Processors for devices that are no longer active, removed from
+   * this engine. The current processing graph's nodes reference them until
+   * the next graph recalculation releases its old node collection, so the
+   * caller must keep them alive until that recalculation completes.
    */
-  void update_midi_processors (
+  std::vector<utils::QObjectUniquePtr<MidiInputProcessor>>
+  update_midi_processors (
     const IHardwareMidiInterface::BufferMap &active_buffers);
 
 private:

@@ -51,6 +51,7 @@ protected:
     // Create real graph builder using the actual implementation
     // We'll use a simple mock implementation for testing
     graph_builder_ = std::make_unique<MockGraphBuilder> ();
+    mock_graph_builder_ = graph_builder_.get ();
     processable_ = std::make_unique<MockProcessable> ();
     ON_CALL (*graph_builder_, build_graph_impl (_))
       .WillByDefault ([this] (graph::Graph &graph) {
@@ -84,6 +85,7 @@ protected:
   std::unique_ptr<Transport>          transport_;
   std::unique_ptr<MockProcessable>    processable_;
   std::unique_ptr<MockGraphBuilder>   graph_builder_;
+  MockGraphBuilder *                  mock_graph_builder_ = nullptr;
   std::unique_ptr<DspGraphDispatcher> graph_dispatcher_;
   std::vector<graph::IProcessable *>  terminal_processables_;
   std::unique_ptr<test_helpers::MockHardwareAudioInterface> hw_interface_;
@@ -388,6 +390,44 @@ TEST_F (AudioEngineTest, MidiDeviceRemovalRemovesProcessor)
 
   EXPECT_TRUE (engine->midi_input_processors ().empty ())
     << "Removing all devices should remove all processors";
+
+  engine->deactivate ();
+}
+
+// The processing graph's node collection holds raw references to the
+// per-device MIDI input processors. Removing a device must keep its processor
+// alive until the graph recalculation that follows has released the old node
+// collection.
+TEST_F (AudioEngineTest, MidiDeviceRemovalFreesProcessorOnlyAfterGraphRechained)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  ON_CALL (*mock_graph_builder_, build_graph_impl (_))
+    .WillByDefault ([this, &engine] (graph::Graph &graph) {
+      graph.add_node_for_processable (*processable_);
+      for (const auto &mip : engine->midi_input_processors ())
+        {
+          dsp::ProcessorGraphBuilder::add_nodes (graph, *mip.second);
+          dsp::ProcessorGraphBuilder::add_connections (graph, *mip.second);
+        }
+    });
+
+  engine->activate ();
+
+  auto       buffer = std::make_shared<dsp::MidiDeviceBuffer> ();
+  const auto dev_id = utils::Utf8String::from_utf8_encoded_string ("dev1");
+  midi_interface_.simulate_device_change (
+    {
+      { dev_id, buffer }
+  });
+  ASSERT_EQ (engine->midi_input_processors ().size (), 1u);
+
+  midi_interface_.simulate_device_change (
+    dsp::IHardwareMidiInterface::BufferMap{});
+
+  EXPECT_TRUE (engine->midi_input_processors ().empty ());
 
   engine->deactivate ();
 }

@@ -138,6 +138,11 @@ AudioEngine::AudioEngine (
           [this] () {
             const auto info = hw_interface_.get_device_info ();
             cached_device_info_ = info;
+
+            // The previous processors are still referenced by the current
+            // graph's nodes: retire them only after the recalculation below
+            // releases the old node collection
+            auto old_audio_input_processor = std::move (audio_input_processor_);
             audio_input_processor_ = utils::make_qobject_unique<
               AudioInputProcessor> (
               [this] () -> std::span<const float * const> {
@@ -145,13 +150,20 @@ AudioEngine::AudioEngine (
               },
               info.input_channel_count, local_registry_, this);
             midi_interface_.set_device_change_callback ([this] () {
+              // Processors for removed devices must outlive the
+              // recalculation performed below, which releases the old node
+              // collection still referencing them
+              std::vector<utils::QObjectUniquePtr<MidiInputProcessor>>
+                removed_processors;
               execute_function_with_paused_processing_synchronously (
-                [this] {
-                  update_midi_processors (midi_interface_.device_buffers ());
+                [this, &removed_processors] () {
+                  removed_processors =
+                    update_midi_processors (midi_interface_.device_buffers ());
                 },
                 true);
             });
-            update_midi_processors (midi_interface_.device_buffers ());
+            auto removed_midi_processors =
+              update_midi_processors (midi_interface_.device_buffers ());
             graph_dispatcher_.recalc_graph (false);
             Q_EMIT sampleRateChanged (info.sample_rate.in (units::sample_rate));
             Q_EMIT blockLengthChanged (
@@ -303,14 +315,27 @@ AudioEngine::deactivate ()
   activate_impl (false);
 }
 
-void
+std::vector<utils::QObjectUniquePtr<MidiInputProcessor>>
 AudioEngine::update_midi_processors (
   const IHardwareMidiInterface::BufferMap &active_buffers)
 {
+  std::vector<utils::QObjectUniquePtr<MidiInputProcessor>> removed_processors;
+
   // Remove processors for devices no longer active
-  std::erase_if (midi_input_processors_, [&active_buffers] (const auto &entry) {
-    return !active_buffers.contains (entry.first);
-  });
+  for (
+    auto it = midi_input_processors_.begin ();
+    it != midi_input_processors_.end ();)
+    {
+      if (active_buffers.contains (it->first))
+        {
+          ++it;
+        }
+      else
+        {
+          removed_processors.push_back (std::move (it->second));
+          it = midi_input_processors_.erase (it);
+        }
+    }
 
   // Create processors for new devices
   for (const auto &[ident, buffer] : active_buffers)
@@ -323,6 +348,8 @@ AudioEngine::update_midi_processors (
               buffer, local_registry_, this));
         }
     }
+
+  return removed_processors;
 }
 
 void
