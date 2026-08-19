@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_descriptor_list.h"
@@ -48,7 +48,9 @@ PluginDescriptorList::update_cache ()
       cached_descriptors_.clear ();
       endRemoveRows ();
     }
-  const auto types = known_plugin_list_->getTypes ();
+  // collect the format list alongside the descriptors
+  QStringList formats;
+  const auto  types = known_plugin_list_->getTypes ();
   if (!types.isEmpty ())
     {
       beginInsertRows ({}, 0, types.size () - 1);
@@ -57,9 +59,18 @@ PluginDescriptorList::update_cache ()
         {
           auto descriptor =
             plugins::PluginDescriptor::from_juce_description (juce_descriptor);
+          formats << descriptor->format ();
           cached_descriptors_.emplace_back (descriptor.release ());
         }
       endInsertRows ();
+    }
+
+  formats.removeDuplicates ();
+  formats.sort ();
+  if (formats != available_formats_)
+    {
+      available_formats_ = formats;
+      Q_EMIT availableFormatsChanged ();
     }
 }
 

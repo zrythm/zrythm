@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_descriptor_list.h"
@@ -33,6 +33,11 @@ protected:
 
   // Conservative wait time - use 1.5x multiplier like playback cache scheduler
   static constexpr auto CONSERVATIVE_WAIT = DEBOUNCER_DELAY * 3 / 2;
+
+  // CONSERVATIVE_WAIT in plain milliseconds, for use with QTRY_* macros and
+  // QSignalSpy::wait() which take an int timeout
+  static constexpr int CONSERVATIVE_WAIT_MS =
+    static_cast<int> (CONSERVATIVE_WAIT.count ());
 
 protected:
   void SetUp () override
@@ -134,9 +139,8 @@ TEST_F (PluginDescriptorListTest, SinglePlugin)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 1);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 1, CONSERVATIVE_WAIT_MS);
 
   auto valid_index = descriptor_list_->index (0, 0);
   EXPECT_TRUE (valid_index.isValid ());
@@ -170,9 +174,8 @@ TEST_F (PluginDescriptorListTest, MultiplePlugins)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), plugin_count);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), plugin_count, CONSERVATIVE_WAIT_MS);
 
   // Test all indices are valid
   for (int i = 0; i < plugin_count; ++i)
@@ -202,7 +205,8 @@ TEST_F (PluginDescriptorListTest, IndexBoundsChecking)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), plugin_count, CONSERVATIVE_WAIT_MS);
 
   // Valid indices
   for (int i = 0; i < plugin_count; ++i)
@@ -236,7 +240,8 @@ TEST_F (PluginDescriptorListTest, ParentMethod)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 1, CONSERVATIVE_WAIT_MS);
 
   auto child_index = descriptor_list_->index (0, 0);
   auto parent_of_child = descriptor_list_->parent (child_index);
@@ -250,9 +255,8 @@ TEST_F (PluginDescriptorListTest, ResetModel)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 3);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 3, CONSERVATIVE_WAIT_MS);
 
   // Reset should not crash and should maintain same row count
   // (since underlying KnownPluginList hasn't changed)
@@ -267,7 +271,8 @@ TEST_F (PluginDescriptorListTest, DataWithInvalidRoles)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 1, CONSERVATIVE_WAIT_MS);
 
   auto valid_index = descriptor_list_->index (0, 0);
   EXPECT_TRUE (valid_index.isValid ());
@@ -296,9 +301,8 @@ TEST_F (PluginDescriptorListTest, DescriptorCreation)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 1);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 1, CONSERVATIVE_WAIT_MS);
 
   auto index = descriptor_list_->index (0, 0);
   auto descriptor_data =
@@ -324,7 +328,8 @@ TEST_F (PluginDescriptorListTest, ColumnCount)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 5, CONSERVATIVE_WAIT_MS);
 
   EXPECT_EQ (descriptor_list_->columnCount (), 1);
 }
@@ -348,9 +353,8 @@ TEST_F (PluginDescriptorListTest, DifferentPluginFormats)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 3);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 3, CONSERVATIVE_WAIT_MS);
 
   // Verify each plugin's format is correctly translated
   bool found_vst3{};
@@ -400,7 +404,8 @@ TEST_F (PluginDescriptorListTest, InstrumentPlugins)
   add_plugins_to_list (test_array);
 
   // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 1, CONSERVATIVE_WAIT_MS);
 
   auto index = descriptor_list_->index (0, 0);
   auto descriptor_data =
@@ -426,11 +431,68 @@ TEST_F (PluginDescriptorListTest, DebouncedUpdate)
   // Should still be empty immediately (debounced)
   EXPECT_EQ (descriptor_list_->rowCount (), 0);
 
-  // Wait for debounced update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
+  // Wait for the debounced update to deliver the plugins
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 3, CONSERVATIVE_WAIT_MS);
+}
 
-  // Now should have plugins
-  EXPECT_EQ (descriptor_list_->rowCount (), 3);
+// Test that availableFormats returns the distinct sorted formats present in
+// the list
+TEST_F (PluginDescriptorListTest, AvailableFormats)
+{
+  juce::Array<juce::PluginDescription> test_array;
+  test_array.add (create_test_juce_description (
+    "VST3 Plugin A", "Test Manufacturer", "VST3", 1001));
+  test_array.add (create_test_juce_description (
+    "VST3 Plugin B", "Test Manufacturer", "VST3", 1002));
+  test_array.add (create_test_juce_description (
+    "LV2 Plugin", "Test Manufacturer", "LV2", 1003));
+  test_array.add (create_test_juce_description (
+    "CLAP Plugin", "Test Manufacturer", "CLAP", 1004));
+  add_plugins_to_list (test_array);
+
+  // Wait for debounced update to complete
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->availableFormats (),
+    (QStringList{ QString ("CLAP"), QString ("LV2"), QString ("VST3") }),
+    CONSERVATIVE_WAIT_MS);
+}
+
+// Test that availableFormatsChanged is emitted only when the set of formats
+// actually changes
+TEST_F (PluginDescriptorListTest, AvailableFormatsChangeNotification)
+{
+  QSignalSpy spy (
+    descriptor_list_.get (), &PluginDescriptorList::availableFormatsChanged);
+
+  add_plugins_to_list (create_test_plugin_array (2));
+
+  // one emission for the initial populate (empty -> {VST3})
+  QTRY_COMPARE_WITH_TIMEOUT (spy.size (), 1, CONSERVATIVE_WAIT_MS);
+  EXPECT_EQ (
+    descriptor_list_->availableFormats (), (QStringList{ QString ("VST3") }));
+
+  // drain the initial emission so that wait() below only reacts to new
+  // emissions
+  spy.takeFirst ();
+
+  // adding another VST3 plugin introduces no new format: no emission
+  juce::Array<juce::PluginDescription> same_format_array;
+  same_format_array.add (create_test_juce_description (
+    "Another VST3 Plugin", "Test Manufacturer", "VST3", 9001));
+  add_plugins_to_list (same_format_array);
+  EXPECT_FALSE (spy.wait (CONSERVATIVE_WAIT_MS));
+  EXPECT_TRUE (spy.isEmpty ());
+
+  // adding a plugin of a new format emits again
+  juce::Array<juce::PluginDescription> new_format_array;
+  new_format_array.add (create_test_juce_description (
+    "CLAP Plugin", "Test Manufacturer", "CLAP", 9002));
+  add_plugins_to_list (new_format_array);
+  QTRY_COMPARE_WITH_TIMEOUT (spy.size (), 1, CONSERVATIVE_WAIT_MS);
+  EXPECT_EQ (
+    descriptor_list_->availableFormats (),
+    (QStringList{ QString ("CLAP"), QString ("VST3") }));
 }
 
 // Test change listener triggers update
@@ -440,18 +502,16 @@ TEST_F (PluginDescriptorListTest, ChangeListenerTriggersUpdate)
   add_plugins_to_list (test_array);
 
   // Wait for initial update to complete
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 2);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 2, CONSERVATIVE_WAIT_MS);
 
   // Add more plugins after construction (similar plugins get merged)
   auto additional_array = create_test_plugin_array (3);
   add_plugins_to_list (additional_array);
 
   // Should trigger debounced update
-  QTest::qWait (CONSERVATIVE_WAIT);
-
-  EXPECT_EQ (descriptor_list_->rowCount (), 3);
+  QTRY_COMPARE_WITH_TIMEOUT (
+    descriptor_list_->rowCount (), 3, CONSERVATIVE_WAIT_MS);
 }
 
 } // namespace zrythm::plugins::discovery

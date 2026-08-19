@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 set_source_files_properties(
@@ -18,6 +18,8 @@ qt_add_qml_module(zrythm_style
     # BusyIndicator.qml
     Button.qml
     ButtonBackgroundRect.qml
+    CheckBox.qml
+    CheckIndicator.qml
     ComboBox.qml
     DialogButtonBox.qml
     # Dialog.qml
@@ -37,6 +39,7 @@ qt_add_qml_module(zrythm_style
     PopupBackgroundRect.qml
     RoundButton.qml
     ProgressBar.qml
+    SearchField.qml
     # ScrollBar.qml
     # ScrollIndicator.qml
     # ScrollView.qml

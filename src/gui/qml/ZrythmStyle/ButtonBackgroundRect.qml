@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
@@ -9,7 +9,7 @@ Rectangle {
   readonly property color colorAdjustedForChecked: control.checked ? control.palette.accent : baseColor
   readonly property color colorAdjustedForHoverOrFocusOrDown: ZrythmTheme.adjustColorForHoverOrVisualFocusOrDown(colorAdjustedForChecked, control.hovered, control.visualFocus, control.down)
   required property var control
-   readonly property real styleHeight: ZrythmTheme.buttonHeight
+  readonly property real styleHeight: ZrythmTheme.buttonHeight
 
   border.color: control.palette.highlight
   border.width: control.visualFocus || control.down ? 2 : 0
@@ -17,7 +17,7 @@ Rectangle {
   implicitHeight: styleHeight
   implicitWidth: styleHeight
   radius: ZrythmTheme.buttonRadius
-  visible: !control.flat || control.down || control.checked || control.highlighted
+  visible: !control.flat || control.hovered || control.down || control.checked || control.highlighted
 
   Behavior on border.width {
     animation: ZrythmTheme.propertyAnimation

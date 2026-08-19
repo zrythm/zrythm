@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2024-2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -17,6 +17,9 @@ namespace zrythm::plugins::discovery
 class PluginDescriptorList : public QAbstractListModel
 {
   Q_OBJECT
+  Q_PROPERTY (
+    QStringList availableFormats READ availableFormats NOTIFY
+      availableFormatsChanged FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
@@ -65,7 +68,16 @@ public:
   QVariant
   data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+  /**
+   * Returns the distinct plugin formats present in the list (e.g. "VST3",
+   * "LV2"), sorted alphabetically.
+   */
+  QStringList availableFormats () const { return available_formats_; }
+
   void reset_model ();
+
+Q_SIGNALS:
+  void availableFormatsChanged ();
 
 private:
   /** Updates the cached plugin descriptors from the known plugin list. */
@@ -80,5 +92,8 @@ private:
   std::shared_ptr<juce::KnownPluginList> known_plugin_list_;
   std::vector<utils::QObjectUniquePtr<PluginDescriptor>> cached_descriptors_;
   utils::QObjectUniquePtr<utils::Debouncer>              update_debouncer_;
+
+  /** Distinct plugin formats present in cached_descriptors_, sorted. */
+  QStringList available_formats_;
 };
 }

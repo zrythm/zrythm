@@ -64,6 +64,7 @@ ColumnLayout {
     PluginBrowserPage {
       id: pluginBrowserPage
 
+      appSettings: GlobalState.application.appSettings
       pluginManager: GlobalState.application.pluginManager
 
       // TODO: import to current track

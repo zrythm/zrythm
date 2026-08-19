@@ -139,6 +139,9 @@ class AppSettings : public QObject
   DEFINE_SETTING_PROPERTY (double, lastAudioFunctionPitchShiftRatio, 1.0)
   DEFINE_SETTING_PROPERTY (int, lastMidiFunction, -1)
   DEFINE_SETTING_PROPERTY (QString, fileBrowserInstrument, {})
+  DEFINE_SETTING_PROPERTY (QString, pluginBrowserSearchText, {})
+  DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserSpecTypes, QStringList ())
+  DEFINE_SETTING_PROPERTY (QStringList, pluginBrowserSpecFormats, QStringList ())
   DEFINE_SETTING_PROPERTY (int, automationCurveAlgorithm, 1) // superellipse
   DEFINE_SETTING_PROPERTY (double, timelineLastCreatedObjectLengthInTicks, 3840.0)
   DEFINE_SETTING_PROPERTY (double, editorLastCreatedObjectLengthInTicks, 480.0)
