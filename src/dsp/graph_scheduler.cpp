@@ -108,6 +108,35 @@ GraphScheduler::rechain_from_node_collection (
 {
   z_debug ("rechaining graph...");
 
+  /* Wait for all workers to go idle before replacing the graph state - a
+   * worker woken near the end of the previous cycle can still be inside a
+   * queue pop.
+   * num_threads() only changes via start_threads()/terminate_threads(),
+   * which callers serialize with this through the engine lock. */
+  if (const auto worker_count = num_threads (); worker_count > 0)
+    {
+      /* Workers are still counted as idle between waking up and
+       * decrementing the counter, so the wait below cannot see them - tell
+       * them to go back to sleep without touching the queue */
+      rechain_pending_.store (true, std::memory_order_release);
+
+      int tries = 0;
+      while (
+        idle_thread_cnt_.load (std::memory_order_acquire)
+        != static_cast<int> (worker_count))
+        {
+          /* warn every ~1s (10us per try) */
+          if ((++tries % 100000) == 0) [[unlikely]]
+            {
+              z_warning (
+                "still waiting for {} graph workers to go idle before "
+                "rechaining (current idle {})",
+                worker_count, idle_thread_cnt_.load ());
+            }
+          std::this_thread::sleep_for (10us);
+        }
+    }
+
   // cleanup previous graph nodes
   release_node_resources ();
 
@@ -120,6 +149,9 @@ GraphScheduler::rechain_from_node_collection (
 
   trigger_queue_.emplace (
     std::max<size_t> (graph_nodes_.graph_nodes_.size (), 1));
+
+  /* the queue has been replaced - workers may touch it again */
+  rechain_pending_.store (false, std::memory_order_release);
 
   sample_rate_ = sample_rate;
   max_block_length_ = max_block_length;
@@ -286,6 +318,9 @@ GraphScheduler::terminate_threads ()
   thread_set_->threads_.clear ();
   thread_set_->main_thread_.reset ();
   thread_set_->num_threads_.store (0, std::memory_order_relaxed);
+
+  /* Reset leftover idle counts from exited threads */
+  idle_thread_cnt_.store (0, std::memory_order_relaxed);
 
   z_info ("graph terminated");
 }

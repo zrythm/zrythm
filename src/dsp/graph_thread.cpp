@@ -225,6 +225,15 @@ GraphThread::run_worker () noexcept
                 id_, scheduler->idle_thread_cnt_.load ());
             }
 
+          /* If a rechain is pending, the trigger queue may be replaced at
+           * any moment (the idle count cannot see woken workers), so go
+           * back to sleep without touching the queue */
+          if (scheduler->rechain_pending_.load (std::memory_order_acquire))
+            [[unlikely]]
+            {
+              continue;
+            }
+
           /* try to find some work to do */
           scheduler->trigger_queue_->try_pop (to_run);
         }

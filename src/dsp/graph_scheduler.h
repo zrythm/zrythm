@@ -224,6 +224,18 @@ private:
   /** Number of threads waiting for work. */
   std::atomic<int> idle_thread_cnt_ = 0;
 
+  /**
+   * @brief Set while @ref rechain_from_node_collection() replaces the
+   * trigger queue.
+   *
+   * Workers that wake up while this is set go back to sleep without
+   * accessing the queue. They are still counted in @ref idle_thread_cnt_
+   * between waking up and decrementing the counter, so the idle-count wait
+   * in rechain alone cannot tell whether a woken worker is about to access
+   * the queue.
+   */
+  std::atomic<bool> rechain_pending_{ false };
+
   /** Wake up graph node process threads. */
   // This is not a std::counting_semaphore due to issues on MSVC/Windows.
   moodycamel::LightweightSemaphore trigger_sem_{ 0 };
