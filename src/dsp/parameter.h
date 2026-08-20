@@ -260,8 +260,9 @@ class ProcessorParameter
       public dsp::graph::IProcessable
 {
   Q_OBJECT
-  Q_PROPERTY (
-    float baseValue READ baseValue WRITE setBaseValue NOTIFY baseValueChanged)
+  // Read-only from QML: writes must state their intent via the invokable
+  // setBaseValue() (value sync) or setBaseValueByUser() (user edits)
+  Q_PROPERTY (float baseValue READ baseValue NOTIFY baseValueChanged)
   Q_PROPERTY (QString label READ label CONSTANT)
   Q_PROPERTY (QString description READ description CONSTANT)
   Q_PROPERTY (zrythm::dsp::ParameterRange range READ range CONSTANT)
@@ -322,7 +323,15 @@ public:
   const auto &range () const { return range_; }
 
   float baseValue () const { return base_value_.load (); }
-  void  setBaseValue (float newValue) [[clang::blocking]]
+
+  /**
+   * @brief Sets the base value without user-edit attribution.
+   *
+   * For value synchronization (plugin-reported values, state loads,
+   * initialization). Deliberate user edits must go through @ref
+   * setBaseValueByUser instead.
+   */
+  Q_INVOKABLE void setBaseValue (float newValue) [[clang::blocking]]
   {
     newValue = std::clamp (newValue, 0.f, 1.f);
     if (qFuzzyCompare (base_value_, newValue))
@@ -330,11 +339,40 @@ public:
     base_value_ = newValue;
     Q_EMIT baseValueChanged (newValue);
   }
-  Q_INVOKABLE void resetBaseValueToDefault ()
+
+  /**
+   * @brief Sets the base value as a deliberate user edit.
+   *
+   * Like @ref setBaseValue, but additionally emits @ref baseValueEditedByUser
+   * when the value actually changed. User-facing write paths (UI controls,
+   * undo commands, MIDI mappings) use this so listeners can distinguish
+   * deliberate edits from value synchronization.
+   *
+   * @note For continuous drags, begin/endUserGesture() additionally
+   * suppresses automation/modulation for the duration of the gesture.
+   */
+  Q_INVOKABLE void setBaseValueByUser (float newValue) [[clang::blocking]]
   {
-    setBaseValue (range_.defaultNormalizedValue ());
+    const auto old_value = baseValue ();
+    setBaseValue (newValue);
+    const auto stored_value = baseValue ();
+    if (!qFuzzyCompare (old_value, stored_value))
+      {
+        Q_EMIT baseValueEditedByUser (stored_value);
+      }
+  }
+
+  Q_INVOKABLE void resetBaseValueToDefault () [[clang::blocking]]
+  {
+    setBaseValueByUser (range_.defaultNormalizedValue ());
   }
   Q_SIGNAL void baseValueChanged (float value);
+
+  /**
+   * @brief Emitted after @ref baseValueChanged when the change came from a
+   * deliberate user edit (@ref setBaseValueByUser).
+   */
+  Q_SIGNAL void baseValueEditedByUser (float value);
 
   /**
    * @brief Returns the current (normalized) value after any automation and
@@ -353,6 +391,14 @@ public:
     return last_automated_value_.load ();
   }
 
+  /**
+   * @brief Marks the start/end of a continuous user adjustment (e.g. a
+   * slider drag), during which automation/modulation is ignored in favor of
+   * the dragged value.
+   *
+   * @note For user-edit attribution (which fires on actual value changes,
+   * including discrete edits), see setBaseValueByUser().
+   */
   Q_INVOKABLE void beginUserGesture ()
   {
     during_gesture_.store (true);

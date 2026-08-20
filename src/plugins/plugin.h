@@ -5,7 +5,11 @@
 
 #include <atomic>
 #include <functional>
+#include <map>
 #include <memory>
+#include <optional>
+#include <span>
+#include <variant>
 #include <vector>
 
 #include "dsp/parameter.h"
@@ -84,8 +88,9 @@ class Plugin : public dsp::ProcessorBase
 {
   Q_OBJECT
   Q_PROPERTY (
-    int programIndex READ programIndex WRITE setProgramIndex NOTIFY
-      programIndexChanged)
+    int presetIndex READ presetIndex WRITE setPresetIndex NOTIFY
+      presetIndexChanged)
+  Q_PROPERTY (bool presetDirty READ presetDirty NOTIFY presetDirtyChanged)
   Q_PROPERTY (
     zrythm::plugins::PluginConfiguration * configuration READ configuration
       NOTIFY configurationChanged)
@@ -118,6 +123,32 @@ public:
   };
   Q_ENUM (InstantiationStatus)
 
+  /**
+   * @brief Durable preset identifier, defined by the backend.
+   *
+   * Indexed formats (VST3 programs) use the program index. Key/URI-based
+   * formats (CLAP, LV2) use an opaque backend-defined string.
+   */
+  using PresetId = std::variant<int, QString>;
+
+  /**
+   * @brief A single selectable preset entry.
+   */
+  struct PresetEntry
+  {
+    /** Display name. */
+    QString name;
+
+    /** Optional grouping name (e.g. a VST3 program list name), or empty
+     * when the backend provides no grouping. */
+    QString group;
+
+    /** Durable identifier used for selection and application. */
+    PresetId id;
+
+    bool operator== (const PresetEntry &) const = default;
+  };
+
   ~Plugin () override;
 
   // ============================================================================
@@ -125,30 +156,61 @@ public:
   // ============================================================================
 
   /**
-   * @brief Returns the current program index, or -1 if no program exists.
+   * @brief Index of the selected preset within @ref presetEntries, or -1 if
+   * no preset is selected.
+   *
+   * Selection is stored as a durable @ref PresetId and resolved against the
+   * current entries on each read, so this returns -1 if the stored preset no
+   * longer exists (e.g. a discovered preset was removed between sessions).
    */
-  int  programIndex () const { return program_index_.value_or (-1); }
-  void setProgramIndex (int index)
-  {
-    if (program_index_.value_or (-1) == index)
-      return;
-
-    if (index >= 0)
-      {
-        program_index_.emplace (index);
-      }
-    else
-      {
-        program_index_.reset ();
-      }
-
-    Q_EMIT programIndexChanged (index);
-  }
+  int presetIndex () const;
 
   /**
-   * @brief Implementations should attach to this and set the program.
+   * @brief Selects a preset by index within @ref presetEntries and applies
+   * it to the underlying plugin via @ref apply_preset_impl.
+   *
+   * Passing -1 clears the selection (host-side display state only; plugin
+   * formats have no "unselect", so implementations are not notified).
+   * Re-selecting the current preset re-applies it, reverting the plugin's
+   * state to the preset. Out-of-range indices are refused with a warning.
    */
-  Q_SIGNAL void programIndexChanged (int index);
+  void setPresetIndex (int index);
+
+  /**
+   * @brief Emitted when the selected preset changed (in either direction).
+   */
+  Q_SIGNAL void presetIndexChanged (int index);
+
+  /**
+   * @brief Returns the list of selectable presets.
+   *
+   * The default implementation returns an empty list (no preset support).
+   * Implementations return a view over cached entries and call @ref
+   * notify_presets_rebuilt when the list content changes.
+   */
+  virtual std::span<const PresetEntry> presetEntries () const { return {}; }
+
+  /**
+   * @brief Emitted by implementations when the preset list content changed.
+   */
+  Q_SIGNAL void presetsChanged ();
+
+  /**
+   * @brief Whether the plugin's current parameter state has diverged from
+   * the selected preset.
+   *
+   * This is a host-side heuristic (plugin formats do not report it): the
+   * base class tracks host-side user edits (see
+   * ProcessorParameter::baseValueEditedByUser), implementations report
+   * edits made from the plugin's own UI (e.g. on gesture start), and it is
+   * cleared whenever a preset is selected.
+   */
+  bool presetDirty () const { return preset_dirty_; }
+
+  /**
+   * @brief Emitted when @ref presetDirty changed.
+   */
+  Q_SIGNAL void presetDirtyChanged (bool dirty);
 
   PluginConfiguration * configuration () const { return configuration_.get (); }
   /**
@@ -528,6 +590,14 @@ private:
     units::sample_rate_t sample_rate,
     units::sample_u32_t  max_block_length) { };
 
+  /**
+   * @brief Applies a preset selection to the underlying plugin.
+   *
+   * Receives the selected entry's durable identifier. The default
+   * implementation does nothing (no preset support).
+   */
+  virtual void apply_preset_impl (const PresetId &) { }
+
   virtual void process_impl (
     dsp::graph::ProcessBlockInfo time_info,
     const dsp::ITransport       &transport,
@@ -588,11 +658,55 @@ protected:
    */
   dsp::ProcessorParameterUuidReference generate_default_gain_param () const;
 
+  /**
+   * @brief Updates the selected preset without re-applying it.
+   *
+   * For selections made by the underlying plugin itself (e.g. from its own
+   * preset browser). If the selection actually changed, clears @ref
+   * presetDirty and emits @ref presetIndexChanged; if the reported preset
+   * is already selected, this is a no-op (the dirty flag is kept:
+   * plugin-side parameter edits can arrive alongside notifications that
+   * re-report the unchanged current preset).
+   */
+  void update_selected_preset_from_backend (PresetId id);
+
+  /**
+   * @brief Emits @ref presetsChanged and @ref presetIndexChanged after the
+   * preset entry list changed.
+   *
+   * The preset index is resolved against the entries on each read, so a
+   * content change can move the selection to a different index or make it
+   * unresolvable; both signals are emitted together so observers
+   * re-evaluate both.
+   */
+  void notify_presets_rebuilt ();
+
+  /**
+   * @brief Sets @ref presetDirty and emits @ref presetDirtyChanged.
+   *
+   * No-op (forced to false) when no preset is selected.
+   */
+  void set_preset_dirty (bool dirty);
+
 private:
+  /**
+   * @brief Connects @p param so that deliberate user edits mark the
+   * selected preset dirty.
+   *
+   * The Zrythm-provided bypass/gain params are skipped: they are host
+   * utilities, not part of the plugin's preset state.
+   */
+  void arm_preset_dirty_tracking_for (dsp::ProcessorParameter &param);
+
   static constexpr auto kConfigurationKey = "configuration"sv;
-  static constexpr auto kProgramIndexKey = "programIndex"sv;
+  static constexpr auto kPresetKey = "preset"sv;
+  static constexpr auto kPresetDirtyKey = "presetDirty"sv;
   static constexpr auto kProtocolKey = "protocol"sv;
   static constexpr auto kVisibleKey = "visible"sv;
+
+  /** Unique IDs of the Zrythm-provided bypass/gain parameters. */
+  static constexpr auto kBypassParamUniqueId = u8"/zrythm-bypass"sv;
+  static constexpr auto kGainParamUniqueId = u8"/zrythm-gain"sv;
   friend void           to_json (nlohmann::json &j, const Plugin &p);
   friend void           from_json (const nlohmann::json &j, Plugin &p);
 
@@ -638,6 +752,14 @@ protected:
   /** Connection re-arming @ref bypassedChanged on the current bypass
    * parameter. */
   QMetaObject::Connection bypassed_relay_connection_;
+
+  /** Preset-dirty tracking connections per parameter (keyed by parameter
+   * UUID), so re-arming disconnects the previous connection instead of
+   * stacking them. Entries are never pruned: parameters are never removed
+   * once added, so the map cannot grow unboundedly. If parameter removal
+   * is ever introduced, prune the corresponding entry there. */
+  std::map<dsp::ProcessorParameter::Uuid, QMetaObject::Connection>
+    preset_dirty_connections_;
 
   /* Realtime caches */
   std::vector<dsp::AudioPort *> audio_in_ports_;
@@ -737,9 +859,18 @@ private:
   std::unique_ptr<PluginConfiguration> configuration_;
 
   /**
-   * @brief Currently selected program index.
+   * @brief Currently selected preset, if any.
+   *
+   * Stored as a durable @ref PresetId and resolved against @ref
+   * presetEntries on read.
    */
-  std::optional<int> program_index_;
+  std::optional<PresetId> selected_preset_id_;
+
+  /**
+   * @brief Whether the current parameter state has diverged from the
+   * selected preset (see @ref presetDirty).
+   */
+  bool preset_dirty_ = false;
 
   InstantiationStatus instantiation_status_{ InstantiationStatus::Pending };
 

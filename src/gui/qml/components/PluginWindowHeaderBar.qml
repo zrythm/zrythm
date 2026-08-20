@@ -28,13 +28,15 @@ Rectangle {
   // e.g. in test harnesses using a fallback engine)
   readonly property int engineSampleRate: GlobalState.application?.projectManager?.activeSession?.project?.engine?.sampleRate ?? 0
   // Reactively bound to the plugin's latencySamples property
-  readonly property int latencySamples: root.plugin.latencySamples
+  readonly property int latencySamples: root.plugin?.latencySamples ?? 0
   // True when rendered offscreen into a native plugin host window strip:
   // popups are then requested from the host (separate window) instead of
   // being shown in-scene, where the strip height would clip them
   readonly property bool nativeStrip: sceneController !== null
 
-  // Must be non-null: bindings dereference it unconditionally
+  // Non-null in normal operation; QML clears the reference when the plugin
+  // is destroyed, which may precede this window's teardown — handlers guard
+  // against that window
   required property Plugin plugin
   // OffscreenQmlScene hosting this scene offscreen, or null when used
   // in-scene (generic editor). The header calls its invokables to talk to
@@ -46,17 +48,31 @@ Rectangle {
   // Applies a selection coming back from an externally hosted popup
   // (untyped parameter: invoked from C++ via QMetaObject::invokeMethod)
   function applyPresetSelection(index) {
-    presetSelector.localIndex = index;
+    if (!root.plugin)
+      return;
+    root.plugin.presetIndex = index;
   }
 
   function refreshDiagnostics() {
-    dspLoadPercent = plugin.dspLoadPercentage();
+    dspLoadPercent = root.plugin?.dspLoadPercentage() ?? 0;
+  }
+
+  // Re-resolves the displayed preset name (invokable model lookups don't
+  // participate in bindings, so this is called from explicit signal
+  // handlers below). A "*" marks state that diverges from the preset
+  function refreshPresetText() {
+    const idx = root.plugin?.presetIndex ?? -1;
+    let text = idx >= 0 ? presetModel.nameAt(idx) : "";
+    if (idx >= 0 && (root.plugin?.presetDirty ?? false))
+      text += "*";
+    presetSelector.currentText = text;
   }
 
   color: themeWindowColor
   implicitHeight: controlsRow.implicitHeight + 2 * contentMargin + (detailsExpanded ? detailsRow.implicitHeight + contentMargin : 0)
   implicitWidth: controlsRow.implicitWidth + disclosureButton.implicitWidth + 3 * contentMargin
 
+  Component.onCompleted: refreshPresetText()
   onDetailsExpandedChanged: {
     if (detailsExpanded)
       refreshDiagnostics();
@@ -99,14 +115,32 @@ Rectangle {
   }
 
   // Refresh immediately when the window re-appears with the row open
-  // (the poll timer is stopped while hidden)
+  // (the poll timer is stopped while hidden). Preset name display:
+  // invokable model lookups don't participate in bindings, so refresh
+  // explicitly on every relevant change
   Connections {
     function onUiVisibleChanged() {
-      if (root.plugin.uiVisible && root.detailsExpanded)
+      if ((root.plugin?.uiVisible ?? false) && root.detailsExpanded)
         root.refreshDiagnostics();
     }
 
+    function onPresetDirtyChanged() {
+      root.refreshPresetText();
+    }
+
+    function onPresetIndexChanged() {
+      root.refreshPresetText();
+    }
+
     target: root.plugin
+  }
+
+  Connections {
+    function onModelReset() {
+      root.refreshPresetText();
+    }
+
+    target: presetModel
   }
 
   ToolBar {
@@ -129,17 +163,19 @@ Rectangle {
 
         Accessible.name: qsTr("Bypass")
         checkable: true
-        checked: root.plugin.bypassed
+        checked: root.plugin?.bypassed ?? false
         display: AbstractButton.IconOnly
         flat: true
         focusPolicy: Qt.NoFocus
         icon.source: ResourceManager.getIconUrl("noto-glyphs", "power.svg")
 
         onClicked: {
+          if (!root.plugin)
+            return;
           root.plugin.bypassed = !root.plugin.bypassed;
           // The control writes checked on click - restore the binding
           checked = Qt.binding(function () {
-            return root.plugin.bypassed;
+            return root.plugin?.bypassed ?? false;
           });
         }
       }
@@ -151,35 +187,26 @@ Rectangle {
       PresetSelector {
         id: presetSelector
 
-        // Dummy content until the plugin preset backend lands; selection
-        // is local only and not applied to the plugin
-        property int localIndex: 0
-
-        currentIndex: localIndex
-        currentText: dummyPresetModel.get(localIndex).name
+        currentIndex: root.plugin?.presetIndex ?? -1
+        enabled: presetModel.count > 0
         externalPopup: root.nativeStrip
         textRole: "name"
 
-        model: ListModel {
-          id: dummyPresetModel
+        model: PluginPresetListModel {
+          id: presetModel
 
-          ListElement {
-            name: "Default"
-          }
-
-          ListElement {
-            name: "Bright Lead"
-          }
-
-          ListElement {
-            name: "Soft Pad"
-          }
+          plugin: root.plugin
         }
 
-        onActivated: idx => localIndex = idx
+        onActivated: idx => {
+          if (root.plugin)
+            root.plugin.presetIndex = idx;
+        }
         onPopupRequested: {
+          if (!root.plugin)
+            return;
           const topLeft = presetSelector.nameButton.mapToItem(root, 0, 0);
-          root.sceneController.requestPresetPopup(Qt.rect(topLeft.x, topLeft.y, presetSelector.nameButton.width, presetSelector.nameButton.height), presetSelector.model, localIndex, presetSelector.textRole);
+          root.sceneController.requestPresetPopup(Qt.rect(topLeft.x, topLeft.y, presetSelector.nameButton.width, presetSelector.nameButton.height), presetSelector.model, root.plugin.presetIndex, presetSelector.textRole);
         }
       }
 
@@ -191,10 +218,10 @@ Rectangle {
         flat: true
         focusPolicy: Qt.NoFocus
         icon.color: root.themeTextColor
-        icon.source: root.plugin.abActive ? "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ba.svg" : "qrc:/qt/qml/Zrythm/icons/zrythm-dark/preset-ab.svg"
+        icon.source: ResourceManager.getIconUrl("zrythm-dark", (root.plugin?.abActive ?? false) ? "preset-ba.svg" : "preset-ab.svg")
         text: qsTr("A/B")
 
-        onClicked: root.plugin.switchAbState()
+        onClicked: root.plugin?.switchAbState()
       }
     }
   }
@@ -252,7 +279,7 @@ Rectangle {
   Timer {
     interval: 600
     repeat: true
-    running: root.detailsExpanded && root.plugin.uiVisible
+    running: root.detailsExpanded && (root.plugin?.uiVisible ?? false)
 
     onTriggered: root.refreshDiagnostics()
   }

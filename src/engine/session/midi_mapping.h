@@ -35,6 +35,13 @@ public:
 
   void set_enabled (bool enabled) { enabled_.store (enabled); }
 
+  /**
+   * Applies the given MIDI message to the mapped parameter.
+   *
+   * Main thread only: mapped writes go through
+   * ProcessorParameter::setBaseValueByUser(), whose signals reach
+   * QML-facing slots.
+   */
   void apply (std::array<midi_byte_t, 3> buf);
 
 private:
@@ -123,9 +130,9 @@ public:
   /**
    * Applies the events to the appropriate mapping.
    *
-   * This is used only for TrackProcessor.cc_mappings.
-   *
-   * @note Must only be called while transport is recording.
+   * Mapped writes go through ProcessorParameter::setBaseValueByUser(),
+   * whose signals reach QML-facing slots, so calls must happen on the main
+   * thread.
    */
   void apply_from_cc_events (std::span<const dsp::RealtimeMidiEvent> events);
 

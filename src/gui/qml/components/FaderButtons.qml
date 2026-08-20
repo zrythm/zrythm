@@ -27,12 +27,10 @@ ColumnLayout {
     icon.source: ResourceManager.getIconUrl("codicons", "merge.svg")
     visible: root.fader.monoToggle !== null
 
-    Binding {
-      property: "baseValue"
-      target: root.fader.monoToggle
-      value: monoCompatButton.checked ? 1.0 : 0.0
-      when: root.fader.monoToggle !== null
-    }
+    // External value syncs that flip checked re-enter these handlers; the
+    // write-back is a no-op then (value unchanged), which only holds for
+    // binary 0/1 toggles like these
+    onCheckedChanged: root.fader.monoToggle?.setBaseValueByUser(checked ? 1.0 : 0.0)
 
     ToolTip {
       text: qsTr("Mono compatibility")
@@ -53,7 +51,7 @@ ColumnLayout {
 
     onClicked: {
       const param = root.track.recordingParam;
-      param.baseValue = param.range.isToggled(param.baseValue) ? 0.0 : 1.0;
+      param.setBaseValueByUser(param.range.isToggled(param.baseValue) ? 0.0 : 1.0);
     }
 
     ToolTip {
@@ -95,7 +93,7 @@ ColumnLayout {
         return;
       const idx = monitorParam.range.enumIndex(monitorParam.baseValue);
       const next = (idx + 1) % monitorParam.range.enumCount();
-      monitorParam.baseValue = monitorParam.range.normalizedEnumValue(next);
+      monitorParam.setBaseValueByUser(monitorParam.range.normalizedEnumValue(next));
     }
     onMonitorParamChanged: updateColor()
 
@@ -133,12 +131,7 @@ ColumnLayout {
       text: qsTr("Solo")
     }
 
-    Binding {
-      property: "baseValue"
-      target: root.fader.solo
-      value: soloButton.checked ? 1.0 : 0.0
-      when: root.fader.solo !== null
-    }
+    onCheckedChanged: root.fader.solo?.setBaseValueByUser(checked ? 1.0 : 0.0)
   }
 
   // Mute button
@@ -156,12 +149,7 @@ ColumnLayout {
       text: qsTr("Mute")
     }
 
-    Binding {
-      property: "baseValue"
-      target: root.fader.mute
-      value: muteButton.checked ? 1.0 : 0.0
-      when: root.fader.mute !== null
-    }
+    onCheckedChanged: root.fader.mute?.setBaseValueByUser(checked ? 1.0 : 0.0)
   }
 
   // Listen button
@@ -175,12 +163,7 @@ ColumnLayout {
     icon.color: checked ? palette.highlight : palette.buttonText
     icon.source: ResourceManager.getIconUrl("gnome-icon-library", "headphones-symbolic.svg")
 
-    Binding {
-      property: "baseValue"
-      target: root.fader.listen
-      value: listenButton.checked ? 1.0 : 0.0
-      when: root.fader.listen !== null
-    }
+    onCheckedChanged: root.fader.listen?.setBaseValueByUser(checked ? 1.0 : 0.0)
 
     ToolTip {
       text: qsTr("Listen")
@@ -198,12 +181,7 @@ ColumnLayout {
     icon.color: checked ? palette.highlight : palette.buttonText
     icon.source: ResourceManager.getIconUrl("zrythm-dark", "phase.svg")
 
-    Binding {
-      property: "baseValue"
-      target: root.fader.swapPhaseToggle
-      value: swapPhaseButton.checked ? 1.0 : 0.0
-      when: root.fader.swapPhaseToggle !== null
-    }
+    onCheckedChanged: root.fader.swapPhaseToggle?.setBaseValueByUser(checked ? 1.0 : 0.0)
 
     ToolTip {
       text: qsTr("Swap phase")

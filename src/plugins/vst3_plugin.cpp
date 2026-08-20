@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "utils/format_qt.h"
 #include <fmt/std.h>
 
 #include "dsp/midi_event.h"
@@ -51,6 +52,7 @@
 #include <pluginterfaces/vst/ivstmidicontrollers.h>
 #include <pluginterfaces/vst/ivstparameterchanges.h>
 #include <pluginterfaces/vst/ivstprocesscontext.h>
+#include <pluginterfaces/vst/ivstunits.h>
 #include <public.sdk/source/vst/hosting/eventlist.h>
 #include <public.sdk/source/vst/hosting/hostclasses.h>
 #include <public.sdk/source/vst/hosting/plugprovider.h>
@@ -420,26 +422,38 @@ private:
 };
 
 /**
- * @brief IComponentHandler implementation bridging plugin-initiated edits to
- * Zrythm parameters.
+ * @brief IComponentHandler/IUnitHandler implementation bridging
+ * plugin-initiated edits and program-list changes to Zrythm.
  */
 class Vst3ComponentHandler final
-    : public U::Implements<U::Directly<Vst::IComponentHandler>>
+    : public U::Implements<U::Directly<Vst::IComponentHandler, Vst::IUnitHandler>>
 {
 public:
   using PerformEditCallback =
     std::function<void (Vst::ParamID, Vst::ParamValue)>;
   using RestartCallback = std::function<void (int32 flags)>;
+  /** Called on beginEdit (true) / endEdit (false) from the plugin's UI. */
+  using GestureCallback = std::function<void (Vst::ParamID, bool)>;
+  /** Called when the content of a program list changed. */
+  using ProgramListChangeCallback = std::function<void ()>;
 
   explicit Vst3ComponentHandler (
-    PerformEditCallback perform_edit_cb,
-    RestartCallback     restart_cb)
+    PerformEditCallback       perform_edit_cb,
+    RestartCallback           restart_cb,
+    GestureCallback           gesture_cb,
+    ProgramListChangeCallback program_list_change_cb)
       : perform_edit_cb_ (std::move (perform_edit_cb)),
-        restart_cb_ (std::move (restart_cb))
+        restart_cb_ (std::move (restart_cb)),
+        gesture_cb_ (std::move (gesture_cb)),
+        program_list_change_cb_ (std::move (program_list_change_cb))
   {
   }
 
-  tresult PLUGIN_API beginEdit (Vst::ParamID) override { return kResultOk; }
+  tresult PLUGIN_API beginEdit (Vst::ParamID id) override
+  {
+    gesture_cb_ (id, true);
+    return kResultOk;
+  }
   tresult PLUGIN_API
   performEdit (Vst::ParamID id, Vst::ParamValue value) override
   {
@@ -447,16 +461,35 @@ public:
     perform_edit_cb_ (id, value);
     return kResultOk;
   }
-  tresult PLUGIN_API endEdit (Vst::ParamID) override { return kResultOk; }
+  tresult PLUGIN_API endEdit (Vst::ParamID id) override
+  {
+    gesture_cb_ (id, false);
+    return kResultOk;
+  }
   tresult PLUGIN_API restartComponent (int32 flags) override
   {
     restart_cb_ (flags);
     return kResultOk;
   }
 
+  tresult PLUGIN_API notifyUnitSelection (Vst::UnitID) override
+  {
+    // The preset display tracks the program-change parameter's unit, which
+    // does not change with unit selection
+    return kResultOk;
+  }
+
+  tresult PLUGIN_API notifyProgramListChange (Vst::ProgramListID, int32) override
+  {
+    program_list_change_cb_ ();
+    return kResultOk;
+  }
+
 private:
-  PerformEditCallback perform_edit_cb_;
-  RestartCallback     restart_cb_;
+  PerformEditCallback       perform_edit_cb_;
+  RestartCallback           restart_cb_;
+  GestureCallback           gesture_cb_;
+  ProgramListChangeCallback program_list_change_cb_;
 };
 
 /**
@@ -596,10 +629,12 @@ struct Vst3RtParamMapping
    */
   std::array<Vst::ParamID, 16 * Vst::kCountCtrlNumber> midi_cc_param_ids_{};
 
-  /** Param flagged kIsProgramChange (if any) and its step count, used to
-   * translate MIDI program change messages to parameter changes. */
+  /** Param flagged kIsProgramChange (if any), its step count and its unit,
+   * used to translate MIDI program change messages to parameter changes
+   * and to build the preset list. */
   std::optional<Vst::ParamID> program_change_param_id_;
   int32                       program_change_step_count_ = 0;
+  Vst::UnitID                 program_change_unit_id_ = Vst::kRootUnitId;
 
   std::unordered_map<dsp::ProcessorParameter *, Vst::ParamID> zrythm_to_vst3_;
 };
@@ -639,11 +674,32 @@ private:
   IPtr<Vst::IAudioProcessor>            processor_;
   IPtr<Vst3HostApplication>             host_app_;
   IPtr<Vst3ComponentHandler>            component_handler_;
-  Vst::HostProcessData                  process_data_;
-  Vst::EventList                        input_events_{ 0 };
-  Vst::EventList                        output_events_{ 0 };
-  Vst3ParameterChanges                  input_param_changes_{};
-  Vst3ParameterChanges                  output_param_changes_{};
+
+  /** Cached preset list (main thread only). */
+  std::vector<PresetEntry> preset_entries_;
+
+  /** Main-thread copies of the program-change param info published in the
+   * realtime mapping (synced by refresh_program_change_param_state()). */
+  std::optional<Vst::ParamID> program_change_param_id_main_;
+  int32                       program_change_step_count_main_ = 0;
+  Vst::UnitID                 program_change_unit_id_main_ = Vst::kRootUnitId;
+
+  /** Any-thread mirror of the program-change param id, read by the
+   * performEdit callback (which may arrive on any thread). */
+  std::atomic<Vst::ParamID> program_change_param_id_any_thread_{
+    Vst::kNoParamId
+  };
+
+  /** Pending UI-initiated program index (-1 = none), written on the main
+   * thread and consumed at process time. If the plugin is not processing
+   * (engine stopped, track disabled), the selection is applied when
+   * processing resumes. */
+  std::atomic<int>     pending_program_index_{ -1 };
+  Vst::HostProcessData process_data_;
+  Vst::EventList       input_events_{ 0 };
+  Vst::EventList       output_events_{ 0 };
+  Vst3ParameterChanges input_param_changes_{};
+  Vst3ParameterChanges output_param_changes_{};
 
   /**
    * @brief Reports dropped items at a bounded rate (audio-thread safe).
@@ -718,6 +774,28 @@ private:
 
   std::atomic<uint32_t> param_queue_drops_{ 0 };
 
+  /** Preset selection whose program index no longer exists (the program
+   * list shrank between selection and processing). */
+  void note_stale_program_drop () noexcept
+  {
+    note_drop (
+      stale_program_drops_,
+      "preset selection(s) (program list shrank before the selection was applied)"sv);
+  }
+
+  std::atomic<uint32_t> stale_program_drops_{ 0 };
+
+  /** Preset selection dropped because the program-change parameter became
+   * unavailable between selection and processing. */
+  void note_missing_program_param_drop () noexcept
+  {
+    note_drop (
+      missing_program_param_drops_,
+      "preset selection(s) (program-change parameter became unavailable)"sv);
+  }
+
+  std::atomic<uint32_t> missing_program_param_drops_{ 0 };
+
   /** Main-thread dispatcher queue full (controller notification dropped). */
   void note_controller_notification_drop () noexcept
   {
@@ -727,6 +805,25 @@ private:
   }
 
   std::atomic<uint32_t> controller_notification_drops_{ 0 };
+
+  /** Gesture callback dropped (dispatcher queue full). */
+  void note_gesture_drop () noexcept
+  {
+    note_drop (
+      gesture_drops_, "gesture notification(s) (dispatcher queue full)"sv);
+  }
+
+  std::atomic<uint32_t> gesture_drops_{ 0 };
+
+  /** Preset-selection sync post dropped (dispatcher queue full); the
+   * display is left stale until the next sync event. */
+  void note_preset_sync_drop () noexcept
+  {
+    note_drop (
+      preset_sync_drops_, "preset selection sync(s) (dispatcher queue full)"sv);
+  }
+
+  std::atomic<uint32_t> preset_sync_drops_{ 0 };
 
   /**
    * @brief Reports a dropped plugin output event (audio-thread safe).
@@ -1270,6 +1367,22 @@ Vst3Plugin::load_plugin (
 
   pimpl_->component_handler_ = owned (new Vst3ComponentHandler (
     [this] (Vst::ParamID id, Vst::ParamValue value) {
+      // The program-change parameter is not exposed as a Zrythm parameter,
+      // so a program switch from the plugin's own UI lands here.
+      // performEdit is the canonical notification for plugin-UI edits; not
+      // every plugin follows up with kParamValuesChanged
+      const auto program_param_id =
+        pimpl_->program_change_param_id_any_thread_.load (
+          std::memory_order_relaxed);
+      if (program_param_id != Vst::kNoParamId && id == program_param_id)
+        {
+          post_main_thread_action_deferred ([this] {
+            if (pimpl_->controller_ == nullptr)
+              return;
+            adopt_current_program_from_controller ();
+          });
+          return;
+        }
       const auto it = pimpl_->vst3_params_.find (id);
       if (it == pimpl_->vst3_params_.end ())
         return;
@@ -1318,6 +1431,20 @@ Vst3Plugin::load_plugin (
               std::memory_order_release);
             notify_latency_changed ();
           }
+        if ((flags & Vst::RestartFlags::kMidiCCAssignmentChanged) != 0)
+          {
+            // The plugin's MIDI-CC mapping (e.g. MIDI learn) or
+            // program-change parameter info changed: rebuild both. This
+            // must run before the program re-read below, which resolves
+            // the program index against the refreshed program-change
+            // parameter state
+            rebuild_midi_cc_mapping ();
+            refresh_program_change_param_state ();
+            // Runs outside any farbot access: it emits signals whose
+            // listeners must be free to take that lock (it is not
+            // recursive)
+            rebuild_preset_list ();
+          }
         if ((flags & Vst::RestartFlags::kParamValuesChanged) != 0)
           {
             // The plugin reports that its parameter values changed outside
@@ -1333,16 +1460,10 @@ Vst3Plugin::load_plugin (
                 set_param_pending_from_plugin (param_index, normalized);
                 param_sync_.entries[param_index].last_from_plugin = normalized;
               }
-          }
-        if ((flags & Vst::RestartFlags::kMidiCCAssignmentChanged) != 0)
-          {
-            // The plugin's MIDI-CC mapping (e.g. MIDI learn) or
-            // program-change parameter info changed: rebuild both
-            rebuild_midi_cc_mapping ();
-            decltype (pimpl_->rt_mapping_)::ScopedAccess<
-              farbot::ThreadType::nonRealtime>
-              rt_mapping{ pimpl_->rt_mapping_ };
-            refresh_program_change_param (*pimpl_->controller_, *rt_mapping);
+
+            // Re-read the current program: a program change made by the
+            // plugin itself (e.g. its own preset browser) lands here
+            adopt_current_program_from_controller ();
           }
         if ((flags & Vst::RestartFlags::kIoChanged) != 0)
           {
@@ -1436,14 +1557,54 @@ Vst3Plugin::load_plugin (
         if ((flags & ~kHandledFlags) != 0)
           {
             // Remaining flags only affect cached metadata (param/bus
-            // titles, program lists, note expression types), which this
-            // host does not cache
+            // titles, note expression types), which this host does not
+            // cache
             z_debug (
               "VST3: ignoring restart flags {:#x} for '{}'",
               flags & ~kHandledFlags, get_node_name ());
           }
       };
       post_main_thread_action_deferred (handler);
+    },
+    [this] (Vst::ParamID id, bool begin) {
+      if (!begin)
+        return;
+      // beginEdit may arrive on any thread; the handler touches
+      // main-thread state, so it is marshalled over
+      if (
+        !post_main_thread_action_deferred ([this, id] {
+          if (pimpl_->controller_ == nullptr)
+            return;
+          // A gesture from the plugin's own UI means the user is editing:
+          // the selected preset's state is being modified. The
+          // program-change param itself is excluded: it represents preset
+          // selection, which is re-synced separately via
+          // kParamValuesChanged. Note that plugins that emit per-parameter
+          // gestures while applying a program also mark the preset dirty:
+          // VST3 provides no transaction boundary that would let us
+          // attribute those edits to the program change. The comparison can
+          // also briefly lag a plugin-side program-param change until the
+          // kMidiCCAssignmentChanged handler refreshes the main-thread
+          // copy; the consequence is heuristic-only (the dirty flag)
+          if (
+            id
+            != pimpl_->program_change_param_id_main_.value_or (Vst::kNoParamId))
+            set_preset_dirty (true);
+        }))
+        {
+          pimpl_->note_gesture_drop ();
+        }
+    },
+    [this] {
+      // A program list's content changed (e.g. the plugin renamed a
+      // program)
+      post_main_thread_action_deferred ([this] {
+        // The plugin may have been unloaded (e.g. a reload) between
+        // posting and handling this action
+        if (pimpl_->controller_ == nullptr)
+          return;
+        rebuild_preset_list ();
+      });
     }));
   pimpl_->controller_->setComponentHandler (pimpl_->component_handler_);
 
@@ -1489,11 +1650,21 @@ Vst3Plugin::load_plugin (
 
   create_parameters_from_vst3_controller ();
 
+  rebuild_preset_list ();
+
   // Apply any pending state from JSON deserialization
   if (state_to_apply_.has_value ())
     {
       apply_state_from_byte_array (*state_to_apply_);
       state_to_apply_.reset ();
+    }
+
+  // No stored selection (fresh instantiation — a deserialized selection is
+  // restored via JSON and the program itself rides the state blob): adopt
+  // the plugin's current program so the UI reflects it
+  if (presetIndex () < 0)
+    {
+      adopt_current_program_from_controller ();
     }
 
   Q_EMIT hasNativeUiChanged ();
@@ -1846,12 +2017,11 @@ Vst3Plugin::rebuild_midi_cc_mapping ()
 }
 
 /**
- * @brief Re-reads the kIsProgramChange parameter (id and step count) from
- * the controller into the given realtime-published mapping.
+ * @brief Re-reads the kIsProgramChange parameter (id, step count and unit)
+ * from the controller into the given realtime-published mapping.
  *
- * Called at load and on RestartFlags::kMidiCCAssignmentChanged, which also
- * covers program-change parameter info changes. The caller must hold the
- * nonRealtime farbot access for @p rt_mapping.
+ * Called via refresh_program_change_param_state(). The caller must hold
+ * the nonRealtime farbot access for @p rt_mapping.
  */
 static void
 refresh_program_change_param (
@@ -1860,6 +2030,7 @@ refresh_program_change_param (
 {
   rt_mapping.program_change_param_id_.reset ();
   rt_mapping.program_change_step_count_ = 0;
+  rt_mapping.program_change_unit_id_ = Vst::kRootUnitId;
 
   const auto param_count = controller.getParameterCount ();
   for (const auto i : std::views::iota (0, param_count))
@@ -1869,24 +2040,58 @@ refresh_program_change_param (
         continue;
       if ((info.flags & Vst::ParameterInfo::kIsProgramChange) != 0)
         {
+          // An implausible step count would drive unbounded entry
+          // allocation in the preset list; real program lists are in the
+          // low thousands at most
+          static constexpr int32_t kMaxProgramChangeSteps = 10'000;
+          if (info.stepCount < 0 || info.stepCount > kMaxProgramChangeSteps)
+            {
+              z_warning (
+                "VST3 program-change parameter reports an implausible step "
+                "count ({}); ignoring program-change support",
+                info.stepCount);
+              return;
+            }
           rt_mapping.program_change_param_id_ = info.id;
           rt_mapping.program_change_step_count_ = info.stepCount;
+          rt_mapping.program_change_unit_id_ = info.unitId;
           break;
         }
     }
 }
 
+/**
+ * @brief Re-reads the program-change parameter info and syncs the
+ * main-thread copies.
+ *
+ * Takes its own nonRealtime farbot access: callers must not hold one (the
+ * lock is not recursive).
+ */
+void
+Vst3Plugin::refresh_program_change_param_state ()
+{
+  decltype (pimpl_->rt_mapping_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+    rt_mapping{ pimpl_->rt_mapping_ };
+  refresh_program_change_param (*pimpl_->controller_, *rt_mapping);
+  pimpl_->program_change_param_id_main_ = rt_mapping->program_change_param_id_;
+  pimpl_->program_change_step_count_main_ =
+    rt_mapping->program_change_step_count_;
+  pimpl_->program_change_unit_id_main_ = rt_mapping->program_change_unit_id_;
+  pimpl_->program_change_param_id_any_thread_.store (
+    rt_mapping->program_change_param_id_.value_or (Vst::kNoParamId),
+    std::memory_order_relaxed);
+}
+
 void
 Vst3Plugin::create_parameters_from_vst3_controller ()
 {
-  // Single nonRealtime access for the whole rebuild (nested accesses on the
-  // same thread would deadlock: farbot's nonRealtime lock is not recursive)
-  decltype (pimpl_->rt_mapping_)::ScopedAccess<farbot::ThreadType::nonRealtime>
-    rt_mapping{ pimpl_->rt_mapping_ };
-
   pimpl_->vst3_params_.clear ();
-  rt_mapping->zrythm_to_vst3_.clear ();
-  refresh_program_change_param (*pimpl_->controller_, *rt_mapping);
+
+  // add_parameter() emits parameterAdded synchronously, and listeners are
+  // free to take the farbot nonRealtime lock, so parameters are created
+  // before that lock is taken and the realtime mapping is published
+  // afterwards (the lock is not recursive)
+  std::vector<std::pair<dsp::ProcessorParameter *, Vst::ParamID>> new_mapping;
 
   const auto param_count = pimpl_->controller_->getParameterCount ();
   for (const auto i : std::views::iota (0, param_count))
@@ -1906,7 +2111,8 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
         {
           // Handled via MIDI program change translation, not exposed as a
           // Zrythm parameter (consistent with MIDI-CC-mapped params). The id
-          // and step count are tracked by refresh_program_change_param()
+          // and step count are tracked by
+          // refresh_program_change_param_state()
           continue;
         }
 
@@ -1957,7 +2163,215 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
       pimpl_->vst3_params_.emplace (
         info.id,
         Vst3PluginImpl::Vst3ParamAdapter{ info.id, zrythm_param, param_index });
-      rt_mapping->zrythm_to_vst3_.emplace (zrythm_param, info.id);
+      new_mapping.emplace_back (zrythm_param, info.id);
+    }
+
+  {
+    decltype (pimpl_->rt_mapping_)::ScopedAccess<farbot::ThreadType::nonRealtime>
+      rt_mapping{ pimpl_->rt_mapping_ };
+    rt_mapping->zrythm_to_vst3_.clear ();
+    for (const auto &[zrythm_param, vst3_id] : new_mapping)
+      rt_mapping->zrythm_to_vst3_.emplace (zrythm_param, vst3_id);
+  }
+
+  refresh_program_change_param_state ();
+}
+
+std::span<const Plugin::PresetEntry>
+Vst3Plugin::presetEntries () const
+{
+  return pimpl_->preset_entries_;
+}
+
+void
+Vst3Plugin::adopt_current_program_from_controller ()
+{
+  if (
+    !pimpl_->program_change_param_id_main_.has_value ()
+    || pimpl_->program_change_step_count_main_ <= 0)
+    return;
+  const auto program = std::lround (
+    pimpl_->controller_->getParamNormalized (
+      *pimpl_->program_change_param_id_main_)
+    * static_cast<double> (pimpl_->program_change_step_count_main_));
+  if (program < 0 || program > pimpl_->program_change_step_count_main_)
+    {
+      z_warning (
+        "VST3 plugin '{}' reported out-of-range program index {}; ignoring",
+        get_node_name (), program);
+      return;
+    }
+  update_selected_preset_from_backend (static_cast<int> (program));
+}
+
+void
+Vst3Plugin::rebuild_preset_list ()
+{
+  std::vector<PresetEntry> entries;
+
+  const auto program_param_id = pimpl_->program_change_param_id_main_;
+  const auto step_count = pimpl_->program_change_step_count_main_;
+  if (program_param_id.has_value () && step_count > 0)
+    {
+      // The program-change parameter selects from the program list of its
+      // unit
+      std::optional<Vst::ProgramListID> list_id;
+      QString                           group;
+      if (auto unit_info = U::cast<Vst::IUnitInfo> (pimpl_->controller_))
+        {
+          const auto program_unit = pimpl_->program_change_unit_id_main_;
+
+          for (const auto i : std::views::iota (0, unit_info->getUnitCount ()))
+            {
+              Vst::UnitInfo unit{};
+              if (
+                unit_info->getUnitInfo (i, unit) == kResultOk
+                && unit.id == program_unit
+                && unit.programListId != Vst::kNoProgramListId)
+                {
+                  list_id = unit.programListId;
+                  break;
+                }
+            }
+          // Fall back to the first program list if the unit lookup failed
+          if (!list_id.has_value ())
+            {
+              Vst::ProgramListInfo list_info{};
+              if (
+                unit_info->getProgramListCount () > 0
+                && unit_info->getProgramListInfo (0, list_info) == kResultOk)
+                {
+                  z_warning (
+                    "VST3 plugin '{}': program-change parameter's unit has "
+                    "no program list; falling back to the first list",
+                    get_node_name ());
+                  list_id = list_info.id;
+                }
+            }
+
+          if (list_id.has_value ())
+            {
+              for (
+                const auto i :
+                std::views::iota (0, unit_info->getProgramListCount ()))
+                {
+                  Vst::ProgramListInfo list_info{};
+                  if (
+                    unit_info->getProgramListInfo (i, list_info) == kResultOk
+                    && list_info.id == *list_id)
+                    {
+                      group =
+                        utils::Utf8String::from_utf8_encoded_string (
+                          Vst::StringConvert::convert (list_info.name))
+                          .to_qstring ();
+                      if (list_info.programCount != step_count + 1)
+                        {
+                          z_warning (
+                            "VST3 plugin '{}': program list '{}' has {} "
+                            "programs but the program-change parameter has "
+                            "{} steps; names may not match",
+                            get_node_name (), group, list_info.programCount,
+                            step_count + 1);
+                        }
+                      break;
+                    }
+                }
+
+              for (const auto i : std::views::iota (0, step_count + 1))
+                {
+                  Vst::String128 name{};
+                  QString        preset_name;
+                  if (unit_info->getProgramName (*list_id, i, name) == kResultOk)
+                    {
+                      preset_name =
+                        utils::Utf8String::from_utf8_encoded_string (
+                          Vst::StringConvert::convert (name))
+                          .to_qstring ();
+                    }
+                  if (preset_name.isEmpty ())
+                    {
+                      preset_name = tr ("Program %1").arg (i + 1);
+                    }
+                  entries.push_back (
+                    { std::move (preset_name), group, static_cast<int> (i) });
+                }
+            }
+        }
+
+      // Without IUnitInfo (or a program list) the step count still defines
+      // the programs; only the names are unknown
+      if (entries.empty ())
+        {
+          for (const auto i : std::views::iota (0, step_count + 1))
+            {
+              entries.push_back (
+                { tr ("Program %1").arg (i + 1), QString (),
+                  static_cast<int> (i) });
+            }
+        }
+    }
+
+  if (entries != pimpl_->preset_entries_)
+    {
+      pimpl_->preset_entries_ = std::move (entries);
+      notify_presets_rebuilt ();
+    }
+}
+
+void
+Vst3Plugin::apply_preset_impl (const PresetId &id)
+{
+  // VST3 presets are program indices; string ids belong to other formats
+  const auto * index = std::get_if<int> (&id);
+  if (index == nullptr || *index < 0)
+    {
+      z_warning (
+        "VST3 plugin '{}': refusing to apply non-index preset id",
+        get_node_name ());
+      return;
+    }
+  if (
+    !pimpl_->program_change_param_id_main_.has_value ()
+    || pimpl_->program_change_step_count_main_ <= 0)
+    {
+      z_warning (
+        "VST3 plugin '{}': preset {} selected but the plugin has no "
+        "program-change parameter",
+        get_node_name (), *index);
+      return;
+    }
+  if (*index > pimpl_->program_change_step_count_main_)
+    {
+      z_warning (
+        "VST3 plugin '{}': refusing out-of-range program {} ({} steps)",
+        get_node_name (), *index, pimpl_->program_change_step_count_main_);
+      return;
+    }
+
+  // Consumed at process time (see process_impl)
+  pimpl_->pending_program_index_.store (*index, std::memory_order_release);
+}
+
+void
+Vst3Plugin::notify_controller_param_value (
+  uint32_t param_id_u,
+  double   normalized_value) noexcept
+{
+  // Deferred so the controller call never runs inline inside process_impl's
+  // realtime context
+  const auto param_id = static_cast<Vst::ParamID> (param_id_u);
+  const auto value = normalized_value;
+  if (!post_main_thread_action_deferred ([this, param_id, value] {
+        if (pimpl_->controller_ == nullptr)
+          return;
+        if (pimpl_->controller_host_editing_ != nullptr)
+          pimpl_->controller_host_editing_->beginEditFromHost (param_id);
+        pimpl_->controller_->setParamNormalized (param_id, value);
+        if (pimpl_->controller_host_editing_ != nullptr)
+          pimpl_->controller_host_editing_->endEditFromHost (param_id);
+      }))
+    {
+      pimpl_->note_controller_notification_drop ();
     }
 }
 
@@ -2146,28 +2560,45 @@ Vst3Plugin::process_impl (
                 && rt_mapping->program_change_param_id_.has_value ()
                 && rt_mapping->program_change_step_count_ > 0)
                 {
-                  int32  queue_index = 0;
-                  auto * queue = impl.input_param_changes_.addParameterData (
-                    *rt_mapping->program_change_param_id_, queue_index);
-                  if (queue == nullptr)
-                    {
-                      pimpl_->note_param_queue_drop ();
-                      continue;
-                    }
-
                   // Clamp the program number to the step count so the
                   // normalized value stays in [0, 1] for plugins with
                   // fewer than 128 programs
                   const auto program = std::min<int32_t> (
                     ev_data[1], rt_mapping->program_change_step_count_);
+                  const auto normalized =
+                    static_cast<Vst::ParamValue> (program)
+                    / rt_mapping->program_change_step_count_;
+
+                  int32  queue_index = 0;
+                  auto * queue = impl.input_param_changes_.addParameterData (
+                    *rt_mapping->program_change_param_id_, queue_index);
                   int32 point_index = 0;
                   if (
-                    queue->addPoint (
-                      sample_offset,
-                      static_cast<Vst::ParamValue> (program)
-                        / rt_mapping->program_change_step_count_,
-                      point_index)
-                    != kResultTrue)
+                    queue != nullptr
+                    && queue->addPoint (sample_offset, normalized, point_index)
+                         == kResultTrue)
+                    {
+                      // The plugin is not obliged to report a host-initiated
+                      // change back, so sync both sides from here: the edit
+                      // controller (a separate-component plugin's own UI
+                      // follows) and the host-side preset selection
+                      notify_controller_param_value (
+                        *rt_mapping->program_change_param_id_, normalized);
+                      if (!post_main_thread_action_deferred ([this, program] {
+                            if (pimpl_->controller_ == nullptr)
+                              return;
+                            update_selected_preset_from_backend (
+                              static_cast<int> (program));
+                          }))
+                        {
+                          pimpl_->note_preset_sync_drop ();
+                        }
+                    }
+                  else if (queue == nullptr)
+                    {
+                      pimpl_->note_param_queue_drop ();
+                    }
+                  else
                     {
                       pimpl_->note_input_point_drop ();
                     }
@@ -2336,24 +2767,89 @@ Vst3Plugin::process_impl (
 
       // Also notify the edit controller on the main thread, or a
       // separate-component plugin (and its own UI) never learns about
-      // host-initiated changes. Deferred so the controller call never runs
-      // inline inside process_impl's realtime context when processing
-      // happens to run on the main thread (e.g. in tests)
-      const auto  param_id = it->second;
-      const float value = change.modulated_value;
-      if (!post_main_thread_action_deferred ([this, param_id, value] {
-            if (pimpl_->controller_ == nullptr)
-              return;
-            if (pimpl_->controller_host_editing_ != nullptr)
-              pimpl_->controller_host_editing_->beginEditFromHost (param_id);
-            pimpl_->controller_->setParamNormalized (
-              param_id, static_cast<Vst::ParamValue> (value));
-            if (pimpl_->controller_host_editing_ != nullptr)
-              pimpl_->controller_host_editing_->endEditFromHost (param_id);
-          }))
+      // host-initiated changes
+      notify_controller_param_value (it->second, change.modulated_value);
+    }
+
+  // UI-initiated preset selection (program change). The pending selection
+  // is consumed (CAS) before a parameter queue is claimed, so a stale or
+  // superseded selection never reaches the plugin
+  auto pending_program =
+    pimpl_->pending_program_index_.load (std::memory_order_acquire);
+  while (pending_program >= 0)
+    {
+      const auto program_param_id = rt_mapping->program_change_param_id_;
+      const auto step_count = rt_mapping->program_change_step_count_;
+      const bool param_missing =
+        !program_param_id.has_value () || step_count <= 0;
+      const bool stale = !param_missing && pending_program > step_count;
+      if (param_missing || stale)
         {
-          pimpl_->note_controller_notification_drop ();
+          if (
+            pimpl_->pending_program_index_.compare_exchange_strong (
+              pending_program, -1, std::memory_order_acq_rel))
+            {
+              if (param_missing)
+                {
+                  // The program-change parameter went away while the
+                  // selection was pending; leaving it queued would apply a
+                  // stale program if the parameter returned with a
+                  // different list
+                  pimpl_->note_missing_program_param_drop ();
+                }
+              else
+                {
+                  // The program list shrank after the selection was made
+                  pimpl_->note_stale_program_drop ();
+                }
+              // The selection state was already committed host-side: re-sync
+              // the display with the program the plugin actually holds
+              // (a no-op when the program-change parameter is gone)
+              if (!post_main_thread_action_deferred ([this] {
+                    if (pimpl_->controller_ == nullptr)
+                      return;
+                    adopt_current_program_from_controller ();
+                  }))
+                {
+                  pimpl_->note_preset_sync_drop ();
+                }
+              break;
+            }
+          continue; // a newer selection superseded: revalidate it
         }
+
+      if (!pimpl_->pending_program_index_.compare_exchange_strong (
+            pending_program, -1, std::memory_order_acq_rel))
+        {
+          continue; // superseded: revalidate the newer selection
+        }
+
+      const auto normalized =
+        static_cast<Vst::ParamValue> (pending_program)
+        / static_cast<Vst::ParamValue> (step_count);
+      int32  queue_index = 0;
+      auto * queue = impl.input_param_changes_.addParameterData (
+        *program_param_id, queue_index);
+      int32 point_index = 0;
+      if (
+        queue != nullptr
+        && queue->addPoint (0, normalized, point_index) == kResultTrue)
+        {
+          // Also notify the edit controller on the main thread, or a
+          // separate-component plugin (and its own UI) never learns about
+          // host-initiated changes
+          notify_controller_param_value (*program_param_id, normalized);
+          break;
+        }
+
+      // Queueing failed: put the selection back for a retry on a later
+      // block, unless a newer one superseded it. This is a delay, not a
+      // drop, so it is not counted as one; persistent queue-table pressure
+      // still surfaces via the MIDI-path drop counters
+      auto expected_clear = -1;
+      pimpl_->pending_program_index_.compare_exchange_strong (
+        expected_clear, pending_program, std::memory_order_acq_rel);
+      break;
     }
 
   impl.process_data_.numSamples = nframes;

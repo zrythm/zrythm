@@ -35,9 +35,10 @@ LinkedButtons {
   // the strip height)
   property bool externalPopup: false
 
-  // Model providing the items (ListModel, QAbstractListModel, ...); a
-  // model with a count property (e.g. ListModel) gives the most
-  // up-to-date item count
+  // Model providing the items; must be a QAbstractItemModel (e.g.
+  // PluginPresetListModel or ListModel) — the in-scene popup connects to
+  // its modelReset signal. A model with a count property (e.g. ListModel)
+  // gives the most up-to-date item count
   property var model: null
   readonly property alias nameButton: nameButton
   readonly property alias nextButton: nextButton

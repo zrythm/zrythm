@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 import QtQuick
-import QtQuick.Controls
 import QtTest
 import QmlTests
 
@@ -32,6 +31,26 @@ TestCase {
     tryVerify(() => popup.listView.activeFocus);
     keyClick(Qt.Key_Escape);
     compare(closeSpy.count, 1);
+  }
+
+  function test_group_headers_hidden_by_default() {
+    const popup = createTemporaryObject(ungroupedPopupComponent, test);
+    tryVerify(() => popup.listView.itemAtIndex(3));
+    compare(visibleGroupHeaders(popup.listView).length, 0);
+  }
+
+  function test_group_headers_shown_for_named_groups() {
+    const popup = createTemporaryObject(groupedPopupComponent, test);
+    tryVerify(() => popup.listView.itemAtIndex(3));
+
+    const headers = visibleGroupHeaders(popup.listView);
+    compare(headers.length, 2);
+    compare(headers[0].section, "Factory");
+    compare(headers[1].section, "User");
+
+    // Each header sits directly above its group's first item
+    tryVerify(() => Math.abs(headers[0].y + headers[0].height - popup.listView.itemAtIndex(1).y) < 1);
+    tryVerify(() => Math.abs(headers[1].y + headers[1].height - popup.listView.itemAtIndex(3).y) < 1);
   }
 
   function test_highlight_follows_current_index() {
@@ -65,6 +84,15 @@ TestCase {
     // Escape calls the host's presetPopupDismissed()
     keyClick(Qt.Key_Escape);
     compare(hostDismissedSpy.count, 1);
+  }
+
+  function visibleGroupHeaders(listView) {
+    const result = [];
+    for (const child of listView.contentItem.children) {
+      if (child.objectName === "groupHeader" && child.visible)
+        result.push(child);
+    }
+    return result;
   }
 
   height: 400
@@ -102,8 +130,74 @@ TestCase {
       function presetPopupActivated(index) {
         activatedReceived(index);
       }
+
       function presetPopupDismissed() {
         dismissedReceived();
+      }
+    }
+  }
+
+  Component {
+    id: groupedPopupComponent
+
+    PresetListPopup {
+      height: implicitHeight
+      showGroupHeaders: true
+      textRole: "name"
+      width: implicitWidth
+
+      model: ListModel {
+        ListElement {
+          group: ""
+          name: "Solo"
+        }
+
+        ListElement {
+          group: "Factory"
+          name: "Init"
+        }
+
+        ListElement {
+          group: "Factory"
+          name: "Bright"
+        }
+
+        ListElement {
+          group: "User"
+          name: "Lead"
+        }
+      }
+    }
+  }
+
+  Component {
+    id: ungroupedPopupComponent
+
+    PresetListPopup {
+      height: implicitHeight
+      textRole: "name"
+      width: implicitWidth
+
+      model: ListModel {
+        ListElement {
+          group: ""
+          name: "Solo"
+        }
+
+        ListElement {
+          group: "Factory"
+          name: "Init"
+        }
+
+        ListElement {
+          group: "Factory"
+          name: "Bright"
+        }
+
+        ListElement {
+          group: "User"
+          name: "Lead"
+        }
       }
     }
   }

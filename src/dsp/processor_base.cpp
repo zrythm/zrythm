@@ -81,6 +81,7 @@ void
 ProcessorBase::add_parameter (const dsp::ProcessorParameterUuidReference &uuid)
 {
   params_.push_back (uuid);
+  Q_EMIT parameterAdded (uuid.get ());
 }
 
 void

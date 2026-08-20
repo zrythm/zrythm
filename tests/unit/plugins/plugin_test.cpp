@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <limits>
+
 #include "plugins/plugin.h"
+#include "utils/exceptions.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -76,6 +79,42 @@ public:
     loaded_states_.push_back (state);
     return true;
   }
+
+  std::span<const PresetEntry> presetEntries () const override
+  {
+    return presets_;
+  }
+
+  void apply_preset_impl (const PresetId &id) override
+  {
+    applied_presets_.push_back (id);
+  }
+
+  /** Simulates the plugin itself switching presets (e.g. from its own UI). */
+  void simulate_backend_preset_change (PresetId id)
+  {
+    update_selected_preset_from_backend (std::move (id));
+  }
+
+  /** Simulates the user editing a parameter while a preset is selected. */
+  void simulate_user_edit () { set_preset_dirty (true); }
+
+  /** Simulates the backend rebuilding its preset list in place. */
+  void simulate_preset_list_change () { notify_presets_rebuilt (); }
+
+  // Durable ids deliberately differ from list positions (and one is a
+  // string) to exercise id-based selection
+  std::vector<PresetEntry> presets_{
+    { QStringLiteral ("Init"),   QStringLiteral ("Factory"), 0  },
+    { QStringLiteral ("Bright"), QStringLiteral ("Factory"), 1  },
+    { QStringLiteral ("Warm"),   QStringLiteral ("Factory"), 2  },
+    { QStringLiteral ("Dark"),   QStringLiteral ("Factory"), 3  },
+    { QStringLiteral ("Lead"),   QStringLiteral ("User"),    10 },
+    { QStringLiteral ("Pad"),    QStringLiteral ("User"),    11 },
+    { QStringLiteral ("Custom"), QStringLiteral ("User"),
+     QStringLiteral ("ext:1")                                   },
+  };
+  std::vector<PresetId> applied_presets_;
 
   mutable int              save_count_ = 0;
   bool                     return_empty_state_ = false;
@@ -206,7 +245,8 @@ TEST_F (PluginTest, ConstructionAndBasicProperties)
   EXPECT_EQ (plugin_->get_all_output_ports ().size (), 0);
   EXPECT_EQ (plugin_->get_parameters ().size (), 2);
   EXPECT_FALSE (plugin_->uiVisible ());
-  EXPECT_EQ (plugin_->programIndex (), -1);
+  EXPECT_EQ (plugin_->presetIndex (), -1);
+  EXPECT_FALSE (plugin_->presetDirty ());
 }
 
 TEST_F (PluginTest, SetConfiguration)
@@ -229,26 +269,77 @@ TEST_F (PluginTest, SetConfiguration)
   EXPECT_EQ (plugin_->get_protocol (), Protocol::ProtocolType::Internal);
 }
 
-TEST_F (PluginTest, ProgramIndex)
+TEST_F (PluginTest, PresetSelection)
 {
-  QSignalSpy spy (plugin_.get (), &Plugin::programIndexChanged);
+  QSignalSpy spy (plugin_.get (), &Plugin::presetIndexChanged);
 
-  // Test setting program index
-  plugin_->setProgramIndex (5);
-  EXPECT_EQ (plugin_->programIndex (), 5);
+  // Selecting an entry applies its durable id, which is not necessarily
+  // the list position
+  plugin_->setPresetIndex (5);
+  EXPECT_EQ (plugin_->presetIndex (), 5);
+  ASSERT_EQ (plugin_->applied_presets_.size (), 1);
+  EXPECT_EQ (std::get<int> (plugin_->applied_presets_.at (0)), 11);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_EQ (spy.takeFirst ().at (0).toInt (), 5);
 
-  // Test setting same index (should not emit signal)
-  plugin_->setProgramIndex (5);
-  EXPECT_EQ (plugin_->programIndex (), 5);
+  // Selecting the same entry again re-applies it (revert) without
+  // re-emitting the change signal
+  plugin_->setPresetIndex (5);
+  EXPECT_EQ (plugin_->presetIndex (), 5);
   EXPECT_EQ (spy.count (), 0);
+  EXPECT_EQ (plugin_->applied_presets_.size (), 2);
 
-  // Test setting negative index (should reset)
-  plugin_->setProgramIndex (-1);
-  EXPECT_EQ (plugin_->programIndex (), -1);
+  // Out-of-range indices are refused
+  plugin_->setPresetIndex (42);
+  EXPECT_EQ (plugin_->presetIndex (), 5);
+  EXPECT_EQ (spy.count (), 0);
+  EXPECT_EQ (plugin_->applied_presets_.size (), 2);
+
+  // -1 clears the selection
+  plugin_->setPresetIndex (-1);
+  EXPECT_EQ (plugin_->presetIndex (), -1);
   EXPECT_EQ (spy.count (), 1);
   EXPECT_EQ (spy.takeFirst ().at (0).toInt (), -1);
+}
+
+TEST_F (PluginTest, PresetDirty)
+{
+  QSignalSpy dirty_spy (plugin_.get (), &Plugin::presetDirtyChanged);
+
+  // Dirty requires a selection
+  plugin_->simulate_user_edit ();
+  EXPECT_FALSE (plugin_->presetDirty ());
+  EXPECT_EQ (dirty_spy.count (), 0);
+
+  plugin_->setPresetIndex (0);
+  EXPECT_FALSE (plugin_->presetDirty ());
+
+  // Editing the state marks the preset dirty
+  plugin_->simulate_user_edit ();
+  EXPECT_TRUE (plugin_->presetDirty ());
+  EXPECT_EQ (dirty_spy.count (), 1);
+  EXPECT_EQ (dirty_spy.takeFirst ().at (0).toBool (), true);
+
+  // Backend reports of the already-selected preset keep the dirty flag
+  // (they can arrive alongside plugin-side parameter edits)
+  plugin_->simulate_backend_preset_change (0);
+  EXPECT_TRUE (plugin_->presetDirty ());
+
+  // Selecting a preset clears the dirty flag
+  plugin_->setPresetIndex (0);
+  EXPECT_FALSE (plugin_->presetDirty ());
+  EXPECT_EQ (dirty_spy.count (), 1);
+  EXPECT_EQ (dirty_spy.takeFirst ().at (0).toBool (), false);
+
+  // Plugin-initiated preset changes update the selection (resolving the
+  // durable id to its list position) and clear the dirty flag
+  QSignalSpy index_spy (plugin_.get (), &Plugin::presetIndexChanged);
+  plugin_->simulate_user_edit ();
+  plugin_->simulate_backend_preset_change (10);
+  EXPECT_EQ (plugin_->presetIndex (), 4);
+  EXPECT_FALSE (plugin_->presetDirty ());
+  EXPECT_EQ (index_spy.count (), 1);
+  EXPECT_EQ (index_spy.takeFirst ().at (0).toInt (), 4);
 }
 
 TEST_F (PluginTest, UiVisible)
@@ -474,7 +565,7 @@ TEST_F (PluginTest, JsonSerializationRoundtrip)
   plugin_->set_configuration (config);
 
   // Set some state
-  plugin_->setProgramIndex (3);
+  plugin_->setPresetIndex (3);
   plugin_->setUiVisible (true);
 
   // Serialize
@@ -485,13 +576,156 @@ TEST_F (PluginTest, JsonSerializationRoundtrip)
   from_json (j, deserialized);
 
   // Verify state
-  EXPECT_EQ (deserialized.programIndex (), 3);
+  EXPECT_EQ (deserialized.presetIndex (), 3);
+  EXPECT_FALSE (deserialized.presetDirty ());
   EXPECT_TRUE (deserialized.uiVisible ());
   EXPECT_EQ (deserialized.get_name (), u8"Test Plugin");
   EXPECT_EQ (deserialized.get_protocol (), Protocol::ProtocolType::Internal);
   EXPECT_EQ (
     deserialized.gainParameter ()->get_uuid (),
     plugin_->gainParameter ()->get_uuid ());
+}
+
+TEST_F (PluginTest, PresetDirtyAndStringKeySerializationRoundtrip)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  // Select the string-keyed entry and dirty it
+  plugin_->setPresetIndex (6);
+  plugin_->simulate_user_edit ();
+
+  nlohmann::json j = *plugin_;
+
+  TestPlugin deserialized (*registry_);
+  from_json (j, deserialized);
+
+  EXPECT_EQ (deserialized.presetIndex (), 6);
+  EXPECT_TRUE (deserialized.presetDirty ());
+}
+
+TEST_F (PluginTest, OutOfRangePresetIndexInJsonIsRefused)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  nlohmann::json j = *plugin_;
+  j["preset"] = std::numeric_limits<int64_t>::max ();
+
+  TestPlugin deserialized (*registry_);
+  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+}
+
+TEST_F (PluginTest, PresetDirtyWithoutSelectionInJsonIsDiscarded)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  nlohmann::json j = *plugin_;
+  j.erase ("preset");
+  j["presetDirty"] = true;
+
+  TestPlugin deserialized (*registry_);
+  from_json (j, deserialized);
+
+  // Dirty state requires a selection; a file without one must not load as
+  // dirty
+  EXPECT_EQ (deserialized.presetIndex (), -1);
+  EXPECT_FALSE (deserialized.presetDirty ());
+}
+
+TEST_F (PluginTest, NegativePresetIndexInJsonIsRefused)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  nlohmann::json j = *plugin_;
+  j["preset"] = -5;
+
+  TestPlugin deserialized (*registry_);
+  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+}
+
+TEST_F (PluginTest, NonIntNonStringPresetInJsonIsRefused)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  nlohmann::json j = *plugin_;
+  const auto     bad_values = std::array{
+    nlohmann::json (3.0), nlohmann::json (nullptr), nlohmann::json (true)
+  };
+  for (const auto &bad_value : bad_values)
+    {
+      j["preset"] = bad_value;
+      TestPlugin deserialized (*registry_);
+      EXPECT_THROW (
+        from_json (j, deserialized), utils::exceptions::ZrythmException)
+        << "preset value should be refused: " << bad_value.dump ();
+    }
+}
+
+TEST_F (PluginTest, NonBoolPresetDirtyInJsonIsRefused)
+{
+  auto descriptor = std::make_unique<PluginDescriptor> ();
+  descriptor->name_ = u8"Test Plugin";
+  descriptor->protocol_ = Protocol::ProtocolType::Internal;
+  PluginConfiguration config;
+  config.descr_ = std::move (descriptor);
+  plugin_->set_configuration (config);
+
+  nlohmann::json j = *plugin_;
+  j["preset"] = 3;
+  j["presetDirty"] = 1;
+
+  TestPlugin deserialized (*registry_);
+  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+}
+
+TEST_F (PluginTest, SelectionFollowsPresetListContentChanges)
+{
+  // Select "Bright" (durable id 1)
+  plugin_->setPresetIndex (1);
+  ASSERT_EQ (plugin_->presetIndex (), 1);
+
+  QSignalSpy presets_spy (plugin_.get (), &Plugin::presetsChanged);
+  QSignalSpy index_spy (plugin_.get (), &Plugin::presetIndexChanged);
+
+  // Removing an earlier entry moves the selection to a lower index; the
+  // durable id keeps it pointing at the same preset
+  plugin_->presets_.erase (plugin_->presets_.begin ());
+  plugin_->simulate_preset_list_change ();
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  EXPECT_EQ (presets_spy.count (), 1);
+  ASSERT_EQ (index_spy.count (), 1);
+  EXPECT_EQ (index_spy.takeFirst ().at (0).toInt (), 0);
+
+  // Removing the selected entry itself makes the selection unresolvable
+  plugin_->presets_.erase (plugin_->presets_.begin ());
+  plugin_->simulate_preset_list_change ();
+  EXPECT_EQ (plugin_->presetIndex (), -1);
+  ASSERT_EQ (index_spy.count (), 1);
+  EXPECT_EQ (index_spy.takeFirst ().at (0).toInt (), -1);
 }
 
 TEST_F (PluginTest, ProcessPassthroughImpl)

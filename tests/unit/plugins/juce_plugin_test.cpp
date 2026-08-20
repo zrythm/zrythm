@@ -783,7 +783,6 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   process_events_until_true ([&] () { return instantiation_finished; });
 
   // Set some state
-  plugin_->setProgramIndex (5);
   plugin_->setUiVisible (true);
 
   // Set parameter values
@@ -830,7 +829,6 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   });
 
   // Verify state was preserved
-  EXPECT_EQ (deserialized_plugin->programIndex (), 5);
   EXPECT_TRUE (deserialized_plugin->uiVisible ());
 
   // Verify ports were preserved

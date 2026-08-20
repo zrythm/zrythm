@@ -47,7 +47,7 @@ ListView {
         checked: paramDelegate.parameter.baseValue >= 0.5
 
         onToggled: {
-          paramDelegate.parameter.baseValue = checked ? 1.0 : 0.0;
+          paramDelegate.parameter.setBaseValueByUser(checked ? 1.0 : 0.0);
         }
       }
     }
@@ -62,7 +62,7 @@ ListView {
         text: qsTr("Trigger")
 
         onClicked: {
-          paramDelegate.parameter.baseValue = 1.0;
+          paramDelegate.parameter.setBaseValueByUser(1.0);
         }
       }
     }
@@ -81,7 +81,7 @@ ListView {
           value: paramDelegate.parameter.baseValue
 
           onMoved: {
-            paramDelegate.parameter.baseValue = value;
+            paramDelegate.parameter.setBaseValueByUser(value);
           }
           onPressedChanged: {
             if (pressed) {

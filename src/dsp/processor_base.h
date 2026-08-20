@@ -162,6 +162,15 @@ public:
   void add_parameter (const dsp::ProcessorParameterUuidReference &uuid);
 
   /**
+   * @brief Emitted after a parameter was added.
+   *
+   * Not emitted for parameters restored from JSON (their objects are not
+   * resolvable at that point); callers needing to observe all parameters
+   * must handle restoration separately.
+   */
+  Q_SIGNAL void parameterAdded (dsp::ProcessorParameter * param);
+
+  /**
    * @brief All ports of the processor, including detached ones, in bus order.
    *
    * The authoritative port lists: position within them is the bus index used

@@ -54,6 +54,7 @@ target_sources(zrythm_plugins_lib
     plugin_host_window.cpp
     plugin_library.cpp
     plugin_parameter_list_model.cpp
+    plugin_preset_list_model.cpp
     plugin_protocol.cpp
     plugin_run_loop.cpp
     plugin_scan_manager.cpp
@@ -81,6 +82,7 @@ target_sources(zrythm_plugins_lib
       plugin_host_window.h
       plugin_library.h
       plugin_parameter_list_model.h
+      plugin_preset_list_model.h
       plugin_protocol.h
       plugin_run_loop.h
       plugin_scan_manager.h

@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: © 2018-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#include <algorithm>
+#include <limits>
 #include <optional>
 
 #include "plugins/plugin.h"
 #include "utils/enum_utils.h"
+#include "utils/exceptions.h"
 #include "utils/logger.h"
 #include "utils/serialization.h"
 #include "utils/tracy.h"
@@ -26,6 +29,29 @@ Plugin::Plugin (utils::IObjectRegistry &registry, QObject * parent)
 
   QObject::connect (
     this, &Plugin::uiVisibleChanged, this, &Plugin::on_ui_visibility_changed);
+
+  // Mark the selected preset dirty on deliberate user edits (see
+  // ProcessorParameter::setBaseValueByUser)
+  QObject::connect (
+    this, &ProcessorBase::parameterAdded, this,
+    [this] (dsp::ProcessorParameter * param) {
+      arm_preset_dirty_tracking_for (*param);
+    });
+}
+
+void
+Plugin::arm_preset_dirty_tracking_for (dsp::ProcessorParameter &param)
+{
+  const auto uid = param.get_unique_id ();
+  if (
+    uid == dsp::ProcessorParameter::UniqueId (kBypassParamUniqueId)
+    || uid == dsp::ProcessorParameter::UniqueId (kGainParamUniqueId))
+    return;
+  auto &connection = preset_dirty_connections_[param.get_uuid ()];
+  disconnect (connection);
+  connection = connect (
+    &param, &dsp::ProcessorParameter::baseValueEditedByUser, this,
+    [this] (float) { set_preset_dirty (true); });
 }
 
 void
@@ -33,6 +59,97 @@ Plugin::set_bypass_id (dsp::ProcessorParameter::Uuid id)
 {
   bypass_id_ = id;
   arm_bypassed_relay ();
+}
+
+int
+Plugin::presetIndex () const
+{
+  if (!selected_preset_id_.has_value ())
+    return -1;
+
+  const auto entries = presetEntries ();
+  const auto it =
+    std::ranges::find (entries, *selected_preset_id_, &PresetEntry::id);
+  if (it == entries.end ())
+    return -1;
+  return static_cast<int> (std::distance (entries.begin (), it));
+}
+
+void
+Plugin::setPresetIndex (int index)
+{
+  if (index < 0)
+    {
+      // Clearing the selection is host-side display state only; plugin
+      // formats have no "unselect", so implementations are not notified
+      if (!selected_preset_id_.has_value ())
+        return;
+      selected_preset_id_.reset ();
+      set_preset_dirty (false);
+      Q_EMIT presetIndexChanged (-1);
+      return;
+    }
+
+  const auto entries = presetEntries ();
+  if (index >= static_cast<int> (entries.size ()))
+    {
+      z_warning (
+        "Refusing to select preset index {}: plugin has {} presets", index,
+        entries.size ());
+      return;
+    }
+
+  const auto new_id = entries[static_cast<size_t> (index)].id;
+  const bool changed =
+    !selected_preset_id_.has_value () || *selected_preset_id_ != new_id;
+
+  // Re-selecting the current preset re-applies it (revert to the preset's
+  // state)
+  selected_preset_id_ = new_id;
+  // Pass an owned copy: implementations may refresh their entry list while
+  // applying, which could mutate the selection state
+  apply_preset_impl (new_id);
+  set_preset_dirty (false);
+  if (changed)
+    {
+      // Re-resolve: applying may have rebuilt the entry list
+      Q_EMIT presetIndexChanged (presetIndex ());
+    }
+}
+
+void
+Plugin::update_selected_preset_from_backend (PresetId id)
+{
+  if (selected_preset_id_.has_value () && *selected_preset_id_ == id)
+    {
+      // Same preset: nothing to do. The dirty flag must stay as-is because
+      // plugin-side parameter edits can arrive alongside notifications that
+      // re-report the unchanged current program
+      return;
+    }
+
+  selected_preset_id_ = std::move (id);
+  set_preset_dirty (false);
+  Q_EMIT presetIndexChanged (presetIndex ());
+}
+
+void
+Plugin::notify_presets_rebuilt ()
+{
+  Q_EMIT presetsChanged ();
+  Q_EMIT presetIndexChanged (presetIndex ());
+}
+
+void
+Plugin::set_preset_dirty (bool dirty)
+{
+  if (!selected_preset_id_.has_value ())
+    dirty = false;
+  if (preset_dirty_ == dirty)
+    return;
+
+  preset_dirty_ = dirty;
+  Q_EMIT presetDirtyChanged (dirty);
 }
 
 void
@@ -68,7 +185,7 @@ Plugin::generate_default_bypass_param () const
 {
   auto bypass_id = utils::create_object<dsp::ProcessorParameter> (
     registry (), registry (),
-    dsp::ProcessorParameter::UniqueId (u8"/zrythm-bypass"),
+    dsp::ProcessorParameter::UniqueId (kBypassParamUniqueId),
     dsp::ParameterRange{ dsp::ParameterRange::Type::Toggle, 0.f, 1.f, 0.f, 0.f },
     utils::Utf8String::from_qstring (QObject::tr ("Bypass")));
   bypass_id.get ()->set_description (
@@ -82,7 +199,7 @@ Plugin::generate_default_gain_param () const
 {
   auto gain_id = utils::create_object<dsp::ProcessorParameter> (
     registry (), registry (),
-    dsp::ProcessorParameter::UniqueId (u8"/zrythm-gain"),
+    dsp::ProcessorParameter::UniqueId (kGainParamUniqueId),
     dsp::ParameterRange{
       dsp::ParameterRange::Type::GainAmplitude, 0.f, 8.f, 0.f, 1.f },
     utils::Utf8String::from_qstring (QObject::tr ("Gain")));
@@ -362,9 +479,21 @@ to_json (nlohmann::json &j, const Plugin &p)
   to_json (j, static_cast<const Plugin::UuidIdentifiableObject &> (p));
   to_json (j, static_cast<const dsp::ProcessorBase &> (p));
   j[Plugin::kConfigurationKey] = p.configuration_;
-  if (p.program_index_.has_value ())
+  if (p.selected_preset_id_.has_value ())
     {
-      j[Plugin::kProgramIndexKey] = *p.program_index_;
+      if (const auto * index = std::get_if<int> (&*p.selected_preset_id_))
+        {
+          j[Plugin::kPresetKey] = *index;
+        }
+      else
+        {
+          j[Plugin::kPresetKey] = utils::Utf8String::from_qstring (
+            std::get<QString> (*p.selected_preset_id_));
+        }
+    }
+  if (p.preset_dirty_)
+    {
+      j[Plugin::kPresetDirtyKey] = true;
     }
   j[Plugin::kProtocolKey] = p.get_protocol ();
   j[Plugin::kVisibleKey] = p.visible_;
@@ -376,9 +505,52 @@ from_json (const nlohmann::json &j, Plugin &p)
   from_json (j, static_cast<Plugin::UuidIdentifiableObject &> (p));
   from_json (j, static_cast<dsp::ProcessorBase &> (p));
   j.at (Plugin::kConfigurationKey).get_to (p.configuration_);
-  if (j.contains (Plugin::kProgramIndexKey))
+  p.selected_preset_id_.reset ();
+  p.preset_dirty_ = false;
+  if (j.contains (Plugin::kPresetKey))
     {
-      p.program_index_ = j[Plugin::kProgramIndexKey].get<int> ();
+      const auto &preset_val = j[Plugin::kPresetKey];
+      if (preset_val.is_number_integer ())
+        {
+          const auto preset_index = preset_val.get<int64_t> ();
+          if (
+            preset_index < 0 || preset_index > std::numeric_limits<int>::max ())
+            {
+              throw utils::exceptions::ZrythmException (
+                fmt::format (
+                  "Invalid preset index {} in project file", preset_index));
+            }
+          p.selected_preset_id_ = static_cast<int> (preset_index);
+        }
+      else if (preset_val.is_string ())
+        {
+          p.selected_preset_id_ =
+            preset_val.get<utils::Utf8String> ().to_qstring ();
+        }
+      else
+        {
+          throw utils::exceptions::ZrythmException (
+            fmt::format (
+              "Invalid preset value in project file: expected integer or "
+              "string, got {}",
+              preset_val.type_name ()));
+        }
+    }
+  if (j.contains (Plugin::kPresetDirtyKey))
+    {
+      const auto &dirty_val = j[Plugin::kPresetDirtyKey];
+      if (!dirty_val.is_boolean ())
+        {
+          throw utils::exceptions::ZrythmException (
+            fmt::format (
+              "Invalid presetDirty value in project file: expected boolean, "
+              "got {}",
+              dirty_val.type_name ()));
+        }
+      // Dirty state requires a selection (the invariant set_preset_dirty
+      // enforces at runtime)
+      p.preset_dirty_ =
+        p.selected_preset_id_.has_value () && dirty_val.get<bool> ();
     }
   j.at (Plugin::kVisibleKey).get_to (p.visible_);
 
@@ -391,22 +563,27 @@ from_json (const nlohmann::json &j, Plugin &p)
   p.bypass_id_.reset ();
   for (const auto &param_ref : p.get_parameters ())
     {
-      const auto * param = param_ref.get ();
+      auto *     param = param_ref.get ();
+      const auto param_uid = param->get_unique_id ();
       if (
-        param->get_unique_id ()
-        == dsp::ProcessorParameter::UniqueId (u8"/zrythm-gain"))
+        param_uid
+        == dsp::ProcessorParameter::UniqueId (Plugin::kGainParamUniqueId))
         {
           p.gain_id_ = param->get_uuid ();
         }
       else if (
-        param->get_unique_id ()
-        == dsp::ProcessorParameter::UniqueId (u8"/zrythm-bypass"))
+        param_uid
+        == dsp::ProcessorParameter::UniqueId (Plugin::kBypassParamUniqueId))
         {
           p.set_bypass_id (param->get_uuid ());
         }
 
-      if (p.gain_id_.has_value () && p.bypass_id_.has_value ())
-        break;
+      // Params restored from JSON don't emit parameterAdded (their objects
+      // are not resolvable during ProcessorBase deserialization): arm
+      // preset-dirty tracking for them here. Params newly created during
+      // set_configuration above were already armed via parameterAdded;
+      // re-arming replaces the previous connection
+      p.arm_preset_dirty_tracking_for (*param);
     }
 }
 

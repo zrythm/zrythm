@@ -49,6 +49,8 @@ public:
 
   bool hasNativeUi () const override;
 
+  std::span<const PresetEntry> presetEntries () const override;
+
   /**
    * @brief Returns the hosted component's live audio bus configuration for
    * @p flow, in bus order.
@@ -175,6 +177,10 @@ private:
    *
    * For params already existing (e.g. after deserialization), only the
    * parameter mappings are rebuilt.
+   *
+   * Called exactly once at load, before processing starts: the realtime
+   * mapping is published non-atomically relative to parameter creation, so
+   * no call may happen while the audio thread is running.
    */
   void create_parameters_from_vst3_controller ();
 
@@ -189,6 +195,49 @@ private:
    * and CC reach it), and a newly unmapped one stays hidden until reload.
    */
   void rebuild_midi_cc_mapping ();
+
+  /**
+   * @brief Rebuilds the cached preset list from the controller's
+   * program-change parameter and IUnitInfo program lists, notifying via
+   * Plugin::notify_presets_rebuilt() when the content changed.
+   *
+   * The cache is refreshed when the plugin reports a program-list change:
+   * RestartFlags::kMidiCCAssignmentChanged for list id/step count changes,
+   * IUnitHandler::notifyProgramListChange for list content changes (e.g.
+   * the plugin renaming a program).
+   */
+  void rebuild_preset_list ();
+
+  /**
+   * @brief Re-reads the program-change parameter info (id, step count,
+   * unit) into the realtime mapping and syncs the main-thread copies.
+   */
+  void refresh_program_change_param_state ();
+
+  /**
+   * @brief Reads the current program from the controller and adopts it as
+   * the selection.
+   *
+   * Out-of-range values reported by the plugin are refused with a warning.
+   */
+  void adopt_current_program_from_controller ();
+
+  /**
+   * @brief Applies a preset selection by queueing a program change on the
+   * plugin's kIsProgramChange parameter.
+   */
+  void apply_preset_impl (const PresetId &id) override;
+
+  /**
+   * @brief Notifies the edit controller of a host-initiated parameter
+   * change (setParamNormalized wrapped in begin/endEditFromHost).
+   *
+   * Deferred to the main thread: controller calls must not run inline
+   * inside process_impl's realtime context.
+   */
+  void notify_controller_param_value (
+    uint32_t param_id,
+    double   normalized_value) noexcept [[clang::nonblocking]];
 
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const Vst3Plugin &p);

@@ -287,7 +287,7 @@ ScrollView {
             }
             onActivated: function (index: int): void {
               if (monitorParam) {
-                monitorParam.baseValue = monitorParam.range.normalizedEnumValue(index);
+                monitorParam.setBaseValueByUser(monitorParam.range.normalizedEnumValue(index));
               }
             }
             onMonitorParamChanged: {

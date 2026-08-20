@@ -1032,8 +1032,16 @@
             "configuration": {
               "$ref": "#/definitions/pluginConfiguration"
             },
-            "programIndex": {
-              "type": "integer"
+            "preset": {
+              "oneOf": [
+                { "type": "integer", "minimum": 0 },
+                { "type": "string" }
+              ],
+              "$comment": "Durable identifier of the selected preset: the program index for indexed formats (VST3), or an opaque backend-defined key/URI for key-based formats"
+            },
+            "presetDirty": {
+              "type": "boolean",
+              "$comment": "Whether the parameter state had diverged from the selected preset when saved"
             },
             "visible": {
               "$comment": "Whether the plugin UI is currently opened",

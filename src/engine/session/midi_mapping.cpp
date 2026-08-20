@@ -12,6 +12,9 @@
 #include "utils/midi.h"
 #include "utils/serialization.h"
 
+#include <QCoreApplication>
+#include <QThread>
+
 namespace zrythm::engine::session
 {
 MidiMapping::MidiMapping (utils::IObjectRegistry &registry, QObject * parent)
@@ -76,18 +79,21 @@ MidiMappings::get_mapping_index (const MidiMapping &mapping) const
 void
 MidiMapping::apply (std::array<midi_byte_t, 3> buf)
 {
+  // Reaches QML-facing slots via setBaseValueByUser()'s signals
+  z_return_if_fail (
+    qApp != nullptr && QThread::currentThread () == qApp->thread ());
   auto * dest = dest_id_->get ();
   /* if toggle, reverse value */
   if (dest->range ().type_ == dsp::ParameterRange::Type::Toggle)
     {
-      dest->setBaseValue (
+      dest->setBaseValueByUser (
         dest->range ().isToggled (dest->baseValue ()) ? 0.f : 1.f);
     }
   /* else if not toggle set the control value received */
   else
     {
       float normalized_val = static_cast<float> (buf[2]) / 127.f;
-      dest->setBaseValue (normalized_val);
+      dest->setBaseValueByUser (normalized_val);
     }
     // TODO port these from MidiPort's to parameters
 #if 0

@@ -58,7 +58,7 @@ ScrollView {
           checked: root.plugin.bypassParameter.baseValue < 0.5
 
           onToggled: {
-            root.plugin.bypassParameter.baseValue = checked ? 0.0 : 1.0;
+            root.plugin.bypassParameter.setBaseValueByUser(checked ? 0.0 : 1.0);
           }
         }
 
@@ -84,7 +84,7 @@ ScrollView {
             value: root.plugin.gainParameter.baseValue
 
             onMoved: {
-              root.plugin.gainParameter.baseValue = value;
+              root.plugin.gainParameter.setBaseValueByUser(value);
             }
           }
 

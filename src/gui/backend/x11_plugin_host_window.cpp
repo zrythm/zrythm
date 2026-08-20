@@ -47,6 +47,7 @@
 #  include <QRectF>
 #  include <QSocketNotifier>
 #  include <QTimer>
+#  include <QWheelEvent>
 
 #  include <X11/X.h>
 #  include <X11/Xatom.h>
@@ -298,7 +299,11 @@ public:
   }
 
   /**
-   * @brief Forwards an X button event to the popup scene as a QMouseEvent.
+   * @brief Forwards an X button event to the popup scene.
+   *
+   * Button1 is forwarded as a left-button QMouseEvent; wheel buttons
+   * (4-7) are forwarded as QWheelEvents (presses only - the paired
+   * release carries no delta). Other buttons are ignored.
    *
    * X coordinates are physical pixels; the scene uses logical pixels.
    */
@@ -306,17 +311,49 @@ public:
   {
     if (popup_scene_ == nullptr || !popup_scene_->is_valid ())
       return;
-    const bool press = ev.type == ButtonPress;
-    popup_button_pressed_ = press;
+    const bool    press = ev.type == ButtonPress;
     const QPointF pos (
       ev.xbutton.x / scale_factor_, ev.xbutton.y / scale_factor_);
     const QPointF global_pos (
       ev.xbutton.x_root / scale_factor_, ev.xbutton.y_root / scale_factor_);
-    QMouseEvent mouse_ev (
-      press ? QEvent::MouseButtonPress : QEvent::MouseButtonRelease, pos, pos,
-      global_pos, Qt::LeftButton, press ? Qt::LeftButton : Qt::NoButton,
-      Qt::NoModifier);
-    QCoreApplication::sendEvent (popup_scene_->quick_window (), &mouse_ev);
+    if (ev.xbutton.button == Button1)
+      {
+        popup_button_pressed_ = press;
+        QMouseEvent mouse_ev (
+          press ? QEvent::MouseButtonPress : QEvent::MouseButtonRelease, pos,
+          pos, global_pos, Qt::LeftButton,
+          press ? Qt::LeftButton : Qt::NoButton, Qt::NoModifier);
+        QCoreApplication::sendEvent (popup_scene_->quick_window (), &mouse_ev);
+        return;
+      }
+    if (!press)
+      return;
+    QPoint angle_delta;
+    switch (ev.xbutton.button)
+      {
+      case Button4:
+        angle_delta.setY (120);
+        break;
+      case Button5:
+        angle_delta.setY (-120);
+        break;
+      // Buttons 6/7 (horizontal wheel) have no Xlib constant
+      case 6:
+        angle_delta.setX (120);
+        break;
+      case 7:
+        angle_delta.setX (-120);
+        break;
+      default:
+        return;
+      }
+    QWheelEvent wheel_ev (
+      pos, global_pos, QPoint (), angle_delta, Qt::NoButton, Qt::NoModifier,
+      Qt::NoScrollPhase, false);
+    // Flickable computes scroll velocity from event timestamps and ignores
+    // events whose timestamp does not advance; forward the X server time
+    wheel_ev.setTimestamp (ev.xbutton.time);
+    QCoreApplication::sendEvent (popup_scene_->quick_window (), &wheel_ev);
   }
 
   /** Forwards X pointer motion to the popup scene as a mouse move

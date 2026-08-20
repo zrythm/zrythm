@@ -215,8 +215,9 @@ ApplicationWindow {
     onSelectionChanged: (selected, deselected) => {
       if (root.appSettings.trackAutoArm) {
         // Disarm all previously auto-armed tracks first
+        // Auto-arm is host policy, not a user edit: write quietly
         automaticallyArmedTracks.forEach((value, track) => {
-          track.recordingParam.baseValue = 0.0;
+          track.recordingParam.setBaseValue(0.0);
         });
         automaticallyArmedTracks.clear();
       }
@@ -228,7 +229,7 @@ ApplicationWindow {
             if (track.recordingParam) {
               if (root.appSettings.trackAutoArm) {
                 if (!track.recordingParam.range.isToggled(track.recordingParam.baseValue)) {
-                  track.recordingParam.baseValue = 1.0;
+                  track.recordingParam.setBaseValue(1.0);
                   automaticallyArmedTracks.set(track, true);
                 }
               }

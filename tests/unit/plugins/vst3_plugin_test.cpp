@@ -1066,4 +1066,241 @@ TEST_F (Vst3PluginTest, IoChangeLeavesPortBuffersPreparedBeforeResume)
   EXPECT_EQ (attached_audio_ports (false).size (), 2);
 }
 
+// ---------------------------------------------------------------------------
+// Presets (program lists)
+// ---------------------------------------------------------------------------
+
+TEST_F (Vst3PluginTest, PresetListIsEnumerated)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+
+  const auto entries = plugin_->presetEntries ();
+  ASSERT_EQ (entries.size (), 3);
+  for (const auto i : std::views::iota (0, 3))
+    {
+      EXPECT_EQ (std::get<int> (entries[static_cast<size_t> (i)].id), i);
+      EXPECT_EQ (
+        entries[static_cast<size_t> (i)].group, QStringLiteral ("Factory"));
+    }
+  EXPECT_EQ (entries[0].name, QStringLiteral ("Init"));
+  EXPECT_EQ (entries[1].name, QStringLiteral ("Bright"));
+  EXPECT_EQ (entries[2].name, QStringLiteral ("Warm"));
+}
+
+TEST_F (Vst3PluginTest, InitialSelectionAdoptsCurrentProgram)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+
+  // Nothing was selected by the host: the plugin's current program (the
+  // default, 0) becomes the selection so the UI reflects reality
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+TEST_F (Vst3PluginTest, SelectingPresetAppliesProgram)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+
+  auto * audio_in = find_audio_port (true);
+  ASSERT_NE (audio_in, nullptr);
+  ASSERT_GE (audio_in->buffers ()->getNumChannels (), 2);
+  for (const auto ch : std::views::iota (0, 2))
+    {
+      for (const auto i : std::views::iota (0, 256))
+        {
+          audio_in->buffers ()->setSample (ch, i, 1.f);
+        }
+    }
+
+  // The fixture's program 1 sets its level to 0.75
+  plugin_->setPresetIndex (1);
+  EXPECT_EQ (plugin_->presetIndex (), 1);
+  EXPECT_FALSE (plugin_->presetDirty ());
+
+  process_blocks (1);
+
+  auto * audio_out = find_audio_port (false);
+  ASSERT_NE (audio_out, nullptr);
+  EXPECT_FLOAT_EQ (audio_out->buffers ()->getSample (0, 255), 0.75f);
+  EXPECT_FLOAT_EQ (audio_out->buffers ()->getSample (1, 255), 0.75f);
+}
+
+// A program change made by the plugin itself (e.g. from its own preset
+// browser) must update the host-side selection. The fixture switches to the
+// last program and reports kParamValuesChanged when its trigger toggle is set
+TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeUpdatesSelection)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  auto * trigger = find_param_by_label ("Trigger Self Program Change");
+  ASSERT_NE (trigger, nullptr);
+  // Quiet write: the trigger is a test stimulus, not a user edit
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+
+  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+// Same, but the fixture reports the change only via a begin/perform/end
+// gesture on the program-change parameter (the canonical notification for
+// plugin-UI edits; no kParamValuesChanged follows). The fixture switches to
+// the last program when its quiet trigger toggle is set
+TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeViaGestureUpdatesSelection)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  auto * trigger = find_param_by_label ("Trigger Quiet Program Change");
+  ASSERT_NE (trigger, nullptr);
+  // Quiet write: the trigger is a test stimulus, not a user edit
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+
+  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+// A program-list content change made by the plugin itself (e.g. the user
+// saved a program under a new name) is reported via
+// IUnitHandler::notifyProgramListChange and must refresh the preset list.
+// The fixture renames its first program when its rename trigger toggle is set
+TEST_F (Vst3PluginTest, ProgramListContentChangeRefreshesPresetNames)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetEntries ()[0].name, QStringLiteral ("Init"));
+
+  auto * trigger = find_param_by_label ("Trigger Rename Programs");
+  ASSERT_NE (trigger, nullptr);
+  // Quiet write: the trigger is a test stimulus, not a user edit
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+
+  process_events_until_true ([this] {
+    return plugin_->presetEntries ()[0].name == QStringLiteral ("Init (User)");
+  });
+  // The rest of the list is untouched
+  EXPECT_EQ (plugin_->presetEntries ()[1].name, QStringLiteral ("Bright"));
+  EXPECT_EQ (plugin_->presetEntries ()[2].name, QStringLiteral ("Warm"));
+}
+
+// A program change arriving via MIDI rides the same param path and must
+// equally update the host-side selection
+TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelection)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  dsp::MidiPort * midi_in = nullptr;
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
+    {
+      midi_in = port_ref.get_object_as<dsp::MidiPort> ();
+      if (midi_in != nullptr)
+        break;
+    }
+  ASSERT_NE (midi_in, nullptr);
+
+  const std::array<midi_byte_t, 2> raw = { 0xC0, 2 };
+  midi_in->buffer_.push_back (units::samples (0u), raw);
+  process_blocks (1);
+
+  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+}
+
+// Same, but the fixture's controller-side reflection of the program change
+// is suppressed: a plugin has no obligation to report host-initiated
+// changes back, so the selection update must come from the host side
+TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelectionWithoutPluginFeedback)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  auto * suppress = find_param_by_label ("Suppress Program Change Reflection");
+  ASSERT_NE (suppress, nullptr);
+  // Quiet write: the toggle is a test stimulus, not a user edit
+  suppress->setBaseValue (1.0f);
+  process_blocks (1);
+
+  dsp::MidiPort * midi_in = nullptr;
+  for (const auto &port_ref : plugin_->get_all_input_ports ())
+    {
+      midi_in = port_ref.get_object_as<dsp::MidiPort> ();
+      if (midi_in != nullptr)
+        break;
+    }
+  ASSERT_NE (midi_in, nullptr);
+
+  const std::array<midi_byte_t, 2> raw = { 0xC0, 2 };
+  midi_in->buffer_.push_back (units::samples (0u), raw);
+  process_blocks (1);
+
+  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+// The fixture simulates a UI gesture (beginEdit) on its Level parameter when
+// its trigger toggle is set
+TEST_F (Vst3PluginTest, PluginUiGestureMarksPresetDirty)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+  ASSERT_FALSE (plugin_->presetDirty ());
+
+  auto * trigger = find_param_by_label ("Trigger Gesture");
+  ASSERT_NE (trigger, nullptr);
+  // Quiet write: the trigger is a test stimulus, not a user edit
+  trigger->setBaseValue (1.0f);
+  process_blocks (1);
+
+  process_events_until_true ([this] { return plugin_->presetDirty (); });
+
+  // Re-selecting the current preset re-applies it and clears the dirty flag
+  plugin_->setPresetIndex (0);
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+TEST_F (Vst3PluginTest, UserParamEditMarksPresetDirty)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // Quiet writes (sync, state loads) do not dirty the preset
+  level->setBaseValue (0.9f);
+  EXPECT_FALSE (plugin_->presetDirty ());
+
+  // Deliberate user edits do
+  level->setBaseValueByUser (0.1f);
+  EXPECT_TRUE (plugin_->presetDirty ());
+}
+
+TEST_F (Vst3PluginTest, PresetSelectionSurvivesJsonRoundtrip)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  plugin_->setPresetIndex (1);
+
+  nlohmann::json j;
+  to_json (j, *plugin_);
+
+  // Deserialize into a fresh instance. The registry is shared so that the
+  // restored port/param references resolve (same pattern as the JUCE plugin
+  // tests)
+  auto window_state2 =
+    std::make_shared<test_helpers::MockPluginHostWindowState> ();
+  auto plugin2 = std::make_unique<Vst3Plugin> (
+    *registry_,
+    test_helpers::make_mock_plugin_host_window_factory (window_state2));
+  plugin2->set_main_thread_services (*main_dispatcher_, {});
+  from_json (j, *plugin2);
+  ASSERT_FALSE (plugin2->get_all_output_ports ().empty ());
+
+  // The selection resolves against the freshly enumerated list
+  EXPECT_EQ (plugin2->presetIndex (), 1);
+
+  plugin2->release_resources ();
+}
+
 } // namespace zrythm::plugins

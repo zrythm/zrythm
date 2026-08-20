@@ -566,11 +566,10 @@ Control {
               styleHeight: root.buttonHeight
               visible: root.track.channel !== null
 
-              Binding {
-                property: "baseValue"
-                target: root.track.channel ? root.track.channel.fader.mute : null
-                value: muteButton.checked ? 1.0 : 0.0
-              }
+              // External value syncs that flip checked re-enter these
+              // handlers; the write-back is a no-op then (value unchanged),
+              // which only holds for binary 0/1 toggles like these
+              onCheckedChanged: root.track.channel?.fader.mute.setBaseValueByUser(checked ? 1.0 : 0.0)
             }
 
             SoloButton {
@@ -581,11 +580,7 @@ Control {
               styleHeight: root.buttonHeight
               visible: root.track.channel !== null
 
-              Binding {
-                property: "baseValue"
-                target: root.track.channel ? root.track.channel.fader.solo : null
-                value: trackSoloButton.checked ? 1.0 : 0.0
-              }
+              onCheckedChanged: root.track.channel?.fader.solo.setBaseValueByUser(checked ? 1.0 : 0.0)
             }
 
             RecordButton {
@@ -596,7 +591,7 @@ Control {
               visible: root.track.recordingParam !== null
 
               onClicked: {
-                root.track.recordingParam.baseValue = root.track.recordingParam.range.isToggled(root.track.recordingParam.baseValue) ? 0.0 : 1.0;
+                root.track.recordingParam.setBaseValueByUser(root.track.recordingParam.range.isToggled(root.track.recordingParam.baseValue) ? 0.0 : 1.0);
               }
             }
           }

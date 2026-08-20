@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #pragma once
@@ -44,11 +44,11 @@ public:
     return true;
   }
 
-  void undo () override { param_.setBaseValue (value_before_); }
+  void undo () override { param_.setBaseValueByUser (value_before_); }
   void redo () override
   {
     value_before_ = param_.baseValue ();
-    param_.setBaseValue (value_after_);
+    param_.setBaseValueByUser (value_after_);
     last_redo_timestamp_ = std::chrono::steady_clock::now ();
   }
 

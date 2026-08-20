@@ -319,7 +319,7 @@ Control {
 
       onClicked: {
         if (root.plugin) {
-          root.plugin.bypassParameter.baseValue = (root.pluginEnabled) ? 1.0 : 0.0;
+          root.plugin.bypassParameter.setBaseValueByUser((root.pluginEnabled) ? 1.0 : 0.0);
         }
       }
     }
