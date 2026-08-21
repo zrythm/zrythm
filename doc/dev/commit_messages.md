@@ -17,9 +17,11 @@ Subject line
 * Use the **imperative mood** ("Add", "Fix", "Remove"), as if giving the
   codebase a command — not "Adds" or "Added".
 * Format: `<ClassName>: <imperative-summary>` (for example `Tracklist:`,
-  `TempoMap:`, `MoveTracksCommand:`). If no single class is central to the
-  change, or too many classes are involved, use a general term for what
-  changed (for example `cmake:`, `tracks:`, `i18n:`).
+  `TempoMap:`, `MoveTracksCommand:`). Prefer the central class name even
+  when the diff makes smaller supporting changes in other files or modules.
+  Only fall back to a general term for what changed (for example `cmake:`,
+  `tracks:`, `i18n:`) when no single class is central to the change, such
+  as broad mechanical refactors or build-system changes.
 * Do not end the subject with a period.
 
 Body

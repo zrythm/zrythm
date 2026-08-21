@@ -268,6 +268,7 @@ Zrythm makes extensive use of modern C++ features:
 - Use ranges and range-based for-loops instead of C-style for-loops
 - Use `std::span` instead of array pointers and sizes; for read-only accessors returning a collection, return `std::span<const T>` (a lightweight view) rather than `const std::vector<T>&`, so callers can't mutate the contents and the interface isn't tied to a specific container type
 - Utilize `std::views` where possible to make code more readable, for example for filtering, transforming, or even to simply loop n times using `std::views::iota`
+- Use `_` as the name for unused loop variables (e.g., `for (const auto _ : std::views::iota (0, n))`)
 - Avoid implicit conversions (`int` to `float`, `double` to `float`, etc.)
 - Prefer `std::ranges::next` and `std::ranges::prev` over the legacy `std::next`/`std::prev` (and over adding/subtracting to iterators directly) — the `std::ranges::` versions work correctly on range-adaptor iterators where the legacy ones don't
 - Prefer `std::erase_if` over `std::remove_if` + `erase()`
@@ -376,6 +377,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 
 - Use gtest and gmock
 - Use QTest for Qt utilities
+- For bugfixes, write a failing repro test first (TDD) when the bug is deterministically reproducible through contract-level APIs; do not force it when reproduction would require destabilizing the test process (e.g., resource exhaustion) or adding production-code seams solely for testability — inspection and review suffice there
 - Unit tests go under `tests/unit/` with a structure corresponding to the source file path (example: `tests/unit/dsp/tempo_map_test.cpp`)
 - Test filenames end in `_test.cpp`
 - If a header is needed (to make qmoc happy for example when defining test QObjects), put it in `_test.h`

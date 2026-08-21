@@ -46,6 +46,11 @@ runtime options and suppressions file paths for the sanitizer enabled at
 
     source conanbuild/Debug/generators/conanrun.sh
 
+Never run `conan install` (or any package-building conan command) from a
+shell with this sourced: its `LD_LIBRARY_PATH` overrides the `RUNPATH` of
+host tools built inside package builds, making them load libraries from
+previously installed packages.
+
 Sanitizers are selected either by the `compiler.sanitizer` profile setting
 (e.g. `-pr:h clang_tsan`, which also instruments dependencies) or by the
 consumer-scoped `-o sanitizer=...` option (which instruments only Zrythm
