@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#include "utils/format_qt.h"
+
 #include "gui/backend/offscreen_qml_scene.h"
 #include "gui/backend/preset_popup_controller.h"
 #include "gui/backend/qt_plugin_host_window.h"
