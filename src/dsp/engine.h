@@ -28,17 +28,25 @@ namespace zrythm::dsp
  * @brief Guard for the engine processing lock.
  *
  * The underlying semaphore is non-recursive: re-acquiring it from the thread
- * that already holds it would wait forever, so the guard records the owning
- * thread and re-entrant acquisition fails loudly instead of deadlocking.
+ * that already holds it is a bug (in blocking mode it would wait forever), so
+ * the guard records the owning thread and re-entrant acquisition fails loudly
+ * instead.
  *
- * Obtained from AudioEngine::get_processing_lock().
+ * Obtained from AudioEngine::get_processing_lock() (blocking) or
+ * AudioEngine::try_get_processing_lock() (non-blocking, for the audio
+ * thread).
  */
 class EngineProcessingLockGuard
 {
 public:
+  /**
+   * @param try_acquire Try to acquire the semaphore without blocking. On
+   * failure, is_acquired() returns false and the guard releases nothing.
+   */
   EngineProcessingLockGuard (
     moodycamel::LightweightSemaphore &sem,
-    std::atomic<std::thread::id>     &owner);
+    std::atomic<std::thread::id>     &owner,
+    bool                              try_acquire = false);
   ~EngineProcessingLockGuard ();
 
   EngineProcessingLockGuard (const EngineProcessingLockGuard &) = delete;
@@ -47,10 +55,16 @@ public:
   EngineProcessingLockGuard (EngineProcessingLockGuard &&) = delete;
   EngineProcessingLockGuard &operator= (EngineProcessingLockGuard &&) = delete;
 
-  bool is_acquired () const { return lock_->is_acquired (); }
+  bool is_acquired () const noexcept { return lock_->is_acquired (); }
 
 private:
-  std::atomic<std::thread::id>                                  &owner_;
+  std::atomic<std::thread::id> &owner_;
+
+  /**
+   * Always engaged: the constructor emplaces unconditionally after the
+   * re-entrancy check (its only other exit is abort). Optional because the
+   * check must run before acquisition.
+   */
   std::optional<SemaphoreRAII<moodycamel::LightweightSemaphore>> lock_;
 };
 
@@ -169,53 +183,12 @@ public:
    *
    * Clears buffers, marks all as unprocessed, etc.
    *
-   * @param sem Processing lock guard to check if acquired. If not acquired
-   * before calling this function, it will only clear output buffers and
-   * return true.
-   * @return Whether the cycle should be skipped.
+   * @param processing_lock Proof that the processing lock is held.
    */
-  template <typename ProcessingLock>
-  [[gnu::hot]] bool process_prepare (
+  [[gnu::hot]] void preprocess (
     dsp::Transport::TransportSnapshot &transport_snapshot,
-    units::sample_u32_t                nframes,
-    ProcessingLock                    &sem) noexcept [[clang::nonblocking]]
-  {
-    assert (cached_device_info_.has_value ());
-    const auto block_length = cached_device_info_->block_length;
-
-    const auto update_transport_play_state =
-      [&] (dsp::ITransport::PlayState play_state) {
-        transport_.set_play_state_rt_safe (play_state);
-        transport_snapshot.set_play_state (play_state);
-      };
-
-    if (
-      transport_snapshot.get_play_state ()
-      == dsp::Transport::PlayState::PauseRequested)
-      {
-        update_transport_play_state (dsp::Transport::PlayState::Paused);
-      }
-    else if (
-      transport_snapshot.get_play_state ()
-        == dsp::Transport::PlayState::RollRequested
-      && transport_snapshot.metronome_countin_frames_remaining ()
-           == units::samples (0))
-      {
-        update_transport_play_state (dsp::Transport::PlayState::Rolling);
-        remaining_latency_preroll_ =
-          graph_dispatcher_.get_max_route_playback_latency ();
-      }
-
-    if (!exporting_ && !sem.is_acquired ())
-      {
-        return true;
-      }
-
-    // Clear all buffers
-    midi_in_->clear_buffer (0, block_length.in (units::samples));
-
-    return false;
-  }
+    const EngineProcessingLockGuard   &processing_lock) noexcept
+    [[clang::nonblocking]];
 
   enum class ProcessReturnStatus : std::uint8_t
   {
@@ -231,9 +204,13 @@ public:
    * Processes current cycle.
    *
    * To be called by each implementation in its callback.
+   *
+   * @param processing_lock Proof that the processing lock was attempted. If
+   * it was not acquired, the cycle is skipped before any shared state is
+   * touched.
    */
   [[gnu::hot]] auto process (
-    const dsp::PlayheadProcessingGuard &playhead_guard,
+    const EngineProcessingLockGuard &processing_lock,
     units::sample_u32_t total_frames_to_process) noexcept [[clang::nonblocking]]
   -> ProcessReturnStatus;
 
@@ -279,9 +256,6 @@ public:
   void  set_running (bool run) { run_.store (run); }
   auto &graph_dispatcher () { return graph_dispatcher_; }
 
-  bool exporting () const { return exporting_; }
-  void set_exporting (bool exporting) { exporting_.store (exporting); }
-
   /**
    * @brief Acquires the processing lock, blocking until the audio thread
    * releases it.
@@ -290,6 +264,17 @@ public:
    * fails loudly instead of deadlocking.
    */
   EngineProcessingLockGuard get_processing_lock () [[clang::blocking]];
+
+  /**
+   * @brief Try-acquires the processing lock without blocking.
+   *
+   * For the audio thread: failure to acquire is a normal outcome (e.g., the
+   * main thread holds the lock during a flush or graph recalculation) and
+   * the caller must skip the cycle. Re-entrant acquisition from the
+   * lock-owning thread fails loudly.
+   */
+  EngineProcessingLockGuard
+  try_get_processing_lock () noexcept [[clang::nonblocking]];
 
   /**
    * @brief Executes the given function after pausing processing and then
@@ -354,11 +339,11 @@ private:
    * Set externally via set_monitor_out_source(). This is typically the
    * monitor fader's stereo output port.
    *
-   * @note Since the audio engine runs (but finishes early) even while the
-   * graph gets recalculated, this port's buffers can be re-allocated by the
-   * graph, so we need to make sure we don't use its buffers unless
-   * processing is successful (no early finish). See the AudioCallback
-   * lambda for details.
+   * @note This port's buffers can be re-allocated when the graph is
+   * recalculated. The copy is safe because the AudioCallback lambda holds
+   * the processing lock across it (graph recalculation also requires the
+   * lock), and only copies after a completed processing cycle. See the
+   * AudioCallback lambda for details.
    */
   dsp::AudioPort * monitor_out_source_ = nullptr;
 
@@ -380,9 +365,6 @@ private:
 
   /** Ok to process or not. */
   std::atomic_bool run_{ false };
-
-  /** Whether currently exporting. */
-  std::atomic_bool exporting_{ false };
 
   juce::AudioProcessLoadMeasurer load_measurer_;
 

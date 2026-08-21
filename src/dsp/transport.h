@@ -386,7 +386,7 @@ public:
    * The main thread is notified via the property notification timer.
    *
    * @warning Same calling contract as get_snapshot(): audio thread, or main
-   * thread while the engine is stopped and holding the processing lock.
+   * thread while holding the engine processing lock.
    */
   void set_play_state_rt_safe (PlayState state) noexcept [[clang::nonblocking]];
 
@@ -498,10 +498,10 @@ public:
    * non-const).
    *
    * @warning Must only be called from the audio thread, or from the main
-   * thread while the engine is stopped and holding the processing lock
-   * (e.g., the flush cycle). The audio callback reaches this even without
-   * acquiring the processing lock, so only the engine being stopped
-   * excludes it - the lock alone does not.
+   * thread while holding the engine processing lock (e.g., the flush cycle)
+   * - it latches audio-thread-owned state. The audio callback returns
+   * before reaching this when it fails to acquire the lock, so the lock
+   * provides mutual exclusion.
    */
   auto get_snapshot () noexcept [[clang::nonblocking]]
   {

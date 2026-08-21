@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdexcept>
+#include <thread>
+#include <tuple>
 
 #include "dsp/engine.h"
 #include "dsp/graph_builder.h"
@@ -101,7 +103,6 @@ TEST_F (AudioEngineTest, ConstructorInitializesCorrectly)
 
   EXPECT_FALSE (engine->activated ());
   EXPECT_FALSE (engine->running ());
-  EXPECT_FALSE (engine->exporting ());
   EXPECT_NE (engine->midi_panic_processor (), nullptr);
   EXPECT_EQ (engine->xRunCount (), 0); // Initial value should be 0
 }
@@ -180,21 +181,6 @@ TEST_F (AudioEngineTest, SetAndGetRunning)
   EXPECT_FALSE (engine->running ());
 }
 
-TEST_F (AudioEngineTest, SetAndGetExporting)
-{
-  auto engine = std::make_unique<AudioEngine> (
-    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
-    *tempo_map_);
-
-  EXPECT_FALSE (engine->exporting ());
-
-  engine->set_exporting (true);
-  EXPECT_TRUE (engine->exporting ());
-
-  engine->set_exporting (false);
-  EXPECT_FALSE (engine->exporting ());
-}
-
 TEST_F (AudioEngineTest, PanicAllCallsMidiPanicProcessor)
 {
   auto engine = std::make_unique<AudioEngine> (
@@ -207,7 +193,7 @@ TEST_F (AudioEngineTest, PanicAllCallsMidiPanicProcessor)
   // without exposing more internals, but we can at least ensure it doesn't crash
 }
 
-TEST_F (AudioEngineTest, ProcessPrepareWithPauseRequestedUpdatesPlayState)
+TEST_F (AudioEngineTest, PreprocessWithPauseRequestedUpdatesPlayState)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -219,21 +205,20 @@ TEST_F (AudioEngineTest, ProcessPrepareWithPauseRequestedUpdatesPlayState)
   // Setup transport to return PauseRequested state
   transport_->requestPause ();
 
-  // Create a dummy semaphore for testing
-  moodycamel::LightweightSemaphore sem (1);
-  auto                             lock = engine->get_processing_lock ();
+  auto lock = engine->get_processing_lock ();
 
-  // Get transport snapshot to test process_prepare
+  // Get transport snapshot to test preprocess
   auto snapshot = transport_->get_snapshot ();
 
-  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
+  engine->preprocess (snapshot, lock);
 
-  EXPECT_FALSE (result); // Should not skip cycle
+  // The pause request is applied
+  EXPECT_EQ (snapshot.get_play_state (), dsp::ITransport::PlayState::Paused);
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), dsp::ITransport::PlayState::Paused);
 }
 
-TEST_F (
-  AudioEngineTest,
-  ProcessPrepareWithRollRequestedAndNoCountinUpdatesPlayState)
+TEST_F (AudioEngineTest, PreprocessWithRollRequestedAndNoCountinUpdatesPlayState)
 {
   auto engine = std::make_unique<AudioEngine> (
     *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
@@ -245,38 +230,49 @@ TEST_F (
   // Setup transport to return RollRequested state
   transport_->requestRoll ();
 
-  // Create a dummy semaphore for testing
-  moodycamel::LightweightSemaphore sem (1);
-  auto                             lock = engine->get_processing_lock ();
+  auto lock = engine->get_processing_lock ();
 
-  // Get transport snapshot to test process_prepare
+  // Get transport snapshot to test preprocess
   auto snapshot = transport_->get_snapshot ();
 
-  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
+  engine->preprocess (snapshot, lock);
 
-  EXPECT_FALSE (result); // Should not skip cycle
+  // With no count-in, the roll request is applied immediately
+  EXPECT_EQ (snapshot.get_play_state (), dsp::ITransport::PlayState::Rolling);
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), dsp::ITransport::PlayState::Rolling);
 }
 
-TEST_F (AudioEngineTest, ProcessPrepareWithoutExportingAndNoSemaphoreSkipsCycle)
+TEST_F (AudioEngineTest, PreprocessWithRollRequestedAndCountinKeepsRequestPending)
 {
+  // Count-in of 1 bar (the fixture's transport has none, and ConfigProvider
+  // is copied at construction, so use a dedicated transport)
+  Transport::ConfigProvider countin_config = {
+    .return_to_cue_on_pause_ = [] () { return false; },
+    .metronome_countin_bars_ = [] () { return 1; },
+    .recording_preroll_bars_ = [] () { return 0; }
+  };
+  Transport countin_transport (*tempo_map_wrapper_, countin_config);
+
   auto engine = std::make_unique<AudioEngine> (
-    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    countin_transport, *hw_interface_, midi_interface_, *graph_dispatcher_,
     *tempo_map_);
-
-  // Activate and start device to initialize monitor out port buffer
   engine->activate ();
-  engine->set_exporting (false);
 
-  // Create a semaphore that is not acquired
-  moodycamel::LightweightSemaphore sem (0);
-  auto                             lock = SemaphoreRAII (sem, false);
+  countin_transport.requestRoll ();
 
-  // Get transport snapshot to test process_prepare
-  auto snapshot = transport_->get_snapshot ();
+  auto lock = engine->get_processing_lock ();
+  auto snapshot = countin_transport.get_snapshot ();
+  ASSERT_GT (snapshot.metronome_countin_frames_remaining (), units::samples (0));
 
-  bool result = engine->process_prepare (snapshot, units::samples (256), lock);
+  engine->preprocess (snapshot, lock);
 
-  EXPECT_TRUE (result); // Should skip cycle
+  // The roll request stays pending while the count-in runs
+  EXPECT_EQ (
+    snapshot.get_play_state (), dsp::ITransport::PlayState::RollRequested);
+  EXPECT_EQ (
+    countin_transport.effective_rt_play_state (),
+    dsp::ITransport::PlayState::RollRequested);
 }
 
 TEST_F (AudioEngineTest, ProcessWhenNotRunningReturnsSkipped)
@@ -289,8 +285,8 @@ TEST_F (AudioEngineTest, ProcessWhenNotRunningReturnsSkipped)
   engine->activate ();
   engine->set_running (false);
 
-  dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto result = engine->process (guard, units::samples (256));
+  auto lock = engine->get_processing_lock ();
+  auto result = engine->process (lock, units::samples (256));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessSkipped);
 }
@@ -305,8 +301,8 @@ TEST_F (AudioEngineTest, ProcessWithZeroFramesReturnsFailed)
   engine->activate ();
   engine->set_running (true);
 
-  dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto result = engine->process (guard, units::samples (0));
+  auto lock = engine->get_processing_lock ();
+  auto result = engine->process (lock, units::samples (0));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessFailed);
 }
@@ -321,8 +317,8 @@ TEST_F (AudioEngineTest, ProcessWhenRunningReturnsCompleted)
   engine->activate ();
   engine->set_running (true);
 
-  dsp::PlayheadProcessingGuard guard{ transport_->playhead ()->playhead () };
-  auto result = engine->process (guard, units::samples (256));
+  auto lock = engine->get_processing_lock ();
+  auto result = engine->process (lock, units::samples (256));
 
   EXPECT_EQ (result, AudioEngine::ProcessReturnStatus::ProcessCompleted);
 }
@@ -903,6 +899,71 @@ TEST_F (AudioEngineTest, ProcessingLockIsReacquirableAfterRelease)
 
   auto lock2 = engine->get_processing_lock ();
   EXPECT_TRUE (lock2.is_acquired ());
+}
+
+TEST_F (AudioEngineTest, TryProcessingLockSucceedsWhenFree)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->activate ();
+  engine->set_running (true);
+
+  auto lock = engine->try_get_processing_lock ();
+  EXPECT_TRUE (lock.is_acquired ());
+  EXPECT_EQ (
+    engine->process (lock, units::samples (256)),
+    AudioEngine::ProcessReturnStatus::ProcessCompleted);
+}
+
+TEST_F (AudioEngineTest, TryProcessingLockFailsWhileHeldByAnotherThread)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  engine->activate ();
+  engine->set_running (true);
+
+  // Hold the lock, as the main thread would while flushing or recalculating
+  // the graph
+  auto main_lock = engine->get_processing_lock ();
+
+  // A pending request proves the skip happened before get_snapshot(): a
+  // running cycle would latch the request into the RT state there
+  transport_->requestRoll ();
+
+  // The audio thread fails to acquire and skips the cycle before touching
+  // any shared state
+  {
+    std::jthread audio_thread ([&] {
+      auto try_lock = engine->try_get_processing_lock ();
+      EXPECT_FALSE (try_lock.is_acquired ());
+      EXPECT_EQ (
+        engine->process (try_lock, units::samples (256)),
+        AudioEngine::ProcessReturnStatus::ProcessSkipped);
+    });
+  }
+
+  // The request was never latched: the RT state still shows the settled
+  // pre-request state
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), dsp::ITransport::PlayState::Paused);
+}
+
+TEST_F (AudioEngineTest, ReentrantTryProcessingLockAcquisitionFails)
+{
+  auto engine = std::make_unique<AudioEngine> (
+    *transport_, *hw_interface_, midi_interface_, *graph_dispatcher_,
+    *tempo_map_);
+
+  auto lock = engine->get_processing_lock ();
+  ASSERT_TRUE (lock.is_acquired ());
+
+  // Try-acquiring from the lock-owning thread is a bug and must fail loudly
+  EXPECT_DEATH (
+    { std::ignore = engine->try_get_processing_lock (); }, "non-recursive");
 }
 
 TEST_F (AudioEngineTest, LoadPercentageReturnsValidValue)

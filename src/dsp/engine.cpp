@@ -102,11 +102,10 @@ AudioEngine::AudioEngine (
             juce::AudioProcessLoadMeasurer::ScopedTimer scoped_timer{
               load_measurer_
             };
-            dsp::PlayheadProcessingGuard guard{
-              this->transport_.playhead ()->playhead ()
-            };
 
-            const auto process_status = this->process (guard, numSamples);
+            auto       processing_lock = try_get_processing_lock ();
+            const auto process_status =
+              this->process (processing_lock, numSamples);
             current_hw_input_ = {};
             if (process_status == ProcessReturnStatus::ProcessCompleted)
               {
@@ -276,7 +275,7 @@ AudioEngine::
         transport_.playhead ()->playhead ()
       };
       auto current_transport_state = transport_.get_snapshot ();
-      process_prepare (current_transport_state, units::samples (1), lock);
+      preprocess (current_transport_state, lock);
 
       auto time_nfo = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
         transport_.get_playhead_position_in_audio_thread (), units::samples (1));
@@ -401,10 +400,13 @@ AudioEngine::activate_impl (const bool activate)
 
 EngineProcessingLockGuard::EngineProcessingLockGuard (
   moodycamel::LightweightSemaphore &sem,
-  std::atomic<std::thread::id>     &owner)
+  std::atomic<std::thread::id>     &owner,
+  bool                              try_acquire)
     : owner_ (owner)
 {
-  // Check before blocking: the offending thread can never make progress
+  // Check before acquiring: re-entrancy is a bug in both modes (in blocking
+  // mode the offending thread could never make progress, so check before
+  // blocking)
   if (owner_.load (std::memory_order_acquire) == std::this_thread::get_id ())
     {
       static constexpr auto message =
@@ -416,13 +418,20 @@ EngineProcessingLockGuard::EngineProcessingLockGuard (
       std::fprintf (stderr, "%s\n", message);
       std::abort ();
     }
-  lock_.emplace (sem, true);
-  owner_.store (std::this_thread::get_id (), std::memory_order_release);
+  // force_acquire = true blocks until acquired; false only tries once
+  lock_.emplace (sem, !try_acquire);
+  if (lock_->is_acquired ())
+    {
+      owner_.store (std::this_thread::get_id (), std::memory_order_release);
+    }
 }
 
 EngineProcessingLockGuard::~EngineProcessingLockGuard ()
 {
-  owner_.store (std::thread::id{}, std::memory_order_release);
+  if (lock_->is_acquired ())
+    {
+      owner_.store (std::thread::id{}, std::memory_order_release);
+    }
 }
 
 EngineProcessingLockGuard
@@ -431,10 +440,52 @@ AudioEngine::get_processing_lock ()
   return EngineProcessingLockGuard (process_lock_, process_lock_owner_);
 }
 
+EngineProcessingLockGuard
+AudioEngine::try_get_processing_lock () noexcept
+{
+  return EngineProcessingLockGuard (process_lock_, process_lock_owner_, true);
+}
+
+void
+AudioEngine::preprocess (
+  dsp::Transport::TransportSnapshot &transport_snapshot,
+  const EngineProcessingLockGuard   &processing_lock) noexcept
+{
+  assert (processing_lock.is_acquired ());
+  assert (cached_device_info_.has_value ());
+  const auto block_length = cached_device_info_->block_length;
+
+  const auto update_transport_play_state =
+    [&] (dsp::ITransport::PlayState play_state) {
+      transport_.set_play_state_rt_safe (play_state);
+      transport_snapshot.set_play_state (play_state);
+    };
+
+  if (
+    transport_snapshot.get_play_state ()
+    == dsp::Transport::PlayState::PauseRequested)
+    {
+      update_transport_play_state (dsp::Transport::PlayState::Paused);
+    }
+  else if (
+    transport_snapshot.get_play_state ()
+      == dsp::Transport::PlayState::RollRequested
+    && transport_snapshot.metronome_countin_frames_remaining ()
+         == units::samples (0))
+    {
+      update_transport_play_state (dsp::Transport::PlayState::Rolling);
+      remaining_latency_preroll_ =
+        graph_dispatcher_.get_max_route_playback_latency ();
+    }
+
+  // Clear all buffers
+  midi_in_->clear_buffer (0, block_length.in (units::samples));
+}
+
 auto
 AudioEngine::process (
-  const dsp::PlayheadProcessingGuard &playhead_guard,
-  const units::sample_u32_t           total_frames_to_process) noexcept
+  const EngineProcessingLockGuard &processing_lock,
+  const units::sample_u32_t        total_frames_to_process) noexcept
   -> ProcessReturnStatus
 {
   if (total_frames_to_process == units::samples (0))
@@ -442,14 +493,24 @@ AudioEngine::process (
       return ProcessReturnStatus::ProcessFailed;
     }
 
-  /* RAIIs */
-  SemaphoreRAII process_sem (process_lock_);
-
   if (!run_.load ()) [[unlikely]]
     {
       // z_info ("skipping processing...");
       return ProcessReturnStatus::ProcessSkipped;
     }
+
+  // Skip the cycle before touching any shared state when the lock was not
+  // acquired (e.g., the main thread is flushing or recalculating the graph)
+  if (!processing_lock.is_acquired ()) [[unlikely]]
+    {
+      return ProcessReturnStatus::ProcessSkipped;
+    }
+
+  // The playhead's processing state may only be touched with the processing
+  // lock held
+  dsp::PlayheadProcessingGuard playhead_processing_guard{
+    transport_.playhead ()->playhead ()
+  };
 
   for (const auto &mip : midi_input_processors_ | std::views::values)
     {
@@ -474,14 +535,7 @@ AudioEngine::process (
     };
 
   /* run pre-process code */
-  bool skip_cycle = process_prepare (
-    current_transport_state, total_frames_to_process, process_sem);
-
-  if (skip_cycle) [[unlikely]]
-    {
-      // z_info ("skip cycle");
-      return ProcessReturnStatus::ProcessSkipped;
-    }
+  preprocess (current_transport_state, processing_lock);
 
   /* puts MIDI in events in the MIDI in port */
   // receive_midi_events (total_frames_to_process);
@@ -629,7 +683,7 @@ AudioEngine::process (
   /* run post-process code for the number of frames remaining after handling
    * preroll (if any) */
   advance_playhead_after_processing (
-    current_transport_state, playhead_guard, total_frames_remaining,
+    current_transport_state, playhead_processing_guard, total_frames_remaining,
     total_frames_to_process);
 
   cycle_.fetch_add (1);
