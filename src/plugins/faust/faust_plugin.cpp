@@ -288,6 +288,8 @@ FaustPlugin::prepare_plugin_for_processing (
   if (is_instrument_)
     {
       synth_buffer_.setSize (dsp_->getNumOutputs (), max_block);
+      voice_manager_.prepare_for_processing (
+        dsp_->getNumOutputs (), max_block_length);
       for (const auto &voice : voice_manager_.voices ())
         {
           static_cast<faust::FaustSynthVoice *> (voice.get ())
@@ -399,7 +401,8 @@ FaustPlugin::process_instrument (dsp::graph::ProcessBlockInfo time_info) noexcep
   const auto &midi_events =
     midi_in_ports_.empty () ? empty_midi_buffer_ : midi_in_ports_.front ()->buffer_;
   voice_manager_.process (
-    synth_buffer_, midi_events, time_info.buffer_offset_, time_info.nframes_);
+    synth_buffer_, midi_events, time_info.buffer_offset_, time_info.nframes_,
+    time_info.fork_join_executor_);
 
   int ch = 0;
   for (auto * port : audio_out_ports_)

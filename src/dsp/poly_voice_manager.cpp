@@ -2,10 +2,16 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <algorithm>
+#include <cassert>
 #include <ranges>
 
+#include "dsp/fork_join_executor.h"
 #include "dsp/poly_voice_manager.h"
 #include "utils/midi.h"
+
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+#  include <sanitizer/rtsan_interface.h>
+#endif
 
 namespace zrythm::dsp
 {
@@ -13,6 +19,22 @@ namespace zrythm::dsp
 PolyVoiceManager::PolyVoiceManager ()
 {
   last_pitch_bend_.fill (SynthVoice::kPitchBendCenter);
+}
+
+void
+PolyVoiceManager::prepare_for_processing (
+  const int                 num_channels,
+  const units::sample_u32_t max_block_length)
+{
+  num_channels_ = num_channels;
+  voice_scratch_.resize (voices_.size ());
+  for (auto &scratch : voice_scratch_)
+    {
+      scratch.setSize (
+        num_channels, max_block_length.in<int> (units::samples), false, false,
+        true);
+    }
+  active_voice_indices_.resize (voices_.size ());
 }
 
 void
@@ -119,15 +141,119 @@ PolyVoiceManager::dispatch_event (std::span<const midi_byte_t> data) noexcept
 void
 PolyVoiceManager::render_active (
   juce::AudioBuffer<float> &output,
-  int                       start_sample,
-  int                       num_samples) noexcept
+  const int                 start_sample,
+  const int                 num_samples,
+  graph::ForkJoinExecutor * fork_join_executor) noexcept
 {
   if (num_samples <= 0)
     return;
-  for (auto &voice : voices_)
+
+  // Serial path: each active voice renders (adds) into the output directly
+  const auto render_serial = [&] {
+    for (auto &voice : voices_)
+      {
+        if (voice->is_active ())
+          voice->render (output, start_sample, num_samples);
+      }
+  };
+
+  // The index list is sized at prepare time; a size mismatch means the
+  // voice set changed afterwards, so the scratch setup does not match the
+  // current voices
+  if (
+    fork_join_executor == nullptr
+    || active_voice_indices_.size () != voices_.size ())
     {
-      if (voice->is_active ())
-        voice->render (output, start_sample, num_samples);
+      render_serial ();
+      return;
+    }
+
+  // Too short to be worth the fork-join overhead (common with dense MIDI,
+  // where events split the block into small segments)
+  if (num_samples < kMinParallelBlockSamples)
+    {
+      render_serial ();
+      return;
+    }
+
+  // Collect the active voices (index list preallocated at prepare time)
+  std::uint32_t num_active = 0;
+  for (const auto i : std::views::iota (0u, voices_.size ()))
+    {
+      if (voices_[i]->is_active ())
+        active_voice_indices_[num_active++] = i;
+    }
+
+  if (num_active < kMinParallelVoices)
+    {
+      render_serial ();
+      return;
+    }
+
+  // Parallel-path preconditions (see process() docs): assert to catch
+  // caller bugs in debug builds, and fall back to the serial path in
+  // release instead of reading/writing past the scratch buffers
+  const bool fits_preparation =
+    num_channels_ == output.getNumChannels ()
+    && voice_scratch_.size () == voices_.size ()
+    && start_sample + num_samples <= voice_scratch_.front ().getNumSamples ();
+  assert (fits_preparation);
+  if (!fits_preparation)
+    {
+      render_serial ();
+      return;
+    }
+
+  // Render each active voice into its own scratch buffer in parallel, then
+  // sum the scratch buffers serially in voice order: the additions happen
+  // in the same order as serial rendering, so the result is bit-identical
+  struct RenderContext
+  {
+    PolyVoiceManager * self;
+    int                start_sample;
+    int                num_samples;
+  } ctx{ this, start_sample, num_samples };
+  const auto render_task = [] (void * context, std::uint32_t i) noexcept {
+    const auto &c = *static_cast<const RenderContext *> (context);
+    const auto  voice_index = c.self->active_voice_indices_[i];
+    auto       &scratch = c.self->voice_scratch_[voice_index];
+    // Render at the same sample range as the output: voices may depend on
+    // the absolute position
+    scratch.clear (c.start_sample, c.num_samples);
+    c.self->voices_[voice_index]->render (
+      scratch, c.start_sample, c.num_samples);
+  };
+
+  bool completed = false;
+  {
+#if defined(__has_feature) && __has_feature(realtime_sanitizer)
+    // exec() blocks the calling thread by design (fork-join)
+    __rtsan::ScopedDisabler disabler;
+#endif
+    completed = fork_join_executor->exec (render_task, &ctx, num_active);
+  }
+
+  if (!completed)
+    {
+      // exec() guarantees that a false return means no task ran, so the
+      // serial fallback here does not double-render any voice
+      for (const auto i : std::views::iota (0u, num_active))
+        {
+          voices_[active_voice_indices_[i]]->render (
+            output, start_sample, num_samples);
+        }
+      return;
+    }
+
+  // fits_preparation guarantees the channel counts match
+  for (const auto i : std::views::iota (0u, num_active))
+    {
+      const auto &scratch = voice_scratch_[active_voice_indices_[i]];
+      for (const auto ch : std::views::iota (0, num_channels_))
+        {
+          output.addFrom (
+            ch, start_sample, scratch, ch, start_sample, num_samples);
+        }
     }
 }
 
@@ -136,7 +262,8 @@ PolyVoiceManager::process (
   juce::AudioBuffer<float> &output,
   const MidiEventBuffer    &midi_events,
   units::sample_u32_t       offset,
-  units::sample_u32_t       nframes) noexcept
+  units::sample_u32_t       nframes,
+  graph::ForkJoinExecutor * fork_join_executor) noexcept
 {
   const int block_start = offset.in<int> (units::samples);
   const int block_end = block_start + nframes.in<int> (units::samples);
@@ -147,11 +274,11 @@ PolyVoiceManager::process (
       const int ev_pos = ev.time ().in<int> (units::samples);
       if (ev_pos < block_start || ev_pos >= block_end)
         continue;
-      render_active (output, current, ev_pos - current);
+      render_active (output, current, ev_pos - current, fork_join_executor);
       current = ev_pos;
       dispatch_event (ev.data ());
     }
-  render_active (output, current, block_end - current);
+  render_active (output, current, block_end - current, fork_join_executor);
 }
 
 } // namespace zrythm::dsp

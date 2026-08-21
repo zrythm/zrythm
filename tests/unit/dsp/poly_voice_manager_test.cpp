@@ -1,9 +1,16 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
 #include <array>
+#include <bit>
+#include <cstdint>
+#include <memory>
+#include <ranges>
+#include <utility>
 #include <vector>
 
+#include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
 #include "dsp/poly_voice_manager.h"
 
@@ -286,6 +293,366 @@ TEST_F (PolyVoiceManagerTest, AllSoundOffCcCutsChannelVoices)
   EXPECT_FALSE (v0->is_active ());
   EXPECT_EQ (v1->cut_count_, 0);
   EXPECT_TRUE (v1->is_active ());
+}
+
+/** Adds position-dependent pseudo-random values, varied enough to make
+ * bit-exact comparison meaningful. */
+class DeterministicVoice : public SynthVoice
+{
+public:
+  explicit DeterministicVoice (std::uint32_t seed) : seed_ (seed) { }
+
+  void render (
+    juce::AudioBuffer<float> &output,
+    int                       start_sample,
+    int                       num_samples) noexcept override
+  {
+    // Instrumentation for the fork-join tests: record whether the target
+    // region already contained signal at render entry. Parallel-path
+    // scratch is always zeroed; serial output accumulates earlier voices.
+    if (!saw_nonzero_target_)
+      {
+        for (const auto ch : std::views::iota (0, output.getNumChannels ()))
+          {
+            const auto * in = output.getReadPointer (ch, start_sample);
+            saw_nonzero_target_ = std::ranges::any_of (
+              in, in + num_samples, [] (const float v) { return v != 0.f; });
+            if (saw_nonzero_target_)
+              break;
+          }
+      }
+
+    for (const auto ch : std::views::iota (0, output.getNumChannels ()))
+      {
+        auto * out = output.getWritePointer (ch, start_sample);
+        for (const auto i : std::views::iota (0, num_samples))
+          {
+            const auto hash =
+              (static_cast<std::uint32_t> (start_sample + i) * 2654435761u)
+              ^ (seed_ * 40503u) ^ (static_cast<std::uint32_t> (ch) * 969u);
+            out[static_cast<size_t> (i)] +=
+              static_cast<float> (hash % 10000u) * 0.0001f;
+          }
+      }
+  }
+
+  bool saw_nonzero_target () const { return saw_nonzero_target_; }
+
+private:
+  bool          saw_nonzero_target_ = false;
+  std::uint32_t seed_;
+};
+
+/** Renders a fresh 4-voice manager into @p output; @p executor may be
+ * nullptr (serial path). Returns true if any voice observed an already
+ * non-zero target region at render entry — expected for serial rendering
+ * (voices accumulate into shared output), false when the parallel path
+ * rendered into zeroed scratch. */
+static bool
+render_four_voices (
+  juce::AudioBuffer<float> &output,
+  graph::ForkJoinExecutor * executor,
+  bool                      prepare = true)
+{
+  PolyVoiceManager                    manager;
+  std::array<DeterministicVoice *, 4> voice_ptrs{};
+  for (const auto i : std::views::iota (0u, 4u))
+    {
+      auto voice = std::make_unique<DeterministicVoice> (i + 1);
+      voice_ptrs[i] = voice.get ();
+      manager.add_voice (std::move (voice));
+    }
+  if (prepare)
+    manager.prepare_for_processing (
+      output.getNumChannels (), units::samples (512u));
+
+  MidiEventBuffer buf;
+  buf.reserve (4096);
+  for (const auto i : std::views::iota (0u, 4u))
+    {
+      const auto ev = midi_event::make_note_on (
+        0, 60 + static_cast<int> (i), 100, units::samples (0u));
+      buf.push_back (ev.time_, ev.data ());
+    }
+  manager.process (
+    output, buf, units::samples (0u), units::samples (256u), executor);
+
+  return std::ranges::any_of (voice_ptrs, [] (const auto * voice) {
+    return voice->saw_nonzero_target ();
+  });
+}
+
+static void
+expect_bit_equal (
+  const juce::AudioBuffer<float> &a,
+  const juce::AudioBuffer<float> &b,
+  int                             num_samples)
+{
+  ASSERT_EQ (a.getNumChannels (), b.getNumChannels ());
+  for (const auto ch : std::views::iota (0, a.getNumChannels ()))
+    {
+      for (const auto i : std::views::iota (0, num_samples))
+        {
+          EXPECT_EQ (
+            std::bit_cast<std::uint32_t> (a.getReadPointer (ch)[i]),
+            std::bit_cast<std::uint32_t> (b.getReadPointer (ch)[i]))
+            << "ch " << ch << " sample " << i;
+        }
+    }
+}
+
+// The parallel path must produce bit-identical output to serial rendering
+TEST_F (PolyVoiceManagerTest, ParallelRenderingMatchesSerialBitExactly)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> parallel_out (2, 512);
+  serial_out.clear ();
+  parallel_out.clear ();
+
+  EXPECT_TRUE (render_four_voices (serial_out, nullptr));
+
+  graph::ForkJoinExecutor executor;
+  executor.start (2);
+  // False here means the parallel path actually rendered into scratch;
+  // true would mean it silently degraded to serial
+  EXPECT_FALSE (render_four_voices (parallel_out, &executor));
+  executor.stop ();
+
+  expect_bit_equal (serial_out, parallel_out, 512);
+}
+
+// A rejected fork-join job (executor unavailable) must fall back to serial
+// rendering with identical output
+TEST_F (PolyVoiceManagerTest, ParallelRenderingFallsBackWhenExecutorUnavailable)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> fallback_out (2, 512);
+  serial_out.clear ();
+  fallback_out.clear ();
+
+  EXPECT_TRUE (render_four_voices (serial_out, nullptr));
+
+  graph::ForkJoinExecutor executor; // never started: exec() rejects the job
+  // True here proves the fallback actually rendered serially
+  EXPECT_TRUE (render_four_voices (fallback_out, &executor));
+
+  expect_bit_equal (serial_out, fallback_out, 512);
+}
+
+// Without prepare_for_processing(), the parallel path is unavailable and
+// rendering falls back to serial even with an executor
+TEST_F (PolyVoiceManagerTest, UnpreparedManagerWithExecutorTakesSerialPath)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> executor_out (2, 512);
+  serial_out.clear ();
+  executor_out.clear ();
+
+  EXPECT_TRUE (render_four_voices (serial_out, nullptr));
+
+  graph::ForkJoinExecutor executor;
+  executor.start (2);
+  EXPECT_TRUE (render_four_voices (executor_out, &executor, false));
+  executor.stop ();
+
+  expect_bit_equal (serial_out, executor_out, 512);
+}
+
+// Adding voices after prepare_for_processing() invalidates the parallel
+// scratch setup: rendering falls back to serial until the next prepare
+TEST_F (PolyVoiceManagerTest, VoicesAddedAfterPrepareTakeSerialPath)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> executor_out (2, 512);
+  serial_out.clear ();
+  executor_out.clear ();
+
+  const auto render_with_late_fifth_voice =
+    [] (juce::AudioBuffer<float> &output, graph::ForkJoinExecutor * executor) {
+      PolyVoiceManager                    manager;
+      std::array<DeterministicVoice *, 5> voice_ptrs{};
+      for (const auto i : std::views::iota (0u, 4u))
+        {
+          auto voice = std::make_unique<DeterministicVoice> (i + 1);
+          voice_ptrs[i] = voice.get ();
+          manager.add_voice (std::move (voice));
+        }
+      manager.prepare_for_processing (
+        output.getNumChannels (), units::samples (512u));
+      // Fifth voice joins after preparation
+      auto late_voice = std::make_unique<DeterministicVoice> (5u);
+      voice_ptrs[4] = late_voice.get ();
+      manager.add_voice (std::move (late_voice));
+
+      MidiEventBuffer buf;
+      buf.reserve (4096);
+      for (const auto i : std::views::iota (0u, 5u))
+        {
+          const auto ev = midi_event::make_note_on (
+            0, 60 + static_cast<int> (i), 100, units::samples (0u));
+          buf.push_back (ev.time_, ev.data ());
+        }
+      manager.process (
+        output, buf, units::samples (0u), units::samples (256u), executor);
+
+      return std::ranges::any_of (voice_ptrs, [] (const auto * voice) {
+        return voice->saw_nonzero_target ();
+      });
+    };
+
+  EXPECT_TRUE (render_with_late_fifth_voice (serial_out, nullptr));
+
+  graph::ForkJoinExecutor executor;
+  executor.start (2);
+  EXPECT_TRUE (render_with_late_fifth_voice (executor_out, &executor));
+  executor.stop ();
+
+  expect_bit_equal (serial_out, executor_out, 512);
+}
+
+/** Deactivates itself once rendering reaches kDeactivateFromSample (mimics
+ * a voice whose release tail ends mid-block). */
+class SelfDeactivatingVoice final : public DeterministicVoice
+{
+public:
+  using DeterministicVoice::DeterministicVoice;
+
+  void render (
+    juce::AudioBuffer<float> &output,
+    int                       start_sample,
+    int                       num_samples) noexcept override
+  {
+    DeterministicVoice::render (output, start_sample, num_samples);
+    if (start_sample >= kDeactivateFromSample)
+      cut ();
+  }
+
+  static constexpr int kDeactivateFromSample = 128;
+};
+
+// A mid-block event splits rendering into sub-blocks; parallel rendering
+// must stay bit-identical, with sub-blocks starting past sample 0 rendered
+// at the same absolute range as serial
+TEST_F (PolyVoiceManagerTest, MidBlockEventSplitsParallelSubBlocks)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> parallel_out (2, 512);
+  serial_out.clear ();
+  parallel_out.clear ();
+
+  const auto render_split_block =
+    [] (juce::AudioBuffer<float> &output, graph::ForkJoinExecutor * executor) {
+      PolyVoiceManager                    manager;
+      std::array<DeterministicVoice *, 4> voice_ptrs{};
+      for (const auto i : std::views::iota (0u, 4u))
+        {
+          auto voice = std::make_unique<DeterministicVoice> (i + 1);
+          voice_ptrs[i] = voice.get ();
+          manager.add_voice (std::move (voice));
+        }
+      manager.prepare_for_processing (
+        output.getNumChannels (), units::samples (512u));
+
+      MidiEventBuffer buf;
+      buf.reserve (4096);
+      for (const auto i : std::views::iota (0u, 2u))
+        {
+          const auto ev = midi_event::make_note_on (
+            0, 60 + static_cast<int> (i), 100, units::samples (0u));
+          buf.push_back (ev.time_, ev.data ());
+        }
+      for (const auto i : std::views::iota (0u, 2u))
+        {
+          const auto ev = midi_event::make_note_on (
+            0, 64 + static_cast<int> (i), 100, units::samples (128u));
+          buf.push_back (ev.time_, ev.data ());
+        }
+      manager.process (
+        output, buf, units::samples (0u), units::samples (256u), executor);
+
+      return std::ranges::any_of (voice_ptrs, [] (const auto * voice) {
+        return voice->saw_nonzero_target ();
+      });
+    };
+
+  EXPECT_TRUE (render_split_block (serial_out, nullptr));
+
+  graph::ForkJoinExecutor executor;
+  executor.start (2);
+  EXPECT_FALSE (render_split_block (parallel_out, &executor));
+  executor.stop ();
+
+  expect_bit_equal (serial_out, parallel_out, 512);
+}
+
+// A voice that deactivates itself mid-render inside a parallel task must
+// produce identical output and final voice state
+TEST_F (PolyVoiceManagerTest, SelfDeactivatingVoiceInParallelTask)
+{
+  juce::AudioBuffer<float> serial_out (2, 512);
+  juce::AudioBuffer<float> parallel_out (2, 512);
+  serial_out.clear ();
+  parallel_out.clear ();
+
+  // Returns { any voice saw a non-zero target, voices still active after }
+  const auto render_with_deactivating_voices =
+    [] (juce::AudioBuffer<float> &output, graph::ForkJoinExecutor * executor) {
+      PolyVoiceManager                       manager;
+      std::array<SelfDeactivatingVoice *, 4> voice_ptrs{};
+      for (const auto i : std::views::iota (0u, 4u))
+        {
+          auto voice = std::make_unique<SelfDeactivatingVoice> (i + 1);
+          voice_ptrs[i] = voice.get ();
+          manager.add_voice (std::move (voice));
+        }
+      manager.prepare_for_processing (
+        output.getNumChannels (), units::samples (512u));
+
+      MidiEventBuffer buf;
+      buf.reserve (4096);
+      for (const auto i : std::views::iota (0u, 2u))
+        {
+          const auto ev = midi_event::make_note_on (
+            0, 60 + static_cast<int> (i), 100, units::samples (0u));
+          buf.push_back (ev.time_, ev.data ());
+        }
+      for (const auto i : std::views::iota (0u, 2u))
+        {
+          const auto ev = midi_event::make_note_on (
+            0, 64 + static_cast<int> (i), 100,
+            units::samples (
+              static_cast<std::uint32_t> (
+                SelfDeactivatingVoice::kDeactivateFromSample)));
+          buf.push_back (ev.time_, ev.data ());
+        }
+      manager.process (
+        output, buf, units::samples (0u), units::samples (256u), executor);
+
+      // Read results before the manager (and its voices) are destroyed
+      const bool saw_nonzero =
+        std::ranges::any_of (voice_ptrs, [] (const auto * voice) {
+          return voice->saw_nonzero_target ();
+        });
+      const auto still_active = std::ranges::count_if (
+        voice_ptrs, [] (const auto * voice) { return voice->is_active (); });
+      return std::pair{ saw_nonzero, still_active };
+    };
+
+  const auto serial_result =
+    render_with_deactivating_voices (serial_out, nullptr);
+  EXPECT_TRUE (serial_result.first);
+  // Every voice reaches the deactivation sample in its final sub-block
+  EXPECT_EQ (serial_result.second, 0);
+
+  graph::ForkJoinExecutor executor;
+  executor.start (2);
+  const auto parallel_result =
+    render_with_deactivating_voices (parallel_out, &executor);
+  executor.stop ();
+  EXPECT_FALSE (parallel_result.first);
+  EXPECT_EQ (parallel_result.second, 0);
+
+  expect_bit_equal (serial_out, parallel_out, 512);
 }
 
 } // namespace zrythm::dsp

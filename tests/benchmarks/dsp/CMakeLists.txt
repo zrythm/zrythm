@@ -4,6 +4,7 @@
 add_executable(zrythm_dsp_benchmarks
   fork_join_executor_bench.cpp
   graph_scheduler_bench.cpp
+  poly_voice_manager_bench.cpp
 )
 
 set_target_properties(zrythm_dsp_benchmarks PROPERTIES
