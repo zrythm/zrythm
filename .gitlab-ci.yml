@@ -372,13 +372,11 @@ check:sanitizer-realtime:
   variables:
     SANITIZER_OPTION: "realtime"
 
-# Hygiene for self-hosted runner Conan caches, run every 2 months: drops
-# regenerable build/temp/download trees and binaries unused for 4+ weeks
-# (LRU is accurate here because every job starts with `conan install`).
-# Runs only in scheduled pipelines - create a schedule on master with cron
-# "0 4 1 */2 *". The schedule also runs the regular branch pipeline.
-runner-cache-hygiene:
-  extends: .gnu-linux-template
+# Periodic Conan cache cleanup on all self-hosted runners (drops regenerable
+# trees and binaries unused for 4+ weeks). Runs only in scheduled pipelines;
+# create a schedule on master with cron "0 4 1 */2 *". Each job runs on a
+# single runner, so there is one job per runner.
+.runner-cache-hygiene-common:
   stage: setup
   needs: []
   rules:
@@ -386,6 +384,26 @@ runner-cache-hygiene:
   script:
     - conan cache clean -b -t -d
     - conan remove "*" --lru=4w -c
+
+runner-cache-hygiene:gnu/linux:
+  extends:
+    - .runner-cache-hygiene-common
+    - .gnu-linux-template
+
+runner-cache-hygiene:mac-arm:
+  extends:
+    - .runner-cache-hygiene-common
+    - .mac-arm-template
+
+runner-cache-hygiene:windows:
+  extends:
+    - .runner-cache-hygiene-common
+    - .windows-with-conan
+
+runner-cache-hygiene:windows-arm64ec:
+  extends:
+    - .runner-cache-hygiene-common
+    - .windows-arm-with-conan
 
 build:sanitizer-asan-ubsan:mac-arm:
   extends: .mac-arm-template
