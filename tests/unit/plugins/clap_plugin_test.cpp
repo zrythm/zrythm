@@ -6,6 +6,7 @@
 #include <thread>
 #include <vector>
 
+#include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
@@ -79,6 +80,7 @@ protected:
     dispatcher_context_ = std::make_unique<QObject> ();
     main_dispatcher_ = std::make_unique<utils::MainThreadClosureDispatcher> (
       *dispatcher_context_, std::chrono::milliseconds{ 10 });
+    fork_join_executor_.start (2);
   }
 
   void TearDown () override
@@ -185,15 +187,21 @@ protected:
    */
   void pump_main_thread () { main_dispatcher_->process_pending (); }
 
-  void process_blocks (int num_blocks)
+  void process_blocks (Plugin &plugin, int num_blocks)
   {
     const dsp::graph::ProcessBlockInfo time_nfo{
       .transport_position_ = units::samples (0),
       .buffer_offset_ = units::samples (0),
       .nframes_ = units::samples (256),
+      .fork_join_executor_ = &fork_join_executor_,
     };
     for (int i = 0; i < num_blocks; ++i)
-      plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+      plugin.process_block (time_nfo, *mock_transport_, *tempo_map_);
+  }
+
+  void process_blocks (int num_blocks)
+  {
+    process_blocks (*plugin_, num_blocks);
   }
 
   std::unique_ptr<utils::ObjectRegistry> registry_;
@@ -202,6 +210,7 @@ protected:
   std::unique_ptr<dsp::TempoMap>                           tempo_map_;
   std::unique_ptr<QObject>                                 dispatcher_context_;
   std::unique_ptr<utils::MainThreadClosureDispatcher>      main_dispatcher_;
+  dsp::graph::ForkJoinExecutor                             fork_join_executor_;
   std::unique_ptr<ClapPlugin>                              plugin_;
   std::shared_ptr<test_helpers::MockPluginHostWindowState> window_state_;
   int paused_processing_calls_ = 0;
@@ -1044,6 +1053,155 @@ TEST_F (
     {
       EXPECT_FLOAT_EQ (
         main_out->buffers ()->getReadPointer (ch)[0], expected.at (ch));
+    }
+}
+
+// The fixture requests 8 parallel tasks from the host pool per process
+// block; the host must execute every task index exactly once per block
+TEST_F (ClapPluginTest, ThreadPoolExecutesAllTasksAcrossWorkers)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Thread Pool"));
+
+  process_blocks (4);
+
+  const auto state = read_plugin_state_json (*plugin_);
+  ASSERT_FALSE (state.is_discarded ());
+  EXPECT_EQ (state["pool_requests_succeeded"].get<int> (), 4);
+  EXPECT_EQ (state["pool_requests_rejected"].get<int> (), 0);
+  EXPECT_EQ (state["fallback_runs"].get<int> (), 0);
+  const auto &counts = state["exec_counts"];
+  ASSERT_EQ (counts.size (), 64);
+  for (const auto i : std::views::iota (0, 8))
+    {
+      EXPECT_EQ (counts[i].get<int> (), 4) << "task " << i;
+    }
+}
+
+// A single-task request must be executed inline on the audio thread
+TEST_F (ClapPluginTest, ThreadPoolSingleTaskRunsInlineOnAudioThread)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Thread Pool"));
+
+  auto * num_tasks = find_param_by_label ("Num Tasks");
+  ASSERT_NE (num_tasks, nullptr);
+  // 1 of 0..64 (exact binary fraction)
+  num_tasks->setBaseValue (1.0f / 64.0f);
+
+  process_blocks (3);
+
+  const auto state = read_plugin_state_json (*plugin_);
+  ASSERT_FALSE (state.is_discarded ());
+  EXPECT_EQ (state["pool_requests_succeeded"].get<int> (), 3);
+  EXPECT_EQ (state["fallback_runs"].get<int> (), 0);
+  EXPECT_EQ (state["exec_counts"][0].get<int> (), 3);
+  EXPECT_EQ (state["execs_on_process_thread"].get<int> (), 3);
+}
+
+// Without an executor in the processing context the host must reject the
+// request; the plugin must then complete its tasks by itself (CLAP spec
+// fallback)
+TEST_F (ClapPluginTest, ThreadPoolRejectedWithoutExecutorFallsBackToSerial)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Thread Pool"));
+
+  static constexpr int               kNumBlocks = 3;
+  const dsp::graph::ProcessBlockInfo time_nfo{
+    .transport_position_ = units::samples (0),
+    .buffer_offset_ = units::samples (0),
+    .nframes_ = units::samples (256),
+  };
+  for (const auto _ : std::views::iota (0, kNumBlocks))
+    plugin_->process_block (time_nfo, *mock_transport_, *tempo_map_);
+
+  const auto state = read_plugin_state_json (*plugin_);
+  ASSERT_FALSE (state.is_discarded ());
+  EXPECT_EQ (state["pool_requests_succeeded"].get<int> (), 0);
+  EXPECT_EQ (state["pool_requests_rejected"].get<int> (), kNumBlocks);
+  EXPECT_EQ (state["fallback_runs"].get<int> (), kNumBlocks);
+  const auto &counts = state["exec_counts"];
+  ASSERT_EQ (counts.size (), 64);
+  for (const auto i : std::views::iota (0, 8))
+    {
+      EXPECT_EQ (counts[i].get<int> (), kNumBlocks) << "task " << i;
+    }
+}
+
+// Tasks beyond the worker count must still all execute (in waves)
+TEST_F (ClapPluginTest, ThreadPoolMoreTasksThanWorkersStillCompletes)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Thread Pool"));
+
+  auto * num_tasks = find_param_by_label ("Num Tasks");
+  ASSERT_NE (num_tasks, nullptr);
+  num_tasks->setBaseValue (1.0f); // 64 tasks, more than the 2 test workers
+
+  process_blocks (2);
+
+  const auto state = read_plugin_state_json (*plugin_);
+  ASSERT_FALSE (state.is_discarded ());
+  EXPECT_EQ (state["pool_requests_succeeded"].get<int> (), 2);
+  EXPECT_EQ (state["fallback_runs"].get<int> (), 0);
+  const auto &counts = state["exec_counts"];
+  ASSERT_EQ (counts.size (), 64);
+  for (const auto i : std::views::iota (0, 64))
+    {
+      EXPECT_EQ (counts[i].get<int> (), 2) << "task " << i;
+    }
+}
+
+// Two instances processing concurrently on different threads (as the
+// parallel graph runs them) submit to the shared executor; both must
+// complete all their tasks without interference
+TEST_F (ClapPluginTest, ThreadPoolConcurrentInstancesDoNotInterfere)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Thread Pool"));
+
+  // Second instance: sequential construction on this thread, its own
+  // registry/window state, shared main-thread dispatcher
+  const auto juce_desc = test_helpers::find_test_clap_plugin_by_name (
+    juce::String ("Test Thread Pool"));
+  ASSERT_NE (juce_desc, nullptr);
+  auto config = std::make_unique<PluginConfiguration> ();
+  config->descr_ = PluginDescriptor::from_juce_description (*juce_desc);
+  ASSERT_NE (config->descr_, nullptr);
+  auto second_registry = std::make_unique<utils::ObjectRegistry> ();
+  auto second_window_state =
+    std::make_shared<test_helpers::MockPluginHostWindowState> ();
+  auto second_plugin = std::make_unique<ClapPlugin> (
+    *second_registry,
+    test_helpers::make_mock_plugin_host_window_factory (second_window_state));
+  second_plugin->set_main_thread_services (*main_dispatcher_, {});
+  second_plugin->set_configuration (*config);
+  ASSERT_FALSE (second_plugin->get_all_output_ports ().empty ())
+    << "Second plugin failed to load";
+  second_plugin->prepare_for_processing (
+    nullptr, units::sample_rate (48000), units::samples (256));
+
+  static constexpr int kBlocksPerThread = 50;
+  {
+    std::jthread first ([this] {
+      process_blocks (*plugin_, kBlocksPerThread);
+    });
+    std::jthread second ([this, &second_plugin] {
+      process_blocks (*second_plugin, kBlocksPerThread);
+    });
+  }
+
+  second_plugin->release_resources ();
+
+  for (auto * plugin : { plugin_.get (), second_plugin.get () })
+    {
+      const auto state = read_plugin_state_json (*plugin);
+      ASSERT_FALSE (state.is_discarded ());
+      EXPECT_EQ (state["pool_requests_succeeded"].get<int> (), kBlocksPerThread);
+      EXPECT_EQ (state["pool_requests_rejected"].get<int> (), 0);
+      EXPECT_EQ (state["fallback_runs"].get<int> (), 0);
+      const auto &counts = state["exec_counts"];
+      ASSERT_EQ (counts.size (), 64);
+      for (const auto i : std::views::iota (0, 8))
+        {
+          EXPECT_EQ (counts[i].get<int> (), kBlocksPerThread) << "task " << i;
+        }
     }
 }
 

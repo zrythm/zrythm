@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <mutex>
@@ -143,6 +144,56 @@ TEST_F (GraphSchedulerTest, NodeTriggeringOrder)
 
   EXPECT_THAT (process_order, ElementsAre (0, 1, 2));
   scheduler_->terminate_threads ();
+}
+
+TEST_F (GraphSchedulerTest, NodeCanForkJoinDuringProcessingCycle)
+{
+  auto collection = create_test_collection ();
+
+  static constexpr std::uint32_t kNumTasks = 8;
+  struct TaskCounter
+  {
+    std::array<std::atomic<std::uint32_t>, kNumTasks> counts_{};
+    std::atomic<bool>                                 saw_executor_{ false };
+    std::atomic<int>                                  rejected_calls_{ 0 };
+  };
+  TaskCounter counter;
+
+  ON_CALL (*processable_, process_block (_, _, _))
+    .WillByDefault ([&counter] (auto time_nfo, auto &, auto &) {
+      auto * executor = time_nfo.fork_join_executor_;
+      if (executor == nullptr)
+        return;
+      counter.saw_executor_.store (true, std::memory_order_relaxed);
+      const auto task = [] (void * context, std::uint32_t task_index) noexcept {
+        static_cast<TaskCounter *> (context)->counts_[task_index].fetch_add (
+          1, std::memory_order_relaxed);
+      };
+      if (!executor->exec (task, &counter, kNumTasks))
+        {
+          counter.rejected_calls_.fetch_add (1, std::memory_order_relaxed);
+        }
+    });
+
+  scheduler_->rechain_from_node_collection (
+    std::move (collection), sample_rate_, block_length_);
+  scheduler_->start_threads (2);
+
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256u));
+  scheduler_->run_cycle (
+    time_info, units::samples (0), *transport_, *tempo_map_);
+
+  scheduler_->terminate_threads ();
+
+  // Each of the 3 nodes must have received a working executor during its
+  // process call and completed all of its tasks
+  EXPECT_TRUE (counter.saw_executor_.load ());
+  EXPECT_EQ (counter.rejected_calls_.load (), 0);
+  for (const auto &count : counter.counts_)
+    {
+      EXPECT_EQ (count.load (), 3);
+    }
 }
 
 TEST_F (GraphSchedulerTest, RechainWithLiveThreadsIsSynchronizedWithWorkers)

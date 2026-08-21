@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <memory>
+#include <vector>
 
+#include "dsp/fork_join_executor.h"
 #include "dsp/graph_node.h"
 #include "dsp/itransport.h"
 #include "utils/utf8_string.h"
@@ -195,6 +197,38 @@ TEST_F (GraphNodeTest, LoopPointProcessing)
   const auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
     units::samples (0), units::samples (256));
   node.process (time_info, units::samples (0), *transport_, *tempo_map_);
+}
+
+// Chunk processing must see the same fork-join executor as the unsplit block
+TEST_F (GraphNodeTest, LoopPointSplittingPreservesForkJoinExecutor)
+{
+  EXPECT_CALL (*transport_, loop_enabled ()).WillRepeatedly (Return (true));
+  EXPECT_CALL (*transport_, get_loop_range_positions ())
+    .WillRepeatedly (
+      Return (std::make_pair (units::samples (0), units::samples (128))));
+  EXPECT_CALL (*transport_, get_play_state ())
+    .WillRepeatedly (Return (ITransport::PlayState::Rolling));
+
+  std::vector<ProcessBlockInfo> captured;
+  EXPECT_CALL (*processable_, process_block (_, _, _))
+    .Times (2)
+    .WillRepeatedly (
+      Invoke ([&captured] (ProcessBlockInfo info, const auto &, const auto &) {
+        captured.push_back (info);
+      }));
+
+  ForkJoinExecutor executor;
+  auto             node = create_test_node ();
+  auto time_info = dsp::graph::ProcessBlockInfo::from_position_and_nframes (
+    units::samples (0), units::samples (256));
+  time_info.fork_join_executor_ = &executor;
+  node.process (time_info, units::samples (0), *transport_, *tempo_map_);
+
+  ASSERT_EQ (captured.size (), 2);
+  for (const auto &chunk : captured)
+    {
+      EXPECT_EQ (chunk.fork_join_executor_, &executor);
+    }
 }
 
 // New test for multiple node connections

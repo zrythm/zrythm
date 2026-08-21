@@ -94,12 +94,9 @@ public:
   bool posixFdSupportUnregisterFd (int fd) noexcept override;
 
   // clap_host_thread_pool
-  // TODO: populate threadPool_ with worker threads and advertise the pool
-  // (threadPoolRequestExec currently has no consumers, so advertising it
-  // would deadlock the audio thread for numTasks > 1). The spec permits
-  // hosts not to offer a thread pool; plugins must then fall back to their
-  // own threading.
-  bool implementsThreadPool () const noexcept override { return false; }
+  // Pool work runs on the shared fork-join executor handed down the graph
+  // (ProcessBlockInfo::fork_join_executor_); see threadPoolRequestExec
+  bool implementsThreadPool () const noexcept override { return true; }
   bool threadPoolRequestExec (uint32_t numTasks) noexcept override;
 
   // clap_host_state

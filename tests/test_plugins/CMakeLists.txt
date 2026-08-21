@@ -111,6 +111,7 @@ set(clap_fixtures
   test_rescan_misuse_clap
   test_restart_clap
   test_synth_clap
+  test_thread_pool_clap
 )
 # Exported so the parent scope can derive the plugin count for test compile
 # definitions

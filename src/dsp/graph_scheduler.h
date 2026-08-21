@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include "dsp/fork_join_executor.h"
 #include "dsp/graph_node.h"
 #include "utils/rt_thread_id.h"
 
@@ -261,6 +262,18 @@ private:
 
   /** Audio workgroup for threads. */
   std::optional<juce::AudioWorkgroup> thread_workgroup_;
+
+  /**
+   * @brief Fork-join executor for intra-node parallel work.
+   *
+   * Started/stopped together with the graph threads (@ref start_threads /
+   * @ref terminate_threads) with as many workers as there are graph worker
+   * threads, and handed to nodes each cycle via
+   * @ref ProcessBlockInfo::fork_join_executor_. Its workers are separate
+   * from the graph workers so that a graph worker blocked in exec() never
+   * consumes the threads its tasks run on.
+   */
+  ForkJoinExecutor fork_join_executor_;
 
   units::sample_rate_t sample_rate_;
   units::sample_u32_t  max_block_length_;

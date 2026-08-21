@@ -266,12 +266,28 @@ GraphScheduler::start_threads (std::optional<int> num_threads)
         thread_set_->threads_.size (), idle_thread_cnt_.load ());
       std::this_thread::sleep_for (10us);
     }
+
+  try
+    {
+      fork_join_executor_.start (
+        num_threads.value (), realtime_thread_options_, thread_workgroup_);
+    }
+  catch (const std::exception &e)
+    {
+      terminate_threads ();
+      throw ZrythmException (
+        "failed to start fork-join executor: " + std::string (e.what ()));
+    }
 }
 
 void
 GraphScheduler::terminate_threads ()
 {
   z_info ("terminating graph...");
+
+  /* stop the fork-join workers (no node may be processing while threads are
+   * terminated, so no exec() can be in flight) */
+  fork_join_executor_.stop ();
 
   /* Flag threads to terminate */
   thread_set_->threads_.cvisit_all ([&] (auto &thread) {
@@ -356,6 +372,7 @@ GraphScheduler::run_cycle (
   const dsp::TempoMap               &tempo_map)
 {
   time_nfo_ = time_nfo;
+  time_nfo_.fork_join_executor_ = &fork_join_executor_;
   remaining_preroll_frames_ = remaining_preroll_frames;
   current_transport_ = transport;
   current_tempo_map_ = tempo_map;

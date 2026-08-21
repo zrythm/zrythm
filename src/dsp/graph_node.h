@@ -45,6 +45,7 @@ class Utf8String;
 
 namespace zrythm::dsp::graph
 {
+class ForkJoinExecutor;
 class GraphNode;
 
 /**
@@ -121,6 +122,17 @@ public:
    * Number of frames to process in this call, starting from the offset.
    */
   units::sample_u32_t nframes_;
+
+  /**
+   * @brief Fork-join executor for intra-node parallel processing, or nullptr
+   * if unavailable.
+   *
+   * Set by the GraphScheduler at the start of each cycle. Processables may
+   * use it to run parallel sub-tasks that must complete before their process
+   * call returns (e.g. per-voice rendering); it is only meaningful during
+   * the process call.
+   */
+  ForkJoinExecutor * fork_join_executor_ = nullptr;
 };
 
 /**

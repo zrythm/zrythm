@@ -49,6 +49,7 @@
 #include <fmt/std.h>
 
 #include "dsp/audio_bus_configuration.h"
+#include "dsp/fork_join_executor.h"
 #include "dsp/midi_event.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/clap_plugin.h"
@@ -67,9 +68,7 @@
 #include "utils/views.h"
 
 #include <QFile>
-#include <QSemaphore>
 #include <QSocketNotifier>
-#include <QThread>
 #include <QTimer>
 
 #include <clap/helpers/event-list.hh>
@@ -388,12 +387,14 @@ private:
   std::unordered_map<int, PluginRunLoop::Token>     fd_tokens_;
   std::unordered_map<clap_id, PluginRunLoop::Token> timer_tokens_;
 
-  /* thread pool */
-  std::vector<std::unique_ptr<QThread>> threadPool_;
-  std::atomic<bool>                     threadPoolStop_ = { false };
-  std::atomic<int>                      threadPoolTaskIndex_ = { 0 };
-  QSemaphore                            threadPoolSemaphoreProd_;
-  QSemaphore                            threadPoolSemaphoreDone_;
+  /**
+   * @brief Fork-join executor for the current process call (non-owning).
+   *
+   * Set from ProcessBlockInfo at the top of every process_impl() call and
+   * only meaningful during that call; used to serve CLAP thread-pool
+   * requests (see threadPoolRequestExec).
+   */
+  dsp::graph::ForkJoinExecutor * fork_join_executor_ = nullptr;
 
   /* process stuff */
   std::vector<clap_audio_buffer> audio_in_clap_bufs_;
@@ -480,6 +481,12 @@ private:
    */
   mutable std::array<bool, 2> misplaced_main_warning_emitted_{};
   mutable std::array<bool, 2> no_main_warning_emitted_{};
+
+  /** Thread-pool misuse (request_exec without providing
+   * clap_plugin_thread_pool) is warned about once per instance: a
+   * misbehaving plugin would otherwise spam the log every block on the
+   * audio thread. Audio thread only. */
+  bool thread_pool_misuse_warning_emitted_ = false;
 
   clap_process process_{};
 
@@ -1048,26 +1055,51 @@ ClapPlugin::posixFdSupportUnregisterFd (int fd) noexcept
 bool
 ClapPlugin::threadPoolRequestExec (uint32_t numTasks) noexcept
 {
+  // The assert guards direct calls; clap-helpers' proxy already aborts
+  // proxied calls made outside the process call
   assert (threadCheckIsAudioThread ());
 
-  z_warn_if_fail (pimpl_->plugin_->canUseThreadPool ());
-
-  Q_ASSERT (!pimpl_->threadPoolStop_);
-  Q_ASSERT (!pimpl_->threadPool_.empty ());
+  if (!pimpl_->plugin_->canUseThreadPool ())
+    {
+      // Contract violation: the plugin called request_exec without providing
+      // clap_plugin_thread_pool
+      if (!pimpl_->thread_pool_misuse_warning_emitted_)
+        {
+          pimpl_->thread_pool_misuse_warning_emitted_ = true;
+          z_warning (
+            "CLAP plugin '{}' called thread-pool request_exec without "
+            "providing the thread-pool extension",
+            get_node_name ());
+        }
+      return false;
+    }
 
   if (numTasks == 0)
     return true;
 
-  if (numTasks == 1)
+  auto * executor = pimpl_->fork_join_executor_;
+  if (executor == nullptr)
     {
-      pimpl_->plugin_->threadPoolExec (0);
-      return true;
+      // No executor in this processing context: only a trivial request can
+      // be served inline; larger ones are rejected so the plugin falls back
+      // to processing by its own means (as the spec allows us to reject)
+      if (numTasks == 1)
+        {
+          pimpl_->plugin_->threadPoolExec (0);
+          return true;
+        }
+      return false;
     }
 
-  pimpl_->threadPoolTaskIndex_ = 0;
-  pimpl_->threadPoolSemaphoreProd_.release (static_cast<int> (numTasks));
-  pimpl_->threadPoolSemaphoreDone_.acquire (static_cast<int> (numTasks));
-  return true;
+  // The blocking fork-join here is sanctioned by the CLAP thread-pool spec
+  // (and runs inside the RTSan disabler around plugin_->process()).
+  // Single-task jobs run inline on this thread and nested submissions are
+  // rejected by exec()
+  return executor->exec (
+    [] (void * context, uint32_t task_index) noexcept {
+      static_cast<ClapPluginProxy *> (context)->threadPoolExec (task_index);
+    },
+    pimpl_->plugin_.get (), numTasks);
 }
 
 bool
@@ -1272,6 +1304,7 @@ ClapPlugin::process_impl (
 {
   ScopedBool audio_thread_guard{ is_audio_thread };
 
+  pimpl_->fork_join_executor_ = time_info.fork_join_executor_;
   pimpl_->process_.frames_count = time_info.nframes_.in (units::samples);
   pimpl_->process_.steady_time = -1;
 

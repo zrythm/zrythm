@@ -125,7 +125,8 @@ GraphNode::process_chunks_after_splitting_at_loop_points (
         dsp::graph::ProcessBlockInfo{
           .transport_position_ = time_nfo.transport_position_,
           .buffer_offset_ = time_nfo.buffer_offset_,
-          .nframes_ = num_processable_frames },
+          .nframes_ = num_processable_frames,
+          .fork_join_executor_ = time_nfo.fork_join_executor_ },
         transport, tempo_map);
 
       time_nfo.nframes_ -= num_processable_frames;
