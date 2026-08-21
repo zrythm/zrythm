@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 add_executable(zrythm_dsp_benchmarks
+  fork_join_executor_bench.cpp
   graph_scheduler_bench.cpp
 )
 

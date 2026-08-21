@@ -20,6 +20,7 @@ add_executable(zrythm_dsp_unit_tests
   engine_test.cpp
   fader_test.cpp
   file_audio_source_test.cpp
+  fork_join_executor_test.cpp
   graph_builder_test.cpp
   graph_dispatcher_test.cpp
   graph_export_test.cpp

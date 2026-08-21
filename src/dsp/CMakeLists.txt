@@ -24,6 +24,7 @@ target_sources(zrythm_dsp_lib
     engine.cpp
     fader.cpp
     file_audio_source.cpp
+    fork_join_executor.cpp
     graph.cpp
     graph_builder.cpp
     graph_dispatcher.cpp
@@ -96,6 +97,7 @@ target_sources(zrythm_dsp_lib
       engine.h
       fader.h
       file_audio_source.h
+      fork_join_executor.h
       graph.h
       graph_builder.h
       graph_dispatcher.h

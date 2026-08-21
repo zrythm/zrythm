@@ -73,17 +73,13 @@
 
 #include "utils/dsp_context.h"
 #include "utils/logger.h"
+#include "utils/threads.h"
 #include "utils/tracy.h"
 
 #include <fmt/format.h>
 
 #ifndef _WIN32
 #  include <sys/resource.h>
-#endif
-
-#if !defined _WIN32 && defined __GLIBC__
-#  include <dlfcn.h>
-#  include <pthread.h>
 #endif
 
 #include "dsp/graph_scheduler.h"
@@ -338,43 +334,6 @@ GraphThread::run ()
   thread_finished_.store (true);
 }
 
-static size_t
-get_stack_size ()
-{
-  size_t rv = 0;
-#if !defined _WIN32 && defined __GLIBC__
-
-  size_t pt_min_stack = 16384;
-
-#  ifdef PTHREAD_STACK_MIN
-  pt_min_stack = static_cast<size_t> (PTHREAD_STACK_MIN);
-#  endif
-
-  void * handle = dlopen (nullptr, RTLD_LAZY);
-
-  /* This function is internal (it has a GLIBC_PRIVATE) version, but
-   * available via weak symbol, or dlsym, and returns
-   *
-   * GLRO(dl_pagesize) + __static_tls_size + PTHREAD_STACK_MIN
-   */
-
-  auto * __pthread_get_minstack = (size_t (*) (const pthread_attr_t *)) dlsym (
-    handle, "__pthread_get_minstack");
-
-  if (__pthread_get_minstack != nullptr)
-    {
-      pthread_attr_t attr;
-      pthread_attr_init (&attr);
-      rv = __pthread_get_minstack (&attr);
-      z_return_val_if_fail (rv >= pt_min_stack, 0);
-      rv -= pt_min_stack;
-      pthread_attr_destroy (&attr);
-    }
-  dlclose (handle);
-#endif
-  return rv;
-}
-
 GraphThread::GraphThread (
   const int                           id,
   const bool                          is_main,
@@ -382,7 +341,7 @@ GraphThread::GraphThread (
   std::optional<juce::AudioWorkgroup> workgroup)
     : juce::Thread (
         is_main ? "GraphWorkerMain" : fmt::format ("GraphWorker{}", id),
-        THREAD_STACK_SIZE + get_stack_size ()),
+        utils::rt_worker_stack_size (THREAD_STACK_SIZE)),
       id_ (id), is_main_ (is_main), scheduler_ (scheduler),
       audio_workgroup_ (std::move (workgroup))
 {
