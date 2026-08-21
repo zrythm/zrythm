@@ -7,6 +7,8 @@
 #include "dsp/transport.h"
 #include "utils/logger.h"
 
+#include <QThread>
+
 #include <nlohmann/json.hpp>
 
 namespace zrythm::dsp
@@ -33,14 +35,25 @@ Transport::Transport (
 
   property_notification_timer_->setInterval (16);
   property_notification_timer_->callOnTimeout (this, [this] () {
-    if (needs_property_notification_.exchange (false))
+    // Pick up play state changes published by the audio thread
+    const auto rt_feedback = rt_feedback_.load ();
+
+    // Ignore feedback from before the audio thread has seen the latest
+    // request - it is stale and would clobber the newer main-thread state
+    if (rt_feedback.generation < request_generation_)
+      return;
+
+    // Reconcile the main-thread display state with the audio thread's
+    // settled state
+    if (play_state_ != rt_feedback.state)
       {
+        play_state_ = rt_feedback.state;
         Q_EMIT playStateChanged (play_state_);
       }
   });
   property_notification_timer_->start ();
 
-  // Recompute RT snapshot whenever any marker position changes
+  // Republish RT state whenever any marker position changes
   for (
     auto * pos :
     { cue_position_.get (), loop_start_position_.get (),
@@ -48,16 +61,16 @@ Transport::Transport (
       punch_out_position_.get () })
     {
       QObject::connect (pos, &dsp::Position::positionChanged, this, [this] () {
-        update_rt_marker_snapshot ();
+        publish_rt_state ();
       });
     }
 
-  // Recompute RT snapshot when tempo changes (BPM, time signature, etc.)
+  // Republish RT state when tempo changes (BPM, time signature, etc.)
   // — tick values stay the same but sample positions change.
   QObject::connect (
     &tempo_map_wrapper, &dsp::TempoMapWrapper::tempoEventsChanged, this,
     [this] () {
-      update_rt_marker_snapshot ();
+      publish_rt_state ();
 
       // Keep a paused playhead anchored to its musical position, which the
       // tempo change remaps. While rolling or transitioning (including a
@@ -70,14 +83,14 @@ Transport::Transport (
         }
     });
 
-  // Recompute RT snapshot when the sample rate changes.
+  // Republish RT state when the sample rate changes.
   QObject::connect (
     &tempo_map_wrapper, &dsp::TempoMapWrapper::sampleRateChanged, this,
-    [this] () { update_rt_marker_snapshot (); });
+    [this] () { publish_rt_state (); });
 
   if (parent == nullptr)
     {
-      update_rt_marker_snapshot ();
+      publish_rt_state ();
       return;
     }
 
@@ -97,15 +110,19 @@ Transport::Transport (
         { .bar = 5, .beat = 1, .sixteenth = 1, .tick = 0 })
       .asDouble ());
 
-  update_rt_marker_snapshot ();
+  publish_rt_state ();
 }
 
 void
-Transport::update_rt_marker_snapshot ()
+Transport::publish_rt_state ()
 {
+  // Publishers must run on the object's thread so that they are serialized
+  // with the property notification timer
+  Q_ASSERT (QThread::currentThread () == thread ());
+
   const auto &tm = playhead_.get_tempo_map ();
-  rt_markers_.nonRealtimeReplace (
-    MarkerSnapshot{
+  rt_state_.nonRealtimeReplace (
+    TransportRtState{
       .loop_start_samples =
         tm.tick_to_samples_rounded (loop_start_position_->asTick ())
           .in (units::samples),
@@ -118,6 +135,13 @@ Transport::update_rt_marker_snapshot ()
       .punch_out_samples =
         tm.tick_to_samples_rounded (punch_out_position_->asTick ())
           .in (units::samples),
+      .countin_frames = countin_request_frames_.in (units::samples),
+      .recording_preroll_frames = preroll_request_frames_.in (units::samples),
+      .request_generation = request_generation_,
+      .play_state_request = play_state_request_,
+      .loop_enabled = loop_,
+      .punch_enabled = punch_mode_,
+      .recording_enabled = recording_,
     });
 }
 
@@ -130,6 +154,7 @@ Transport::setLoopEnabled (bool enabled)
     }
 
   loop_ = enabled;
+  publish_rt_state ();
   Q_EMIT (loopEnabledChanged (loop_));
 }
 
@@ -142,6 +167,7 @@ Transport::setRecordEnabled (bool enabled)
     }
 
   recording_ = enabled;
+  publish_rt_state ();
   Q_EMIT recordEnabledChanged (recording_);
 }
 
@@ -152,7 +178,30 @@ Transport::setPunchEnabled (bool enabled)
     return;
 
   punch_mode_ = enabled;
+  publish_rt_state ();
   Q_EMIT punchEnabledChanged (enabled);
+}
+
+void
+Transport::request_play_state (PlayState state)
+{
+  play_state_request_ = state;
+
+  // A non-roll request cancels any in-flight count-in/preroll
+  if (state != PlayState::RollRequested)
+    {
+      countin_request_frames_ = units::samples (0);
+      preroll_request_frames_ = units::samples (0);
+    }
+
+  ++request_generation_;
+  publish_rt_state ();
+
+  if (play_state_ != state)
+    {
+      play_state_ = state;
+      Q_EMIT playStateChanged (play_state_);
+    }
 }
 
 void
@@ -163,8 +212,7 @@ Transport::setPlayState (PlayState state)
       return;
     }
 
-  play_state_ = state;
-  Q_EMIT playStateChanged (play_state_);
+  request_play_state (state);
 }
 
 void
@@ -185,25 +233,19 @@ init_from (
   obj.cue_position_->setTicks (other.cue_position_->ticks ());
   obj.punch_in_position_->setTicks (other.punch_in_position_->ticks ());
   obj.punch_out_position_->setTicks (other.punch_out_position_->ticks ());
-  obj.update_rt_marker_snapshot ();
+  obj.publish_rt_state ();
 }
 
 void
-Transport::set_play_state_rt_safe (PlayState state)
+Transport::set_play_state_rt_safe (PlayState state) noexcept
 {
-  if (play_state_ == state)
-    {
-      return;
-    }
-
-  play_state_ = state;
-  needs_property_notification_.store (true);
+  rt_feedback_.set_state (state);
 }
 
 void
 Transport::pause_for_engine_internal ()
 {
-  set_play_state_rt_safe (PlayState::PauseRequested);
+  request_play_state (PlayState::PauseRequested);
 }
 
 void
@@ -251,7 +293,7 @@ Transport::requestRoll ()
   /* handle countin */
   const auto countin_target_pos = calculate_target_position_for_n_bars_before (
     config_provider_.metronome_countin_bars_ ());
-  countin_frames_remaining_ = current_samples - countin_target_pos;
+  countin_request_frames_ = current_samples - countin_target_pos;
 
   if (recording_)
     {
@@ -259,7 +301,7 @@ Transport::requestRoll ()
       const auto preroll_target_pos =
         calculate_target_position_for_n_bars_before (
           config_provider_.recording_preroll_bars_ ());
-      recording_preroll_frames_remaining_ = current_samples - preroll_target_pos;
+      preroll_request_frames_ = current_samples - preroll_target_pos;
 
       // Move playhead to preroll position
       playhead_adapter_->setTicks (
@@ -268,7 +310,7 @@ Transport::requestRoll ()
           .asDouble ());
     }
 
-  setPlayState (PlayState::RollRequested);
+  request_play_state (PlayState::RollRequested);
 }
 
 void
@@ -364,6 +406,6 @@ from_json (const nlohmann::json &j, Transport &transport)
     {
       j.at (Transport::kPunchOutPosKey).get_to (*transport.punch_out_position_);
     }
-  transport.update_rt_marker_snapshot ();
+  transport.publish_rt_state ();
 }
 }

@@ -5,6 +5,8 @@
 #include "dsp/tempo_map_qml_adapter.h"
 #include "dsp/transport.h"
 
+#include <QSignalSpy>
+
 #include "helpers/scoped_qcoreapplication.h"
 
 #include <gmock/gmock.h>
@@ -16,8 +18,23 @@ namespace zrythm::dsp
 
 class TransportTest : public ::testing::Test
 {
+  // Tests in this file simulate the audio thread by calling get_snapshot(),
+  // consume_*() and set_play_state_rt_safe() directly - no live engine
+  // callback exists here.
+
 protected:
   static constexpr auto SAMPLE_RATE = units::sample_rate (44100.0);
+
+  /** Returns a config provider with the given count-in/preroll lengths. */
+  static Transport::ConfigProvider
+  make_config (int countin_bars, int preroll_bars)
+  {
+    return {
+      .return_to_cue_on_pause_ = [] () { return false; },
+      .metronome_countin_bars_ = [countin_bars] () { return countin_bars; },
+      .recording_preroll_bars_ = [preroll_bars] () { return preroll_bars; }
+    };
+  }
 
   void SetUp () override
   {
@@ -28,11 +45,7 @@ protected:
     tempo_map_wrapper_ = std::make_unique<TempoMapWrapper> (*tempo_map_);
 
     // Setup config provider with default values
-    config_provider_ = {
-      .return_to_cue_on_pause_ = [] () { return false; },
-      .metronome_countin_bars_ = [] () { return 0; },
-      .recording_preroll_bars_ = [] () { return 0; }
-    };
+    config_provider_ = make_config (0, 0);
 
     transport_ =
       std::make_unique<Transport> (*tempo_map_wrapper_, config_provider_);
@@ -232,16 +245,21 @@ TEST_F (TransportTest, AudioThreadPlayheadAdvancement)
     new_pos.in (units::samples),
     initial_pos.in (units::samples) + nframes.in (units::samples));
 }
+
 // Test real-time safe play state setting
 TEST_F (TransportTest, RealTimeSafePlayStateSetting)
 {
-  // Set initial state
-  transport_->setPlayState (Transport::PlayState::Paused);
+  QSignalSpy spy (transport_.get (), &Transport::playStateChanged);
 
-  // Use RT-safe setter
+  // Set the state as the audio thread would
   transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
 
-  // State should be updated immediately
+  // The audio thread state is visible immediately via the RT state getter
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), Transport::PlayState::Rolling);
+
+  // The main-thread state is updated once the notification timer fires
+  ASSERT_TRUE (spy.wait ());
   EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Rolling);
 }
 
@@ -268,18 +286,13 @@ TEST_F (TransportTest, MarkerNavigation)
   EXPECT_DOUBLE_EQ (
     transport_->playhead ()->ticks (), 1440.0); // Should go to 1.5 beats
 }
+
 // Test metronome count-in consumption
 TEST_F (TransportTest, MetronomeCountInConsumption)
 {
   // Create a new transport with count-in config
-  Transport::ConfigProvider countin_config = {
-    .return_to_cue_on_pause_ = [] () { return false; },
-    .metronome_countin_bars_ = [] () { return 1; },
-    .recording_preroll_bars_ = [] () { return 0; }
-  };
-
   auto countin_transport =
-    std::make_unique<Transport> (*tempo_map_wrapper_, countin_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, make_config (1, 0));
 
   // Request roll to trigger count-in
   countin_transport->requestRoll ();
@@ -300,18 +313,70 @@ TEST_F (TransportTest, MetronomeCountInConsumption)
     countin_frames.in (units::samples) -consume_frames.in (units::samples));
 }
 
+// Test that re-requesting roll during count-in restarts the count-in
+TEST_F (TransportTest, RollRequestDuringCountInRestartsCountIn)
+{
+  // Create a new transport with count-in config
+  auto countin_transport =
+    std::make_unique<Transport> (*tempo_map_wrapper_, make_config (1, 0));
+
+  // Request roll to trigger count-in
+  countin_transport->requestRoll ();
+  const auto countin_frames =
+    countin_transport->get_snapshot ().metronome_countin_frames_remaining ();
+  ASSERT_GT (countin_frames.in (units::samples), 0);
+
+  // Simulate the audio thread consuming some of the count-in
+  const auto consume_frames = units::samples (200);
+  countin_transport->consume_metronome_countin_samples (consume_frames);
+  ASSERT_EQ (
+    countin_transport->get_snapshot ().metronome_countin_frames_remaining ().in (
+      units::samples),
+    countin_frames.in (units::samples) -consume_frames.in (units::samples));
+
+  // Requesting roll again during the count-in must restart it
+  countin_transport->requestRoll ();
+  EXPECT_EQ (
+    countin_transport->get_snapshot ().metronome_countin_frames_remaining ().in (
+      units::samples),
+    countin_frames.in (units::samples));
+}
+
+// Test that a non-roll request cancels an in-flight count-in/preroll
+TEST_F (TransportTest, PauseCancelsInFlightCountInAndPreroll)
+{
+  // Create a new transport with count-in and preroll config
+  auto transport =
+    std::make_unique<Transport> (*tempo_map_wrapper_, make_config (1, 2));
+  transport->setRecordEnabled (true);
+
+  // Request roll to trigger count-in and preroll
+  transport->requestRoll ();
+  auto snapshot = transport->get_snapshot ();
+  ASSERT_GT (
+    snapshot.metronome_countin_frames_remaining ().in (units::samples), 0);
+  ASSERT_GT (
+    snapshot.recording_preroll_frames_remaining ().in (units::samples), 0);
+
+  // Simulate the audio thread consuming some of each
+  transport->consume_metronome_countin_samples (units::samples (100));
+  transport->consume_recording_preroll_samples (units::samples (100));
+
+  // A pause request cancels both
+  transport->requestPause ();
+  snapshot = transport->get_snapshot ();
+  EXPECT_EQ (
+    snapshot.metronome_countin_frames_remaining ().in (units::samples), 0);
+  EXPECT_EQ (
+    snapshot.recording_preroll_frames_remaining ().in (units::samples), 0);
+}
+
 // Test recording preroll consumption
 TEST_F (TransportTest, RecordingPrerollConsumption)
 {
   // Create a new transport with preroll config
-  Transport::ConfigProvider preroll_config = {
-    .return_to_cue_on_pause_ = [] () { return false; },
-    .metronome_countin_bars_ = [] () { return 0; },
-    .recording_preroll_bars_ = [] () { return 2; }
-  };
-
   auto preroll_transport =
-    std::make_unique<Transport> (*tempo_map_wrapper_, preroll_config);
+    std::make_unique<Transport> (*tempo_map_wrapper_, make_config (0, 2));
 
   // Enable recording and request roll to trigger preroll
   preroll_transport->setRecordEnabled (true);
@@ -332,6 +397,7 @@ TEST_F (TransportTest, RecordingPrerollConsumption)
       units::samples),
     preroll_frames.in (units::samples) -consume_frames.in (units::samples));
 }
+
 // Test serialization/deserialization
 TEST_F (TransportTest, Serialization)
 {
@@ -362,25 +428,76 @@ TEST_F (TransportTest, Serialization)
 // Test property notification timer behavior
 TEST_F (TransportTest, PropertyNotificationTimer)
 {
-  // This test verifies that the property notification timer is working
-  // We can't directly test the timer behavior, but we can verify
-  // that RT-safe state changes don't immediately emit signals
+  QSignalSpy spy (transport_.get (), &Transport::playStateChanged);
 
-  testing::MockFunction<void ()> mock_handler;
-  QObject::connect (
-    transport_.get (), &Transport::playStateChanged, transport_.get (),
-    mock_handler.AsStdFunction ());
-
-  // Use RT-safe setter - should not immediately emit signal
-  EXPECT_CALL (mock_handler, Call ()).Times (0);
+  // Audio-thread-originated state changes must not emit the signal
+  // immediately; the notification timer emits it once the change is picked
+  // up on the main thread
   transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
+  EXPECT_EQ (spy.count (), 0);
 
-  // State should be changed but signal not emitted yet
+  ASSERT_TRUE (spy.wait ());
+  EXPECT_EQ (spy.count (), 1);
+  EXPECT_EQ (
+    spy.at (0).at (0).value<Transport::PlayState> (),
+    Transport::PlayState::Rolling);
   EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Rolling);
+}
 
-  // Note: In a real test environment, we'd need to wait for the timer
-  // to fire and then expect the signal. For unit tests, we verify the
-  // interface behavior.
+// Test that audio-thread feedback predating the latest play state request is
+// not applied over the newer main-thread state
+TEST_F (TransportTest, StaleRtFeedbackIgnoredWhileRequestPending)
+{
+  QSignalSpy spy (transport_.get (), &Transport::playStateChanged);
+
+  // Request a new play state; the audio thread has not seen it yet
+  transport_->setPlayState (Transport::PlayState::RollRequested);
+  ASSERT_EQ (spy.count (), 1);
+  spy.clear ();
+
+  // Until the audio thread latches the request, the effective RT state is
+  // still the previously settled one
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), Transport::PlayState::Paused);
+
+  // Stale feedback from before the request
+  transport_->set_play_state_rt_safe (Transport::PlayState::PauseRequested);
+
+  // The timer fires several times within this window but must not apply the
+  // stale state
+  EXPECT_FALSE (spy.wait (100));
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::RollRequested);
+
+  // Once the audio thread latches the request, feedback flows again
+  transport_->get_snapshot ();
+  EXPECT_EQ (
+    transport_->effective_rt_play_state (), Transport::PlayState::RollRequested);
+  transport_->set_play_state_rt_safe (Transport::PlayState::Rolling);
+  ASSERT_TRUE (spy.wait ());
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Rolling);
+}
+
+// Test that the main-thread play state is reconciled to the audio thread's
+// settled state even when the timer never observes an intermediate state
+TEST_F (TransportTest, DisplayStateReconcilesToSettledRtState)
+{
+  QSignalSpy spy (transport_.get (), &Transport::playStateChanged);
+
+  // Quick request cycle: both requests settle before the timer can observe
+  // any intermediate audio-thread state
+  transport_->requestRoll ();
+  transport_->requestPause ();
+  spy.clear ();
+
+  // Simulate the audio thread latching the latest request and settling to
+  // Paused within a single processing cycle
+  transport_->get_snapshot ();
+  transport_->set_play_state_rt_safe (Transport::PlayState::Paused);
+
+  // The display state must converge to Paused even though the sampled RT
+  // state never differed from its pre-request value
+  ASSERT_TRUE (spy.wait ());
+  EXPECT_EQ (transport_->getPlayState (), Transport::PlayState::Paused);
 }
 
 // Test loop end crossing in audio thread

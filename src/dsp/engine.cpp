@@ -232,10 +232,25 @@ AudioEngine::
         }
       else
         {
+          // Best-effort drain of an in-flight audio cycle that has already
+          // latched the pause request. This may exit immediately if no cycle
+          // has latched it yet - the flush cycle below is what actually
+          // applies the pause.
+          constexpr auto kPauseDrainTimeout = std::chrono::seconds (2);
+          const auto     start_time = std::chrono::steady_clock::now ();
           while (
-            transport_.getPlayState ()
+            transport_.effective_rt_play_state ()
             == dsp::Transport::PlayState::PauseRequested)
             {
+              if (
+                std::chrono::steady_clock::now () - start_time
+                >= kPauseDrainTimeout)
+                {
+                  // The audio callback is likely wedged - continue anyway;
+                  // the flush cycle below applies the pause
+                  z_warning ("timed out waiting for the audio thread to pause");
+                  break;
+                }
               std::this_thread::sleep_for (std::chrono::microseconds (100));
             }
         }
@@ -244,6 +259,9 @@ AudioEngine::
   z_debug ("setting run to false and waiting for cycle to finish...");
   run_.store (false);
   {
+    // Note: if the audio callback is wedged while holding the lock, this
+    // still blocks indefinitely - the drain timeout above only bounds the
+    // polling phase
     auto lock = get_processing_lock ();
   }
   z_debug ("cycle finished");

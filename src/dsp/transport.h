@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "dsp/itransport.h"
 #include "dsp/playhead_qml_adapter.h"
 #include "dsp/position.h"
@@ -338,6 +340,26 @@ public:
     return playhead_.position_during_processing_rounded ();
   }
 
+  /**
+   * @brief Effective play state as last set by the audio thread.
+   *
+   * Unlike getPlayState(), which reflects the latest state known on the main
+   * thread (including pending requests), this returns the audio thread's
+   * state directly. Safe to call from any thread, including while the main
+   * thread event loop is blocked.
+   *
+   * @note Between the audio thread latching a request and settling it, this
+   * returns the requested state (e.g., PauseRequested until the pause is
+   * applied).
+   *
+   * @note The engine's flush cycle also sets this from the main thread
+   * while holding the processing lock.
+   */
+  PlayState effective_rt_play_state () const noexcept [[clang::nonblocking]]
+  {
+    return rt_feedback_.load ().state;
+  }
+
   // ==================================================================
 
   Q_INVOKABLE bool isRolling () const
@@ -358,7 +380,15 @@ public:
     const dsp::Transport::TransportSnapshot &transport_snapshot,
     units::sample_t nframes) noexcept [[clang::nonblocking]];
 
-  void set_play_state_rt_safe (PlayState state);
+  /**
+   * @brief Sets the effective play state from the audio thread.
+   *
+   * The main thread is notified via the property notification timer.
+   *
+   * @warning Same calling contract as get_snapshot(): audio thread, or main
+   * thread while the engine is stopped and holding the processing lock.
+   */
+  void set_play_state_rt_safe (PlayState state) noexcept [[clang::nonblocking]];
 
   /**
    * Moves playhead to given pos.
@@ -438,44 +468,69 @@ public:
   }
 
   /**
-   * @brief For engine use only.
+   * @brief For engine use only (audio thread).
    *
    * @param samples Samples to consume.
    */
-  void consume_metronome_countin_samples (units::sample_t samples)
+  void consume_metronome_countin_samples (units::sample_t samples) noexcept
+    [[clang::nonblocking]]
   {
-    assert (countin_frames_remaining_ >= samples);
-    countin_frames_remaining_ -= samples;
+    assert (rt_countin_frames_remaining_ >= samples);
+    rt_countin_frames_remaining_ -= samples;
   }
 
   /**
-   * @brief For engine use only.
+   * @brief For engine use only (audio thread).
    *
    * @param samples Samples to consume.
    */
-  void consume_recording_preroll_samples (units::sample_t samples)
+  void consume_recording_preroll_samples (units::sample_t samples) noexcept
+    [[clang::nonblocking]]
   {
-    assert (recording_preroll_frames_remaining_ >= samples);
-    recording_preroll_frames_remaining_ -= samples;
+    assert (rt_preroll_frames_remaining_ >= samples);
+    rt_preroll_frames_remaining_ -= samples;
   }
 
-  auto get_snapshot () const noexcept [[clang::nonblocking]]
+  /**
+   * @brief Returns a snapshot of the current transport state for processing.
+   *
+   * Latches any newly requested state published by the main thread (hence
+   * non-const).
+   *
+   * @warning Must only be called from the audio thread, or from the main
+   * thread while the engine is stopped and holding the processing lock
+   * (e.g., the flush cycle). The audio callback reaches this even without
+   * acquiring the processing lock, so only the engine being stopped
+   * excludes it - the lock alone does not.
+   */
+  auto get_snapshot () noexcept [[clang::nonblocking]]
   {
-    decltype (rt_markers_)::ScopedAccess<farbot::ThreadType::realtime> access{
-      rt_markers_
+    decltype (rt_state_)::ScopedAccess<farbot::ThreadType::realtime> access{
+      rt_state_
     };
+
+    // Latch newly requested play state / countin / preroll
+    if (access->request_generation != rt_feedback_.load ().generation)
+      {
+        rt_feedback_.store (
+          access->request_generation, access->play_state_request);
+        rt_countin_frames_remaining_ = units::samples (access->countin_frames);
+        rt_preroll_frames_remaining_ =
+          units::samples (access->recording_preroll_frames);
+      }
+
     return TransportSnapshot{
       { units::samples (access->loop_start_samples),
        units::samples (access->loop_end_samples)  },
       { units::samples (access->punch_in_samples),
        units::samples (access->punch_out_samples) },
       get_playhead_position_in_audio_thread (),
-      recording_preroll_frames_remaining_,
-      countin_frames_remaining_,
-      play_state_,
-      loop_,
-      punch_mode_,
-      recording_
+      rt_preroll_frames_remaining_,
+      rt_countin_frames_remaining_,
+      rt_feedback_.load ().state,
+      access->loop_enabled,
+      access->punch_enabled,
+      access->recording_enabled
     };
   }
 
@@ -500,16 +555,114 @@ private:
    */
   bool can_user_move_playhead () const;
 
-  /** Pre-computed marker sample positions for lock-free audio-thread reads. */
-  struct MarkerSnapshot
+  /**
+   * @brief State published from the main thread to the audio thread.
+   *
+   * Replaced wholesale via @ref rt_state_ on any change, so the audio thread
+   * always reads a consistent snapshot.
+   */
+  struct TransportRtState
   {
+    /** Pre-computed marker sample positions. */
     int64_t loop_start_samples{};
     int64_t loop_end_samples{};
     int64_t punch_in_samples{};
     int64_t punch_out_samples{};
+
+    /** Countin/preroll frames from the last roll request. */
+    int64_t countin_frames{};
+    int64_t recording_preroll_frames{};
+
+    /** Incremented on each new play state request. */
+    uint64_t request_generation{};
+
+    /** Last requested play state (latched by the audio thread when
+     * @ref request_generation changes). */
+    PlayState play_state_request{ PlayState::Paused };
+
+    bool loop_enabled{ true };
+    bool punch_enabled{ false };
+    bool recording_enabled{ false };
   };
 
-  void update_rt_marker_snapshot ();
+  /** Publishes the current main-thread state to @ref rt_state_. */
+  void publish_rt_state ();
+
+  /**
+   * @brief Audio-thread play state feedback, packed with the generation of
+   * the request it corresponds to.
+   *
+   * A single atomic word so readers always observe a consistent
+   * (generation, state) pair: the staleness check and the state read can
+   * never straddle a latch.
+   *
+   * Writers follow the get_snapshot() calling contract (single writer at a
+   * time), so the read-modify-write in set_state() is safe.
+   */
+  class RtPlayStateFeedback
+  {
+  public:
+    struct Snapshot
+    {
+      /** Generation of the latest request latched by the audio thread. */
+      uint64_t generation;
+
+      /** Effective play state on the audio thread. */
+      PlayState state;
+    };
+
+    Snapshot load () const noexcept [[clang::nonblocking]]
+    {
+      const auto packed = packed_.load ();
+      return {
+        .generation = packed >> kStateBitWidth,
+        .state = static_cast<PlayState> (packed & kStateMask)
+      };
+    }
+
+    void
+    store (uint64_t generation, PlayState state) noexcept [[clang::nonblocking]]
+    {
+      assert ((generation >> kGenerationBitWidth) == 0);
+      packed_.store (pack (generation, state));
+    }
+
+    void set_state (PlayState state) noexcept [[clang::nonblocking]]
+    {
+      packed_.store (pack (packed_.load () >> kStateBitWidth, state));
+    }
+
+  private:
+    /** The state gets its enum's width; the generation gets the rest. */
+    static constexpr auto kStateBitWidth = sizeof (PlayState) * 8;
+    static constexpr auto kGenerationBitWidth = 64 - kStateBitWidth;
+    static constexpr uint64_t kStateMask = (uint64_t{ 1 } << kStateBitWidth) - 1;
+
+    static_assert (kGenerationBitWidth >= 32);
+
+    static constexpr uint64_t pack (uint64_t generation, PlayState state)
+    {
+      return (generation << kStateBitWidth) | static_cast<uint64_t> (state);
+    }
+
+    std::atomic<uint64_t> packed_{ pack (0, PlayState::Paused) };
+  };
+
+  /**
+   * @brief Requests a play state change.
+   *
+   * Publishes the request to the audio thread with a new generation, then
+   * updates the main-thread display state and emits @ref playStateChanged
+   * if it changed.
+   *
+   * Unlike setPlayState(), this always publishes, even when the display
+   * state already matches @a state (e.g., re-requesting roll during
+   * count-in must re-publish the recomputed count-in).
+   *
+   * @warning Must only be called on the object's thread (the thread the
+   * property notification timer fires on), like all other publishers.
+   */
+  void request_play_state (PlayState state);
 
 private:
   /** Playhead position. */
@@ -532,15 +685,19 @@ private:
   utils::QObjectUniquePtr<dsp::TimelinePosition> punch_out_position_;
 
   /**
-   * @brief Pre-computed marker sample positions for audio-thread access.
+   * @brief Main→RT transport state.
    *
-   * Updated on the main thread whenever a position changes, read on the
-   * audio thread via get_snapshot().
+   * Replaced on the main thread via publish_rt_state(), read on the audio
+   * thread via get_snapshot().
    */
-  mutable farbot::RealtimeObject<
-    MarkerSnapshot,
+  farbot::RealtimeObject<
+    TransportRtState,
     farbot::RealtimeObjectOptions::nonRealtimeMutatable>
-    rt_markers_;
+    rt_state_;
+
+  // ==================================================================
+  // Main-thread-owned state (only the main thread may read/write these)
+  // ==================================================================
 
   /** Looping or not. */
   bool loop_{ true };
@@ -552,11 +709,32 @@ private:
    * bar). */
   bool recording_{ false };
 
-  /** Recording preroll frames remaining. */
-  units::sample_t recording_preroll_frames_remaining_;
+  /** Play state as known on the main thread (backs the QML property). */
+  PlayState play_state_{ PlayState::Paused };
 
-  /** Metronome countin frames remaining. */
-  units::sample_t countin_frames_remaining_;
+  /** Last requested play state / countin / preroll, published to the audio
+   * thread via publish_rt_state(). */
+  PlayState       play_state_request_{ PlayState::Paused };
+  units::sample_t countin_request_frames_{};
+  units::sample_t preroll_request_frames_{};
+  uint64_t        request_generation_{};
+
+  // ==================================================================
+  // Audio-thread-owned state (only the audio thread may write these)
+  // ==================================================================
+
+  /** Play state feedback from the audio thread, polled by the main thread
+   * for QML notification. */
+  RtPlayStateFeedback rt_feedback_;
+
+  /**
+   * @brief Latch of the latest published countin/preroll request.
+   *
+   * Only latched from get_snapshot(), whose calling contract guarantees a
+   * single writer, so no further synchronization is needed.
+   */
+  units::sample_t rt_countin_frames_remaining_{};
+  units::sample_t rt_preroll_frames_remaining_{};
 
   /**
    * Position of the playhead before pausing, in ticks.
@@ -565,18 +743,14 @@ private:
    */
   units::precise_tick_t playhead_before_pause_;
 
-  /** Play state. */
-  PlayState play_state_{ PlayState::Paused };
-
   /**
-   * @brief Timer used to notify the property system of changes (e.g.
-   * playhead position).
+   * @brief Timer used to poll audio-thread state and notify the property
+   * system of changes (e.g. play state).
    *
    * This is used to avoid Q_EMIT on realtime threads because Q_EMIT is not
    * realtime safe.
    */
-  QTimer *          property_notification_timer_ = nullptr;
-  std::atomic<bool> needs_property_notification_{ false };
+  QTimer * property_notification_timer_ = nullptr;
 
   ConfigProvider config_provider_;
 };
