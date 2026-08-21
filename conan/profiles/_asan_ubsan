@@ -13,7 +13,3 @@ tools.build:sharedlinkflags+=["-fsanitize=address,undefined"]
 [buildenv]
 ASAN_OPTIONS=detect_leaks=0:halt_on_error=0:abort_on_error=0
 UBSAN_OPTIONS=halt_on_error=0
-
-[runenv]
-ASAN_OPTIONS=halt_on_error=1:detect_leaks=1:abort_on_error=1
-UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1

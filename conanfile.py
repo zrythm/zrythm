@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 from conan import ConanFile
+from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.build import check_min_cppstd
+from conan.tools.env import VirtualRunEnv
 from conan.tools.files import load
 import json
 import os
@@ -61,12 +63,11 @@ class Zrythm(ConanFile):
             self.tool_requires("ninja/[>=1]")
 
     def configure(self):
-        # NOTE: the 8 enabled Qt modules below (qtdeclarative, qtquickcontrols2,
-        # qttools, qttranslations, qtcanvaspainter, qtlanguageserver, qtsvg,
-        # qtshadertools) and with_pq/with_odbc are MIRRORED in
-        # conan/profiles/_qt_common. Conan 2 does not propagate these
-        # consumer options to build-context tool_requires, so _qt_common must
-        # set them too. Keep the two in sync when changing either.
+        # Conan 2 does not propagate consumer options to build-context
+        # tool_requires, so the options the build-context qt also needs are
+        # mirrored in conan/profiles/_qt_common: the 8 enabled qt modules,
+        # with_pq/with_odbc and with_glib. Keep in sync. (with_dbus needs no
+        # mirror - our qt recipe forwards it to its self-tool_requires.)
         self.options["qt"].shared = True
         self.options["qt"].with_glib = False
         self.options["harfbuzz"].with_glib = False
@@ -140,6 +141,28 @@ class Zrythm(ConanFile):
 
         self.options["boost"].header_only = True
 
+    @staticmethod
+    def _profile_sanitizer_option(profile_san):
+        """Maps a compiler.sanitizer profile setting value to the vocabulary
+        of the 'sanitizer' option (empty string if unset)."""
+        if not profile_san:
+            return ""
+        if "Address" in profile_san and "UndefinedBehavior" in profile_san:
+            return "address_undefined"
+        if "Thread" in profile_san and "UndefinedBehavior" in profile_san:
+            return "thread_undefined"
+        if "Thread" in profile_san:
+            return "thread"
+        if "Address" in profile_san:
+            return "address"
+        if "UndefinedBehavior" in profile_san:
+            return "undefined"
+        if "Realtime" in profile_san:
+            return "realtime"
+        if "Memory" in profile_san:
+            return "memory"
+        return ""
+
     def build(self):
         cmake = CMake(self)
         cmake.configure()
@@ -156,22 +179,10 @@ class Zrythm(ConanFile):
         tc = CMakeToolchain(self)
 
         san_opt = str(self.options.get_safe("sanitizer", "none"))
-        profile_san = self.settings.get_safe("compiler.sanitizer") or ""
-        if profile_san:
-            if "Address" in profile_san and "UndefinedBehavior" in profile_san:
-                san_opt = "address_undefined"
-            elif "Thread" in profile_san and "UndefinedBehavior" in profile_san:
-                san_opt = "thread_undefined"
-            elif "Thread" in profile_san:
-                san_opt = "thread"
-            elif "Address" in profile_san:
-                san_opt = "address"
-            elif "UndefinedBehavior" in profile_san:
-                san_opt = "undefined"
-            elif "Realtime" in profile_san:
-                san_opt = "realtime"
-            elif "Memory" in profile_san:
-                san_opt = "memory"
+        profile_san_opt = self._profile_sanitizer_option(
+            self.settings.get_safe("compiler.sanitizer") or "")
+        if profile_san_opt:
+            san_opt = profile_san_opt
 
         parts = san_opt.split("_")
         sans = set()
@@ -192,6 +203,42 @@ class Zrythm(ConanFile):
         tc.cache_variables["ZRYTHM_ENABLE_SANITIZER_MEMORY"] = "ON" if "memory" in sans else "OFF"
         tc.cache_variables["ZRYTHM_ENABLE_SANITIZER_REALTIME"] = "ON" if "realtime" in sans else "OFF"
         tc.generate()
+
+        # Sanitizer runtime options (with suppressions) for test runs,
+        # composed into the generated conanrun.sh. Profiles cannot provide
+        # the absolute suppressions paths (they are installed into the Conan
+        # home), so the recipe folder is the single source of truth
+        san_run_options = {}
+        if "address" in sans:
+            san_run_options["ASAN_OPTIONS"] = (
+                "halt_on_error=1:abort_on_error=1:detect_leaks=1"
+                ":strict_string_checks=1:detect_stack_use_after_return=1"
+                ":check_initialization_order=1:strict_init_order=1"
+                f":suppressions={os.path.join(self.recipe_folder, 'tools', 'asan_suppressions.supp')}")
+        if "undefined" in sans:
+            san_run_options["UBSAN_OPTIONS"] = (
+                "print_stacktrace=1:halt_on_error=1:abort_on_error=1"
+                f":suppressions={os.path.join(self.recipe_folder, 'tools', 'ubsan_suppressions.supp')}")
+        if "thread" in sans:
+            san_run_options["TSAN_OPTIONS"] = (
+                "halt_on_error=1:second_deadlock_stack=1"
+                ":ignore_noninstrumented_modules=1"
+                f":suppressions={os.path.join(self.recipe_folder, 'tools', 'tsan_suppressions.supp')}")
+        if "address" in sans or "thread" in sans:
+            # The QV4 JIT is incompatible with ASan (shadow memory vs
+            # JIT-allocated code) and crashes under TSan: force the
+            # interpreter
+            san_run_options["QV4_FORCE_INTERPRETER"] = "1"
+        if "realtime" in sans:
+            san_run_options["RTSAN_OPTIONS"] = (
+                "halt_on_error=1"
+                f":suppressions={os.path.join(self.recipe_folder, 'tools', 'rtsan_suppressions.supp')}")
+        if san_run_options:
+            run_env = VirtualRunEnv(self)
+            env = run_env.environment()
+            for var, value in san_run_options.items():
+                env.define(var, value)
+            run_env.generate()
 
         build_rel = os.path.relpath(self.build_folder, self.source_folder)
         gen_rel = os.path.relpath(self.generators_folder, self.source_folder)
@@ -252,3 +299,26 @@ class Zrythm(ConanFile):
 
     def validate(self):
         check_min_cppstd(self, "23")
+
+        san_opt = str(self.options.get_safe("sanitizer", "none"))
+        profile_san_opt = self._profile_sanitizer_option(
+            self.settings.get_safe("compiler.sanitizer") or "")
+
+        if san_opt != "none" and profile_san_opt and san_opt != profile_san_opt:
+            raise ConanInvalidConfiguration(
+                f"the 'sanitizer' option ('{san_opt}') conflicts with the "
+                f"profile's compiler.sanitizer setting ('{profile_san_opt}'); "
+                "select the sanitizer in one place only, or make both agree")
+
+        # ThreadSanitizer requires dependencies built with TSan too:
+        # uninstrumented Qt aborts the TSan runtime outright (its
+        # pthread_clockjoin_np-based thread join is not intercepted by TSan),
+        # and races inside other uninstrumented dependencies go undetected.
+        # Only the profile setting drives the dependencies' package IDs, so
+        # the option alone must not be used to request a TSan build.
+        if "thread" in (profile_san_opt or san_opt).split("_") and not profile_san_opt:
+            raise ConanInvalidConfiguration(
+                "ThreadSanitizer builds require the compiler.sanitizer=Thread "
+                "profile setting so that dependencies are instrumented too "
+                "(e.g. -pr:h clang_tsan); the 'sanitizer' option alone only "
+                "instruments Zrythm itself")

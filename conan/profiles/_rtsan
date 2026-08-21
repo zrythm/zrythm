@@ -12,6 +12,3 @@ tools.build:sharedlinkflags+=["-fsanitize=realtime"]
 
 [buildenv]
 RTSAN_OPTIONS=halt_on_error=0
-
-[runenv]
-RTSAN_OPTIONS=halt_on_error=1

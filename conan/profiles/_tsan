@@ -12,6 +12,3 @@ tools.build:sharedlinkflags+=["-fsanitize=thread"]
 
 [buildenv]
 TSAN_OPTIONS=halt_on_error=0
-
-[runenv]
-TSAN_OPTIONS=halt_on_error=1:second_deadlock_stack=1

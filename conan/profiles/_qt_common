@@ -16,3 +16,5 @@ qt/*:qtsvg=True
 qt/*:qtshadertools=True
 qt/*:with_pq=False
 qt/*:with_odbc=False
+qt/*:with_glib=False
+harfbuzz/*:with_glib=False

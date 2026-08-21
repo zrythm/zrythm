@@ -79,7 +79,6 @@ stages:
   variables:
     HOST_PROFILE: "clang_debug"
     SANITIZER_OPTION: "address_undefined"
-    RTSAN_OPTIONS: "suppressions=$CI_PROJECT_DIR/tools/rtsan_suppressions.supp"
   before_script:
     - *unix-activate-venv
   script:
@@ -372,6 +371,21 @@ check:sanitizer-realtime:
   extends: .sanitizer-template
   variables:
     SANITIZER_OPTION: "realtime"
+
+# Hygiene for self-hosted runner Conan caches, run every 2 months: drops
+# regenerable build/temp/download trees and binaries unused for 4+ weeks
+# (LRU is accurate here because every job starts with `conan install`).
+# Runs only in scheduled pipelines - create a schedule on master with cron
+# "0 4 1 */2 *". The schedule also runs the regular branch pipeline.
+runner-cache-hygiene:
+  extends: .gnu-linux-template
+  stage: setup
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  script:
+    - conan cache clean -b -t -d
+    - conan remove "*" --lru=4w -c
 
 build:sanitizer-asan-ubsan:mac-arm:
   extends: .mac-arm-template

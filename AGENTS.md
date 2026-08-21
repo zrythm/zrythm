@@ -189,6 +189,9 @@ Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and us
 ```bash
 # CI/CD
 # Note: use 'trace' instead of 'view' - 'view' requires a TTY
+# IMPORTANT: job traces are re-downloaded on every fetch. When analyzing a trace,
+# save it to a local file ONCE (e.g. `glab ci trace <job-id> ... > /tmp/trace.log`)
+# and grep/read that file afterwards - do not re-run trace for each search.
 glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get job logs (use | tail -N for large outputs)
 glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List recent pipelines
 glab ci get -b <branch> -R https://gitlab.zrythm.org/zrythm/zrythm # Get pipeline details (SHA, jobs) for a branch

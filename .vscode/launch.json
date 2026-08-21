@@ -57,7 +57,7 @@
           },
           {
             "description": "Source Conan runtime environment and apply sanitizer suppressions",
-            "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${workspaceFolder} ${command:cmake.buildDirectory}"
+            "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${command:cmake.buildDirectory}"
           },
         ]
       },
@@ -159,7 +159,7 @@
       "setupCommands": [
         {
           "description": "Source Conan runtime environment and apply sanitizer suppressions",
-          "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${workspaceFolder} ${command:cmake.buildDirectory}",
+          "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${command:cmake.buildDirectory}",
           "ignoreFailures": true
         }
       ],
@@ -212,7 +212,7 @@
       "setupCommands": [
         {
           "description": "Source Conan runtime environment and apply sanitizer suppressions",
-          "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${workspaceFolder} ${command:cmake.buildDirectory}",
+          "text": "set exec-wrapper ${workspaceFolder}/tools/conanrun_wrapper.sh ${command:cmake.buildDirectory}",
           "ignoreFailures": true
         }
       ],

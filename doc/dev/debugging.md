@@ -37,6 +37,40 @@ Explanation for options:
 - `--suppressions=tools/vg.sup` tells valgrind to ignore errors that are outside Zrythm's control and false positives
 - `--vgdb-error=1` will make valgrind pause execution on the first error and allow gdb to be attached to it (valgrind will print instructions)
 
+# Sanitizers
+
+The generated `conanbuild/<config>/generators/conanrun.sh` carries the
+runtime options and suppressions file paths for the sanitizer enabled at
+`conan install` time (composed by `conanfile.py`; suppressions live in
+`tools/*_suppressions.supp`). Source it before running tests or binaries:
+
+    source conanbuild/Debug/generators/conanrun.sh
+
+Sanitizers are selected either by the `compiler.sanitizer` profile setting
+(e.g. `-pr:h clang_tsan`, which also instruments dependencies) or by the
+consumer-scoped `-o sanitizer=...` option (which instruments only Zrythm
+itself). The recipe rejects combinations that would produce a silently
+half-instrumented build: a `thread` selection without the profile setting,
+or an option that disagrees with the profile. ThreadSanitizer builds must
+use the profile because uninstrumented Qt aborts the TSan runtime (its
+`pthread_clockjoin_np`-based thread join is not intercepted by TSan).
+
+ASan and TSan builds also get `QV4_FORCE_INTERPRETER=1` in the composed
+environment: the QML JIT is incompatible with ASan (shadow memory vs
+JIT-allocated code) and crashes under TSan.
+
+The qt recipe revision pinned in `conan.lock` comes from the vendored
+recipe in `ext/conan-center-index` and exists in the local Conan cache only
+after `tools/export_conan_recipes.py` runs (CI does this in
+`before_script`). Conan commands that skip the export fail to resolve the
+pin.
+
+For gdb sessions, `tools/conanrun_wrapper.sh` (used by
+`.vscode/launch.json` as an exec-wrapper) sources the same file and adds
+gdb-specific overrides: `detect_leaks=0` (LSan aborts under ptrace) and
+`QV4_FORCE_INTERPRETER=1` unconditionally (the same launch configs serve
+all build types).
+
 # Profiling
 
 ## perf
