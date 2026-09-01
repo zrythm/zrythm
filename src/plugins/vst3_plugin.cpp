@@ -1231,7 +1231,7 @@ Vst3Plugin::hide_editor ()
 }
 
 void
-Vst3Plugin::detach_editor ()
+Vst3Plugin::detach_editor (bool destroy_window)
 {
   if (!pimpl_->view_attached_)
     return;
@@ -1245,7 +1245,10 @@ Vst3Plugin::detach_editor ()
     pimpl_->view_->setFrame (nullptr);
   }
   pimpl_->plug_frame_.reset ();
-  pimpl_->editor_window_.reset ();
+  if (destroy_window)
+    pimpl_->editor_window_.reset ();
+  else
+    pimpl_->editor_window_->setVisible (false);
   pimpl_->view_attached_ = false;
 }
 
@@ -1674,7 +1677,11 @@ Vst3Plugin::load_plugin (
 void
 Vst3Plugin::unload_current_plugin ()
 {
-  detach_editor ();
+  // Keep the host window alive past the view teardown: plugin toolkits
+  // can still reference the embed parent while their view is being
+  // destroyed (e.g. LSP pokes it at view release), so the window is only
+  // destroyed at the end of this function
+  detach_editor (false);
   release_resources_impl ();
 
   // The teardown below destroys the plug-in's run loop handlers and
@@ -1703,6 +1710,9 @@ Vst3Plugin::unload_current_plugin ()
   pimpl_->host_app_ = nullptr;
   pimpl_->process_data_.unprepare ();
   pimpl_->module_.reset ();
+  // The view is fully released by now: safe to destroy the host window
+  // (see the detach_editor call above)
+  pimpl_->editor_window_.reset ();
 }
 
 void

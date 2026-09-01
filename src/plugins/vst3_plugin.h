@@ -120,9 +120,15 @@ private:
   void hide_editor ();
 
   /**
-   * @brief Detaches the plugin's editor view and destroys the host window.
+   * @brief Detaches the plugin's editor view.
+   *
+   * @param destroy_window Whether to destroy the host window. When false,
+   * the window is only hidden: plugin toolkits may still reference the
+   * embed parent during their view teardown, so on unload the window is
+   * kept alive until the view is fully released (see
+   * unload_current_plugin).
    */
-  void detach_editor ();
+  void detach_editor (bool destroy_window = true);
 
   /**
    * @brief Loads the plugin at the given path.

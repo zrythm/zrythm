@@ -1587,10 +1587,19 @@ X11PluginHostWindow::~X11PluginHostWindow ()
       mgr.unregister_window (pimpl_->win_);
       mgr.unregister_window (pimpl_->header_win_);
       mgr.unregister_window (pimpl_->embed_win_);
-      // Destroying the toplevel recursively destroys the embedded client,
-      // whose events would otherwise dispatch to a dangling handler
       if (pimpl_->embedded_client_.has_value ())
-        mgr.unregister_window (*pimpl_->embedded_client_);
+        {
+          mgr.unregister_window (*pimpl_->embedded_client_);
+          // The plugin owns its editor window and can outlive this
+          // window (its teardown runs after ours): hand it back to the
+          // root window so the recursive destroy below does not kill it
+          // behind the plugin's back. The window may already be dead
+          // (plugin removed it first) — tolerate that
+          ScopedXErrorTrap trap (*dpy, *pimpl_->embedded_client_);
+          XReparentWindow (
+            dpy, *pimpl_->embedded_client_, DefaultRootWindow (dpy), 0, 0);
+          XUnmapWindow (dpy, *pimpl_->embedded_client_);
+        }
       if (pimpl_->gc_ != nullptr)
         XFreeGC (dpy, pimpl_->gc_);
       XDestroyWindow (dpy, pimpl_->win_);
