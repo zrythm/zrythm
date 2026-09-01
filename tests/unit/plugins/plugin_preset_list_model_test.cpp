@@ -196,6 +196,76 @@ TEST_F (PluginPresetListModelTest, HasGroupsChangedEmittedOnTransitions)
   EXPECT_EQ (spy.count (), 2);
 }
 
+TEST_F (
+  PluginPresetListModelTest,
+  GroupsAreDerivedWithCountsInFirstAppearanceOrder)
+{
+  plugin_->replace_presets (
+    {
+      { QStringLiteral ("A"), QStringLiteral ("Factory"), 0 },
+      { QStringLiteral ("B"), QStringLiteral ("User"),    1 },
+      { QStringLiteral ("C"), QStringLiteral ("Factory"), 2 },
+      { QStringLiteral ("D"), {},                         3 },
+  });
+  model_.setPlugin (plugin_.get ());
+
+  const auto groups = model_.groups ();
+  ASSERT_EQ (groups.size (), 2);
+  EXPECT_EQ (
+    groups.at (0).toMap ().value (QStringLiteral ("name")).toString (),
+    QStringLiteral ("Factory"));
+  EXPECT_EQ (
+    groups.at (0).toMap ().value (QStringLiteral ("count")).toInt (), 2);
+  EXPECT_EQ (
+    groups.at (1).toMap ().value (QStringLiteral ("name")).toString (),
+    QStringLiteral ("User"));
+  EXPECT_EQ (
+    groups.at (1).toMap ().value (QStringLiteral ("count")).toInt (), 1);
+}
+
+TEST_F (PluginPresetListModelTest, GroupsChangedEmittedOnContentChange)
+{
+  model_.setPlugin (plugin_.get ());
+  ASSERT_EQ (model_.groups ().size (), 2);
+
+  QSignalSpy spy (&model_, &PluginPresetListModel::groupsChanged);
+
+  // Same groups and counts with different preset names: no emission
+  plugin_->replace_presets (
+    {
+      { QStringLiteral ("X"), QStringLiteral ("Factory"), 0 },
+      { QStringLiteral ("Y"), QStringLiteral ("Factory"), 1 },
+      { QStringLiteral ("Z"), QStringLiteral ("User"),    2 },
+  });
+  EXPECT_EQ (spy.count (), 0);
+
+  // Per-group counts change: emits
+  plugin_->replace_presets (
+    {
+      { QStringLiteral ("X"), QStringLiteral ("Factory"), 0 },
+      { QStringLiteral ("Y"), QStringLiteral ("Factory"), 1 },
+  });
+  EXPECT_EQ (spy.count (), 1);
+
+  // Groups removed entirely: emits
+  plugin_->replace_presets (
+    {
+      { QStringLiteral ("X"), {}, 0 },
+  });
+  EXPECT_EQ (spy.count (), 2);
+  EXPECT_TRUE (model_.groups ().isEmpty ());
+}
+
+TEST_F (PluginPresetListModelTest, GroupAtReturnsGroupOrEmpty)
+{
+  model_.setPlugin (plugin_.get ());
+
+  EXPECT_EQ (model_.groupAt (0), QStringLiteral ("Factory"));
+  EXPECT_EQ (model_.groupAt (2), QStringLiteral ("User"));
+  EXPECT_TRUE (model_.groupAt (-1).isEmpty ());
+  EXPECT_TRUE (model_.groupAt (3).isEmpty ());
+}
+
 TEST_F (PluginPresetListModelTest, HandlesPluginDestruction)
 {
   model_.setPlugin (plugin_.get ());

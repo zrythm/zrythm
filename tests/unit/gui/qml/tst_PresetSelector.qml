@@ -9,16 +9,6 @@ import QmlTests
 TestCase {
   id: test
 
-  function test_arrows_clamp_at_bounds() {
-    const selector = createTemporaryObject(selectorComponent, test);
-    selector.currentIndex = 0;
-    verify(!selector.prevButton.enabled);
-    verify(selector.nextButton.enabled);
-    selector.currentIndex = 2;
-    verify(selector.prevButton.enabled);
-    verify(!selector.nextButton.enabled);
-  }
-
   function test_arrows_emit_activated_without_applying() {
     const selector = createTemporaryObject(selectorComponent, test);
     activatedSpy.target = selector;
@@ -37,12 +27,23 @@ TestCase {
     compare(selector.currentIndex, 1);
   }
 
-  function test_default_text_role() {
-    const selector = createTemporaryObject(defaultRoleComponent, test);
-    verify(selector);
-    compare(selector.count, 1);
+  function test_arrows_wrap_around() {
+    const selector = createTemporaryObject(selectorComponent, test);
+    activatedSpy.target = selector;
+    activatedSpy.signalName = "activated";
+    activatedSpy.clear();
+
+    // At the first item, previous wraps to the last
     selector.currentIndex = 0;
-    compare(selector.nameButton.text, "Only Preset");
+    mouseClick(selector.prevButton);
+    compare(activatedSpy.count, 1);
+    compare(activatedSpy.signalArguments[0][0], 2);
+
+    // At the last item, next wraps to the first
+    selector.currentIndex = 2;
+    mouseClick(selector.nextButton);
+    compare(activatedSpy.count, 2);
+    compare(activatedSpy.signalArguments[1][0], 0);
   }
 
   function test_empty_model_disables_control() {
@@ -71,10 +72,19 @@ TestCase {
     verify(selector);
     compare(selector.count, 3);
     compare(selector.currentIndex, -1);
-    verify(!selector.prevButton.enabled);
-    // Next from -1 activates the first item
+    // Both arrows are enabled and wrap around (from -1: next activates
+    // the first item, previous the last)
+    verify(selector.prevButton.enabled);
     verify(selector.nextButton.enabled);
     compare(selector.nameButton.text, selector.placeholderText);
+  }
+
+  function test_name_button_shows_current_text() {
+    const selector = createTemporaryObject(defaultRoleComponent, test);
+    verify(selector);
+    compare(selector.count, 1);
+    selector.currentIndex = 0;
+    compare(selector.nameButton.text, "Only Preset");
   }
 
   function test_popup_keyboard_selection() {
@@ -88,12 +98,12 @@ TestCase {
     tryCompare(selector, "popupVisible", true);
     // Focus is set when the popup finishes opening (after the enter
     // transition), so wait for it before sending keys
-    const listView = selector.popup.contentItem.listView;
-    tryVerify(() => listView.activeFocus);
+    const browser = selector.popup.contentItem;
+    tryVerify(() => browser.searchField.fieldActiveFocus);
 
     // Highlight follows currentIndex on open; Down moves to the next item
     keyClick(Qt.Key_Down);
-    compare(listView.currentIndex, 1);
+    compare(browser.listView.currentIndex, 1);
     keyClick(Qt.Key_Return);
     compare(activatedSpy.count, 1);
     compare(activatedSpy.signalArguments[0][0], 1);
@@ -107,6 +117,74 @@ TestCase {
     compare(selector.popup.parent, anchor);
     // Redirecting the parent alone does not change the popup type
     compare(selector.popup.popupType, Popup.Item);
+  }
+
+  function test_popup_passive_close_applies_selection() {
+    const selector = createTemporaryObject(selectorComponent, test);
+    selector.currentIndex = 0;
+    activatedSpy.target = selector;
+    activatedSpy.signalName = "activated";
+    activatedSpy.clear();
+
+    mouseClick(selector.nameButton);
+    tryCompare(selector, "popupVisible", true);
+    const browser = selector.popup.contentItem;
+    tryVerify(() => browser.searchField.fieldActiveFocus);
+
+    // Navigating only selects (and would audition); the popup stays open
+    keyClick(Qt.Key_Down);
+    compare(browser.listView.currentIndex, 1);
+    tryCompare(selector, "popupVisible", true);
+
+    // Closing without an explicit apply/cancel commits the selection and
+    // reports it through activated()
+    selector.popup.close();
+    tryCompare(selector, "popupVisible", false);
+    tryCompare(activatedSpy, "count", 1);
+    compare(activatedSpy.signalArguments[0][0], 1);
+  }
+
+  function test_tooltip_anchors_above_when_room() {
+    const selector = createTemporaryObject(selectorComponent, test, {
+      "y": 200
+    });
+    selector.currentIndex = 0;
+    const tip = selector.nameToolTip;
+    verify(tip);
+    tip.delay = 0;
+
+    mouseMove(selector.nameButton, selector.nameButton.width / 2, selector.nameButton.height / 2);
+    tryVerify(() => tip.visible);
+    compare(tip.y, -tip.implicitHeight - 3);
+  }
+
+  function test_tooltip_anchors_below_button_at_window_top() {
+    const selector = createTemporaryObject(selectorComponent, test, {
+      "y": 0
+    });
+    selector.currentIndex = 0;
+    const tip = selector.nameToolTip;
+    verify(tip);
+    tip.delay = 0;
+
+    mouseMove(selector.nameButton, selector.nameButton.width / 2, selector.nameButton.height / 2);
+    tryVerify(() => tip.visible);
+    // At the window top there is no room above, so it anchors below
+    compare(tip.y, selector.nameButton.height + 3);
+  }
+
+  function test_tooltip_suppressed_in_external_popup_mode() {
+    const selector = createTemporaryObject(selectorComponent, test);
+    selector.currentIndex = 0;
+    selector.externalPopup = true;
+    const tip = selector.nameToolTip;
+    verify(tip);
+    tip.delay = 0;
+
+    mouseMove(selector.nameButton, selector.nameButton.width / 2, selector.nameButton.height / 2);
+    tryVerify(() => selector.nameButton.hovered);
+    // Nothing fits inside a strip-height native scene: no tooltip
+    verify(!tip.visible);
   }
 
   function test_window_popup_type() {
@@ -123,8 +201,8 @@ TestCase {
 
     mouseClick(selector.nameButton);
     tryCompare(selector, "popupVisible", true);
-    const listView = selector.popup.contentItem.listView;
-    tryVerify(() => listView.activeFocus);
+    const browser = selector.popup.contentItem;
+    tryVerify(() => browser.searchField.fieldActiveFocus);
 
     keyClick(Qt.Key_Return);
     compare(activatedSpy.count, 1);
@@ -153,7 +231,6 @@ TestCase {
 
     PresetSelector {
       currentText: currentIndex >= 0 ? presetModel.get(currentIndex).name : ""
-      textRole: "name"
 
       model: ListModel {
         id: presetModel

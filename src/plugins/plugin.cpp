@@ -10,6 +10,9 @@
 #include "utils/logger.h"
 #include "utils/serialization.h"
 #include "utils/tracy.h"
+#include "utils/types.h"
+
+#include <QCoreApplication>
 
 #include <juce_audio_basics/juce_audio_basics.h>
 
@@ -150,6 +153,68 @@ Plugin::set_preset_dirty (bool dirty)
 
   preset_dirty_ = dirty;
   Q_EMIT presetDirtyChanged (dirty);
+}
+
+bool
+Plugin::beginPresetAudition ()
+{
+  z_return_val_if_fail (ZRYTHM_IS_QT_THREAD, false);
+  if (audition_snapshot_.has_value ())
+    {
+      // The same logical session can be signalled twice; the original
+      // snapshot must be kept
+      return true;
+    }
+
+  auto state = save_state ();
+  if (state.empty ())
+    {
+      // Without a state snapshot there is nothing to revert to
+      z_warning (
+        "Plugin '{}': no state available, starting no preset audition "
+        "session",
+        get_node_name ());
+      return false;
+    }
+  audition_snapshot_ = AuditionSnapshot{
+    .state = std::move (state),
+    .selection = selected_preset_id_,
+    .dirty = preset_dirty_,
+  };
+  return true;
+}
+
+void
+Plugin::commitPresetAudition ()
+{
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
+  audition_snapshot_.reset ();
+}
+
+void
+Plugin::revertPresetAudition ()
+{
+  z_return_if_fail (ZRYTHM_IS_QT_THREAD);
+  if (!audition_snapshot_.has_value ())
+    return;
+
+  const auto snapshot = std::exchange (audition_snapshot_, std::nullopt);
+  if (!load_state (snapshot->state))
+    {
+      // The auditioned state is still playing: the selection and dirty
+      // flag must keep matching it, so nothing is restored here
+      z_warning (
+        "Plugin '{}': failed to restore the pre-audition state; leaving "
+        "the auditioned state applied",
+        get_node_name ());
+      return;
+    }
+  // The state blob does not capture the host-side selection in all formats,
+  // and loading the state may have moved the selection through backend
+  // notifications: restore the snapshot's values explicitly
+  selected_preset_id_ = snapshot->selection;
+  set_preset_dirty (snapshot->dirty);
+  Q_EMIT presetIndexChanged (presetIndex ());
 }
 
 void

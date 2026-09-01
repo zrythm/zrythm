@@ -6,12 +6,14 @@
 #include <cmath>
 #include <string>
 
+#include "base/source/fstreamer.h"
 #include "gain_dsp.h"
 #include "pluginterfaces/base/ustring.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstunits.h"
 #include "public.sdk/source/main/pluginfactory.h"
 #include "public.sdk/source/vst/vstsinglecomponenteffect.h"
+#include <nlohmann/json.hpp>
 
 namespace zrythm_test_plugins
 {
@@ -351,6 +353,50 @@ public:
         apply_gain (
           in, out, static_cast<uint32_t> (data.numSamples), level_.load ());
       }
+    return kResultOk;
+  }
+
+  tresult PLUGIN_API setEditorState (IBStream * state) SMTG_OVERRIDE
+  {
+    IBStreamer streamer (state, kLittleEndian);
+    int32      length = 0;
+    if (!streamer.readInt32 (length))
+      return kResultFalse;
+    if (length <= 0)
+      return kResultFalse;
+    std::string json_text (static_cast<size_t> (length), '\0');
+    if (streamer.readRaw (json_text.data (), length) != length)
+      return kResultFalse;
+    const auto j = nlohmann::json::parse (json_text, nullptr, false);
+    if (
+      j.is_discarded () || !j.contains ("level") || !j.contains ("program")
+      || !j["level"].is_number () || !j["program"].is_number ())
+      return kResultFalse;
+    // Restore the raw values through the base class: the setParamNormalized
+    // override applies the program, which would clobber the restored level
+    EditControllerEx1::setParamNormalized (
+      kProgramParamId, j["program"].get<double> ());
+    const auto level = j["level"].get<double> ();
+    EditControllerEx1::setParamNormalized (kLevelParamId, level);
+    level_.store (level);
+    return kResultOk;
+  }
+
+  tresult PLUGIN_API getEditorState (IBStream * state) SMTG_OVERRIDE
+  {
+    const nlohmann::json j{
+      { "level",   level_.load ()                       },
+      { "program", getParamNormalized (kProgramParamId) },
+    };
+    const auto json_text = j.dump ();
+    IBStreamer streamer (state, kLittleEndian);
+    if (!streamer.writeInt32 (static_cast<int32> (json_text.size ())))
+      return kResultFalse;
+    if (
+      streamer.writeRaw (
+        json_text.data (), static_cast<int32> (json_text.size ()))
+      != static_cast<int32> (json_text.size ()))
+      return kResultFalse;
     return kResultOk;
   }
 

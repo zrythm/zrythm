@@ -61,31 +61,6 @@ TestCase {
     tryVerify(() => delegate && delegate.highlighted);
   }
 
-  function test_popup_host_invokables() {
-    const host = createTemporaryObject(hostComponent, test);
-    const popup = createTemporaryObject(popupComponent, test, {
-      popupHost: host
-    });
-    hostActivatedSpy.target = host;
-    hostActivatedSpy.signalName = "activatedReceived";
-    hostActivatedSpy.clear();
-    hostDismissedSpy.target = host;
-    hostDismissedSpy.signalName = "dismissedReceived";
-    hostDismissedSpy.clear();
-
-    tryVerify(() => popup.listView.activeFocus);
-
-    // Clicking a delegate calls the host's presetPopupActivated()
-    const delegate = popup.listView.itemAtIndex(1);
-    mouseClick(delegate);
-    compare(hostActivatedSpy.count, 1);
-    compare(hostActivatedSpy.signalArguments[0][0], 1);
-
-    // Escape calls the host's presetPopupDismissed()
-    keyClick(Qt.Key_Escape);
-    compare(hostDismissedSpy.count, 1);
-  }
-
   function visibleGroupHeaders(listView) {
     const result = [];
     for (const child of listView.contentItem.children) {
@@ -109,32 +84,6 @@ TestCase {
 
   SignalSpy {
     id: closeSpy
-  }
-
-  SignalSpy {
-    id: hostActivatedSpy
-  }
-
-  SignalSpy {
-    id: hostDismissedSpy
-  }
-
-  // Stand-in for the C++ PresetPopupController passed to windowed popups
-  Component {
-    id: hostComponent
-
-    QtObject {
-      signal activatedReceived(int index)
-      signal dismissedReceived
-
-      function presetPopupActivated(index) {
-        activatedReceived(index);
-      }
-
-      function presetPopupDismissed() {
-        dismissedReceived();
-      }
-    }
   }
 
   Component {

@@ -91,10 +91,8 @@ public:
       [this] (int width) { setMinimumWidth (std::max (1, width)); });
     connect (
       header_.get (), &OffscreenQmlScene::presetPopupRequested, this,
-      [this] (
-        const QRectF &anchor, QObject * model, int current_index,
-        const QString &text_role) {
-        open_preset_popup (anchor, model, current_index, text_role);
+      [this] (const QRectF &anchor, QObject * model, int current_index) {
+        open_preset_popup (anchor, model, current_index);
       });
   }
 
@@ -105,6 +103,11 @@ public:
   {
     if (preset_popup_window_ == nullptr)
       return;
+    // End the audition session deterministically, while the controller,
+    // header and plugin are all guaranteed alive (same rationale as the
+    // X11 backend)
+    if (preset_popup_controller_ != nullptr)
+      Q_EMIT preset_popup_controller_->sessionEndRequested ();
     preset_popup_window_->hide ();
     release_preset_popup_item ();
   }
@@ -186,12 +189,11 @@ private:
     schedule_repaint ();
   }
 
-  /** Shows the preset list popup below the given strip rect. */
+  /** Shows the preset browser popup below the given strip rect. */
   void open_preset_popup (
-    const QRectF  &anchor_strip_rect,
-    QObject *      model,
-    int            current_index,
-    const QString &text_role)
+    const QRectF &anchor_strip_rect,
+    QObject *     model,
+    int           current_index)
   {
     if (model == nullptr)
       return;
@@ -216,9 +218,7 @@ private:
           QVariant::fromValue (1u | 2u | 8u));
 
         preset_popup_component_ = utils::make_qobject_unique<QQmlComponent> (
-          header_->qml_engine (),
-          QUrl (QStringLiteral (
-            "qrc:/qt/qml/Zrythm/components/basic/PresetListPopup.qml")));
+          header_->qml_engine (), preset_popup_component_url ());
 
         preset_popup_controller_ =
           utils::make_qobject_unique<PresetPopupController> (this);
@@ -258,17 +258,12 @@ private:
     release_preset_popup_item ();
     auto * item = qobject_cast<
       QQuickItem *> (preset_popup_component_->createWithInitialProperties (
-      {
-        { QStringLiteral ("model"),        QVariant::fromValue (model)    },
-        { QStringLiteral ("currentIndex"), current_index                  },
-        { QStringLiteral ("textRole"),     text_role                      },
-        { QStringLiteral ("popupHost"),
-         QVariant::fromValue<QObject *> (preset_popup_controller_.get ()) },
-    }));
+      preset_popup_initial_properties (
+        model, current_index, preset_popup_controller_.get ())));
     if (item == nullptr)
       {
         z_warning (
-          "Failed to load preset list popup QML: {}",
+          "Failed to load preset browser popup QML: {}",
           preset_popup_component_->errors ().isEmpty ()
             ? QStringLiteral ("unknown error")
             : preset_popup_component_->errors ().constFirst ().toString ());
@@ -282,7 +277,11 @@ private:
 
     const auto width = std::max (
       qCeil (anchor_strip_rect.width ()), qCeil (item->implicitWidth ()));
-    const auto height = qCeil (item->implicitHeight ());
+    // Cap the height to the available screen geometry (same rationale
+    // as the X11 backend)
+    auto height = qCeil (item->implicitHeight ());
+    if (const auto * popup_screen = window ()->windowHandle ()->screen ())
+      height = std::min (height, popup_screen->availableGeometry ().height ());
     preset_popup_window_->resize (width, height);
     item->setSize (QSizeF (width, height));
 
@@ -311,14 +310,21 @@ private:
         preset_popup_window_->setPosition (popup_pos);
       }
     preset_popup_window_->show ();
+    // Ask for keyboard activation: without it no item can hold active
+    // focus and key events keep going to the host window. On Wayland the
+    // xdg_popup grab already covers this and the request degrades to a
+    // silent no-op
+    preset_popup_window_->requestActivate ();
   }
 
 private:
-  utils::QObjectUniquePtr<OffscreenQmlScene>     header_;
+  utils::QObjectUniquePtr<OffscreenQmlScene> header_;
+  // Declared before the popup members so it outlives the scene items
+  // referencing it
+  utils::QObjectUniquePtr<PresetPopupController> preset_popup_controller_;
   utils::QObjectUniquePtr<QQuickWindow>          preset_popup_window_;
   utils::QObjectUniquePtr<QQmlComponent>         preset_popup_component_;
   utils::QObjectUniquePtr<QQuickItem>            preset_popup_item_;
-  utils::QObjectUniquePtr<PresetPopupController> preset_popup_controller_;
   QPointF                                        last_mouse_pos_{ -1, -1 };
   bool                                           repaint_pending_ = false;
 };

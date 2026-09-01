@@ -184,6 +184,7 @@ set(rel_qml_file_paths
   components/basic/LinkedButtons.qml
   components/basic/MuteButton.qml
   components/basic/PlaceholderPage.qml
+  components/basic/PresetBrowserPopup.qml
   components/basic/PresetListPopup.qml
   components/basic/PresetSelector.qml
   components/basic/RecordButton.qml
@@ -195,6 +196,7 @@ set(rel_qml_file_paths
   components/basic/ZrythmFilePicker.qml
   components/basic/ZrythmPreferencesPage.qml
   components/basic/ZrythmResizablePanel.qml
+  components/basic/ZrythmSearchField.qml
   components/basic/SplitButton.qml
   components/basic/WarpDragArea.qml
   components/basic/ZrythmToolBar.qml

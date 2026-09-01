@@ -1303,4 +1303,113 @@ TEST_F (Vst3PluginTest, PresetSelectionSurvivesJsonRoundtrip)
   plugin2->release_resources ();
 }
 
+TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresStateAndSelection)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+  ASSERT_FLOAT_EQ (level->baseValue (), 0.25f);
+
+  plugin_->beginPresetAudition ();
+
+  // Audition program 1: the plugin's level becomes 0.75 (plugin-reported
+  // param values land on the main-thread flush, which the project timer
+  // drives in production)
+  plugin_->setPresetIndex (1);
+  process_blocks (1);
+  process_events_until_true ([&] {
+    plugin_->flush_plugin_values ();
+    return level->baseValue () == 0.75f;
+  });
+  ASSERT_EQ (plugin_->presetIndex (), 1);
+
+  // Reverting restores the state captured at session begin
+  plugin_->revertPresetAudition ();
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  EXPECT_FLOAT_EQ (level->baseValue (), 0.25f);
+  EXPECT_FALSE (plugin_->presetDirty ());
+}
+
+TEST_F (Vst3PluginTest, PresetAuditionCommitKeepsAppliedState)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  plugin_->beginPresetAudition ();
+  plugin_->setPresetIndex (1);
+  process_blocks (1);
+  ASSERT_EQ (plugin_->presetIndex (), 1);
+
+  plugin_->commitPresetAudition ();
+
+  // Reverting after a commit is a no-op
+  plugin_->revertPresetAudition ();
+  EXPECT_EQ (plugin_->presetIndex (), 1);
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+  process_events_until_true ([&] {
+    plugin_->flush_plugin_values ();
+    return level->baseValue () == 0.75f;
+  });
+}
+
+TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresDirtyFlag)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+
+  // Select program 1, then diverge from it with a user edit
+  plugin_->setPresetIndex (1);
+  process_blocks (1);
+  process_events_until_true ([&] {
+    plugin_->flush_plugin_values ();
+    return level->baseValue () == 0.75f;
+  });
+  level->setBaseValueByUser (0.1f);
+  process_blocks (1);
+  ASSERT_TRUE (plugin_->presetDirty ());
+
+  plugin_->beginPresetAudition ();
+
+  // Auditioning another program clears the dirty flag
+  plugin_->setPresetIndex (2);
+  process_blocks (1);
+  ASSERT_EQ (plugin_->presetIndex (), 2);
+  ASSERT_FALSE (plugin_->presetDirty ());
+
+  // Reverting restores the diverged state, the selection and the flag
+  plugin_->revertPresetAudition ();
+  EXPECT_EQ (plugin_->presetIndex (), 1);
+  EXPECT_TRUE (plugin_->presetDirty ());
+  EXPECT_FLOAT_EQ (level->baseValue (), 0.1f);
+}
+
+TEST_F (Vst3PluginTest, BeginPresetAuditionWhileActiveKeepsOriginalSnapshot)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Programs"));
+  ASSERT_EQ (plugin_->presetIndex (), 0);
+
+  plugin_->beginPresetAudition ();
+  plugin_->setPresetIndex (1);
+  process_blocks (1);
+
+  // A second begin is a no-op: the original snapshot must be kept
+  plugin_->beginPresetAudition ();
+  plugin_->setPresetIndex (2);
+  process_blocks (1);
+  ASSERT_EQ (plugin_->presetIndex (), 2);
+
+  plugin_->revertPresetAudition ();
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+
+  auto * level = find_param_by_label ("Level");
+  ASSERT_NE (level, nullptr);
+  EXPECT_FLOAT_EQ (level->baseValue (), 0.25f);
+}
+
 } // namespace zrythm::plugins

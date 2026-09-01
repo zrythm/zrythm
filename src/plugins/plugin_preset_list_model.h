@@ -28,6 +28,10 @@ class PluginPresetListModel : public QAbstractListModel
   // True when at least one preset entry has a non-empty group; views use
   // this to decide whether to show group section headers
   Q_PROPERTY (bool hasGroups READ hasGroups NOTIFY hasGroupsChanged)
+  // Named groups of the preset entries with per-group preset counts, as a
+  // list of maps with "name" and "count" keys, in order of first
+  // appearance; entries without a group are not listed
+  Q_PROPERTY (QVariantList groups READ groups NOTIFY groupsChanged)
   QML_ELEMENT
 
 public:
@@ -54,12 +58,22 @@ public:
    */
   Q_INVOKABLE QString nameAt (int row) const;
 
+  /**
+   * @brief Returns the preset's group at @p row, or an empty string if out
+   * of range or the entry has no group.
+   *
+   * The same binding-tracking caveat as @ref nameAt applies.
+   */
+  Q_INVOKABLE QString groupAt (int row) const;
+
   Plugin *      plugin () const { return plugin_.get (); }
   bool          hasGroups () const { return has_groups_; }
+  QVariantList  groups () const { return groups_; }
   void          setPlugin (Plugin * plugin);
   Q_SIGNAL void pluginChanged ();
   Q_SIGNAL void countChanged ();
   Q_SIGNAL void hasGroupsChanged ();
+  Q_SIGNAL void groupsChanged ();
 
 private:
   /** Resets the model from the current plugin's preset entries. */
@@ -69,6 +83,7 @@ private:
   QMetaObject::Connection destroyed_connection_;
   QMetaObject::Connection presets_changed_connection_;
   bool                    has_groups_ = false;
+  QVariantList            groups_;
 
   std::vector<Plugin::PresetEntry> cached_entries_;
 };

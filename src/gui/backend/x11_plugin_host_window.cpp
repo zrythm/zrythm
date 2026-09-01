@@ -26,6 +26,7 @@
 #  include <algorithm>
 #  include <array>
 #  include <cassert>
+#  include <cctype>
 #  include <chrono>
 #  include <cmath>
 #  include <cstdlib>
@@ -48,6 +49,7 @@
 #  include <QSocketNotifier>
 #  include <QTimer>
 #  include <QWheelEvent>
+#  include <qpa/qwindowsysteminterface.h>
 
 #  include <X11/X.h>
 #  include <X11/Xatom.h>
@@ -258,7 +260,7 @@ public:
   }
 
   /**
-   * @brief Shows the preset list in an override-redirect popup window
+   * @brief Shows the preset browser in an override-redirect popup window
    * below the given strip rect.
    *
    * The strip's QML scene renders offscreen, so an in-scene popup would
@@ -270,11 +272,10 @@ public:
    *   coordinates; the popup opens below it.
    */
   void open_preset_popup (
-    Display       &dpy,
-    const QRectF  &anchor_logical,
-    QObject *      model,
-    int            current_index,
-    const QString &text_role);
+    Display      &dpy,
+    const QRectF &anchor_logical,
+    QObject *     model,
+    int           current_index);
 
   /** Closes the preset popup, if open. */
   void close_preset_popup (Display &dpy);
@@ -373,14 +374,27 @@ public:
   /**
    * @brief Forwards an X key event to the popup scene as a QKeyEvent.
    *
-   * Only the keys the list handles are mapped (Escape, Return, Up, Down).
+   * Special keys are mapped explicitly; for everything else the
+   * shift-adjusted keysym and text from XLookupString are used, so text
+   * input works (Unicode-mapped keysyms are 0x01000000 | code point and
+   * map to Qt keys by code point).
    */
   void forward_popup_key_event (const XEvent &ev)
   {
     if (popup_scene_ == nullptr || !popup_scene_->is_valid ())
       return;
-    const auto keysym = XLookupKeysym (const_cast<XKeyEvent *> (&ev.xkey), 0);
-    int        qt_key = 0;
+
+    char      text_buf[16] = {};
+    KeySym    keysym = NoSymbol;
+    const int text_len = XLookupString (
+      const_cast<XKeyEvent *> (&ev.xkey), text_buf,
+      static_cast<int> (sizeof (text_buf)) - 1, &keysym, nullptr);
+    // XLookupString returns Latin-1 (per the Xlib spec), regardless of
+    // the process locale
+    const QString text =
+      text_len > 0 ? QString::fromLatin1 (text_buf, text_len) : QString ();
+
+    int qt_key = 0;
     switch (keysym)
       {
       case XK_Escape:
@@ -392,16 +406,79 @@ public:
       case XK_KP_Enter:
         qt_key = Qt::Key_Enter;
         break;
+      case XK_BackSpace:
+        qt_key = Qt::Key_Backspace;
+        break;
+      case XK_Delete:
+        qt_key = Qt::Key_Delete;
+        break;
+      case XK_Tab:
+        qt_key = Qt::Key_Tab;
+        break;
+      case XK_ISO_Left_Tab:
+        qt_key = Qt::Key_Backtab;
+        break;
+      case XK_Left:
+        qt_key = Qt::Key_Left;
+        break;
+      case XK_Right:
+        qt_key = Qt::Key_Right;
+        break;
       case XK_Up:
         qt_key = Qt::Key_Up;
         break;
       case XK_Down:
         qt_key = Qt::Key_Down;
         break;
+      case XK_Home:
+        qt_key = Qt::Key_Home;
+        break;
+      case XK_End:
+        qt_key = Qt::Key_End;
+        break;
       default:
-        return;
+        {
+          // Special keys with no explicit mapping (bare modifiers, lock
+          // keys, dead keys, numpad keys without NumLock) have keysyms
+          // in 0xFE00-0xFFFF and produce no text; forwarding them would
+          // deliver meaningless key codes
+          if (text_len == 0 && keysym >= 0xFE00 && keysym <= 0xFFFF)
+            return;
+          // Printable single-character text (including keypad digits
+          // and operators): Qt's key codes for these are the uppercase
+          // character codes
+          if (text_len == 1 && text_buf[0] >= 0x20 && text_buf[0] < 0x7F)
+            {
+              qt_key = std::toupper (static_cast<unsigned char> (text_buf[0]));
+              break;
+            }
+          const unsigned long code_point =
+            (keysym & 0xFF000000) == 0x01000000 ? keysym & 0x00FFFFFF : keysym;
+          if (code_point < 0x20 || code_point > 0x10FFFF)
+            return; // unmapped special key
+          // Qt letter keys are uppercase
+          qt_key = static_cast<int> (
+            code_point >= 'a' && code_point <= 'z'
+              ? code_point - 0x20
+              : code_point);
+          break;
+        }
       }
-    QKeyEvent key_ev (QEvent::KeyPress, qt_key, Qt::NoModifier);
+
+    Qt::KeyboardModifiers modifiers = Qt::NoModifier;
+    if (ev.xkey.state & ShiftMask)
+      modifiers |= Qt::ShiftModifier;
+    if (ev.xkey.state & ControlMask)
+      modifiers |= Qt::ControlModifier;
+    if (ev.xkey.state & Mod1Mask)
+      modifiers |= Qt::AltModifier;
+    if (ev.xkey.state & Mod4Mask)
+      modifiers |= Qt::MetaModifier;
+    // XK_KP_Space .. XK_KP_Equal
+    if (keysym >= 0xFF80 && keysym <= 0xFFBD)
+      modifiers |= Qt::KeypadModifier;
+
+    QKeyEvent key_ev (QEvent::KeyPress, qt_key, modifiers, text);
     QCoreApplication::sendEvent (popup_scene_->quick_window (), &key_ev);
   }
 
@@ -463,10 +540,16 @@ public:
   /** Popup window size in physical pixels. */
   int popup_width_px_ = 0;
   int popup_height_px_ = 0;
+  /** Invokable surface passed to the popup scene. Declared before the
+   * scene so it outlives the scene items referencing it. */
+  utils::QObjectUniquePtr<PresetPopupController> popup_controller_;
   /** Offscreen scene rendered onto the popup window. */
   utils::QObjectUniquePtr<OffscreenQmlScene> popup_scene_;
-  /** Invokable surface passed to the popup scene. */
-  utils::QObjectUniquePtr<PresetPopupController> popup_controller_;
+  /**
+   * Qt window that held the focus window role before the popup scene was
+   * activated, restored when the popup closes.
+   */
+  QPointer<QWindow> previous_focus_window_;
   /** Whether the left mouse button is currently held over the popup. */
   bool popup_button_pressed_ = false;
   /** Whether the left mouse button is currently held over the header. */
@@ -903,11 +986,10 @@ x11_scale_factor ()
 
 void
 X11PluginHostWindow::Impl::open_preset_popup (
-  Display       &dpy,
-  const QRectF  &anchor_logical,
-  QObject *      model,
-  int            current_index,
-  const QString &text_role)
+  Display      &dpy,
+  const QRectF &anchor_logical,
+  QObject *     model,
+  int           current_index)
 {
   if (model == nullptr || header_win_ == 0)
     return;
@@ -934,15 +1016,9 @@ X11PluginHostWindow::Impl::open_preset_popup (
     }
 
   popup_scene_ = utils::make_qobject_unique<OffscreenQmlScene> (
-    QUrl (QStringLiteral (
-      "qrc:/qt/qml/Zrythm/components/basic/PresetListPopup.qml")),
-    QVariantMap{
-      { QStringLiteral ("model"),        QVariant::fromValue (model) },
-      { QStringLiteral ("currentIndex"), current_index               },
-      { QStringLiteral ("textRole"),     text_role                   },
-      { QStringLiteral ("popupHost"),
-       QVariant::fromValue<QObject *> (popup_controller_.get ())     },
-  },
+    preset_popup_component_url (),
+    preset_popup_initial_properties (
+      model, current_index, popup_controller_.get ()),
     &q_ptr_);
   if (!popup_scene_->is_valid ())
     {
@@ -957,7 +1033,14 @@ X11PluginHostWindow::Impl::open_preset_popup (
 
   const auto width_logical = std::max (
     qCeil (anchor_logical.width ()), popup_scene_->controls_implicit_width ());
-  const auto height_logical = popup_scene_->implicit_height ();
+  // Cap the height so the popup fits the screen: the browser lays out
+  // to whatever height it is given, so capping here keeps the footer
+  // reachable on short work areas
+  XWindowAttributes root_attrs{};
+  XGetWindowAttributes (&dpy, DefaultRootWindow (&dpy), &root_attrs);
+  const auto height_logical = std::min (
+    popup_scene_->implicit_height (),
+    qFloor (root_attrs.height / scale_factor_));
   popup_scene_->set_device_pixel_ratio (scale_factor_);
   popup_scene_->resize (width_logical, height_logical);
 
@@ -979,8 +1062,6 @@ X11PluginHostWindow::Impl::open_preset_popup (
     &root_y, &unused_child);
 
   // Keep the popup inside the root window
-  XWindowAttributes root_attrs{};
-  XGetWindowAttributes (&dpy, DefaultRootWindow (&dpy), &root_attrs);
   root_x =
     std::clamp (root_x, 0, std::max (0, root_attrs.width - popup_width_px_));
   root_y =
@@ -1012,6 +1093,13 @@ X11PluginHostWindow::Impl::open_preset_popup (
     GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
   XGrabKeyboard (
     &dpy, popup_win_, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  // The scene's QQuickWindow is never shown, so Qt never marks it active
+  // and no item can hold active focus — every forwarded key event would be
+  // dropped. While the X keyboard grab is held the popup is the de facto
+  // focused window, so tell Qt the same
+  previous_focus_window_ = QGuiApplication::focusWindow ();
+  QWindowSystemInterface::handleFocusWindowChanged (
+    popup_scene_->quick_window (), Qt::OtherFocusReason);
   paint_popup (dpy);
 }
 
@@ -1020,6 +1108,18 @@ X11PluginHostWindow::Impl::close_preset_popup (Display &dpy)
 {
   if (popup_win_ == 0)
     return;
+  // End the audition session deterministically, while the controller,
+  // header and plugin are all guaranteed alive: the scene is destroyed
+  // via deleteLater() below, which can outlive this object — the
+  // QML-side session end would then find null references and skip the
+  // commit, leaking the armed snapshot into the next session
+  if (popup_controller_ != nullptr)
+    Q_EMIT popup_controller_->sessionEndRequested ();
+  // Return Qt's focus window to whatever had it before the popup opened;
+  // the scene window is destroyed below
+  QWindowSystemInterface::handleFocusWindowChanged (
+    previous_focus_window_, Qt::OtherFocusReason);
+  previous_focus_window_ = nullptr;
   XUngrabPointer (&dpy, CurrentTime);
   XUngrabKeyboard (&dpy, CurrentTime);
   X11DisplayManager::instance ().unregister_window (popup_win_);
@@ -1261,12 +1361,10 @@ X11PluginHostWindow::X11PluginHostWindow (plugins::Plugin &plugin)
     });
   connect (
     pimpl_->header_.get (), &OffscreenQmlScene::presetPopupRequested, this,
-    [this] (
-      const QRectF &anchor, QObject * model, int current_index,
-      const QString &text_role) {
+    [this] (const QRectF &anchor, QObject * model, int current_index) {
       auto * d = X11DisplayManager::instance ().display ();
       if (d != nullptr)
-        pimpl_->open_preset_popup (*d, anchor, model, current_index, text_role);
+        pimpl_->open_preset_popup (*d, anchor, model, current_index);
     });
   connect (
     pimpl_->header_.get (), &OffscreenQmlScene::implicitHeightChanged, this,

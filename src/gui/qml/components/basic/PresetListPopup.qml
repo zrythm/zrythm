@@ -8,12 +8,12 @@ import QtQuick.Controls
 import ZrythmStyle
 
 /**
- * Item list with keyboard navigation, shown when a PresetSelector's name
- * button is clicked.
+ * Item list with keyboard navigation, used as the list pane of
+ * PresetBrowserPopup and standalone where a plain list popup is enough.
  *
- * Used as the content of PresetSelector's in-scene popup, and standalone
- * as the root of windowed popups over native plugin strips. Selection is
- * reported via activated(); the host applies it and closes the popup.
+ * Standalone use reports the selection via activated(); the host applies
+ * it and closes the popup. In composite use (clickActivates false),
+ * clicks only move the highlight and double-clicks emit activated().
  *
  * When showGroupHeaders is enabled, items are separated by headers showing
  * their group (from the model's groupRole). Entries with an empty group
@@ -21,6 +21,11 @@ import ZrythmStyle
  */
 Item {
   id: root
+
+  // Whether clicking an item emits activated() (standalone use). When
+  // false (composite hosts), clicks only move the highlight;
+  // double-clicks still emit activated()
+  property bool clickActivates: true
 
   // Item count from the ListView; can go stale while never shown
   readonly property int count: listView.count
@@ -35,11 +40,13 @@ Item {
   // PluginPresetListModel or ListModel) — the modelReset signal is
   // required (plain JS arrays/ints are not supported)
   property var model: null
-  // When set (windowed hosts), activated()/closeRequested() are also
-  // reported by calling the host's presetPopupActivated()/
-  // presetPopupDismissed() invokables, since C++ cannot connect to this
-  // component's QML-declared signals. Must outlive this item.
-  property var popupHost: null
+  // Whether the list takes keyboard focus (statically and when becoming
+  // visible); composite hosts that keep focus on another input (e.g. a
+  // search field) set this to false
+  property bool ownsKeyboardFocus: true
+  // Whether the popup background is painted; composite hosts (e.g.
+  // PresetBrowserPopup) paint their own
+  property bool showBackground: true
   // Whether to show group section headers. Defaults to the model's
   // hasGroups property when it has one (e.g. PluginPresetListModel),
   // false otherwise
@@ -55,22 +62,14 @@ Item {
   implicitHeight: Math.min(listView.contentHeight, 360) + 4
   implicitWidth: 180
 
-  onActivated: idx => {
-    if (root.popupHost)
-      root.popupHost.presetPopupActivated(idx);
-  }
-  onCloseRequested: {
-    if (root.popupHost)
-      root.popupHost.presetPopupDismissed();
-  }
-
   // The list only becomes visible when its host shows it (popup open,
   // window shown); grab keyboard focus and scroll to the current item
   onVisibleChanged: {
     if (visible) {
       if (root.currentIndex >= 0 && listView.contentHeight > listView.height)
         listView.positionViewAtIndex(root.currentIndex, ListView.Center);
-      listView.forceActiveFocus();
+      if (root.ownsKeyboardFocus)
+        listView.forceActiveFocus();
     }
   }
 
@@ -104,6 +103,7 @@ Item {
 
   PopupBackgroundRect {
     anchors.fill: parent
+    visible: root.showBackground
   }
 
   ListView {
@@ -113,7 +113,7 @@ Item {
     anchors.margins: 2
     clip: true
     currentIndex: root.currentIndex
-    focus: true
+    focus: root.ownsKeyboardFocus
     highlightMoveDuration: 0
     model: root.model
 
@@ -122,17 +122,39 @@ Item {
     // left unset when headers are disabled
     section.property: root.showGroupHeaders ? root.groupRole : ""
 
-    ScrollIndicator.vertical: ScrollIndicator {
+    // Interactive scrollbar; stays transient but is revealed on hover so
+    // it can be dragged
+    ScrollBar.vertical: ScrollBar {
+      active: listView.moving || hovered || pressed
+      hoverEnabled: true
+      policy: ScrollBar.AsNeeded
     }
     delegate: ItemDelegate {
+      id: presetDelegate
+
       required property int index
       required property var model
 
+      // Clicks must not steal keyboard focus from composite hosts (e.g.
+      // the browser's search field), or arrow-key navigation dies
+      focusPolicy: Qt.NoFocus
       highlighted: listView.currentIndex === index
       text: model[root.textRole]
       width: listView.width
 
-      onClicked: root.activated(index)
+      onClicked: {
+        if (root.clickActivates)
+          root.activated(presetDelegate.index);
+        else
+          listView.currentIndex = presetDelegate.index;
+      }
+
+      // In browser mode (single click only selects), double-click applies
+      // directly; the second click of the pair does not emit clicked()
+      onDoubleClicked: {
+        if (!root.clickActivates)
+          root.activated(presetDelegate.index);
+      }
     }
     section.delegate: Item {
       id: sectionDelegate
@@ -154,9 +176,8 @@ Item {
         anchors.rightMargin: 8
         anchors.verticalCenter: parent.verticalCenter
         elide: Text.ElideRight
-        font.bold: true
-        font.pixelSize: 10
-        opacity: 0.7
+        font: ZrythmTheme.semiBoldTextFont
+        opacity: 0.8
         text: sectionDelegate.section
       }
     }
@@ -165,13 +186,23 @@ Item {
     Keys.onEscapePressed: root.closeRequested()
     Keys.onReturnPressed: root.activated(listView.currentIndex)
 
+    // Internal navigation (clicks, keyboard) assigns currentIndex
+    // directly, which removes the binding above; external updates are
+    // therefore applied via this signal handler instead of relying on the
+    // binding staying intact
+    Connections {
+      function onCurrentIndexChanged() {
+        listView.currentIndex = root.currentIndex;
+      }
+
+      target: root
+    }
+
     // A model reset (e.g. preset list content changed) resets the view's
-    // current index; re-apply the external selection. A plain assignment
-    // would permanently remove the currentIndex binding above, so the
-    // binding is re-established instead
+    // current index; re-apply the external selection
     Connections {
       function onModelReset() {
-        listView.currentIndex = Qt.binding(() => root.currentIndex);
+        listView.currentIndex = root.currentIndex;
       }
 
       target: root.model

@@ -132,10 +132,11 @@ Item {
       Layout.fillWidth: true
       spacing: 4
 
-      SearchField {
+      ZrythmSearchField {
         id: pluginSearch
 
         Layout.fillWidth: true
+        placeholderText: qsTr("Search plugins")
 
         Synchronizer on text {
           sourceObject: root.appSettings

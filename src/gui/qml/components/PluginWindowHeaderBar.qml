@@ -66,6 +66,7 @@ Rectangle {
     if (idx >= 0 && (root.plugin?.presetDirty ?? false))
       text += "*";
     presetSelector.currentText = text;
+    presetSelector.currentGroup = idx >= 0 ? presetModel.groupAt(idx) : "";
   }
 
   color: themeWindowColor
@@ -119,17 +120,17 @@ Rectangle {
   // invokable model lookups don't participate in bindings, so refresh
   // explicitly on every relevant change
   Connections {
-    function onUiVisibleChanged() {
-      if ((root.plugin?.uiVisible ?? false) && root.detailsExpanded)
-        root.refreshDiagnostics();
-    }
-
     function onPresetDirtyChanged() {
       root.refreshPresetText();
     }
 
     function onPresetIndexChanged() {
       root.refreshPresetText();
+    }
+
+    function onUiVisibleChanged() {
+      if ((root.plugin?.uiVisible ?? false) && root.detailsExpanded)
+        root.refreshDiagnostics();
     }
 
     target: root.plugin
@@ -190,13 +191,17 @@ Rectangle {
         currentIndex: root.plugin?.presetIndex ?? -1
         enabled: presetModel.count > 0
         externalPopup: root.nativeStrip
-        textRole: "name"
 
         model: PluginPresetListModel {
           id: presetModel
 
           plugin: root.plugin
         }
+
+        // The browser is wider than the windows this header appears in
+        // (e.g. the generic editor), where an in-scene popup would be
+        // clipped; unused in native strips (externalPopup above)
+        popupType: Popup.Window
 
         onActivated: idx => {
           if (root.plugin)
@@ -206,7 +211,7 @@ Rectangle {
           if (!root.plugin)
             return;
           const topLeft = presetSelector.nameButton.mapToItem(root, 0, 0);
-          root.sceneController.requestPresetPopup(Qt.rect(topLeft.x, topLeft.y, presetSelector.nameButton.width, presetSelector.nameButton.height), presetSelector.model, root.plugin.presetIndex, presetSelector.textRole);
+          root.sceneController.requestPresetPopup(Qt.rect(topLeft.x, topLeft.y, presetSelector.nameButton.width, presetSelector.nameButton.height), presetSelector.model, root.plugin.presetIndex);
         }
       }
 
@@ -265,12 +270,12 @@ Rectangle {
       elide: Label.ElideRight
       opacity: 0.8
       text: {
-        const roundedLoad = Math.round(root.dspLoadPercent);
+        const loadText = Qt.locale().toString(root.dspLoadPercent, 'f', 1);
         if (root.engineSampleRate > 0) {
           const ms = Qt.locale().toString(root.latencySamples * 1000.0 / root.engineSampleRate, 'f', 1);
-          return qsTr("Load: %1% · Latency: %2 samples (%3 ms)").arg(roundedLoad).arg(root.latencySamples).arg(ms);
+          return qsTr("Load: %1% · Latency: %2 samples (%3 ms)").arg(loadText).arg(root.latencySamples).arg(ms);
         }
-        return qsTr("Load: %1% · Latency: %2 samples").arg(roundedLoad).arg(root.latencySamples);
+        return qsTr("Load: %1% · Latency: %2 samples").arg(loadText).arg(root.latencySamples);
       }
     }
   }

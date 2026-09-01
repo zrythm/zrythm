@@ -139,21 +139,19 @@ Q_SIGNALS:
   void implicitWidthChanged (int width);
 
   /**
-   * @brief Emitted when a header bar scene asks for the preset list to be
-   * shown in a separate window.
+   * @brief Emitted when a header bar scene asks for the preset browser to
+   * be shown in a separate window.
    *
    * @param anchor_strip_rect Name button rect in scene (logical)
    *   coordinates; the popup should open below it.
-   * @param model The selector's model (a snapshot; ownership stays with
-   *   the scene).
+   * @param model The selector's preset model (a snapshot; ownership stays
+   *   with the scene).
    * @param current_index Index to highlight.
-   * @param text_role Model role holding each item's name.
    */
   void presetPopupRequested (
-    const QRectF  &anchor_strip_rect,
-    QObject *      model,
-    int            current_index,
-    const QString &text_role);
+    const QRectF &anchor_strip_rect,
+    QObject *     model,
+    int           current_index);
 
 public Q_SLOTS:
   /**
@@ -175,19 +173,16 @@ public:
    *
    * @param anchor_strip_rect Name button rect in scene (logical)
    *   coordinates; the popup should open below it.
-   * @param model The selector's model (a snapshot; ownership stays with
-   *   the scene).
+   * @param model The selector's preset model (a snapshot; ownership stays
+   *   with the scene).
    * @param current_index Index to highlight.
-   * @param text_role Model role holding each item's name.
    */
   Q_INVOKABLE void requestPresetPopup (
-    const QRectF  &anchor_strip_rect,
-    QObject *      model,
-    int            current_index,
-    const QString &text_role)
+    const QRectF &anchor_strip_rect,
+    QObject *     model,
+    int           current_index)
   {
-    Q_EMIT presetPopupRequested (
-      anchor_strip_rect, model, current_index, text_role);
+    Q_EMIT presetPopupRequested (anchor_strip_rect, model, current_index);
   }
 
   /**

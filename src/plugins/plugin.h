@@ -212,6 +212,48 @@ public:
    */
   Q_SIGNAL void presetDirtyChanged (bool dirty);
 
+  /**
+   * @brief Begins a preset auditioning session, capturing a snapshot the
+   * session can later revert to.
+   *
+   * While a session is active, presets are auditioned by selecting them as
+   * usual (@ref setPresetIndex). Only one session can be active at a time;
+   * beginning one while another is active is a no-op (the original snapshot
+   * is kept).
+   *
+   * If the plugin has no state to snapshot, no session is started (a
+   * warning is logged): auditioning still works, it just cannot be
+   * reverted.
+   *
+   * Must be called on the main thread.
+   *
+   * @return True if a session is active after this call (newly started or
+   * already active), false when the plugin has no state to snapshot. When
+   * false, no session exists and commit/revert must not be called for it.
+   */
+  Q_INVOKABLE bool beginPresetAudition ();
+
+  /**
+   * @brief Ends the auditioning session, keeping the currently auditioned
+   * state applied.
+   *
+   * No-op when no session is active. Must be called on the main thread.
+   */
+  Q_INVOKABLE void commitPresetAudition ();
+
+  /**
+   * @brief Ends the auditioning session, reverting to the snapshot captured
+   * by @ref beginPresetAudition: plugin state, selected preset and dirty
+   * flag.
+   *
+   * If the plugin rejects the snapshot, the auditioned state is left
+   * applied (with a warning), and the selected preset and dirty flag are
+   * left matching what is actually playing (they are NOT restored to the
+   * snapshot values). No-op when no session is active. Must be called on
+   * the main thread.
+   */
+  Q_INVOKABLE void revertPresetAudition ();
+
   PluginConfiguration * configuration () const { return configuration_.get (); }
   /**
    * @brief Emitted when the configuration is set on the plugin.
@@ -871,6 +913,21 @@ private:
    * selected preset (see @ref presetDirty).
    */
   bool preset_dirty_ = false;
+
+  /**
+   * @brief Snapshot captured by @ref beginPresetAudition, if a session is
+   * active.
+   */
+  struct AuditionSnapshot
+  {
+    /** Plugin state at session begin (see @ref save_state). */
+    std::string state;
+    /** Selected preset at session begin. */
+    std::optional<PresetId> selection;
+    /** Dirty flag at session begin. */
+    bool dirty = false;
+  };
+  std::optional<AuditionSnapshot> audition_snapshot_;
 
   InstantiationStatus instantiation_status_{ InstantiationStatus::Pending };
 
