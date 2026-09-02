@@ -230,6 +230,9 @@ configure:mac-arm:
 # build-machine profile to use.
 .configure-windows-template:
   stage: setup
+  # conan builds dependencies from source when the cache is cold, which can
+  # take longer than the project-level timeout
+  timeout: 6h
   variables:
     GIT_DEPTH: 0 # Fetch full history
   script:
