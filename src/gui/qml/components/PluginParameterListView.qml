@@ -19,8 +19,35 @@ ListView {
   interactive: contentHeight > height
   spacing: 2
 
+  // The model emits entries sorted by group (ungrouped first), so sections
+  // are contiguous; ungrouped entries get no header
+  section.property: "paramGroup"
+
   ScrollBar.vertical: ScrollBar {
     policy: root.interactive ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
+  }
+  section.delegate: Item {
+    id: sectionDelegate
+
+    required property string section
+
+    height: section.length > 0 ? sectionLabel.implicitHeight + 10 : 0
+    visible: section.length > 0
+    width: root.width
+
+    Label {
+      id: sectionLabel
+
+      anchors.left: parent.left
+      anchors.leftMargin: 8
+      anchors.right: parent.right
+      anchors.rightMargin: 8
+      anchors.verticalCenter: parent.verticalCenter
+      elide: Text.ElideRight
+      font: ZrythmTheme.semiBoldTextFont
+      opacity: 0.8
+      text: sectionDelegate.section
+    }
   }
   delegate: RowLayout {
     id: paramDelegate

@@ -14,6 +14,7 @@
 #include "utils/units.h"
 #include "utils/uuid_identifiable_object.h"
 
+#include <QStringList>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <nlohmann/json_fwd.hpp>
@@ -265,6 +266,7 @@ class ProcessorParameter
   Q_PROPERTY (float baseValue READ baseValue NOTIFY baseValueChanged)
   Q_PROPERTY (QString label READ label CONSTANT)
   Q_PROPERTY (QString description READ description CONSTANT)
+  Q_PROPERTY (QStringList groupPath READ groupPath CONSTANT)
   Q_PROPERTY (zrythm::dsp::ParameterRange range READ range CONSTANT)
   Q_PROPERTY (bool automatable READ automatable CONSTANT)
   QML_ELEMENT
@@ -319,6 +321,14 @@ public:
   QString label () const { return label_.to_qstring (); }
   QString description () const { return description_->to_qstring (); }
   bool    automatable () const { return automatable_; }
+
+  /**
+   * @brief Path of parameter groups this parameter belongs to.
+   *
+   * E.g. { "Osc", "Filter" } for a parameter in the "Filter" group nested
+   * under "Osc". Empty when the parameter is ungrouped.
+   */
+  QStringList groupPath () const;
 
   const auto &range () const { return range_; }
 
@@ -455,6 +465,21 @@ public:
     description_ = std::move (descr);
   }
 
+  /**
+   * @brief Sets the group path (outermost group first).
+   *
+   * An empty path means the parameter is ungrouped. Must be called before
+   * the parameter is published to listeners, since the path is exposed as
+   * CONSTANT.
+   */
+  void set_group_path (std::vector<utils::Utf8String> group_path)
+  {
+    group_path_ = std::move (group_path);
+  }
+
+  /** Returns the group path (outermost group first), empty when ungrouped. */
+  std::span<const utils::Utf8String> group_path () const { return group_path_; }
+
   void set_automatable (bool automatable) { automatable_ = automatable; }
 
   bool hidden () const { return hidden_; }
@@ -468,6 +493,7 @@ private:
   static constexpr auto kLabelKey = "label"sv;
   static constexpr auto kSymbolKey = "symbol"sv;
   static constexpr auto kDescriptionKey = "description"sv;
+  static constexpr auto kGroupPathKey = "groupPath"sv;
   static constexpr auto kAutomatableKey = "automatable"sv;
   static constexpr auto kHiddenKey = "hidden"sv;
   static constexpr auto kBaseValueKey = "baseValue"sv;
@@ -549,6 +575,9 @@ private:
 
   /** Description, if any, to be shown in tooltips. */
   std::optional<utils::Utf8String> description_;
+
+  /** Group path (outermost group first); empty when ungrouped. */
+  std::vector<utils::Utf8String> group_path_;
 
   // Automatable (via automation provider or modulation)
   bool automatable_{ true };

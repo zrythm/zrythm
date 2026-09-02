@@ -26,6 +26,9 @@ public:
   {
     ParamRole = Qt::UserRole + 1,
     ParamTypeRole,
+    /** Group path joined with " / " for display (empty when ungrouped). The
+     * structured path is available on the parameter itself. */
+    ParamGroupRole,
   };
   Q_ENUM (Roles)
 

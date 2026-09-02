@@ -46,6 +46,7 @@ set(vst3_fixtures
   test_gui_vst3
   test_latency_vst3
   test_midi_cc_vst3
+  test_param_groups_vst3
   test_programs_vst3
   test_restart_vst3
   test_synth_vst3
@@ -74,6 +75,10 @@ smtg_add_vst3plugin(test_latency_vst3
 smtg_add_vst3plugin(test_midi_cc_vst3
   PACKAGE_NAME "Test MIDI CC"
   SOURCES_LIST test_midi_cc_vst3.cpp ${vst3_fixture_extra_sources}
+)
+smtg_add_vst3plugin(test_param_groups_vst3
+  PACKAGE_NAME "Test Param Groups"
+  SOURCES_LIST test_param_groups_vst3.cpp ${vst3_fixture_extra_sources}
 )
 smtg_add_vst3plugin(test_programs_vst3
   PACKAGE_NAME "Test Programs"

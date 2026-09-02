@@ -216,6 +216,16 @@ ProcessorParameter::get_node_name () const
   return label_;
 }
 
+QStringList
+ProcessorParameter::groupPath () const
+{
+  QStringList ret;
+  ret.reserve (static_cast<qsizetype> (group_path_.size ()));
+  for (const auto &segment : group_path_)
+    ret.append (segment.to_qstring ());
+  return ret;
+}
+
 void
 to_json (nlohmann::json &j, const ProcessorParameter &p)
 {
@@ -228,6 +238,8 @@ to_json (nlohmann::json &j, const ProcessorParameter &p)
     j[ProcessorParameter::kSymbolKey] = *p.symbol_;
   if (p.description_.has_value ())
     j[ProcessorParameter::kDescriptionKey] = *p.description_;
+  if (!p.group_path_.empty ())
+    j[ProcessorParameter::kGroupPathKey] = p.group_path_;
   j[ProcessorParameter::kBaseValueKey] = p.base_value_.load ();
   j[ProcessorParameter::kAutomatableKey] = p.automatable_;
   j[ProcessorParameter::kHiddenKey] = p.hidden_;
@@ -248,6 +260,8 @@ from_json (const nlohmann::json &j, ProcessorParameter &p)
       p.description_ = utils::Utf8String::from_utf8_encoded_string (
         j.at (ProcessorParameter::kDescriptionKey).get<std::string> ());
     }
+  if (j.contains (ProcessorParameter::kGroupPathKey))
+    j.at (ProcessorParameter::kGroupPathKey).get_to (p.group_path_);
   float base_val{};
   j.at (ProcessorParameter::kBaseValueKey).get_to (base_val);
   p.base_value_.store (base_val);

@@ -251,6 +251,55 @@ TEST_F (ProcessorParameterTest, GestureBlocksModulation)
   param->endUserGesture ();
 }
 
+TEST_F (ProcessorParameterTest, GroupPathDefaultsToEmpty)
+{
+  EXPECT_TRUE (param->group_path ().empty ());
+  EXPECT_TRUE (param->groupPath ().isEmpty ());
+}
+
+TEST_F (ProcessorParameterTest, GroupPathSerializationRoundTrip)
+{
+  param->set_group_path (
+    { utils::Utf8String::from_utf8_encoded_string ("Osc"),
+      utils::Utf8String::from_utf8_encoded_string ("Filter") });
+
+  nlohmann::json j;
+  to_json (j, *param);
+
+  auto new_param = std::make_unique<ProcessorParameter> (
+    registry,
+    ProcessorParameter::UniqueId (
+      utils::Utf8String::from_utf8_encoded_string ("Cutoff")),
+    ParameterRange (
+      ParameterRange::Type::Logarithmic, 20.f, 20000.f, 20.f, 1000.f),
+    utils::Utf8String::from_utf8_encoded_string ("Cutoff"));
+  from_json (j, *new_param);
+
+  ASSERT_EQ (new_param->group_path ().size (), 2u);
+  EXPECT_EQ (new_param->group_path ()[0].view (), "Osc");
+  EXPECT_EQ (new_param->group_path ()[1].view (), "Filter");
+  EXPECT_EQ (new_param->groupPath (), QStringList ({ "Osc", "Filter" }));
+}
+
+TEST_F (ProcessorParameterTest, MissingGroupPathDeserializesAsUngrouped)
+{
+  // Projects saved before group support have no "groupPath" key
+  nlohmann::json j;
+  to_json (j, *param);
+  j.erase ("groupPath");
+
+  auto new_param = std::make_unique<ProcessorParameter> (
+    registry,
+    ProcessorParameter::UniqueId (
+      utils::Utf8String::from_utf8_encoded_string ("Cutoff")),
+    ParameterRange (
+      ParameterRange::Type::Logarithmic, 20.f, 20000.f, 20.f, 1000.f),
+    utils::Utf8String::from_utf8_encoded_string ("Cutoff"));
+  from_json (j, *new_param);
+
+  EXPECT_TRUE (new_param->group_path ().empty ());
+}
+
 TEST_F (ProcessorParameterTest, SerializationRoundTrip)
 {
   // Set non-default value

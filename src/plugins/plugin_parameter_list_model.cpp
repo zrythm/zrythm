@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <algorithm>
+
 #include "plugins/plugin_parameter_list_model.h"
 
 namespace zrythm::plugins
@@ -15,8 +17,9 @@ QHash<int, QByteArray>
 PluginParameterListModel::roleNames () const
 {
   static const QHash<int, QByteArray> roles = {
-    { ParamRole,     "parameter" },
-    { ParamTypeRole, "paramType" },
+    { ParamRole,      "parameter"  },
+    { ParamTypeRole,  "paramType"  },
+    { ParamGroupRole, "paramGroup" },
   };
   return roles;
 }
@@ -45,6 +48,8 @@ PluginParameterListModel::data (const QModelIndex &index, int role) const
       return QVariant::fromValue (param);
     case ParamTypeRole:
       return static_cast<int> (param->range ().type_);
+    case ParamGroupRole:
+      return param->groupPath ().join (" / ");
     default:
       return {};
     }
@@ -105,6 +110,35 @@ PluginParameterListModel::rebuild_cache ()
           cached_params_.push_back (param);
         }
     }
+
+  // Sort for contiguous sections: ungrouped parameters first, then groups in
+  // order of first appearance (plugin order preserved within each group)
+  std::vector<std::vector<utils::Utf8String>> group_paths;
+  for (const auto * param : cached_params_)
+    {
+      const auto path = param->group_path ();
+      if (path.empty ())
+        continue;
+      const auto already_seen =
+        std::ranges::any_of (group_paths, [&] (const auto &seen) {
+          return std::ranges::equal (seen, path);
+        });
+      if (!already_seen)
+        group_paths.emplace_back (path.begin (), path.end ());
+    }
+
+  const auto rank_of = [&group_paths] (std::span<const utils::Utf8String> path) {
+    if (path.empty ())
+      return -1;
+    const auto it = std::ranges::find_if (group_paths, [&] (const auto &seen) {
+      return std::ranges::equal (seen, path);
+    });
+    return static_cast<int> (std::distance (group_paths.begin (), it));
+  };
+  std::ranges::stable_sort (
+    cached_params_, [&rank_of] (const auto * a, const auto * b) {
+      return rank_of (a->group_path ()) < rank_of (b->group_path ());
+    });
 }
 
 } // namespace zrythm::plugins

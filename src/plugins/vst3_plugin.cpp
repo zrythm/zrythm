@@ -2092,10 +2092,60 @@ Vst3Plugin::refresh_program_change_param_state ()
     std::memory_order_relaxed);
 }
 
+namespace
+{
+using Vst3UnitMap =
+  std::unordered_map<Vst::UnitID, std::pair<utils::Utf8String, Vst::UnitID>>;
+
+/**
+ * @brief Builds the group path (outermost group first) for a VST3 unit.
+ *
+ * @return The path, or std::nullopt if the unit or an ancestor is unknown to
+ * @p units, or if the parent chain is cyclic.
+ */
+std::optional<std::vector<utils::Utf8String>>
+build_vst3_unit_group_path (Vst::UnitID unit_id, const Vst3UnitMap &units)
+{
+  std::vector<utils::Utf8String> path;
+  for (auto hops_left = units.size (); unit_id != Vst::kRootUnitId;)
+    {
+      if (hops_left == 0)
+        return std::nullopt; // cyclic parent chain
+      const auto it = units.find (unit_id);
+      if (it == units.end ())
+        return std::nullopt;
+      path.push_back (it->second.first);
+      unit_id = it->second.second;
+      --hops_left;
+    }
+  std::ranges::reverse (path);
+  return path;
+}
+} // namespace
+
 void
 Vst3Plugin::create_parameters_from_vst3_controller ()
 {
   pimpl_->vst3_params_.clear ();
+
+  // Unit map for resolving parameter groups (unit ID -> name + parent unit
+  // ID); empty when the controller does not implement IUnitInfo
+  Vst3UnitMap units;
+  if (auto unit_info = U::cast<Vst::IUnitInfo> (pimpl_->controller_))
+    {
+      for (const auto i : std::views::iota (0, unit_info->getUnitCount ()))
+        {
+          Vst::UnitInfo uinfo{};
+          if (unit_info->getUnitInfo (i, uinfo) != kResultOk)
+            continue;
+          units.emplace (
+            uinfo.id,
+            std::make_pair (
+              utils::Utf8String::from_utf8_encoded_string (
+                Steinberg::Vst::StringConvert::convert (uinfo.name)),
+              uinfo.parentUnitId));
+        }
+    }
 
   // add_parameter() emits parameterAdded synchronously, and listeners are
   // free to take the farbot nonRealtime lock, so parameters are created
@@ -2156,17 +2206,45 @@ Vst3Plugin::create_parameters_from_vst3_controller ()
               range = dsp::ParameterRange::make_toggle (
                 info.defaultNormalizedValue > 0.5);
             }
+          const auto title = utils::Utf8String::from_utf8_encoded_string (
+            Steinberg::Vst::StringConvert::convert (info.title));
           auto param_ref = utils::create_object<dsp::ProcessorParameter> (
-            registry (), registry (), unique_id, range,
-            utils::Utf8String::from_utf8_encoded_string (
-              Steinberg::Vst::StringConvert::convert (info.title)));
-          add_parameter (param_ref);
+            registry (), registry (), unique_id, range, title);
           zrythm_param = param_ref.get ();
+
+          // Fully configure the parameter before publishing it:
+          // add_parameter() emits parameterAdded synchronously, and
+          // CONSTANT-exposed state (automatable, group path) must be final
+          // by the time listeners see the parameter
           zrythm_param->set_automatable (
             (info.flags & Vst::ParameterInfo::kCanAutomate) != 0);
+          if (info.unitId != Vst::kRootUnitId)
+            {
+              if (units.empty ())
+                {
+                  z_warning (
+                    "VST3 plugin '{}': parameter '{}' references unit {} but "
+                    "the controller exposes no unit info; treating it as "
+                    "ungrouped",
+                    get_node_name (), title, info.unitId);
+                }
+              else if (
+                auto group_path = build_vst3_unit_group_path (info.unitId, units))
+                {
+                  zrythm_param->set_group_path (std::move (*group_path));
+                }
+              else
+                {
+                  z_warning (
+                    "VST3 plugin '{}': parameter '{}' references an unknown "
+                    "or cyclic unit {}; treating it as ungrouped",
+                    get_node_name (), title, info.unitId);
+                }
+            }
           zrythm_param->setBaseValue (
             static_cast<float> (
               pimpl_->controller_->getParamNormalized (info.id)));
+          add_parameter (param_ref);
           param_index = get_parameters ().size () - 1;
         }
 

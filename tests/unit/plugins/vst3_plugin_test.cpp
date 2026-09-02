@@ -1412,4 +1412,30 @@ TEST_F (Vst3PluginTest, BeginPresetAuditionWhileActiveKeepsOriginalSnapshot)
   EXPECT_FLOAT_EQ (level->baseValue (), 0.25f);
 }
 
+TEST_F (Vst3PluginTest, ParametersExposeUnitGroups)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("Test Param Groups"));
+
+  auto * master = find_param_by_label ("Master");
+  auto * resonance = find_param_by_label ("Resonance");
+  auto * cutoff = find_param_by_label ("Cutoff");
+  ASSERT_NE (master, nullptr);
+  ASSERT_NE (resonance, nullptr);
+  ASSERT_NE (cutoff, nullptr);
+
+  // Root-unit parameter: ungrouped
+  EXPECT_TRUE (master->group_path ().empty ());
+  EXPECT_TRUE (master->groupPath ().isEmpty ());
+
+  // Parameter directly in the "Osc" unit
+  ASSERT_EQ (resonance->group_path ().size (), 1u);
+  EXPECT_EQ (resonance->group_path ()[0].view (), "Osc");
+
+  // Parameter in "Filter", nested under "Osc": full path outermost-first
+  ASSERT_EQ (cutoff->group_path ().size (), 2u);
+  EXPECT_EQ (cutoff->group_path ()[0].view (), "Osc");
+  EXPECT_EQ (cutoff->group_path ()[1].view (), "Filter");
+  EXPECT_EQ (cutoff->groupPath (), QStringList ({ "Osc", "Filter" }));
+}
+
 } // namespace zrythm::plugins
