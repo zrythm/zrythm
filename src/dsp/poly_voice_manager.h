@@ -90,14 +90,18 @@ public:
    * for a large enough block (below internal voice-count and block-size
    * thresholds the serial path is used), voices render into per-voice
    * scratch buffers in parallel and are summed into the output serially in
-   * voice order, giving bit-identical results to the serial path; if the
-   * executor rejects the job the serial path is used.
+   * voice order; if the executor rejects the job the serial path is used.
    *
-   * Bit-identity assumes voices only add into the target buffer and never
-   * read from it (all current voices comply), and holds modulo signed-zero
-   * sign bits. The parallel path asserts that the output channel count
-   * matches the channel count passed to prepare_for_processing() and that
-   * the rendered range fits the prepared block size.
+   * Additions happen in the same order as serial rendering, so without
+   * floating-point contraction the output is bit-identical to it, modulo
+   * signed-zero sign bits. With contraction (fused multiply-add), a
+   * serial accumulate rounds once while this path rounds each voice's
+   * contribution and the sum separately, so targets with fused
+   * multiply-adds (e.g. ARM64) may differ by a few ULP. Voices must only
+   * add into the target buffer, never read from it (all current voices
+   * comply). The parallel path asserts that the output channel count
+   * matches the channel count passed to prepare_for_processing() and
+   * that the rendered range fits the prepared block size.
    */
   void process (
     juce::AudioBuffer<float> &output,

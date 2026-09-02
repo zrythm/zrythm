@@ -206,7 +206,9 @@ PolyVoiceManager::render_active (
 
   // Render each active voice into its own scratch buffer in parallel, then
   // sum the scratch buffers serially in voice order: the additions happen
-  // in the same order as serial rendering, so the result is bit-identical
+  // in the same order as serial rendering, so the output matches it
+  // bit-for-bit unless the compiler contracts multiply-adds (see process()
+  // docs)
   struct RenderContext
   {
     PolyVoiceManager * self;
