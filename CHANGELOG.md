@@ -8,6 +8,82 @@ All notable changes to this project will be documented in this file.
 
 For changes prior to v2.0.0, see [CHANGELOG-old.v1.md](CHANGELOG-old.v1.md).
 
+## [v2.0.0-alpha.3] - 2026-09-03
+
+### Added
+- Native VST3 plugin hosting replacing the JUCE wrapper, with
+  resizable embedded editor windows featuring a header strip, bypass
+  and A/B state comparison
+- Durable preset selection with VST3 program tracking, a prev/next
+  preset selector in plugin windows, and a searchable preset browser
+  with group filtering and keyboard auditioning
+- Parameter groups (e.g. VST3 units) shown as sections in the
+  generic plugin parameter editor
+- Diagnostics row in plugin windows showing DSP load and latency
+  (#4526)
+- Host transport (play state, tempo, time signature and musical
+  position) delivered to VST3 and CLAP plugins, so tempo-synced
+  plugins follow the project
+- Parallel polyphonic voice rendering for bundled synths on a
+  realtime-safe worker pool, and hosting of the CLAP thread-pool
+  extension for plugins that parallelize their processing
+- Drag and wheel scrubbing on the transport bar BPM, time signature
+  and position readouts (Shift/Ctrl for fine steps)
+- Pinned-cursor dragging with Shift fine mode for knobs, faders and
+  balance controls, so values can be edited indefinitely without the
+  cursor hitting screen edges
+- Type and format filters with persisted search in the plugin browser
+- Per-stage progress reporting for project load and save, and a
+  modal dialog that blocks concurrent project loads
+- System information and a Copy System Info button in the About
+  dialog
+- Windows on ARM installers built as ARM64EC, running natively while
+  loading x64 plugins in-process
+
+### Changed
+- Multi-channel audio routing reworked around speaker arrangements:
+  audio folds between layouts per ITU-R BS.775 instead of silencing
+  unmatched buses, port connections carry explicit channel routings,
+  and plugin bus changes at runtime detach and revive ports without
+  losing connections
+- Sidechain buses are excluded from automatic track chain wiring and
+  connect through explicit user connections
+- The playhead keeps its musical position across tempo changes, and
+  engine-internal pauses (e.g. for undo) no longer trigger
+  return-to-cue moves
+
+### Fixed
+- Plugin parameters being zeroed on the first processing cycle,
+  resetting patches of plugins like Surge XT
+- Crash when removing a MIDI device while its processor is part of
+  the processing graph (#5284)
+- Backups cloning their pool files over the main project's pool
+  files (reversed copy direction in the reflink path)
+- Crash on port connections referencing nonexistent endpoints; such
+  connections are now dropped with a warning at load
+- Data races between the main and audio threads on transport state
+  and playhead processing state (ThreadSanitizer)
+- Deadlocks when graph recalculation or engine pausing was requested
+  while already in progress
+- Count-in metronome clicks continuing to play after pausing during
+  the count-in
+- Faders and balance controls resetting to hardcoded values instead
+  of the parameter default, and the fader hover label showing
+  -2.1 dB at unity gain (#5307)
+- Faders ramping to new volumes faster than real time during
+  playback
+- Generic plugin editor windows opening without a title bar on
+  Windows
+- Unstyled platform scrollbars and fallback controls on Windows
+  (#5312)
+- Arrangers setting drag cursors when the pointer is elsewhere in
+  the window
+- Missing icon error in the track inspector's MIDI input expander
+- DSP load indicator rendering an empty meter as a solid block
+
+### Removed
+- Carla plugin hosting support (already disabled)
+
 ## [v2.0.0-alpha.2] - 2026-07-29
 
 ### Added
