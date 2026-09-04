@@ -57,6 +57,7 @@ target_sources(zrythm_plugins_lib
     plugin_preset_list_model.cpp
     plugin_protocol.cpp
     plugin_run_loop.cpp
+    plugin_format_utils.cpp
     plugin_scan_manager.cpp
     vst3_plugin.cpp
     vst3_plugin_format.cpp
@@ -78,6 +79,7 @@ target_sources(zrythm_plugins_lib
       plugin_descriptor.h
       plugin_descriptor_list.h
       plugin_factory.h
+      plugin_format_utils.h
       plugin_group.h
       plugin_host_window.h
       plugin_library.h
@@ -98,6 +100,40 @@ set_target_properties(zrythm_plugins_lib PROPERTIES
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
+
+if(ZRYTHM_WITH_LILV)
+  target_sources(zrythm_plugins_lib
+    PRIVATE
+      lv2_discovery.cpp
+      lv2_plugin_format.cpp
+    PUBLIC
+      FILE_SET HEADERS
+      BASE_DIRS ".."
+      FILES
+        lv2_discovery.h
+        lv2_plugin_format.h
+  )
+  target_link_libraries(zrythm_plugins_lib PRIVATE lilv::lilv)
+  # Stage the LV2 spec bundles shipped with the conan lv2 package into the
+  # build tree, where the runtime looks for them (datadir/zrythm/lv2-specs
+  # under the binaries' parent directory), and install them to the same
+  # location for packaging. This must NOT be a directory that is searched
+  # for plugins (e.g. lib/zrythm/lv2 or share/zrythm/lv2 are search paths
+  # for bundled plugins like ZLFO).
+  cmake_path(
+    GET CMAKE_RUNTIME_OUTPUT_DIRECTORY PARENT_PATH
+    zrythm_lv2_binaries_parent_dir)
+  add_custom_command(TARGET zrythm_plugins_lib POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${lv2_RES_DIRS}/lv2"
+      "${zrythm_lv2_binaries_parent_dir}/${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/lv2-specs"
+    COMMENT "Staging LV2 spec bundles"
+  )
+  install(
+    DIRECTORY "${lv2_RES_DIRS}/lv2/"
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/${prog_name_lowercase}/lv2-specs
+  )
+endif()
 
 target_precompile_headers(zrythm_plugins_lib
   PUBLIC

@@ -399,19 +399,19 @@ SPDX-FileCopyrightText = "2017 Michael Aprimo"
 SPDX-License-Identifier = "MIT"
 
 [[annotations]]
-path = ["tests/lv2plugins/eg-amp.lv2/**.ttl**", "tests/lv2plugins/sigabrt.lv2/**.ttl**", "tests/lv2plugins/sigabrt.lv2/sigabrt.c"]
+path = ["tests/test_plugins/lv2/eg-amp.lv2/**.ttl**", "tests/test_plugins/lv2/sigabrt.lv2/**.ttl**", "tests/test_plugins/lv2/sigabrt.lv2/sigabrt.c"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["", "2006-2016 David Robillard <d@drobilla.net>", "2006 Steve Harris <steve@plugin.org.uk>"]
 SPDX-License-Identifier = "ISC"
 
 [[annotations]]
-path = ["tests/lv2plugins/eg-fifths.lv2/**.ttl**", "tests/lv2plugins/test-instrument.lv2/**.ttl**"]
+path = ["tests/test_plugins/lv2/eg-fifths.lv2/**.ttl**", "tests/test_plugins/lv2/test-instrument.lv2/**.ttl**"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = ["", "2014-2016 David Robillard <d@drobilla.net>"]
 SPDX-License-Identifier = "ISC"
 
 [[annotations]]
-path = ["tests/lv2plugins/plumbing.lv2/**.ttl**", "tests/lv2plugins/plumbing.lv2/plumbing.c"]
+path = ["tests/test_plugins/lv2/plumbing.lv2/**.ttl**", "tests/test_plugins/lv2/plumbing.lv2/plumbing.c"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2015 Robin Gareus <robin@gareus.org>"
 SPDX-License-Identifier = "GPL-2.0-or-later"
@@ -423,7 +423,7 @@ SPDX-FileCopyrightText = ["", "2009-2016 Albert Graef <aggraef@gmail.com>", "200
 SPDX-License-Identifier = "LGPL-3.0-or-later"
 
 [[annotations]]
-path = ["data/samples/klick/README", "ext/README", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "tests/lv2plugins/eg-amp.lv2/README.txt", "tests/lv2plugins/eg-fifths.lv2/README.txt", "tests/lv2plugins/plumbing.lv2/README", "tests/lv2plugins/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "tools/vg.sup", "VERSION.txt"]
+path = ["data/samples/klick/README", "ext/README", "**/resources/icons/font-awesome/README", "**/resources/icons/fork-awesome/README", "**/resources/icons/gnome-builder/README", "**/resources/icons/jam-icons/README", "tests/test_plugins/lv2/eg-amp.lv2/README.txt", "tests/test_plugins/lv2/eg-fifths.lv2/README.txt", "tests/test_plugins/lv2/plumbing.lv2/README", "tests/test_plugins/lv2/test-instrument.lv2/README.txt", "tests/presets/LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2/**.ttl", "tools/vg.sup", "VERSION.txt"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"

@@ -56,6 +56,7 @@
 #include "plugins/clap_speaker_arrangement.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_library.h"
 #include "plugins/plugin_run_loop.h"
 #include "plugins/plugin_transport_context.h"
@@ -1593,9 +1594,7 @@ ClapPlugin::load_plugin (
           pimpl_->pluginFactory_, i);
         if (cur_desc == nullptr || cur_desc->id == nullptr)
           continue;
-        if (
-          CLAPPluginFormat::get_hash_for_range (std::string (cur_desc->id))
-          == plugin_unique_id)
+        if (get_hash_for_range (std::string (cur_desc->id)) == plugin_unique_id)
           {
             return cur_desc;
           }

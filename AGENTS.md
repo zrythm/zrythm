@@ -386,7 +386,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 ### Flaky Test Prevention
 
 - Use condition variables, latches, `QSignalSpy::wait()`, or `QTest::qWaitFor()` for synchronization — never `sleep()` or timed waits such as `QTest::qWait()`
-- Make temp directories unique per test (e.g., prepend test name) and clean them up in teardown
+- Make temp directories unique per test (e.g., prepend test name) and clean them up in teardown — prefer [make_tmp_dir()](src/utils/io_utils.h), which is unique and auto-deleting
 - Avoid depending on real-time clocks, network, or filesystem state in unit tests; mock or abstract these away
 - Use deterministic seeds for any randomized test inputs (e.g., pass a fixed seed to `std::mt19937`)
 
@@ -396,6 +396,7 @@ Some arranger objects are [loopable](src/structure/arrangement/loopable_object.h
 - [ScopedJuceQApplication](tests/helpers/scoped_juce_qapplication.h): Inherits from ScopedQCoreApplication and also runs the JUCE message loop inside Qt's event loop. Only to be used when we can't avoid dependence on JUCE's message loop.
 - [MockProcessable, MockTransport](tests/unit/dsp/graph_helpers.h)
 - [MockTrack](tests/unit/structure/tracks/mock_track.h)
+- [make_tmp_dir()](src/utils/io_utils.h): unique, auto-deleting temp directory (QTemporaryDir-based); use it instead of hand-rolling temp dir creation/cleanup in tests
 - Logging can be enabled in tests by calling `init_logging(utils::LoggerType::Test)` (`#include "utils/logger.h"`)
 
 ---

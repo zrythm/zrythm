@@ -198,7 +198,6 @@ option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
 option(ZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS "Fetch third party attributions file and bundle it (for use by the Zrythm team)" OFF)
-option(ZRYTHM_WITH_JUCE_LV2_HOSTING "Include JUCE LV2 hosting module (doesn't build on MSVC)" ${UNIX})
 option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
 option(ZRYTHM_STRICT "Compile and link with strict flags (warnings as errors, etc.)" OFF)
@@ -851,16 +850,25 @@ add_subdirectory(ext)
 find_package(SndFile REQUIRED)
 set(HAVE_OPUS TRUE)
 
-# add_library(lv2_lib INTERFACE)
-# target_include_directories(lv2_lib
-  # INTERFACE ${juce_SOURCE_DIR}/modules/juce_audio_processors/format_types/LV2_SDK/lv2)
-# pkg_check_modules(LV2 lv2>=1.18.0 REQUIRED IMPORTED_TARGET)
-# add_library(zrythm::lv2 ALIAS PkgConfig::LV2)
-# pkg_check_modules(ZIX zix-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SERD serd-0>=0.30.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SORD sord-0>=0.14.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(SRATOM sratom-0>=0.4.0 REQUIRED IMPORTED_TARGET)
-# pkg_check_modules(LILV lilv-0>=0.24.6 REQUIRED IMPORTED_TARGET)
+# lilv (+ its lv2/serd/sord/sratom/zix chain, from Conan) for native LV2
+# plugin discovery/hosting; only required on GNU/Linux
+if(OS_GNU)
+  find_package(lilv REQUIRED)
+  # CMakeDeps exposes resdirs only per-config (e.g. lv2_RES_DIRS_DEBUG) -
+  # map to the config in use so the LV2 spec bundles can be located
+  string(TOUPPER "${CMAKE_BUILD_TYPE}" _lv2_build_type_upper)
+  if(NOT DEFINED lv2_RES_DIRS AND DEFINED lv2_RES_DIRS_${_lv2_build_type_upper})
+    set(lv2_RES_DIRS "${lv2_RES_DIRS_${_lv2_build_type_upper}}")
+  endif()
+  unset(_lv2_build_type_upper)
+  if(NOT DEFINED lv2_RES_DIRS)
+    message(FATAL_ERROR
+      "lv2_RES_DIRS not found: a single-config generator with CMAKE_BUILD_TYPE set is required for CMakeDeps' per-config variables")
+  endif()
+  set(ZRYTHM_WITH_LILV ON)
+else()
+  set(ZRYTHM_WITH_LILV OFF)
+endif()
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)
 add_library(_zrythm_chromaprint_lib INTERFACE)

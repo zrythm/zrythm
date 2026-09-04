@@ -6,6 +6,7 @@
 
 #include <ranges>
 
+#include "plugins/plugin_format_utils.h"
 #include "plugins/vst3_plugin_format.h"
 #include "utils/format_juce.h"
 #include "utils/logger.h"
@@ -26,29 +27,6 @@ class_info_is_instrument (const VST3::Hosting::ClassInfo &class_info)
     return sub_category.find (Steinberg::Vst::PlugType::kInstrument)
            != std::string::npos;
   });
-}
-
-/**
- * @brief Modification time used for stale-scan detection.
- *
- * A .vst3 bundle is a directory whose own mtime doesn't change when the
- * binary inside is replaced, so bundles use the newest mtime of their
- * contents.
- */
-static juce::Time
-effective_modification_time (const juce::File &plugin_file)
-{
-  if (!plugin_file.isDirectory ())
-    return plugin_file.getLastModificationTime ();
-
-  juce::Time newest;
-  for (
-    const auto &entry : juce::RangedDirectoryIterator (
-      plugin_file, true, "*", juce::File::findFiles))
-    {
-      newest = std::max (newest, entry.getFile ().getLastModificationTime ());
-    }
-  return newest;
 }
 
 void

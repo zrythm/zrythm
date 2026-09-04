@@ -3,7 +3,6 @@
 
 add_subdirectory(backward-cpp)
 add_subdirectory(dirent)
-add_subdirectory(lv2)
 add_subdirectory(moodycamel)
 
 set(JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED ON)
@@ -54,11 +53,10 @@ target_compile_definitions(juce_lib
     JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
     JUCE_USE_MP3AUDIOFORMAT=1
     JUCE_WEB_BROWSER=0
-    # VST3 hosting/scanning is done natively via the VST3 SDK (see
-    # src/plugins/vst3_plugin_format.cpp and vst3_plugin.cpp); JUCE's VST3
-    # wrapper is disabled because it embeds its own copy of the SDK sources,
-    # which would clash with the sdk_hosting targets
+    # VST3 hosting is done natively via the VST3 SDK
     JUCE_PLUGINHOST_VST3=0
+    # LV2 hosting is done natively via lilv
+    JUCE_PLUGINHOST_LV2=0
     JUCE_PLUGINHOST_LADSPA=1
     JUCE_PLUGINHOST_AU=1
     JUCE_USE_CURL=0
@@ -68,9 +66,6 @@ target_compile_definitions(juce_lib
     # for tests only.
     JUCE_MODAL_LOOPS_PERMITTED=1
 )
-if(ZRYTHM_WITH_JUCE_LV2_HOSTING)
-  target_compile_definitions(juce_lib PUBLIC JUCE_PLUGINHOST_LV2=1)
-endif()
 if(ZRYTHM_WITH_ASIO)
   target_compile_definitions(juce_lib PUBLIC JUCE_ASIO=1)
   target_include_directories(juce_lib PRIVATE "${ZRYTHM_ASIO_SDK_PATH}\\common")

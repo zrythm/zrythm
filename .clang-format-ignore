@@ -8,4 +8,4 @@ ext/**/*
 inc/plugins/lv2/suil/*
 src/gui/backend/gtk_widgets/**
 src/plugins/faust/faust_registry.cpp.in
-tests/lv2plugins/**/*c
+tests/test_plugins/lv2/**

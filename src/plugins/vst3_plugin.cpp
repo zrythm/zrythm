@@ -21,6 +21,7 @@
 #include "dsp/midi_event.h"
 #include "plugins/gl_context_utils.h"
 #include "plugins/host_window_units.h"
+#include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_run_loop.h"
 #include "plugins/plugin_transport_context.h"
 #include "plugins/vst3_channel_mapping.h"
@@ -1281,8 +1282,7 @@ Vst3Plugin::load_plugin (
   // the native scanner existed
   const auto &class_infos = module->getFactory ().classInfos ();
   const auto  matches_hash = [plugin_unique_id] (const auto &ci) {
-    return Vst3PluginFormat::get_hash_for_range (ci.ID ().toString ())
-           == plugin_unique_id;
+    return get_hash_for_range (ci.ID ().toString ()) == plugin_unique_id;
   };
   const auto matches_name = [this] (const auto &ci) {
     return ci.name () == get_name ().str ();

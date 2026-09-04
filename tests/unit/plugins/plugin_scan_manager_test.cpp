@@ -240,6 +240,40 @@ TEST_P (PluginScannerTest, SinglePluginScan)
     }
 }
 
+// A scan that succeeds with no plugins (e.g. an LV2 preset or extension
+// bundle) must not be blacklisted, while a failed scan (crash, timeout)
+// must be
+TEST_P (PluginScannerTest, ScanResultBlacklisting)
+{
+  EXPECT_CALL (*mockFormat_, searchPathsForPlugins (_, _, _))
+    .WillRepeatedly (Return (juce::StringArray{ "test-plugin" }));
+
+  const auto run_scan = [this] (bool scan_succeeds) {
+    auto plugin_list = std::make_shared<juce::KnownPluginList> ();
+    {
+      auto scanner = std::make_unique<MockScanner> ();
+      EXPECT_CALL (*scanner, findPluginTypesFor (_, _, _))
+        .WillRepeatedly (
+          [scan_succeeds] (
+            juce::AudioPluginFormat &,
+            juce::OwnedArray<juce::PluginDescription> &, const juce::String &) {
+            return scan_succeeds;
+          });
+      plugin_list->setCustomScanner (std::move (scanner));
+    }
+
+    PluginScanManager scanner (
+      plugin_list, formatManager_, pathsProvider_, nullptr);
+    QSignalSpy finished_spy (&scanner, &PluginScanManager::scanningFinished);
+    scanner.beginScan ();
+    finished_spy.wait (1000);
+    return plugin_list->getBlacklistedFiles ().contains ("test-plugin");
+  };
+
+  EXPECT_FALSE (run_scan (true));
+  EXPECT_TRUE (run_scan (false));
+}
+
 INSTANTIATE_TEST_SUITE_P (
   PluginScanTests,
   PluginScannerTest,

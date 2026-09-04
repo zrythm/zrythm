@@ -51,9 +51,12 @@ class Zrythm(ConanFile):
         self.requires("tracy/[>=0.13.1 <1]")
         self.requires("xxhash/0.8.3")
         self.requires("mpmcqueue/1.0")
-        if self.settings.os == "Linux":
+        if self.settings.os in ["Linux", "FreeBSD"]:
             self.requires("freetype/[>=2.14]")
             self.requires("fontconfig/[>=2.15]")
+            # lilv + its lv2/serd/sord/sratom/zix chain for native LV2
+            # plugin discovery/hosting
+            self.requires("lilv/0.28.0")
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=4.3]")

@@ -89,7 +89,7 @@ Worker::process ()
           scanner_.set_currently_scanning_plugin (
             utils::Utf8String::from_juce_string (identifier).to_qstring ());
           juce::OwnedArray<juce::PluginDescription> types;
-          bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
+          const bool has_new = scanner_.known_plugin_list_->scanAndAddFile (
             identifier, true, types, *format);
           if (has_new)
             {
@@ -97,10 +97,15 @@ Worker::process ()
                 "Found new plugins for identifier '{}' (total types {})",
                 identifier, types.size ());
             }
-          if (types.isEmpty ())
+          // Identifiers without plugins (e.g. LV2 preset or extension
+          // bundles) are a valid scan result, not a failure. Failed scans
+          // (crashes, timeouts) are blacklisted by KnownPluginList itself
+          // when the scanner subprocess reports failure.
+          if (
+            scanner_.known_plugin_list_->getBlacklistedFiles ().contains (
+              identifier))
             {
-              z_warning ("Blacklisting plugin: {}", identifier);
-              scanner_.known_plugin_list_->addToBlacklist (identifier);
+              z_debug ("Blacklisted plugin: {}", identifier);
             }
         }
 
