@@ -99,7 +99,7 @@ DeviceManager::initialize (
     fallback_to_default);
   if (ret.isNotEmpty ())
     {
-      throw utils::exceptions::ZrythmException (
+      throw utils::ZrythmException (
         fmt::format (
           "Audio device initialization failed: {}", ret.toStdString ()));
     }

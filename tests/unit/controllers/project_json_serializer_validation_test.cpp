@@ -30,8 +30,7 @@ TEST_P (MissingRequiredFieldTest, TopLevelFieldMissing_Throws)
 {
   j_.erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -59,8 +58,7 @@ TEST_P (MissingProjectDataFieldTest, ProjectDataFieldMissing_Throws)
 {
   j_["projectData"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -82,8 +80,7 @@ TEST_P (MissingRegistryTest, RegistryMissing_Throws)
 {
   j_["projectData"]["registry"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -111,8 +108,7 @@ TEST_P (MissingTracklistFieldTest, TracklistFieldMissing_Throws)
 {
   j_["projectData"]["tracklist"].erase (GetParam ());
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j_); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j_); }, utils::ZrythmException);
 }
 
 INSTANTIATE_TEST_SUITE_P (
@@ -138,8 +134,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonWrongDocumentType)
   j["documentType"] = "WrongDocumentType";
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
@@ -154,8 +149,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
@@ -171,8 +165,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
@@ -187,8 +180,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
   j["projectData"]["registry"]["tracks"].push_back (track);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonEmpty)
@@ -196,8 +188,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonEmpty)
   nlohmann::json j = nlohmann::json::object ();
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 TEST (ProjectJsonSerializerValidationTest, InvalidJsonNotObject)
@@ -205,8 +196,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonNotObject)
   nlohmann::json j = "not an object";
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 
 // ============================================================================
@@ -417,7 +407,7 @@ TEST_F (
     {
       ProjectJsonSerializer::validate_json (j);
     }
-  catch (const utils::exceptions::ZrythmException &e)
+  catch (const utils::ZrythmException &e)
     {
       FAIL ()
         << "Full project with all content types should produce "

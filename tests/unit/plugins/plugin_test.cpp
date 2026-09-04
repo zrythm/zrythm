@@ -621,7 +621,7 @@ TEST_F (PluginTest, OutOfRangePresetIndexInJsonIsRefused)
   j["preset"] = std::numeric_limits<int64_t>::max ();
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, PresetDirtyWithoutSelectionInJsonIsDiscarded)
@@ -659,7 +659,7 @@ TEST_F (PluginTest, NegativePresetIndexInJsonIsRefused)
   j["preset"] = -5;
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, NonIntNonStringPresetInJsonIsRefused)
@@ -679,8 +679,7 @@ TEST_F (PluginTest, NonIntNonStringPresetInJsonIsRefused)
     {
       j["preset"] = bad_value;
       TestPlugin deserialized (*registry_);
-      EXPECT_THROW (
-        from_json (j, deserialized), utils::exceptions::ZrythmException)
+      EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException)
         << "preset value should be refused: " << bad_value.dump ();
     }
 }
@@ -699,7 +698,7 @@ TEST_F (PluginTest, NonBoolPresetDirtyInJsonIsRefused)
   j["presetDirty"] = 1;
 
   TestPlugin deserialized (*registry_);
-  EXPECT_THROW (from_json (j, deserialized), utils::exceptions::ZrythmException);
+  EXPECT_THROW (from_json (j, deserialized), utils::ZrythmException);
 }
 
 TEST_F (PluginTest, SelectionFollowsPresetListContentChanges)

@@ -225,7 +225,7 @@ TEST (SerializationTest, VariantInvalidTypeIndexThrows)
         variant_from_json_with_builder (
           json_with_index (invalid_index), deserialized,
           SerializationTestVariantBuilder{}),
-        utils::exceptions::ZrythmException);
+        utils::ZrythmException);
     }
 
   // a missing or non-integer type key must also throw ZrythmException so
@@ -236,7 +236,7 @@ TEST (SerializationTest, VariantInvalidTypeIndexThrows)
     EXPECT_THROW (
       variant_from_json_with_builder (
         missing_key, deserialized, SerializationTestVariantBuilder{}),
-      utils::exceptions::ZrythmException);
+      utils::ZrythmException);
   }
   {
     nlohmann::json non_integer = nlohmann::json::object ();
@@ -245,7 +245,7 @@ TEST (SerializationTest, VariantInvalidTypeIndexThrows)
     EXPECT_THROW (
       variant_from_json_with_builder (
         non_integer, deserialized, SerializationTestVariantBuilder{}),
-      utils::exceptions::ZrythmException);
+      utils::ZrythmException);
   }
 
   // valid indices still work

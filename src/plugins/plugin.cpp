@@ -581,7 +581,7 @@ from_json (const nlohmann::json &j, Plugin &p)
           if (
             preset_index < 0 || preset_index > std::numeric_limits<int>::max ())
             {
-              throw utils::exceptions::ZrythmException (
+              throw utils::ZrythmException (
                 fmt::format (
                   "Invalid preset index {} in project file", preset_index));
             }
@@ -594,7 +594,7 @@ from_json (const nlohmann::json &j, Plugin &p)
         }
       else
         {
-          throw utils::exceptions::ZrythmException (
+          throw utils::ZrythmException (
             fmt::format (
               "Invalid preset value in project file: expected integer or "
               "string, got {}",
@@ -606,7 +606,7 @@ from_json (const nlohmann::json &j, Plugin &p)
       const auto &dirty_val = j[Plugin::kPresetDirtyKey];
       if (!dirty_val.is_boolean ())
         {
-          throw utils::exceptions::ZrythmException (
+          throw utils::ZrythmException (
             fmt::format (
               "Invalid presetDirty value in project file: expected boolean, "
               "got {}",

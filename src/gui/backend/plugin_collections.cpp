@@ -1,11 +1,14 @@
 // SPDX-FileCopyrightText: © 2020-2024, 2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <exception>
+
 #include <fmt/std.h>
 
 #include "gui/backend/plugin_collections.h"
 #include "gui/backend/zrythm_application.h"
 #include "utils/directory_manager.h"
+#include "utils/exceptions.h"
 #include "utils/format.h"
 #include "utils/io_utils.h"
 #include "utils/utf8_string.h"
@@ -119,10 +122,10 @@ PluginCollections::serialize_to_file () const
       utils::io::set_file_contents (
         path, utils::Utf8String::from_utf8_encoded_string (json.dump ()));
     }
-  catch (const ZrythmException &e)
+  catch (const ZrythmException &)
     {
-      throw ZrythmException (
-        format_str ("Unable to write plugin collections: {}", e.what ()));
+      std::throw_with_nested (
+        ZrythmException ("Unable to write plugin collections"));
     }
 }
 

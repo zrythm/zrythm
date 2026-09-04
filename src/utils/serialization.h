@@ -18,7 +18,7 @@
 #include <boost/unordered/concurrent_flat_map_fwd.hpp>
 #include <nlohmann/json.hpp>
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 using namespace std::string_view_literals;
 
 inline void

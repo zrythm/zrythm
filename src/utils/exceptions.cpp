@@ -1,115 +1,71 @@
-// SPDX-CopyrightText: © 2024 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2024-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "utils/format_qt.h"
-
 #include "utils/exceptions.h"
-#include "utils/format.h"
 #include "utils/logger.h"
 
-#include <fmt/format.h>
-
-using namespace zrythm::utils::exceptions;
+namespace zrythm::utils
+{
 
 ZrythmException::ZrythmException (const char * message)
-    : ZrythmException (std::string (message))
+    : std::runtime_error (message)
 {
 }
 
 ZrythmException::ZrythmException (const std::string &message)
-    : message_ (message)
-{
-  z_warning ("Exception:\n{}", message);
-}
-
-ZrythmException::ZrythmException (const QString &message)
-    : ZrythmException (utils::Utf8String::from_qstring (message).str ())
+    : std::runtime_error (message)
 {
 }
 
 ZrythmException::ZrythmException (std::string_view message)
-    : ZrythmException (std::string (message))
+    : std::runtime_error (std::string (message))
 {
 }
 
-template <typename... Args>
-void
-ZrythmException::handle (const std::string &format, Args &&... args) const
+ZrythmException::ZrythmException (const QString &message)
+    : std::runtime_error (Utf8String::from_qstring (message).str ())
 {
-  std::string errorMessage = fmt::format (
-    "{}\n- {} -\n{}", QObject ::tr ("Error"), QObject::tr ("Details"), what ());
-  // std::string formattedMessage =
-  // fmt::format (fmt::runtime (format), std::forward<Args> (args)...);
-  std::string formattedMessage =
-    format_str (format, std::forward<Args> (args)...);
-  errorMessage += "\n" + formattedMessage;
+}
 
-#if 0
-  AdwDialog * win = nullptr;
-  if (ZRYTHM_HAVE_UI)
+namespace
+{
+
+void
+append_exception_chain (std::string &out, const std::exception &e, int level)
+{
+  out.append (static_cast<std::string::size_type> (level) * 2, ' ');
+  out += e.what ();
+  try
     {
-      win = ui_show_message_literal (QObject::tr ("Error"), errorMessage.c_str ());
+      std::rethrow_if_nested (e);
     }
+  catch (const std::exception &nested)
+    {
+      out += "\n";
+      append_exception_chain (out, nested, level + 1);
+    }
+  catch (...)
+    {
+    }
+}
+
+} // namespace
+
+std::string
+format_exception (const std::exception &exception)
+{
+  std::string out;
+  append_exception_chain (out, exception, 0);
+  return out;
+}
+
+void
+log_exception (const std::exception &exception, const std::string &context)
+{
+  if (context.empty ())
+    z_warning ("{}", format_exception (exception));
   else
-    {
-#endif
-  z_warning ("{}", errorMessage.c_str ());
-#if 0
-    }
-
-  return win;
-#endif
+    z_warning ("{}:\n{}", context, format_exception (exception));
 }
 
-void
-ZrythmException::handle (const char * str) const
-{
-  handle ("{}", str);
-}
-
-void
-ZrythmException::handle (const std::string &str) const
-{
-  handle ("{}", str);
-}
-
-void
-ZrythmException::handle (const QString &str) const
-{
-  handle ("{}", str);
-}
-
-const char *
-ZrythmException::what () const noexcept
-{
-  if (full_message_.empty ())
-    {
-      std::ostringstream oss;
-      oss << "Exception Stack:\n";
-      oss << "- " << message_ << "\n";
-
-      auto current = std::current_exception ();
-      while (current)
-        {
-          try
-            {
-              std::rethrow_exception (current);
-            }
-          catch (const std::exception &e)
-            {
-              oss << "- " << e.what () << "\n";
-              current =
-                dynamic_cast<const std::nested_exception *> (&e)
-                  ? dynamic_cast<const std::nested_exception *> (&e)->nested_ptr ()
-                  : nullptr;
-            }
-          catch (...)
-            {
-              oss << "- Unknown exception\n";
-              current = nullptr;
-            }
-        }
-      full_message_ = oss.str ();
-    }
-  return full_message_.c_str ();
-}
+} // namespace zrythm::utils

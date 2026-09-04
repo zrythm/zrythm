@@ -568,7 +568,7 @@ TEST_F (ProjectSerializationTest, DeserializeProject_ValidatesFirst)
     {
       ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
     },
-    utils::exceptions::ZrythmException);
+    utils::ZrythmException);
 }
 
 TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected)
@@ -584,7 +584,7 @@ TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected
     {
       ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
     },
-    utils::exceptions::ZrythmException);
+    utils::ZrythmException);
 }
 
 TEST_F (ProjectSerializationTest, Deserialize_OlderMajorVersionSucceeds)
@@ -610,7 +610,6 @@ TEST_F (ProjectSerializationTest, Deserialize_InvalidRegistryDataRejected)
   j["projectData"]["registry"]["ports"].push_back (bad_port);
 
   EXPECT_THROW (
-    { ProjectJsonSerializer::validate_json (j); },
-    utils::exceptions::ZrythmException);
+    { ProjectJsonSerializer::validate_json (j); }, utils::ZrythmException);
 }
 }

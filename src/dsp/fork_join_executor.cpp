@@ -17,7 +17,7 @@
 namespace zrythm::dsp::graph
 {
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 namespace
 {

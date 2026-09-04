@@ -18,7 +18,7 @@
 #include "utils/utf8_string.h"
 #include "utils/uuid_identifiable_object.h"
 
-using zrythm::utils::exceptions::ZrythmException;
+using zrythm::utils::ZrythmException;
 
 namespace zrythm::dsp
 {

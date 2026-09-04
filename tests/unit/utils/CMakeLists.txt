@@ -14,6 +14,7 @@ add_executable(zrythm_utils_unit_tests
   enum_utils_test.cpp
   directory_manager_test.cpp
   expandable_tick_range_test.cpp
+  exceptions_test.cpp
   float_ranges_test.cpp
   hash_test.cpp
   icloneable_test.cpp
