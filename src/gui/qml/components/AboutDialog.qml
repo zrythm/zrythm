@@ -134,12 +134,9 @@ Dialog {
 
         Button {
           flat: true
-          text: qsTr("Third Party Notices")
+          text: qsTr("Third-Party Licenses")
 
-          onClicked: stackView.push(licensePage, {
-            licenseTitle: "Third Party Notices",
-            licenseText: QmlUtils.readTextFileContent(":/qt/qml/Zrythm/licenses/attributions_sbom.txt")
-          })
+          onClicked: stackView.push(thirdPartyLicensesPage)
         }
 
         Button {
@@ -217,6 +214,14 @@ Dialog {
 
         onClicked: stackView.pop()
       }
+    }
+  }
+
+  Component {
+    id: thirdPartyLicensesPage
+
+    AboutThirdPartyLicensesPage {
+      stackView: stackView
     }
   }
 }

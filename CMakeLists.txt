@@ -197,7 +197,6 @@ set(ZRYTHM_PACKAGE_VERSION "${ZRYTHM_VERSION_STRING_FULL_WITHOUT_V}" CACHE STRIN
 option(ZRYTHM_PROFILING "Build with profiling (for gprof)" OFF)
 option(ZRYTHM_MANPAGE "Build and install manpage" ${OS_GNU})
 option(ZRYTHM_SHELL_COMPLETIONS "Build and install shell completions" ${UNIX})
-option(ZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS "Fetch third party attributions file and bundle it (for use by the Zrythm team)" OFF)
 option(ZRYTHM_USER_MANUAL "Build and install user manual" OFF)
 cmake_dependent_option(ZRYTHM_STRICT_SPHINX_OPTS "Use strict sphinx options (for docs, fail on warnings)" OFF "ZRYTHM_USER_MANUAL" OFF)
 option(ZRYTHM_STRICT "Compile and link with strict flags (warnings as errors, etc.)" OFF)
@@ -377,28 +376,6 @@ endforeach()
 string(JOIN " " locales_str ${locales_list})
 message(STATUS "Locales: ${locales_str}")
 
-# Attributions SBOM
-set(attributions_sbom_filepath "${CMAKE_CURRENT_BINARY_DIR}/attributions_sbom.txt")
-if(NOT EXISTS "${attributions_sbom_filepath}")
-  if(ZRYTHM_WITH_BUNDLED_THIRD_PARTY_ATTRIBUTIONS)
-    file(DOWNLOAD
-      https://raw.githubusercontent.com/zrythm/zrythm-attribution-sbom/refs/heads/main/project-attribution-sbom.txt
-      "${attributions_sbom_filepath}"
-      STATUS download_status
-      TLS_VERIFY OFF
-      TIMEOUT 30
-    )
-    list(GET download_status 0 status_code)
-    list(GET download_status 1 error_message)
-    if(NOT status_code EQUAL 0)
-      message(WARNING "Download failed (${status_code}): ${error_message}")
-      message(FATAL_ERROR "Third party attributions SBOM not fetched")
-    endif()
-  else()
-    file(WRITE "${attributions_sbom_filepath}" "(No attributions included)")
-  endif()
-endif()
-
 # JUCE properties
 set_directory_properties(PROPERTIES
   JUCE_COMPANY_NAME "Zrythm"
@@ -411,6 +388,8 @@ set_directory_properties(PROPERTIES
 #==============================================================================
 
 check_symbol_exists(mlock "sys/mman.h" HAVE_MLOCK)
+
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
 
 add_library(_zrythm_include_dirs INTERFACE)
 target_include_directories(_zrythm_include_dirs
@@ -1095,6 +1074,10 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 endif()
 
+# Generates attributions.json (bundled via QRC in src/gui) and sbom.cdx.json
+# from data/dependencies.toml at configure time.
+include(DependencyInventory)
+
 add_subdirectory(src)
 
 # below errors out on Xcode
@@ -1106,7 +1089,7 @@ if(NOT XCODE)
     QT_TRANSLATION_CATALOGS qtbase
   )
   set_property(TARGET zrythm PROPERTY QT_EXCLUDE_SOURCES_FROM_TRANSLATION
-    "${CMAKE_CURRENT_BINARY_DIR}/attributions_sbom.txt"
+    "${generated_attributions_json}"
     "${CMAKE_SOURCE_DIR}/ext/*"
     "${CMAKE_SOURCE_DIR}/.cache/CPM/*"
     "${CMAKE_SOURCE_DIR}/src/gui/resources/icons/*"
@@ -1116,7 +1099,6 @@ if(NOT XCODE)
 endif()
 
 # clang-format integration
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
 add_custom_target(clang-format-check
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/run_clang_format.py --dry-run
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}

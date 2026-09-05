@@ -149,16 +149,41 @@ foreach(license ${licenses})
     )
   list(APPEND license_files ${license})
 endforeach()
+# Runtime-only license texts for external dependencies (not used by in-repo
+# files, so not part of the REUSE set). Adding a text goes together with a
+# manifest edit (the text is only referenced from there), and the manifest
+# is in CMAKE_CONFIGURE_DEPENDS, which re-runs this glob at the next build.
+file(GLOB runtime_licenses "${CMAKE_SOURCE_DIR}/data/licenses/*.txt")
+foreach(license ${runtime_licenses})
+  get_filename_component(license_name ${license} NAME)
+  set(license_alias "licenses/${license_name}")
+  set_source_files_properties(${license}
+    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTIES QT_RESOURCE_ALIAS ${license_alias}
+    )
+  list(APPEND license_files ${license})
+endforeach()
+# Both directories above map into the same "licenses/" resource prefix: a
+# file name present in both would produce a duplicate resource alias.
+set(license_file_names)
+foreach(license ${license_files})
+  get_filename_component(license_name ${license} NAME)
+  if(license_name IN_LIST license_file_names)
+    message(FATAL_ERROR
+      "license file name exists in both LICENSES/ and data/licenses/: ${license_name}")
+  endif()
+  list(APPEND license_file_names ${license_name})
+endforeach()
 set_source_files_properties("${CMAKE_SOURCE_DIR}/TRADEMARKS.md"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PROPERTIES QT_RESOURCE_ALIAS "licenses/TRADEMARKS.md"
   )
 list(APPEND license_files "${CMAKE_SOURCE_DIR}/TRADEMARKS.md")
-set_source_files_properties("${attributions_sbom_filepath}"
+set_source_files_properties("${generated_attributions_json}"
   DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-  PROPERTIES QT_RESOURCE_ALIAS "licenses/attributions_sbom.txt"
+  PROPERTIES QT_RESOURCE_ALIAS "licenses/attributions.json"
   )
-list(APPEND license_files "${attributions_sbom_filepath}")
+list(APPEND license_files "${generated_attributions_json}")
 
 # WAV files
 set(wav_filepaths
@@ -241,6 +266,7 @@ set(rel_qml_file_paths
   components/editors/PianoRollKeys.qml
   components/editors/ChordRowLabels.qml
   components/AboutDialog.qml
+  components/AboutThirdPartyLicensesPage.qml
   components/AutomationTracksListView.qml
   components/MainToolbar.qml
   components/BalanceControl.qml

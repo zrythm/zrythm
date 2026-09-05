@@ -62,7 +62,6 @@ CPMDeclarePackage(juce
   GITHUB_REPOSITORY zrythm/JUCE
   SYSTEM YES
   EXCLUDE_FROM_ALL YES
-  SBOM_LICENSE_CONCLUDED "LicenseRef-JUCE-Commercial OR AGPL-3.0-only"
 )
 # SndFile
 CPMDeclarePackage(SndFile
@@ -80,7 +79,6 @@ CPMDeclarePackage(SndFile
     "ENABLE_PACKAGE_CONFIG OFF"
     "INSTALL_PKGCONFIG_MODULE OFF"
     "INSTALL_MANPAGES OFF"
-  SBOM_SKIP YES
 )
 # zstd
 CPMDeclarePackage(zstd
@@ -190,7 +188,6 @@ CPMDeclarePackage(GTest
   EXCLUDE_FROM_ALL YES
   OPTIONS
     "INSTALL_GTEST OFF"
-  SBOM_SKIP YES
 )
 # benchmark
 CPMDeclarePackage(benchmark
@@ -205,7 +202,6 @@ CPMDeclarePackage(benchmark
     "BENCHMARK_ENABLE_INSTALL OFF"
     "BENCHMARK_INSTALL_DOCS OFF"
     "CMAKE_BUILD_TYPE Release"
-  SBOM_SKIP YES
 )
 # gsl-lite
 CPMDeclarePackage(gsl-lite
