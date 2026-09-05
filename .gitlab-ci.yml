@@ -295,6 +295,14 @@ check:reuse:
   script:
     - reuse lint
 
+check:dependency-inventory:
+  extends: .gnu-linux-template
+  stage: check
+  needs: []
+  script:
+    - python3 -m pytest tools/tests -q
+    - python3 tools/check_dependencies.py
+
 check:exif:
   extends: .gnu-linux-template
   stage: check
@@ -488,6 +496,7 @@ build:gnu/linux:
     - job: check:exif
     - job: check:reuse
     - job: check:clang-format
+    - job: check:dependency-inventory
   timeout: 2h # a lot of tools are run here
   script:
     - cmake --build conanbuild/${BUILD_TYPE} --config ${BUILD_TYPE} --parallel --target all all_verify_interface_header_sets
@@ -514,6 +523,29 @@ build:gnu/linux:
     reports:
       junit: conanbuild/${BUILD_TYPE}/test_results/*.xml
   coverage: '/Percentage Coverage:\s+(\d+\.\d+)%$/'
+
+# CycloneDX SBOM for the GNU/Linux release build, generated from the Conan
+# fragment emitted during configure. Independent of build:gnu/linux so the
+# SBOM is published even when the build fails.
+sbom:gnu/linux:
+  extends: .gnu-linux-template
+  stage: build
+  needs:
+    - job: configure:gnu/linux
+      artifacts: true
+      parallel:
+        matrix:
+          - BUILD_TYPE: Release
+            HOST_PROFILE: gcc_release
+  script:
+    - >-
+      python3 tools/generate_sbom.py --manifest data/dependencies.toml
+      --conan-fragment conanbuild/Release/generators/zrythm-conan-sbom.cdx.json
+      --version-file VERSION.txt --output sbom.cdx.json
+  artifacts:
+    paths:
+      - sbom.cdx.json
+    expire_in: 1 day
 
 build:mac-arm:
   extends: .mac-arm-template
