@@ -500,3 +500,10 @@ path = "data/schemas/project.schema.json"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Alexandros Theodotou <alex@zrythm.org>"
 SPDX-License-Identifier = "LicenseRef-ZrythmLicense"
+
+[[annotations]]
+path = "data/licenses/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "Various upstream authors (see the individual license texts)"
+SPDX-License-Identifier = "LicenseRef-VerbatimCopyLicense"
+SPDX-PackageComment = "Verbatim third-party license texts bundled for the in-app attribution display; these licenses are not used by any in-repo source file"

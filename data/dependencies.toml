@@ -1,0 +1,653 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#
+# Inventory of third-party components shipped with Zrythm.
+# Single source of truth for the CycloneDX SBOM (tools/generate_sbom.py) and
+# the in-app attribution display (tools/generate_attributions.py).
+# Validated by tools/dependency_manifest.py; kept honest by
+# tools/check_dependencies.py (runs in CI).
+#
+# tier:    conan | cpm | vendored | asset
+# version: forbidden for tier "conan" (taken from the resolved Conan graph);
+#          required for tier "cpm" (checked against package-lock.cmake);
+#          optional for vendored entries without an in-tree version
+# spdx:    SPDX id or expression; every id must have a license text in
+#          LICENSES/ or data/licenses/
+# shipped: false for build-only/test-only components (excluded from SBOM and
+#          the attribution display)
+
+# ---------- Conan (direct requirements; versions come from the graph) ----------
+
+[[component]]
+id = "qt"
+name = "Qt"
+tier = "conan"
+spdx = "LicenseRef-Qt-Commercial OR LGPL-3.0-only"
+copyright = "The Qt Company Ltd. and Qt contributors"
+homepage = "https://www.qt.io"
+
+[[component]]
+id = "magic_enum"
+name = "magic_enum"
+tier = "conan"
+spdx = "MIT"
+copyright = "Daniil Goncharov (Neargye)"
+homepage = "https://github.com/Neargye/magic_enum"
+
+[[component]]
+id = "fmt"
+name = "fmt"
+tier = "conan"
+spdx = "MIT"
+copyright = "Victor Zverovich and fmt contributors"
+homepage = "https://fmt.dev"
+
+[[component]]
+id = "spdlog"
+name = "spdlog"
+tier = "conan"
+spdx = "MIT"
+copyright = "Gabi Melman and spdlog contributors"
+homepage = "https://github.com/gabime/spdlog"
+
+[[component]]
+id = "scnlib"
+name = "scnlib"
+tier = "conan"
+spdx = "Apache-2.0"
+copyright = "Elias Kosunen"
+homepage = "https://github.com/eliaskosunen/scnlib"
+
+[[component]]
+id = "boost"
+name = "Boost"
+tier = "conan"
+spdx = "BSL-1.0"
+copyright = "Boost developers"
+homepage = "https://www.boost.org"
+
+[[component]]
+id = "nlohmann_json"
+name = "nlohmann/json"
+tier = "conan"
+spdx = "MIT"
+copyright = "Niels Lohmann"
+homepage = "https://json.nlohmann.me"
+
+[[component]]
+id = "json-schema-validator"
+name = "JSON Schema Validator for Modern C++"
+tier = "conan"
+spdx = "MIT"
+copyright = "Patrick Boettcher"
+homepage = "https://github.com/pboettch/json-schema-validator"
+
+[[component]]
+id = "libsndfile"
+name = "libsndfile"
+tier = "conan"
+spdx = "LGPL-2.1-or-later"
+copyright = "Erik de Castro Lopo and libsndfile contributors"
+homepage = "https://libsndfile.github.io/libsndfile/"
+
+[[component]]
+id = "lilv"
+name = "lilv"
+tier = "conan"
+spdx = "ISC"
+copyright = "David Robillard and contributors"
+homepage = "https://drobilla.net/software/lilv.html"
+
+[[component]]
+id = "zstd"
+name = "Zstandard"
+tier = "conan"
+spdx = "BSD-3-Clause"
+copyright = "Meta Platforms, Inc. and affiliates"
+homepage = "https://facebook.github.io/zstd/"
+
+[[component]]
+id = "type_safe"
+name = "type_safe"
+tier = "conan"
+spdx = "MIT"
+copyright = "Jonathan Müller"
+homepage = "https://github.com/foonathan/type_safe"
+
+[[component]]
+id = "gsl-lite"
+name = "gsl-lite"
+tier = "conan"
+spdx = "MIT"
+copyright = "Martin Moene and gsl-lite contributors"
+homepage = "https://github.com/gsl-lite/gsl-lite"
+
+[[component]]
+id = "au"
+name = "Au units library"
+tier = "conan"
+spdx = "Apache-2.0"
+copyright = "Aurora Innovation, Inc."
+homepage = "https://github.com/aurora-opensource/au"
+
+[[component]]
+id = "onetbb"
+name = "oneTBB"
+tier = "conan"
+spdx = "Apache-2.0"
+copyright = "Intel Corporation"
+homepage = "https://github.com/oneapi-src/oneTBB"
+
+[[component]]
+id = "tracy"
+name = "Tracy Profiler"
+tier = "conan"
+spdx = "BSD-3-Clause"
+copyright = "Bartosz Taudul"
+homepage = "https://github.com/wolfpld/tracy"
+
+[[component]]
+id = "xxhash"
+name = "xxHash"
+tier = "conan"
+spdx = "BSD-2-Clause"
+copyright = "Yann Collet and xxHash contributors"
+homepage = "https://xxhash.com"
+
+[[component]]
+id = "mpmcqueue"
+name = "MPMCQueue"
+tier = "conan"
+spdx = "MIT"
+copyright = "Erik Rigtorp"
+homepage = "https://github.com/rigtorp/MPMCQueue"
+
+[[component]]
+id = "freetype"
+name = "FreeType"
+tier = "conan"
+spdx = "FTL"
+copyright = "David Turner, Robert Wilhelm, Werner Lemberg and FreeType contributors"
+homepage = "https://freetype.org"
+
+[[component]]
+id = "fontconfig"
+name = "Fontconfig"
+tier = "conan"
+spdx = "MIT"
+copyright = "Fontconfig authors"
+homepage = "https://www.freedesktop.org/wiki/Software/fontconfig/"
+
+# ---------- Conan build/test tools (not shipped) ----------
+
+[[component]]
+id = "cmake"
+name = "CMake"
+tier = "conan"
+spdx = "BSD-3-Clause"
+copyright = "Kitware, Inc. and CMake contributors"
+homepage = "https://cmake.org"
+shipped = false
+
+[[component]]
+id = "ninja"
+name = "Ninja"
+tier = "conan"
+spdx = "Apache-2.0"
+copyright = "Ninja contributors"
+homepage = "https://ninja-build.org"
+shipped = false
+
+[[component]]
+id = "gtest"
+name = "GoogleTest"
+tier = "conan"
+spdx = "BSD-3-Clause"
+copyright = "Google LLC"
+homepage = "https://github.com/google/googletest"
+shipped = false
+
+[[component]]
+id = "benchmark"
+name = "Google Benchmark"
+tier = "conan"
+spdx = "Apache-2.0"
+copyright = "Google LLC"
+homepage = "https://github.com/google/benchmark"
+shipped = false
+
+# ---------- CPM (versions must match package-lock.cmake) ----------
+
+[[component]]
+id = "clap"
+name = "CLAP"
+tier = "cpm"
+version = "1.2.7"
+spdx = "MIT"
+copyright = "2021 Alexandre BIQUE"
+homepage = "https://github.com/free-audio/clap"
+
+[[component]]
+id = "clap-helpers"
+name = "CLAP Helpers"
+tier = "cpm"
+version = "0.3"
+spdx = "MIT"
+copyright = "2021 Alexandre BIQUE"
+homepage = "https://github.com/free-audio/clap-helpers"
+
+[[component]]
+id = "vst3sdk"
+name = "VST 3 SDK"
+tier = "cpm"
+version = "3.8.0"
+spdx = "MIT"
+copyright = "2025 Steinberg Media Technologies GmbH"
+homepage = "https://www.steinberg.net/developers/"
+
+[[component]]
+id = "juce"
+name = "JUCE"
+tier = "cpm"
+version = "9.0.0"
+spdx = "AGPL-3.0-only OR LicenseRef-JUCE-Commercial"
+copyright = "Raw Material Software Limited"
+homepage = "https://juce.com"
+
+[[component]]
+id = "farbot"
+name = "farbot"
+tier = "cpm"
+version = "0.1"
+spdx = "MIT"
+copyright = "2019 Fabian Renn"
+homepage = "https://github.com/hogliux/farbot"
+
+[[component]]
+id = "loop-tempo-estimator"
+name = "Loop Tempo Estimator"
+tier = "cpm"
+version = "0.0.4"
+spdx = "GPL-2.0-or-later"
+copyright = "Matthieu Hodgkinson"
+homepage = "https://github.com/saintmatthieu/loop-tempo-estimator"
+
+# ---------- Vendored (ext/) ----------
+
+[[component]]
+id = "backward-cpp"
+name = "backward-cpp"
+tier = "vendored"
+spdx = "MIT"
+copyright = "2013 Google Inc. All Rights Reserved."
+homepage = "https://github.com/bombela/backward-cpp"
+
+[[component]]
+id = "dirent"
+name = "dirent"
+tier = "vendored"
+spdx = "MIT"
+copyright = "1998-2019 Toni Ronkko"
+homepage = "https://github.com/tronkko/dirent"
+
+[[component]]
+id = "kissfft"
+name = "KISS FFT"
+tier = "vendored"
+version = "1.3.0"
+spdx = "BSD-3-Clause"
+copyright = "Mark Borgerding"
+homepage = "https://github.com/mborgerding/kissfft"
+
+[[component]]
+id = "ladspa"
+name = "LADSPA SDK header"
+tier = "vendored"
+version = "1.1"
+spdx = "LGPL-2.1-or-later"
+copyright = "2000-2002 Richard W.E. Furse, Paul Barton-Davis, Stefan Westerfeld"
+homepage = "https://www.ladspa.org"
+
+[[component]]
+id = "midilib"
+name = "MIDI File Library (midilib)"
+tier = "vendored"
+version = "1.5"
+spdx = "GPL-2.0-or-later"
+copyright = "1998-2010 Steven Goodwin"
+homepage = "https://github.com/StevenGoodwin/midilib"
+
+[[component]]
+id = "moodycamel"
+name = "moodycamel LightweightSemaphore"
+tier = "vendored"
+spdx = "Zlib"
+copyright = "2015 Jeff Preshing; Cameron Desrochers"
+homepage = "https://github.com/cameron314/concurrentqueue"
+
+[[component]]
+id = "qm-dsp"
+name = "QM DSP Library"
+tier = "vendored"
+spdx = "GPL-2.0-or-later"
+copyright = "2006-2019 Queen Mary, University of London"
+homepage = "https://github.com/c4dm/qm-dsp"
+
+[[component]]
+id = "rubberband"
+name = "Rubber Band Library"
+tier = "vendored"
+version = "4.0.0"
+spdx = "GPL-2.0-or-later"
+copyright = "2007-18 robs@users.sourceforge.net (Particular Programs Ltd)"
+homepage = "https://breakfastquay.com/rubberband/"
+
+[[component]]
+id = "soxr"
+name = "SoX Resampler Library (libsoxr)"
+tier = "vendored"
+version = "0.1.3"
+spdx = "LGPL-2.1-or-later"
+copyright = "2007-18 robs@users.sourceforge.net"
+homepage = "https://sourceforge.net/projects/soxr/"
+
+[[component]]
+id = "weakjack"
+name = "weakjack"
+tier = "vendored"
+spdx = "GPL-2.0-or-later"
+copyright = "2014 Robin Gareus and others"
+homepage = "https://github.com/x42/weakjack"
+
+[[component]]
+id = "zita-resampler"
+name = "zita-resampler"
+tier = "vendored"
+version = "1.11"
+spdx = "GPL-3.0-or-later"
+copyright = "2006-2023 Fons Adriaensen"
+homepage = "https://kokkinizita.linuxaudio.org/linuxaudio/"
+
+[[component]]
+id = "conan-center-index"
+name = "conan-center-index (vendored recipes)"
+tier = "vendored"
+spdx = "MIT"
+copyright = "JFrog and conan-center-index contributors"
+homepage = "https://github.com/conan-io/conan-center-index"
+shipped = false
+note = "Build infrastructure: vendored Conan recipes exported into the local cache; not linked into the application"
+
+[[component]]
+id = "sh-manpage-completions"
+name = "sh-manpage-completions"
+tier = "vendored"
+spdx = "MIT"
+copyright = "2018 nevesnunes"
+homepage = "https://github.com/nevesnunes/sh-manpage-completions"
+shipped = false
+note = "Development tooling for shell completion generation; not shipped"
+
+# ---------- Assets: fonts & samples ----------
+
+[[component]]
+id = "dseg-font"
+name = "DSEG14-Classic-MINI font"
+tier = "asset"
+spdx = "OFL-1.1"
+copyright = "2017 keshikan, with Reserved Font Name \"DSEG\""
+homepage = "https://www.keshikan.net/fonts-e.html"
+
+[[component]]
+id = "inter-font"
+name = "Inter font"
+tier = "asset"
+spdx = "OFL-1.1"
+copyright = "The Inter Project Authors"
+homepage = "https://rsms.me/inter/"
+
+[[component]]
+id = "noto-sans-fonts"
+name = "Noto Sans font families"
+tier = "asset"
+spdx = "OFL-1.1"
+copyright = "The Noto Project Authors"
+homepage = "https://github.com/notofonts/latin-greek-cyrillic"
+note = "NotoSans, Arabic, Hebrew, Symbols, Symbols 2 and Thai variants"
+
+[[component]]
+id = "noto-sans-cjk-fonts"
+name = "Noto Sans CJK font families"
+tier = "asset"
+spdx = "OFL-1.1"
+copyright = "Adobe, with Reserved Font Name 'Source'"
+homepage = "https://github.com/notofonts/noto-cjk"
+note = "KR, SC and TC variants"
+
+[[component]]
+id = "klick-samples"
+name = "Metronome samples (from klick)"
+tier = "asset"
+spdx = "GPL-3.0-only"
+copyright = "2007-2013 Dominic Sacré; portions from Ardour, GTick and Freepats"
+homepage = "http://das.nasophon.de/klick/"
+
+# ---------- Assets: icon and cursor sets (see REUSE.toml for file mapping) ----------
+
+[[component]]
+id = "icons-arena"
+name = "Arena icons"
+tier = "asset"
+spdx = "CC-BY-3.0"
+copyright = "Arena"
+homepage = "https://thenounproject.com/arena/"
+
+[[component]]
+id = "icons-box-icons"
+name = "Boxicons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2015-2021 Aniket Suvarna"
+homepage = "https://github.com/atisawd/boxicons"
+
+[[component]]
+id = "icons-breeze"
+name = "KDE Breeze icons"
+tier = "asset"
+spdx = "GPL-3.0-or-later"
+copyright = "2014 Uri Herrera and others"
+homepage = "https://invent.kde.org/frameworks/breeze-icons"
+
+[[component]]
+id = "icons-carbon"
+name = "Carbon icons"
+tier = "asset"
+spdx = "Apache-2.0"
+copyright = "carbon authors"
+homepage = "https://github.com/carbon-design-system/carbon"
+
+[[component]]
+id = "icons-clarity"
+name = "Clarity icons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2018 VMware, Inc."
+homepage = "https://clarity.design/icons"
+
+[[component]]
+id = "icons-codicons"
+name = "VS Code Codicons"
+tier = "asset"
+spdx = "CC-BY-4.0"
+copyright = "Microsoft and other contributors"
+homepage = "https://github.com/microsoft/vscode-codicons"
+
+[[component]]
+id = "icons-css-gg"
+name = "css.gg icons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2019 css.gg"
+homepage = "https://github.com/astrit/css.gg"
+
+[[component]]
+id = "icons-elementor"
+name = "Elementor Icons"
+tier = "asset"
+spdx = "OFL-1.1"
+copyright = "Elementor Icons"
+homepage = "https://github.com/elementor/elementor-icons"
+
+[[component]]
+id = "icons-fluentui"
+name = "Fluent UI System Icons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2020 Microsoft Corporation"
+homepage = "https://github.com/microsoft/fluentui-system-icons"
+
+[[component]]
+id = "icons-font-awesome"
+name = "Font Awesome icons"
+tier = "asset"
+spdx = "CC-BY-4.0"
+copyright = "Font Awesome project"
+homepage = "https://fontawesome.com"
+
+[[component]]
+id = "icons-fontaudio"
+name = "fontaudio icons"
+tier = "asset"
+spdx = "CC-BY-SA-4.0"
+copyright = "fontaudio"
+homepage = "https://github.com/fefanto/fontaudio"
+
+[[component]]
+id = "icons-fork-awesome"
+name = "Fork Awesome icons"
+tier = "asset"
+spdx = "CC-BY-3.0"
+copyright = "2018 Dave Gandy and Fork Awesome contributors"
+homepage = "https://forkaweso.me"
+
+[[component]]
+id = "icons-gnome-builder"
+name = "GNOME Builder icons"
+tier = "asset"
+spdx = "CC-BY-SA-3.0"
+copyright = "gnome-builder authors"
+homepage = "https://gitlab.gnome.org/GNOME/gnome-builder"
+
+[[component]]
+id = "icons-gnome-icon-library"
+name = "GNOME Icon Library icons"
+tier = "asset"
+spdx = "CC0-1.0"
+copyright = "GNOME Design Team"
+homepage = "https://gitlab.gnome.org/Teams/Design/icon-development-kit"
+
+[[component]]
+id = "icons-iconoir"
+name = "Iconoir icons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2021 Luca Burgio"
+homepage = "https://github.com/iconoir-icons/iconoir"
+
+[[component]]
+id = "icons-iconpark"
+name = "IconPark icons"
+tier = "asset"
+spdx = "Apache-2.0"
+copyright = "IconPark contributors"
+homepage = "https://iconpark.oceanengine.com/official"
+
+[[component]]
+id = "icons-jam-icons"
+name = "Jam Icons"
+tier = "asset"
+spdx = "MIT"
+copyright = "2017 Michael Aprimo"
+homepage = "https://jam-icons.com"
+
+[[component]]
+id = "icons-libadwaita"
+name = "libadwaita icons"
+tier = "asset"
+spdx = "LGPL-2.1-or-later"
+copyright = "libadwaita contributors"
+homepage = "https://gitlab.gnome.org/GNOME/libadwaita"
+
+[[component]]
+id = "icons-lucide"
+name = "Lucide icons"
+tier = "asset"
+spdx = "ISC"
+copyright = "Cole Bemis 2013-2022, Lucide Contributors 2022"
+homepage = "https://lucide.dev"
+
+[[component]]
+id = "icons-material-design"
+name = "Material Design icons (Pictogrammers)"
+tier = "asset"
+spdx = "Apache-2.0"
+copyright = "Pictogrammers"
+homepage = "https://github.com/Templarian/MaterialDesign"
+
+[[component]]
+id = "icons-remixicon"
+name = "RemixIcon icons"
+tier = "asset"
+spdx = "Apache-2.0"
+copyright = "RemixIcon contributors"
+homepage = "https://github.com/Remix-Design/RemixIcon"
+
+[[component]]
+id = "icons-unicons"
+name = "Unicons icons"
+tier = "asset"
+spdx = "Apache-2.0"
+copyright = "Unicons contributors"
+homepage = "https://iconscout.com/unicons"
+
+[[component]]
+id = "icons-untitled-ui"
+name = "Untitled UI icons"
+tier = "asset"
+spdx = "CC-BY-4.0"
+copyright = "Jordan Hughes"
+homepage = "https://www.figma.com/community/file/1114001199549197320/"
+
+[[component]]
+id = "icons-wikipedia"
+name = "Wikipedia articulation icons"
+tier = "asset"
+spdx = "CC-BY-SA-3.0"
+copyright = "Denelson83 and Ekips39 (Wikimedia Commons)"
+homepage = "https://commons.wikimedia.org"
+
+[[component]]
+id = "icons-drum-flam"
+name = "Drum flam icon"
+tier = "asset"
+spdx = "CC-BY-2.0"
+copyright = "Vladimir Morozov"
+homepage = "https://visualhunt.com"
+
+[[component]]
+id = "cursors-adwaita"
+name = "Adwaita-derived cursors"
+tier = "asset"
+spdx = "CC-BY-SA-3.0 AND CC-BY-SA-4.0"
+copyright = "GNOME Project; 2024 Miró Allard (modifications)"
+homepage = "https://gitlab.gnome.org/GNOME/adwaita-icon-theme"
+
+[[component]]
+id = "mcss"
+name = "m.css documentation theme"
+tier = "asset"
+spdx = "MIT"
+copyright = "2017-2020 Vladimír Vondruš"
+homepage = "https://mcss.mosra.cz"
+shipped = false
+note = "Documentation infrastructure only; not shipped in the application"

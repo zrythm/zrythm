@@ -300,6 +300,19 @@ class Zrythm(ConanFile):
                 f.write(json.dumps(user_presets, indent=2))
             self.output.info("CMakeUserPresets.json generated with Conan environment")
 
+        # Conan-tier SBOM fragment consumed by tools/generate_sbom.py and
+        # tools/generate_attributions.py. Keep this the only call site: the
+        # upstream API is experimental.
+        from conan.tools.sbom import cyclonedx_1_6
+
+        fragment = cyclonedx_1_6(self, name=f"zrythm/{self.version}")
+        fragment_path = os.path.join(
+            self.generators_folder, "zrythm-conan-sbom.cdx.json"
+        )
+        with open(fragment_path, "w") as f:
+            json.dump(fragment, f, indent=2)
+        self.output.info(f"Conan SBOM fragment written to {fragment_path}")
+
     def validate(self):
         check_min_cppstd(self, "23")
 

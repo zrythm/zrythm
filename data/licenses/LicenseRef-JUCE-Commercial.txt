@@ -1,0 +1,12 @@
+This file summarizes the licensing option relevant to Zrythm's use of JUCE.
+
+The JUCE framework modules are dual-licensed. Zrythm uses JUCE under the GNU
+Affero General Public License v3.0 (AGPL-3.0-only). Alternatively, JUCE is
+available under a commercial license from the copyright holder.
+
+For the full terms of the commercial option, see the JUCE 8 End User Licence
+Agreement and related documents at:
+
+  https://juce.com/legal/juce-8-licence/
+
+Copyright (c) Raw Material Software Limited.
