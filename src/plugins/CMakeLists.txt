@@ -48,6 +48,7 @@ target_sources(zrythm_plugins_lib
     lv2_discovery.cpp
     lv2_plugin_format.cpp
     lv2_urid_map.cpp
+    lv2_world.cpp
     out_of_process_scanner.cpp
     plugin.cpp
     plugin_configuration.cpp
@@ -78,6 +79,7 @@ target_sources(zrythm_plugins_lib
       lv2_discovery.h
       lv2_plugin_format.h
       lv2_urid_map.h
+      lv2_world.h
       out_of_process_scanner.h
       plugin.h
       plugin_all.h
@@ -107,7 +109,9 @@ set_target_properties(zrythm_plugins_lib PROPERTIES
   VERIFY_INTERFACE_HEADER_SETS ${ZRYTHM_VERIFY_INTERFACE_HEADER_SETS}
 )
 
-target_link_libraries(zrythm_plugins_lib PRIVATE lilv::lilv)
+# lilv include dirs are public: backend headers (lv2_world.h) expose lilv
+# types, like the clap/vst3 SDK headers already do
+target_link_libraries(zrythm_plugins_lib PUBLIC lilv::lilv)
 # Stage the LV2 spec bundles shipped with the conan lv2 package into the
 # build tree, where the runtime looks for them (datadir/zrythm/lv2-specs
 # under the binaries' parent directory), and install them to the same

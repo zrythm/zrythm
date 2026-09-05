@@ -4,13 +4,14 @@
 #pragma once
 
 #include <filesystem>
-#include <memory>
 #include <vector>
 
 #include "utils/utf8_string.h"
 
 namespace zrythm::plugins
 {
+
+class Lv2World;
 
 /**
  * @brief Metadata of a single LV2 plugin, extracted from a bundle's ttl.
@@ -46,40 +47,19 @@ struct Lv2PluginInfo
 };
 
 /**
- * @brief RAII owner of a lilv world (implementation detail).
+ * @brief Loads the bundle at @p bundle_dir into @p world and returns the
+ * extracted metadata of all plugins it contains.
  *
- * @param spec_bundles_dir Directory containing the LV2 specification
- * bundles, loaded so that the plugin class hierarchy and extension
- * vocabularies resolve.
- * @throw ZrythmException on construction if the world cannot be created.
+ * Bundles are additive in lilv: previously loaded bundles stay in the
+ * world, so only plugins whose bundle URI matches @p bundle_dir are
+ * returned.
+ *
+ * @return Extracted plugin metadata; empty if the bundle contains no
+ * plugins or cannot be parsed.
+ *
+ * @note Main thread only.
  */
-class Lv2World
-{
-public:
-  explicit Lv2World (const std::filesystem::path &spec_bundles_dir);
-  ~Lv2World ();
-  Lv2World (const Lv2World &) = delete;
-  Lv2World &operator= (const Lv2World &) = delete;
-  Lv2World (Lv2World &&) = delete;
-  Lv2World &operator= (Lv2World &&) = delete;
-
-  /**
-   * @brief Loads the bundle at @p bundle_dir and returns the extracted
-   * metadata of all plugins it contains.
-   *
-   * Bundles are additive in lilv: previously loaded bundles stay in the
-   * world, so only plugins whose bundle URI matches @p bundle_dir are
-   * returned.
-   *
-   * @return Extracted plugin metadata; empty if the bundle contains no
-   * plugins or cannot be parsed.
-   */
-  std::vector<Lv2PluginInfo>
-  get_plugins_in_bundle (const std::filesystem::path &bundle_dir);
-
-private:
-  struct Impl;
-  std::unique_ptr<Impl> impl_;
-};
+std::vector<Lv2PluginInfo>
+get_plugins_in_bundle (Lv2World &world, const std::filesystem::path &bundle_dir);
 
 } // namespace zrythm::plugins

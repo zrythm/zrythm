@@ -8,6 +8,7 @@
 
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "plugins/out_of_process_scanner.h"
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_scan_manager.h"
@@ -50,7 +51,9 @@ protected:
     format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
     format_manager_->addFormat (std::make_unique<Vst3PluginFormat> ());
     format_manager_->addFormat (std::make_unique<CLAPPluginFormat> ());
-    format_manager_->addFormat (std::make_unique<Lv2PluginFormat> ());
+    format_manager_->addFormat (
+      std::make_unique<Lv2PluginFormat> (
+        std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ())));
 
     known_plugins_ = std::make_shared<juce::KnownPluginList> ();
   }
@@ -268,7 +271,9 @@ TEST_F (TestPluginsScanTest, ScanAllTestLv2Plugins)
 // entries for bundles that disappeared must be reportable as gone
 TEST_F (TestPluginsScanTest, Lv2RescanOnlyWhenBundleChanged)
 {
-  Lv2PluginFormat format;
+  Lv2PluginFormat format{
+    std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ())
+  };
 
   const auto bundle =
     juce::File (TEST_LV2_SEARCH_PATHS).getChildFile ("eg-amp.lv2");
@@ -297,7 +302,9 @@ TEST_F (TestPluginsScanTest, Lv2RescanOnlyWhenBundleChanged)
 
 TEST_F (TestPluginsScanTest, Lv2DescriptionsExposeDeclaredMetadata)
 {
-  Lv2PluginFormat format;
+  Lv2PluginFormat format{
+    std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ())
+  };
 
   // the instrument declares an author, a class, static port counts and a UI
   juce::OwnedArray<juce::PluginDescription> descriptions;

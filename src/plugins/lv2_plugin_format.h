@@ -28,7 +28,11 @@ class Lv2World;
 class Lv2PluginFormat final : public juce::AudioPluginFormat
 {
 public:
-  Lv2PluginFormat ();
+  /**
+   * @param world The world used for bundle parsing, kept alive by the
+   * format. Callers share one world per process.
+   */
+  explicit Lv2PluginFormat (std::shared_ptr<Lv2World> world);
   ~Lv2PluginFormat () override;
 
   /**
@@ -66,7 +70,7 @@ private:
     const juce::PluginDescription &desc) const override;
 
 private:
-  std::unique_ptr<Lv2World> world_;
+  std::shared_ptr<Lv2World> world_;
 
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Lv2PluginFormat)
 };

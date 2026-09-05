@@ -11,6 +11,11 @@
 #include "plugins/plugin_descriptor_list.h"
 #include "plugins/plugin_scan_manager.h"
 
+namespace zrythm::plugins
+{
+class Lv2World;
+}
+
 namespace zrythm::gui::old_dsp::plugins
 {
 
@@ -69,6 +74,15 @@ public:
   Q_INVOKABLE void beginScan ();
 
   auto &get_format_manager () const { return format_manager_; }
+
+  /**
+   * @brief Returns the process-wide LV2 world owned by this manager,
+   * shared by the scan format and instantiated LV2 plugins.
+   */
+  const std::shared_ptr<zrythm::plugins::Lv2World> &get_lv2_world () const
+  {
+    return lv2_world_;
+  }
 
   /**
    * Adds a new descriptor.
@@ -134,6 +148,8 @@ private:
   std::vector<utils::Utf8String> plugin_authors_;
 
   std::shared_ptr<juce::AudioPluginFormatManager> format_manager_;
+
+  std::shared_ptr<zrythm::plugins::Lv2World> lv2_world_;
 
   /** Current known plugin list. */
   std::shared_ptr<juce::KnownPluginList> known_plugin_list_;

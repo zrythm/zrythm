@@ -6,6 +6,7 @@
 
 #include "plugins/lv2_discovery.h"
 #include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "utils/exceptions.h"
 #include "utils/io_utils.h"
 
@@ -35,7 +36,7 @@ protected:
 
 TEST_F (Lv2DiscoveryTest, ExtractsAmpBundleMetadata)
 {
-  const auto infos = world_.get_plugins_in_bundle (bundle_path ("eg-amp.lv2"));
+  const auto infos = get_plugins_in_bundle (world_, bundle_path ("eg-amp.lv2"));
   ASSERT_EQ (infos.size (), 1);
 
   const auto &info = infos.front ();
@@ -59,7 +60,7 @@ TEST_F (Lv2DiscoveryTest, ExtractsAmpBundleMetadata)
 TEST_F (Lv2DiscoveryTest, ExtractsFifthsBundleMetadata)
 {
   const auto infos =
-    world_.get_plugins_in_bundle (bundle_path ("eg-fifths.lv2"));
+    get_plugins_in_bundle (world_, bundle_path ("eg-fifths.lv2"));
   ASSERT_EQ (infos.size (), 1);
 
   const auto &info = infos.front ();
@@ -78,7 +79,7 @@ TEST_F (Lv2DiscoveryTest, ExtractsFifthsBundleMetadata)
 TEST_F (Lv2DiscoveryTest, ExtractsInstrumentBundleMetadata)
 {
   const auto infos =
-    world_.get_plugins_in_bundle (bundle_path ("test-instrument.lv2"));
+    get_plugins_in_bundle (world_, bundle_path ("test-instrument.lv2"));
   ASSERT_EQ (infos.size (), 1);
 
   const auto &info = infos.front ();
@@ -102,7 +103,8 @@ TEST_F (Lv2DiscoveryTest, ExtractsInstrumentBundleMetadata)
 
 TEST_F (Lv2DiscoveryTest, DiscoversMultiplePluginsInOneBundle)
 {
-  const auto infos = world_.get_plugins_in_bundle (bundle_path ("plumbing.lv2"));
+  const auto infos =
+    get_plugins_in_bundle (world_, bundle_path ("plumbing.lv2"));
   EXPECT_EQ (infos.size (), 23);
 }
 
@@ -110,8 +112,8 @@ TEST_F (Lv2DiscoveryTest, ReturnsEmptyForDirectoryWithoutPlugins)
 {
   const auto temp_dir =
     utils::io::make_tmp_dir ("zrythm_lv2_discovery_empty_bundle_XXXXXX");
-  const auto infos = world_.get_plugins_in_bundle (
-    utils::Utf8String::from_qstring (temp_dir->path ()).to_path ());
+  const auto infos = get_plugins_in_bundle (
+    world_, utils::Utf8String::from_qstring (temp_dir->path ()).to_path ());
   EXPECT_TRUE (infos.empty ());
 }
 
@@ -130,11 +132,11 @@ TEST_F (Lv2DiscoveryTest, BundlesLoadedIntoOneWorldAreQueriedIndependently)
 {
   // loading a bundle must not affect the results of previously loaded ones
   const auto amp_infos =
-    world_.get_plugins_in_bundle (bundle_path ("eg-amp.lv2"));
+    get_plugins_in_bundle (world_, bundle_path ("eg-amp.lv2"));
   ASSERT_EQ (amp_infos.size (), 1);
 
   const auto instrument_infos =
-    world_.get_plugins_in_bundle (bundle_path ("test-instrument.lv2"));
+    get_plugins_in_bundle (world_, bundle_path ("test-instrument.lv2"));
   ASSERT_EQ (instrument_infos.size (), 1);
   EXPECT_EQ (
     instrument_infos.front ().uri_, "https://lv2.zrythm.org/test-instrument");
@@ -179,13 +181,15 @@ TEST_F (Lv2DiscoveryTest, UncategorizedPluginHasNoCategory)
          "    ] .\n";
   }
 
-  const auto infos = world_.get_plugins_in_bundle (bundle_path_);
+  const auto infos = get_plugins_in_bundle (world_, bundle_path_);
   ASSERT_EQ (infos.size (), 1);
   EXPECT_TRUE (infos.front ().category_str_.view ().empty ())
     << infos.front ().category_str_;
   EXPECT_FALSE (infos.front ().is_instrument_);
 
-  Lv2PluginFormat                           format;
+  Lv2PluginFormat format{
+    std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ())
+  };
   juce::OwnedArray<juce::PluginDescription> results;
   format.findAllTypesForFile (
     results, utils::Utf8String::from_path (bundle_path_).to_juce_string ());

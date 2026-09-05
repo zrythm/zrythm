@@ -8,6 +8,7 @@
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/faust/faust_registry.h"
 #include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "plugins/out_of_process_scanner.h"
 #include "plugins/vst3_plugin_format.h"
 #include "utils/io_utils.h"
@@ -45,13 +46,18 @@ PluginManager::PluginManager (
         this)),
       collections_ (PluginCollections::read_or_new ())
 {
+  // One LV2 world per process, shared by the scan format and the plugins
+  // instantiated through get_lv2_world()
+  lv2_world_ = std::make_shared<zrythm::plugins::Lv2World> (
+    zrythm::plugins::Lv2PluginFormat::get_spec_bundles_dir ());
+
   juce::addDefaultFormatsToManager (*format_manager_);
   format_manager_->addFormat (
     std::make_unique<zrythm::plugins::CLAPPluginFormat> ());
   format_manager_->addFormat (
     std::make_unique<zrythm::plugins::Vst3PluginFormat> ());
   format_manager_->addFormat (
-    std::make_unique<zrythm::plugins::Lv2PluginFormat> ());
+    std::make_unique<zrythm::plugins::Lv2PluginFormat> (lv2_world_));
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (

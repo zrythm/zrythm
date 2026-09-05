@@ -10,6 +10,7 @@
 
 #include "plugins/lv2_discovery.h"
 #include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "plugins/plugin_format_utils.h"
 #include "utils/format_juce.h"
 #include "utils/logger.h"
@@ -57,8 +58,8 @@ Lv2PluginFormat::get_spec_bundles_dir ()
   };
 }
 
-Lv2PluginFormat::Lv2PluginFormat ()
-    : world_ (std::make_unique<Lv2World> (get_spec_bundles_dir ()))
+Lv2PluginFormat::Lv2PluginFormat (std::shared_ptr<Lv2World> world)
+    : world_ (std::move (world))
 {
 }
 
@@ -73,7 +74,7 @@ Lv2PluginFormat::findAllTypesForFile (
     return;
 
   const auto bundle_path = canonical_bundle_path (fileOrIdentifier);
-  const auto plugin_infos = world_->get_plugins_in_bundle (bundle_path);
+  const auto plugin_infos = get_plugins_in_bundle (*world_, bundle_path);
 
   if (plugin_infos.empty ())
     {
