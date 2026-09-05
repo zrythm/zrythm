@@ -830,23 +830,18 @@ find_package(SndFile REQUIRED)
 set(HAVE_OPUS TRUE)
 
 # lilv (+ its lv2/serd/sord/sratom/zix chain, from Conan) for native LV2
-# plugin discovery/hosting; only required on GNU/Linux
-if(OS_GNU)
-  find_package(lilv REQUIRED)
-  # CMakeDeps exposes resdirs only per-config (e.g. lv2_RES_DIRS_DEBUG) -
-  # map to the config in use so the LV2 spec bundles can be located
-  string(TOUPPER "${CMAKE_BUILD_TYPE}" _lv2_build_type_upper)
-  if(NOT DEFINED lv2_RES_DIRS AND DEFINED lv2_RES_DIRS_${_lv2_build_type_upper})
-    set(lv2_RES_DIRS "${lv2_RES_DIRS_${_lv2_build_type_upper}}")
-  endif()
-  unset(_lv2_build_type_upper)
-  if(NOT DEFINED lv2_RES_DIRS)
-    message(FATAL_ERROR
-      "lv2_RES_DIRS not found: a single-config generator with CMAKE_BUILD_TYPE set is required for CMakeDeps' per-config variables")
-  endif()
-  set(ZRYTHM_WITH_LILV ON)
-else()
-  set(ZRYTHM_WITH_LILV OFF)
+# plugin discovery/hosting
+find_package(lilv REQUIRED)
+# CMakeDeps exposes resdirs only per-config (e.g. lv2_RES_DIRS_DEBUG) -
+# map to the config in use so the LV2 spec bundles can be located
+string(TOUPPER "${CMAKE_BUILD_TYPE}" _lv2_build_type_upper)
+if(NOT DEFINED lv2_RES_DIRS AND DEFINED lv2_RES_DIRS_${_lv2_build_type_upper})
+  set(lv2_RES_DIRS "${lv2_RES_DIRS_${_lv2_build_type_upper}}")
+endif()
+unset(_lv2_build_type_upper)
+if(NOT DEFINED lv2_RES_DIRS)
+  message(FATAL_ERROR
+    "lv2_RES_DIRS not found: a single-config generator with CMAKE_BUILD_TYPE set is required for CMakeDeps' per-config variables")
 endif()
 
 pkg_check_modules(CHROMAPRINT libchromaprint IMPORTED_TARGET)

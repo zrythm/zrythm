@@ -8,6 +8,7 @@ add_executable(zrythm_plugins_unit_tests
   faust_synth_voice_test.cpp
   host_window_units_test.cpp
   juce_plugin_test.cpp
+  lv2_discovery_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp
   plugin_descriptor_list_test.cpp
@@ -29,10 +30,6 @@ set_target_properties(zrythm_plugins_unit_tests PROPERTIES
   AUTOMOC OFF
   UNITY_BUILD ${ZRYTHM_UNITY_BUILD}
 )
-
-if(ZRYTHM_WITH_LILV)
-  target_sources(zrythm_plugins_unit_tests PRIVATE lv2_discovery_test.cpp)
-endif()
 
 target_link_libraries(zrythm_plugins_unit_tests PRIVATE
   GTest::gmock_main

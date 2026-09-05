@@ -114,9 +114,6 @@
 
 #define USER_MANUAL_URL "@user_manual_url@"
 
-/* Whether native LV2 support (via lilv) is available */
-#cmakedefine01 ZRYTHM_WITH_LILV
-
 #define ZRYTHM_PREFIX "@CMAKE_INSTALL_PREFIX@"
 
 // target major version (what this branch targets)

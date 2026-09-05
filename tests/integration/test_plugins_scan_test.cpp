@@ -7,13 +7,11 @@
 #include <string_view>
 
 #include "plugins/CLAPPluginFormat.h"
+#include "plugins/lv2_plugin_format.h"
 #include "plugins/out_of_process_scanner.h"
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_scan_manager.h"
 #include "plugins/vst3_plugin_format.h"
-#if ZRYTHM_WITH_LILV
-#  include "plugins/lv2_plugin_format.h"
-#endif
 #include "utils/file_path_list.h"
 #include "utils/io_utils.h"
 #include "utils/logger.h"
@@ -52,9 +50,7 @@ protected:
     format_manager_ = std::make_shared<juce::AudioPluginFormatManager> ();
     format_manager_->addFormat (std::make_unique<Vst3PluginFormat> ());
     format_manager_->addFormat (std::make_unique<CLAPPluginFormat> ());
-#if ZRYTHM_WITH_LILV
     format_manager_->addFormat (std::make_unique<Lv2PluginFormat> ());
-#endif
 
     known_plugins_ = std::make_shared<juce::KnownPluginList> ();
   }
@@ -212,8 +208,6 @@ TEST_F (TestPluginsScanTest, ScanAllTestClapPlugins)
 // ============================================================================
 // LV2 tests
 // ============================================================================
-
-#if ZRYTHM_WITH_LILV
 
 TEST_F (TestPluginsScanTest, ScanAllTestLv2Plugins)
 {
@@ -426,7 +420,5 @@ TEST_F (TestPluginsScanTest, Lv2SearchResultsAreCanonical)
         << result;
     }
 }
-
-#endif // ZRYTHM_WITH_LILV
 
 } // namespace zrythm::plugins

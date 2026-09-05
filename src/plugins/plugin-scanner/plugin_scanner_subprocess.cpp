@@ -40,9 +40,7 @@
 #include "zrythm-config.h"
 
 #include "plugins/CLAPPluginFormat.h"
-#if ZRYTHM_WITH_LILV
-#  include "plugins/lv2_plugin_format.h"
-#endif
+#include "plugins/lv2_plugin_format.h"
 #include "plugins/vst3_plugin_format.h"
 
 #include "plugin_scanner_subprocess.h"
@@ -177,9 +175,7 @@ PluginScannerSubprocess::initialise (const juce::String &commandLineParameters)
   juce::addDefaultFormatsToManager (format_manager_);
   format_manager_.addFormat (std::make_unique<plugins::CLAPPluginFormat> ());
   format_manager_.addFormat (std::make_unique<plugins::Vst3PluginFormat> ());
-#if ZRYTHM_WITH_LILV
   format_manager_.addFormat (std::make_unique<plugins::Lv2PluginFormat> ());
-#endif
   for (auto * format : format_manager_.getFormats ())
     {
       juce::Logger::writeToLog ("Found format: " + format->getName ());

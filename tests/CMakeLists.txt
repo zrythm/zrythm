@@ -113,17 +113,15 @@ target_compile_definitions(zrythm_test_helpers_lib
     TEST_VST3_PLUGINS_COUNT=${vst3_plugins_count}
     TEST_CLAP_PLUGINS_COUNT=${clap_plugins_count}
 )
-if(ZRYTHM_WITH_LILV)
-  target_compile_definitions(zrythm_test_helpers_lib
-    PUBLIC
-      TEST_LV2_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/LV2/$<CONFIG>"
-      # eg-amp, eg-fifths, sigabrt and test-instrument contain 1 plugin
-      # each; plumbing contains 23; test-instrument.preset contains only a
-      # preset (no plugins)
-      TEST_LV2_BUNDLES_COUNT=6
-      TEST_LV2_PLUGINS_COUNT=27
-  )
-endif()
+target_compile_definitions(zrythm_test_helpers_lib
+  PUBLIC
+    TEST_LV2_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/LV2/$<CONFIG>"
+    # eg-amp, eg-fifths, sigabrt and test-instrument contain 1 plugin
+    # each; plumbing contains 23; test-instrument.preset contains only a
+    # preset (no plugins)
+    TEST_LV2_BUNDLES_COUNT=6
+    TEST_LV2_PLUGINS_COUNT=27
+)
 
 # Ensure test plugins are built before running tests
 add_dependencies(zrythm_test_helpers_lib zrythm_test_plugins)

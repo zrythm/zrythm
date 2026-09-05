@@ -7,9 +7,7 @@
 #include "gui/backend/plugin_protocol_paths.h"
 #include "plugins/CLAPPluginFormat.h"
 #include "plugins/faust/faust_registry.h"
-#if ZRYTHM_WITH_LILV
-#  include "plugins/lv2_plugin_format.h"
-#endif
+#include "plugins/lv2_plugin_format.h"
 #include "plugins/out_of_process_scanner.h"
 #include "plugins/vst3_plugin_format.h"
 #include "utils/io_utils.h"
@@ -52,10 +50,8 @@ PluginManager::PluginManager (
     std::make_unique<zrythm::plugins::CLAPPluginFormat> ());
   format_manager_->addFormat (
     std::make_unique<zrythm::plugins::Vst3PluginFormat> ());
-#if ZRYTHM_WITH_LILV
   format_manager_->addFormat (
     std::make_unique<zrythm::plugins::Lv2PluginFormat> ());
-#endif
   known_plugin_list_->setCustomScanner (
     std::make_unique<::zrythm::plugins::discovery::OutOfProcessPluginScanner> ());
   scanner_ = std::make_unique<zrythm::plugins::PluginScanManager> (

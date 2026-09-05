@@ -138,12 +138,10 @@ foreach(clap_fixture ${clap_fixtures})
   )
 endforeach()
 
-if(ZRYTHM_WITH_LILV)
-  # LV2 fixture bundles are placed here (<root>/<name>.lv2), like the VST3
-  # and CLAP fixtures get their own directories under this build dir
-  set(ZRYTHM_LV2_FIXTURE_ROOT ${CMAKE_CURRENT_BINARY_DIR}/LV2)
-  add_subdirectory(lv2)
-endif()
+# LV2 fixture bundles are placed here (<root>/<name>.lv2), like the VST3
+# and CLAP fixtures get their own directories under this build dir
+set(ZRYTHM_LV2_FIXTURE_ROOT ${CMAKE_CURRENT_BINARY_DIR}/LV2)
+add_subdirectory(lv2)
 
 add_custom_target(zrythm_test_plugins
   DEPENDS
