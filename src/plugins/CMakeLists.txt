@@ -47,6 +47,7 @@ target_sources(zrythm_plugins_lib
     juce_plugin.cpp
     lv2_discovery.cpp
     lv2_plugin_format.cpp
+    lv2_urid_map.cpp
     out_of_process_scanner.cpp
     plugin.cpp
     plugin_configuration.cpp
@@ -76,6 +77,7 @@ target_sources(zrythm_plugins_lib
       juce_plugin.h
       lv2_discovery.h
       lv2_plugin_format.h
+      lv2_urid_map.h
       out_of_process_scanner.h
       plugin.h
       plugin_all.h

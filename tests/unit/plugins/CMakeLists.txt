@@ -9,6 +9,7 @@ add_executable(zrythm_plugins_unit_tests
   host_window_units_test.cpp
   juce_plugin_test.cpp
   lv2_discovery_test.cpp
+  lv2_urid_map_test.cpp
   plugin_test.cpp
   plugin_descriptor_test.cpp
   plugin_descriptor_list_test.cpp
