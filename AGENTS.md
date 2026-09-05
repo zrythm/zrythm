@@ -184,7 +184,7 @@ To add a dependency: add it to `conanfile.py` and consume via `find_package`; if
 
 ### GitLab Interaction
 
-Use the `glab` CLI tool to interact with the self-hosted GitLab instance, and use the full repository URL:
+Use the `glab` CLI tool to interact with the self-hosted GitLab instance. Always pass the instance explicitly: repo-scoped commands take the full repository URL via `-R`, and `glab api` (which has no `-R` flag) takes `--hostname gitlab.zrythm.org`:
 
 ```bash
 # CI/CD
@@ -196,12 +196,16 @@ glab ci trace <job-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get job log
 glab ci list -R https://gitlab.zrythm.org/zrythm/zrythm            # List recent pipelines
 glab ci get -b <branch> -R https://gitlab.zrythm.org/zrythm/zrythm # Get pipeline details (SHA, jobs) for a branch
 glab ci get -p <pipeline-id> -R https://gitlab.zrythm.org/zrythm/zrythm  # Get pipeline details by ID
+glab ci get -p <pipeline-id> -s failed -d -R https://gitlab.zrythm.org/zrythm/zrythm  # Failed jobs with details (failure reason, duration, URL)
 
 # Issues
 glab issue view <id> -R https://gitlab.zrythm.org/zrythm/zrythm    # View issue details
 glab issue close <id> -R https://gitlab.zrythm.org/zrythm/zrythm   # Close an issue
 glab issue note <id> -R https://gitlab.zrythm.org/zrythm/zrythm -m "comment"  # Add comment to issue
 glab issue update <id> -R https://gitlab.zrythm.org/zrythm/zrythm --label "label-name"  # Add label to issue
+
+# Raw REST API for endpoints without a dedicated command (glab api has no -R flag: pass --hostname)
+glab api --hostname gitlab.zrythm.org "projects/zrythm%2Fzrythm/<endpoint>"
 ```
 
 ---
