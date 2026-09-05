@@ -5,6 +5,8 @@
 #include <string>
 #include <string_view>
 
+#include <fmt/std.h>
+
 #include "plugins/lv2_world.h"
 #include "utils/exceptions.h"
 #include "utils/logger.h"
@@ -18,7 +20,7 @@ Lv2World::Lv2World (const std::filesystem::path &spec_bundles_dir)
     : world_ (lilv_world_new ())
 {
   if (world_ == nullptr)
-    throw ZrythmException ("Failed to create an LV2 world");
+    throw utils::ZrythmException ("Failed to create an LV2 world");
 
   // Load the LV2 specification bundles, so that the plugin class hierarchy
   // and extension vocabularies resolve (without them, every plugin class
@@ -41,12 +43,12 @@ Lv2World::Lv2World (const std::filesystem::path &spec_bundles_dir)
       ++loaded_bundles;
     }
   if (ec)
-    throw ZrythmException (
+    throw utils::ZrythmException (
       fmt::format (
         "Failed to read the LV2 specification bundles from '{}': {}",
         spec_bundles_dir, ec.message ()));
   if (loaded_bundles == 0)
-    throw ZrythmException (
+    throw utils::ZrythmException (
       fmt::format (
         "No LV2 specification bundles found in '{}'", spec_bundles_dir));
   lilv_world_load_specifications (world_.get ());

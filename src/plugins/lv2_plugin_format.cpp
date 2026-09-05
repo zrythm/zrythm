@@ -8,6 +8,8 @@
 
 #include <ranges>
 
+#include <fmt/std.h>
+
 #include "plugins/lv2_discovery.h"
 #include "plugins/lv2_plugin_format.h"
 #include "plugins/lv2_world.h"

@@ -5,8 +5,11 @@
 #include <string_view>
 #include <vector>
 
+#include <fmt/std.h>
+
 #include "plugins/lv2_discovery.h"
 #include "plugins/lv2_world.h"
+#include "utils/logger.h"
 
 #include <fmt/format.h>
 #include <lv2/atom/atom.h>
