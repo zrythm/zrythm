@@ -140,6 +140,8 @@ init_from (
   obj.protocol_ = other.protocol_;
   obj.path_or_id_ = other.path_or_id_;
   obj.unique_id_ = other.unique_id_;
+  obj.juce_compat_deprecated_unique_id_ =
+    other.juce_compat_deprecated_unique_id_;
   obj.has_custom_ui_ = other.has_custom_ui_;
 }
 

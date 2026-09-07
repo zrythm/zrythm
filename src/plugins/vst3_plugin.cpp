@@ -1278,8 +1278,8 @@ Vst3Plugin::load_plugin (
     }
 
   // Find the class matching the scanned unique ID (a 32-bit hash of the
-  // TUID string), falling back to name matching for projects saved before
-  // the native scanner existed
+  // TUID string); when several classes of the module hash to the same
+  // value, the class name disambiguates
   const auto &class_infos = module->getFactory ().classInfos ();
   const auto  matches_hash = [plugin_unique_id] (const auto &ci) {
     return get_hash_for_range (ci.ID ().toString ()) == plugin_unique_id;
