@@ -366,8 +366,7 @@ TEST_F (TestPluginsScanTest, Lv2DescriptionsExposeDeclaredMetadata)
 // times out and the identifier gets blacklisted.
 TEST_F (TestPluginsScanTest, SubprocessScanAnswersForPresetOnlyLv2Bundle)
 {
-  const auto scanner_path =
-    QCoreApplication::applicationDirPath () + QStringLiteral ("/plugin-scanner");
+  const auto scanner_path = QString::fromUtf8 (TEST_PLUGIN_SCANNER_PATH);
   ASSERT_TRUE (QFile::exists (scanner_path)) << scanner_path.toStdString ();
   qputenv ("ZRYTHM_PLUGIN_SCANNER_PATH", scanner_path.toUtf8 ());
 
@@ -393,10 +392,12 @@ TEST_F (TestPluginsScanTest, KnownPluginListSkipsUnchangedLv2Bundles)
   ASSERT_NE (lv2_format, nullptr) << "LV2 format not available";
 
   juce::KnownPluginList known_plugins;
-  const auto            bundle =
+  // KnownPluginList compares identifiers by exact string, so query with the
+  // forward-slash spelling the LV2 format reports
+  const auto bundle = normalize_bundle_path (
     juce::File (TEST_LV2_SEARCH_PATHS)
       .getChildFile ("eg-amp.lv2")
-      .getFullPathName ();
+      .getFullPathName ());
 
   juce::OwnedArray<juce::PluginDescription> types;
   EXPECT_TRUE (known_plugins.scanAndAddFile (bundle, true, types, *lv2_format));

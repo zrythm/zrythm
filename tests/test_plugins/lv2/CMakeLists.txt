@@ -42,6 +42,9 @@ function(add_lv2_fixture target bundle_dir output_name)
   target_link_libraries(${target} PRIVATE lv2::lv2 zrythm::sanitizers)
   set_target_properties(${target} PROPERTIES
     PREFIX ""
+    # The manifests reference @CMAKE_SHARED_LIBRARY_SUFFIX@, which differs
+    # from the module suffix CMake picks on macOS (.so)
+    SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}"
     OUTPUT_NAME ${output_name}
     LIBRARY_OUTPUT_DIRECTORY ${bundle_root}
     UNITY_BUILD OFF
