@@ -14,7 +14,7 @@ GridLayout {
   required property AutomationEditor automationEditor
   required property ClipEditor clipEditor
   readonly property Project project: session.project
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
 
   columnSpacing: 0

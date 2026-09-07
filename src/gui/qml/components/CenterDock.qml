@@ -177,7 +177,7 @@ ColumnLayout {
         sourceComponent: ColumnLayout {
           id: timelinePane
 
-          readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+          readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
 
           spacing: 1
 

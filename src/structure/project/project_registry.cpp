@@ -14,6 +14,7 @@
 #include "structure/project/project_registry.h"
 #include "structure/tracks/track_factory.h"
 #include "structure/tracks/track_fwd.h"
+#include "utils/exceptions.h"
 #include "utils/serialization.h"
 #include "utils/traits.h"
 #include "utils/variant_helpers.h"
@@ -25,15 +26,7 @@ namespace zrythm::structure::project
 
 struct ProjectRegistry::Impl
 {
-  enum class Category : uint8_t
-  {
-    Port,
-    Param,
-    Plugin,
-    Track,
-    ArrangerObject,
-    FileAudioSource,
-  };
+  using Category = ProjectRegistry::ObjectCategory;
 
   ~Impl ()
   {
@@ -95,7 +88,7 @@ ProjectRegistry::register_object_impl (utils::UuidIdentifiableBase &base)
 
   if (impl_->uuid_to_category_.contains (uuid))
     {
-      throw std::runtime_error (
+      throw utils::ZrythmException (
         fmt::format ("duplicate UUID: {}", uuid.toString ()));
     }
 
@@ -294,12 +287,54 @@ ProjectRegistry::for_each_matching_impl (
 // Private
 // ============================================================================
 
+bool
+ProjectRegistry::has_live_references (const QUuid &id) const
+{
+  const auto ref_it = impl_->ref_counts_.find (id);
+  return ref_it != impl_->ref_counts_.end () && ref_it->second > 0;
+}
+
+void
+ProjectRegistry::delete_objects_in_any_order (std::span<const QUuid> ids)
+{
+  // Deleting an object releases its references, and a reference count
+  // reaching zero deletes its target immediately, so one pass that
+  // deletes every currently-unreferenced object cascades whole
+  // reference chains. Further passes only drop already-deleted ids and
+  // detect the no-progress case below
+  std::vector<QUuid> pending{ ids.begin (), ids.end () };
+  while (!pending.empty ())
+    {
+      const auto remaining_before = pending.size ();
+      std::erase_if (pending, [this] (const QUuid &id) {
+        if (contains (id) && has_live_references (id))
+          return false;
+        delete_object_by_id (id);
+        return true;
+      });
+      if (pending.size () == remaining_before)
+        {
+          z_warning (
+            "{} of {} objects are still referenced and will stay registered",
+            pending.size (), ids.size ());
+          return;
+        }
+    }
+}
+
 void
 ProjectRegistry::delete_object_by_id (const QUuid &id)
 {
   const auto cat_it = impl_->uuid_to_category_.find (id);
   if (cat_it == impl_->uuid_to_category_.end ())
     return;
+
+  // Force-deleting an object that is still referenced would make the next
+  // release of one of its references throw in an arbitrary destructor
+  const auto ref_it = impl_->ref_counts_.find (id);
+  assert (
+    ref_it == impl_->ref_counts_.end ()
+    || ref_it->second == 0 && "delete_object_by_id called with live references");
 
   QObject * raw = nullptr;
 
@@ -380,12 +415,38 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
 // Serialization
 // ============================================================================
 
-static constexpr auto kPortsKey = "ports"sv;
-static constexpr auto kParametersKey = "parameters"sv;
-static constexpr auto kPluginsKey = "plugins"sv;
-static constexpr auto kTracksKey = "tracks"sv;
-static constexpr auto kArrangerObjectsKey = "arrangerObjects"sv;
-static constexpr auto kFileAudioSourcesKey = "fileAudioSources"sv;
+std::optional<ProjectRegistry::ObjectCategory>
+ProjectRegistry::serialize_object_by_uuid (
+  const QUuid    &id,
+  nlohmann::json &j_out) const
+{
+  const auto cat_it = impl_->uuid_to_category_.find (id);
+  if (cat_it == impl_->uuid_to_category_.end ())
+    return std::nullopt;
+
+  switch (cat_it->second)
+    {
+    case ObjectCategory::Port:
+      j_out = impl_->ports_.at (id);
+      break;
+    case ObjectCategory::Param:
+      j_out = *impl_->params_.at (id);
+      break;
+    case ObjectCategory::Plugin:
+      j_out = impl_->plugins_.at (id);
+      break;
+    case ObjectCategory::Track:
+      j_out = impl_->tracks_.at (id);
+      break;
+    case ObjectCategory::ArrangerObject:
+      j_out = impl_->arranger_objects_.at (id);
+      break;
+    case ObjectCategory::FileAudioSource:
+      j_out = *impl_->file_audio_sources_.at (id);
+      break;
+    }
+  return cat_it->second;
+}
 
 void
 to_json (nlohmann::json &j, const ProjectRegistry &registry)
@@ -412,13 +473,17 @@ to_json (nlohmann::json &j, const ProjectRegistry &registry)
     return arr;
   };
 
-  j[kPortsKey] = serialize_bucket_variant (registry.impl_->ports_);
-  j[kParametersKey] = serialize_bucket_ptr (registry.impl_->params_);
-  j[kPluginsKey] = serialize_bucket_variant (registry.impl_->plugins_);
-  j[kTracksKey] = serialize_bucket_variant (registry.impl_->tracks_);
-  j[kArrangerObjectsKey] =
+  j[ProjectRegistry::kPortsKey] =
+    serialize_bucket_variant (registry.impl_->ports_);
+  j[ProjectRegistry::kParametersKey] =
+    serialize_bucket_ptr (registry.impl_->params_);
+  j[ProjectRegistry::kPluginsKey] =
+    serialize_bucket_variant (registry.impl_->plugins_);
+  j[ProjectRegistry::kTracksKey] =
+    serialize_bucket_variant (registry.impl_->tracks_);
+  j[ProjectRegistry::kArrangerObjectsKey] =
     serialize_bucket_variant (registry.impl_->arranger_objects_);
-  j[kFileAudioSourcesKey] =
+  j[ProjectRegistry::kFileAudioSourcesKey] =
     serialize_bucket_ptr (registry.impl_->file_audio_sources_);
 }
 
@@ -523,13 +588,23 @@ create_and_register_all (
       VariantT var;
       utils::serialization::variant_create_object_only (entry, var, builder);
 
-      std::visit (
-        [&entry] (auto &&ptr) {
-          from_json (entry, static_cast<utils::UuidIdentifiableBase &> (*ptr));
-        },
-        var);
-
-      std::visit ([&] (auto * p) { registry.register_object (*p); }, var);
+      try
+        {
+          std::visit (
+            [&entry] (auto &&ptr) {
+              from_json (
+                entry, static_cast<utils::UuidIdentifiableBase &> (*ptr));
+            },
+            var);
+          std::visit ([&] (auto * p) { registry.register_object (*p); }, var);
+        }
+      catch (...)
+        {
+          // registration failed: the registry does not own the object, so
+          // it is deleted here to avoid leaking it
+          std::visit ([] (auto * p) { delete p; }, var);
+          throw;
+        }
       deferred.emplace_back (var, entry);
     }
 }
@@ -634,51 +709,54 @@ from_json (const nlohmann::json &j, ProjectRegistry &registry)
   // This ensures every UUID is resolvable before any from_json reads
   // references.
 
-  if (j.contains (kPortsKey))
+  if (j.contains (ProjectRegistry::kPortsKey))
     {
-      deferred_ports.reserve (j[kPortsKey].size ());
+      deferred_ports.reserve (j[ProjectRegistry::kPortsKey].size ());
       create_and_register_all<dsp::PortPtrVariant> (
-        registry, j[kPortsKey], PortBuilder{}, deferred_ports);
+        registry, j[ProjectRegistry::kPortsKey], PortBuilder{}, deferred_ports);
     }
 
-  if (j.contains (kParametersKey))
+  if (j.contains (ProjectRegistry::kParametersKey))
     {
-      deferred_params.reserve (j[kParametersKey].size ());
+      deferred_params.reserve (j[ProjectRegistry::kParametersKey].size ());
       create_and_register_ptr_all<dsp::ProcessorParameter> (
-        registry, j[kParametersKey], ParamBuilder{ registry }, deferred_params);
+        registry, j[ProjectRegistry::kParametersKey], ParamBuilder{ registry },
+        deferred_params);
     }
 
-  if (j.contains (kPluginsKey))
+  if (j.contains (ProjectRegistry::kPluginsKey))
     {
-      deferred_plugins.reserve (j[kPluginsKey].size ());
+      deferred_plugins.reserve (j[ProjectRegistry::kPluginsKey].size ());
       create_and_register_all<plugins::PluginPtrVariant> (
-        registry, j[kPluginsKey], PluginBuilder{ deps.plugin_factory },
-        deferred_plugins);
+        registry, j[ProjectRegistry::kPluginsKey],
+        PluginBuilder{ deps.plugin_factory }, deferred_plugins);
     }
 
-  if (j.contains (kFileAudioSourcesKey))
+  if (j.contains (ProjectRegistry::kFileAudioSourcesKey))
     {
-      deferred_file_audio_sources.reserve (j[kFileAudioSourcesKey].size ());
+      deferred_file_audio_sources.reserve (
+        j[ProjectRegistry::kFileAudioSourcesKey].size ());
       create_and_register_ptr_all<dsp::FileAudioSource> (
-        registry, j[kFileAudioSourcesKey], FileAudioSourceBuilder{},
-        deferred_file_audio_sources);
+        registry, j[ProjectRegistry::kFileAudioSourcesKey],
+        FileAudioSourceBuilder{}, deferred_file_audio_sources);
     }
 
-  if (j.contains (kArrangerObjectsKey))
+  if (j.contains (ProjectRegistry::kArrangerObjectsKey))
     {
-      deferred_arranger_objects.reserve (j[kArrangerObjectsKey].size ());
+      deferred_arranger_objects.reserve (
+        j[ProjectRegistry::kArrangerObjectsKey].size ());
       create_and_register_all<structure::arrangement::ArrangerObjectPtrVariant> (
-        registry, j[kArrangerObjectsKey],
+        registry, j[ProjectRegistry::kArrangerObjectsKey],
         ArrangerObjectBuilder{ deps.arranger_object_factory },
         deferred_arranger_objects);
     }
 
-  if (j.contains (kTracksKey))
+  if (j.contains (ProjectRegistry::kTracksKey))
     {
-      deferred_tracks.reserve (j[kTracksKey].size ());
+      deferred_tracks.reserve (j[ProjectRegistry::kTracksKey].size ());
       create_and_register_all<structure::tracks::TrackPtrVariant> (
-        registry, j[kTracksKey], TrackBuilder{ deps.track_factory },
-        deferred_tracks);
+        registry, j[ProjectRegistry::kTracksKey],
+        TrackBuilder{ deps.track_factory }, deferred_tracks);
     }
 
   // --- Phase 2: Deserialize data into ALL objects from ALL buckets ---

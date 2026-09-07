@@ -39,7 +39,8 @@ class AudioClip final : public Clip, public ArrangerObjectOwner<AudioSourceObjec
   QML_UNCREATABLE ("")
 
 public:
-  static constexpr int BUILTIN_FADE_FRAMES = 10;
+  static constexpr int  BUILTIN_FADE_FRAMES = 10;
+  static constexpr auto kAudioSourcesKey = "audioSources"sv;
 
   AudioClip (
     const dsp::TempoMapWrapper &tempo_map_wrapper,
@@ -81,7 +82,7 @@ public:
   std::string
   get_field_name_for_serialization (const AudioSourceObject *) const override
   {
-    return "audioSources";
+    return std::string{ kAudioSourcesKey };
   }
 
   std::vector<ArrangerObjectListModel *> get_child_list_models () const override
@@ -105,8 +106,9 @@ private:
   static constexpr auto kGainKey = "gain"sv;
   static constexpr auto kAlgorithmKey = "stretchAlgorithm"sv;
   static constexpr auto kFadeRangeKey = "fadeRange"sv;
-  friend void           to_json (nlohmann::json &j, const AudioClip &clip);
-  friend void           from_json (const nlohmann::json &j, AudioClip &clip);
+
+  friend void to_json (nlohmann::json &j, const AudioClip &clip);
+  friend void from_json (const nlohmann::json &j, AudioClip &clip);
 
   std::atomic<float>             gain_ = 1.0f;
   dsp::StretchOptions::Algorithm algorithm_{

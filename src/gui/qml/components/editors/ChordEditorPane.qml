@@ -32,7 +32,7 @@ GridLayout {
     const fit = Math.floor(h / (count + 1)); // +1 for trailing "+" row
     return Math.max(root.minRowHeight, Math.min(root.maxRowHeight, fit));
   }
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
   readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.chordClip)
 

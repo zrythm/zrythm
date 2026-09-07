@@ -14,10 +14,13 @@
 #include "structure/arrangement/audio_clip.h"
 #include "structure/tracks/track_all.h"
 #include "structure/tracks/tracklist.h"
+#include "utils/exceptions.h"
 #include "utils/logger.h"
 #include "utils/math_utils.h"
 #include "utils/ranges.h"
 #include "utils/variant_helpers.h"
+
+#include <boost/unordered/unordered_flat_set.hpp>
 
 namespace zrythm::actions
 {
@@ -128,21 +131,26 @@ next_chord_content_position (const structure::arrangement::ChordObject &chord)
 
 ArrangerObjectSelectionOperator ::ArrangerObjectSelectionOperator (
   undo::UndoStack                               &undoStack,
-  QItemSelectionModel                           &selectionModel,
   ObjectOwnerProvider                            objectOwnerProvider,
   structure::arrangement::ArrangerObjectFactory &objectFactory,
+  structure::project::ProjectRegistry           &projectRegistry,
+  controllers::Clipboard                        &clipboard,
+  ProjectIdProvider                              projectIdProvider,
   TimelineObjectsEnumerator                      timelineObjectsEnumerator,
   QObject *                                      parent)
     : QObject (parent), undo_stack_ (undoStack),
-      selection_model_ (selectionModel),
       object_owner_provider_ (std::move (objectOwnerProvider)),
-      object_factory_ (objectFactory),
+      object_factory_ (objectFactory), project_registry_ (projectRegistry),
+      clipboard_ (clipboard),
+      project_id_provider_ (std::move (projectIdProvider)),
       timeline_objects_enumerator_ (std::move (timelineObjectsEnumerator))
 {
 }
 
 bool
-ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
+ArrangerObjectSelectionOperator::moveByTicks (
+  QItemSelectionModel * selectionModel,
+  double                tick_delta)
 {
   if (tick_delta == 0.0)
     {
@@ -151,7 +159,7 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
     }
 
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_warning ("No objects selected for movement");
@@ -191,13 +199,18 @@ ArrangerObjectSelectionOperator::moveByTicks (double tick_delta)
 }
 
 bool
-ArrangerObjectSelectionOperator::moveNotesByPitch (int pitch_delta)
+ArrangerObjectSelectionOperator::moveNotesByPitch (
+  QItemSelectionModel * selectionModel,
+  int                   pitch_delta)
 {
-  return process_vertical_move (static_cast<double> (pitch_delta));
+  return process_vertical_move (
+    selectionModel, static_cast<double> (pitch_delta));
 }
 
 bool
-ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
+ArrangerObjectSelectionOperator::changeVelocities (
+  QItemSelectionModel * selectionModel,
+  int                   velocity_delta)
 {
   if (velocity_delta == 0)
     {
@@ -205,7 +218,7 @@ ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
     }
 
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected for velocity change");
@@ -241,6 +254,7 @@ ArrangerObjectSelectionOperator::changeVelocities (int velocity_delta)
 
 bool
 ArrangerObjectSelectionOperator::rampVelocities (
+  QItemSelectionModel *              selectionModel,
   structure::arrangement::MidiClip * clip,
   double                             start_ticks,
   double                             start_value,
@@ -249,8 +263,14 @@ ArrangerObjectSelectionOperator::rampVelocities (
 {
   // Collect the target notes: the selected MIDI notes, or, when none are
   // selected, all notes of the given clip inside the line's tick span
+  if (selectionModel == nullptr)
+    {
+      z_debug ("No selection model given; velocity ramp is a no-op");
+      return false;
+    }
+
   std::vector<structure::arrangement::MidiNote *> target_notes;
-  for (const auto &obj_ref : extractSelectedObjects ())
+  for (const auto &obj_ref : extractSelectedObjects (selectionModel))
     {
       if (
         auto * note =
@@ -318,28 +338,20 @@ ArrangerObjectSelectionOperator::rampVelocities (
 }
 
 bool
-ArrangerObjectSelectionOperator::deleteObjects ()
+ArrangerObjectSelectionOperator::deleteObjects (
+  QItemSelectionModel * selectionModel)
 {
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected to delete");
       return false;
     }
 
-  // Check for undeletable objects
-  const auto all_deletable =
-    std::ranges::all_of (selected_objects, [] (const auto &obj_ref) {
-      auto obj_var = utils::convert_to_variant_qobj<
-        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
-      return std::visit (
-        [] (const auto &obj) {
-          return structure::arrangement::is_arranger_object_deletable (*obj);
-        },
-        obj_var);
-    });
-  if (!all_deletable)
+  // Validate before opening the macro: a refusal never opens one
+  OwnerResolver resolver{ object_owner_provider_ };
+  if (!can_delete_objects (selected_objects, resolver))
     {
       z_warning ("Some selected objects cannot be deleted");
       return false;
@@ -349,23 +361,84 @@ ArrangerObjectSelectionOperator::deleteObjects ()
   undo::UndoStack::ScopedMacro macro (
     undo_stack_,
     QObject::tr ("Delete %1 Objects").arg (selected_objects.size ()));
-  for (const auto &obj_ref : selected_objects)
+  return delete_objects (selected_objects, resolver);
+}
+
+bool
+ArrangerObjectSelectionOperator::all_objects_deletable (
+  const SelectedObjectsVector &objects)
+{
+  return std::ranges::all_of (objects, [] (const auto &obj_ref) {
+    auto obj_var = utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+    return std::visit (
+      [] (const auto &obj) {
+        return structure::arrangement::is_arranger_object_deletable (*obj);
+      },
+      obj_var);
+  });
+}
+
+bool
+ArrangerObjectSelectionOperator::all_objects_copyable (
+  const SelectedObjectsVector &objects)
+{
+  return std::ranges::all_of (objects, [] (const auto &obj_ref) {
+    auto obj_var = utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+    return std::visit (
+      [] (const auto * obj) {
+        return structure::arrangement::is_arranger_object_copyable (*obj);
+      },
+      obj_var);
+  });
+}
+
+bool
+ArrangerObjectSelectionOperator::delete_objects (
+  const SelectedObjectsVector &objects,
+  OwnerResolver               &resolver)
+{
+  if (!all_objects_deletable (objects))
+    {
+      z_warning ("Some selected objects cannot be deleted");
+      return false;
+    }
+
+  // Resolve all owners first: either all objects are deleted or none
+  struct DeleteTarget
+  {
+    structure::arrangement::ArrangerObjectUuidReference obj_ref;
+    ArrangerObjectOwnerPtrVariant                       owner_var;
+  };
+  std::vector<DeleteTarget> targets;
+  targets.reserve (objects.size ());
+  for (const auto &obj_ref : objects)
     {
       auto obj_var = utils::convert_to_variant_qobj<
         structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
-      auto owner_var = object_owner_provider_ (obj_var);
+      auto owner_var = resolver.resolve (obj_var);
+      if (
+        std::visit (
+          [] (const auto &owner) { return owner == nullptr; }, owner_var))
+        {
+          z_warning ("No owner found for object {}", obj_ref.id ());
+          return false;
+        }
+      targets.push_back ({ obj_ref, owner_var });
+    }
+
+  if (targets.empty ())
+    return false;
+
+  for (auto &target : targets)
+    {
       std::visit (
         [&] (auto &owner) {
-          if (owner == nullptr)
-            {
-              z_warning ("No owner found for object {}", obj_ref.id ());
-              return;
-            }
-          auto * command =
-            new commands::RemoveArrangerObjectCommand (*owner, obj_ref);
-          undo_stack_.push (command);
+          undo_stack_.push (
+            new commands::RemoveArrangerObjectCommand (*owner, target.obj_ref));
         },
-        owner_var);
+        target.owner_var);
     }
 
   return true;
@@ -419,9 +492,11 @@ ArrangerObjectSelectionOperator::deleteObject (
 }
 
 bool
-ArrangerObjectSelectionOperator::cutObjectsAt (double ticks)
+ArrangerObjectSelectionOperator::cutObjectsAt (
+  QItemSelectionModel * selectionModel,
+  double                ticks)
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected to cut");
@@ -669,10 +744,11 @@ ArrangerObjectSelectionOperator::cut_objects (
 }
 
 bool
-ArrangerObjectSelectionOperator::cloneObjects ()
+ArrangerObjectSelectionOperator::cloneObjects (
+  QItemSelectionModel * selectionModel)
 {
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected to clone");
@@ -703,35 +779,921 @@ ArrangerObjectSelectionOperator::cloneObjects ()
     {
       auto obj_var = utils::convert_to_variant_qobj<
         structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
-      auto new_obj_ref = std::visit (
-        [&] (const auto &obj)
-          -> structure::arrangement::ArrangerObjectUuidReference {
-          return object_factory_.clone_new_object_identity (*obj);
-        },
-        obj_var);
-
-      auto owner_var = object_owner_provider_ (obj_var);
-      std::visit (
-        [&] (auto &owner) {
-          if (owner == nullptr)
-            {
-              z_warning ("No owner found for object {}", obj_ref.id ());
-              return;
-            }
-          auto * command =
-            new commands::AddArrangerObjectCommand (*owner, new_obj_ref);
-          undo_stack_.push (command);
-        },
-        owner_var);
+      clone_and_attach (obj_var);
     }
 
   return true;
 }
 
-bool
-ArrangerObjectSelectionOperator::toggleMute ()
+std::optional<QUuid>
+ArrangerObjectSelectionOperator::clone_and_attach (
+  structure::arrangement::ArrangerObjectPtrVariant                      obj_var,
+  const std::function<void (structure::arrangement::ArrangerObject &)> &mutate)
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto new_obj_ref = std::visit (
+    [&] (const auto * obj) -> structure::arrangement::ArrangerObjectUuidReference {
+      return object_factory_.clone_new_object_identity (*obj);
+    },
+    obj_var);
+
+  if (mutate)
+    mutate (*new_obj_ref.get ());
+
+  auto       owner_var = object_owner_provider_ (obj_var);
+  const bool attached = std::visit (
+    [&] (auto &owner) {
+      if (owner == nullptr)
+        {
+          z_warning (
+            "No owner found for object {}",
+            std::visit (
+              [] (const auto * obj) { return obj->get_uuid (); }, obj_var));
+          return false;
+        }
+      undo_stack_.push (
+        new commands::AddArrangerObjectCommand (*owner, new_obj_ref));
+      return true;
+    },
+    owner_var);
+  if (!attached)
+    {
+      // The clone stays unowned: it is destroyed automatically once its
+      // last reference (new_obj_ref here, if no command was pushed) goes
+      // away
+      return std::nullopt;
+    }
+  return type_safe::get (new_obj_ref.id ());
+}
+
+bool
+ArrangerObjectSelectionOperator::copyObjects (
+  QItemSelectionModel * selectionModel)
+{
+  auto selected_objects = extractSelectedObjects (selectionModel);
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to copy");
+      return false;
+    }
+
+  OwnerResolver resolver{ object_owner_provider_ };
+  return copy_objects (copyable_objects (selected_objects), resolver);
+}
+
+ArrangerObjectSelectionOperator::SelectedObjectsVector
+ArrangerObjectSelectionOperator::copyable_objects (
+  const SelectedObjectsVector &objects)
+{
+  SelectedObjectsVector copyable;
+  for (const auto &obj_ref : objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      const bool copyable_object = std::visit (
+        [] (const auto &obj) {
+          return structure::arrangement::is_arranger_object_copyable (*obj);
+        },
+        obj_var);
+      if (copyable_object)
+        copyable.push_back (obj_ref);
+      else
+        {
+          z_warning ("Object {} cannot be copied and is skipped", obj_ref.id ());
+        }
+    }
+  return copyable;
+}
+
+ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant
+ArrangerObjectSelectionOperator::OwnerResolver::resolve (
+  const structure::arrangement::ArrangerObjectPtrVariant &obj_var)
+{
+  const auto * raw = std::visit (
+    [] (const auto * obj) -> const QObject * { return obj; }, obj_var);
+  if (const auto it = cache_.find (raw); it != cache_.end ())
+    return it->second;
+  auto owner_var = provider_ (obj_var);
+  cache_.emplace (raw, owner_var);
+  return owner_var;
+}
+
+bool
+ArrangerObjectSelectionOperator::can_delete_objects (
+  const SelectedObjectsVector &objects,
+  OwnerResolver               &resolver) const
+{
+  return std::ranges::all_of (objects, [&resolver] (const auto &obj_ref) {
+    auto obj_var = utils::convert_to_variant_qobj<
+      structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+    const bool deletable = std::visit (
+      [] (const auto &obj) {
+        return structure::arrangement::is_arranger_object_deletable (*obj);
+      },
+      obj_var);
+    if (!deletable)
+      return false;
+    const auto owner_var = resolver.resolve (obj_var);
+    return std::visit (
+      [] (const auto &owner) { return owner != nullptr; }, owner_var);
+  });
+}
+
+bool
+ArrangerObjectSelectionOperator::copy_objects (
+  const SelectedObjectsVector &objects,
+  OwnerResolver               &resolver)
+{
+  if (objects.empty ())
+    {
+      z_warning ("No copyable objects selected");
+      return false;
+    }
+
+  if (!selection_in_single_position_space (objects))
+    {
+      z_warning (
+        "Cannot copy a selection that mixes timeline and clip contents "
+        "objects");
+      return false;
+    }
+
+  // The paste anchor is the earliest position in the selection's position
+  // space (timeline ticks on the timeline, content ticks in an editor —
+  // uniform within one arranger pane).
+  const auto anchor = std::ranges::min (object_positions (objects));
+
+  // Remember the source lane of lane clips so paste can use the same lane
+  // when the target track has one. The owner variant only knows the
+  // ArrangerObjectOwner<T> base, so recover the concrete track lane (the
+  // only owner type that is a track lane) with a cross-cast.
+  nlohmann::json lane_indices = nlohmann::json::object ();
+  for (const auto &obj_ref : objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      auto owner_var = resolver.resolve (obj_var);
+      std::visit (
+        [&] (auto &owner) {
+          if (owner == nullptr)
+            return;
+          auto * lane = dynamic_cast<structure::tracks::TrackLane *> (owner);
+          if (lane == nullptr)
+            return;
+          const auto * lane_list = qobject_cast<
+            const structure::tracks::TrackLaneList *> (lane->parent ());
+          const auto lane_idx =
+            lane_list != nullptr ? lane_list->indexOfLane (lane) : std::nullopt;
+          if (lane_idx.has_value ())
+            {
+              lane_indices
+                [type_safe::get (obj_ref.id ())
+                   .toString (QUuid::WithoutBraces)
+                   .toStdString ()] = *lane_idx;
+            }
+        },
+        owner_var);
+    }
+
+  auto metadata = nlohmann::json::object ();
+  metadata[structure::project::ClipboardPayload::kAnchorTicksMetadataKey] =
+    anchor.in (units::ticks);
+  if (!lane_indices.empty ())
+    metadata[structure::project::ClipboardPayload::kLaneIndicesMetadataKey] =
+      std::move (lane_indices);
+
+  std::vector<QUuid> roots;
+  roots.reserve (objects.size ());
+  for (const auto &obj_ref : objects)
+    roots.push_back (type_safe::get (obj_ref.id ()));
+
+  try
+    {
+      clipboard_.setPayload (
+        structure::project::ClipboardPayload::create (
+          project_registry_,
+          structure::project::ClipboardPayload::Type::ArrangerObjects, roots,
+          project_id_provider_ (), std::move (metadata)));
+    }
+  catch (const std::exception &e)
+    {
+      z_warning ("Failed to store copied objects: {}", e.what ());
+      refuse_operation (
+        QObject::tr ("The objects could not be copied to the clipboard"));
+      return false;
+    }
+  return true;
+}
+
+bool
+ArrangerObjectSelectionOperator::cutObjects (
+  QItemSelectionModel * selectionModel)
+{
+  auto selected_objects = extractSelectedObjects (selectionModel);
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to cut");
+      return false;
+    }
+
+  // Refuse before copying so cut never copies without deleting: cut
+  // needs every selected object copyable and deletable. One resolver is
+  // shared by the can-delete/copy/delete phases.
+  OwnerResolver resolver{ object_owner_provider_ };
+  if (
+    !all_objects_copyable (selected_objects)
+    || !can_delete_objects (selected_objects, resolver))
+    {
+      z_warning ("Some selected objects cannot be cut");
+      refuse_operation (QObject::tr ("Some selected objects cannot be cut"));
+      return false;
+    }
+
+  // Delete exactly the objects that were copied
+  const auto copyable = copyable_objects (selected_objects);
+  if (!copy_objects (copyable, resolver))
+    return false;
+
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Cut %1 Objects").arg (copyable.size ()));
+  return delete_objects (copyable, resolver);
+}
+
+void
+ArrangerObjectSelectionOperator::refuse_operation (const QString &reason)
+{
+  z_warning ("Refusing operation: {}", reason.toStdString ());
+  Q_EMIT operationRefused (reason);
+}
+
+std::optional<units::precise_tick_t>
+ArrangerObjectSelectionOperator::duplicate_shift (
+  const SelectedObjectsVector &objects)
+{
+  // Shift the duplicates by the selection's span so they continue where
+  // the selection ends. For a zero-span selection (point objects at the
+  // same position), shift by one bar instead.
+  const auto positions = object_positions (objects);
+  const auto first_pos = std::ranges::min (positions);
+  auto       shift =
+    std::ranges::max (
+      objects | std::views::transform ([] (const auto &obj_ref) {
+        return object_end_ticks (
+          utils::convert_to_variant_qobj<
+            structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()));
+      }))
+    - first_pos;
+  if (shift <= units::precise_tick_t{})
+    {
+      // Measure the bar at the selection's timeline position: editor
+      // objects' positions are clip-relative, so their pane-local position
+      // must be offset by the owning clip's timeline position (the owner
+      // of an editor object is its clip by design; the first object's clip
+      // is a close-enough anchor for this bar-length fallback)
+      const auto first_pos_in_timeline_ticks =
+        [first_pos, &first_object = objects.front ()] {
+          if (
+            auto * parent_clip = qobject_cast<structure::arrangement::Clip *> (
+              first_object.get ()->parentObject ()))
+            {
+              return first_pos + parent_clip->position ()->asTick ().asQuantity ();
+            }
+          return first_pos;
+        }();
+      shift =
+        objects.front ()
+          .get ()
+          ->get_tempo_map ()
+          .time_signature_at_tick (
+            au::round_as<int64_t> (units::ticks, first_pos_in_timeline_ticks))
+          .ticks_per_bar ();
+    }
+
+  if (shift <= units::precise_tick_t{})
+    return std::nullopt;
+  return shift;
+}
+
+QVariantList
+ArrangerObjectSelectionOperator::duplicateObjects (
+  QItemSelectionModel * selectionModel)
+{
+  auto selected_objects = extractSelectedObjects (selectionModel);
+  if (selected_objects.empty ())
+    {
+      z_debug ("No objects selected to duplicate");
+      return {};
+    }
+  // Duplication clones and re-attaches each selected object
+  if (!all_objects_copyable (selected_objects))
+    {
+      z_warning ("Some selected objects cannot be duplicated");
+      return {};
+    }
+  if (!selection_in_single_position_space (selected_objects))
+    {
+      z_warning (
+        "Cannot duplicate a selection that mixes timeline and clip "
+        "contents objects");
+      return {};
+    }
+
+  const auto shift = duplicate_shift (selected_objects);
+  if (!shift.has_value ())
+    {
+      z_warning ("Cannot determine the duplicate placement");
+      return {};
+    }
+
+  // Time signatures are only allowed at bar boundaries: refuse the whole
+  // duplication when a duplicate would land off a bar
+  if (!std::ranges::all_of (selected_objects, [&shift] (const auto &obj_ref) {
+        return time_signature_lands_on_bar (
+          utils::convert_to_variant_qobj<
+            structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ()),
+          dsp::TimelineTick{ *shift });
+      }))
+    {
+      refuse_operation (
+        QObject::tr ("Time signatures can only be placed at bar boundaries"));
+      return {};
+    }
+
+  QVariantList                 new_ids;
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_,
+    QObject::tr ("Duplicate %1 Objects").arg (selected_objects.size ()));
+  for (const auto &obj_ref : selected_objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      if (
+        const auto new_id = clone_and_attach (
+          obj_var,
+          [shift] (structure::arrangement::ArrangerObject &clone) {
+            clone.position ()->addTicks (shift->in (units::ticks));
+          });
+        new_id.has_value ())
+        {
+          new_ids.push_back (new_id->toString (QUuid::WithoutBraces));
+        }
+    }
+
+  return new_ids;
+}
+
+ArrangerObjectSelectionOperator::PasteOwnerResolver
+ArrangerObjectSelectionOperator::timeline_paste_owner_resolver (
+  structure::tracks::Track *                   targetTrack,
+  structure::tracks::MarkerTrack *             markerTrack,
+  structure::tracks::ChordTrack *              chordTrack,
+  structure::arrangement::TempoObjectManager * tempoObjectManager) const
+{
+  return
+    [targetTrack, markerTrack, chordTrack, tempoObjectManager] (
+      const PreparedPaste                              &paste,
+      const structure::arrangement::ArrangerObjectUuid &root_uuid,
+      structure::arrangement::ArrangerObjectPtrVariant  obj_var)
+      -> std::optional<ArrangerObjectOwnerPtrVariant> {
+      std::optional<ArrangerObjectOwnerPtrVariant> owner_var = std::nullopt;
+      std::visit (
+        [&] (const auto * obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiClip>
+            || std::is_same_v<ObjectT, structure::arrangement::AudioClip>)
+            {
+              // Lane clips are pasted into the target track's lanes, using
+              // the copied lane index when the target track has that lane
+              const bool track_compatible = [&] {
+                if constexpr (
+                  std::is_same_v<ObjectT, structure::arrangement::MidiClip>)
+                  return qobject_cast<const structure::tracks::InstrumentTrack *> (
+                           targetTrack)
+                           != nullptr
+                         || qobject_cast<const structure::tracks::MidiTrack *> (
+                              targetTrack)
+                              != nullptr;
+                else
+                  return qobject_cast<const structure::tracks::AudioTrack *> (
+                           targetTrack)
+                         != nullptr;
+              }();
+              const auto * lanes =
+                targetTrack != nullptr ? targetTrack->lanes () : nullptr;
+              if (!track_compatible || lanes == nullptr || lanes->empty ())
+                {
+                  z_warning (
+                    "Cannot paste a {} onto the given track", obj->type ());
+                  return;
+                }
+              std::size_t lane_idx = 0;
+              if (
+                const auto lane_it = paste.lane_indices.find (root_uuid);
+                lane_it != paste.lane_indices.end ())
+                {
+                  lane_idx = lane_it->second;
+                }
+              if (lane_idx >= lanes->size ())
+                {
+                  z_warning (
+                    "Cannot paste a {} into lane {} (target track has {} "
+                    "lanes)",
+                    obj->type (), lane_idx, lanes->size ());
+                  return;
+                }
+              owner_var = static_cast<
+                structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                lanes->at (lane_idx));
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::Marker>)
+            {
+              if (markerTrack == nullptr)
+                {
+                  z_warning ("Cannot paste a marker without a marker track");
+                  return;
+                }
+              owner_var = static_cast<
+                structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                markerTrack);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::ScaleObject>
+            || std::is_same_v<ObjectT, structure::arrangement::ChordClip>)
+            {
+              if (chordTrack == nullptr)
+                {
+                  z_warning ("Cannot paste without a chord track");
+                  return;
+                }
+              owner_var = static_cast<
+                structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                chordTrack);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::TempoObject>
+            || std::is_same_v<
+              ObjectT, structure::arrangement::TimeSignatureObject>)
+            {
+              if (tempoObjectManager == nullptr)
+                {
+                  z_warning ("Cannot paste without a tempo object manager");
+                  return;
+                }
+              owner_var = static_cast<
+                structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                tempoObjectManager);
+            }
+          else
+            {
+              // Automation clips need their automation track and editor
+              // objects their clip: neither is known on the timeline
+              z_warning (
+                "{} objects cannot be pasted on the timeline", obj->type ());
+            }
+        },
+        obj_var);
+      return owner_var;
+    };
+}
+
+QVariantList
+ArrangerObjectSelectionOperator::pasteObjectsOnTimeline (
+  structure::tracks::Track *                   targetTrack,
+  structure::tracks::MarkerTrack *             markerTrack,
+  structure::tracks::ChordTrack *              chordTrack,
+  structure::arrangement::TempoObjectManager * tempoObjectManager,
+  double                                       playheadTicks)
+{
+  const auto paste_target = prepare_paste (units::ticks (playheadTicks));
+  if (!paste_target.has_value ())
+    return {};
+
+  return attach_paste_targets (
+    *paste_target,
+    timeline_paste_owner_resolver (
+      targetTrack, markerTrack, chordTrack, tempoObjectManager));
+}
+
+QVariantList
+ArrangerObjectSelectionOperator::attach_paste_targets (
+  const PreparedPaste      &paste,
+  const PasteOwnerResolver &resolve_owner)
+{
+  struct PasteTarget
+  {
+    structure::arrangement::ArrangerObjectUuidReference root_ref;
+    ArrangerObjectOwnerPtrVariant                       owner_var;
+  };
+  std::vector<PasteTarget> targets;
+  std::vector<QUuid>       pasted_root_ids;
+  // Set when a root must refuse the whole paste; handled after the loop:
+  // the collected root references are dropped first so the discard can
+  // sweep the imports
+  bool    paste_refused = false;
+  QString refusal_reason;
+
+  for (const auto &root_id : paste.payload.roots ())
+    {
+      const auto root_uuid =
+        structure::arrangement::ArrangerObjectUuid (root_id);
+      structure::arrangement::ArrangerObjectUuidReference root_ref{
+        root_uuid, project_registry_
+      };
+      if (root_ref.get () == nullptr)
+        {
+          z_warning ("Clipboard: imported object {} not found", root_id);
+          continue;
+        }
+
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (root_ref.get ());
+      const auto owner_var = resolve_owner (paste, root_uuid, obj_var);
+      if (!owner_var.has_value ())
+        continue;
+
+      // The payload's anchor is untrusted metadata: validate the
+      // position the root will actually hold after the shift — editor
+      // objects shift in clip-relative ticks, timeline objects in
+      // absolute ticks (the same rule interactive moves follow)
+      if (
+        root_ref.get ()->position ()->ticks () + paste.delta.in (units::ticks)
+        < 0.0)
+        {
+          z_warning (
+            "Cannot paste: object {} would land before the start of the "
+            "destination",
+            root_id.toString (QUuid::WithoutBraces));
+          paste_refused = true;
+          refusal_reason = QObject::tr (
+            "Objects cannot be placed before the start of the destination");
+          break;
+        }
+
+      // Time signatures are only allowed at bar boundaries
+      if (
+        !time_signature_lands_on_bar (obj_var, dsp::TimelineTick{ paste.delta }))
+        {
+          z_warning ("Cannot paste: a time signature would land off a bar");
+          paste_refused = true;
+          refusal_reason = QObject::tr (
+            "Time signatures can only be placed at bar boundaries");
+          break;
+        }
+
+      targets.push_back ({ std::move (root_ref), *owner_var });
+      pasted_root_ids.push_back (root_id);
+    }
+
+  if (paste_refused)
+    {
+      // Drop the references of already-collected roots first: their
+      // destruction releases (and cascades away) the imported objects, so
+      // the discard below only needs to sweep what is left
+      targets.clear ();
+      discard_imported_objects (paste);
+      refuse_operation (refusal_reason);
+      return {};
+    }
+
+  if (targets.empty ())
+    {
+      discard_imported_objects (paste);
+      z_warning ("None of the clipboard objects could be pasted here");
+      return {};
+    }
+
+  // Shift the validated roots into place
+  for (auto &target : targets)
+    {
+      target.root_ref.get ()->position ()->addTicks (
+        paste.delta.in (units::ticks));
+    }
+
+  // Sweep the imports the pasted roots do not need. Copied payloads
+  // carry exactly their closure, so this is a no-op for them; payloads
+  // carrying surplus entries get them deregistered instead of leaving
+  // unowned objects behind
+  discard_imported_objects (paste, pasted_root_ids);
+
+  QVariantList                 new_ids;
+  undo::UndoStack::ScopedMacro macro (
+    undo_stack_, QObject::tr ("Paste %1 Objects").arg (targets.size ()));
+  for (auto &target : targets)
+    {
+      std::visit (
+        [&] (auto &owner) {
+          undo_stack_.push (
+            new commands::AddArrangerObjectCommand (*owner, target.root_ref));
+        },
+        target.owner_var);
+      new_ids.push_back (
+        type_safe::get (target.root_ref.id ()).toString (QUuid::WithoutBraces));
+    }
+
+  // Surface cross-project content loss after a successful paste (the
+  // pasted remainder is intact; what is gone is gone either way)
+  if (paste.dropped_audio_objects > 0 || paste.severed_references > 0)
+    {
+      QStringList parts;
+      if (paste.dropped_audio_objects > 0)
+        parts << QObject::tr (
+          "%n audio item(s) were dropped", nullptr,
+          static_cast<int> (paste.dropped_audio_objects));
+      if (paste.severed_references > 0)
+        parts << QObject::tr (
+          "%n routing(s) were severed", nullptr,
+          static_cast<int> (paste.severed_references));
+      const auto summary =
+        parts.join (QStringLiteral (" · "))
+        + QObject::tr (
+          " (content from another project could not be resolved here)");
+      z_warning (
+        "Paste modified cross-project content: {}", summary.toStdString ());
+      Q_EMIT pasteContentModified (summary);
+    }
+
+  return new_ids;
+}
+
+ArrangerObjectSelectionOperator::PasteOwnerResolver
+ArrangerObjectSelectionOperator::clip_paste_owner_resolver (
+  structure::arrangement::Clip * clip)
+{
+  return
+    [clip] (
+      const PreparedPaste & /*paste*/,
+      const structure::arrangement::ArrangerObjectUuid & /*root_uuid*/,
+      structure::arrangement::ArrangerObjectPtrVariant obj_var)
+      -> std::optional<ArrangerObjectOwnerPtrVariant> {
+      std::optional<ArrangerObjectOwnerPtrVariant> owner_var = std::nullopt;
+      std::visit (
+        [&] (const auto * obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::MidiNote>
+            || std::is_same_v<ObjectT, structure::arrangement::MidiControlEvent>)
+            {
+              if (
+                auto * target_clip =
+                  qobject_cast<structure::arrangement::MidiClip *> (clip))
+                owner_var = static_cast<
+                  structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                  target_clip);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AutomationPoint>)
+            {
+              if (
+                auto * target_clip =
+                  qobject_cast<structure::arrangement::AutomationClip *> (clip))
+                owner_var = static_cast<
+                  structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                  target_clip);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::ChordObject>)
+            {
+              if (
+                auto * target_clip =
+                  qobject_cast<structure::arrangement::ChordClip *> (clip))
+                owner_var = static_cast<
+                  structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                  target_clip);
+            }
+          else if constexpr (
+            std::is_same_v<ObjectT, structure::arrangement::AudioSourceObject>)
+            {
+              if (
+                auto * target_clip =
+                  qobject_cast<structure::arrangement::AudioClip *> (clip))
+                owner_var = static_cast<
+                  structure::arrangement::ArrangerObjectOwner<ObjectT> *> (
+                  target_clip);
+            }
+          if (!owner_var.has_value ())
+            {
+              z_warning (
+                "{} objects cannot be pasted into this clip", obj->type ());
+            }
+        },
+        obj_var);
+      return owner_var;
+    };
+}
+
+QVariantList
+ArrangerObjectSelectionOperator::pasteObjectsIntoClip (
+  structure::arrangement::Clip * clip,
+  double                         positionTicks)
+{
+  if (clip == nullptr)
+    {
+      z_warning ("No clip given to paste into");
+      return {};
+    }
+
+  const auto paste_target = prepare_paste (units::ticks (positionTicks));
+  if (!paste_target.has_value ())
+    return {};
+
+  return attach_paste_targets (*paste_target, clip_paste_owner_resolver (clip));
+}
+
+auto
+ArrangerObjectSelectionOperator::prepare_paste (units::precise_tick_t position)
+  -> std::optional<PreparedPaste>
+{
+  const auto &clipboard_payload = clipboard_.payload ();
+  if (!clipboard_payload.has_value ())
+    {
+      z_debug ("No clipboard payload to paste");
+      return std::nullopt;
+    }
+  if (
+    clipboard_payload->type ()
+    != structure::project::ClipboardPayload::Type::ArrangerObjects)
+    {
+      z_warning ("The clipboard does not contain arranger objects");
+      refuse_operation (
+        QObject::tr ("The clipboard contents could not be pasted"));
+      return std::nullopt;
+    }
+
+  // Arranger-object pastes cannot attach plugins or tracks: refuse
+  // payloads that carry any, or their objects would stay unowned
+  // (import_into()'s instantiation-wait contract is the caller's job)
+  {
+    const auto &registry = clipboard_payload->registry_json ();
+    for (
+      const auto bucket_key :
+      { structure::project::ProjectRegistry::kPluginsKey,
+        structure::project::ProjectRegistry::kTracksKey })
+      {
+        const auto bucket_it = registry.find (bucket_key);
+        if (bucket_it != registry.end () && !bucket_it->empty ())
+          {
+            z_warning (
+              "The clipboard payload contains {} and cannot be pasted as "
+              "arranger objects",
+              bucket_key);
+            refuse_operation (
+              QObject::tr ("The clipboard contents could not be pasted"));
+            return std::nullopt;
+          }
+      }
+  }
+
+  PreparedPaste prepared;
+  try
+    {
+      auto filtered = clipboard_payload->filtered_for_target (project_registry_);
+      if (!filtered.payload.has_value ())
+        {
+          z_warning (
+            "The clipboard contents cannot be pasted into this project");
+          refuse_operation (
+            QObject::tr ("The clipboard contents could not be pasted"));
+          return std::nullopt;
+        }
+      prepared.dropped_audio_objects = filtered.dropped_audio_objects;
+      prepared.severed_references = filtered.severed_references;
+
+      prepared.payload = structure::project::ClipboardPayload::
+        with_regenerated_uuids (std::move (*filtered.payload));
+      const auto anchor = units::ticks (prepared.payload.metadata ().value (
+        structure::project::ClipboardPayload::kAnchorTicksMetadataKey, 0.0));
+      prepared.delta = position - anchor;
+      if (
+        prepared.payload.metadata ().contains (
+          structure::project::ClipboardPayload::kLaneIndicesMetadataKey))
+        {
+          for (
+            const auto &[key, value] :
+            prepared.payload.metadata ()
+              .at (structure::project::ClipboardPayload::kLaneIndicesMetadataKey)
+              .items ())
+            {
+              if (value.is_number_unsigned ())
+                {
+                  prepared.lane_indices.emplace (
+                    structure::arrangement::ArrangerObjectUuid (
+                      QUuid::fromString (QString::fromStdString (key))),
+                    value.get<std::size_t> ());
+                }
+            }
+        }
+      prepared.imported_ids = prepared.payload.import_into (project_registry_);
+    }
+  catch (const std::exception &e)
+    {
+      z_warning (
+        "Failed to prepare the clipboard contents for pasting: {}", e.what ());
+      refuse_operation (
+        QObject::tr ("The clipboard contents could not be pasted"));
+      return std::nullopt;
+    }
+  return prepared;
+}
+
+void
+ArrangerObjectSelectionOperator::discard_imported_objects (
+  const PreparedPaste      &paste,
+  const std::vector<QUuid> &ids_to_keep)
+{
+  const auto needed_ids = paste.payload.ids_needed_by_roots (ids_to_keep);
+  const boost::unordered_flat_set<QUuid> keep{
+    needed_ids.begin (), needed_ids.end ()
+  };
+  const boost::unordered_flat_set<QUuid> imported{
+    paste.imported_ids.begin (), paste.imported_ids.end ()
+  };
+  const auto &registry_json = paste.payload.registry_json ();
+
+  std::vector<QUuid> to_delete;
+  for (const auto &[_, bucket] : registry_json.items ())
+    {
+      for (const auto &entry : bucket)
+        {
+          const auto id = QUuid::fromString (
+            QString::fromStdString (entry.at ("id").get<std::string> ()));
+          if (!keep.contains (id) && imported.contains (id))
+            to_delete.push_back (id);
+        }
+    }
+  // deleting a parent destroys and deregisters its children, which the
+  // order-insensitive deletion handles regardless of payload order
+  project_registry_.delete_objects_in_any_order (to_delete);
+}
+
+bool
+ArrangerObjectSelectionOperator::selection_in_single_position_space (
+  const SelectedObjectsVector &objects)
+{
+  bool saw_timeline_object = false;
+  bool saw_editor_object = false;
+  for (const auto &obj_ref : objects)
+    {
+      auto obj_var = utils::convert_to_variant_qobj<
+        structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+      std::visit (
+        [&] (const auto * obj) {
+          using ObjectT = utils::base_type<decltype (obj)>;
+          if constexpr (structure::arrangement::TimelineObject<ObjectT>)
+            saw_timeline_object = true;
+          else if constexpr (structure::arrangement::EditorObject<ObjectT>)
+            saw_editor_object = true;
+        },
+        obj_var);
+    }
+  return !saw_timeline_object || !saw_editor_object;
+}
+
+std::vector<units::precise_tick_t>
+ArrangerObjectSelectionOperator::object_positions (
+  const SelectedObjectsVector &objects)
+{
+  return objects | std::views::transform ([] (const auto &obj_ref) {
+           auto obj_var = utils::convert_to_variant_qobj<
+             structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
+           return std::visit (
+             [] (const auto * obj) {
+               return obj->position ()->asTick ().asQuantity ();
+             },
+             obj_var);
+         })
+         | std::ranges::to<std::vector> ();
+}
+
+units::precise_tick_t
+ArrangerObjectSelectionOperator::object_end_ticks (
+  structure::arrangement::ArrangerObjectPtrVariant obj_var)
+{
+  return std::visit (
+    [] (const auto * obj) -> units::precise_tick_t {
+      using ObjectT = utils::base_type<decltype (obj)>;
+      if constexpr (structure::arrangement::ClipObject<ObjectT>)
+        {
+          return structure::arrangement::timeline_end_ticks (*obj).asQuantity ();
+        }
+      else if constexpr (structure::arrangement::BoundedObject<ObjectT>)
+        {
+          return (obj->position ()->asTick () + obj->length ()->asTick ())
+            .asQuantity ();
+        }
+      else
+        {
+          return obj->position ()->asTick ().asQuantity ();
+        }
+    },
+    obj_var);
+}
+
+bool
+ArrangerObjectSelectionOperator::toggleMute (
+  QItemSelectionModel * selectionModel)
+{
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected for mute toggle");
@@ -780,9 +1742,10 @@ ArrangerObjectSelectionOperator::toggleMute ()
 
 bool
 ArrangerObjectSelectionOperator::setStretchAlgorithm (
+  QItemSelectionModel *          selectionModel,
   dsp::StretchOptions::Algorithm algorithm)
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected for algorithm change");
@@ -818,9 +1781,11 @@ ArrangerObjectSelectionOperator::setStretchAlgorithm (
 }
 
 bool
-ArrangerObjectSelectionOperator::setTimebaseOverride (dsp::Timebase timebase)
+ArrangerObjectSelectionOperator::setTimebaseOverride (
+  QItemSelectionModel * selectionModel,
+  dsp::Timebase         timebase)
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected for timebase override");
@@ -848,9 +1813,10 @@ ArrangerObjectSelectionOperator::setTimebaseOverride (dsp::Timebase timebase)
 }
 
 bool
-ArrangerObjectSelectionOperator::clearTimebaseOverride ()
+ArrangerObjectSelectionOperator::clearTimebaseOverride (
+  QItemSelectionModel * selectionModel)
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_debug ("No objects selected for timebase clear");
@@ -878,9 +1844,10 @@ ArrangerObjectSelectionOperator::clearTimebaseOverride ()
 }
 
 bool
-ArrangerObjectSelectionOperator::selectionHasTimebaseProviders () const
+ArrangerObjectSelectionOperator::selectionHasTimebaseProviders (
+  QItemSelectionModel * selectionModel) const
 {
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   return std::ranges::any_of (selected_objects, [] (const auto &obj_ref) {
     auto obj_var = utils::convert_to_variant_qobj<
       structure::arrangement::ArrangerObjectPtrVariant> (obj_ref.get ());
@@ -894,13 +1861,17 @@ ArrangerObjectSelectionOperator::selectionHasTimebaseProviders () const
 }
 
 bool
-ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (double delta)
+ArrangerObjectSelectionOperator::moveAutomationPointsByDelta (
+  QItemSelectionModel * selectionModel,
+  double                delta)
 {
-  return process_vertical_move (delta);
+  return process_vertical_move (selectionModel, delta);
 }
 
 bool
-ArrangerObjectSelectionOperator::process_vertical_move (double delta)
+ArrangerObjectSelectionOperator::process_vertical_move (
+  QItemSelectionModel * selectionModel,
+  double                delta)
 {
 
   if (utils::math::floats_equal (delta, 0.0))
@@ -910,7 +1881,7 @@ ArrangerObjectSelectionOperator::process_vertical_move (double delta)
     }
 
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_warning ("No objects selected for movement");
@@ -934,6 +1905,7 @@ ArrangerObjectSelectionOperator::process_vertical_move (double delta)
 
 bool
 ArrangerObjectSelectionOperator::resizeObjects (
+  QItemSelectionModel *     selectionModel,
   commands::ResizeType      type,
   commands::ResizeDirection direction,
   double                    delta)
@@ -945,7 +1917,7 @@ ArrangerObjectSelectionOperator::resizeObjects (
     }
 
   // Extract selected objects from selection model
-  auto selected_objects = extractSelectedObjects ();
+  auto selected_objects = extractSelectedObjects (selectionModel);
   if (selected_objects.empty ())
     {
       z_warning ("No objects selected for resize");
@@ -968,12 +1940,17 @@ ArrangerObjectSelectionOperator::resizeObjects (
 }
 
 auto
-ArrangerObjectSelectionOperator::extractSelectedObjects () const
-  -> SelectedObjectsVector
+ArrangerObjectSelectionOperator::extractSelectedObjects (
+  const QItemSelectionModel * selectionModel) -> SelectedObjectsVector
 {
   SelectedObjectsVector objects;
 
-  const auto selected_indexes = selection_model_.selectedIndexes ();
+  if (selectionModel == nullptr)
+    {
+      z_debug ("No selection model given; selection is empty");
+      return objects;
+    }
+  const auto selected_indexes = selectionModel->selectedIndexes ();
   for (const auto &index : selected_indexes)
     {
       // Get the object from the model index
@@ -1026,6 +2003,30 @@ ArrangerObjectSelectionOperator::validateHorizontalMovement (
       },
       obj_var);
   });
+}
+
+bool
+ArrangerObjectSelectionOperator::time_signature_lands_on_bar (
+  structure::arrangement::ArrangerObjectPtrVariant obj_var,
+  dsp::TimelineTick                                shift)
+{
+  return std::visit (
+    [&] (const auto * obj) {
+      using ObjectT = utils::base_type<decltype (obj)>;
+      if constexpr (
+        std::is_same_v<ObjectT, structure::arrangement::TimeSignatureObject>)
+        {
+          const auto new_timeline =
+            structure::arrangement::timeline_ticks (*obj) + shift;
+          const auto &tempo_map = obj->get_tempo_map ();
+          const auto  musical_pos = tempo_map.tick_to_musical_position (
+            au::round_as<int64_t> (units::ticks, new_timeline.asQuantity ()));
+          return musical_pos.beat == 1 && musical_pos.sixteenth == 1
+                 && musical_pos.tick == 0;
+        }
+      return true;
+    },
+    obj_var);
 }
 
 bool

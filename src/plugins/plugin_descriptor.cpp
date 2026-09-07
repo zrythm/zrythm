@@ -409,7 +409,7 @@ from_json (const nlohmann::json &j, PluginDescriptor &p)
   j.at (PluginDescriptor::kProtocolKey).get_to (p.protocol_);
   {
     const auto &val = j.at (PluginDescriptor::kPathOrIdKey);
-    if (val[zrythm::utils::serialization::kVariantTypeKey] == 0)
+    if (val.at (zrythm::utils::serialization::kVariantTypeKey) == 0)
       {
         p.path_or_id_ =
           val.at (utils::serialization::kVariantNonObjectValueKey)

@@ -571,6 +571,24 @@ TEST_F (ProjectSerializationTest, DeserializeProject_ValidatesFirst)
     utils::ZrythmException);
 }
 
+TEST_F (ProjectSerializationTest, DeserializeProject_MalformedProjectIdRejected)
+{
+  auto j = create_minimal_valid_project_json ();
+  j["projectData"]["projectId"] = "not-a-uuid";
+
+  auto project = create_minimal_project ();
+  ASSERT_NE (project, nullptr);
+  create_ui_state_and_undo_stack (*project);
+
+  // A garbage id would parse to a null QUuid and silently make every
+  // same-project comparison decide "foreign"
+  EXPECT_THROW (
+    {
+      ProjectJsonSerializer::deserialize (j, *project, *ui_state, *undo_stack);
+    },
+    utils::ZrythmException);
+}
+
 TEST_F (ProjectSerializationTest, DeserializeProject_FutureMajorVersion_Rejected)
 {
   auto j = create_minimal_valid_project_json ();

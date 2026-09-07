@@ -4,16 +4,27 @@
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/move_arranger_objects_command.h"
 #include "commands/remove_arranger_object_command.h"
+#include "controllers/clipboard.h"
 #include "dsp/content_time_warp.h"
+#include "dsp/file_audio_source.h"
+#include "plugins/plugin_factory.h"
 #include "structure/arrangement/arranger_object_all.h"
 #include "structure/arrangement/arranger_object_list_model.h"
 #include "structure/arrangement/arranger_object_owner.h"
+#include "structure/project/project_registry.h"
+#include "structure/tracks/track_all.h"
+#include "structure/tracks/track_factory.h"
 #include "utils/app_settings.h"
+#include "utils/audio.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 #include "utils/variant_helpers.h"
 
+#include <QSignalSpy>
+
 #include "helpers/in_memory_settings_backend.h"
+#include "helpers/mock_plugin_host_window.h"
+#include "helpers/scoped_qcoreapplication.h"
 
 #include "unit/actions/arranger_object_selection_operator_test.h"
 #include <gmock/gmock.h>
@@ -27,6 +38,7 @@ class ArrangerObjectSelectionOperatorTest : public ::testing::Test
 protected:
   void SetUp () override
   {
+    app_ = std::make_unique<test_helpers::ScopedQCoreApplication> ();
     tempo_map = std::make_unique<dsp::TempoMap> (units::sample_rate (44100.0));
     tempo_map_wrapper = std::make_unique<dsp::TempoMapWrapper> (*tempo_map);
 
@@ -45,6 +57,33 @@ protected:
         .automation_curve_algorithm_provider_ =
           [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
       sample_rate_provider, bpm_provider);
+
+    // Factories needed for clipboard payload imports (paste)
+    const structure::tracks::FinalTrackDependencies track_deps{
+      *tempo_map_wrapper,
+      registry_,
+      structure::tracks::SoloedTracksExistGetter{ [] () { return false; } },
+      {}
+    };
+    track_factory_ = std::make_unique<structure::tracks::TrackFactory> (
+      [track_deps] () { return track_deps; });
+    plugin_factory_ = std::make_unique<
+      plugins::PluginFactory> (plugins::PluginFactory::CommonFactoryDependencies{
+      .registry = registry_,
+      .create_plugin_instance_async_func_ =
+        [] (
+          const juce::PluginDescription &, double, int,
+          juce::AudioPluginFormat::PluginCreationCallback callback) {
+          callback (nullptr, "No plugin in operator tests");
+        },
+      .sample_rate_provider_ = [] () { return units::sample_rate (44100); },
+      .buffer_size_provider_ = [] () { return units::samples (256u); },
+      .top_level_window_provider_ =
+        test_helpers::make_mock_plugin_host_window_factory (
+          std::make_shared<test_helpers::MockPluginHostWindowState> ()),
+      .main_thread_dispatcher_ = main_dispatcher_ });
+    registry_.set_deserialization_dependencies (
+      { *track_factory_, *factory, *plugin_factory_ });
 
     marker_ref = utils::create_object<structure::arrangement::Marker> (
       registry_, *tempo_map_wrapper,
@@ -236,8 +275,8 @@ protected:
           }
       };
     operator_ = std::make_unique<ArrangerObjectSelectionOperator> (
-      *undo_stack_, *selection_model_, mock_owner_provider, *factory,
-      mock_enumerator);
+      *undo_stack_, mock_owner_provider, *factory, registry_, clipboard_,
+      [this] () { return current_project_id_; }, mock_enumerator);
   }
 
   // Selects the row of the given object in the list model.
@@ -308,11 +347,16 @@ protected:
 
   std::unique_ptr<dsp::TempoMap>        tempo_map;
   std::unique_ptr<dsp::TempoMapWrapper> tempo_map_wrapper;
-  utils::ObjectRegistry                 registry_;
+  structure::project::ProjectRegistry   registry_;
   structure::arrangement::ArrangerObjectRefMultiIndexContainer test_objects_;
   std::vector<double>              original_positions_;
   std::unique_ptr<undo::UndoStack> undo_stack_;
   bool                             engine_pause_requested_{ false };
+  // Declared before operator_ so destruction (reverse order) destroys
+  // the operator while the clipboard it references still exists
+  controllers::Clipboard clipboard_{
+    [] () { return QString (); }, [] (const QString &) { }
+  };
   std::unique_ptr<ArrangerObjectSelectionOperator> operator_;
   structure::arrangement::ArrangerObjectListModel  list_model_{ test_objects_ };
   std::unique_ptr<QItemSelectionModel>             selection_model_;
@@ -320,8 +364,18 @@ protected:
   structure::arrangement::ArrangerObjectFactory::SampleRateProvider
     sample_rate_provider;
   structure::arrangement::ArrangerObjectFactory::BpmProvider     bpm_provider;
+  std::unique_ptr<test_helpers::ScopedQCoreApplication>          app_;
   std::unique_ptr<structure::arrangement::ArrangerObjectFactory> factory;
   std::unique_ptr<utils::AppSettings>                            app_settings;
+
+  // For clipboard payload imports and paste targets
+  QObject                            dispatcher_context_;
+  utils::MainThreadClosureDispatcher main_dispatcher_{
+    dispatcher_context_, std::chrono::milliseconds{ 10 }
+  };
+  std::unique_ptr<structure::tracks::TrackFactory> track_factory_;
+  std::unique_ptr<plugins::PluginFactory>          plugin_factory_;
+  QString current_project_id_{ QStringLiteral ("test-project") };
   structure::arrangement::ArrangerObjectUuidReference note_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference marker_ref{ registry_ };
   structure::arrangement::ArrangerObjectUuidReference audio_clip_ref{
@@ -335,6 +389,90 @@ protected:
   structure::arrangement::ArrangerObjectUuidReference time_signature_ref{
     registry_
   };
+
+  // One bar at PPQN 960 in 4/4
+  static constexpr double kBarTicks = 3840.;
+
+  // A standalone project: its own registry with no shared state, playing
+  // another project when pasting
+  struct TargetProject
+  {
+    structure::project::ProjectRegistry              registry;
+    structure::arrangement::ArrangerObjectFactory    arranger_factory;
+    std::unique_ptr<structure::tracks::TrackFactory> track_factory;
+    std::unique_ptr<plugins::PluginFactory>          plugin_factory;
+    undo::UndoStack                                  undo_stack;
+    std::optional<ArrangerObjectSelectionOperator>   op;
+
+    TargetProject (
+      dsp::TempoMapWrapper &tempo_map_wrapper,
+      const structure::arrangement::ArrangerObjectFactory::SampleRateProvider
+        &sample_rate_provider,
+      const structure::arrangement::ArrangerObjectFactory::BpmProvider
+                                         &bpm_provider,
+      utils::MainThreadClosureDispatcher &main_thread_dispatcher,
+      controllers::Clipboard             &clipboard,
+      const QString                      &project_id)
+        : registry (),
+          arranger_factory (
+            structure::arrangement::ArrangerObjectFactory::Dependencies{
+              .tempo_map_ = tempo_map_wrapper,
+              .registry_ = registry,
+              .last_timeline_obj_len_provider_ = [] () { return 100.0; },
+              .last_editor_obj_len_provider_ = [] () { return 50.0; },
+              .automation_curve_algorithm_provider_ =
+                [] () { return dsp::CurveOptions::Algorithm::Exponent; } },
+            sample_rate_provider,
+            bpm_provider),
+          undo_stack ([] (const std::function<void ()> &action, bool) {
+            action ();
+          })
+    {
+      const structure::tracks::FinalTrackDependencies track_deps{
+        tempo_map_wrapper,
+        registry,
+        structure::tracks::SoloedTracksExistGetter{ [] () { return false; } },
+        {}
+      };
+      track_factory = std::make_unique<structure::tracks::TrackFactory> (
+        [track_deps] () { return track_deps; });
+      plugin_factory = std::make_unique<
+        plugins::PluginFactory> (plugins::PluginFactory::CommonFactoryDependencies{
+        .registry = registry,
+        .create_plugin_instance_async_func_ =
+          [] (
+            const juce::PluginDescription &, double, int,
+            juce::AudioPluginFormat::PluginCreationCallback callback) {
+            callback (nullptr, "No plugin in operator tests");
+          },
+        .sample_rate_provider_ = [] () { return units::sample_rate (44100); },
+        .buffer_size_provider_ = [] () { return units::samples (256u); },
+        .top_level_window_provider_ =
+          test_helpers::make_mock_plugin_host_window_factory (
+            std::make_shared<test_helpers::MockPluginHostWindowState> ()),
+        .main_thread_dispatcher_ = main_thread_dispatcher });
+      registry.set_deserialization_dependencies (
+        { *track_factory, arranger_factory, *plugin_factory });
+      op.emplace (
+        undo_stack,
+        [] (structure::arrangement::ArrangerObjectPtrVariant)
+          -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+          return static_cast<structure::arrangement::ArrangerObjectOwner<
+            structure::arrangement::MidiClip> *> (nullptr);
+        },
+        arranger_factory, registry, clipboard,
+        [project_id] () { return project_id; },
+        [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
+    }
+  };
+
+  TargetProject make_target_project ()
+  {
+    return TargetProject{
+      *tempo_map_wrapper, sample_rate_provider, bpm_provider,
+      main_dispatcher_,   clipboard_,           current_project_id_
+    };
+  }
 };
 
 // Test initial state after construction
@@ -352,7 +490,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksPositiveDelta)
 
   const double tick_delta = 100.0;
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Only selected objects (marker and note) should be moved by tick_delta
@@ -391,7 +529,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNegativeDelta)
 
   const double tick_delta = -50.0;
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Only selected objects (marker and note) should be moved backward by
@@ -417,7 +555,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksZeroDelta)
   select_object (marker_ref);
   select_object (note_ref);
 
-  bool result = operator_->moveByTicks (0.0);
+  bool result = operator_->moveByTicks (selection_model_.get (), 0.0);
   EXPECT_TRUE (result);
 
   // Only selected objects (marker and note) should remain at original positions
@@ -443,7 +581,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksNoSelection)
   // Clear selection
   selection_model_->clear ();
 
-  bool result = operator_->moveByTicks (100.0);
+  bool result = operator_->moveByTicks (selection_model_.get (), 100.0);
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
@@ -464,7 +602,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksInvalidMovement)
 
   const double tick_delta = -50.0; // Would put objects at -50 ticks
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_FALSE (result);
 
   // Only selected objects (marker and note) should remain at position 0 (no
@@ -493,7 +631,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, UndoRedoFunctionality)
   const double tick_delta = 100.0;
 
   // Move objects
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
   EXPECT_EQ (undo_stack_->index (), 1);
 
@@ -556,7 +694,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitch)
   ASSERT_NE (note_obj, nullptr);
   int original_pitch = note_obj->pitch ();
 
-  bool result = operator_->moveNotesByPitch (pitch_delta);
+  bool result =
+    operator_->moveNotesByPitch (selection_model_.get (), pitch_delta);
   EXPECT_TRUE (result);
 
   // MIDI notes should be moved by pitch_delta
@@ -598,7 +737,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDelta)
 
   const double delta = 0.2;
 
-  bool result = operator_->moveAutomationPointsByDelta (delta);
+  bool result =
+    operator_->moveAutomationPointsByDelta (selection_model_.get (), delta);
   EXPECT_TRUE (result);
 
   // Only selected automation point should be moved by delta
@@ -628,7 +768,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchNoSelection)
   // Clear selection
   selection_model_->clear ();
 
-  bool result = operator_->moveNotesByPitch (5);
+  bool result = operator_->moveNotesByPitch (selection_model_.get (), 5);
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
@@ -641,7 +781,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchZeroDelta)
   // Select note for testing
   select_object (note_ref);
 
-  bool result = operator_->moveNotesByPitch (0);
+  bool result = operator_->moveNotesByPitch (selection_model_.get (), 0);
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
@@ -661,7 +801,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveNotesByPitchInvalidPitch)
   int original_pitch = 125;
 
   // Try to move by 5 (would result in pitch 130, which is out of range)
-  bool result = operator_->moveNotesByPitch (5);
+  bool result = operator_->moveNotesByPitch (selection_model_.get (), 5);
   EXPECT_FALSE (result);
 
   // Pitch should remain unchanged
@@ -679,7 +819,8 @@ TEST_F (
   // Clear selection
   selection_model_->clear ();
 
-  bool result = operator_->moveAutomationPointsByDelta (0.1);
+  bool result =
+    operator_->moveAutomationPointsByDelta (selection_model_.get (), 0.1);
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
@@ -708,7 +849,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveAutomationPointsByDeltaZeroDelt
   // Update list model and select automation point
   select_object (automation_point_ref);
 
-  bool result = operator_->moveAutomationPointsByDelta (0.0);
+  bool result =
+    operator_->moveAutomationPointsByDelta (selection_model_.get (), 0.0);
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
@@ -740,7 +882,8 @@ TEST_F (
   select_object (automation_point_ref);
 
   // Try to move by 0.2 (would result in value 1.1, which is out of range)
-  bool result = operator_->moveAutomationPointsByDelta (0.2);
+  bool result =
+    operator_->moveAutomationPointsByDelta (selection_model_.get (), 0.2);
   EXPECT_FALSE (result);
 
   // Value should remain unchanged
@@ -778,7 +921,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsValidSelection)
   EXPECT_TRUE (note_found_before);
 
   // Delete selected objects
-  bool result = operator_->deleteObjects ();
+  bool result = operator_->deleteObjects (selection_model_.get ());
   EXPECT_TRUE (result);
 
   // Should have created a macro command with individual remove commands
@@ -901,7 +1044,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsTempoAndTimeSignature)
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
       structure::arrangement::TimeSignatureObject>::contains_object (ts_id));
 
-  EXPECT_TRUE (operator_->deleteObjects ());
+  EXPECT_TRUE (operator_->deleteObjects (selection_model_.get ()));
 
   EXPECT_FALSE (
     mock_owner_->structure::arrangement::ArrangerObjectOwner<
@@ -961,7 +1104,7 @@ TEST_F (
   // tempo_ref is index 4 in the list model.
   select_object (tempo_ref);
 
-  EXPECT_TRUE (operator_->cloneObjects ());
+  EXPECT_TRUE (operator_->cloneObjects (selection_model_.get ()));
   EXPECT_TRUE (engine_pause_requested_)
     << "Cloning a tempo object must request an engine pause";
 }
@@ -975,7 +1118,7 @@ TEST_F (
   // tempo_ref is index 4 in the list model.
   select_object (tempo_ref);
 
-  EXPECT_TRUE (operator_->deleteObjects ());
+  EXPECT_TRUE (operator_->deleteObjects (selection_model_.get ()));
   EXPECT_TRUE (engine_pause_requested_)
     << "Deleting a tempo object via deleteObjects() must request an engine "
        "pause";
@@ -991,7 +1134,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsNoSelection)
   const int initial_count = undo_stack_->count ();
 
   // Attempt to delete with no selection
-  bool result = operator_->deleteObjects ();
+  bool result = operator_->deleteObjects (selection_model_.get ());
   EXPECT_FALSE (result);
 
   // No commands should be pushed
@@ -1018,7 +1161,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndeletableObject)
   const int initial_count = undo_stack_->count ();
 
   // Attempt to delete non-deletable object
-  bool result = operator_->deleteObjects ();
+  bool result = operator_->deleteObjects (selection_model_.get ());
   EXPECT_FALSE (result);
 
   // No commands should be pushed for undeletable objects
@@ -1048,7 +1191,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsMixedObjects)
   const int initial_count = undo_stack_->count ();
 
   // Attempt to delete mixed objects
-  bool result = operator_->deleteObjects ();
+  bool result = operator_->deleteObjects (selection_model_.get ());
   EXPECT_FALSE (result);
 
   // No commands should be pushed when any object is undeletable
@@ -1080,7 +1223,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, DeleteObjectsUndoRedo)
   const int initial_count = undo_stack_->count ();
 
   // Delete objects
-  bool result = operator_->deleteObjects ();
+  bool result = operator_->deleteObjects (selection_model_.get ());
   EXPECT_TRUE (result);
 
   const int after_delete_count = undo_stack_->count ();
@@ -1139,7 +1282,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromEnd)
   select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1160,7 +1304,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsBoundsFromStart)
   select_object (note_ref); // Select only MidiNote
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromStart, delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1182,7 +1327,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromEnd)
   select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::LoopPoints,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1205,8 +1351,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsLoopPointsFromStart)
   select_object (midi_clip_ref); // Select only MidiClip
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
-    delta);
+    selection_model_.get (), commands::ResizeType::LoopPoints,
+    commands::ResizeDirection::FromStart, delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1230,7 +1376,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFades)
   select_object (audio_clip_ref); // Select only AudioClip
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::Fades,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1250,7 +1397,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsFadesRejectNegative)
   select_object (audio_clip_ref); // AudioClip (fadeOut = 300)
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Fades, commands::ResizeDirection::FromEnd, -500.0);
+    selection_model_.get (), commands::ResizeType::Fades,
+    commands::ResizeDirection::FromEnd, -500.0);
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0); // no command pushed
 
@@ -1266,7 +1414,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsZeroDelta)
   const double delta = 0.0;
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
@@ -1282,7 +1431,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsNoSelection)
   const double delta = 100.0;
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
@@ -1300,7 +1450,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ResizeObjectsUndoRedo)
 
   // Perform resize
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromEnd, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromEnd, delta);
   EXPECT_TRUE (result);
   EXPECT_EQ (undo_stack_->index (), 1);
 
@@ -1342,7 +1493,8 @@ TEST_F (
   const double delta = -20.0; // Would put MIDI note start position at -10 ticks
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromStart, delta);
 
   // This should succeed for non-timeline objects (MIDI notes)
   // The test will currently fail, but we expect it to pass after implementation
@@ -1379,7 +1531,8 @@ TEST_F (
   const double delta = 150.0; // Would make length -50 (100 - 150)
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::Bounds, commands::ResizeDirection::FromStart, delta);
+    selection_model_.get (), commands::ResizeType::Bounds,
+    commands::ResizeDirection::FromStart, delta);
 
   // This should fail because it would make length zero/negative
   EXPECT_FALSE (result)
@@ -1411,8 +1564,8 @@ TEST_F (
   const double delta = 150.0; // Would make length -50 (100 - 150)
 
   bool result = operator_->resizeObjects (
-    commands::ResizeType::LoopPoints, commands::ResizeDirection::FromStart,
-    delta);
+    selection_model_.get (), commands::ResizeType::LoopPoints,
+    commands::ResizeDirection::FromStart, delta);
 
   // This should fail because it would make length zero/negative
   EXPECT_FALSE (result)
@@ -1435,7 +1588,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTempoObject)
 
   const double tick_delta = 100.0;
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1465,9 +1618,9 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksTimeSignatureObjectValid
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
 
-  const double tick_delta = 3840.0; // Move to next bar (assuming 4/4, 120 BPM)
+  const double tick_delta = kBarTicks; // move to the next bar
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1501,7 +1654,7 @@ TEST_F (
 
   const double tick_delta = 100.0; // Move to non-bar boundary position
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_FALSE (result);
 
   // No command should be pushed for invalid movement
@@ -1524,7 +1677,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, MoveByTicksMixedWithTempoObjects)
 
   const double tick_delta = 100.0;
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1564,9 +1717,9 @@ TEST_F (
   // Set time signature to position 0 (bar boundary)
   time_signature_ref.get ()->position ()->setTicks (0.0);
 
-  const double tick_delta = 3840.0; // Move to next bar
+  const double tick_delta = kBarTicks; // move to the next bar
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_TRUE (result);
 
   // Check that command was pushed to undo stack
@@ -1607,7 +1760,7 @@ TEST_F (
 
   const double tick_delta = 100.0; // Move to non-bar boundary position
 
-  bool result = operator_->moveByTicks (tick_delta);
+  bool result = operator_->moveByTicks (selection_model_.get (), tick_delta);
   EXPECT_FALSE (result);
 
   // No command should be pushed for invalid movement
@@ -1650,7 +1803,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsValidSelection)
   EXPECT_TRUE (note_found_before);
 
   // Clone selected objects
-  bool result = operator_->cloneObjects ();
+  bool result = operator_->cloneObjects (selection_model_.get ());
   EXPECT_TRUE (result);
 
   // Should have created a macro command with individual add commands
@@ -1693,7 +1846,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsNoSelection)
   const int initial_count = undo_stack_->count ();
 
   // Attempt to clone with no selection
-  bool result = operator_->cloneObjects ();
+  bool result = operator_->cloneObjects (selection_model_.get ());
   EXPECT_FALSE (result);
 
   // No commands should be pushed for no selection
@@ -1722,7 +1875,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUncloneableObject)
   const int initial_count = undo_stack_->count ();
 
   // Attempt to clone uncloneable object
-  bool result = operator_->cloneObjects ();
+  bool result = operator_->cloneObjects (selection_model_.get ());
   EXPECT_FALSE (result);
 
   // No commands should be pushed for uncloneable objects
@@ -1750,7 +1903,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsUndoRedo)
       .size ();
 
   // Clone objects
-  bool result = operator_->cloneObjects ();
+  bool result = operator_->cloneObjects (selection_model_.get ());
   EXPECT_TRUE (result);
 
   const int after_clone_count = undo_stack_->count ();
@@ -1823,7 +1976,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CloneObjectsAudioClip)
       .size ();
 
   // Clone audio clip
-  bool result = operator_->cloneObjects ();
+  bool result = operator_->cloneObjects (selection_model_.get ());
   EXPECT_TRUE (result);
 
   // Verify command was pushed
@@ -1868,7 +2021,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocities)
   ASSERT_NE (note_obj, nullptr);
   int original_velocity = note_obj->velocity ();
 
-  bool result = operator_->changeVelocities (velocity_delta);
+  bool result =
+    operator_->changeVelocities (selection_model_.get (), velocity_delta);
   EXPECT_TRUE (result);
 
   // MIDI notes should have velocity changed
@@ -1889,7 +2043,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesNoSelection)
   // Clear selection
   selection_model_->clear ();
 
-  bool result = operator_->changeVelocities (10);
+  bool result = operator_->changeVelocities (selection_model_.get (), 10);
   EXPECT_FALSE (result);
 
   // No command should be pushed for no selection
@@ -1902,7 +2056,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesZeroDelta)
   // Select note for testing
   select_object (note_ref);
 
-  bool result = operator_->changeVelocities (0);
+  bool result = operator_->changeVelocities (selection_model_.get (), 0);
   EXPECT_TRUE (result);
 
   // No command should be pushed for zero delta
@@ -1935,7 +2089,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesLinearInterpolation)
   select_object (ramp_note_ref2);
   select_object (ramp_note_ref3);
 
-  bool result = operator_->rampVelocities (nullptr, 1000.0, 10.0, 3000.0, 110.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), nullptr, 1000.0, 10.0, 3000.0, 110.0);
   EXPECT_TRUE (result);
 
   EXPECT_EQ (
@@ -1998,7 +2153,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesClampsOutsideSpan)
 
   // Reversed drag (end before start): each note outside the span gets the
   // value of its nearest endpoint (10 at tick 1000, 110 at tick 3000)
-  bool result = operator_->rampVelocities (nullptr, 3000.0, 110.0, 1000.0, 10.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), nullptr, 3000.0, 110.0, 1000.0, 10.0);
   EXPECT_TRUE (result);
 
   EXPECT_EQ (
@@ -2017,7 +2173,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesEqualEndpoints)
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (64);
   select_object (note_ref);
 
-  bool result = operator_->rampVelocities (nullptr, 1000.0, 30.0, 1000.0, 90.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), nullptr, 1000.0, 30.0, 1000.0, 90.0);
   EXPECT_TRUE (result);
 
   EXPECT_EQ (
@@ -2031,7 +2188,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesNoSelection)
 {
   selection_model_->clear ();
 
-  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), nullptr, 0.0, 0.0, 1000.0, 127.0);
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0);
 }
@@ -2041,7 +2199,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, RampVelocitiesIgnoresNonNotes)
 {
   select_object (marker_ref);
 
-  bool result = operator_->rampVelocities (nullptr, 0.0, 0.0, 1000.0, 127.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), nullptr, 0.0, 0.0, 1000.0, 127.0);
   EXPECT_FALSE (result);
 
   // No command should be pushed when nothing changed
@@ -2070,7 +2229,8 @@ TEST_F (
 
   selection_model_->clear ();
 
-  bool result = operator_->rampVelocities (clip, 2000.0, 10.0, 3000.0, 110.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), clip, 2000.0, 10.0, 3000.0, 110.0);
   EXPECT_TRUE (result);
 
   // Notes inside the span get the line's velocities
@@ -2110,7 +2270,8 @@ TEST_F (
     selected_note_ref);
   select_object (selected_note_ref);
 
-  bool result = operator_->rampVelocities (clip, 5000.0, 20.0, 7000.0, 80.0);
+  bool result = operator_->rampVelocities (
+    selection_model_.get (), clip, 5000.0, 20.0, 7000.0, 80.0);
   EXPECT_TRUE (result);
 
   // Selected note outside the span gets the nearest endpoint's value
@@ -2136,7 +2297,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteMutesUnmutedObjects)
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
-  bool result = operator_->toggleMute ();
+  bool result = operator_->toggleMute (selection_model_.get ());
   EXPECT_TRUE (result);
 
   EXPECT_TRUE (note_ref.get ()->mute ()->muted ());
@@ -2154,7 +2315,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUnmutesMutedObjects)
   select_object (note_ref);
   select_object (midi_clip_ref);
 
-  bool result = operator_->toggleMute ();
+  bool result = operator_->toggleMute (selection_model_.get ());
   EXPECT_TRUE (result);
 
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
@@ -2167,7 +2328,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteNoSelection)
 {
   selection_model_->clear ();
 
-  bool result = operator_->toggleMute ();
+  bool result = operator_->toggleMute (selection_model_.get ());
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0);
 }
@@ -2180,7 +2341,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteUndoRedo)
 
   EXPECT_FALSE (midi_clip_ref.get ()->mute ()->muted ());
 
-  operator_->toggleMute ();
+  operator_->toggleMute (selection_model_.get ());
   EXPECT_TRUE (midi_clip_ref.get ()->mute ()->muted ());
 
   undo_stack_->undo ();
@@ -2200,7 +2361,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteSkipsNonMuteableObjects)
   EXPECT_EQ (marker_ref.get ()->mute (), nullptr);
   EXPECT_FALSE (note_ref.get ()->mute ()->muted ());
 
-  bool result = operator_->toggleMute ();
+  bool result = operator_->toggleMute (selection_model_.get ());
   EXPECT_TRUE (result);
 
   EXPECT_TRUE (note_ref.get ()->mute ()->muted ());
@@ -2213,7 +2374,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ToggleMuteOnlyNonMuteableObjects)
   selection_model_->clear ();
   select_object (marker_ref);
 
-  bool result = operator_->toggleMute ();
+  bool result = operator_->toggleMute (selection_model_.get ());
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0);
 }
@@ -2230,8 +2391,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmOnAudioClip)
   selection_model_->clear ();
   select_object (audio_clip_ref);
 
-  bool result =
-    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
+  bool result = operator_->setStretchAlgorithm (
+    selection_model_.get (), dsp::StretchOptions::Algorithm::Beats);
   EXPECT_TRUE (result);
   EXPECT_EQ (clip->stretchAlgorithm (), dsp::StretchOptions::Algorithm::Beats);
   EXPECT_EQ (undo_stack_->index (), 1);
@@ -2254,8 +2415,8 @@ TEST_F (
   select_object (marker_ref);
   select_object (audio_clip_ref);
 
-  bool result =
-    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Monophonic);
+  bool result = operator_->setStretchAlgorithm (
+    selection_model_.get (), dsp::StretchOptions::Algorithm::Monophonic);
   EXPECT_TRUE (result);
 
   auto * clip =
@@ -2269,8 +2430,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetStretchAlgorithmNoSelection)
 {
   selection_model_->clear ();
 
-  bool result =
-    operator_->setStretchAlgorithm (dsp::StretchOptions::Algorithm::Beats);
+  bool result = operator_->setStretchAlgorithm (
+    selection_model_.get (), dsp::StretchOptions::Algorithm::Beats);
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->index (), 0);
 }
@@ -2287,7 +2448,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, SetTimebaseOverrideOnClip)
   selection_model_->clear ();
   select_object (audio_clip_ref);
 
-  bool result = operator_->setTimebaseOverride (dsp::Timebase::Absolute);
+  bool result = operator_->setTimebaseOverride (
+    selection_model_.get (), dsp::Timebase::Absolute);
   EXPECT_TRUE (result);
   EXPECT_EQ (
     clip->timebaseProvider ()->effectiveTimebase (), dsp::Timebase::Absolute);
@@ -2309,10 +2471,11 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ClearTimebaseOverrideOnClip)
   selection_model_->clear ();
   select_object (audio_clip_ref);
 
-  operator_->setTimebaseOverride (dsp::Timebase::Absolute);
+  operator_->setTimebaseOverride (
+    selection_model_.get (), dsp::Timebase::Absolute);
   EXPECT_TRUE (clip->timebaseProvider ()->hasOverride ());
 
-  operator_->clearTimebaseOverride ();
+  operator_->clearTimebaseOverride (selection_model_.get ());
   EXPECT_FALSE (clip->timebaseProvider ()->hasOverride ());
 
   // Undo clears, then redo clears again
@@ -2326,11 +2489,13 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ClearTimebaseOverrideOnClip)
 TEST_F (ArrangerObjectSelectionOperatorTest, SelectionHasTimebaseProviders)
 {
   selection_model_->clear ();
-  EXPECT_FALSE (operator_->selectionHasTimebaseProviders ());
+  EXPECT_FALSE (
+    operator_->selectionHasTimebaseProviders (selection_model_.get ()));
 
   // Audio clip (index 3) has a timebase provider
   select_object (audio_clip_ref);
-  EXPECT_TRUE (operator_->selectionHasTimebaseProviders ());
+  EXPECT_TRUE (
+    operator_->selectionHasTimebaseProviders (selection_model_.get ()));
 }
 
 // changeVelocities must clamp to [0,127] instead of rejecting, so a single
@@ -2340,7 +2505,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMax)
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (120);
   select_object (note_ref);
 
-  const bool result = operator_->changeVelocities (20); // 120 + 20 = 140
+  const bool result =
+    operator_->changeVelocities (selection_model_.get (), 20); // 120 + 20 = 140
 
   EXPECT_TRUE (result);
   EXPECT_EQ (
@@ -2354,7 +2520,8 @@ TEST_F (ArrangerObjectSelectionOperatorTest, ChangeVelocitiesClampsToMin)
   note_ref.get_object_as<structure::arrangement::MidiNote> ()->setVelocity (5);
   select_object (note_ref);
 
-  const bool result = operator_->changeVelocities (-20); // 5 - 20 = -15
+  const bool result =
+    operator_->changeVelocities (selection_model_.get (), -20); // 5 - 20 = -15
 
   EXPECT_TRUE (result);
   EXPECT_EQ (
@@ -2376,7 +2543,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsLoopedMidiClip)
   // Custom loop ranges imply bounds-tracking is off (as in production)
   midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
     ->setTrackBounds (false);
-  const bool result = operator_->cutObjectsAt (4500.0);
+  const bool result = operator_->cutObjectsAt (selection_model_.get (), 4500.0);
   EXPECT_TRUE (result);
 
   auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
@@ -2424,7 +2591,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsTrackBoundsClip)
 
   select_object (clip_ref);
 
-  const bool result = operator_->cutObjectsAt (800.0);
+  const bool result = operator_->cutObjectsAt (selection_model_.get (), 800.0);
   EXPECT_TRUE (result);
 
   // Left half: resized, bounds re-tracked (loop = [0, new length])
@@ -2466,7 +2633,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSplitsMidiNote)
 
   select_object (note_in_clip_ref);
 
-  const bool result = operator_->cutObjectsAt (3000.0);
+  const bool result = operator_->cutObjectsAt (selection_model_.get (), 3000.0);
   EXPECT_TRUE (result);
 
   // Left half: truncated at the cut
@@ -2493,7 +2660,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtSkipsMidiNoteWithoutCli
   // Fixture note: position 1000, length 4000, not inside a clip
   select_object (note_ref);
 
-  const bool result = operator_->cutObjectsAt (3000.0);
+  const bool result = operator_->cutObjectsAt (selection_model_.get (), 3000.0);
   EXPECT_FALSE (result);
   EXPECT_EQ (undo_stack_->count (), 0);
 }
@@ -2646,9 +2813,12 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtBoundariesIsNoOp)
 {
   select_object (midi_clip_ref);
 
-  EXPECT_FALSE (operator_->cutObjectsAt (2000.0)); // exactly at start
-  EXPECT_FALSE (operator_->cutObjectsAt (6000.0)); // exactly at end
-  EXPECT_FALSE (operator_->cutObjectsAt (1000.0)); // outside
+  EXPECT_FALSE (operator_->cutObjectsAt (
+    selection_model_.get (), 2000.0)); // exactly at start
+  EXPECT_FALSE (operator_->cutObjectsAt (
+    selection_model_.get (), 6000.0)); // exactly at end
+  EXPECT_FALSE (
+    operator_->cutObjectsAt (selection_model_.get (), 1000.0)); // outside
   EXPECT_EQ (undo_stack_->count (), 0);
 }
 
@@ -2664,7 +2834,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtAudioClipAdjustsFades)
 
   select_object (audio_clip_ref);
 
-  const bool result = operator_->cutObjectsAt (4000.0);
+  const bool result = operator_->cutObjectsAt (selection_model_.get (), 4000.0);
   EXPECT_TRUE (result);
 
   // Left half fades unchanged
@@ -2690,7 +2860,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtUndoRedo)
   select_object (midi_clip_ref);
   midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
     ->setTrackBounds (false);
-  ASSERT_TRUE (operator_->cutObjectsAt (4500.0));
+  ASSERT_TRUE (operator_->cutObjectsAt (selection_model_.get (), 4500.0));
 
   const auto &children = mock_owner_->structure::arrangement::ArrangerObjectOwner<
     structure::arrangement::MidiClip>::get_children_vector ();
@@ -2726,13 +2896,15 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWithMissingOwnerIsNoOp)
       structure::arrangement::MidiClip> *> (nullptr);
   };
   ArrangerObjectSelectionOperator op_with_no_owner (
-    *undo_stack_, *selection_model_, null_owner_provider, *factory);
+    *undo_stack_, null_owner_provider, *factory, registry_, clipboard_,
+    [this] () { return current_project_id_; },
+    [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
 
   select_object (midi_clip_ref);
   midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ()
     ->setTrackBounds (false);
 
-  EXPECT_FALSE (op_with_no_owner.cutObjectsAt (4500.0));
+  EXPECT_FALSE (op_with_no_owner.cutObjectsAt (selection_model_.get (), 4500.0));
 
   auto * clip = midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
   EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 4000.0);
@@ -2773,7 +2945,7 @@ TEST_F (ArrangerObjectSelectionOperatorTest, CutObjectsAtWarpedLoopedClip)
   // [0,1920), content [1920,3840] (1s at 240 BPM) -> [1920,5760).
   // Cut at 4800: 1.75s into the source -> unwound content position 3360,
   // wrapped by the loop size (1920) -> 1440
-  ASSERT_TRUE (operator_->cutObjectsAt (4800.0));
+  ASSERT_TRUE (operator_->cutObjectsAt (selection_model_.get (), 4800.0));
 
   // Left half ends at the cut (content 3360)
   EXPECT_DOUBLE_EQ (clip->length ()->ticks (), 3360.0);
@@ -2815,7 +2987,7 @@ TEST_F (
   select_object (note_in_clip_ref);
 
   // Cut at 3250: the unwound content position under the cut is 1250
-  ASSERT_TRUE (operator_->cutObjectsAt (3250.0));
+  ASSERT_TRUE (operator_->cutObjectsAt (selection_model_.get (), 3250.0));
 
   // Left half ends at the cut
   EXPECT_DOUBLE_EQ (note_in_clip_ref.get ()->position ()->ticks (), 1000.0);
@@ -2858,6 +3030,820 @@ TEST_F (
   auto * new_chord =
     find_child_at<structure::arrangement::ChordObject> (chords, 1250.0);
   EXPECT_NE (new_chord, nullptr);
+}
+
+// ============================================================================
+// Clipboard: copy / cut / duplicate / paste
+// ============================================================================
+
+TEST_F (ArrangerObjectSelectionOperatorTest, CopyObjectsStoresPayload)
+{
+  selection_model_->clear ();
+  select_object (marker_ref);    // position 0
+  select_object (midi_clip_ref); // position 2000
+
+  EXPECT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto &payload = clipboard_.payload ();
+  ASSERT_TRUE (payload.has_value ());
+  EXPECT_EQ (
+    payload->type (),
+    structure::project::ClipboardPayload::Type::ArrangerObjects);
+  EXPECT_EQ (payload->roots ().size (), 2u);
+  EXPECT_EQ (payload->source_project_id (), u"test-project");
+  // Earliest selected position is the paste anchor
+  EXPECT_DOUBLE_EQ (
+    payload->metadata ()
+      .at (structure::project::ClipboardPayload::kAnchorTicksMetadataKey)
+      .get<double> (),
+    0.0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CopyObjectsEmptySelectionReturnsFalse)
+{
+  selection_model_->clear ();
+
+  EXPECT_FALSE (operator_->copyObjects (selection_model_.get ()));
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+}
+
+TEST_F (ArrangerObjectSelectionOperatorTest, CopyObjectsSkipsNonCopyableObjects)
+{
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    start_marker_ref);
+
+  selection_model_->clear ();
+  select_object (start_marker_ref);
+  select_object (marker_ref);
+
+  EXPECT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  // Only the deletable custom marker is copied
+  const auto &payload = clipboard_.payload ();
+  ASSERT_TRUE (payload.has_value ());
+  ASSERT_EQ (payload->roots ().size (), 1u);
+  EXPECT_EQ (payload->roots ().front (), type_safe::get (marker_ref.id ()));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CopyObjectsRefusesMixedPositionSpaces)
+{
+  selection_model_->clear ();
+  select_object (marker_ref); // timeline object
+  select_object (note_ref);   // clip-contents object
+
+  // The paste anchor would be meaningless across position spaces
+  EXPECT_FALSE (operator_->copyObjects (selection_model_.get ()));
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutObjectsCopiesAndDeletesInOneUndoStep)
+{
+  selection_model_->clear ();
+  select_object (marker_ref);
+  select_object (midi_clip_ref);
+
+  EXPECT_TRUE (operator_->cutObjects (selection_model_.get ()));
+
+  // The clipboard holds both objects
+  const auto &payload = clipboard_.payload ();
+  ASSERT_TRUE (payload.has_value ());
+  EXPECT_EQ (payload->roots ().size (), 2u);
+
+  // Both were removed from their owners
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_ref.id ()));
+  EXPECT_FALSE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip>::contains_object (midi_clip_ref.id ()));
+
+  // One undo step restores both
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_ref.id ()));
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::MidiClip>::contains_object (midi_clip_ref.id ()));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutObjectsRefusesSelectionWithMissingOwner)
+{
+  auto scale_ref = utils::create_object<structure::arrangement::ScaleObject> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    scale_ref);
+
+  selection_model_->clear ();
+  select_object (marker_ref);
+  select_object (scale_ref); // no owner is registered for scale objects
+
+  // Cut is atomic: the refusal leaves the selection un-cut and the
+  // clipboard empty
+  EXPECT_FALSE (operator_->cutObjects (selection_model_.get ()));
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (marker_ref.id ()));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CutObjectsRefusesUndeletableSelection)
+{
+  auto start_marker_ref = utils::create_object<structure::arrangement::Marker> (
+    registry_, *tempo_map_wrapper,
+    structure::arrangement::Marker::MarkerType::Start);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    start_marker_ref);
+  mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::Marker>::add_object (start_marker_ref);
+
+  selection_model_->clear ();
+  select_object (start_marker_ref);
+
+  EXPECT_FALSE (operator_->cutObjects (selection_model_.get ()));
+  // Nothing was copied and nothing was deleted
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_TRUE (
+    mock_owner_->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (start_marker_ref.id ()));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DuplicateObjectsClonesShiftedBySelectionSpan)
+{
+  selection_model_->clear ();
+  select_object (note_ref); // position 1000, length 4000
+
+  const auto new_ids = operator_->duplicateObjects (selection_model_.get ());
+  ASSERT_EQ (new_ids.size (), 1u);
+
+  // The clone continues where the selection ends (1000 + 4000)
+  const auto &notes = mock_owner_->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  auto * duplicate =
+    find_child_at<structure::arrangement::MidiNote> (notes, 5000.0);
+  ASSERT_NE (duplicate, nullptr);
+  EXPECT_DOUBLE_EQ (duplicate->length ()->ticks (), 4000.0);
+  EXPECT_EQ (
+    duplicate->pitch (),
+    note_ref.get_object_as<structure::arrangement::MidiNote> ()->pitch ());
+  EXPECT_EQ (
+    QUuid::fromString (new_ids.front ().toString ()),
+    type_safe::get (duplicate->get_uuid ()));
+
+  // Single undo step removes the duplicate
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    find_child_at<structure::arrangement::MidiNote> (
+      mock_owner_->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector (),
+      5000.0),
+    nullptr);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DuplicateObjectsEmptySelectionReturnsNothing)
+{
+  selection_model_->clear ();
+
+  EXPECT_TRUE (operator_->duplicateObjects (selection_model_.get ()).isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsIntoClipPastesNotesAtPosition)
+{
+  auto * midi_clip =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+
+  selection_model_->clear ();
+  select_object (note_ref); // position 1000, length 4000
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  // Paste so the note lands at content position 300
+  const auto pasted = operator_->pasteObjectsIntoClip (midi_clip, 300.0);
+  ASSERT_EQ (pasted.size (), 1u);
+
+  const auto &notes = midi_clip->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::MidiNote>::get_children_vector ();
+  auto * new_note =
+    find_child_at<structure::arrangement::MidiNote> (notes, 300.0);
+  ASSERT_NE (new_note, nullptr);
+  EXPECT_DOUBLE_EQ (new_note->length ()->ticks (), 4000.0);
+  EXPECT_EQ (
+    QUuid::fromString (pasted.front ().toString ()),
+    type_safe::get (new_note->get_uuid ()));
+
+  // Single undo step removes the pasted note
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    find_child_at<structure::arrangement::MidiNote> (
+      midi_clip->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::MidiNote>::get_children_vector (),
+      300.0),
+    nullptr);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsIntoClipSkipsMismatchedObjects)
+{
+  auto * midi_clip =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+
+  selection_model_->clear ();
+  select_object (marker_ref); // timeline object, not pastable into a clip
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  EXPECT_TRUE (operator_->pasteObjectsIntoClip (midi_clip, 0.0).isEmpty ());
+  // Nothing was pasted and nothing was pushed
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelinePastesMarkersAtPlayhead)
+{
+  const auto marker_track_ref =
+    track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
+  auto * marker_track =
+    marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ();
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  selection_model_->clear ();
+  select_object (marker_ref); // position 0
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto pasted = operator_->pasteObjectsOnTimeline (
+    nullptr, marker_track, nullptr, &tempo_mgr, 5000.0);
+  ASSERT_EQ (pasted.size (), 1u);
+
+  // The pasted marker is at the playhead; the track's own markers are not
+  // (start/end markers live at other positions)
+  const auto pasted_uuid = structure::arrangement::ArrangerObjectUuid (
+    QUuid::fromString (pasted.front ().toString ()));
+  const auto pasted_marker = [&] () -> const structure::arrangement::Marker * {
+    for (
+      const auto * marker :
+      marker_track->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::Marker>::get_sorted_children_view ()
+        | std::ranges::to<std::vector> ())
+      {
+        if (marker->get_uuid () == pasted_uuid)
+          return marker;
+      }
+    return nullptr;
+  }();
+  ASSERT_NE (pasted_marker, nullptr);
+  EXPECT_DOUBLE_EQ (pasted_marker->position ()->ticks (), 5000.0);
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_FALSE (
+    marker_track->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::Marker>::contains_object (pasted_uuid));
+}
+
+// Time signatures may only land on bar boundaries: duplicating with a
+// non-bar-aligned span must refuse the whole operation
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DuplicateObjectsRefusesOffBarTimeSignature)
+{
+  marker_ref.get ()->position ()->setTicks (0.0);
+  time_signature_ref.get ()->position ()->setTicks (100.0);
+  selection_model_->clear ();
+  select_object (marker_ref);
+  select_object (time_signature_ref);
+
+  EXPECT_TRUE (operator_->duplicateObjects (selection_model_.get ()).empty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+// Pasting at a mid-bar playhead would place the copied time signature off
+// a bar: the paste must be refused and its imports rolled back
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesOffBarTimeSignature)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  time_signature_ref.get ()->position ()->setTicks (0.0);
+  selection_model_->clear ();
+  select_object (time_signature_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto count_arranger_objects = [&] () {
+    return nlohmann::json (registry_)
+      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
+      .size ();
+  };
+  const auto before = count_arranger_objects ();
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, 100.0)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  // The refusal must leave nothing imported behind
+  EXPECT_EQ (count_arranger_objects (), before);
+
+  // at a bar boundary (4/4 at PPQN 960: 3840 ticks) the same paste succeeds
+  const auto pasted = operator_->pasteObjectsOnTimeline (
+    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+  EXPECT_EQ (pasted.size (), 1u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesLandingBeforeStart)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  // A lying anchor far past the paste position shifts the root before
+  // the start of the timeline; the paste must refuse and import nothing
+  time_signature_ref.get ()->position ()->setTicks (0.0);
+  auto payload = structure::project::ClipboardPayload::create (
+    registry_, structure::project::ClipboardPayload::Type::ArrangerObjects,
+    { type_safe::get (time_signature_ref.id ()) }, current_project_id_);
+  nlohmann::json j = payload;
+  j["metadata"][structure::project::ClipboardPayload::kAnchorTicksMetadataKey] =
+    1000000.0;
+  clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
+
+  const auto count_arranger_objects = [&] () {
+    return nlohmann::json (registry_)
+      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
+      .size ();
+  };
+  const auto before = count_arranger_objects ();
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (count_arranger_objects (), before);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineWithEmptyClipboardIsNoOp)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesTracksPayload)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  clipboard_.setPayload (
+    structure::project::ClipboardPayload::create (
+      registry_, structure::project::ClipboardPayload::Type::Tracks, {},
+      current_project_id_));
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesPluginsPayload)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  clipboard_.setPayload (
+    structure::project::ClipboardPayload::create (
+      registry_, structure::project::ClipboardPayload::Type::Plugins, {},
+      current_project_id_));
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineRefusesPayloadCarryingTracks)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  // An arranger-objects payload carrying a track entry: tracks cannot be
+  // attached by an arranger paste and would stay unowned, so the paste
+  // must be refused before anything is imported
+  const auto payload = structure::project::ClipboardPayload::create (
+    registry_, structure::project::ClipboardPayload::Type::ArrangerObjects,
+    { type_safe::get (marker_ref.id ()) }, current_project_id_);
+  nlohmann::json j = payload;
+  const auto     track_ref =
+    track_factory_->create_empty_track<structure::tracks::MarkerTrack> ();
+  nlohmann::json track_json;
+  registry_.serialize_object_by_uuid (
+    type_safe::get (track_ref.id ()), track_json);
+  j["registry"][structure::project::ProjectRegistry::kTracksKey].push_back (
+    std::move (track_json));
+  clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks)
+      .isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  // The carried track stays untouched in the source registry
+  EXPECT_TRUE (registry_.contains (type_safe::get (track_ref.id ())));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineDiscardsObjectsNoRootNeeds)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+  time_signature_ref.get ()->position ()->setTicks (0.0);
+
+  const auto count_arranger_objects = [&] () {
+    return nlohmann::json (registry_)
+      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
+      .size ();
+  };
+  const auto before = count_arranger_objects ();
+
+  // The payload smuggles in a surplus marker no root needs: the paste
+  // must succeed for the root and deregister the surplus entry
+  auto payload = structure::project::ClipboardPayload::create (
+    registry_, structure::project::ClipboardPayload::Type::ArrangerObjects,
+    { type_safe::get (time_signature_ref.id ()) }, current_project_id_);
+  nlohmann::json j = payload;
+  nlohmann::json surplus_json;
+  registry_.serialize_object_by_uuid (
+    type_safe::get (marker_ref.id ()), surplus_json);
+  j["registry"][structure::project::ProjectRegistry::kArrangerObjectsKey]
+    .push_back (std::move (surplus_json));
+  clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
+
+  const auto pasted = operator_->pasteObjectsOnTimeline (
+    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+  ASSERT_EQ (pasted.size (), 1u);
+  EXPECT_EQ (undo_stack_->count (), 1);
+  EXPECT_EQ (count_arranger_objects (), before + 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineTwiceProducesIndependentObjects)
+{
+  structure::arrangement::TempoObjectManager tempo_mgr{ registry_, nullptr };
+
+  time_signature_ref.get ()->position ()->setTicks (0.0);
+  selection_model_->clear ();
+  select_object (time_signature_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto first = operator_->pasteObjectsOnTimeline (
+    nullptr, nullptr, nullptr, &tempo_mgr, kBarTicks);
+  ASSERT_EQ (first.size (), 1u);
+
+  // the same clipboard pastes again: the payload is re-prepared with
+  // fresh identities, so the results are independent objects
+  const auto second = operator_->pasteObjectsOnTimeline (
+    nullptr, nullptr, nullptr, &tempo_mgr, 7680.0);
+  ASSERT_EQ (second.size (), 1u);
+
+  EXPECT_NE (first.front (), second.front ());
+  EXPECT_TRUE (
+    registry_.contains (QUuid::fromString (first.front ().toString ())));
+  EXPECT_TRUE (
+    registry_.contains (QUuid::fromString (second.front ().toString ())));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  CopyObjectsRecordsSourceLaneOfLaneClips)
+{
+  const auto audio_track_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+  auto * audio_track =
+    audio_track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  auto * lane = audio_track->lanes ()->getFirstLane ();
+  lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::add_object (audio_clip_ref);
+
+  // Owner provider that reports the track lane, as in the project
+  auto lane_owner_provider =
+    [lane] (structure::arrangement::ArrangerObjectPtrVariant obj_var)
+    -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+    return std::visit (
+      [&] (auto &&obj)
+        -> ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+        using ObjectT = utils::base_type<decltype (obj)>;
+        if constexpr (std::is_same_v<ObjectT, structure::arrangement::AudioClip>)
+          {
+            return static_cast<structure::arrangement::ArrangerObjectOwner<
+              structure::arrangement::AudioClip> *> (lane);
+          }
+        return static_cast<
+          structure::arrangement::ArrangerObjectOwner<ObjectT> *> (nullptr);
+      },
+      obj_var);
+  };
+  ArrangerObjectSelectionOperator lane_operator (
+    *undo_stack_, lane_owner_provider, *factory, registry_, clipboard_,
+    [this] () { return current_project_id_; },
+    [] (ArrangerObjectSelectionOperator::ArrangerObjectVisitor) { });
+
+  selection_model_->clear ();
+  select_object (audio_clip_ref);
+  ASSERT_TRUE (lane_operator.copyObjects (selection_model_.get ()));
+
+  // The clip's lane index is recorded so paste can reuse the same lane
+  const auto &payload = clipboard_.payload ();
+  ASSERT_TRUE (payload.has_value ());
+  const auto &lane_indices = payload->metadata ().at (
+    structure::project::ClipboardPayload::kLaneIndicesMetadataKey);
+  ASSERT_EQ (lane_indices.size (), 1u);
+  EXPECT_EQ (
+    lane_indices
+      .at (
+        type_safe::get (audio_clip_ref.id ())
+          .toString (QUuid::WithoutBraces)
+          .toStdString ())
+      .get<int> (),
+    0);
+}
+
+// A null selection model (e.g. a pane without a usable selection model)
+// must make every selection-based operation a safe no-op
+TEST_F (ArrangerObjectSelectionOperatorTest, NullSelectionModelIsNoOp)
+{
+  EXPECT_FALSE (operator_->copyObjects (nullptr));
+  EXPECT_FALSE (operator_->cutObjects (nullptr));
+  EXPECT_TRUE (operator_->duplicateObjects (nullptr).empty ());
+  EXPECT_FALSE (operator_->moveByTicks (nullptr, 100.0));
+  EXPECT_FALSE (operator_->deleteObjects (nullptr));
+  EXPECT_FALSE (operator_->cutObjectsAt (nullptr, 4500.0));
+  EXPECT_FALSE (operator_->toggleMute (nullptr));
+  EXPECT_FALSE (operator_->selectionHasTimebaseProviders (nullptr));
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_FALSE (clipboard_.payload ().has_value ());
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelinePastesClipsIntoMatchingTrackLanes)
+{
+  audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
+    ->length ()
+    ->setTicks (1000.0);
+  const auto audio_track_ref =
+    track_factory_->create_empty_track<structure::tracks::AudioTrack> ();
+  auto * audio_track =
+    audio_track_ref.get_object_as<structure::tracks::AudioTrack> ();
+  auto * lane = audio_track->lanes ()->getFirstLane ();
+
+  selection_model_->clear ();
+  select_object (audio_clip_ref); // position 3000
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto pasted = operator_->pasteObjectsOnTimeline (
+    audio_track, nullptr, nullptr, nullptr, 5000.0);
+  ASSERT_EQ (pasted.size (), 1u);
+
+  const auto &clips = lane->structure::arrangement::ArrangerObjectOwner<
+    structure::arrangement::AudioClip>::get_children_vector ();
+  ASSERT_EQ (clips.size (), 1u);
+  EXPECT_DOUBLE_EQ (clips.front ().get ()->position ()->ticks (), 5000.0);
+
+  EXPECT_EQ (undo_stack_->count (), 1);
+  undo_stack_->undo ();
+  EXPECT_EQ (
+    lane
+      ->structure::arrangement::ArrangerObjectOwner<
+        structure::arrangement::AudioClip>::get_children_vector ()
+      .size (),
+    0u);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineSkipsIncompatibleClipAndDiscardsImport)
+{
+  const auto midi_track_ref =
+    track_factory_->create_empty_track<structure::tracks::MidiTrack> ();
+  auto * midi_track =
+    midi_track_ref.get_object_as<structure::tracks::MidiTrack> ();
+
+  selection_model_->clear ();
+  select_object (
+    audio_clip_ref); // audio clips are not pastable onto MIDI tracks
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  EXPECT_TRUE (
+    operator_
+      ->pasteObjectsOnTimeline (midi_track, nullptr, nullptr, nullptr, 5000.0)
+      .isEmpty ());
+  // Nothing was pasted and nothing was pushed
+  EXPECT_EQ (undo_stack_->count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineDropsPoolBoundContentFromOtherProjects)
+{
+  // The clip carries pool-bound audio: file audio source -> source object
+  auto fas_ref = utils::create_object<dsp::FileAudioSource> (
+    registry_, utils::audio::AudioBuffer (2, 64),
+    dsp::FileAudioSource::BitDepth::BIT_DEPTH_16, units::sample_rate (44100),
+    units::bpm (120.0), utils::Utf8String::from_utf8_encoded_string ("test"));
+  auto audio_source_ref =
+    utils::create_object<structure::arrangement::AudioSourceObject> (
+      registry_, *tempo_map_wrapper, registry_, fas_ref);
+  audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
+    ->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioSourceObject>::add_object (audio_source_ref);
+
+  selection_model_->clear ();
+  select_object (audio_clip_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  // The target project holds no file audio source, so the pool-bound
+  // audio content is dropped and nothing pasteable remains
+  auto target = make_target_project ();
+
+  const auto target_audio_track_ref =
+    target.track_factory->create_empty_track<structure::tracks::AudioTrack> ();
+  auto * target_audio_track =
+    target_audio_track_ref.get_object_as<structure::tracks::AudioTrack> ();
+
+  EXPECT_TRUE (
+    target.op
+      ->pasteObjectsOnTimeline (
+        target_audio_track, nullptr, nullptr, nullptr, 5000.0)
+      .isEmpty ());
+  EXPECT_EQ (target.undo_stack.count (), 0);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsOnTimelineReportsDroppedAudioContent)
+{
+  // The clip carries pool-bound audio: file audio source -> source object
+  auto fas_ref = utils::create_object<dsp::FileAudioSource> (
+    registry_, utils::audio::AudioBuffer (2, 64),
+    dsp::FileAudioSource::BitDepth::BIT_DEPTH_16, units::sample_rate (44100),
+    units::bpm (120.0), utils::Utf8String::from_utf8_encoded_string ("test"));
+  auto audio_source_ref =
+    utils::create_object<structure::arrangement::AudioSourceObject> (
+      registry_, *tempo_map_wrapper, registry_, fas_ref);
+  audio_clip_ref.get_object_as<structure::arrangement::AudioClip> ()
+    ->structure::arrangement::ArrangerObjectOwner<
+      structure::arrangement::AudioSourceObject>::add_object (audio_source_ref);
+
+  selection_model_->clear ();
+  select_object (marker_ref);
+  select_object (audio_clip_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  // The target project holds no file audio source, so the audio content
+  // is dropped while the marker still pastes
+  auto target = make_target_project ();
+
+  const auto target_marker_track_ref =
+    target.track_factory->create_empty_track<structure::tracks::MarkerTrack> ();
+  auto * target_marker_track =
+    target_marker_track_ref.get_object_as<structure::tracks::MarkerTrack> ();
+
+  QSignalSpy spy (
+    &*target.op, &ArrangerObjectSelectionOperator::pasteContentModified);
+  const auto pasted = target.op->pasteObjectsOnTimeline (
+    nullptr, target_marker_track, nullptr, nullptr, kBarTicks);
+  EXPECT_EQ (pasted.size (), 1u);
+  EXPECT_EQ (target.undo_stack.count (), 1);
+  ASSERT_EQ (spy.count (), 1);
+  EXPECT_TRUE (spy.takeFirst ().at (0).toString ().contains (
+    QStringLiteral ("audio item")));
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsIntoClipRefusesNoteLandingBeforeClipStart)
+{
+  auto * midi_clip =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  midi_clip_ref.get ()->position ()->setTicks (5000.0);
+  note_ref.get ()->position ()->setTicks (100.0);
+
+  selection_model_->clear ();
+  select_object (note_ref);
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  // A lying anchor shifts the note's clip-relative position below zero
+  // even though its timeline position (parent clip + note) stays
+  // positive: the paste must refuse in the written space
+  auto payload = structure::project::ClipboardPayload::create (
+    registry_, structure::project::ClipboardPayload::Type::ArrangerObjects,
+    { type_safe::get (note_ref.id ()) }, current_project_id_);
+  nlohmann::json j = payload;
+  j["metadata"][structure::project::ClipboardPayload::kAnchorTicksMetadataKey] =
+    4000.0;
+  clipboard_.setPayload (j.get<structure::project::ClipboardPayload> ());
+
+  const auto count_arranger_objects = [&] () {
+    return nlohmann::json (registry_)
+      .at (structure::project::ProjectRegistry::kArrangerObjectsKey)
+      .size ();
+  };
+  const auto before = count_arranger_objects ();
+
+  EXPECT_TRUE (operator_->pasteObjectsIntoClip (midi_clip, 0.0).isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+  EXPECT_EQ (count_arranger_objects (), before);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  PasteObjectsIntoClipDiscardsSkippedRootsImports)
+{
+  auto * midi_clip =
+    midi_clip_ref.get_object_as<structure::arrangement::MidiClip> ();
+  // A chord object is clip-contents like the note, but only pastes into
+  // chord clips, so it is the skipped root when pasting into a MIDI clip
+  auto chord_ref = utils::create_object<structure::arrangement::ChordObject> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    chord_ref);
+
+  selection_model_->clear ();
+  select_object (note_ref);  // pastable into a MIDI clip
+  select_object (chord_ref); // not pastable into a MIDI clip
+  ASSERT_TRUE (operator_->copyObjects (selection_model_.get ()));
+
+  const auto chords_before =
+    registry_.count_matching<structure::arrangement::ChordObject> ();
+
+  const auto pasted = operator_->pasteObjectsIntoClip (midi_clip, 300.0);
+  EXPECT_EQ (pasted.size (), 1u);
+
+  // The skipped chord object's import is rolled back: no new chord objects
+  // remain
+  EXPECT_EQ (
+    registry_.count_matching<structure::arrangement::ChordObject> (),
+    chords_before);
+  EXPECT_EQ (undo_stack_->count (), 1);
+}
+
+TEST_F (
+  ArrangerObjectSelectionOperatorTest,
+  DuplicateObjectsWithOwnerlessObjectDiscardsClone)
+{
+  auto scale_ref = utils::create_object<structure::arrangement::ScaleObject> (
+    registry_, *tempo_map_wrapper);
+  test_objects_.get<structure::arrangement::random_access_index> ().push_back (
+    scale_ref);
+
+  selection_model_->clear ();
+  select_object (scale_ref);
+
+  // No owner is registered for scale objects in this fixture
+  EXPECT_TRUE (operator_->duplicateObjects (selection_model_.get ()).isEmpty ());
+  EXPECT_EQ (undo_stack_->count (), 0);
+
+  // The orphaned clone was removed from the registry
+  EXPECT_EQ (
+    registry_.count_matching<structure::arrangement::ScaleObject> (), 1u);
 }
 
 } // namespace zrythm::actions

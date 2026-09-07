@@ -11,6 +11,7 @@
 #include "actions/plugin_operator.h"
 #include "actions/track_creator.h"
 #include "actions/uuid_property_operator.h"
+#include "controllers/clipboard.h"
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
 #include "controllers/transport_controller.h"
@@ -58,6 +59,9 @@ class ProjectSession : public QObject
   Q_PROPERTY (
     zrythm::actions::ClipOperator * clipOperator READ clipOperator CONSTANT FINAL)
   Q_PROPERTY (
+    zrythm::actions::ArrangerObjectSelectionOperator * arrangerObjectSelectionOperator
+      READ arrangerObjectSelectionOperator CONSTANT FINAL)
+  Q_PROPERTY (
     zrythm::actions::TrackCreator * trackCreator READ trackCreator CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::PluginImporter * pluginImporter READ pluginImporter
@@ -79,12 +83,15 @@ class ProjectSession : public QObject
   Q_PROPERTY (
     QString projectDirectory READ projectDirectory WRITE setProjectDirectory
       NOTIFY projectDirectoryChanged FINAL)
+  Q_PROPERTY (
+    zrythm::controllers::Clipboard * clipboard READ clipboard CONSTANT FINAL)
   QML_ELEMENT
   QML_UNCREATABLE ("")
 
 public:
   ProjectSession (
     utils::AppSettings                                    &app_settings,
+    controllers::Clipboard                                &clipboard,
     utils::QObjectUniquePtr<structure::project::Project> &&project);
 
   ~ProjectSession () override;
@@ -107,9 +114,19 @@ public:
   controllers::TransportController *       transportController () const;
   controllers::RecordingCoordinator *      recordingCoordinator () const;
 
-  Q_INVOKABLE actions::ArrangerObjectSelectionOperator *
-              createArrangerObjectSelectionOperator (
-                QItemSelectionModel * selectionModel) const;
+  /**
+   * @brief Returns the application-wide object clipboard.
+   */
+  controllers::Clipboard * clipboard () const { return &clipboard_; }
+
+  /**
+   * @brief Returns the session's arranger object selection operator.
+   *
+   * Selection-based operations take the caller's selection model as an
+   * argument, so the operator holds no per-view state.
+   */
+  zrythm::actions::ArrangerObjectSelectionOperator *
+  arrangerObjectSelectionOperator () const;
 
   /**
    * @brief Saves the project to the current project directory.
@@ -159,6 +176,15 @@ private:
 
   utils::AppSettings &app_settings_;
 
+  // Application-wide object clipboard (shared across project sessions)
+  controllers::Clipboard &clipboard_;
+
+  // True while a Save As is running: overlapping calls are refused so
+  // each save's identity restore only ever sees its own lineage.
+  // UI-thread only (saveAs runs there and the finished handler is
+  // queued back to this thread)
+  bool save_as_in_flight_ = false;
+
   // Project title and directory
   utils::Utf8String     title_;
   std::filesystem::path project_directory_;
@@ -180,6 +206,8 @@ private:
   utils::QObjectUniquePtr<actions::ArrangerObjectCreator>
                                                  arranger_object_creator_;
   utils::QObjectUniquePtr<actions::ClipOperator> clip_operator_;
+  utils::QObjectUniquePtr<actions::ArrangerObjectSelectionOperator>
+    arranger_object_selection_operator_;
   utils::QObjectUniquePtr<actions::TrackCreator> track_creator_;
   utils::QObjectUniquePtr<qquick::GenericPluginUiController>
     generic_plugin_ui_controller_;

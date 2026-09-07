@@ -22,7 +22,7 @@ GridLayout {
   required property MidiClip midiClip
   required property MidiEditor midiEditor
   readonly property Project project: session.project
-  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.createArrangerObjectSelectionOperator(arrangerSelectionModel)
+  readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
   readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.midiClip)
 

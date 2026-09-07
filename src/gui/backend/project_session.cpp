@@ -12,7 +12,9 @@
 #include "utils/io_utils.h"
 #include "utils/version.h"
 
+#include <QFuture>
 #include <QPointer>
+#include <QPromise>
 #include <QQmlEngine>
 
 namespace zrythm::gui
@@ -20,8 +22,10 @@ namespace zrythm::gui
 
 ProjectSession::ProjectSession (
   utils::AppSettings                                    &app_settings,
+  controllers::Clipboard                                &clipboard,
   utils::QObjectUniquePtr<structure::project::Project> &&project)
-    : app_settings_ (app_settings), project_ (std::move (project)),
+    : app_settings_ (app_settings), clipboard_ (clipboard),
+      project_ (std::move (project)),
       ui_state_ (
         utils::make_qobject_unique<
           structure::project::ProjectUiState> (*project_, app_settings_)),
@@ -49,6 +53,67 @@ ProjectSession::ProjectSession (
       clip_operator_ (
         utils::make_qobject_unique<
           actions::ClipOperator> (project_->get_registry (), *undo_stack_, this)),
+      arranger_object_selection_operator_ (
+        utils::make_qobject_unique<actions::ArrangerObjectSelectionOperator> (
+          *undo_stack_,
+          [this] (structure::arrangement::ArrangerObjectPtrVariant obj_var) {
+            return std::visit (
+              [&] (const auto &obj)
+                -> actions::ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
+                using ObjT = utils::base_type<decltype (obj)>;
+                if constexpr (structure::arrangement::LaneOwnedObject<ObjT>)
+                  {
+                    return static_cast<
+                      structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                      project_->tracklist ()->getTrackLaneForObject (obj));
+                  }
+                else if constexpr (
+                  std::is_same_v<ObjT, structure::arrangement::TempoObject>
+                  || std::is_same_v<
+                    ObjT, structure::arrangement::TimeSignatureObject>)
+                  {
+                    // Tempo/time-signature objects live on the timeline but
+                    // are owned by the project's TempoObjectManager, not by a
+                    // track
+                    return static_cast<
+                      structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                      project_->tempoObjectManager ());
+                  }
+                else if constexpr (
+                  std::is_same_v<ObjT, structure::arrangement::AutomationClip>)
+                  {
+                    // Automation clips are owned by automation tracks, not
+                    // directly by tracks
+                    return static_cast<
+                      structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                      project_->tracklist ()->getAutomationTrackForObject (obj));
+                  }
+                else if constexpr (structure::arrangement::TimelineObject<ObjT>)
+                  {
+                    return dynamic_cast<
+                      structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                      project_->tracklist ()->getTrackForTimelineObject (obj));
+                  }
+                else
+                  {
+                    return dynamic_cast<
+                      structure::arrangement::ArrangerObjectOwner<ObjT> *> (
+                      obj->parentObject ());
+                  }
+              },
+              obj_var);
+          },
+          *project_->arrangerObjectFactory (),
+          project_->projectRegistry (),
+          clipboard_,
+          [this] () -> QString {
+            return project_->project_id ().toString (QUuid::WithoutBraces);
+          },
+          [this] (
+            actions::ArrangerObjectSelectionOperator::ArrangerObjectVisitor visitor) {
+            project_->tracklist ()->for_each_arranger_object (visitor);
+          },
+          this)),
       track_creator_ (
         utils::make_qobject_unique<actions::TrackCreator> (
           *undo_stack_,
@@ -497,62 +562,9 @@ ProjectSession::recordingCoordinator () const
 }
 
 actions::ArrangerObjectSelectionOperator *
-ProjectSession::createArrangerObjectSelectionOperator (
-  QItemSelectionModel * selectionModel) const
+ProjectSession::arrangerObjectSelectionOperator () const
 {
-  auto * sel_operator = new actions::ArrangerObjectSelectionOperator (
-    *undo_stack_, *selectionModel,
-    [this] (structure::arrangement::ArrangerObjectPtrVariant obj_var) {
-      return std::visit (
-        [&] (const auto &obj)
-          -> actions::ArrangerObjectSelectionOperator::ArrangerObjectOwnerPtrVariant {
-          using ObjT = utils::base_type<decltype (obj)>;
-          if constexpr (structure::arrangement::LaneOwnedObject<ObjT>)
-            {
-              return static_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (project_->tracklist ()->getTrackLaneForObject (obj));
-            }
-          else if constexpr (
-            std::is_same_v<ObjT, structure::arrangement::TempoObject>
-            || std::is_same_v<ObjT, structure::arrangement::TimeSignatureObject>)
-            {
-              // Tempo/time-signature objects live on the timeline but are owned
-              // by the project's TempoObjectManager, not by a track.
-              return static_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (project_->tempoObjectManager ());
-            }
-          else if constexpr (
-            std::is_same_v<ObjT, structure::arrangement::AutomationClip>)
-            {
-              // Automation clips are owned by automation tracks, not directly
-              // by tracks
-              return static_cast<
-                structure::arrangement::ArrangerObjectOwner<ObjT> *> (
-                project_->tracklist ()->getAutomationTrackForObject (obj));
-            }
-          else if constexpr (structure::arrangement::TimelineObject<ObjT>)
-            {
-              return dynamic_cast<
-                structure::arrangement::ArrangerObjectOwner<ObjT> *> (
-                project_->tracklist ()->getTrackForTimelineObject (obj));
-            }
-          else
-            {
-              return dynamic_cast<structure::arrangement::ArrangerObjectOwner<
-                ObjT> *> (obj->parentObject ());
-            }
-        },
-        obj_var);
-    },
-    *project_->arrangerObjectFactory (),
-    [this] (
-      actions::ArrangerObjectSelectionOperator::ArrangerObjectVisitor visitor) {
-      project_->tracklist ()->for_each_arranger_object (visitor);
-    });
-
-  QQmlEngine::setObjectOwnership (sel_operator, QQmlEngine::JavaScriptOwnership);
-
-  return sel_operator;
+  return arranger_object_selection_operator_.get ();
 }
 
 std::optional<std::filesystem::path>
@@ -634,29 +646,71 @@ ProjectSession::save ()
 gui::qquick::QFutureQmlWrapper *
 ProjectSession::saveAs (const QString &path)
 {
+  if (save_as_in_flight_)
+    {
+      z_warning ("A Save As is already in progress; refusing this one");
+      // Complete on the next event-loop pass: finishing an
+      // already-complete future inside the wrapper would emit finished
+      // before QML attaches to the wrapper
+      QPromise<QString> promise;
+      auto              future = promise.future ();
+      auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
+      QMetaObject::invokeMethod (
+        this,
+        [inner_promise = std::move (promise)] () mutable {
+          inner_promise.addResult (QString ());
+          inner_promise.finish ();
+        },
+        Qt::QueuedConnection);
+      QQmlEngine::setObjectOwnership (wrapper, QQmlEngine::JavaScriptOwnership);
+      return wrapper;
+    }
+  save_as_in_flight_ = true;
+
   auto new_path = utils::Utf8String::from_qstring (path).to_path ();
 
-  auto future = controllers::ProjectSaver::save (
-    *project_, *ui_state_, *undo_stack_, utils::get_app_version (), new_path,
-    false);
+  // The saved copy starts a separate project lineage: assign it a fresh
+  // identity before the new file is written. On failure, the original
+  // identity is restored while the installed identity is still current.
+  const auto previous_id = project_->project_id ();
+  project_->regenerate_project_id ();
+  const auto installed_id = project_->project_id ();
+
+  QFuture<QString> future;
+  try
+    {
+      future = controllers::ProjectSaver::save (
+        *project_, *ui_state_, *undo_stack_, utils::get_app_version (),
+        new_path, false);
+    }
+  catch (const std::exception &e)
+    {
+      z_warning ("Save As failed to start: {}", e.what ());
+      project_->set_project_id (previous_id);
+      save_as_in_flight_ = false;
+      future = QtFuture::makeReadyFuture (QString ());
+    }
 
   auto * wrapper = new gui::qquick::QFutureQmlWrapperT<QString> (future);
 
   // Update project directory and title when save completes
   QObject::connect (
     wrapper, &gui::qquick::QFutureQmlWrapperT<QString>::finished, this,
-    [this, new_path, future] () {
-      if (future.resultCount () > 0)
+    [this, new_path, previous_id, installed_id, future] () {
+      save_as_in_flight_ = false;
+      const bool saved =
+        future.resultCount () > 0 && !future.result ().isEmpty ();
+      if (saved)
         {
-          auto saved_path = future.result ();
-          if (!saved_path.isEmpty ())
-            {
-              setProjectDirectory (saved_path);
-              setTitle (
-                utils::Utf8String::from_path (
-                  utils::io::path_get_basename (new_path))
-                  .to_qstring ());
-            }
+          setProjectDirectory (future.result ());
+          setTitle (
+            utils::Utf8String::from_path (utils::io::path_get_basename (new_path))
+              .to_qstring ());
+        }
+      else if (project_->project_id () == installed_id)
+        {
+          z_warning ("Save As failed: restoring the previous project identity");
+          project_->set_project_id (previous_id);
         }
     });
 

@@ -68,13 +68,15 @@ public:
 
   dsp::FileAudioSourceUuidReference audio_source_ref () const;
 
+public:
+  static constexpr auto kFileAudioSourceKey = "fileAudioSource"sv;
+
 private:
   friend void init_from (
     AudioSourceObject       &obj,
     const AudioSourceObject &other,
     utils::ObjectCloneType   clone_type);
 
-  static constexpr auto kFileAudioSourceKey = "fileAudioSource"sv;
   friend void to_json (nlohmann::json &j, const AudioSourceObject &obj);
   friend void from_json (const nlohmann::json &j, AudioSourceObject &obj);
 

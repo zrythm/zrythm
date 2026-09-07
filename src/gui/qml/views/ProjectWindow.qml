@@ -28,7 +28,7 @@ ApplicationWindow {
 
     onTriggered: {
       if (root.activeArranger) {
-        root.activeArranger.selectionOperator.deleteObjects();
+        root.activeArranger.selectionOperator.deleteObjects(root.activeArranger.arrangerSelectionModel);
       }
     }
   }
@@ -54,7 +54,7 @@ ApplicationWindow {
 
     onTriggered: {
       if (root.activeArranger) {
-        root.activeArranger.selectionOperator.toggleMute();
+        root.activeArranger.selectionOperator.toggleMute(root.activeArranger.arrangerSelectionModel);
       }
     }
   }
@@ -120,6 +120,18 @@ ApplicationWindow {
     }
 
     target: root.alertManager
+  }
+
+  Connections {
+    function onOperationRefused(reason) {
+      root.alertManager.showAlert(qsTr("Cannot Perform Operation"), reason);
+    }
+
+    function onPasteContentModified(summary) {
+      root.alertManager.showAlert(qsTr("Pasted Content Modified"), summary);
+    }
+
+    target: root.session.arrangerObjectSelectionOperator
   }
 
   Connections {

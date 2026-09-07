@@ -19,11 +19,11 @@
       "description": "Document type identifier"
     },
     "schemaVersion": {
-      "$ref": "#/definitions/version",
+      "$ref": "common.schema.json#/definitions/version",
       "description": "Schema format version"
     },
     "appVersion": {
-      "$ref": "#/definitions/version",
+      "$ref": "common.schema.json#/definitions/version",
       "description": "Zrythm version that created this file"
     },
     "datetime": {
@@ -40,11 +40,11 @@
       "description": "UI-specific state (snap grids, editor settings, etc.)",
       "properties": {
         "snapGridTimeline": {
-          "$ref": "#/definitions/snapGrid",
+          "$ref": "common.schema.json#/definitions/snapGrid",
           "description": "Timeline snap/grid settings"
         },
         "snapGridEditor": {
-          "$ref": "#/definitions/snapGrid",
+          "$ref": "common.schema.json#/definitions/snapGrid",
           "description": "Editor (piano roll, chord editor, etc.) snap/grid settings"
         },
         "audioInputSelections": {
@@ -54,7 +54,7 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/uuid",
+                "$ref": "common.schema.json#/definitions/uuid",
                 "description": "Track UUID"
               },
               {
@@ -92,7 +92,7 @@
             "chords": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/chordDescriptor"
+                "$ref": "common.schema.json#/definitions/chordDescriptor"
               }
             }
           }
@@ -104,7 +104,7 @@
             "type": "array",
             "items": [
               {
-                "$ref": "#/definitions/uuid",
+                "$ref": "common.schema.json#/definitions/uuid",
                 "description": "Track UUID"
               },
               {
@@ -140,12 +140,17 @@
       "type": "object",
       "description": "Project data",
       "required": [
+        "projectId",
         "tempoMap",
         "transport",
         "tracklist",
         "registry"
       ],
       "properties": {
+        "projectId": {
+          "$ref": "common.schema.json#/definitions/uuid",
+          "description": "Persistent identity of this project instance (regenerated on Save As)"
+        },
         "tempoMap": {
           "type": "object",
           "description": "Tempo and time signature map",
@@ -157,7 +162,7 @@
               "description": "Base tempo (BPM) anchored at tick 0; governs the region from tick 0 up to the first inserted tempo event"
             },
             "baseTimeSignature": {
-              "$ref": "#/definitions/timeSignature",
+              "$ref": "common.schema.json#/definitions/timeSignature",
               "description": "Base time signature anchored at tick 0"
             },
             "timeSignatures": {
@@ -166,7 +171,7 @@
               "items": {
                 "allOf": [
                   {
-                    "$ref": "#/definitions/timeSignature"
+                    "$ref": "common.schema.json#/definitions/timeSignature"
                   }
                 ],
                 "properties": {
@@ -211,22 +216,22 @@
           "description": "Transport state (playhead, loop, etc.)",
           "properties": {
             "playheadPosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             },
             "cuePosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             },
             "loopStartPosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             },
             "loopEndPosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             },
             "punchInPosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             },
             "punchOutPosition": {
-              "$ref": "#/definitions/position"
+              "$ref": "common.schema.json#/definitions/position"
             }
           }
         },
@@ -243,7 +248,7 @@
               "type": "array",
               "description": "UUID references to tracks in registry.tracks (ordered)",
               "items": {
-                "$ref": "#/definitions/uuid"
+                "$ref": "common.schema.json#/definitions/uuid"
               }
             },
             "pinnedTracksCutoff": {
@@ -257,11 +262,11 @@
                 "type": "array",
                 "items": [
                   {
-                    "$ref": "#/definitions/uuid",
+                    "$ref": "common.schema.json#/definitions/uuid",
                     "description": "Source track UUID"
                   },
                   {
-                    "$ref": "#/definitions/uuid",
+                    "$ref": "common.schema.json#/definitions/uuid",
                     "description": "Destination track UUID"
                   }
                 ],
@@ -275,11 +280,11 @@
                 "type": "array",
                 "items": [
                   {
-                    "$ref": "#/definitions/uuid",
+                    "$ref": "common.schema.json#/definitions/uuid",
                     "description": "Child track UUID"
                   },
                   {
-                    "$ref": "#/definitions/uuid",
+                    "$ref": "common.schema.json#/definitions/uuid",
                     "description": "Parent folder track UUID"
                   }
                 ],
@@ -290,7 +295,7 @@
               "type": "array",
               "description": "UUIDs of expanded folder tracks (absent from list = collapsed)",
               "items": {
-                "$ref": "#/definitions/uuid"
+                "$ref": "common.schema.json#/definitions/uuid"
               }
             }
           }
@@ -306,7 +311,7 @@
                 "type": "array",
                 "items": [
                   {
-                    "$ref": "#/definitions/uuid",
+                    "$ref": "common.schema.json#/definitions/uuid",
                     "description": "File audio source ID from registry.fileAudioSources"
                   },
                   {
@@ -383,11 +388,11 @@
           "description": "Tempo and time signature objects in arranger",
           "properties": {
             "tempoObjects": {
-              "$ref": "#/definitions/uuidArray",
+              "$ref": "common.schema.json#/definitions/uuidArray",
               "description": "UUID references to tempoObject objects in registry.arrangerObjects"
             },
             "timeSignatureObjects": {
-              "$ref": "#/definitions/uuidArray",
+              "$ref": "common.schema.json#/definitions/uuidArray",
               "description": "UUID references to timeSignatureObject objects in registry.arrangerObjects"
             }
           }
@@ -400,7 +405,7 @@
               "type": "array",
               "description": "Scenes in the clip launcher (each scene has clip slots per track)",
               "items": {
-                "$ref": "#/definitions/scene"
+                "$ref": "common.schema.json#/definitions/scene"
               }
             }
           }
@@ -421,1641 +426,44 @@
               "type": "array",
               "description": "All audio/MIDI ports",
               "items": {
-                "$ref": "#/definitions/knownPort"
+                "$ref": "common.schema.json#/definitions/knownPort"
               }
             },
             "parameters": {
               "type": "array",
               "description": "All processor parameters",
               "items": {
-                "$ref": "#/definitions/parameter"
+                "$ref": "common.schema.json#/definitions/parameter"
               }
             },
             "plugins": {
               "type": "array",
               "description": "All plugin instances",
               "items": {
-                "$ref": "#/definitions/plugin"
+                "$ref": "common.schema.json#/definitions/plugin"
               }
             },
             "tracks": {
               "type": "array",
               "description": "All tracks with full data",
               "items": {
-                "$ref": "#/definitions/knownTrack"
+                "$ref": "common.schema.json#/definitions/knownTrack"
               }
             },
             "arrangerObjects": {
               "type": "array",
               "description": "All arranger objects (clips, notes, automation, markers, etc.)",
               "items": {
-                "$ref": "#/definitions/knownArrangerObject"
+                "$ref": "common.schema.json#/definitions/knownArrangerObject"
               }
             },
             "fileAudioSources": {
               "type": "array",
               "description": "All audio file references",
               "items": {
-                "$ref": "#/definitions/fileAudioSource"
+                "$ref": "common.schema.json#/definitions/fileAudioSource"
               }
             }
-          }
-        }
-      }
-    }
-  },
-  "definitions": {
-    "uuid": {
-      "type": "string",
-      "format": "uuid",
-      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-      "description": "UUID string format"
-    },
-    "timeSignature": {
-      "type": "object",
-      "description": "Time signature (beats per bar / beat unit)",
-      "properties": {
-        "numerator": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "denominator": {
-          "type": "integer",
-          "minimum": 1,
-          "enum": [
-            1,
-            2,
-            4,
-            8,
-            16,
-            32,
-            64,
-            128
-          ]
-        }
-      }
-    },
-    "uuidArray": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/uuid"
-      },
-      "description": "Array of UUID strings"
-    },
-    "version": {
-      "type": "object",
-      "description": "Semantic version with major, minor, and optional patch components",
-      "required": [
-        "major",
-        "minor"
-      ],
-      "properties": {
-        "major": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Major version number (breaking changes)"
-        },
-        "minor": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Minor version number (backward-compatible additions)"
-        },
-        "patch": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Patch version number (bug fixes)"
-        }
-      }
-    },
-    "color": {
-      "type": "string",
-      "pattern": "^#[0-9A-Fa-f]{6}$",
-      "description": "Hex color string in HTML #RRGGBB format (e.g., #ff5588)"
-    },
-    "curveOptions": {
-      "type": "object",
-      "description": "Curve options for interpolation between values",
-      "properties": {
-        "curviness": {
-          "type": "number",
-          "minimum": -1,
-          "maximum": 1,
-          "description": "Curve curviness: <0 tilts down, >0 tilts up, 0 is straight line"
-        },
-        "algorithm": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 4,
-          "description": "Curve algorithm: 0=Exponent, 1=SuperEllipse, 2=Vital, 3=Pulse, 4=Logarithmic"
-        }
-      }
-    },
-    "position": {
-      "type": "object",
-      "description": "Position in time (ticks or seconds)",
-      "required": [
-        "value"
-      ],
-      "properties": {
-        "mode": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 0,
-          "description": "0=musical (ticks), 1=absolute (seconds). Defaults to 0 if omitted."
-        },
-        "value": {
-          "type": "number",
-          "description": "Ticks (if mode=0 or omitted) or seconds (if mode=1)"
-        }
-      }
-    },
-    "noteLength": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 10,
-      "description": "Bar=0, Beat=1, 2/1=2, 1/1=3, 1/2=4, 1/4=5, 1/8=6, 1/16=7, 1/32=8, 1/64=9, 1/128=10"
-    },
-    "noteType": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 2,
-      "description": "0=normal, 1=dotted, 2=triplet"
-    },
-    "snapGrid": {
-      "type": "object",
-      "properties": {
-        "snapEnabled": {
-          "type": "boolean"
-        },
-        "snapNoteLength": {
-          "$ref": "#/definitions/noteLength"
-        },
-        "snapNoteType": {
-          "$ref": "#/definitions/noteType"
-        },
-        "adaptive": {
-          "type": "boolean"
-        },
-        "lengthType": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 2,
-          "description": "0=link, 1=lastObject, 2=custom"
-        },
-        "keepOffset": {
-          "type": "boolean"
-        },
-        "snapToEvents": {
-          "type": "boolean"
-        }
-      }
-    },
-    "chordDescriptor": {
-      "type": "object",
-      "description": "A chord descriptor (root note, type, accent, inversion, optional bass)",
-      "properties": {
-        "rootNote": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 11,
-          "description": "Root note (MusicalNote enum value)"
-        },
-        "type": {
-          "type": "integer",
-          "description": "ChordType enum value"
-        },
-        "accent": {
-          "type": "integer",
-          "description": "ChordAccent enum value"
-        },
-        "inversion": {
-          "type": "integer",
-          "description": "Inversion count (0 = none)"
-        },
-        "bassNote": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 11,
-          "description": "Optional bass note (MusicalNote enum value)"
-        }
-      },
-      "required": [
-        "rootNote",
-        "type",
-        "accent",
-        "inversion"
-      ]
-    },
-    "registryObjectBase": {
-      "$comment": "Base class for all objects in registries",
-      "type": "object",
-      "required": [
-        "id"
-      ],
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/uuid"
-        }
-      }
-    },
-    "fileAudioSource": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/registryObjectBase"
-        },
-        {
-          "required": [
-            "name",
-            "bpm"
-          ],
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Original filename before import (for display purposes)"
-            },
-            "bpm": {
-              "type": "number",
-              "minimum": 1,
-              "maximum": 1000,
-              "description": "Reference BPM for musical mode (BPM when imported)"
-            }
-          }
-        }
-      ]
-    },
-    "portBase": {
-      "$comment": "Base class for all port types",
-      "allOf": [
-        {
-          "$ref": "#/definitions/registryObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2,
-              "description": "0=audio, 1=midi, 2=cv"
-            },
-            "flow": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "0=input, 1=output"
-            },
-            "label": {
-              "type": "string"
-            },
-            "symbol": {
-              "type": "string"
-            },
-            "portGroup": {
-              "type": "string"
-            },
-            "detached": {
-              "type": "boolean",
-              "description": "Whether the port is detached from processing (kept for its identity and connections but excluded from the graph); absent means false"
-            }
-          },
-          "required": [
-            "type",
-            "flow"
-          ]
-        }
-      ]
-    },
-    "audioPort": {
-      "$comment": "Audio port (derives from portBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/portBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 1
-            },
-            "speakerArrangement": {
-              "type": "object",
-              "properties": {
-                "kind": {
-                  "enum": [
-                    "speakers",
-                    "ambisonics",
-                    "discrete"
-                  ]
-                },
-                "speakers": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "Speaker bitmask (when kind=speakers)"
-                },
-                "ambisonicOrder": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 7,
-                  "description": "Ambisonic order (when kind=ambisonics)"
-                },
-                "ambisonicOrdering": {
-                  "enum": [
-                    "acn",
-                    "fuma"
-                  ],
-                  "description": "Ambisonic channel ordering (when kind=ambisonics)"
-                },
-                "ambisonicNormalization": {
-                  "enum": [
-                    "sn3d",
-                    "n3d",
-                    "maxn"
-                  ],
-                  "description": "Ambisonic normalization (when kind=ambisonics)"
-                },
-                "channels": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "description": "Channel count (when kind=discrete)"
-                }
-              },
-              "required": [
-                "kind"
-              ]
-            },
-            "purpose": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "0=main, 1=sidechain"
-            },
-            "requiresLimiting": {
-              "type": "boolean"
-            },
-            "externalPortId": {
-              "type": "integer",
-              "minimum": 0,
-              "description": "Stable id the hosting SDK assigns to this bus (e.g. the CLAP audio port id); absent when the SDK assigns none"
-            }
-          },
-          "required": [
-            "speakerArrangement"
-          ]
-        }
-      ]
-    },
-    "midiPort": {
-      "$comment": "MIDI port (derives from portBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/portBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 0
-            }
-          }
-        }
-      ]
-    },
-    "cvPort": {
-      "$comment": "CV port (derives from portBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/portBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 2
-            }
-          }
-        }
-      ]
-    },
-    "knownPort": {
-      "$comment": "Polymorphic reference for any known port type",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/audioPort"
-        },
-        {
-          "$ref": "#/definitions/midiPort"
-        },
-        {
-          "$ref": "#/definitions/cvPort"
-        }
-      ]
-    },
-    "parameterRange": {
-      "$comment": "Parameter range definition (min, max, default values, type)",
-      "type": "object",
-      "required": [
-        "type",
-        "min",
-        "max",
-        "def"
-      ],
-      "properties": {
-        "type": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 6,
-          "description": "Parameter type: 0=Linear, 1=Toggle, 2=Integer, 3=GainAmplitude, 4=Logarithmic, 5=Enumeration, 6=Trigger"
-        },
-        "min": {
-          "type": "number",
-          "description": "Minimum value"
-        },
-        "max": {
-          "type": "number",
-          "description": "Maximum value"
-        },
-        "def": {
-          "type": "number",
-          "description": "Default value"
-        },
-        "zero": {
-          "type": "number",
-          "description": "Zero position value"
-        },
-        "enumLabels": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "string"
-          },
-          "description": "Labels for Enumeration type parameters"
-        }
-      }
-    },
-    "parameter": {
-      "$comment": "Processor parameter",
-      "allOf": [
-        {
-          "$ref": "#/definitions/registryObjectBase"
-        },
-        {
-          "properties": {
-            "uniqueId": {
-              "type": "string"
-            },
-            "label": {
-              "type": "string",
-              "description": "Human-readable label for the parameter"
-            },
-            "symbol": {
-              "type": "string",
-              "description": "Short symbol/identifier for the parameter"
-            },
-            "description": {
-              "type": "string",
-              "description": "Detailed description of what the parameter does"
-            },
-            "baseValue": {
-              "type": "number",
-              "description": "Normalized parameter value set by the user in the UI (0.0-1.0)"
-            },
-            "range": {
-              "$ref": "#/definitions/parameterRange",
-              "description": "Parameter range definition"
-            },
-            "automatable": {
-              "type": "boolean",
-              "description": "Whether this parameter can be automated",
-              "default": true
-            },
-            "hidden": {
-              "type": "boolean",
-              "description": "Whether this parameter is hidden from the UI",
-              "default": false
-            },
-            "modulationSource": {
-              "$ref": "#/definitions/uuid",
-              "description": "Input CV port ID for modulation, if parameter is modulatable"
-            }
-          },
-          "required": [
-            "uniqueId",
-            "baseValue",
-            "range"
-          ]
-        }
-      ]
-    },
-    "processorBase": {
-      "$comment": "Base class for all processor types",
-      "type": "object",
-      "required": [
-        "inputPorts",
-        "outputPorts",
-        "parameters"
-      ],
-      "properties": {
-        "processorName": {
-          "type": "string",
-          "description": "Processor display name"
-        },
-        "inputPorts": {
-          "type": "array",
-          "description": "UUID references to input ports in registry.ports",
-          "items": {
-            "$ref": "#/definitions/uuid"
-          }
-        },
-        "outputPorts": {
-          "type": "array",
-          "description": "UUID references to output ports in registry.ports",
-          "items": {
-            "$ref": "#/definitions/uuid"
-          }
-        },
-        "parameters": {
-          "type": "array",
-          "description": "UUID references to processor parameters in registry.parameters",
-          "items": {
-            "$ref": "#/definitions/uuid"
-          }
-        }
-      }
-    },
-    "fader": {
-      "$comment": "Channel fader processor",
-      "allOf": [
-        {
-          "$ref": "#/definitions/processorBase"
-        }
-      ]
-    },
-    "channelSend": {
-      "$comment": "Channel send processor (derives from processorBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/processorBase"
-        },
-        {
-          "properties": {
-            "destinationPort": {
-              "$ref": "#/definitions/uuid",
-              "description": "UUID of the destination input port (must be Audio or MIDI type matching the send)"
-            }
-          }
-        }
-      ]
-    },
-    "pluginConfiguration": {
-      "$comment": "Plugin configuration",
-      "type": "object",
-      "properties": {
-        "forceGenericUi": {
-          "type": "boolean"
-        }
-      },
-      "unevaluatedProperties": false
-    },
-    "plugin": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/processorBase"
-        },
-        {
-          "properties": {
-            "id": {
-              "$ref": "#/definitions/uuid"
-            },
-            "protocol": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 10,
-              "description": "Plugin protocol: 0=internal, 1=lv2, 2=dssi, 3=ladspa, 4=vst, 5=vst3, 6=au, 7=sfz, 8=sf2, 9=clap, 10=jsfx"
-            },
-            "configuration": {
-              "$ref": "#/definitions/pluginConfiguration"
-            },
-            "preset": {
-              "oneOf": [
-                { "type": "integer", "minimum": 0 },
-                { "type": "string" }
-              ],
-              "$comment": "Durable identifier of the selected preset: the program index for indexed formats (VST3), or an opaque backend-defined key/URI for key-based formats"
-            },
-            "presetDirty": {
-              "type": "boolean",
-              "$comment": "Whether the parameter state had diverged from the selected preset when saved"
-            },
-            "visible": {
-              "$comment": "Whether the plugin UI is currently opened",
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "id",
-            "protocol",
-            "configuration"
-          ]
-        }
-      ]
-    },
-    "pluginGroup": {
-      "description": "Container for plugins and nested plugin groups (racks/chains/layers)",
-      "type": "object",
-      "properties": {
-        "fader": {
-          "$ref": "#/definitions/fader"
-        },
-        "deviceGroups": {
-          "type": "array",
-          "description": "Nested device groups (plugins or sub-groups)",
-          "items": {
-            "$comment": "Note: recursive refs must come first in oneOf to avoid 'already inserted' error in nlohmann::json-schema validator",
-            "oneOf": [
-              {
-                "$ref": "#/definitions/pluginGroup",
-                "$comment": "Nested container"
-              },
-              {
-                "$ref": "#/definitions/uuid",
-                "$comment": "Reference to a plugin"
-              }
-            ]
-          }
-        }
-      },
-      "required": [
-        "fader"
-      ]
-    },
-    "channel": {
-      "type": "object",
-      "description": "Track channel (fader, sends, plugins, etc.)",
-      "properties": {
-        "midiFx": {
-          "$ref": "#/definitions/pluginGroup",
-          "description": "MIDI FX plugin group (for MIDI/instrument tracks)"
-        },
-        "instruments": {
-          "$ref": "#/definitions/pluginGroup",
-          "description": "Instrument plugin group"
-        },
-        "inserts": {
-          "$ref": "#/definitions/pluginGroup",
-          "description": "Insert effects plugin group"
-        },
-        "preFaderSends": {
-          "type": "array",
-          "description": "Pre-fader channel sends",
-          "items": {
-            "$ref": "#/definitions/channelSend"
-          }
-        },
-        "postFaderSends": {
-          "type": "array",
-          "description": "Post-fader channel sends",
-          "items": {
-            "$ref": "#/definitions/channelSend"
-          }
-        },
-        "fader": {
-          "$ref": "#/definitions/fader",
-          "description": "Channel fader"
-        }
-      }
-    },
-    "trackBase": {
-      "$comment": "Base class for all track types",
-      "allOf": [
-        {
-          "$ref": "#/definitions/registryObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "description": "Track type discriminator (must be overridden in derived schemas)",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 11
-            },
-            "name": {
-              "type": "string"
-            },
-            "visible": {
-              "type": "boolean"
-            },
-            "mainHeight": {
-              "type": "number"
-            },
-            "enabled": {
-              "type": "boolean"
-            },
-            "color": {
-              "$ref": "#/definitions/color"
-            },
-            "comment": {
-              "type": "string"
-            },
-            "processor": {
-              "$ref": "#/definitions/processorBase"
-            },
-            "automationTracklist": {
-              "type": "object",
-              "description": "Automation tracks for this track",
-              "properties": {
-                "automationTracks": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "automationMode": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 2,
-                        "description": "0=Read, 1=Record, 2=Off"
-                      },
-                      "recordMode": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 1,
-                        "description": "0=Touch, 1=Latch"
-                      },
-                      "parameter": {
-                        "$ref": "#/definitions/uuid",
-                        "description": "UUID reference to parameter in registry.parameters"
-                      },
-                      "clips": {
-                        "$ref": "#/definitions/uuidArray",
-                        "description": "UUID references to AutomationClip objects in registry.arrangerObjects"
-                      },
-                      "createdByUser": {
-                        "type": "boolean",
-                        "description": "Whether this automation track was created by the user"
-                      },
-                      "visible": {
-                        "type": "boolean",
-                        "description": "Whether this automation track is visible"
-                      },
-                      "height": {
-                        "type": "number",
-                        "description": "Height of the automation track"
-                      }
-                    },
-                    "required": [
-                      "parameter"
-                    ]
-                  }
-                },
-                "automationVisible": {
-                  "type": "boolean",
-                  "$comment": "Whether automation tracks should be visible"
-                }
-              }
-            },
-            "channel": {
-              "$ref": "#/definitions/channel"
-            },
-            "lanes": {
-              "type": "array",
-              "description": "Track lanes",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "$ref": "#/definitions/uuid"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "height": {
-                    "type": "number"
-                  },
-                  "mute": {
-                    "type": "boolean",
-                    "default": false
-                  },
-                  "solo": {
-                    "type": "boolean",
-                    "default": false
-                  },
-                  "midiChannel": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 16,
-                    "default": 0
-                  },
-                  "objects": {
-                    "type": "array",
-                    "description": "Arranger objects contained in this lane",
-                    "items": {
-                      "$ref": "#/definitions/uuid"
-                    }
-                  }
-                }
-              }
-            },
-            "lanesVisible": {
-              "type": "boolean",
-              "description": "Whether track lanes should be visible"
-            },
-            "clipLauncherMode": {
-              "type": "boolean",
-              "description": "Whether the track is in clip launcher mode"
-            },
-            "timebase": {
-              "type": "integer",
-              "description": "Per-track timebase override: 0 = Musical, 1 = Absolute (omitted means \"inherit\" from project default)",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "pianoRoll": {
-              "type": "object",
-              "description": "Piano roll options if this track supports a piano roll",
-              "properties": {
-                "drumMode": {
-                  "type": "boolean",
-                  "description": "Whether drum mode in the piano roll is enabled for this track"
-                },
-                "midiChannel": {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 16,
-                  "description": "MIDI channel (1-16) to output track events in"
-                },
-                "passthroughMidiInput": {
-                  "type": "boolean",
-                  "description": "If true, input received will not be changed to the selected MIDI channel"
-                },
-                "midiChannels": {
-                  "type": "array",
-                  "description": "Flags for each MIDI channel (1-16) to enable or disable it. If not present, accepts all channels",
-                  "items": {
-                    "type": "boolean"
-                  },
-                  "minItems": 16,
-                  "maxItems": 16
-                }
-              }
-            }
-          },
-          "required": [
-            "type",
-            "name"
-          ]
-        }
-      ]
-    },
-    "audioTrack": {
-      "$comment": "Audio track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 1
-            }
-          }
-        }
-      ]
-    },
-    "instrumentTrack": {
-      "$comment": "Instrument track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 0
-            }
-          }
-        }
-      ]
-    },
-    "midiTrack": {
-      "$comment": "MIDI track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 8
-            }
-          }
-        }
-      ]
-    },
-    "masterTrack": {
-      "$comment": "Master track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 2
-            }
-          }
-        }
-      ]
-    },
-    "chordTrack": {
-      "$comment": "Chord track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 3
-            },
-            "clips": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to ChordClip objects in registry.arrangerObjects"
-            },
-            "scales": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to ScaleObject objects in registry.arrangerObjects"
-            }
-          }
-        }
-      ]
-    },
-    "markerTrack": {
-      "$comment": "Marker track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 4
-            },
-            "markers": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to Marker objects in registry.arrangerObjects"
-            }
-          }
-        }
-      ]
-    },
-    "modulatorTrack": {
-      "$comment": "Modulator track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 5
-            },
-            "modulators": {
-              "$ref": "#/definitions/pluginGroup"
-            },
-            "modulatorMacroProcessors": {
-              "type": "array",
-              "description": "Modulator macro processors",
-              "items": {
-                "$ref": "#/definitions/processorBase"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "audioBusTrack": {
-      "$comment": "Audio bus track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 6
-            }
-          }
-        }
-      ]
-    },
-    "audioGroupTrack": {
-      "$comment": "Audio group track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 7
-            }
-          }
-        }
-      ]
-    },
-    "midiBusTrack": {
-      "$comment": "MIDI bus track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 9
-            }
-          }
-        }
-      ]
-    },
-    "midiGroupTrack": {
-      "$comment": "MIDI group track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 10
-            }
-          }
-        }
-      ]
-    },
-    "arrangerObjectBase": {
-      "$comment": "Base class for all arranger objects",
-      "allOf": [
-        {
-          "$ref": "#/definitions/registryObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "description": "Arranger object type discriminator (must be overridden in derived schemas)",
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 11
-            },
-            "position": {
-              "$ref": "#/definitions/position"
-            },
-            "length": {
-              "$ref": "#/definitions/position"
-            },
-            "name": {
-              "type": "string"
-            },
-            "color": {
-              "$ref": "#/definitions/color"
-            },
-            "muted": {
-              "type": "boolean"
-            },
-            "timebase": {
-              "type": "integer",
-              "description": "Per-object timebase override: 0 = Musical, 1 = Absolute (omitted means \"inherit\" from parent provider)",
-              "minimum": 0,
-              "maximum": 1
-            }
-          },
-          "required": [
-            "type",
-            "position"
-          ]
-        }
-      ]
-    },
-    "clipBase": {
-      "$comment": "Base class for clips (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "clipStartPosition": {
-              "$ref": "#/definitions/position"
-            },
-            "loopStartPosition": {
-              "$ref": "#/definitions/position"
-            },
-            "loopEndPosition": {
-              "$ref": "#/definitions/position"
-            },
-            "trackBounds": {
-              "type": "boolean",
-              "default": true,
-              "description": "Whether loop positions should track the object's bounds length"
-            }
-          },
-          "required": [
-            "clipStartPosition",
-            "loopStartPosition",
-            "loopEndPosition"
-          ]
-        }
-      ]
-    },
-    "midiControlEvent": {
-      "$comment": "MIDI control event (CC, pitch bend, etc.) (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 12
-            },
-            "controlType": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 4,
-              "description": "Control event type: 0=ControlChange, 1=PitchBend, 2=ChannelPressure, 3=PolyKeyPressure, 4=ProgramChange"
-            },
-            "channel": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 15,
-              "description": "MIDI channel (0-15)"
-            },
-            "controller": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 127,
-              "description": "Controller number (0-127), used for CC and PolyKeyPressure"
-            },
-            "value": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 16383,
-              "description": "Value (0-127 for most types, 0-16383 for PitchBend)"
-            }
-          },
-          "required": [
-            "controlType",
-            "channel",
-            "controller",
-            "value"
-          ]
-        }
-      ]
-    },
-    "midiNote": {
-      "$comment": "MIDI note (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 0
-            },
-            "pitch": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 127,
-              "description": "MIDI note pitch (0-127)"
-            },
-            "velocity": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 127,
-              "description": "MIDI note velocity (0-127)"
-            },
-            "midiChannel": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 15,
-              "description": "MIDI channel (0-15)"
-            }
-          },
-          "required": [
-            "pitch",
-            "velocity"
-          ]
-        }
-      ]
-    },
-    "midiClip": {
-      "$comment": "MIDI clip (derives from clipBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/clipBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 3
-            },
-            "midiNotes": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to midiNote objects in registry.arrangerObjects"
-            },
-            "midiControlEvents": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to midiControlEvent objects in registry.arrangerObjects"
-            },
-            "sourceBpm": {
-              "type": "number",
-              "minimum": 0,
-              "default": 0,
-              "description": "Source tempo for Absolute timebase anchor. 0 = unknown (Absolute is no-op)."
-            }
-          }
-        }
-      ]
-    },
-    "audioClip": {
-      "$comment": "Audio clip (derives from clipBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/clipBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 4
-            },
-            "audioSources": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to audioSourceObject objects in registry.arrangerObjects"
-            },
-            "gain": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 2,
-              "default": 1.0,
-              "description": "Gain multiplier (0.0-2.0)"
-            },
-            "stretchAlgorithm": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 3,
-              "default": 2,
-              "description": "Timestretch algorithm: 0=Beats, 1=Monophonic, 2=Polyphonic, 3=Repitch"
-            },
-            "fadeInOffset": {
-              "$ref": "#/definitions/position",
-              "description": "Fade in duration (offset from clip start)"
-            },
-            "fadeOutOffset": {
-              "$ref": "#/definitions/position",
-              "description": "Fade out duration (offset from clip end)"
-            },
-            "fadeInOpts": {
-              "$ref": "#/definitions/curveOptions",
-              "description": "Fade in curve options"
-            },
-            "fadeOutOpts": {
-              "$ref": "#/definitions/curveOptions",
-              "description": "Fade out curve options"
-            }
-          }
-        }
-      ]
-    },
-    "audioSourceObject": {
-      "$comment": "Audio source object (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 9
-            },
-            "fileAudioSource": {
-              "$ref": "#/definitions/uuid",
-              "description": "UUID reference in registry.fileAudioSources"
-            }
-          },
-          "required": [
-            "fileAudioSource"
-          ]
-        }
-      ]
-    },
-    "automationClip": {
-      "$comment": "Automation clip (derives from clipBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/clipBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 6
-            },
-            "automationPoints": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to automationPoint objects in registry.arrangerObjects"
-            }
-          }
-        }
-      ]
-    },
-    "automationPoint": {
-      "$comment": "Automation point (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 7
-            },
-            "normalizedValue": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1,
-              "description": "Normalized value (0.0 to 1.0)"
-            },
-            "curveOptions": {
-              "$ref": "#/definitions/curveOptions"
-            }
-          },
-          "required": [
-            "normalizedValue",
-            "curveOptions"
-          ]
-        }
-      ]
-    },
-    "chordClip": {
-      "$comment": "Chord clip (derives from clipBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/clipBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 5
-            },
-            "chordObjects": {
-              "$ref": "#/definitions/uuidArray",
-              "description": "UUID references to chordObject objects in registry.arrangerObjects"
-            }
-          }
-        }
-      ]
-    },
-    "marker": {
-      "$comment": "Marker (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 8
-            },
-            "markerType": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 2,
-              "description": "0=Start, 1=End, 2=Custom"
-            }
-          },
-          "required": [
-            "markerType"
-          ]
-        }
-      ]
-    },
-    "scaleObject": {
-      "$comment": "Scale object (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 2
-            },
-            "scale": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "integer",
-                  "description": "Musical scale type (e.g., 'Aeolian', 'Ionian')"
-                },
-                "rootKey": {
-                  "type": "integer",
-                  "description": "Root note (e.g., 'C', 'A#')"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "tempoObject": {
-      "$comment": "Tempo object (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 10
-            },
-            "bpm": {
-              "type": "number"
-            },
-            "curveAlgorithm": {
-              "type": "string"
-            }
-          }
-        }
-      ]
-    },
-    "timeSignatureObject": {
-      "$comment": "Time signature object (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 11
-            },
-            "numerator": {
-              "type": "integer"
-            },
-            "denominator": {
-              "type": "integer"
-            }
-          }
-        }
-      ]
-    },
-    "chordObject": {
-      "$comment": "Chord object (derives from arrangerObjectBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/arrangerObjectBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 1
-            },
-            "endPosition": {
-              "$ref": "#/definitions/position"
-            },
-            "chordDescriptor": {
-              "$ref": "#/definitions/chordDescriptor"
-            }
-          }
-        }
-      ]
-    },
-    "knownArrangerObject": {
-      "$comment": "Polymorphic reference for any known arranger object type",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/midiControlEvent"
-        },
-        {
-          "$ref": "#/definitions/midiNote"
-        },
-        {
-          "$ref": "#/definitions/midiClip"
-        },
-        {
-          "$ref": "#/definitions/audioClip"
-        },
-        {
-          "$ref": "#/definitions/audioSourceObject"
-        },
-        {
-          "$ref": "#/definitions/automationClip"
-        },
-        {
-          "$ref": "#/definitions/automationPoint"
-        },
-        {
-          "$ref": "#/definitions/chordClip"
-        },
-        {
-          "$ref": "#/definitions/chordObject"
-        },
-        {
-          "$ref": "#/definitions/marker"
-        },
-        {
-          "$ref": "#/definitions/scaleObject"
-        },
-        {
-          "$ref": "#/definitions/tempoObject"
-        },
-        {
-          "$ref": "#/definitions/timeSignatureObject"
-        }
-      ]
-    },
-    "folderTrack": {
-      "$comment": "Folder track (derives from trackBase)",
-      "allOf": [
-        {
-          "$ref": "#/definitions/trackBase"
-        },
-        {
-          "properties": {
-            "type": {
-              "const": 11
-            }
-          }
-        }
-      ]
-    },
-    "knownTrack": {
-      "$comment": "Polymorphic reference for any known track type",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/audioTrack"
-        },
-        {
-          "$ref": "#/definitions/instrumentTrack"
-        },
-        {
-          "$ref": "#/definitions/midiTrack"
-        },
-        {
-          "$ref": "#/definitions/masterTrack"
-        },
-        {
-          "$ref": "#/definitions/chordTrack"
-        },
-        {
-          "$ref": "#/definitions/markerTrack"
-        },
-        {
-          "$ref": "#/definitions/modulatorTrack"
-        },
-        {
-          "$ref": "#/definitions/audioBusTrack"
-        },
-        {
-          "$ref": "#/definitions/audioGroupTrack"
-        },
-        {
-          "$ref": "#/definitions/midiBusTrack"
-        },
-        {
-          "$ref": "#/definitions/midiGroupTrack"
-        },
-        {
-          "$ref": "#/definitions/folderTrack"
-        }
-      ]
-    },
-    "clipSlot": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "description": "A clip slot in the clip launcher (null when empty, object with clipId when a clip is assigned)",
-      "properties": {
-        "clipId": {
-          "$ref": "#/definitions/uuid",
-          "description": "UUID reference to a clip in registry.arrangerObjects (MidiClip, AudioClip, etc.)"
-        }
-      }
-    },
-    "scene": {
-      "type": "object",
-      "description": "A scene in the clip launcher containing clip slots for each track",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Scene name"
-        },
-        "color": {
-          "$ref": "#/definitions/color",
-          "description": "Scene color"
-        },
-        "clipSlots": {
-          "type": "array",
-          "description": "Clip slots for this scene, one per track (order matches tracklist order)",
-          "items": {
-            "$ref": "#/definitions/clipSlot"
           }
         }
       }

@@ -81,7 +81,7 @@ private:
     const MidiControlEvent &other,
     utils::ObjectCloneType  clone_type);
 
-  static constexpr auto kTypeKey = "type"sv;
+  static constexpr auto kControlTypeKey = "controlType"sv;
   static constexpr auto kChannelKey = "channel"sv;
   static constexpr auto kControllerKey = "controller"sv;
   static constexpr auto kValueKey = "value"sv;

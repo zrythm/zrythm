@@ -181,6 +181,13 @@ Project::Project (
           return juce_hw ? juce_hw->get_device_audio_workgroup () : std::nullopt;
         }())
 {
+  project_registry_.set_deserialization_dependencies (
+    {
+      *track_factory_,
+      *arranger_object_factory_,
+      *plugin_factory_,
+    });
+
   audio_engine_->set_monitor_out_source (monitor_fader_.get_stereo_out_port ());
 
   // Flush plugin-reported parameter values to Zrythm params for all
@@ -500,6 +507,7 @@ Project::tempoObjectManager () const
 void
 to_json (nlohmann::json &j, const Project &project)
 {
+  j[Project::kProjectIdKey] = project.project_id_;
   j[Project::kTempoMapKey] = project.tempo_map_;
   j[Project::kTransportKey] = project.transport_;
   j[Project::kAudioPoolKey] = project.pool_;
@@ -516,14 +524,25 @@ to_json (nlohmann::json &j, const Project &project)
 void
 from_json (const nlohmann::json &j, Project &project)
 {
+  try
+    {
+      j.at (Project::kProjectIdKey).get_to (project.project_id_);
+    }
+  catch (const nlohmann::json::exception &)
+    {
+      throw std::runtime_error (
+        "project file has no projectId: it was saved by an older version "
+        "of Zrythm and cannot be loaded");
+    }
+  if (project.project_id_.isNull ())
+    {
+      throw std::runtime_error (
+        "project file has a malformed projectId: it was saved by an "
+        "older version of Zrythm and cannot be loaded");
+    }
+
   j.at (Project::kTempoMapKey).get_to (project.tempo_map_);
 
-  project.project_registry_.set_deserialization_dependencies (
-    {
-      *project.track_factory_,
-      *project.arranger_object_factory_,
-      *project.plugin_factory_,
-    });
   j.at (Project::kRegistryKey).get_to (project.project_registry_);
 
   // Transport is required

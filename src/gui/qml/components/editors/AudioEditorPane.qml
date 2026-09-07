@@ -88,7 +88,7 @@ GridLayout {
     fadePropertyOperator: fadePropertyOperator
     objectCreator: root.session.arrangerObjectCreator
     ruler: ruler
-    selectionOperator: root.session.createArrangerObjectSelectionOperator(emptySelectionModel)
+    selectionOperator: root.session.arrangerObjectSelectionOperator
     snapGrid: root.session.uiState.snapGridEditor
     tempoMap: root.project.tempoMap
     tool: root.session.uiState.tool

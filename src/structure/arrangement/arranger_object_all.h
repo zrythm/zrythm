@@ -33,6 +33,18 @@ is_arranger_object_deletable (const ObjT &obj)
     }
 }
 
+/**
+ * Returns whether the object can be copied to the clipboard. Currently
+ * the same set of objects as deletable, kept separate so the two
+ * concepts can diverge.
+ */
+template <FinalArrangerObjectSubclass ObjT>
+bool
+is_arranger_object_copyable (const ObjT &obj)
+{
+  return is_arranger_object_deletable (obj);
+}
+
 // Currently unused
 #if 0
 /**

@@ -64,7 +64,7 @@ TEST_P (MissingProjectDataFieldTest, ProjectDataFieldMissing_Throws)
 INSTANTIATE_TEST_SUITE_P (
   ProjectJsonSerializerValidationTest,
   MissingProjectDataFieldTest,
-  testing::Values ("tempoMap", "transport", "tracklist", "registry"),
+  testing::Values ("projectId", "tempoMap", "transport", "tracklist", "registry"),
   [] (const testing::TestParamInfo<std::string> &param_info) {
     return "Missing_" + param_info.param;
   });
@@ -143,7 +143,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidUuidFormat)
 
   nlohmann::json track;
   track["id"] = "not-a-valid-uuid";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "Bad Track";
 
   j["projectData"]["registry"]["tracks"].push_back (track);
@@ -158,7 +158,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidColorFormat)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "Bad Color Track";
   track["color"] = "red";
 
@@ -174,7 +174,7 @@ TEST (ProjectJsonSerializerValidationTest, InvalidJsonInvalidTrackType)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 999;
+  track["variantType"] = 999;
   track["name"] = "Invalid Type Track";
 
   j["projectData"]["registry"]["tracks"].push_back (track);
@@ -226,7 +226,7 @@ TEST (ProjectJsonSerializerValidationTest, ValidateJson_UnicodeInTrackName)
 
   nlohmann::json track;
   track["id"] = "550e8400-e29b-41d4-a716-446655440000";
-  track["type"] = 2;
+  track["variantType"] = 2;
   track["name"] = "钢琴轨道 🎹";
   j["projectData"]["registry"]["tracks"].push_back (track);
 

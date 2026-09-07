@@ -152,10 +152,13 @@ public:
    */
   bool has_destination () const { return destination_port_.has_value (); }
 
+  /** Serialization key of the destination port reference; the key is
+   * absent when the send has no destination. */
+  static constexpr auto kDestinationPortKey = "destinationPort"sv;
+
 private:
   static constexpr auto kSignalTypeKey = "signalType"sv;
   static constexpr auto kIsPrefaderKey = "isPrefader"sv;
-  static constexpr auto kDestinationPortKey = "destinationPort"sv;
   friend void           to_json (nlohmann::json &j, const ChannelSend &p);
   friend void           from_json (const nlohmann::json &j, ChannelSend &p);
 

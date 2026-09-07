@@ -55,6 +55,9 @@ create_minimal_valid_project_json ()
   // projectData section
   auto &pd = j["projectData"];
 
+  // projectId (required)
+  pd["projectId"] = "0d2ac709-75f5-4a3b-93af-1cbb4f1d1f10";
+
   // tempoMap (required)
   pd["tempoMap"] = nlohmann::json::object ();
   pd["tempoMap"]["timeSignatures"] = nlohmann::json::array ();

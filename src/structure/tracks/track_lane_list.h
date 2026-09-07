@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <optional>
+
 #include "structure/tracks/track_lane.h"
 #include "utils/expandable_tick_range.h"
 #include "utils/qt.h"
@@ -90,6 +93,19 @@ public:
   {
     return lanes_
            | std::views::transform (&utils::QObjectUniquePtr<TrackLane>::get);
+  }
+
+  /**
+   * @brief Returns the index of @p lane in the list, or std::nullopt if it
+   * is not one of this list's lanes.
+   */
+  std::optional<size_t> indexOfLane (const TrackLane * lane) const
+  {
+    const auto view = lanes_view ();
+    const auto it = std::ranges::find (view, lane);
+    if (it == view.end ())
+      return std::nullopt;
+    return static_cast<size_t> (std::ranges::distance (view.begin (), it));
   }
 
   /**

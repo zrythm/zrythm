@@ -30,7 +30,8 @@ ProjectManager::ProjectManager (
   utils::AppSettings &app_settings,
   QObject *           parent)
     : QObject (parent), app_settings_ (app_settings),
-      recent_projects_model_ (new RecentProjectsModel (app_settings, this))
+      recent_projects_model_ (new RecentProjectsModel (app_settings, this)),
+      clipboard_ (utils::make_qobject_unique<controllers::Clipboard> (this))
 {
   z_debug ("Initializing project manager...");
   init_templates ();
@@ -209,7 +210,7 @@ ProjectManager::create_default (
           *zapp->controlRoom ()->monitorFader (),
           zapp->pluginManager ()->get_lv2_world ());
         project_session = utils::make_qobject_unique<ProjectSession> (
-          app_settings_, std::move (prj));
+          app_settings_, *clipboard_, std::move (prj));
       }
       project_session->setTitle (name.to_qstring ());
       project_session->project ()->add_default_tracks ();
@@ -424,7 +425,7 @@ ProjectManager::loadProject (const QString &filepath)
               return;
 
             auto project_session = utils::make_qobject_unique<ProjectSession> (
-              app_settings_, std::move (prj));
+              app_settings_, *clipboard_, std::move (prj));
 
             // Deserialize JSON into Project, ProjectUiState, and UndoStack
             controllers::ProjectLoader::deserialize (
@@ -523,6 +524,12 @@ ProjectSession *
 ProjectManager::activeSession () const
 {
   return active_session_.get ();
+}
+
+controllers::Clipboard *
+ProjectManager::clipboard () const
+{
+  return clipboard_.get ();
 }
 
 void

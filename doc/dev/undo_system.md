@@ -30,9 +30,14 @@ graph TD
     commands --> undo[zrythm::undo]
     undo --> actions[zrythm::actions]
     undo --> controllers[zrythm::controllers]
+    controllers --> actions
     actions --> gui[zrythm::gui]
     controllers --> gui
 ```
+
+Note: `actions` depends on `controllers` for the application-wide object
+clipboard (`controllers/clipboard.h`), which the selection operators use for
+copy/paste operations.
 
 | Module        | Responsibility                                | Public API Examples |
 |---------------|-----------------------------------------------|---------------------|

@@ -486,6 +486,10 @@ public:
 
   const auto &get_unique_id () const { return unique_id_; }
 
+  /** Serialization key of the modulation source port reference; null when
+   * the parameter is not modulated. */
+  static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
+
 private:
   // Serialization keys
   static constexpr auto kUniqueIdKey = "uniqueId"sv;
@@ -497,7 +501,6 @@ private:
   static constexpr auto kAutomatableKey = "automatable"sv;
   static constexpr auto kHiddenKey = "hidden"sv;
   static constexpr auto kBaseValueKey = "baseValue"sv;
-  static constexpr auto kModulationSourcePortIdKey = "modulationSourcePortId"sv;
   friend void to_json (nlohmann::json &j, const ProcessorParameter &p);
   friend void from_json (const nlohmann::json &j, ProcessorParameter &p);
 

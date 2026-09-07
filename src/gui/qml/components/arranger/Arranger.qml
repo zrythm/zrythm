@@ -605,7 +605,7 @@ Item {
           }
           onAboutToShow: {
             arrangerContent.arrangerIsActive = true;
-            arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders();
+            arrangerContextMenu.showTimebaseMenu = root.selectionOperator && root.selectionOperator.selectionHasTimebaseProviders(root.arrangerSelectionModel);
           }
 
           MenuItem {
@@ -642,19 +642,19 @@ Item {
             MenuItem {
               text: qsTr("Inherit from Track")
 
-              onTriggered: root.selectionOperator.clearTimebaseOverride()
+              onTriggered: root.selectionOperator.clearTimebaseOverride(root.arrangerSelectionModel)
             }
 
             MenuItem {
               text: qsTr("Musical")
 
-              onTriggered: root.selectionOperator.setTimebaseOverride(0)
+              onTriggered: root.selectionOperator.setTimebaseOverride(root.arrangerSelectionModel, 0)
             }
 
             MenuItem {
               text: qsTr("Absolute")
 
-              onTriggered: root.selectionOperator.setTimebaseOverride(1)
+              onTriggered: root.selectionOperator.setTimebaseOverride(root.arrangerSelectionModel, 1)
             }
           }
         }
@@ -837,7 +837,7 @@ Item {
           // Moves the selected objects by the given amount of ticks.
           function moveSelectionsX(ticksToMove: real) {
             if (root.selectionOperator) {
-              const success = root.selectionOperator.moveByTicks(ticksToMove);
+              const success = root.selectionOperator.moveByTicks(root.arrangerSelectionModel, ticksToMove);
               if (!success) {
                 console.warn("Failed to move selections - validation failed");
               }
@@ -1006,7 +1006,7 @@ Item {
                   if (obj.fadeRange) {
                     delta = startTicks - obj.fadeRange.startOffset.ticks;
                   }
-                  root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
+                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromStart, delta);
                 } else {
                   // Bounds/LoopPoints: visual transform on real delegates
                   root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
@@ -1048,7 +1048,7 @@ Item {
                     if (obj.fadeRange) {
                       delta = endTicks - obj.fadeRange.endOffset.ticks;
                     }
-                    root.selectionOperator.resizeObjects(resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
+                    root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, ArrangerObjectSelectionOperator.FromEnd, delta);
                   } else {
                     // Bounds/LoopPoints: visual transform on real delegates
                     root.dragState.isLoopResize = (resizeType === ArrangerObjectSelectionOperator.LoopPoints);
@@ -1093,7 +1093,7 @@ Item {
                   // cursor line.
                   if (root.hoveredObject) {
                     root.hoveredObject.requestSelection(mouse);
-                    root.selectionOperator.cutObjectsAt(currentCutTicks);
+                    root.selectionOperator.cutObjectsAt(root.arrangerSelectionModel, currentCutTicks);
                   } else {
                     root.selectionOperator.cutAllObjectsAt(currentCutTicks, root.clipContext);
                   }
@@ -1226,7 +1226,7 @@ Item {
                 if (action === Arranger.MovingCopy) {
                   root.undoStack.beginMacro(qsTr("Copy Objects"));
                   // This creates new object clones at the original positions, and the following move operations move the original objects
-                  root.selectionOperator.cloneObjects();
+                  root.selectionOperator.cloneObjects(root.arrangerSelectionModel);
                 } else if (action === Arranger.MovingLink) {
                   // TODO: Link operation is not yet implemented on the C++ side
                   // (ArrangerObjectSelectionOperator has no linkObjects() method).
@@ -1256,7 +1256,7 @@ Item {
                   resizeType = ArrangerObjectSelectionOperator.LoopPoints;
 
                 if (Math.abs(currentResizeDeltaTicks) > 0.001)
-                  root.selectionOperator.resizeObjects(resizeType, direction, currentResizeDeltaTicks);
+                  root.selectionOperator.resizeObjects(root.arrangerSelectionModel, resizeType, direction, currentResizeDeltaTicks);
                 // Fades resize: already handled by direct manipulation
               }
               console.debug("released after action");

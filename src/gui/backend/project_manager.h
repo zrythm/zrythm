@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "controllers/clipboard.h"
 #include "gui/backend/project_session.h"
 #include "gui/backend/recent_projects_model.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
@@ -27,6 +28,8 @@ class ProjectManager : public QObject
   Q_PROPERTY (
     zrythm::gui::ProjectSession * activeSession READ activeSession WRITE
       setActiveSession NOTIFY activeSessionChanged)
+  Q_PROPERTY (
+    zrythm::controllers::Clipboard * clipboard READ clipboard CONSTANT FINAL)
   QML_UNCREATABLE ("")
 
 public:
@@ -70,6 +73,12 @@ public:
 
   ProjectSession * activeSession () const;
   void             setActiveSession (ProjectSession * project);
+
+  /**
+   * @brief Returns the application-wide object clipboard shared by all
+   * project sessions.
+   */
+  controllers::Clipboard * clipboard () const;
 
 Q_SIGNALS:
   void projectLoaded (ProjectSession * project);
@@ -131,6 +140,13 @@ private:
   Template demo_template_;
 
   RecentProjectsModel * recent_projects_model_ = nullptr;
+
+  /** Application-wide object clipboard shared by all project sessions.
+   *
+   * Must stay declared before any session member: members die in reverse
+   * declaration order, so sessions (whose operators hold a reference to
+   * the clipboard) are destroyed before the clipboard itself. */
+  utils::QObjectUniquePtr<controllers::Clipboard> clipboard_;
 
   /**
    * @brief Currently active project session.

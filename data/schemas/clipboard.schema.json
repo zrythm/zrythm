@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "schema:clipboard",
+  "title": "Zrythm Clipboard Payload",
+  "description": "Schema for Zrythm clipboard payloads (UNSTABLE - v2.alpha under active development). A clipboard payload is a self-contained snapshot of copied arranger objects, tracks or plugins. It mirrors the project file's registry format: flat buckets containing every object reachable from the copied roots, the root UUIDs, and free-form per-type metadata. The text form put on the OS clipboard is this JSON document, zstd-compressed and base64-encoded, prefixed with 'ZRYTHM-CLIPBOARD:v1:'.",
+  "type": "object",
+  "required": [
+    "documentType",
+    "formatVersion",
+    "payloadType",
+    "sourceProjectId",
+    "metadata",
+    "registry",
+    "roots"
+  ],
+  "properties": {
+    "documentType": {
+      "type": "string",
+      "const": "ZrythmClipboard",
+      "description": "Document type identifier"
+    },
+    "formatVersion": {
+      "type": "integer",
+      "const": 1,
+      "description": "Clipboard format version (bumped on incompatible changes)"
+    },
+    "payloadType": {
+      "type": "string",
+      "enum": [
+        "arrangerObjects",
+        "tracks",
+        "plugins"
+      ],
+      "description": "Which kind of objects the roots are"
+    },
+    "sourceProjectId": {
+      "type": "string",
+      "description": "Persistent identity of the source project (Project::projectId, regenerated on Save As). Used at paste time to decide whether references to objects outside the payload still resolve"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Free-form per-payload-type paste context (anchor position, lane indices, plugin group category, source slot indices, in-set routing)",
+      "properties": {
+        "anchorTicks": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000,
+          "description": "Timeline/content position of the earliest root object; the pasted selection is anchored at the playhead with this offset. Bounded to reject hostile magnitudes"
+        },
+        "laneIndices": {
+          "type": "object",
+          "description": "Lane index per root clip UUID (lane-preserving paste)",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          }
+        },
+        "groupCategory": {
+          "type": "string",
+          "enum": [
+            "inserts",
+            "midiFx",
+            "instruments",
+            "modulators"
+          ],
+          "description": "Which plugin group category the plugins were copied from"
+        },
+        "sourceIndices": {
+          "type": "object",
+          "description": "Source slot/tracklist index per root UUID",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "routing": {
+          "type": "object",
+          "description": "Track output routing within the copied set (source track UUID to destination track UUID)",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/definitions/uuid"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "registry": {
+      "type": "object",
+      "description": "Every object reachable from the roots, in the same bucket format as the project file's registry",
+      "required": [
+        "ports",
+        "parameters",
+        "plugins",
+        "tracks",
+        "arrangerObjects",
+        "fileAudioSources"
+      ],
+      "properties": {
+        "ports": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/knownPort"
+          },
+          "maxItems": 1000000
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/parameter"
+          },
+          "maxItems": 1000000
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/plugin"
+          },
+          "maxItems": 100000
+        },
+        "tracks": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/knownTrack"
+          },
+          "maxItems": 100000
+        },
+        "arrangerObjects": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/knownArrangerObject"
+          },
+          "maxItems": 1000000
+        },
+        "fileAudioSources": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/definitions/fileAudioSource"
+          },
+          "maxItems": 100000
+        }
+      },
+      "additionalProperties": false
+    },
+    "roots": {
+      "description": "UUIDs of the copied objects (entry points of the payload)",
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/definitions/uuid"
+      },
+      "maxItems": 100000
+    }
+  },
+  "additionalProperties": false
+}
