@@ -116,11 +116,11 @@ target_compile_definitions(zrythm_test_helpers_lib
 target_compile_definitions(zrythm_test_helpers_lib
   PUBLIC
     TEST_LV2_SEARCH_PATHS="${CMAKE_CURRENT_BINARY_DIR}/test_plugins/LV2/$<CONFIG>"
-    # eg-amp, eg-fifths, sigabrt and test-instrument contain 1 plugin
-    # each; plumbing contains 23; test-instrument.preset contains only a
-    # preset (no plugins)
-    TEST_LV2_BUNDLES_COUNT=6
-    TEST_LV2_PLUGINS_COUNT=27
+    # eg-amp, eg-enum, eg-fifths, sigabrt, test-instrument and broken
+    # contain 1 plugin each; pos-probe contains 2; plumbing contains 23;
+    # test-instrument.preset contains only a preset (no plugins)
+    TEST_LV2_BUNDLES_COUNT=9
+    TEST_LV2_PLUGINS_COUNT=31
 )
 
 # Ensure test plugins are built before running tests

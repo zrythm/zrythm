@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://lv2plug.in/plugins/pos-probe>
+	a lv2:Plugin ;
+	lv2:binary <pos_probe@CMAKE_SHARED_LIBRARY_SUFFIX@>  ;
+	rdfs:seeAlso <pos-probe.ttl> .
+
+<http://lv2plug.in/plugins/pos-probe-separate>
+	a lv2:Plugin ;
+	lv2:binary <pos_probe@CMAKE_SHARED_LIBRARY_SUFFIX@>  ;
+	rdfs:seeAlso <pos-probe.ttl> .

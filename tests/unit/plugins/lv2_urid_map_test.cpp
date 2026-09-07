@@ -110,17 +110,23 @@ TEST (Lv2UridMapTest, ConcurrentMappingIsConsistent)
     }
 }
 
-TEST (Lv2UridMapTest, SharedInstanceCachesHostUrids)
+TEST (Lv2UridMapTest, HostUridsMapAndUnmap)
 {
-  const auto &urids = lv2_host_urids ();
+  Lv2UridMap map;
+  const auto urids = map.host_urids ();
   EXPECT_NE (urids.atom_Sequence, 0u);
+  EXPECT_NE (urids.atom_Chunk, 0u);
   EXPECT_NE (urids.midi_MidiEvent, 0u);
   EXPECT_NE (urids.time_Position, 0u);
-  // host URIDs are stable and identical on repeated access
-  EXPECT_EQ (lv2_host_urids ().atom_Sequence, urids.atom_Sequence);
+  EXPECT_NE (urids.time_beatsPerMinute, 0u);
+  EXPECT_NE (urids.param_sampleRate, 0u);
+  EXPECT_NE (urids.bufsz_sequenceSize, 0u);
   EXPECT_STREQ (
-    Lv2UridMap::instance ().unmap (urids.atom_Sequence),
-    "http://lv2plug.in/ns/ext/atom#Sequence");
+    map.unmap (urids.atom_Sequence), "http://lv2plug.in/ns/ext/atom#Sequence");
+  EXPECT_STREQ (
+    map.unmap (urids.midi_MidiEvent), "http://lv2plug.in/ns/ext/midi#MidiEvent");
+  EXPECT_STREQ (
+    map.unmap (urids.time_Position), "http://lv2plug.in/ns/ext/time#Position");
 }
 
 } // namespace zrythm::plugins

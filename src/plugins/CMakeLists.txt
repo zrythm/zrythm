@@ -46,6 +46,7 @@ target_sources(zrythm_plugins_lib
     internal_plugin_base.cpp
     juce_plugin.cpp
     lv2_discovery.cpp
+    lv2_plugin.cpp
     lv2_plugin_format.cpp
     lv2_urid_map.cpp
     lv2_world.cpp
@@ -77,6 +78,7 @@ target_sources(zrythm_plugins_lib
       internal_plugin_base.h
       juce_plugin.h
       lv2_discovery.h
+      lv2_plugin.h
       lv2_plugin_format.h
       lv2_urid_map.h
       lv2_world.h

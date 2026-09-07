@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "plugins/lv2_urid_map.h"
 #include "utils/utf8_string.h"
 
 #include <lilv/lilv.h>
@@ -31,6 +32,28 @@ struct LilvUIsDeleter
   void operator() (LilvUIs * uis) const { lilv_uis_free (uis); }
 };
 using LilvUIsUPtr = std::unique_ptr<LilvUIs, LilvUIsDeleter>;
+
+struct LilvScalePointsDeleter
+{
+  void operator() (LilvScalePoints * points) const
+  {
+    lilv_scale_points_free (points);
+  }
+};
+using LilvScalePointsUPtr =
+  std::unique_ptr<LilvScalePoints, LilvScalePointsDeleter>;
+
+struct LilvStateDeleter
+{
+  void operator() (LilvState * state) const { lilv_state_free (state); }
+};
+using LilvStateUPtr = std::unique_ptr<LilvState, LilvStateDeleter>;
+
+struct LilvCharPtrDeleter
+{
+  void operator() (char * str) const { lilv_free (str); }
+};
+using LilvCharPtrUPtr = std::unique_ptr<char[], LilvCharPtrDeleter>;
 
 inline utils::Utf8String
 node_to_utf8 (const LilvNode * node)
@@ -72,7 +95,8 @@ public:
    * the bundle contains no plugin with that URI.
    */
   const LilvPlugin *
-  find_plugin (const std::filesystem::path &bundle_dir, std::string_view uri);
+  find_plugin (const std::filesystem::path &bundle_dir, std::string_view uri)
+    [[clang::blocking]];
 
   /**
    * @brief Raw world access for LV2 backend implementation files
@@ -80,12 +104,30 @@ public:
    */
   LilvWorld * raw () const noexcept { return world_.get (); }
 
+  /**
+   * @brief The URI <-> URID table shared by everything using this world.
+   *
+   * URIDs are world-global identities: plugin instances and lilv's state
+   * API must resolve them through the same table.
+   */
+  Lv2UridMap &urid_map () { return urid_map_; }
+
+  /**
+   * @brief The host's cached URIDs (atom, MIDI, time, parameters,
+   * buffer-size), filled at construction. Audio-thread code caches its
+   * own copy of the returned struct: map()/unmap() on this world's table
+   * are not realtime-safe.
+   */
+  const Lv2HostUrids &host_urids () const { return host_urids_; }
+
 private:
   struct WorldDeleter
   {
     void operator() (LilvWorld * world) const { lilv_world_free (world); }
   };
   std::unique_ptr<LilvWorld, WorldDeleter> world_;
+  Lv2UridMap                               urid_map_;
+  Lv2HostUrids                             host_urids_;
 };
 
 } // namespace zrythm::plugins

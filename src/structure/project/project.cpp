@@ -33,6 +33,7 @@ Project::Project (
   plugins::PluginHostWindowFactory                plugin_host_window_provider,
   dsp::Metronome                                 &metronome,
   dsp::Fader                                     &monitor_fader,
+  std::shared_ptr<plugins::Lv2World>              lv2_world,
   QObject *                                       parent)
     : QObject (parent), app_settings_ (app_settings),
       tempo_map_ (hw_interface.get_device_info ().sample_rate),
@@ -140,6 +141,7 @@ Project::Project (
             .top_level_window_provider_ = plugin_host_window_provider_,
             .main_thread_dispatcher_ = main_thread_dispatcher_,
             .main_thread_callbacks_ = main_thread_callbacks_,
+            .lv2_world_ = std::move (lv2_world),
           },
           this)),
       track_factory_ (std::make_unique<structure::tracks::TrackFactory> ([this] () {

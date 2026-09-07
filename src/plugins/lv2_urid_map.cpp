@@ -32,13 +32,6 @@ struct Lv2UridMap::Impl
 Lv2UridMap::Lv2UridMap () : impl_ (std::make_unique<Impl> ()) { }
 Lv2UridMap::~Lv2UridMap () = default;
 
-Lv2UridMap &
-Lv2UridMap::instance ()
-{
-  static Lv2UridMap instance;
-  return instance;
-}
-
 uint32_t
 Lv2UridMap::map (const char * uri)
 {
@@ -74,32 +67,32 @@ Lv2UridMap::unmap (uint32_t urid) const
   return impl_->by_urid[urid - 1]->c_str ();
 }
 
-const Lv2HostUrids &
-lv2_host_urids ()
+Lv2HostUrids
+Lv2UridMap::host_urids ()
 {
-  static Lv2HostUrids urids = [] {
-    auto        &map = Lv2UridMap::instance ();
-    Lv2HostUrids u;
-    u.atom_Sequence = map.map (LV2_ATOM__Sequence);
-    u.atom_Object = map.map (LV2_ATOM__Object);
-    u.midi_MidiEvent = map.map (LV2_MIDI__MidiEvent);
-    u.time_Position = map.map (LV2_TIME__Position);
-    u.time_speed = map.map (LV2_TIME__speed);
-    u.time_frame = map.map (LV2_TIME__frame);
-    u.time_framesPerSecond = map.map (LV2_TIME__framesPerSecond);
-    u.time_bar = map.map (LV2_TIME__bar);
-    u.time_barBeat = map.map (LV2_TIME__barBeat);
-    u.time_beatUnit = map.map (LV2_TIME__beatUnit);
-    u.time_beatsPerBar = map.map (LV2_TIME__beatsPerBar);
-    u.time_beatsPerMinute = map.map (LV2_TIME__beatsPerMinute);
-    u.param_sampleRate = map.map (LV2_PARAMETERS__sampleRate);
-    u.bufsz_minBlockLength = map.map (LV2_BUF_SIZE__minBlockLength);
-    u.bufsz_maxBlockLength = map.map (LV2_BUF_SIZE__maxBlockLength);
-    u.bufsz_nominalBlockLength = map.map (LV2_BUF_SIZE__nominalBlockLength);
-    u.bufsz_sequenceSize = map.map (LV2_BUF_SIZE__sequenceSize);
-    return u;
-  }();
-  return urids;
+  Lv2HostUrids u;
+  u.atom_Sequence = map (LV2_ATOM__Sequence);
+  u.atom_Chunk = map (LV2_ATOM__Chunk);
+  u.atom_Float = map (LV2_ATOM__Float);
+  u.atom_Int = map (LV2_ATOM__Int);
+  u.atom_Long = map (LV2_ATOM__Long);
+  u.atom_Double = map (LV2_ATOM__Double);
+  u.midi_MidiEvent = map (LV2_MIDI__MidiEvent);
+  u.time_Position = map (LV2_TIME__Position);
+  u.time_speed = map (LV2_TIME__speed);
+  u.time_frame = map (LV2_TIME__frame);
+  u.time_framesPerSecond = map (LV2_TIME__framesPerSecond);
+  u.time_bar = map (LV2_TIME__bar);
+  u.time_barBeat = map (LV2_TIME__barBeat);
+  u.time_beatUnit = map (LV2_TIME__beatUnit);
+  u.time_beatsPerBar = map (LV2_TIME__beatsPerBar);
+  u.time_beatsPerMinute = map (LV2_TIME__beatsPerMinute);
+  u.param_sampleRate = map (LV2_PARAMETERS__sampleRate);
+  u.bufsz_minBlockLength = map (LV2_BUF_SIZE__minBlockLength);
+  u.bufsz_maxBlockLength = map (LV2_BUF_SIZE__maxBlockLength);
+  u.bufsz_nominalBlockLength = map (LV2_BUF_SIZE__nominalBlockLength);
+  u.bufsz_sequenceSize = map (LV2_BUF_SIZE__sequenceSize);
+  return u;
 }
 
 } // namespace zrythm::plugins

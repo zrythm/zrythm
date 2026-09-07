@@ -30,6 +30,12 @@ namespace zrythm::dsp
 {
 class Fader;
 }
+
+namespace zrythm::plugins
+{
+class Lv2World;
+}
+
 namespace zrythm::utils
 {
 class AppSettings;
@@ -108,6 +114,7 @@ public:
     plugins::PluginHostWindowFactory                plugin_host_window_provider,
     dsp::Metronome                                 &metronome,
     dsp::Fader                                     &monitor_fader,
+    std::shared_ptr<plugins::Lv2World>              lv2_world = nullptr,
     QObject *                                       parent = nullptr);
   ~Project () override;
   Q_DISABLE_COPY_MOVE (Project)

@@ -2,12 +2,17 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <atomic>
+#include <filesystem>
 #include <thread>
 
 #include "plugins/faust/faust_plugin.h"
+#include "plugins/lv2_plugin.h"
+#include "plugins/lv2_plugin_format.h"
+#include "plugins/lv2_world.h"
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_factory.h"
+#include "plugins/plugin_format_utils.h"
 #include "utils/object_registry.h"
 #include "utils/registry_utils.h"
 
@@ -360,6 +365,44 @@ TEST_F (PluginFactoryTest, MultiplePluginsIndependent)
   EXPECT_NE (plugin1->get_uuid (), plugin3->get_uuid ());
 }
 
+// An LV2 load failure at configuration time reaches the factory's
+// instantiation-finished handler while it is still connected
+TEST_F (PluginFactoryTest, Lv2LoadFailureReachesInstantiationHandler)
+{
+  auto factory_deps = PluginFactory::CommonFactoryDependencies{
+    .registry = *registry_,
+    .create_plugin_instance_async_func_ = create_mock_async_func (),
+    .sample_rate_provider_ = [this] () { return sample_rate_; },
+    .buffer_size_provider_ = [this] () { return buffer_size_; },
+    .top_level_window_provider_ = create_mock_window_provider (),
+    .main_thread_dispatcher_ = *main_dispatcher_,
+    .lv2_world_ =
+      std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ()),
+  };
+  auto factory = std::make_unique<PluginFactory> (std::move (factory_deps));
+
+  auto config = create_test_configuration (Protocol::ProtocolType::LV2);
+  config->descr_->path_or_id_ =
+    std::filesystem::path ("/nonexistent/bundle.lv2");
+
+  std::atomic<bool> handler_called{ false };
+  std::atomic<bool> handler_successful{ true };
+  auto              finish_options = PluginFactory::InstantiationFinishOptions{
+    .handler_ =
+      [&handler_called, &handler_successful] (
+        plugins::PluginUuidReference, bool successful, const QString &) {
+        handler_called.store (true);
+        handler_successful.store (successful);
+      },
+    .handler_context_ = nullptr
+  };
+
+  const auto plugin_ref =
+    factory->create_plugin_from_setting (*config, finish_options);
+  EXPECT_TRUE (handler_called.load ());
+  EXPECT_FALSE (handler_successful.load ());
+}
+
 // Test sample rate and buffer size providers
 TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
 {
@@ -376,23 +419,42 @@ TEST_F (PluginFactoryTest, SampleRateAndBufferSizeProviders)
       [custom_buffer_size] () { return custom_buffer_size; },
     .top_level_window_provider_ = create_mock_window_provider (),
     .main_thread_dispatcher_ = *main_dispatcher_,
+    .lv2_world_ =
+      std::make_shared<Lv2World> (Lv2PluginFormat::get_spec_bundles_dir ()),
   };
 
   auto custom_factory =
     std::make_unique<PluginFactory> (std::move (factory_deps));
 
-  auto juce_config = create_test_configuration (Protocol::ProtocolType::LV2);
+  // A real fixture bundle: the LV2 backend instantiates eagerly at
+  // configuration time using the providers' values
+  auto lv2_config = create_test_configuration (Protocol::ProtocolType::LV2);
+  lv2_config->descr_->path_or_id_ =
+    std::filesystem::path (TEST_LV2_SEARCH_PATHS) / "eg-amp.lv2";
+  lv2_config->descr_->unique_id_ =
+    get_hash_for_range (std::string ("http://lv2plug.in/plugins/eg-amp"));
+
+  bool handler_called = false;
+  bool handler_successful = false;
   auto finish_options = PluginFactory::InstantiationFinishOptions{
-    .handler_ = [] (plugins::PluginUuidReference, bool, const QString &) { },
+    .handler_ =
+      [&handler_called, &handler_successful] (
+        plugins::PluginUuidReference, bool successful, const QString &) {
+        handler_called = true;
+        handler_successful = successful;
+      },
     .handler_context_ = nullptr
   };
 
   auto plugin_ref =
-    custom_factory->create_plugin_from_setting (*juce_config, finish_options);
-  auto * plugin = plugin_ref.get_object_as<JucePlugin> ();
+    custom_factory->create_plugin_from_setting (*lv2_config, finish_options);
+  auto * plugin = plugin_ref.get_object_as<Lv2Plugin> ();
 
   EXPECT_NE (plugin, nullptr);
   EXPECT_TRUE (utils::contains (*registry_, plugin->get_uuid ()));
+  EXPECT_TRUE (handler_called);
+  EXPECT_TRUE (handler_successful);
+  EXPECT_FALSE (plugin->get_all_output_ports ().empty ());
 }
 
 // Test error handling for invalid configurations

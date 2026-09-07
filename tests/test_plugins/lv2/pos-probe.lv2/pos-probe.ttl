@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+@prefix atom:  <http://lv2plug.in/ns/ext/atom#> .
+@prefix doap:  <http://usefulinc.com/ns/doap#> .
+@prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
+@prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rsz:   <http://lv2plug.in/ns/ext/resize-port#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
+@prefix units: <http://lv2plug.in/ns/extensions/units#> .
+@prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
+
+<http://lv2plug.in/plugins/pos-probe>
+	a lv2:Plugin ,
+		lv2:UtilityPlugin ;
+	doap:name "Position Probe" ;
+	lv2:requiredFeature urid:map ;
+	lv2:optionalFeature lv2:hardRTCapable ;
+	lv2:port [
+		a lv2:InputPort ,
+			atom:AtomPort ;
+		atom:bufferType atom:Sequence ;
+		atom:supports midi:MidiEvent ,
+			time:Position ;
+		lv2:index 0 ;
+		lv2:symbol "in" ;
+		lv2:name "In"
+	] , [
+		a lv2:OutputPort ,
+			lv2:AudioPort ;
+		lv2:index 1 ;
+		lv2:symbol "out" ;
+		lv2:name "Out"
+	] , [
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 2 ;
+		lv2:symbol "degree" ;
+		lv2:name "Degree" ;
+		lv2:default 0.0 ;
+		lv2:minimum -360.0 ;
+		lv2:maximum 360.0 ;
+		units:unit units:degree
+	] .
+
+<http://lv2plug.in/plugins/pos-probe-separate>
+	a lv2:Plugin ,
+		lv2:UtilityPlugin ;
+	doap:name "Position Probe (Separate Ports)" ;
+	lv2:requiredFeature urid:map ;
+	lv2:optionalFeature lv2:hardRTCapable ;
+	lv2:port [
+		a lv2:InputPort ,
+			atom:AtomPort ;
+		atom:bufferType atom:Sequence ;
+		atom:supports midi:MidiEvent ;
+		lv2:index 0 ;
+		lv2:symbol "in" ;
+		lv2:name "In" ;
+		rsz:minimumSize 65536
+	] , [
+		a lv2:InputPort ,
+			atom:AtomPort ;
+		atom:bufferType atom:Sequence ;
+		atom:supports time:Position ;
+		lv2:index 1 ;
+		lv2:symbol "position" ;
+		lv2:name "Position"
+	] , [
+		a lv2:OutputPort ,
+			lv2:AudioPort ;
+		lv2:index 2 ;
+		lv2:symbol "out" ;
+		lv2:name "Out"
+	] , [
+		a lv2:OutputPort ,
+			lv2:ControlPort ;
+		lv2:designation lv2:latency ;
+		lv2:index 3 ;
+		lv2:symbol "latency" ;
+		lv2:name "Latency"
+	] , [
+		a lv2:OutputPort ,
+			atom:AtomPort ;
+		atom:bufferType atom:Sequence ;
+		atom:supports midi:MidiEvent ;
+		lv2:index 4 ;
+		lv2:symbol "midi_out" ;
+		lv2:name "MIDI Out" ;
+		rsz:minimumSize 65536
+	] .

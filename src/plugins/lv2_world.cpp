@@ -53,6 +53,7 @@ Lv2World::Lv2World (const std::filesystem::path &spec_bundles_dir)
         "No LV2 specification bundles found in '{}'", spec_bundles_dir));
   lilv_world_load_specifications (world_.get ());
   lilv_world_load_plugin_classes (world_.get ());
+  host_urids_ = urid_map_.host_urids ();
 }
 
 Lv2World::~Lv2World () = default;

@@ -30,10 +30,10 @@ PluginDescriptor::from_juce_description (
     switch (descr->protocol_)
       {
       case Protocol::ProtocolType::Internal:
-      case Protocol::ProtocolType::LV2:
       case Protocol::ProtocolType::AudioUnit:
         descr->path_or_id_ = tmp;
         break;
+      case Protocol::ProtocolType::LV2:
       case Protocol::ProtocolType::LADSPA:
       case Protocol::ProtocolType::VST:
       case Protocol::ProtocolType::VST3:

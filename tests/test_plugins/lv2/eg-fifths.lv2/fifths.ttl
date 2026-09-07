@@ -3,6 +3,7 @@
 @prefix lv2:   <http://lv2plug.in/ns/lv2core#> .
 @prefix urid:  <http://lv2plug.in/ns/ext/urid#> .
 @prefix midi:  <http://lv2plug.in/ns/ext/midi#> .
+@prefix time:  <http://lv2plug.in/ns/ext/time#> .
 
 <http://lv2plug.in/plugins/eg-fifths>
 	a lv2:Plugin ,
@@ -16,7 +17,8 @@
 		a lv2:InputPort ,
 			atom:AtomPort ;
 		atom:bufferType atom:Sequence ;
-		atom:supports midi:MidiEvent ;
+		atom:supports midi:MidiEvent ,
+			time:Position ;
 		lv2:index 0 ;
 		lv2:symbol "in" ;
 		lv2:name "In"

@@ -965,9 +965,10 @@ class JucePlugin;
 class ClapPlugin;
 class Vst3Plugin;
 class FaustPlugin;
+class Lv2Plugin;
 
 using PluginVariant =
-  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin>;
+  std::variant<JucePlugin, ClapPlugin, Vst3Plugin, FaustPlugin, Lv2Plugin>;
 using PluginPtrVariant = utils::to_pointer_variant<PluginVariant>;
 
 using PluginUuidReference = utils::TypedUuidReference<Plugin>;

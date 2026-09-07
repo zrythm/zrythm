@@ -53,9 +53,15 @@ endfunction()
 add_lv2_fixture(eg_amp_lv2 eg-amp.lv2 amp
   TTL_FILES amp.ttl
   SOURCES eg-amp.lv2/amp.c)
+add_lv2_fixture(eg_enum_lv2 eg-enum.lv2 enumamp
+  TTL_FILES enumamp.ttl
+  SOURCES eg-enum.lv2/enumamp.c)
 add_lv2_fixture(eg_fifths_lv2 eg-fifths.lv2 fifths
   TTL_FILES fifths.ttl
   SOURCES eg-fifths.lv2/fifths.c)
+add_lv2_fixture(pos_probe_lv2 pos-probe.lv2 pos_probe
+  TTL_FILES pos-probe.ttl
+  SOURCES pos-probe.lv2/pos_probe.c)
 add_lv2_fixture(plumbing_lv2 plumbing.lv2 plumbing
   TTL_FILES plumbing.ttl
   SOURCES plumbing.lv2/midieat.c plumbing.lv2/plumbing.c plumbing.lv2/route.c)
@@ -69,14 +75,23 @@ add_lv2_fixture(test_instrument_lv2 test-instrument.lv2 test-instrument
 # test-instrument plugin
 add_lv2_fixture(test_instrument_preset_lv2 test-instrument.preset.lv2 ""
   TTL_FILES preset.ttl)
+# bundle with malformed plugin data (a port without a direction): the host
+# must refuse to load it (the library itself is valid so instantiation
+# would succeed against the partially read port metadata)
+add_lv2_fixture(broken_lv2 broken.lv2 broken
+  TTL_FILES broken.ttl
+  SOURCES broken.lv2/broken.c)
 
 # Exported so the parent scope can derive the plugin count for test compile
 # definitions
 set(zrythm_test_lv2_fixture_targets
   eg_amp_lv2
+  eg_enum_lv2
   eg_fifths_lv2
   plumbing_lv2
+  pos_probe_lv2
   sigabrt_lv2
   test_instrument_lv2
+  broken_lv2
   PARENT_SCOPE
 )

@@ -206,7 +206,8 @@ ProjectManager::create_default (
             return create_window_for_plugin (plugin);
           },
           *zapp->controlRoom ()->metronome (),
-          *zapp->controlRoom ()->monitorFader ());
+          *zapp->controlRoom ()->monitorFader (),
+          zapp->pluginManager ()->get_lv2_world ());
         project_session = utils::make_qobject_unique<ProjectSession> (
           app_settings_, std::move (prj));
       }
@@ -414,7 +415,8 @@ ProjectManager::loadProject (const QString &filepath)
                 return create_window_for_plugin (plugin);
               },
               *zapp->controlRoom ()->metronome (),
-              *zapp->controlRoom ()->monitorFader ());
+              *zapp->controlRoom ()->monitorFader (),
+              zapp->pluginManager ()->get_lv2_world ());
 
             report_progress_and_repaint (
               kStageDeserialize, tr ("Deserializing project data..."));
