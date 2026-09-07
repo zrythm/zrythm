@@ -140,7 +140,11 @@ endforeach()
 
 # LV2 fixture bundles are placed here (<root>/<name>.lv2), like the VST3
 # and CLAP fixtures get their own directories under this build dir
-set(ZRYTHM_LV2_FIXTURE_ROOT ${CMAKE_CURRENT_BINARY_DIR}/LV2)
+# Keep this lowercase to match the lv2/ subdirectory name: on
+# case-insensitive filesystems a differently-cased bundle root would
+# collapse into the subdirectory's build dir and lilv would report the
+# paths with the first-created spelling
+set(ZRYTHM_LV2_FIXTURE_ROOT ${CMAKE_CURRENT_BINARY_DIR}/lv2)
 add_subdirectory(lv2)
 
 add_custom_target(zrythm_test_plugins

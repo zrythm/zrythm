@@ -80,6 +80,15 @@ protected:
     return paths;
   }
 
+  /**
+   * @brief Converts backslashes to forward slashes so that lilv-reported
+   * paths and juce::File-built paths compare equal on Windows.
+   */
+  static juce::String normalize_bundle_path (const juce::String &path)
+  {
+    return path.replace ("\\", "/");
+  }
+
   auto get_vst3_search_paths ()
   {
     return parse_search_paths (QStringLiteral (TEST_VST3_SEARCH_PATHS));
@@ -315,7 +324,9 @@ TEST_F (TestPluginsScanTest, Lv2DescriptionsExposeDeclaredMetadata)
   format.findAllTypesForFile (descriptions, instrument_bundle);
   ASSERT_EQ (descriptions.size (), 1);
   const auto * desc = descriptions.getFirst ();
-  EXPECT_EQ (desc->fileOrIdentifier, instrument_bundle);
+  EXPECT_EQ (
+    normalize_bundle_path (desc->fileOrIdentifier),
+    normalize_bundle_path (instrument_bundle));
   EXPECT_EQ (
     desc->uniqueId,
     get_hash_for_range (
@@ -337,7 +348,9 @@ TEST_F (TestPluginsScanTest, Lv2DescriptionsExposeDeclaredMetadata)
   format.findAllTypesForFile (descriptions, amp_bundle);
   ASSERT_EQ (descriptions.size (), 1);
   desc = descriptions.getFirst ();
-  EXPECT_EQ (desc->fileOrIdentifier, amp_bundle);
+  EXPECT_EQ (
+    normalize_bundle_path (desc->fileOrIdentifier),
+    normalize_bundle_path (amp_bundle));
   EXPECT_EQ (
     desc->uniqueId,
     get_hash_for_range (std::string_view{ "http://lv2plug.in/plugins/eg-amp" }));
