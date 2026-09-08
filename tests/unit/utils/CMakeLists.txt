@@ -41,6 +41,7 @@ add_executable(zrythm_utils_unit_tests
   variant_helpers_test.cpp
   version_test.cpp
   views_test.cpp
+  zip_utils_test.cpp
 )
 
 set_target_properties(zrythm_utils_unit_tests PROPERTIES

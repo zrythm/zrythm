@@ -41,6 +41,7 @@ target_sources(zrythm_utils_lib
     uuid_identifiable_object.cpp
     # vamp.cpp
     version.cpp
+    zip_utils.cpp
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS ".."
@@ -111,6 +112,7 @@ target_sources(zrythm_utils_lib
       variant_helpers.h
       version.h
       views.h
+      zip_utils.h
 )
 
 set_target_properties(zrythm_utils_lib PROPERTIES

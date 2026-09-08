@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <memory>
 #include <ranges>
+#include <set>
 #include <string_view>
 #include <vector>
 
@@ -15,8 +16,10 @@
 #include "plugins/plugin_configuration.h"
 #include "plugins/plugin_descriptor.h"
 #include "utils/audio.h"
+#include "utils/base64.h"
 #include "utils/object_registry.h"
 #include "utils/serialization.h"
+#include "utils/zip_utils.h"
 
 #include <QByteArray>
 #include <QCoreApplication>
@@ -284,6 +287,103 @@ TEST_F (Lv2PluginTest, StateRoundTripRestoresGain)
   fill_input_with (1.f);
   process_blocks (1);
   EXPECT_NEAR (read_first_output_sample (), 2.f, 0.01f);
+}
+
+// Files created by the plugin through state:makePath travel inside the
+// state archive: the marker file written during save is read back during
+// restore and surfaces as the output DC offset, both on the same
+// instance and on a fresh instance (the blob is self-contained)
+TEST_F (Lv2PluginTest, StateFilesSurviveRoundTrip)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("state-files.lv2"));
+
+  // The gain port range is 0..1 linear; a value of 1 stores a marker
+  // byte of 255
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+  gain->setBaseValue (gain->range ().convertTo0To1 (1.f));
+
+  fill_input_with (1.f);
+  process_blocks (1);
+  // The state carried across the preparation re-instantiation was
+  // saved with the default gain, so both restored marker bytes are 0
+  EXPECT_NEAR (read_first_output_sample (), 0.f, 0.01f);
+
+  const auto state = plugin_->save_state ();
+  ASSERT_FALSE (state.empty ());
+
+  // The archive holds exactly the TTL, the manifest lilv writes
+  // alongside it, and the three state files: marker.bin written
+  // during save, sub/runtime.bin created at instantiate time and
+  // carried into the archive through lilv's path mapping, and
+  // restored.bin created when the carried state was applied at
+  // preparation
+  const auto entries = utils::zip_utils::extract (
+    utils::base64::decode (QByteArray::fromStdString (state)), 100, 1 << 20);
+  const auto paths = [&entries] () {
+    std::set<std::string> result;
+    for (const auto &entry : entries)
+      result.insert (entry.path_);
+    return result;
+  }();
+  EXPECT_EQ (
+    paths,
+    (std::set<std::string>{
+      "manifest.ttl", "marker.bin", "restored.bin", "state.ttl",
+      "sub/runtime.bin" }));
+  for (const auto * name : { "marker.bin", "restored.bin", "sub/runtime.bin" })
+    {
+      const auto it = std::ranges::find_if (entries, [name] (const auto &entry) {
+        return entry.path_ == name;
+      });
+      ASSERT_NE (it, entries.end ());
+      ASSERT_EQ (it->data_.size (), 1);
+      EXPECT_EQ (static_cast<uint8_t> (it->data_[0]), 255) << name;
+    }
+
+  // The output is the sum of both restored marker bytes
+  EXPECT_TRUE (plugin_->load_state (state));
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 510.f, 0.01f);
+
+  // The file the plugin created during restore() through the
+  // restore-scoped makePath is rooted like a runtime file: the next
+  // saved state carries it inside the archive (with the byte
+  // restore() wrote)
+  const auto expect_restored_file = [] (const std::string &blob) {
+    const auto archive_entries = utils::zip_utils::extract (
+      utils::base64::decode (QByteArray::fromStdString (blob)), 100, 1 << 20);
+    std::set<std::string> archive_paths;
+    for (const auto &entry : archive_entries)
+      archive_paths.insert (entry.path_);
+    EXPECT_EQ (
+      archive_paths,
+      (std::set<std::string>{
+        "manifest.ttl", "marker.bin", "restored.bin", "state.ttl",
+        "sub/runtime.bin" }));
+    const auto it =
+      std::ranges::find_if (archive_entries, [] (const auto &entry) {
+        return entry.path_ == "restored.bin";
+      });
+    ASSERT_NE (it, archive_entries.end ());
+    ASSERT_EQ (it->data_.size (), 1);
+    EXPECT_EQ (static_cast<uint8_t> (it->data_[0]), 255);
+  };
+  const auto state_after_restore = plugin_->save_state ();
+  ASSERT_FALSE (state_after_restore.empty ());
+  expect_restored_file (state_after_restore);
+
+  // A fresh instance (whose session files are unrelated to the first
+  // instance's) restores from the same blob
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("state-files.lv2"));
+  EXPECT_TRUE (plugin_->load_state (state));
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 510.f, 0.01f);
+  const auto fresh_state_after_restore = plugin_->save_state ();
+  ASSERT_FALSE (fresh_state_after_restore.empty ());
+  expect_restored_file (fresh_state_after_restore);
 }
 
 // A change of the processing sample rate re-instantiates the plugin,
@@ -653,9 +753,10 @@ TEST_F (Lv2PluginTest, FailedPendingRestoreIsRetried)
 
   plugin_->release_resources ();
 
-  // Unparseable state becomes pending and fails to restore at preparation
+  // Non-archive garbage becomes pending and fails to restore at
+  // preparation
   const auto garbage_state =
-    utils::to_std_string (QByteArray ("not a ttl state").toBase64 ());
+    utils::to_std_string (QByteArray ("not a zip archive").toBase64 ());
   EXPECT_TRUE (plugin_->load_state (garbage_state));
   plugin_->prepare_for_processing (
     nullptr, units::sample_rate (48000), units::samples (256));

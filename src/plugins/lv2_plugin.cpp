@@ -8,6 +8,10 @@
 #include <atomic>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <limits>
 #include <optional>
 #include <ranges>
@@ -28,11 +32,15 @@
 #include "plugins/lv2_world.h"
 #include "plugins/plugin_format_utils.h"
 #include "plugins/plugin_transport_context.h"
+#include "utils/base64.h"
+#include "utils/exceptions.h"
+#include "utils/io_utils.h"
 #include "utils/logger.h"
 #include "utils/qt.h"
 #include "utils/registry_utils.h"
 #include "utils/serialization.h"
 #include "utils/views.h"
+#include "utils/zip_utils.h"
 
 #include <fmt/format.h>
 #include <lilv/lilv.h>
@@ -71,6 +79,14 @@ constexpr uint32_t kAtomBufferSize = 16384;
  * arbitrarily.
  */
 constexpr uint32_t kMaxAtomBufferSize = 1u << 20;
+
+/**
+ * Upper bounds for extracted state archives (entry count and total
+ * uncompressed size): a corrupt or hostile state blob must not exhaust
+ * host resources at extraction.
+ */
+constexpr size_t kMaxStateArchiveEntries = 10000;
+constexpr size_t kMaxStateArchiveTotalSize = size_t{ 1 } << 30;
 
 /**
  * Sample rate and maximum block length of the instance created at
@@ -303,14 +319,32 @@ public:
     units::sample_u32_t local_offset,
     units::sample_u32_t nframes) noexcept [[clang::nonblocking]];
 
-  /** Serializes the current instance state to a TTL string, or nullopt
-   * when no instance exists or serialization fails. */
+  /**
+   * Serializes the current instance state to a base64 zip archive
+   * string (a state.ttl plus any state-created files), or nullopt when
+   * no instance exists or serialization fails.
+   */
   [[nodiscard]] std::optional<std::string>
-  save_state_to_string () [[clang::blocking]];
+  save_state_to_blob () [[clang::blocking]];
 
-  /** Restores the instance from a TTL state string. */
+  /** Restores the instance from a base64 zip archive state string. */
   bool
-  restore_state_from_string (const std::string &ttl_state) [[clang::blocking]];
+  restore_state_from_blob (const std::string &base64_state) [[clang::blocking]];
+
+  /** LV2 state:makePath callback: returns a path under the current
+   * makePath root, creating leading directories. */
+  static char *
+  state_make_path (LV2_State_Make_Path_Handle handle, const char * path);
+
+  /** LV2 state:freePath callback. */
+  static void state_free_path (LV2_State_Free_Path_Handle handle, char * path);
+
+  /**
+   * Creates the per-plugin session directories on first instantiation.
+   * They outlive every instance of this plugin object so files created
+   * by the plugin survive re-instantiation.
+   */
+  void ensure_session_dirs ();
 
   /** LV2 state restore callback: applies a control port value. */
   static void state_set_port_value (
@@ -425,6 +459,25 @@ public:
    * they must stay stable and valid until the instance is freed. */
   LV2_URID_Map   urid_map_feature_{};
   LV2_URID_Unmap urid_unmap_feature_{};
+
+  /* Session directories for plugin state: files created by the plugin
+   * through state:makePath live under scratch/, and extracted state
+   * archives are unpacked into state/ before a restore. */
+  std::unique_ptr<QTemporaryDir> session_dir_;
+  std::filesystem::path          session_scratch_dir_;
+  std::filesystem::path          session_state_dir_;
+  /** Root a makePath call resolves paths against. The
+   * instantiate-time feature is bound to the scratch directory for
+   * the plugin's lifetime; save and restore calls bind their own
+   * feature with a call-specific root. */
+  struct MakePathContext
+  {
+    Lv2PluginImpl *               impl;
+    const std::filesystem::path * root;
+  };
+  MakePathContext     make_path_context_{};
+  LV2_State_Make_Path make_path_feature_{};
+  LV2_State_Free_Path free_path_feature_{};
   /** Copy of the world's host URIDs, read on the audio thread without
    * touching the world. */
   Lv2HostUrids                      host_urids_{};
@@ -1143,6 +1196,12 @@ void
 Lv2Plugin::unload_current_plugin ()
 {
   pimpl_->free_instance ();
+  // Session files are archived on every save, so they must not
+  // outlive the plugin they belong to: a plugin loaded into this
+  // object later starts with an empty session
+  pimpl_->session_dir_.reset ();
+  pimpl_->session_scratch_dir_.clear ();
+  pimpl_->session_state_dir_.clear ();
   pimpl_->plugin_ = nullptr;
   pimpl_->ports_.clear ();
   pimpl_->control_in_bufs_.clear ();
@@ -1520,6 +1579,17 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
 
   features_.clear ();
   feature_ptrs_.clear ();
+  try
+    {
+      ensure_session_dirs ();
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning (
+        "LV2: failed to create the session directories of '{}': {}",
+        owner_.get_name (), e.what ());
+      return false;
+    }
   const auto push_feature = [this] (const char * uri, void * data) {
     features_.push_back (LV2_Feature{ uri, data });
   };
@@ -1528,6 +1598,8 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
   push_feature (LV2_OPTIONS__options, options_.data ());
   push_feature (LV2_BUF_SIZE__boundedBlockLength, nullptr);
   push_feature (LV2_CORE__hardRTCapable, nullptr);
+  push_feature (LV2_STATE__makePath, &make_path_feature_);
+  push_feature (LV2_STATE__freePath, &free_path_feature_);
   for (const auto &feature : features_)
     {
       feature_ptrs_.push_back (&feature);
@@ -1543,7 +1615,9 @@ Lv2Plugin::Lv2PluginImpl::instantiate (
                || std::string_view{ uri } == LV2_URID__unmap
                || std::string_view{ uri } == LV2_OPTIONS__options
                || std::string_view{ uri } == LV2_BUF_SIZE__boundedBlockLength
-               || std::string_view{ uri } == LV2_CORE__hardRTCapable;
+               || std::string_view{ uri } == LV2_CORE__hardRTCapable
+               || std::string_view{ uri } == LV2_STATE__makePath
+               || std::string_view{ uri } == LV2_STATE__freePath;
       };
       std::string         unsupported_features;
       const LilvNodesUPtr required_features{
@@ -1677,7 +1751,7 @@ Lv2Plugin::apply_pending_state ()
 {
   if (state_to_apply_.has_value () && pimpl_->instance_ != nullptr)
     {
-      if (pimpl_->restore_state_from_string (state_to_apply_->toStdString ()))
+      if (pimpl_->restore_state_from_blob (state_to_apply_->toStdString ()))
         {
           state_to_apply_.reset ();
         }
@@ -1745,7 +1819,7 @@ Lv2Plugin::prepare_plugin_for_processing (
   const auto prepare = [this, sample_rate, max_block_length, &carried_state] () {
     if (pimpl_->instance_ != nullptr)
       {
-        carried_state = pimpl_->save_state_to_string ();
+        carried_state = pimpl_->save_state_to_blob ();
         pimpl_->free_instance ();
         z_debug (
           "LV2: re-instantiating '{}' at {} Hz with a maximum block "
@@ -1781,7 +1855,7 @@ Lv2Plugin::prepare_plugin_for_processing (
         }();
         if (state_to_restore.has_value ())
           {
-            if (pimpl_->restore_state_from_string (*state_to_restore))
+            if (pimpl_->restore_state_from_blob (*state_to_restore))
               {
                 state_to_apply_.reset ();
                 carried_state.reset ();
@@ -1863,7 +1937,7 @@ Lv2Plugin::release_resources_impl ()
   // the next processing preparation
   if (pimpl_->instance_ != nullptr)
     {
-      if (const auto state = pimpl_->save_state_to_string (); state.has_value ())
+      if (const auto state = pimpl_->save_state_to_blob (); state.has_value ())
         {
           state_to_apply_ = QByteArray::fromStdString (*state);
         }
@@ -2351,71 +2425,495 @@ Lv2Plugin::get_single_playback_latency () const
 // State
 // ============================================================================
 
+namespace
+{
+
+// Creates the subdirectory structure of @p from under @p to, so that
+// files copied by relative path from one tree to the other always
+// have a destination
+void
+mirror_directory_tree (
+  const std::filesystem::path &from,
+  const std::filesystem::path &to)
+{
+  std::error_code ec;
+  if (!std::filesystem::exists (from, ec))
+    return;
+
+  auto it = std::filesystem::recursive_directory_iterator (from, ec);
+  if (ec != std::error_code{})
+    {
+      throw ZrythmException (
+        fmt::format (
+          "failed to walk the directory '{}': {}", from, ec.message ()));
+    }
+  for (
+    ; it != std::filesystem::recursive_directory_iterator (); it.increment (ec))
+    {
+      if (ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to walk the directory '{}': {}", from, ec.message ()));
+        }
+      const bool is_directory = it->is_directory (ec);
+      if (ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to inspect the directory entry '{}': {}", it->path (),
+              ec.message ()));
+        }
+      if (!is_directory)
+        continue;
+
+      const auto relative_path =
+        std::filesystem::relative (it->path (), from, ec);
+      if (ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to relativize the directory '{}': {}", it->path (),
+              ec.message ()));
+        }
+      std::filesystem::create_directories (to / relative_path, ec);
+      if (ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to create the directory '{}': {}", to / relative_path,
+              ec.message ()));
+        }
+    }
+}
+
+// Returns a copy of @p features with the makePath entry replaced by
+// @p replacement, for passing a call-specific root to lilv while the
+// instantiate-time feature the plugin holds stays untouched
+std::vector<const LV2_Feature *>
+features_with_make_path (
+  const std::vector<const LV2_Feature *> &features,
+  const LV2_Feature *                     replacement)
+{
+  auto result = features;
+  std::ranges::replace_if (
+    result,
+    [] (const LV2_Feature * feature) {
+      return feature != nullptr
+             && std::string_view (feature->URI) == LV2_STATE__makePath;
+    },
+    replacement);
+  return result;
+}
+
+} // namespace
+
+void
+Lv2Plugin::Lv2PluginImpl::ensure_session_dirs ()
+{
+  if (session_dir_ != nullptr)
+    return;
+
+  // The members are only assigned after every step succeeded: a
+  // partially initialized session could not be rolled back or
+  // retried, since the temporary directory owner would already be
+  // attached
+  auto session_dir = utils::io::make_tmp_dir ();
+  // lilv compares plugin-supplied paths (which it canonicalizes)
+  // against these directories, so the root must use its canonical
+  // spelling: a symlinked temp directory would otherwise make lilv
+  // treat every state file as external
+  std::error_code ec;
+  const auto      root = std::filesystem::canonical (
+    utils::Utf8String::from_qstring (session_dir->path ()).to_path (), ec);
+  if (ec != std::error_code{})
+    {
+      throw ZrythmException (
+        fmt::format (
+          "failed to canonicalize the session directory: {}", ec.message ()));
+    }
+
+  session_scratch_dir_ = root / "scratch";
+  session_state_dir_ = root / "state";
+
+  make_path_context_ = MakePathContext{ this, &session_scratch_dir_ };
+  make_path_feature_ = LV2_State_Make_Path{
+    .handle = &make_path_context_, .path = state_make_path
+  };
+  free_path_feature_ = LV2_State_Free_Path{
+    .handle = nullptr,
+    .free_path = state_free_path,
+  };
+  session_dir_ = std::move (session_dir);
+}
+
+char *
+Lv2Plugin::Lv2PluginImpl::state_make_path (
+  LV2_State_Make_Path_Handle handle,
+  const char *               path)
+{
+  const auto * context = static_cast<const MakePathContext *> (handle);
+
+  // The path is plugin-supplied: anything absolute or containing dot
+  // components would escape the root the feature is bound to
+  const std::filesystem::path relative_path =
+    utils::Utf8String::from_utf8_encoded_string (path).to_path ();
+  const auto escapes_root =
+    relative_path.empty () || relative_path.is_absolute ()
+    || relative_path.has_root_name ()
+    || std::ranges::any_of (relative_path, [] (const auto &component) {
+         return component == "." || component == ".." || component.empty ();
+       });
+  if (escapes_root)
+    {
+      z_warning (
+        "LV2: '{}' requested a state path outside its session directory "
+        "('{}'); refusing",
+        context->impl->owner_.get_name (), path);
+      return nullptr;
+    }
+
+  const auto      full_path = *context->root / relative_path;
+  std::error_code ec;
+  std::filesystem::create_directories (full_path.parent_path (), ec);
+  if (ec)
+    {
+      z_warning (
+        "LV2: failed to create the state directory of '{}' '{}': {}",
+        context->impl->owner_.get_name (), full_path.parent_path (),
+        ec.message ());
+      return nullptr;
+    }
+  return strdup (utils::Utf8String::from_path (full_path).c_str ());
+}
+
+void
+Lv2Plugin::Lv2PluginImpl::state_free_path (
+  LV2_State_Free_Path_Handle handle,
+  char *                     path)
+{
+  (void) handle;
+  free (path);
+}
+
 std::optional<std::string>
-Lv2Plugin::Lv2PluginImpl::save_state_to_string ()
+Lv2Plugin::Lv2PluginImpl::save_state_to_blob ()
 {
   if (instance_ == nullptr || plugin_ == nullptr)
     return std::nullopt;
 
-  const LilvStateUPtr state{ lilv_state_new_from_instance (
-    plugin_, instance_, &urid_map_feature_, nullptr, nullptr, nullptr, nullptr,
-    &Lv2PluginImpl::state_get_port_value, this,
-    LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE, feature_ptrs_.data ()) };
-  if (state == nullptr)
+  try
+    {
+      // Files created during save are written into a staging directory
+      // that is archived and removed when this scope ends. The path is
+      // canonicalized for the same reason as the session directories
+      std::error_code             canonical_ec;
+      const auto                  staging_dir = utils::io::make_tmp_dir ();
+      const std::filesystem::path staging_path = std::filesystem::canonical (
+        utils::Utf8String::from_qstring (staging_dir->path ()).to_path (),
+        canonical_ec);
+      if (canonical_ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to canonicalize the staging directory: {}",
+              canonical_ec.message ()));
+        }
+
+      // Files the plugin created at runtime are referenced by paths
+      // relative to the scratch directory; lilv copies them into
+      // staging (copy_dir) but creates only the staging root itself,
+      // so the scratch directory tree is mirrored into staging first
+      // to give nested files a destination
+      mirror_directory_tree (session_scratch_dir_, staging_path);
+
+      // The plugin's save() runs inside this call and receives a
+      // makePath feature rooted at the staging directory (the host
+      // feature creates leading directories, unlike the save-scoped
+      // one lilv would add itself, which also drops all state
+      // properties if the plugin's save() fails on a nested path).
+      // lilv passes host features through, so only the makePath entry
+      // of the per-call array below is swapped
+      MakePathContext     staging_context{ this, &staging_path };
+      LV2_State_Make_Path staging_make_path{
+        .handle = &staging_context, .path = state_make_path
+      };
+      LV2_Feature staging_make_path_feature{
+        LV2_STATE__makePath, &staging_make_path
+      };
+      const auto save_features =
+        features_with_make_path (feature_ptrs_, &staging_make_path_feature);
+      const LilvStateUPtr state{ lilv_state_new_from_instance (
+        plugin_, instance_, &urid_map_feature_,
+        utils::Utf8String::from_path (session_scratch_dir_).c_str (),
+        utils::Utf8String::from_path (staging_path).c_str (), nullptr,
+        utils::Utf8String::from_path (staging_path).c_str (),
+        &Lv2PluginImpl::state_get_port_value, this,
+        LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE, save_features.data ()) };
+      if (state == nullptr)
+        {
+          throw ZrythmException ("failed to snapshot the instance state");
+        }
+
+      // The state TTL is keyed by the plugin URI, so it must be passed
+      // as the state subject (lilv_plugin_get_uri returns a borrowed
+      // node). External files keep their absolute paths: no link
+      // directory is given, so lilv never creates symlinks.
+      const LilvNode * plugin_uri = lilv_plugin_get_uri (plugin_);
+      if (
+        lilv_state_save (
+          owner_.world_->raw (), &urid_map_feature_, &urid_unmap_feature_,
+          state.get (), lilv_node_as_uri (plugin_uri),
+          utils::Utf8String::from_path (staging_path).c_str (), "state.ttl")
+        != 0)
+        {
+          throw ZrythmException ("failed to write the state TTL");
+        }
+
+      // Archive everything lilv wrote: the TTL plus state-created files.
+      // The same caps as on restore are enforced here so an oversized
+      // state fails at save time instead of producing a state that can
+      // never be restored; sizes are checked before each file is read
+      // so a plugin cannot force unbounded buffering
+      std::vector<utils::zip_utils::Entry> entries;
+      size_t                               total_size = 0;
+      std::error_code                      ec;
+      auto it = std::filesystem::recursive_directory_iterator (staging_path, ec);
+      if (ec != std::error_code{})
+        {
+          throw ZrythmException (
+            fmt::format (
+              "failed to walk the staging directory: {}", ec.message ()));
+        }
+      for (
+        ; it != std::filesystem::recursive_directory_iterator ();
+        it.increment (ec))
+        {
+          if (ec != std::error_code{})
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "failed to walk the staging directory: {}", ec.message ()));
+            }
+          const bool regular = it->is_regular_file (ec);
+          if (ec != std::error_code{})
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "failed to inspect the staging entry '{}': {}", it->path (),
+                  ec.message ()));
+            }
+          if (!regular)
+            continue;
+
+          const auto file_size = it->file_size (ec);
+          if (ec != std::error_code{})
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "failed to size the staging entry '{}': {}", it->path (),
+                  ec.message ()));
+            }
+          if (entries.size () == kMaxStateArchiveEntries)
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "the state holds more than {} files", kMaxStateArchiveEntries));
+            }
+          if (
+            total_size + static_cast<size_t> (file_size)
+            > kMaxStateArchiveTotalSize)
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "the state files hold more than {} bytes",
+                  kMaxStateArchiveTotalSize));
+            }
+
+          std::ifstream stream{ it->path (), std::ios::binary };
+          if (!stream)
+            {
+              throw ZrythmException (
+                fmt::format ("failed to read the state file '{}'", it->path ()));
+            }
+          // The read is bounded by the sized cap; a file that grew
+          // between the size query and the read fails instead of
+          // buffering the growth
+          auto bytes = std::vector<char> (static_cast<size_t> (file_size));
+          if (file_size > 0)
+            {
+              stream.read (
+                bytes.data (), static_cast<std::streamsize> (file_size));
+            }
+          if (stream.gcount () != static_cast<std::streamsize> (file_size))
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "failed to read the state file '{}': short read", it->path ()));
+            }
+          if (stream.peek () != std::char_traits<char>::eof ())
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "the state file '{}' grew while being read", it->path ()));
+            }
+          const auto relative_path =
+            std::filesystem::relative (it->path (), staging_path, ec);
+          if (ec != std::error_code{})
+            {
+              throw ZrythmException (
+                fmt::format (
+                  "failed to relativize the state file path '{}'", it->path ()));
+            }
+          entries.push_back (
+            utils::zip_utils::Entry{
+              utils::Utf8String::from_path (relative_path).str (),
+              QByteArray{
+                         bytes.data (), static_cast<qsizetype> (bytes.size ()) }
+          });
+          total_size += static_cast<size_t> (file_size);
+        }
+
+      return utils::to_std_string (
+        utils::base64::encode (utils::zip_utils::create (entries)));
+    }
+  catch (const ZrythmException &e)
     {
       z_warning (
-        "LV2: failed to snapshot the state of '{}'", owner_.get_name ());
+        "LV2: failed to serialize the state of '{}': {}", owner_.get_name (),
+        e.what ());
       return std::nullopt;
     }
-
-  // The state TTL is keyed by the plugin URI, so it must be passed as the
-  // state subject (lilv_plugin_get_uri returns a borrowed node)
-  const LilvNode *      plugin_uri = lilv_plugin_get_uri (plugin_);
-  const LilvCharPtrUPtr ttl{ lilv_state_to_string (
-    owner_.world_->raw (), &urid_map_feature_, &urid_unmap_feature_,
-    state.get (), lilv_node_as_uri (plugin_uri), nullptr) };
-  if (ttl == nullptr)
-    {
-      z_warning (
-        "LV2: failed to serialize the state of '{}'", owner_.get_name ());
-      return std::nullopt;
-    }
-  return std::string (ttl.get ());
-}
-
-std::string
-Lv2Plugin::save_state_impl () const
-{
-  const auto ttl = pimpl_->save_state_to_string ();
-  if (!ttl.has_value ())
-    {
-      // Not instantiated: keep any pending state instead of dropping it
-      if (state_to_apply_.has_value ())
-        return utils::to_std_string (state_to_apply_->toBase64 ());
-      return {};
-    }
-  return utils::to_std_string (QByteArray::fromStdString (*ttl).toBase64 ());
 }
 
 bool
-Lv2Plugin::Lv2PluginImpl::restore_state_from_string (
-  const std::string &ttl_state)
+Lv2Plugin::Lv2PluginImpl::restore_state_from_blob (
+  const std::string &base64_state)
 {
   if (instance_ == nullptr || plugin_ == nullptr)
     return false;
 
-  const LilvStateUPtr state{ lilv_state_new_from_string (
-    owner_.world_->raw (), &urid_map_feature_, ttl_state.c_str ()) };
+  std::vector<utils::zip_utils::Entry> entries;
+  try
+    {
+      entries = utils::zip_utils::extract (
+        utils::base64::decode (QByteArray::fromStdString (base64_state)),
+        kMaxStateArchiveEntries, kMaxStateArchiveTotalSize);
+    }
+  catch (const ZrythmException &e)
+    {
+      z_warning (
+        "LV2: failed to parse the state of '{}': {}", owner_.get_name (),
+        e.what ());
+      return false;
+    }
+
+  // The state directory is only rewritten once the archive is known
+  // to hold a state TTL: a failed restore then leaves the previous
+  // contents fully intact
+  if (!std::ranges::any_of (entries, [] (const utils::zip_utils::Entry &entry) {
+        return entry.path_ == "state.ttl";
+      }))
+    {
+      z_warning (
+        "LV2: the state of '{}' holds no state.ttl", owner_.get_name ());
+      return false;
+    }
+
+  // Rewrite the session state directory with the archive contents. The
+  // state TTL refers to the extracted files by paths relative to its
+  // directory, which lilv resolves against the state->dir it derives
+  // from the TTL location.
+  std::error_code ec;
+  std::filesystem::remove_all (session_state_dir_, ec);
+  if (ec != std::error_code{})
+    {
+      z_warning (
+        "LV2: failed to clear the state directory of '{}': {}",
+        owner_.get_name (), ec.message ());
+      return false;
+    }
+  std::filesystem::create_directories (session_state_dir_, ec);
+  if (ec != std::error_code{})
+    {
+      z_warning (
+        "LV2: failed to reset the state directory of '{}': {}",
+        owner_.get_name (), ec.message ());
+      return false;
+    }
+  for (const auto &entry : entries)
+    {
+      const auto path =
+        session_state_dir_
+        / utils::Utf8String::from_utf8_encoded_string (entry.path_).to_path ();
+      std::filesystem::create_directories (path.parent_path (), ec);
+      if (ec != std::error_code{})
+        {
+          z_warning (
+            "LV2: failed to create the parent directory of the state file "
+            "'{}' of '{}': {}",
+            path, owner_.get_name (), ec.message ());
+          return false;
+        }
+      std::ofstream stream{ path, std::ios::binary | std::ios::trunc };
+      if (!stream)
+        {
+          z_warning (
+            "LV2: failed to write the state file '{}' of '{}'", path,
+            owner_.get_name ());
+          return false;
+        }
+      stream.write (entry.data_.constData (), entry.data_.size ());
+      if (!stream)
+        {
+          z_warning (
+            "LV2: failed to write the state file '{}' of '{}'", path,
+            owner_.get_name ());
+          return false;
+        }
+    }
+
+  const LilvStateUPtr state{ lilv_state_new_from_file (
+    owner_.world_->raw (), &urid_map_feature_, nullptr,
+    utils::Utf8String::from_path (session_state_dir_ / "state.ttl").c_str ()) };
   if (state == nullptr)
     {
       z_warning ("LV2: failed to parse the state of '{}'", owner_.get_name ());
       return false;
     }
 
+  // The plugin's restore() may create files through makePath: they
+  // are rooted at the scratch directory so they behave like runtime
+  // files and are carried into the next saved state (the state
+  // directory is wiped by the next restore, and paths in it would be
+  // stored as absolute paths outside the archive)
+  MakePathContext     restore_context{ this, &session_scratch_dir_ };
+  LV2_State_Make_Path restore_make_path{
+    .handle = &restore_context, .path = state_make_path
+  };
+  LV2_Feature restore_make_path_feature{
+    LV2_STATE__makePath, &restore_make_path
+  };
+  const auto restore_features =
+    features_with_make_path (feature_ptrs_, &restore_make_path_feature);
   lilv_state_restore (
     state.get (), instance_, state_set_port_value, this, 0,
-    feature_ptrs_.data ());
+    restore_features.data ());
   return true;
+}
+
+std::string
+Lv2Plugin::save_state_impl () const
+{
+  const auto blob = pimpl_->save_state_to_blob ();
+  if (!blob.has_value ())
+    {
+      // Not instantiated: keep any pending state instead of dropping it
+      if (state_to_apply_.has_value ())
+        return state_to_apply_->toStdString ();
+      return {};
+    }
+  return *blob;
 }
 
 void
@@ -2488,16 +2986,13 @@ Lv2Plugin::Lv2PluginImpl::state_get_port_value (
 bool
 Lv2Plugin::load_state_impl (const std::string &base64_state)
 {
-  const auto ttl =
-    QByteArray::fromBase64 (QByteArray::fromStdString (base64_state))
-      .toStdString ();
-  if (ttl.empty ())
+  if (base64_state.empty ())
     return false;
 
   if (pimpl_->instance_ == nullptr)
     {
       // Not instantiated yet: applied during processing preparation
-      state_to_apply_ = QByteArray::fromStdString (ttl);
+      state_to_apply_ = QByteArray::fromStdString (base64_state);
       return true;
     }
 
@@ -2507,7 +3002,7 @@ Lv2Plugin::load_state_impl (const std::string &base64_state)
     {
       auto restored = false;
       main_thread_callbacks_.with_paused_processing_ ([&] () {
-        restored = pimpl_->restore_state_from_string (ttl);
+        restored = pimpl_->restore_state_from_blob (base64_state);
       });
       return restored;
     }

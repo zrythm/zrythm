@@ -65,6 +65,9 @@ add_lv2_fixture(eg_fifths_lv2 eg-fifths.lv2 fifths
 add_lv2_fixture(pos_probe_lv2 pos-probe.lv2 pos_probe
   TTL_FILES pos-probe.ttl
   SOURCES pos-probe.lv2/pos_probe.c)
+add_lv2_fixture(state_files_lv2 state-files.lv2 state_files
+  TTL_FILES state-files.ttl
+  SOURCES state-files.lv2/state_files.c)
 add_lv2_fixture(plumbing_lv2 plumbing.lv2 plumbing
   TTL_FILES plumbing.ttl
   SOURCES plumbing.lv2/midieat.c plumbing.lv2/plumbing.c plumbing.lv2/route.c)
@@ -94,6 +97,7 @@ set(zrythm_test_lv2_fixture_targets
   plumbing_lv2
   pos_probe_lv2
   sigabrt_lv2
+  state_files_lv2
   test_instrument_lv2
   broken_lv2
   PARENT_SCOPE
