@@ -3,7 +3,11 @@
 
 #pragma once
 
+#include <memory>
+
 #include "structure/project/project_registry.h"
+
+#include <nlohmann/json_fwd.hpp>
 
 using namespace std::string_view_literals;
 
@@ -59,6 +63,15 @@ public:
    */
   static constexpr qsizetype kMaxClipboardTextLength = 16LL * 1024 * 1024;
 
+  /** Copies duplicate the JSON state: payloads stay independent after
+   * copying. */
+  ClipboardPayload ();
+  ClipboardPayload (const ClipboardPayload &other);
+  ClipboardPayload (ClipboardPayload &&other) noexcept;
+  ClipboardPayload &operator= (const ClipboardPayload &other);
+  ClipboardPayload &operator= (ClipboardPayload &&other) noexcept;
+  ~ClipboardPayload ();
+
   /**
    * @brief Builds a payload by collecting the transitive closure of @p roots.
    *
@@ -78,12 +91,19 @@ public:
     Type                      type,
     const std::vector<QUuid> &roots,
     const QString            &source_project_id,
-    nlohmann::json            metadata = nlohmann::json::object ());
+    nlohmann::json            metadata);
+
+  /** Same as above, with empty metadata. */
+  static ClipboardPayload create (
+    const ProjectRegistry    &registry,
+    Type                      type,
+    const std::vector<QUuid> &roots,
+    const QString            &source_project_id);
 
   Type           type () const { return type_; }
   const QString &source_project_id () const { return source_project_id_; }
-  const nlohmann::json  &metadata () const { return metadata_; }
-  const nlohmann::json  &registry_json () const { return registry_json_; }
+  const nlohmann::json  &metadata () const;
+  const nlohmann::json  &registry_json () const;
   std::span<const QUuid> roots () const { return roots_; }
 
   /**
@@ -187,10 +207,13 @@ public:
   friend void from_json (const nlohmann::json &j, ClipboardPayload &payload);
 
 private:
+  /** Metadata and registry JSON; defined in the source file to keep the
+   * full JSON header out of this one. */
+  struct JsonState;
+  std::unique_ptr<JsonState> json_;
+
   Type               type_{};
   QString            source_project_id_;
-  nlohmann::json     metadata_ = nlohmann::json::object ();
-  nlohmann::json     registry_json_ = nlohmann::json::object ();
   std::vector<QUuid> roots_;
 };
 

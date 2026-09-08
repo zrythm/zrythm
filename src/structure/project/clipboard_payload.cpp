@@ -429,6 +429,68 @@ private:
 
 } // namespace
 
+struct ClipboardPayload::JsonState
+{
+  nlohmann::json metadata_ = nlohmann::json::object ();
+  nlohmann::json registry_json_ = nlohmann::json::object ();
+};
+
+ClipboardPayload::ClipboardPayload () : json_ (std::make_unique<JsonState> ())
+{
+}
+
+ClipboardPayload::ClipboardPayload (const ClipboardPayload &other)
+    : ClipboardPayload ()
+{
+  *json_ = *other.json_;
+  type_ = other.type_;
+  source_project_id_ = other.source_project_id_;
+  roots_ = other.roots_;
+}
+
+ClipboardPayload::ClipboardPayload (ClipboardPayload &&other) noexcept = default;
+
+ClipboardPayload &
+ClipboardPayload::operator= (const ClipboardPayload &other)
+{
+  if (this != &other)
+    {
+      *json_ = *other.json_;
+      type_ = other.type_;
+      source_project_id_ = other.source_project_id_;
+      roots_ = other.roots_;
+    }
+  return *this;
+}
+
+ClipboardPayload &
+ClipboardPayload::operator= (ClipboardPayload &&other) noexcept = default;
+
+ClipboardPayload::~ClipboardPayload () = default;
+
+const nlohmann::json &
+ClipboardPayload::metadata () const
+{
+  return json_->metadata_;
+}
+
+const nlohmann::json &
+ClipboardPayload::registry_json () const
+{
+  return json_->registry_json_;
+}
+
+ClipboardPayload
+ClipboardPayload::create (
+  const ProjectRegistry    &registry,
+  Type                      type,
+  const std::vector<QUuid> &roots,
+  const QString            &source_project_id)
+{
+  return create (
+    registry, type, roots, source_project_id, nlohmann::json::object ());
+}
+
 ClipboardPayload
 ClipboardPayload::create (
   const ProjectRegistry    &registry,
@@ -440,7 +502,7 @@ ClipboardPayload::create (
   ClipboardPayload payload;
   payload.type_ = type;
   payload.source_project_id_ = source_project_id;
-  payload.metadata_ = std::move (metadata);
+  payload.json_->metadata_ = std::move (metadata);
   payload.roots_ = roots;
 
   std::unordered_map<ObjectCategory, nlohmann::json> buckets;
@@ -468,10 +530,10 @@ ClipboardPayload::create (
         worklist);
     }
 
-  payload.registry_json_ = nlohmann::json::object ();
+  payload.json_->registry_json_ = nlohmann::json::object ();
   for (const auto &[category, key] : ProjectRegistry::kCategoryBucketKeys)
     {
-      payload.registry_json_[key] =
+      payload.json_->registry_json_[key] =
         buckets.contains (category)
           ? std::move (buckets[category])
           : nlohmann::json::array ();
@@ -484,15 +546,15 @@ bool
 ClipboardPayload::references_resolve_internally () const
 {
   IdSet ids;
-  for (const auto &[bucket_key, bucket] : registry_json_.items ())
+  for (const auto &[bucket_key, bucket] : json_->registry_json_.items ())
     {
       for (const auto &entry : bucket)
         ids.insert (entry_id (entry));
     }
 
   if (
-    has_dangling_reference (registry_json_, ids)
-    || has_dangling_reference (metadata_, ids))
+    has_dangling_reference (json_->registry_json_, ids)
+    || has_dangling_reference (json_->metadata_, ids))
     return false;
 
   return std::ranges::all_of (roots_, [&] (const QUuid &root) {
@@ -568,7 +630,7 @@ ClipboardPayload
 ClipboardPayload::with_regenerated_uuids (ClipboardPayload payload)
 {
   IdMap id_map;
-  for (const auto &[bucket_key, bucket] : payload.registry_json_.items ())
+  for (const auto &[bucket_key, bucket] : payload.json_->registry_json_.items ())
     {
       // file audio sources are shared assets and keep their identity
       if (bucket_key == ProjectRegistry::kFileAudioSourcesKey)
@@ -577,8 +639,8 @@ ClipboardPayload::with_regenerated_uuids (ClipboardPayload payload)
         id_map.emplace (entry_id (entry), QUuid::createUuid ());
     }
 
-  rewrite_uuid_strings (payload.registry_json_, id_map);
-  rewrite_uuid_strings (payload.metadata_, id_map);
+  rewrite_uuid_strings (payload.json_->registry_json_, id_map);
+  rewrite_uuid_strings (payload.json_->metadata_, id_map);
   for (auto &root : payload.roots_)
     {
       if (const auto it = id_map.find (root); it != id_map.end ())
@@ -602,8 +664,8 @@ ClipboardPayload::filtered_for_target (
   // silent clips.
   IdSet drop_set;
   for (
-    const auto &entry :
-    result_payload.registry_json_.at (ProjectRegistry::kFileAudioSourcesKey))
+    const auto &entry : result_payload.json_->registry_json_.at (
+      ProjectRegistry::kFileAudioSourcesKey))
     {
       const auto id = entry_id (entry);
       if (!target_registry.contains (id))
@@ -613,8 +675,8 @@ ClipboardPayload::filtered_for_target (
     arrangement::AudioClip, arrangement::ArrangerObjectPtrVariant>::value;
   static constexpr auto kAudioSourceObjectIndex = ptr_variant_index<
     arrangement::AudioSourceObject, arrangement::ArrangerObjectPtrVariant>::value;
-  auto &arranger_bucket =
-    result_payload.registry_json_.at (ProjectRegistry::kArrangerObjectsKey);
+  auto &arranger_bucket = result_payload.json_->registry_json_.at (
+    ProjectRegistry::kArrangerObjectsKey);
   for (const auto &entry : arranger_bucket)
     {
       const auto type_index =
@@ -657,7 +719,9 @@ ClipboardPayload::filtered_for_target (
       // Remove dropped objects from the buckets, then drop every
       // reference to them (buckets are rebuilt instead of erased in
       // place: nlohmann erasure shifts the whole tail)
-      for (auto &[bucket_key, bucket] : result_payload.registry_json_.items ())
+      for (
+        auto &[bucket_key, bucket] :
+        result_payload.json_->registry_json_.items ())
         {
           nlohmann::json kept = nlohmann::json::array ();
           for (auto &entry : bucket)
@@ -667,8 +731,8 @@ ClipboardPayload::filtered_for_target (
             }
           bucket = std::move (kept);
         }
-      drop_uuid_references (result_payload.registry_json_, drop_set);
-      drop_uuid_references (result_payload.metadata_, drop_set);
+      drop_uuid_references (result_payload.json_->registry_json_, drop_set);
+      drop_uuid_references (result_payload.json_->metadata_, drop_set);
       std::erase_if (result_payload.roots_, [&] (const QUuid &id) {
         return drop_set.contains (id);
       });
@@ -682,16 +746,19 @@ ClipboardPayload::filtered_for_target (
   // same project this severs references whose targets were deleted after
   // the copy was made.
   IdSet resolvable;
-  for (const auto &[bucket_key, bucket] : result_payload.registry_json_.items ())
+  for (
+    const auto &[bucket_key, bucket] :
+    result_payload.json_->registry_json_.items ())
     for (const auto &entry : bucket)
       resolvable.insert (entry_id (entry));
   const auto is_resolvable = [&] (const QUuid &id) {
     return resolvable.contains (id) || target_registry.contains (id);
   };
   clear_unresolvable_external_refs (
-    result_payload.registry_json_, is_resolvable, result.severed_references);
+    result_payload.json_->registry_json_, is_resolvable,
+    result.severed_references);
   clear_unresolvable_external_refs (
-    result_payload.metadata_, is_resolvable, result.severed_references);
+    result_payload.json_->metadata_, is_resolvable, result.severed_references);
 
   if (result_payload.roots_.empty ())
     return FilterResult{};
@@ -703,7 +770,7 @@ ClipboardPayload::ids_needed_by_roots (const std::vector<QUuid> &roots) const
 {
   // Index the payload entries by ID
   boost::unordered_flat_map<QUuid, const nlohmann::json *> entries_by_id;
-  for (const auto &[bucket_key, bucket] : registry_json_.items ())
+  for (const auto &[bucket_key, bucket] : json_->registry_json_.items ())
     {
       for (const auto &entry : bucket)
         entries_by_id.emplace (entry_id (entry), &entry);
@@ -745,7 +812,7 @@ ClipboardPayload::import_into (ProjectRegistry &registry) const
   bool               has_shared_file_audio_sources = false;
   for (
     const auto &entry :
-    registry_json_.at (ProjectRegistry::kFileAudioSourcesKey))
+    json_->registry_json_.at (ProjectRegistry::kFileAudioSourcesKey))
     {
       const auto id = entry_id (entry);
       if (registry.contains (id))
@@ -759,7 +826,7 @@ ClipboardPayload::import_into (ProjectRegistry &registry) const
           imported_ids.push_back (id);
         }
     }
-  for (const auto &[bucket_key, bucket] : registry_json_.items ())
+  for (const auto &[bucket_key, bucket] : json_->registry_json_.items ())
     {
       if (bucket_key == ProjectRegistry::kFileAudioSourcesKey)
         continue;
@@ -788,7 +855,7 @@ ClipboardPayload::import_into (ProjectRegistry &registry) const
     {
       try
         {
-          from_json (registry_json_, registry);
+          from_json (json_->registry_json_, registry);
         }
       catch (...)
         {
@@ -798,7 +865,7 @@ ClipboardPayload::import_into (ProjectRegistry &registry) const
       return imported_ids;
     }
 
-  auto  registry_json = registry_json_;
+  auto  registry_json = json_->registry_json_;
   auto &fas_bucket = registry_json.at (ProjectRegistry::kFileAudioSourcesKey);
   for (auto it = fas_bucket.begin (); it != fas_bucket.end ();)
     {
@@ -853,8 +920,8 @@ to_json (nlohmann::json &j, const ClipboardPayload &payload)
       break;
     }
   j[kSourceProjectIdKey] = payload.source_project_id_;
-  j[kMetadataKey] = payload.metadata_;
-  j[kRegistryKey] = payload.registry_json_;
+  j[kMetadataKey] = payload.json_->metadata_;
+  j[kRegistryKey] = payload.json_->registry_json_;
   j[kRootsKey] = payload.roots_;
 }
 
@@ -873,8 +940,8 @@ from_json (const nlohmann::json &j, ClipboardPayload &payload)
       fmt::format ("Invalid clipboard payload type '{}'", type_str));
 
   j.at (kSourceProjectIdKey).get_to (payload.source_project_id_);
-  j.at (kMetadataKey).get_to (payload.metadata_);
-  j.at (kRegistryKey).get_to (payload.registry_json_);
+  j.at (kMetadataKey).get_to (payload.json_->metadata_);
+  j.at (kRegistryKey).get_to (payload.json_->registry_json_);
   j.at (kRootsKey).get_to (payload.roots_);
 }
 
