@@ -56,11 +56,13 @@ protected:
 TEST_F (ArrangerObjectListModelTest, InitialState)
 {
   EXPECT_EQ (model_->rowCount (), 5);
-  EXPECT_EQ (model_->roleNames ().size (), 2);
+  EXPECT_EQ (model_->roleNames ().size (), 3);
   EXPECT_TRUE (model_->roleNames ().contains (
     ArrangerObjectListModel::ArrangerObjectPtrRole));
   EXPECT_TRUE (model_->roleNames ().contains (
     ArrangerObjectListModel::ArrangerObjectUuidReferenceRole));
+  EXPECT_TRUE (model_->roleNames ().contains (
+    ArrangerObjectListModel::ArrangerObjectUuidStringRole));
 }
 
 // Test data access
@@ -144,13 +146,16 @@ TEST_F (ArrangerObjectListModelTest, ResetModel)
 TEST_F (ArrangerObjectListModelTest, RoleNames)
 {
   auto roles = model_->roleNames ();
-  EXPECT_EQ (roles.size (), 2);
+  EXPECT_EQ (roles.size (), 3);
   EXPECT_EQ (
     roles[ArrangerObjectListModel::ArrangerObjectPtrRole],
     QByteArray ("arrangerObject"));
   EXPECT_EQ (
     roles[ArrangerObjectListModel::ArrangerObjectUuidReferenceRole],
     QByteArray ("arrangerObjectReference"));
+  EXPECT_EQ (
+    roles[ArrangerObjectListModel::ArrangerObjectUuidStringRole],
+    QByteArray ("arrangerObjectUuidString"));
 }
 
 // Test empty model

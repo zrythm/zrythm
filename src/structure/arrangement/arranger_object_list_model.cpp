@@ -125,6 +125,7 @@ ArrangerObjectListModel::roleNames () const
   QHash<int, QByteArray> roles;
   roles[ArrangerObjectPtrRole] = "arrangerObject";
   roles[ArrangerObjectUuidReferenceRole] = "arrangerObjectReference";
+  roles[ArrangerObjectUuidStringRole] = "arrangerObjectUuidString";
   return roles;
 }
 
@@ -146,6 +147,14 @@ ArrangerObjectListModel::data (const QModelIndex &index, int role) const
       return QVariant::fromValue (
         const_cast<ArrangerObjectUuidReference *> (
           &objects_.get<random_access_index> ()[static_cast<size_t> (index_int)]));
+    }
+  if (role == ArrangerObjectUuidStringRole)
+    {
+      return type_safe::
+        get (objects_
+               .get<random_access_index> ()[static_cast<size_t> (index_int)]
+               .id ())
+          .toString (QUuid::WithoutBraces);
     }
 
   return {};

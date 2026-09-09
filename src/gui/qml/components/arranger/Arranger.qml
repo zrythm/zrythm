@@ -354,6 +354,45 @@ Item {
     root.arrangerSelectionModel.setCurrentIndex(unifiedIndex, ItemSelectionModel.Select);
   }
 
+  // Selects the objects identified by @p uuidStrings (e.g. the return
+  // value of a paste or duplicate), in the given order
+  function selectObjectsByUuidStrings(uuidStrings: list<string>) {
+    root.arrangerSelectionModel.clear();
+    let firstUnifiedIndex = null;
+    for (const uuidString of uuidStrings) {
+      const unifiedIndex = root.unifiedIndexForUuidString(uuidString);
+      if (unifiedIndex !== null) {
+        root.arrangerSelectionModel.select(unifiedIndex, ItemSelectionModel.Select);
+        if (firstUnifiedIndex === null)
+          firstUnifiedIndex = unifiedIndex;
+      }
+    }
+    if (firstUnifiedIndex !== null)
+      root.arrangerSelectionModel.setCurrentIndex(firstUnifiedIndex, ItemSelectionModel.NoUpdate);
+  }
+
+  function unifiedIndexForUuidString(uuidString: string): var {
+    const numRows = root.unifiedObjectsModel.rowCount();
+    for (let row = 0; row < numRows; row++) {
+      const unifiedIndex = root.unifiedObjectsModel.index(row, 0);
+      const rowUuidString = root.unifiedObjectsModel.data(unifiedIndex, ArrangerObjectListModel.ArrangerObjectUuidStringRole);
+      if (rowUuidString !== undefined && rowUuidString === uuidString)
+        return unifiedIndex;
+    }
+    return null;
+  }
+
+  // Pastes the clipboard contents at the playhead and returns the pasted
+  // objects' UUID strings. Editor arrangers (which set clipContext) paste
+  // into the edited clip; the timeline arranger overrides this function
+  function pasteAtPlayhead(): list<string> {
+    if (root.clipContext !== null) {
+      const localTicks = root.transport.playhead.ticks - root.clipContext.position.ticks;
+      return root.selectionOperator.pasteObjectsIntoClip(root.clipContext, Math.max(0, localTicks));
+    }
+    return [];
+  }
+
   function shouldResizeBeLoopResize(object: ArrangerObjectBaseView, fromStart: bool): bool {
     // Note: should probably check all selected objects if loopable
     const isObjectHoveredInBottomHalf = root.hoveredObject.hoveredPoint.y > ((root.hoveredObject.height * 2) / 3);
@@ -609,15 +648,27 @@ Item {
           }
 
           MenuItem {
+            text: qsTr("Cut")
+
+            onTriggered: root.selectionOperator.cutObjects(root.arrangerSelectionModel)
+          }
+
+          MenuItem {
             text: qsTr("Copy")
 
-            onTriggered: {}
+            onTriggered: root.selectionOperator.copyObjects(root.arrangerSelectionModel)
           }
 
           MenuItem {
             text: qsTr("Paste")
 
-            onTriggered: {}
+            onTriggered: root.selectObjectsByUuidStrings(root.pasteAtPlayhead())
+          }
+
+          MenuItem {
+            text: qsTr("Duplicate")
+
+            onTriggered: root.selectObjectsByUuidStrings(root.selectionOperator.duplicateObjects(root.arrangerSelectionModel))
           }
 
           MenuItem {

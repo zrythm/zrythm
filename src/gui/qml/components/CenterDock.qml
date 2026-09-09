@@ -222,6 +222,7 @@ ColumnLayout {
               tempoMap: root.project.tempoMap
               tempoObjectManager: root.project.tempoObjectManager
               tool: root.session.uiState.tool
+              tracklist: root.project.tracklist
               transport: root.project.transport
               undoStack: root.session.undoStack
               unifiedObjectsModel: timelinePane.unifiedObjectsModel
@@ -242,9 +243,11 @@ ColumnLayout {
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
+            tempoObjectManager: root.project.tempoObjectManager
             timeline: root.session.uiState.timeline
             tool: root.session.uiState.tool
             tracklist: root.project.tracklist
+            trackSelectionModel: root.trackSelectionModel
             transport: root.project.transport
             undoStack: root.session.undoStack
             unifiedObjectsModel: timelinePane.unifiedObjectsModel
@@ -293,9 +296,11 @@ ColumnLayout {
             selectionOperator: timelinePane.selectionOperator
             snapGrid: root.session.uiState.snapGridTimeline
             tempoMap: root.project.tempoMap
+            tempoObjectManager: root.project.tempoObjectManager
             timeline: root.session.uiState.timeline
             tool: root.session.uiState.tool
             tracklist: root.project.tracklist
+            trackSelectionModel: root.trackSelectionModel
             transport: root.project.transport
             undoStack: root.session.undoStack
             unifiedObjectsModel: timelinePane.unifiedObjectsModel

@@ -218,6 +218,7 @@ GridLayout {
     Layout.fillHeight: true
     Layout.fillWidth: true
     arrangerSelectionModel: arrangerSelectionModel
+    clipContext: root.clipEditor.clipObject
     clipEditor: root.clipEditor
     dragState: editorDragState
     midiEditor: root.midiEditor

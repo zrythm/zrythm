@@ -18,7 +18,33 @@ ApplicationWindow {
   required property AlertManager alertManager
   required property AppSettings appSettings
   required property ChordPresetManager chordPresetManager
+  readonly property Action copyAction: Action {
+    id: copyAction
+
+    enabled: root.activeArranger !== null
+    shortcut: StandardKey.Copy
+    text: qsTr("&Copy")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.selectionOperator.copyObjects(root.activeArranger.arrangerSelectionModel);
+      }
+    }
+  }
   required property ControlRoom controlRoom
+  readonly property Action cutAction: Action {
+    id: cutAction
+
+    enabled: root.activeArranger !== null
+    shortcut: StandardKey.Cut
+    text: qsTr("Cu&t")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.selectionOperator.cutObjects(root.activeArranger.arrangerSelectionModel);
+      }
+    }
+  }
   readonly property Action deleteAction: Action {
     id: deleteAction
 
@@ -33,6 +59,19 @@ ApplicationWindow {
     }
   }
   required property DeviceManager deviceManager
+  readonly property Action duplicateAction: Action {
+    id: duplicateAction
+
+    enabled: root.activeArranger !== null
+    shortcut: "Ctrl+D"
+    text: qsTr("&Duplicate")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.selectObjectsByUuidStrings(root.activeArranger.selectionOperator.duplicateObjects(root.activeArranger.arrangerSelectionModel));
+      }
+    }
+  }
   readonly property Action fullScreenAction: Action {
     id: fullScreenAction
 
@@ -45,6 +84,19 @@ ApplicationWindow {
   }
   readonly property Project project: session.project
   required property ProjectSession session
+  readonly property Action pasteAction: Action {
+    id: pasteAction
+
+    enabled: root.activeArranger !== null && root.session.clipboard.hasArrangerObjects
+    shortcut: StandardKey.Paste
+    text: qsTr("&Paste")
+
+    onTriggered: {
+      if (root.activeArranger) {
+        root.activeArranger.selectObjectsByUuidStrings(root.activeArranger.pasteAtPlayhead());
+      }
+    }
+  }
   readonly property Action toggleMuteAction: Action {
     id: toggleMuteAction
 

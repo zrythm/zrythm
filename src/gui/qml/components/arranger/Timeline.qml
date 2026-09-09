@@ -14,8 +14,21 @@ Arranger {
   id: root
 
   required property bool pinned
+  required property TempoObjectManager tempoObjectManager
   required property var timeline
   required property Tracklist tracklist
+  required property TrackSelectionModel trackSelectionModel
+
+  // Returns the topmost track of the track selection, used as the paste
+  // target for lane clips
+  function firstSelectedTrack(): Track {
+    let firstSelectedRow = null;
+    for (const selectedRow of root.trackSelectionModel.selectedRows(0)) {
+      if (firstSelectedRow === null || selectedRow.row < firstSelectedRow.row)
+        firstSelectedRow = selectedRow;
+    }
+    return firstSelectedRow !== null ? firstSelectedRow.data(TrackCollection.TrackPtrRole) : null;
+  }
 
   function beginObjectCreation(coordinates: point): ArrangerObject {
     const track = getTrackAtY(coordinates.y);
@@ -338,6 +351,18 @@ Arranger {
   }
 
   function moveTemporaryObjectsY(dy: real, prevY: real) {
+  }
+
+  // Pastes the clipboard's arranger objects onto the timeline so the
+  // earliest object lands at the playhead; lane clips are attached to the
+  // topmost selected track
+  function pasteAtPlayhead(): list<string> {
+    return root.selectionOperator.pasteObjectsOnTimeline(
+      root.firstSelectedTrack(),
+      root.tracklist.singletonTracks.markerTrack,
+      root.tracklist.singletonTracks.chordTrack,
+      root.tempoObjectManager,
+      root.transport.playhead.ticks);
   }
 
   editorSettings: timeline

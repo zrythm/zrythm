@@ -13,6 +13,7 @@ Arranger {
   required property int laneHeight
   required property int laneSpacing
   required property TempoObjectManager tempoObjectManager
+  required property Tracklist tracklist
 
   function beginObjectCreation(coordinates: point): ArrangerObject {
     // Open the macro before creation so the creation and the post-creation
@@ -60,6 +61,17 @@ Arranger {
   }
 
   function moveTemporaryObjectsY(dy: real, prevY: real) {
+  }
+
+  // Pastes the clipboard's tempo and time-signature objects so the
+  // earliest object lands at the playhead
+  function pasteAtPlayhead(): list<string> {
+    return root.selectionOperator.pasteObjectsOnTimeline(
+      null,
+      root.tracklist.singletonTracks.markerTrack,
+      root.tracklist.singletonTracks.chordTrack,
+      root.tempoObjectManager,
+      root.transport.playhead.ticks);
   }
 
   enableYScroll: false

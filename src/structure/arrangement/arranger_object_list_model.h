@@ -84,7 +84,10 @@ public:
   enum ArrangerObjectListModelRoles
   {
     ArrangerObjectPtrRole = Qt::UserRole + 1,
-    ArrangerObjectUuidReferenceRole
+    ArrangerObjectUuidReferenceRole,
+    /** UUID of the row object as a brace-less string (the form
+     * selection/paste APIs return), for QML-side row lookups. */
+    ArrangerObjectUuidStringRole
   };
   Q_ENUM (ArrangerObjectListModelRoles)
 
