@@ -332,9 +332,13 @@ ProjectRegistry::delete_object_by_id (const QUuid &id)
   // Force-deleting an object that is still referenced would make the next
   // release of one of its references throw in an arbitrary destructor
   const auto ref_it = impl_->ref_counts_.find (id);
-  assert (
-    ref_it == impl_->ref_counts_.end ()
-    || ref_it->second == 0 && "delete_object_by_id called with live references");
+  if (ref_it != impl_->ref_counts_.end () && ref_it->second != 0)
+    {
+      z_error (
+        "delete_object_by_id: object {} still has {} live references", id,
+        ref_it->second);
+      return;
+    }
 
   QObject * raw = nullptr;
 
