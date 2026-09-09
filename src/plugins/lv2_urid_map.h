@@ -17,6 +17,7 @@ struct Lv2HostUrids
 {
   uint32_t atom_Sequence = 0;
   uint32_t atom_Chunk = 0;
+  uint32_t atom_Bool = 0;
   uint32_t atom_Float = 0;
   uint32_t atom_Int = 0;
   uint32_t atom_Long = 0;

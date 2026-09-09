@@ -48,7 +48,7 @@ TEST_F (Lv2DiscoveryTest, ExtractsAmpBundleMetadata)
   EXPECT_FALSE (info.is_instrument_);
   EXPECT_EQ (info.num_audio_ins_, 1);
   EXPECT_EQ (info.num_audio_outs_, 1);
-  EXPECT_EQ (info.num_ctrl_ins_, 1);
+  EXPECT_EQ (info.num_ctrl_ins_, 2);
   EXPECT_EQ (info.num_ctrl_outs_, 0);
   EXPECT_EQ (info.num_midi_ins_, 0);
   EXPECT_EQ (info.num_midi_outs_, 0);

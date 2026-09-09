@@ -33,7 +33,8 @@ typedef enum
 {
   AMP_GAIN = 0,
   AMP_INPUT = 1,
-  AMP_OUTPUT = 2
+  AMP_OUTPUT = 2,
+  AMP_MUTE = 3
 } PortIndex;
 
 /**
@@ -48,6 +49,7 @@ typedef struct
   const float * gain;
   const float * input;
   float *       output;
+  const float * mute;
 } Amp;
 
 /**
@@ -95,6 +97,9 @@ connect_port (LV2_Handle instance, uint32_t port, void * data)
       break;
     case AMP_OUTPUT:
       amp->output = (float *) data;
+      break;
+    case AMP_MUTE:
+      amp->mute = (const float *) data;
       break;
     }
 }

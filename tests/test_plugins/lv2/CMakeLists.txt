@@ -54,7 +54,7 @@ function(add_lv2_fixture target bundle_dir output_name)
 endfunction()
 
 add_lv2_fixture(eg_amp_lv2 eg-amp.lv2 amp
-  TTL_FILES amp.ttl
+  TTL_FILES amp.ttl presets.ttl
   SOURCES eg-amp.lv2/amp.c)
 add_lv2_fixture(eg_enum_lv2 eg-enum.lv2 enumamp
   TTL_FILES enumamp.ttl

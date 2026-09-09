@@ -61,6 +61,8 @@ public:
 
   units::sample_u32_t get_single_playback_latency () const override;
 
+  std::span<const PresetEntry> presetEntries () const override;
+
 protected:
   void prepare_plugin_for_processing (
     units::sample_rate_t sample_rate,
@@ -112,6 +114,28 @@ private:
 
   std::string save_state_impl () const override;
   bool        load_state_impl (const std::string &base64_state) override;
+
+  /**
+   * @brief Applies a preset by restoring its state from the lilv world.
+   */
+  void apply_preset_impl (const PresetId &id) override;
+
+  /**
+   * @brief Rebuilds the cached preset list from the lilv world.
+   *
+   * Presets are the resources related to the loaded plugin through
+   * pset:Preset. Entries are sorted by name and hold the preset URI as
+   * their id; the group is the label of the preset's pset:bank, when it
+   * declares one. Emits the preset list signals when the content changed.
+   */
+  void rebuild_preset_list ();
+
+  /** Clears the cached preset list, emitting the preset list signals
+   * when the list was non-empty. */
+  void clear_preset_list ();
+
+  /** Cached presets of the loaded plugin (preset URIs as ids). */
+  std::vector<PresetEntry> preset_entries_;
 
   static constexpr auto kStateKey = "state"sv;
   friend void           to_json (nlohmann::json &j, const Lv2Plugin &p);

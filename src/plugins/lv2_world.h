@@ -86,6 +86,21 @@ public:
   Lv2World &operator= (Lv2World &&) = delete;
 
   /**
+   * @brief Loads @p bundle_dir into the world.
+   *
+   * Loading is idempotent; previously loaded bundles stay in the world.
+   * A bundle's resources (e.g. the presets it declares) are
+   * discoverable only after it is loaded.
+   *
+   * The world learns bundles lazily: production code loads a bundle
+   * when one of its plugins is hosted, so a bundle holding only
+   * presets for plugins in other bundles is not loaded and its
+   * presets stay undiscovered.
+   */
+  void
+  load_bundle (const std::filesystem::path &bundle_dir) [[clang::blocking]];
+
+  /**
    * @brief Loads @p bundle_dir into the world and returns the plugin
    * with @p uri.
    *

@@ -58,10 +58,8 @@ Lv2World::Lv2World (const std::filesystem::path &spec_bundles_dir)
 
 Lv2World::~Lv2World () = default;
 
-const LilvPlugin *
-Lv2World::find_plugin (
-  const std::filesystem::path &bundle_dir,
-  std::string_view             uri)
+void
+Lv2World::load_bundle (const std::filesystem::path &bundle_dir)
 {
   // (bundle_dir / "") forces a trailing slash: lilv requires directories
   // to be passed with one
@@ -70,10 +68,18 @@ Lv2World::find_plugin (
   if (bundle_uri == nullptr)
     {
       z_warning ("Failed to create file URI for LV2 bundle '{}'", bundle_dir);
-      return nullptr;
+      return;
     }
 
   lilv_world_load_bundle (world_.get (), bundle_uri.get ());
+}
+
+const LilvPlugin *
+Lv2World::find_plugin (
+  const std::filesystem::path &bundle_dir,
+  std::string_view             uri)
+{
+  load_bundle (bundle_dir);
 
   const LilvNodeUPtr uri_node{
     lilv_new_uri (world_.get (), std::string (uri).c_str ())

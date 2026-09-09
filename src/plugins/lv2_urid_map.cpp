@@ -73,6 +73,7 @@ Lv2UridMap::host_urids ()
   Lv2HostUrids u;
   u.atom_Sequence = map (LV2_ATOM__Sequence);
   u.atom_Chunk = map (LV2_ATOM__Chunk);
+  u.atom_Bool = map (LV2_ATOM__Bool);
   u.atom_Float = map (LV2_ATOM__Float);
   u.atom_Int = map (LV2_ATOM__Int);
   u.atom_Long = map (LV2_ATOM__Long);

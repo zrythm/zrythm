@@ -61,4 +61,14 @@
 		lv2:index 2 ;
 		lv2:symbol "out" ;
 		lv2:name "Out"
+	] , [
+		a lv2:InputPort ,
+			lv2:ControlPort ;
+		lv2:index 3 ;
+		lv2:symbol "mute" ;
+		lv2:name "Mute" ;
+		lv2:portProperty lv2:toggled ;
+		lv2:default 0.0 ;
+		lv2:minimum 0.0 ;
+		lv2:maximum 1.0
 	] .

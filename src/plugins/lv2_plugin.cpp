@@ -54,6 +54,7 @@
 #include <lv2/parameters/parameters.h>
 #include <lv2/port-groups/port-groups.h>
 #include <lv2/port-props/port-props.h>
+#include <lv2/presets/presets.h>
 #include <lv2/resize-port/resize-port.h>
 #include <lv2/state/state.h>
 #include <lv2/time/time.h>
@@ -330,6 +331,10 @@ public:
   /** Restores the instance from a base64 zip archive state string. */
   bool
   restore_state_from_blob (const std::string &base64_state) [[clang::blocking]];
+
+  /** Restores the instance from the state of a preset in the world. */
+  bool
+  restore_preset_from_world (const std::string &preset_uri) [[clang::blocking]];
 
   /** LV2 state:makePath callback: returns a path under the current
    * makePath root, creating leading directories. */
@@ -1188,6 +1193,7 @@ Lv2Plugin::load_plugin (
       return false;
     }
   create_ports_and_parameters (generate_new);
+  rebuild_preset_list ();
 
   return true;
 }
@@ -1219,6 +1225,7 @@ Lv2Plugin::unload_current_plugin ()
   pimpl_->unroutable_ports_warned_ = false;
   pimpl_->midi_in_port_idx_ = -1;
   pimpl_->midi_out_port_idx_ = -1;
+  clear_preset_list ();
   pimpl_->time_in_port_idx_ = -1;
   pimpl_->latency_.store (units::samples (0u), std::memory_order_relaxed);
 }
@@ -2506,6 +2513,24 @@ features_with_make_path (
   return result;
 }
 
+// Returns the label of @p subject (the first object of the label
+// predicate), or an empty string when it has none
+QString
+first_node_label (
+  LilvWorld *      world,
+  const LilvNode * subject,
+  const LilvNode * label_predicate)
+{
+  const LilvNodesUPtr labels{
+    lilv_world_find_nodes (world, subject, label_predicate, nullptr)
+  };
+  if (labels == nullptr || lilv_nodes_size (labels.get ()) == 0)
+    return {};
+  return utils::Utf8String::from_utf8_encoded_string (
+           lilv_node_as_string (lilv_nodes_get_first (labels.get ())))
+    .to_qstring ();
+}
+
 } // namespace
 
 void
@@ -2902,6 +2927,48 @@ Lv2Plugin::Lv2PluginImpl::restore_state_from_blob (
   return true;
 }
 
+bool
+Lv2Plugin::Lv2PluginImpl::restore_preset_from_world (
+  const std::string &preset_uri)
+{
+  const LilvNodeUPtr preset_node{
+    lilv_new_uri (owner_.world_->raw (), preset_uri.c_str ())
+  };
+  if (preset_node == nullptr)
+    {
+      z_warning (
+        "LV2: invalid preset URI '{}' for '{}'", preset_uri, owner_.get_name ());
+      return false;
+    }
+
+  // The preset state is read from the world's data: files its TTL
+  // references keep their locations in the preset's bundle, resolved
+  // by the mapPath feature lilv adds itself
+  const LilvStateUPtr state{ lilv_state_new_from_world (
+    owner_.world_->raw (), &urid_map_feature_, preset_node.get ()) };
+  if (state == nullptr)
+    {
+      z_warning (
+        "LV2: failed to load the state of preset '{}' of '{}'", preset_uri,
+        owner_.get_name ());
+      return false;
+    }
+
+  MakePathContext     restore_context{ this, &session_scratch_dir_ };
+  LV2_State_Make_Path restore_make_path{
+    .handle = &restore_context, .path = state_make_path
+  };
+  LV2_Feature restore_make_path_feature{
+    LV2_STATE__makePath, &restore_make_path
+  };
+  const auto restore_features =
+    features_with_make_path (feature_ptrs_, &restore_make_path_feature);
+  lilv_state_restore (
+    state.get (), instance_, state_set_port_value, this, 0,
+    restore_features.data ());
+  return true;
+}
+
 std::string
 Lv2Plugin::save_state_impl () const
 {
@@ -2926,10 +2993,14 @@ Lv2Plugin::Lv2PluginImpl::state_set_port_value (
 {
   auto * impl = static_cast<Lv2PluginImpl *> (user_data);
 
-  // The state blob comes from a saved project file and may hold any
-  // literal type: convert the numeric ones and reject everything else
+  // The data comes from saved project files or external presets and
+  // may hold any literal type: convert the numeric and boolean ones
+  // and reject everything else. An atom:Bool holds a 32-bit integer
+  // body regardless of the C++ bool size
   const auto &urids = impl->host_urids_;
   const auto  new_value = [&] () -> std::optional<float> {
+    if (type == urids.atom_Bool && size == sizeof (int32_t))
+      return *static_cast<const int32_t *> (value) != 0 ? 1.f : 0.f;
     if (type == urids.atom_Float && size == sizeof (float))
       return *static_cast<const float *> (value);
     if (type == urids.atom_Double && size == sizeof (double))
@@ -3012,6 +3083,142 @@ Lv2Plugin::load_state_impl (const std::string &base64_state)
     "pause processing",
     get_name ());
   return false;
+}
+
+std::span<const Plugin::PresetEntry>
+Lv2Plugin::presetEntries () const
+{
+  return preset_entries_;
+}
+
+void
+Lv2Plugin::apply_preset_impl (const PresetId &id)
+{
+  assert (QThread::currentThread () == thread ());
+
+  // LV2 presets are identified by their URI; index ids belong to
+  // other formats
+  const auto * preset_uri = std::get_if<QString> (&id);
+  if (preset_uri == nullptr)
+    {
+      z_warning (
+        "LV2 plugin '{}': refusing to apply a non-URI preset id", get_name ());
+      return;
+    }
+
+  if (pimpl_->instance_ == nullptr)
+    {
+      z_warning (
+        "LV2 plugin '{}': cannot apply preset '{}' while the plugin is not "
+        "instantiated",
+        get_name (), utils::Utf8String::from_qstring (*preset_uri));
+      return;
+    }
+
+  // The restore runs on the plugin instance and must not overlap audio
+  // processing of the same instance
+  if (main_thread_callbacks_.with_paused_processing_)
+    {
+      const auto uri = utils::Utf8String::from_qstring (*preset_uri);
+      main_thread_callbacks_.with_paused_processing_ ([this, &uri] () {
+        pimpl_->restore_preset_from_world (uri.str ());
+      });
+      return;
+    }
+
+  z_warning (
+    "LV2: cannot apply a preset to '{}' while processing; the host cannot "
+    "pause processing",
+    get_name ());
+}
+
+void
+Lv2Plugin::rebuild_preset_list ()
+{
+  std::vector<PresetEntry> entries;
+
+  auto *             world = world_->raw ();
+  const LilvNodeUPtr preset_type{ lilv_new_uri (world, LV2_PRESETS__Preset) };
+  const LilvNodeUPtr label_predicate{
+    lilv_new_uri (world, LILV_NS_RDFS "label")
+  };
+  const LilvNodeUPtr  bank_predicate{ lilv_new_uri (world, LV2_PRESETS__bank) };
+  const LilvNodesUPtr presets{
+    lilv_plugin_get_related (pimpl_->plugin_, preset_type.get ())
+  };
+  if (presets != nullptr)
+    {
+      LILV_FOREACH (nodes, iter, presets.get ())
+        {
+          const LilvNode * preset = lilv_nodes_get (presets.get (), iter);
+          if (!lilv_node_is_uri (preset))
+            {
+              z_warning (
+                "LV2: '{}' has a preset that is not a URI; skipping it",
+                get_name ());
+              continue;
+            }
+
+          // Loads the data the preset's rdfs:seeAlso points to (its
+          // label and port values)
+          lilv_world_load_resource (world, preset);
+
+          const LilvNodesUPtr labels{ lilv_world_find_nodes (
+            world, preset, label_predicate.get (), nullptr) };
+          if (labels == nullptr || lilv_nodes_size (labels.get ()) == 0)
+            {
+              z_warning (
+                "LV2: '{}' has a preset without an rdfs:label; skipping it",
+                get_name ());
+              continue;
+            }
+
+          PresetEntry entry;
+          entry.name =
+            utils::Utf8String::from_utf8_encoded_string (
+              lilv_node_as_string (lilv_nodes_get_first (labels.get ())))
+              .to_qstring ();
+          entry.id =
+            utils::Utf8String::from_utf8_encoded_string (
+              lilv_node_as_uri (preset))
+              .to_qstring ();
+
+          const LilvNodesUPtr banks{ lilv_world_find_nodes (
+            world, preset, bank_predicate.get (), nullptr) };
+          if (banks != nullptr && lilv_nodes_size (banks.get ()) > 0)
+            {
+              entry.group = first_node_label (
+                world, lilv_nodes_get_first (banks.get ()),
+                label_predicate.get ());
+            }
+
+          entries.push_back (std::move (entry));
+        }
+    }
+
+  // The pset spec defines no order: sort by name, then URI, so equal
+  // labels cannot change the list order between rebuilds
+  std::ranges::sort (entries, [] (const PresetEntry &a, const PresetEntry &b) {
+    if (a.name != b.name)
+      return a.name < b.name;
+    return std::get<QString> (a.id) < std::get<QString> (b.id);
+  });
+
+  if (entries != preset_entries_)
+    {
+      preset_entries_ = std::move (entries);
+      notify_presets_rebuilt ();
+    }
+}
+
+void
+Lv2Plugin::clear_preset_list ()
+{
+  if (preset_entries_.empty ())
+    return;
+
+  preset_entries_.clear ();
+  notify_presets_rebuilt ();
 }
 
 void

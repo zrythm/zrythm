@@ -1,7 +1,23 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
 <http://lv2plug.in/plugins/eg-amp>
 	a lv2:Plugin ;
 	lv2:binary <amp@CMAKE_SHARED_LIBRARY_SUFFIX@>  ;
 	rdfs:seeAlso <amp.ttl> .
+
+<http://lv2plug.in/plugins/eg-amp#preset_boost>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:seeAlso <presets.ttl> .
+
+<http://lv2plug.in/plugins/eg-amp#preset_half>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:seeAlso <presets.ttl> .
+
+<http://lv2plug.in/plugins/eg-amp#preset_muted>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:seeAlso <presets.ttl> .

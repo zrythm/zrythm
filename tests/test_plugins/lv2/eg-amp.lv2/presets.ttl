@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: © 2026 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: FSFAP
+
+@prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
+@prefix pset: <http://lv2plug.in/ns/ext/presets#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://lv2plug.in/plugins/eg-amp#preset_boost>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:label "Boost" ;
+	pset:bank <http://lv2plug.in/plugins/eg-amp#bank_extra> ;
+	lv2:port [
+		lv2:symbol "gain" ;
+		pset:value 6.0206
+	] .
+
+<http://lv2plug.in/plugins/eg-amp#preset_half>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:label "Half" ;
+	lv2:port [
+		lv2:symbol "gain" ;
+		pset:value -6.0206
+	] .
+
+<http://lv2plug.in/plugins/eg-amp#preset_muted>
+	a pset:Preset ;
+	lv2:appliesTo <http://lv2plug.in/plugins/eg-amp> ;
+	rdfs:label "Muted" ;
+	lv2:port [
+		lv2:symbol "gain" ;
+		pset:value 0.0
+	] , [
+		lv2:symbol "mute" ;
+		pset:value true
+	] .
+
+<http://lv2plug.in/plugins/eg-amp#bank_extra>
+	a pset:Bank ;
+	rdfs:label "Extra" .

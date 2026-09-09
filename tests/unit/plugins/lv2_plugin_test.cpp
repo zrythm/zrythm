@@ -386,6 +386,96 @@ TEST_F (Lv2PluginTest, StateFilesSurviveRoundTrip)
   expect_restored_file (fresh_state_after_restore);
 }
 
+// Presets declared in the plugin's bundle are listed with their bank
+// grouping and apply their port values to the instance
+TEST_F (Lv2PluginTest, PresetListAndApply)
+{
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("eg-amp.lv2"));
+
+  // Entries are sorted by name; only the banked preset carries a group
+  const auto entries = plugin_->presetEntries ();
+  ASSERT_EQ (entries.size (), 3u);
+  EXPECT_EQ (entries[0].name, QStringLiteral ("Boost"));
+  EXPECT_EQ (entries[0].group, QStringLiteral ("Extra"));
+  EXPECT_EQ (
+    std::get<QString> (entries[0].id),
+    QStringLiteral ("http://lv2plug.in/plugins/eg-amp#preset_boost"));
+  EXPECT_EQ (entries[1].name, QStringLiteral ("Half"));
+  EXPECT_TRUE (entries[1].group.isEmpty ());
+  EXPECT_EQ (entries[2].name, QStringLiteral ("Muted"));
+  EXPECT_TRUE (entries[2].group.isEmpty ());
+
+  auto * gain = find_param_by_unique_id ("gain"sv);
+  ASSERT_NE (gain, nullptr);
+
+  // Selecting a preset applies its gain (6.0206 dB doubles the input)
+  plugin_->setPresetIndex (0);
+  EXPECT_EQ (plugin_->presetIndex (), 0);
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 2.f, 0.01f);
+
+  // A host-side user edit marks the plugin dirty; selecting a preset
+  // clears the flag again
+  gain->setBaseValueByUser (gain->range ().convertTo0To1 (0.f));
+  EXPECT_TRUE (plugin_->presetDirty ());
+  plugin_->setPresetIndex (1);
+  EXPECT_FALSE (plugin_->presetDirty ());
+  EXPECT_EQ (plugin_->presetIndex (), 1);
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 0.5f, 0.01f);
+
+  // Re-selecting the current preset re-applies it: an edit made after
+  // the selection reverts to the preset value (-6.0206 dB halves)
+  gain->setBaseValueByUser (gain->range ().convertTo0To1 (0.f));
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 1.f, 0.01f);
+  plugin_->setPresetIndex (1);
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 0.5f, 0.01f);
+
+  // A toggled port's boolean preset value applies as 1 (sratom reads
+  // xsd:boolean literals as atom:Bool with a 32-bit integer body)
+  plugin_->setPresetIndex (2);
+  auto * mute = find_param_by_unique_id ("mute"sv);
+  ASSERT_NE (mute, nullptr);
+  EXPECT_NEAR (mute->baseValue (), mute->range ().convertTo0To1 (1.f), 0.001f);
+  fill_input_with (1.f);
+  process_blocks (1);
+  EXPECT_NEAR (read_first_output_sample (), 1.f, 0.01f);
+}
+
+// Presets may live in a bundle of their own, separate from the plugin's
+TEST_F (Lv2PluginTest, PresetFromSeparateBundleApplies)
+{
+  // The hosting world learns bundles lazily: the preset bundle must be
+  // loaded into it for the plugin's preset lookup to see the bundle's
+  // manifest
+  world_->load_bundle (
+    std::filesystem::path{ TEST_LV2_SEARCH_PATHS }
+    / "test-instrument.preset.lv2");
+
+  ASSERT_NO_FATAL_FAILURE (load_test_plugin ("test-instrument.lv2"));
+
+  const auto entries = plugin_->presetEntries ();
+  ASSERT_EQ (entries.size (), 1u);
+  EXPECT_EQ (entries[0].name, QStringLiteral ("Init"));
+  EXPECT_EQ (
+    std::get<QString> (entries[0].id),
+    QStringLiteral ("https://lv2.zrythm.org/test-instrument/presets/init"));
+
+  // Applying the preset sets its port value on the instance
+  plugin_->setPresetIndex (0);
+  auto * test_param = find_param_by_unique_id ("test"sv);
+  ASSERT_NE (test_param, nullptr);
+  EXPECT_NEAR (
+    test_param->baseValue (), test_param->range ().convertTo0To1 (0.75f),
+    0.001f);
+}
+
 // A change of the processing sample rate re-instantiates the plugin,
 // carrying the current state over
 TEST_F (Lv2PluginTest, SampleRateChangeCarriesStateOver)
