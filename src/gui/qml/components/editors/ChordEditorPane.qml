@@ -35,6 +35,7 @@ GridLayout {
   readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
   required property ProjectSession session
   readonly property Track track: root.project.tracklist.getTrackForTimelineObject(root.chordClip)
+  required property EditorArrangerObjectsModel unifiedObjectsModel
 
   function _selectedChordObjects(): QVariantList {
     const list = [];
@@ -146,14 +147,10 @@ GridLayout {
     chordClip: root.chordClip
   }
 
-  UnifiedProxyModel {
-    id: unifiedObjectsModel
-  }
-
   ItemSelectionModel {
     id: arrangerSelectionModel
 
-    model: unifiedObjectsModel
+    model: root.unifiedObjectsModel
   }
 
   // Cell (1,1): chord arranger grid
@@ -177,7 +174,7 @@ GridLayout {
     tool: root.session.uiState.tool
     transport: root.project.transport
     undoStack: root.session.undoStack
-    unifiedObjectsModel: unifiedObjectsModel
+    unifiedObjectsModel: root.unifiedObjectsModel
 
     onChordCreationRequested: function (ticks) {
       createDialogLoader.active = true;

@@ -15,6 +15,8 @@
 #include "controllers/recording_coordinator.h"
 #include "controllers/recording_materializer.h"
 #include "controllers/transport_controller.h"
+#include "gui/backend/editor_arranger_objects_model.h"
+#include "gui/backend/timeline_arranger_objects_model.h"
 #include "gui/qquick/generic_plugin_ui_controller.h"
 #include "gui/qquick/qfuture_qml_wrapper.h"
 #include "structure/project/project.h"
@@ -53,6 +55,12 @@ class ProjectSession : public QObject
     zrythm::structure::project::ProjectUiState * uiState READ uiState CONSTANT
       FINAL)
   Q_PROPERTY (zrythm::undo::UndoStack * undoStack READ undoStack CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::TimelineArrangerObjectsModel * timelineArrangerObjects READ
+      timelineArrangerObjects CONSTANT FINAL)
+  Q_PROPERTY (
+    zrythm::gui::EditorArrangerObjectsModel * editorArrangerObjects READ
+      editorArrangerObjects CONSTANT FINAL)
   Q_PROPERTY (
     zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator READ
       arrangerObjectCreator CONSTANT FINAL)
@@ -103,6 +111,8 @@ public:
   structure::project::Project * project () const;
   structure::project::ProjectUiState *     uiState () const;
   undo::UndoStack *                        undoStack () const;
+  TimelineArrangerObjectsModel *           timelineArrangerObjects () const;
+  EditorArrangerObjectsModel *             editorArrangerObjects () const;
   zrythm::actions::ArrangerObjectCreator * arrangerObjectCreator () const;
   zrythm::actions::ClipOperator *          clipOperator () const;
   zrythm::actions::TrackCreator *          trackCreator () const;
@@ -197,6 +207,11 @@ private:
 
   // Undo/redo history
   utils::QObjectUniquePtr<undo::UndoStack> undo_stack_;
+
+  // Unified arranger object models (timeline-wide and open-clip)
+  utils::QObjectUniquePtr<TimelineArrangerObjectsModel>
+    timeline_arranger_objects_;
+  utils::QObjectUniquePtr<EditorArrangerObjectsModel> editor_arranger_objects_;
 
   // Quantize options for MIDI editing
   std::unique_ptr<old_dsp::QuantizeOptions> quantize_opts_editor_;

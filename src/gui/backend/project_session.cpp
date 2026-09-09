@@ -159,6 +159,16 @@ ProjectSession::ProjectSession (
 {
   project_->setParent (this);
 
+  timeline_arranger_objects_ =
+    utils::make_qobject_unique<TimelineArrangerObjectsModel> (this);
+  timeline_arranger_objects_->setTracklist (project_->tracklist ());
+  timeline_arranger_objects_->setTempoObjectManager (
+    project_->tempoObjectManager ());
+
+  editor_arranger_objects_ =
+    utils::make_qobject_unique<EditorArrangerObjectsModel> (this);
+  editor_arranger_objects_->setClipEditor (ui_state_->clipEditor ());
+
   project_->set_audio_input_selection_provider (
     [this] (const structure::tracks::Track::Uuid &uuid)
       -> dsp::AudioInputSelection * {
@@ -499,6 +509,18 @@ undo::UndoStack *
 ProjectSession::undoStack () const
 {
   return undo_stack_.get ();
+}
+
+TimelineArrangerObjectsModel *
+ProjectSession::timelineArrangerObjects () const
+{
+  return timeline_arranger_objects_.get ();
+}
+
+EditorArrangerObjectsModel *
+ProjectSession::editorArrangerObjects () const
+{
+  return editor_arranger_objects_.get ();
 }
 
 zrythm::actions::ArrangerObjectCreator *

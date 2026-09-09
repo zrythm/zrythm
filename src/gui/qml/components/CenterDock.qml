@@ -178,6 +178,7 @@ ColumnLayout {
           id: timelinePane
 
           readonly property ArrangerObjectSelectionOperator selectionOperator: root.session.arrangerObjectSelectionOperator
+          readonly property TimelineArrangerObjectsModel unifiedObjectsModel: root.session.timelineArrangerObjects
 
           spacing: 1
 
@@ -223,7 +224,7 @@ ColumnLayout {
               tool: root.session.uiState.tool
               transport: root.project.transport
               undoStack: root.session.undoStack
-              unifiedObjectsModel: unifiedObjectsModel
+              unifiedObjectsModel: timelinePane.unifiedObjectsModel
             }
           }
 
@@ -246,12 +247,7 @@ ColumnLayout {
             tracklist: root.project.tracklist
             transport: root.project.transport
             undoStack: root.session.undoStack
-            unifiedObjectsModel: unifiedObjectsModel
-          }
-
-          UnifiedProxyModel {
-            id: unifiedObjectsModel
-
+            unifiedObjectsModel: timelinePane.unifiedObjectsModel
           }
 
           ItemSelectionModel {
@@ -302,7 +298,7 @@ ColumnLayout {
             tracklist: root.project.tracklist
             transport: root.project.transport
             undoStack: root.session.undoStack
-            unifiedObjectsModel: unifiedObjectsModel
+            unifiedObjectsModel: timelinePane.unifiedObjectsModel
 
             arrangerContentHeight: Math.max(unpinnedTracklist.contentHeight, unpinnedTimelineArranger.height)
           }

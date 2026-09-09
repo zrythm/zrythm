@@ -589,4 +589,17 @@ TEST_F (ArrangerObjectListModelTest, CacheInvalidationOnNonPositionalChange)
   EXPECT_EQ (range->second, 150.0); // End position unchanged
 }
 
+// The model announces its destruction before teardown of the base class
+// begins, while its members are still valid.
+TEST_F (ArrangerObjectListModelTest, EmitsAboutToBeDestroyedOnDestruction)
+{
+  QSignalSpy destroyed_spy (
+    model_.get (), &ArrangerObjectListModel::aboutToBeDestroyed);
+  EXPECT_EQ (destroyed_spy.count (), 0);
+
+  model_.reset ();
+
+  EXPECT_EQ (destroyed_spy.count (), 1);
+}
+
 } // namespace zrythm::structure::arrangement
