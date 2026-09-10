@@ -12,6 +12,8 @@
 #include "utils/qt.h"
 #include "utils/serialization.h"
 
+#include <QTest>
+
 #include "helpers/scoped_juce_qapplication.h"
 
 #include "unit/dsp/graph_helpers.h"
@@ -182,9 +184,8 @@ TEST_F (JucePluginTest, AsyncInstantiationSuccess)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
-  EXPECT_TRUE (instantiation_finished);
   EXPECT_TRUE (successful);
 
   const auto &in_ports = plugin_->get_all_input_ports ();
@@ -224,9 +225,8 @@ TEST_F (JucePluginTest, AsyncInstantiationFailure)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
-  EXPECT_TRUE (instantiation_finished);
   EXPECT_FALSE (successful);
   EXPECT_EQ (error_message, "Plugin not found");
 
@@ -258,8 +258,7 @@ TEST_F (JucePluginTest, LoadStateAppliesImmediatelyWhenInstantiated)
     plugin_.get (), &JucePlugin::instantiationFinished, plugin_.get (),
     [&instantiation_finished] () { instantiation_finished = true; });
   plugin_->set_configuration (*config_);
-  process_events_until_true ([&] () { return instantiation_finished; });
-  ASSERT_TRUE (instantiation_finished);
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   const juce::MemoryBlock state_data ("live state", 10);
   EXPECT_CALL (*mock_raw, setStateInformation (::testing::_, 10))
@@ -298,7 +297,7 @@ TEST_F (JucePluginTest, ProcessingWithInstantiatedPlugin)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Prepare for processing
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
@@ -327,9 +326,7 @@ TEST_F (JucePluginTest, ParameterMapping)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
-
-  EXPECT_TRUE (instantiation_finished);
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Test parameter mapping
   EXPECT_EQ (plugin_->get_parameters ().size (), 3);
@@ -366,7 +363,7 @@ TEST_F (JucePluginTest, StateSavingLoading)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Serialize to JSON - this should capture the JUCE plugin state via
   // getStateInformation() and encode it as base64
@@ -451,7 +448,7 @@ TEST_F (JucePluginTest, MidiProcessing)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -498,7 +495,7 @@ TEST_F (JucePluginTest, OutputMidiEventWithOutOfBlockPositionIsDropped)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -535,7 +532,7 @@ TEST_F (JucePluginTest, BidirectionalParameterSync)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Test parameter synchronization from host to plugin
   auto params = plugin_->get_parameters ();
@@ -606,7 +603,7 @@ TEST_F (JucePluginTest, LatencyChangeNotifiesHost)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
   ASSERT_FALSE (latency_recalc_called);
 
   mock_plugin->updateHostDisplay (
@@ -636,7 +633,7 @@ TEST_F (JucePluginTest, PluginOnlyParamChangesAreNotOverwrittenOnFirstCycle)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Plugin-side change the host was not notified about, leaving the host
   // with a stale value (e.g. the plugin loaded a patch internally)
@@ -667,7 +664,7 @@ TEST_F (JucePluginTest, AudioProcessingEdgeCases)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -721,7 +718,7 @@ TEST_F (JucePluginTest, AdvancedParameterTypes)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Verify parameter types are correctly mapped
   auto params = plugin_->get_parameters ();
@@ -780,7 +777,7 @@ TEST_F (JucePluginTest, SerializationPreservesState)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Set some state
   plugin_->setUiVisible (true);
@@ -824,9 +821,9 @@ TEST_F (JucePluginTest, SerializationPreservesState)
   from_json (json, *deserialized_plugin);
 
   // Wait for instantiation
-  process_events_until_true ([&] () {
+  ASSERT_TRUE (QTest::qWaitFor ([&] () {
     return deserialized_plugin_instantiation_finished;
-  });
+  }));
 
   // Verify state was preserved
   EXPECT_TRUE (deserialized_plugin->uiVisible ());
@@ -918,7 +915,7 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   // Set parameter values
   auto params = plugin_->get_parameters ();
@@ -1012,9 +1009,9 @@ TEST_F (JucePluginTest, JuceParameterStateSerialization)
   EXPECT_TRUE (found_choice);
 
   // Wait for instantiation so we can verify the JUCE state is restored
-  process_events_until_true ([&] () {
+  ASSERT_TRUE (QTest::qWaitFor ([&] () {
     return deserialized_plugin_instantiation_finished;
-  });
+  }));
 }
 
 TEST_F (JucePluginTest, AudioSignalPassThrough)
@@ -1035,7 +1032,7 @@ TEST_F (JucePluginTest, AudioSignalPassThrough)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 
@@ -1132,7 +1129,7 @@ TEST_F (JucePluginTest, AudioSignalSplitCycles)
 
   plugin_->set_configuration (*config_);
 
-  process_events_until_true ([&] () { return instantiation_finished; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   plugin_->prepare_for_processing (nullptr, sample_rate_, buffer_size_);
 

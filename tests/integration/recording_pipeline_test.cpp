@@ -29,6 +29,7 @@
 #include "structure/tracks/track.h"
 
 #include <QSignalSpy>
+#include <QTest>
 
 #include "helpers/project_fixture.h"
 
@@ -190,10 +191,10 @@ protected:
 
     initial_process_count_ = mock_hw_->process_call_count ();
 
-    process_events_until_true ([this, min_cycles] () {
+    ASSERT_TRUE (QTest::qWaitFor ([this, min_cycles] () {
       return mock_hw_->process_call_count ()
              >= initial_process_count_ + min_cycles;
-    });
+    }));
   }
 
   void start_engine_with_midi_device (
@@ -215,10 +216,10 @@ protected:
 
     initial_process_count_ = mock_hw_->process_call_count ();
 
-    process_events_until_true ([this, min_cycles] () {
+    ASSERT_TRUE (QTest::qWaitFor ([this, min_cycles] () {
       return mock_hw_->process_call_count ()
              >= initial_process_count_ + min_cycles;
-    });
+    }));
   }
 
   void stop_engine ()
@@ -308,13 +309,13 @@ protected:
   collect_audio_packets (controllers::AudioRecordingSession * session)
   {
     std::vector<controllers::RecordingAudioPacket> packets;
-    process_events_until_true ([session, &packets] () {
+    EXPECT_TRUE (QTest::qWaitFor ([session, &packets] () {
       auto drained = session->drain_pending ();
       packets.insert (
         packets.end (), std::make_move_iterator (drained.begin ()),
         std::make_move_iterator (drained.end ()));
       return !packets.empty ();
-    });
+    }));
     return packets;
   }
 
@@ -322,22 +323,22 @@ protected:
   collect_midi_packets (controllers::MidiRecordingSession * session)
   {
     std::vector<controllers::RecordingMidiPacket> packets;
-    process_events_until_true ([session, &packets] () {
+    EXPECT_TRUE (QTest::qWaitFor ([session, &packets] () {
       auto drained = session->drain_pending ();
       packets.insert (
         packets.end (), std::make_move_iterator (drained.begin ()),
         std::make_move_iterator (drained.end ()));
       return !packets.empty ();
-    });
+    }));
     return packets;
   }
 
   void drain_until (std::function<bool ()> predicate)
   {
-    process_events_until_true ([this, pred = std::move (predicate)] () {
+    ASSERT_TRUE (QTest::qWaitFor ([this, pred = std::move (predicate)] () {
       coordinator_->process_pending ();
       return pred ();
-    });
+    }));
   }
 
   dsp::FileAudioSource * get_first_clip () const
@@ -543,10 +544,10 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthIncreaseDuringRecording)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   auto pre_packets = collect_audio_packets (
     std::get<controllers::AudioRecordingSession *> (session));
@@ -567,9 +568,9 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthIncreaseDuringRecording)
   ASSERT_EQ (block_length_spy.size (), 1);
   EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 512);
 
-  process_events_until_true ([this, count_before_change] () {
+  ASSERT_TRUE (QTest::qWaitFor ([this, count_before_change] () {
     return mock_hw_->process_call_count () >= count_before_change + 5;
-  });
+  }));
 
   auto session_after = coordinator_->session_for_track (track->get_uuid ());
   ASSERT_TRUE (
@@ -611,10 +612,10 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthShrinkDuringRecording)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   auto pre_packets = collect_audio_packets (
     std::get<controllers::AudioRecordingSession *> (session));
@@ -635,9 +636,9 @@ TEST_F (RecordingPipelineTest, AudioBlockLengthShrinkDuringRecording)
   ASSERT_EQ (block_length_spy.size (), 1);
   EXPECT_EQ (block_length_spy.takeFirst ().at (0).toInt (), 64);
 
-  process_events_until_true ([this, count_before_change] () {
+  ASSERT_TRUE (QTest::qWaitFor ([this, count_before_change] () {
     return mock_hw_->process_call_count () >= count_before_change + 5;
-  });
+  }));
 
   auto session_after = coordinator_->session_for_track (track->get_uuid ());
   ASSERT_TRUE (
@@ -686,10 +687,10 @@ TEST_F (RecordingPipelineTest, AudioMaterializerCreatesClipFromEngineAudio)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   stop_engine ();
 
@@ -730,10 +731,10 @@ TEST_F (RecordingPipelineTest, AudioUndoMacroWrapsRecording)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -774,10 +775,10 @@ TEST_F (RecordingPipelineTest, AudioContinuousRecordingExpandsSingleClip)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -829,14 +830,14 @@ TEST_F (RecordingPipelineTest, AudioMultiTrackRecordingCreatesClipsForAll)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session_b));
 
-  process_events_until_true ([session_a] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session_a] () {
     return std::get<controllers::AudioRecordingSession *> (session_a)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
-  process_events_until_true ([session_b] () {
+  }));
+  ASSERT_TRUE (QTest::qWaitFor ([session_b] () {
     return std::get<controllers::AudioRecordingSession *> (session_b)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();
@@ -873,10 +874,10 @@ TEST_F (RecordingPipelineTest, AudioTransportRecordToggleFinalizesMacro)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -917,10 +918,10 @@ TEST_F (RecordingPipelineTest, AudioTransportStopStartResumesRecording)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -942,10 +943,10 @@ TEST_F (RecordingPipelineTest, AudioTransportStopStartResumesRecording)
     std::holds_alternative<controllers::AudioRecordingSession *> (session_after))
     << "Session should be reused after transport restart";
 
-  process_events_until_true ([session_after] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session_after] () {
     return std::get<controllers::AudioRecordingSession *> (session_after)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();
@@ -977,10 +978,10 @@ TEST_F (RecordingPipelineTest, AudioRecordedAudioDataIntegrity)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();
@@ -1039,10 +1040,10 @@ TEST_F (RecordingPipelineTest, AudioUndoMacroCountAndRedoAfterUndo)
   ASSERT_TRUE (
     std::holds_alternative<controllers::AudioRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::AudioRecordingSession *> (session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();
@@ -1162,10 +1163,10 @@ TEST_F (RecordingPipelineTest, MidiMaterializerCreatesClipWithNotes)
   ASSERT_TRUE (
     std::holds_alternative<controllers::MidiRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::MidiRecordingSession *> (session)->state ()
            == controllers::MidiRecordingSession::State::Capturing;
-  });
+  }));
 
   stop_engine ();
 
@@ -1198,10 +1199,10 @@ TEST_F (RecordingPipelineTest, MidiContinuousRecordingExpandsClip)
   ASSERT_TRUE (
     std::holds_alternative<controllers::MidiRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::MidiRecordingSession *> (session)->state ()
            == controllers::MidiRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -1244,10 +1245,10 @@ TEST_F (RecordingPipelineTest, MidiNoteOnWithoutOffForceCompletedOnDisarm)
   ASSERT_TRUE (
     std::holds_alternative<controllers::MidiRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::MidiRecordingSession *> (session)->state ()
            == controllers::MidiRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
 
@@ -1285,10 +1286,10 @@ TEST_F (RecordingPipelineTest, MidiUndoMacroCountAndRedoAfterUndo)
   ASSERT_TRUE (
     std::holds_alternative<controllers::MidiRecordingSession *> (session));
 
-  process_events_until_true ([session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([session] () {
     return std::get<controllers::MidiRecordingSession *> (session)->state ()
            == controllers::MidiRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();
@@ -1351,14 +1352,14 @@ TEST_F (RecordingPipelineTest, MixedAudioAndMidiRecording)
   ASSERT_TRUE (
     std::holds_alternative<controllers::MidiRecordingSession *> (midi_session));
 
-  process_events_until_true ([audio_session] () {
+  ASSERT_TRUE (QTest::qWaitFor ([audio_session] () {
     return std::get<controllers::AudioRecordingSession *> (audio_session)->state ()
            == controllers::AudioRecordingSession::State::Capturing;
-  });
-  process_events_until_true ([midi_session] () {
+  }));
+  ASSERT_TRUE (QTest::qWaitFor ([midi_session] () {
     return std::get<controllers::MidiRecordingSession *> (midi_session)->state ()
            == controllers::MidiRecordingSession::State::Capturing;
-  });
+  }));
 
   coordinator_->process_pending ();
   stop_engine ();

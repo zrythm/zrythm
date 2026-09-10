@@ -15,6 +15,8 @@
 #include "utils/object_registry.h"
 #include "utils/views.h"
 
+#include <QTest>
+
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
 #include "helpers/test_plugin_finder.h"
@@ -804,7 +806,7 @@ TEST_F (Vst3PluginTest, HostParamChangesReachEditController)
     const auto state = read_controller_state_json (*plugin_);
     return state.value ("controllerEditCount", 0);
   };
-  process_events_until_true ([&] { return read_edit_count () >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([&] { return read_edit_count () >= 1; }));
 }
 
 // A plugin that changes its MIDI-CC mapping at runtime (MIDI learn) reports
@@ -847,14 +849,14 @@ TEST_F (Vst3PluginTest, MidiCcAssignmentChangeRebuildsMapping)
   // later main-thread pass
   cc_assign->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     const auto cc =
       dsp::midi_event::make_control_change (0, 7, 64, units::samples (0u));
     midi_in->buffer_.push_back (cc.time_, cc.data ());
     process_blocks (1);
     const auto gain = read_gain ();
     return gain >= 0.0 && gain < 0.6;
-  });
+  }));
   EXPECT_NEAR (read_gain (), 64.0 / 127.0, 1e-9);
 }
 
@@ -873,7 +875,9 @@ TEST_F (Vst3PluginTest, IoChangeDeactivatesBeforeReactivatingBuses)
   process_blocks (1);
 
   // The restart request is handled asynchronously on the main thread
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
   process_blocks (1);
 
   const auto state = read_controller_state_json (*plugin_);
@@ -909,7 +913,9 @@ TEST_F (Vst3PluginTest, ReloadComponentRecreatesInstance)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
   process_blocks (1);
 
   EXPECT_EQ (
@@ -985,7 +991,9 @@ TEST_F (Vst3PluginTest, IoChangeWithNewBusCreatesPort)
   process_blocks (1);
 
   // The restart request is handled asynchronously on the main thread
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -1006,7 +1014,9 @@ TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   const auto audio_outs_after_grow = attached_audio_ports (false);
   ASSERT_EQ (audio_outs_after_grow.size (), 2);
@@ -1016,7 +1026,9 @@ TEST_F (Vst3PluginTest, IoChangeWithRemovedBusDetachesPort)
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 1);
   const auto all_outs = all_audio_ports (false);
@@ -1061,7 +1073,9 @@ TEST_F (Vst3PluginTest, IoChangeLeavesPortBuffersPreparedBeforeResume)
   ASSERT_NE (trigger, nullptr);
   trigger->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 2);
 }
@@ -1139,7 +1153,9 @@ TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeUpdatesSelection)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1158,7 +1174,9 @@ TEST_F (Vst3PluginTest, PluginInitiatedProgramChangeViaGestureUpdatesSelection)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1177,9 +1195,9 @@ TEST_F (Vst3PluginTest, ProgramListContentChangeRefreshesPresetNames)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] {
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
     return plugin_->presetEntries ()[0].name == QStringLiteral ("Init (User)");
-  });
+  }));
   // The rest of the list is untouched
   EXPECT_EQ (plugin_->presetEntries ()[1].name, QStringLiteral ("Bright"));
   EXPECT_EQ (plugin_->presetEntries ()[2].name, QStringLiteral ("Warm"));
@@ -1205,7 +1223,9 @@ TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelection)
   midi_in->buffer_.push_back (units::samples (0u), raw);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
 }
 
 // Same, but the fixture's controller-side reflection of the program change
@@ -1235,7 +1255,9 @@ TEST_F (Vst3PluginTest, MidiProgramChangeUpdatesSelectionWithoutPluginFeedback)
   midi_in->buffer_.push_back (units::samples (0u), raw);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetIndex () == 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return plugin_->presetIndex () == 2;
+  }));
   EXPECT_FALSE (plugin_->presetDirty ());
 }
 
@@ -1253,7 +1275,7 @@ TEST_F (Vst3PluginTest, PluginUiGestureMarksPresetDirty)
   trigger->setBaseValue (1.0f);
   process_blocks (1);
 
-  process_events_until_true ([this] { return plugin_->presetDirty (); });
+  ASSERT_TRUE (QTest::qWaitFor ([this] { return plugin_->presetDirty (); }));
 
   // Re-selecting the current preset re-applies it and clears the dirty flag
   plugin_->setPresetIndex (0);
@@ -1319,10 +1341,10 @@ TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresStateAndSelection)
   // drives in production)
   plugin_->setPresetIndex (1);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
   ASSERT_EQ (plugin_->presetIndex (), 1);
 
   // Reverting restores the state captured at session begin
@@ -1350,10 +1372,10 @@ TEST_F (Vst3PluginTest, PresetAuditionCommitKeepsAppliedState)
 
   auto * level = find_param_by_label ("Level");
   ASSERT_NE (level, nullptr);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
 }
 
 TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresDirtyFlag)
@@ -1366,10 +1388,10 @@ TEST_F (Vst3PluginTest, PresetAuditionRevertRestoresDirtyFlag)
   // Select program 1, then diverge from it with a user edit
   plugin_->setPresetIndex (1);
   process_blocks (1);
-  process_events_until_true ([&] {
+  ASSERT_TRUE (QTest::qWaitFor ([&] {
     plugin_->flush_plugin_values ();
     return level->baseValue () == 0.75f;
-  });
+  }));
   level->setBaseValueByUser (0.1f);
   process_blocks (1);
   ASSERT_TRUE (plugin_->presetDirty ());

@@ -17,6 +17,7 @@
 #include "utils/views.h"
 
 #include <QCoreApplication>
+#include <QTest>
 
 #include "helpers/mock_plugin_host_window.h"
 #include "helpers/scoped_juce_qapplication.h"
@@ -411,10 +412,10 @@ TEST_F (ClapPluginTest, CrossThreadGuiRequestsAreDeliveredOnMainThread)
     plugin_->guiRequestResize (640, 480);
   });
 
-  process_events_until_true ([this] {
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
     return window_state_->visible && window_state_->width == 640
            && window_state_->height == 480;
-  });
+  }));
 }
 
 TEST_F (ClapPluginTest, RequestRestartKeepsPluginProcessing)
@@ -443,7 +444,9 @@ TEST_F (ClapPluginTest, RequestCallbackIsDeliveredOnMainThread)
   // maximal clap-helpers checking aborts on wrong-thread delivery)
   std::jthread requester ([this] { plugin_->requestCallback (); });
 
-  process_events_until_true ([this] { return window_state_->width == 640; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return window_state_->width == 640;
+  }));
 }
 
 // Note events emitted on the plugin's note output port must be forwarded to
@@ -651,7 +654,9 @@ TEST_F (ClapPluginTest, RescanNamesSyncsLabelsWithoutGraphRecalc)
 
   // The rename arrives via the plugin's main-thread callback; the
   // names-only rescan's deferred reconciliation runs in one pause
-  process_events_until_true ([this] { return paused_processing_calls_ >= 1; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 1;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).at (0)->get_label (), u8"Renamed Out");
   EXPECT_EQ (graph_recalc_calls_, 0);
@@ -691,7 +696,9 @@ TEST_F (ClapPluginTest, RescanListWithNewBusCreatesPort)
 
   // The restart and the deferred rescan reconciliation each pause
   // processing once
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -733,7 +740,9 @@ TEST_F (ClapPluginTest, RescanListWithNewInputBusFeedsSilenceUntilReconciled)
   process_blocks (1);
 
   // The restart and the deferred rescan reconciliation each pause once
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   // 0.5 is the fixture's identifying level for output bus 0; the sentinel
   // means it saw nonzero input on the port-less bus
@@ -759,7 +768,9 @@ TEST_F (ClapPluginTest, RescanListWithRemovedBusDetachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs_after_grow = attached_audio_ports (false);
   ASSERT_EQ (audio_outs_after_grow.size (), 2);
@@ -769,7 +780,9 @@ TEST_F (ClapPluginTest, RescanListWithRemovedBusDetachesPort)
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   EXPECT_EQ (attached_audio_ports (false).size (), 1);
   const auto all_outs = all_audio_ports (false);
@@ -789,13 +802,17 @@ TEST_F (ClapPluginTest, RescanListWithReaddedBusReattachesPort)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   auto * shrink = find_param_by_label ("Shrink Output");
   ASSERT_NE (shrink, nullptr);
   shrink->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   // The toggles are one-shot: reset the host-side value so the second fire
   // registers as a change
@@ -803,7 +820,9 @@ TEST_F (ClapPluginTest, RescanListWithReaddedBusReattachesPort)
   process_blocks (1);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 6; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 6;
+  }));
 
   const auto all_outs = all_audio_ports (false);
   ASSERT_EQ (all_outs.size (), 2);
@@ -836,7 +855,9 @@ TEST_F (ClapPluginTest, RescanChannelCountGrowsPortSafely)
   ASSERT_NE (widen, nullptr);
   widen->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 1);
@@ -873,7 +894,9 @@ TEST_F (ClapPluginTest, RescanLeavesPortBuffersPreparedBeforeResume)
   ASSERT_NE (widen, nullptr);
   widen->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 1);
@@ -979,7 +1002,9 @@ TEST_F (ClapPluginTest, RescanListWithReorderedBusesKeepsRouting)
   ASSERT_NE (grow, nullptr);
   grow->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 2; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 2;
+  }));
 
   const auto audio_outs = attached_audio_ports (false);
   ASSERT_EQ (audio_outs.size (), 2);
@@ -997,7 +1022,9 @@ TEST_F (ClapPluginTest, RescanListWithReorderedBusesKeepsRouting)
   ASSERT_NE (swap, nullptr);
   swap->setBaseValue (1.0f);
   process_blocks (1);
-  process_events_until_true ([this] { return paused_processing_calls_ >= 4; });
+  ASSERT_TRUE (QTest::qWaitFor ([this] {
+    return paused_processing_calls_ >= 4;
+  }));
 
   // Bus 0 (value 0.5) is now the bus with stable id 1 and vice versa
   process_blocks (1);

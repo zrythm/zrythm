@@ -23,6 +23,8 @@
 #include "utils/audio.h"
 #include "utils/midi.h"
 
+#include <QTest>
+
 #include "helpers/project_fixture.h"
 #include "helpers/test_plugin_finder.h"
 
@@ -198,8 +200,7 @@ protected:
 
     importer->importPluginToNewTrack (&(*descriptor));
 
-    process_events_until_true ([&] () { return instantiation_finished; });
-    EXPECT_TRUE (instantiation_finished);
+    EXPECT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
     auto &plugin_registry = project->get_registry ();
     EXPECT_EQ (plugin_registry.count_matching<plugins::Plugin> (), 1);
@@ -341,8 +342,7 @@ TEST_P (PluginInstrumentTest, SaveLoadRoundtripProducesSound)
 
   importer->importPluginToNewTrack (&(*descriptor));
 
-  process_events_until_true ([&] () { return instantiation_finished; });
-  ASSERT_TRUE (instantiation_finished);
+  ASSERT_TRUE (QTest::qWaitFor ([&] () { return instantiation_finished; }));
 
   auto &plugin_registry2 = project2->get_registry ();
   ASSERT_EQ (plugin_registry2.count_matching<plugins::Plugin> (), 1);
@@ -429,12 +429,12 @@ TEST_P (PluginParamSyncTest, ParameterChangesReachPlugin)
 
   target_param->setBaseValue (0.9f);
   auto state_changed = state_default;
-  ScopedQCoreApplication::process_events_until_true ([&] () {
+  ASSERT_TRUE (QTest::qWaitFor ([&] () {
     auto transport_snap = transport.get_snapshot ();
     plugin->process_block (time_nfo, transport_snap, tempo_map);
     state_changed = plugin->save_state ();
     return state_changed != state_default;
-  });
+  }));
 
   EXPECT_NE (state_default, state_changed)
     << "Plugin state unchanged after parameter edit";
