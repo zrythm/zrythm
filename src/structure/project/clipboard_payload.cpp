@@ -766,7 +766,7 @@ ClipboardPayload::filtered_for_target (
 }
 
 std::vector<QUuid>
-ClipboardPayload::ids_needed_by_roots (const std::vector<QUuid> &roots) const
+ClipboardPayload::ids_needed_by_roots (std::span<const QUuid> roots) const
 {
   // Index the payload entries by ID
   boost::unordered_flat_map<QUuid, const nlohmann::json *> entries_by_id;
@@ -780,7 +780,7 @@ ClipboardPayload::ids_needed_by_roots (const std::vector<QUuid> &roots) const
   };
 
   IdSet              needed;
-  std::vector<QUuid> worklist = roots;
+  std::vector<QUuid> worklist = roots | std::ranges::to<std::vector> ();
   while (!worklist.empty ())
     {
       const auto id = worklist.back ();
@@ -900,6 +900,37 @@ ClipboardPayload::cleanup_failed_import (
   // audio sources withheld from the import still belong to the target
   // project (possibly kept registered for undo) and must survive
   registry.delete_objects_in_any_order (imported_ids);
+}
+
+void
+ClipboardPayload::discard_imports_except (
+  ProjectRegistry       &registry,
+  std::span<const QUuid> imported_ids,
+  std::span<const QUuid> ids_to_keep) const
+{
+  const auto needed_ids = ids_needed_by_roots (ids_to_keep);
+  const boost::unordered_flat_set<QUuid> keep{
+    needed_ids.begin (), needed_ids.end ()
+  };
+  const boost::unordered_flat_set<QUuid> imported{
+    imported_ids.begin (), imported_ids.end ()
+  };
+  const auto &payload_registry_json = registry_json ();
+
+  std::vector<QUuid> to_delete;
+  for (const auto &[_, bucket] : payload_registry_json.items ())
+    {
+      for (const auto &entry : bucket)
+        {
+          const auto id = QUuid::fromString (
+            QString::fromStdString (entry.at ("id").get<std::string> ()));
+          if (!keep.contains (id) && imported.contains (id))
+            to_delete.push_back (id);
+        }
+    }
+  // deleting a parent destroys and deregisters its children, which the
+  // order-insensitive deletion handles regardless of payload order
+  registry.delete_objects_in_any_order (to_delete);
 }
 
 void

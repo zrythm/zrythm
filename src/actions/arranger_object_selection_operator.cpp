@@ -22,8 +22,6 @@
 #include "utils/ranges.h"
 #include "utils/variant_helpers.h"
 
-#include <boost/unordered/unordered_flat_set.hpp>
-
 namespace zrythm::actions
 {
 
@@ -1023,7 +1021,7 @@ ArrangerObjectSelectionOperator::cutObjects (
 void
 ArrangerObjectSelectionOperator::refuse_operation (const QString &reason)
 {
-  z_warning ("Refusing operation: {}", reason.toStdString ());
+  z_warning ("Refusing operation: {}", reason);
   Q_EMIT operationRefused (reason);
 }
 
@@ -1353,15 +1351,19 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
       // destruction releases (and cascades away) the imported objects, so
       // the discard below only needs to sweep what is left
       targets.clear ();
-      discard_imported_objects (paste);
+      paste.payload.cleanup_failed_import (
+        project_registry_, paste.imported_ids);
       refuse_operation (refusal_reason);
       return {};
     }
 
   if (targets.empty ())
     {
-      discard_imported_objects (paste);
+      paste.payload.cleanup_failed_import (
+        project_registry_, paste.imported_ids);
       z_warning ("None of the clipboard objects could be pasted here");
+      refuse_operation (
+        QObject::tr ("The clipboard objects could not be pasted here"));
       return {};
     }
 
@@ -1376,7 +1378,8 @@ ArrangerObjectSelectionOperator::attach_paste_targets (
   // carry exactly their closure, so this is a no-op for them; payloads
   // carrying surplus entries get them deregistered instead of leaving
   // unowned objects behind
-  discard_imported_objects (paste, pasted_root_ids);
+  paste.payload.discard_imports_except (
+    project_registry_, paste.imported_ids, pasted_root_ids);
 
   QVariantList                 new_ids;
   undo::UndoStack::ScopedMacro macro (
@@ -1596,36 +1599,6 @@ ArrangerObjectSelectionOperator::prepare_paste (units::precise_tick_t position)
       return std::nullopt;
     }
   return prepared;
-}
-
-void
-ArrangerObjectSelectionOperator::discard_imported_objects (
-  const PreparedPaste      &paste,
-  const std::vector<QUuid> &ids_to_keep)
-{
-  const auto needed_ids = paste.payload.ids_needed_by_roots (ids_to_keep);
-  const boost::unordered_flat_set<QUuid> keep{
-    needed_ids.begin (), needed_ids.end ()
-  };
-  const boost::unordered_flat_set<QUuid> imported{
-    paste.imported_ids.begin (), paste.imported_ids.end ()
-  };
-  const auto &registry_json = paste.payload.registry_json ();
-
-  std::vector<QUuid> to_delete;
-  for (const auto &[_, bucket] : registry_json.items ())
-    {
-      for (const auto &entry : bucket)
-        {
-          const auto id = QUuid::fromString (
-            QString::fromStdString (entry.at ("id").get<std::string> ()));
-          if (!keep.contains (id) && imported.contains (id))
-            to_delete.push_back (id);
-        }
-    }
-  // deleting a parent destroys and deregisters its children, which the
-  // order-insensitive deletion handles regardless of payload order
-  project_registry_.delete_objects_in_any_order (to_delete);
 }
 
 bool

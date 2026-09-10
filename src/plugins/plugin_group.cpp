@@ -53,6 +53,7 @@ PluginGroup::roleNames () const
 {
   QHash<int, QByteArray> roles;
   roles[DeviceGroupPtrRole] = "deviceGroupOrPlugin";
+  roles[PluginUuidStringRole] = "pluginUuidString";
   return roles;
 }
 int
@@ -80,6 +81,17 @@ PluginGroup::data (const QModelIndex &index, int role) const
         {
           return QVariant::fromValue (std::get<1> (var).get_object_base ());
         }
+    }
+
+  if (role == PluginUuidStringRole)
+    {
+      const auto &var = pimpl_->devices_.at (index_int);
+      if (var.index () == 1)
+        {
+          return type_safe::get (std::get<1> (var).id ())
+            .toString (QUuid::WithoutBraces);
+        }
+      return QString ();
     }
 
   return {};

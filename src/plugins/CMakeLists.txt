@@ -57,6 +57,7 @@ target_sources(zrythm_plugins_lib
     plugin_descriptor_list.cpp
     plugin_group.cpp
     plugin_host_window.cpp
+    plugin_instantiation_wait.cpp
     plugin_library.cpp
     plugin_parameter_list_model.cpp
     plugin_preset_list_model.cpp
@@ -92,6 +93,7 @@ target_sources(zrythm_plugins_lib
       plugin_format_utils.h
       plugin_group.h
       plugin_host_window.h
+      plugin_instantiation_wait.h
       plugin_library.h
       plugin_parameter_list_model.h
       plugin_preset_list_model.h

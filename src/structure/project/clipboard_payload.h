@@ -117,7 +117,7 @@ public:
    * is safe to delete when some roots end up not pasted.
    */
   [[nodiscard]] std::vector<QUuid>
-  ids_needed_by_roots (const std::vector<QUuid> &roots) const;
+  ids_needed_by_roots (std::span<const QUuid> roots) const;
 
   /**
    * @brief Whether every non-boundary UUID reference in the registry and
@@ -167,6 +167,24 @@ public:
   void cleanup_failed_import (
     ProjectRegistry       &registry,
     std::span<const QUuid> imported_ids) const;
+
+  /**
+   * @brief Deletes the objects that this payload's import registered
+   * and that the given pasted roots do not need.
+   *
+   * Used when only some of a paste's roots end up attached: imported
+   * objects outside the kept roots' closure are deleted instead of
+   * being left unowned. Objects no longer registered are skipped, so a
+   * parents-first cascade that already removed an entry is harmless.
+   *
+   * @param registry Registry the paste imported into.
+   * @param imported_ids IDs import_into() returned for the paste.
+   * @param ids_to_keep Roots that stay pasted; their closure survives.
+   */
+  void discard_imports_except (
+    ProjectRegistry       &registry,
+    std::span<const QUuid> imported_ids,
+    std::span<const QUuid> ids_to_keep) const;
 
   /**
    * @brief Returns a copy with content that cannot resolve in @p

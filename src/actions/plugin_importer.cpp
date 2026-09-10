@@ -5,6 +5,7 @@
 
 #include "actions/plugin_importer.h"
 #include "commands/add_plugin_command.h"
+#include "plugins/plugin_group.h"
 
 #include <QTimer>
 
@@ -123,43 +124,56 @@ PluginImporter::import (
                     }
                 }
 
-              if (descr->isInstrument ())
+              // Pick the plugin slot matching the descriptor's category,
+              // creating a track of a matching type when no target was
+              // given
+              const auto group_type =
+                plugins::PluginGroup::group_type_for_descriptor (*descr);
+              switch (group_type)
                 {
-                  auto * t =
-                    track != nullptr
-                      ? track
-                      : track_creator_
-                          .addEmptyTrackFromType (
-                            structure::tracks::Track::Type::Instrument)
-                          .value<structure::tracks::InstrumentTrack *> ();
-                  return t->channel ()->instruments ();
+                case plugins::PluginGroup::DeviceGroupType::Instrument:
+                  {
+                    auto * t =
+                      track != nullptr
+                        ? track
+                        : track_creator_
+                            .addEmptyTrackFromType (
+                              structure::tracks::Track::Type::Instrument)
+                            .value<structure::tracks::InstrumentTrack *> ();
+                    return t->channel ()->instruments ();
+                  }
+                case plugins::PluginGroup::DeviceGroupType::MIDI:
+                  {
+                    auto * t =
+                      track != nullptr
+                        ? track
+                        : track_creator_
+                            .addEmptyTrackFromType (
+                              structure::tracks::Track::Type::MidiBus)
+                            .value<structure::tracks::MidiBusTrack *> ();
+                    return t->channel ()->midiFx ();
+                  }
+                default:
+                  {
+                    auto * t =
+                      track != nullptr
+                        ? track
+                        : track_creator_
+                            .addEmptyTrackFromType (
+                              structure::tracks::Track::Type::AudioBus)
+                            .value<structure::tracks::AudioBusTrack *> ();
+                    return t->channel ()->inserts ();
+                  }
                 }
-              if (descr->isMidiModifier ())
-                {
-                  auto * t =
-                    track != nullptr
-                      ? track
-                      : track_creator_
-                          .addEmptyTrackFromType (
-                            structure::tracks::Track::Type::MidiBus)
-                          .value<structure::tracks::MidiBusTrack *> ();
-                  return t->channel ()->midiFx ();
-                }
-              auto * t =
-                track != nullptr
-                  ? track
-                  : track_creator_
-                      .addEmptyTrackFromType (
-                        structure::tracks::Track::Type::AudioBus)
-                      .value<structure::tracks::AudioBusTrack *> ();
-              return t->channel ()->inserts ();
             }();
 
             // Add plugin to the group using AddPluginCommand
             if (plugin_group != nullptr)
               {
-                undo_stack_.push (new commands::AddPluginCommand (
-                  *plugin_group, inner_plugin_ref, index));
+                undo_stack_.push (
+                  std::make_unique<commands::AddPluginCommand> (
+                    *plugin_group, inner_plugin_ref, index)
+                    .release ());
               }
           }
 

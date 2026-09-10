@@ -914,8 +914,8 @@ TEST_F (ClipboardPayloadTest, IdsNeededByRootsReturnsClosureOfGivenRoots)
     { to_quuid (midi_clip_ref_.id ()), to_quuid (marker_ref_.id ()) },
     QStringLiteral ("project-a"));
 
-  const auto needed =
-    payload.ids_needed_by_roots ({ to_quuid (midi_clip_ref_.id ()) });
+  const auto needed = payload.ids_needed_by_roots (
+    std::vector<QUuid>{ to_quuid (midi_clip_ref_.id ()) });
 
   const auto is_needed = [&needed] (const auto &ref) {
     return std::ranges::find (needed, to_quuid (ref.id ())) != needed.end ();
@@ -939,8 +939,8 @@ TEST_F (ClipboardPayloadTest, IdsNeededByRootsIncludesBoundaryReferences)
 
   // The boundary reference must be followed so that discarding skipped
   // roots never severs a kept parameter's modulation source
-  const auto needed =
-    payload.ids_needed_by_roots ({ to_quuid (param_ref_.id ()) });
+  const auto needed = payload.ids_needed_by_roots (
+    std::vector<QUuid>{ to_quuid (param_ref_.id ()) });
   EXPECT_NE (
     std::ranges::find (needed, to_quuid (cv_port_ref_.id ())), needed.end ());
 }

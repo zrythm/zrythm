@@ -187,6 +187,14 @@ ApplicationWindow {
   }
 
   Connections {
+    function onOperationRefused(reason) {
+      root.alertManager.showAlert(qsTr("Cannot Perform Operation"), reason);
+    }
+
+    target: root.session.pluginOperator
+  }
+
+  Connections {
     function onInstantiationFailed(pluginName, error) {
       alertDialog.text = qsTr("Plugin Instantiation Failed");
       alertDialog.informativeText = qsTr("Failed to instantiate plugin %1:\n\n%2").arg(pluginName).arg(error);

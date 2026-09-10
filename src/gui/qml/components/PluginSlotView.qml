@@ -76,12 +76,76 @@ Control {
 
     onAboutToShow: {
       if (root.plugin) {
-        removeMenuItem.visible = true;
         const selCount = root.gatherSelectedPlugins().length;
+        removeMenuItem.visible = true;
         removeMenuItem.text = selCount > 1 ? qsTr("Remove %1 Plugins").arg(selCount) : qsTr("Remove Plugin");
+        cutMenuItem.visible = true;
+        cutMenuItem.text = selCount > 1 ? qsTr("Cut %1 Plugins").arg(selCount) : qsTr("Cut Plugin");
+        copyMenuItem.visible = true;
+        copyMenuItem.text = selCount > 1 ? qsTr("Copy %1 Plugins").arg(selCount) : qsTr("Copy Plugin");
+        duplicateMenuItem.visible = true;
+        duplicateMenuItem.text = selCount > 1 ? qsTr("Duplicate %1 Plugins").arg(selCount) : qsTr("Duplicate Plugin");
       } else {
         removeMenuItem.visible = false;
+        cutMenuItem.visible = false;
+        copyMenuItem.visible = false;
+        duplicateMenuItem.visible = false;
       }
+    }
+
+    MenuItem {
+      id: cutMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Cut Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          root.pluginOperator.cutPlugins(root.gatherSelectedPlugins(), root.pluginGroup, root.track);
+        }
+      }
+    }
+
+    MenuItem {
+      id: copyMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Copy Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          root.pluginOperator.copyPlugins(root.gatherSelectedPlugins());
+        }
+      }
+    }
+
+    MenuItem {
+      enabled: root.pluginOperator.canPastePlugins
+      text: qsTr("Paste")
+
+      onTriggered: {
+        const pastedIds = root.pluginOperator.pastePlugins(root.pluginGroup, root.index);
+        if (pastedIds.length > 0)
+          root.pluginSelectionModel.selectPluginsByUuidStrings(pastedIds);
+      }
+    }
+
+    MenuItem {
+      id: duplicateMenuItem
+
+      enabled: root.plugin !== null
+      text: qsTr("Duplicate Plugin")
+
+      onTriggered: {
+        if (root.plugin) {
+          const duplicatedIds = root.pluginOperator.duplicatePlugins(root.gatherSelectedPlugins(), root.pluginGroup);
+          if (duplicatedIds.length > 0)
+            root.pluginSelectionModel.selectPluginsByUuidStrings(duplicatedIds);
+        }
+      }
+    }
+
+    MenuSeparator {
     }
 
     MenuItem {

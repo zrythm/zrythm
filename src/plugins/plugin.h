@@ -943,6 +943,7 @@ private:
    */
   bool set_configuration_called_{};
 
+protected:
   /**
    * @brief Weak self-reference used to drop pending main thread actions
    * after the plugin is destroyed.

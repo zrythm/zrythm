@@ -3,6 +3,7 @@
 
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Controls
 import Zrythm
 
 ListView {
@@ -36,7 +37,9 @@ ListView {
   footer: DropAreaBase {
     id: dropArea
 
-    height: 24
+    // Reacts to row changes through the view's count property
+    readonly property bool groupEmpty: ListView.view.count === 0
+    height: groupEmpty ? Math.max(32, pasteButton.implicitHeight + 8) : 24
     text: qsTr("Drop plugins here")
     width: ListView.view.width
 
@@ -56,6 +59,36 @@ ListView {
       const descSrc = dragSource as DescriptorDragItem;
       if (descSrc && descSrc.descriptor) {
         root.pluginImporter.importPluginToGroup(descSrc.descriptor, root.pluginGroup);
+      }
+    }
+
+    // Empty-group state: paste the clipboard contents directly, or show
+    // a muted label when there is nothing to paste.
+    Label {
+      anchors.centerIn: parent
+      color: ZrythmTheme.placeholderTextColor
+      font: ZrythmTheme.smallTextFont
+      text: qsTr("Drop or Paste Plugins Here")
+      visible: dropArea.groupEmpty && !root.pluginOperator.canPastePlugins && !dropArea.dragInProgress
+    }
+
+    Button {
+      id: pasteButton
+
+      anchors.centerIn: parent
+      flat: true
+      font: ZrythmTheme.smallTextFont
+      text: qsTr("Paste Plugins")
+      visible: dropArea.groupEmpty && root.pluginOperator.canPastePlugins && !dropArea.dragInProgress
+
+      onClicked: {
+        const pastedIds = root.pluginOperator.pastePlugins(root.pluginGroup, -1);
+        if (pastedIds.length > 0)
+          root.pluginSelectionModel.selectPluginsByUuidStrings(pastedIds);
+      }
+
+      ToolTip {
+        text: qsTr("Paste the plugins from the clipboard")
       }
     }
   }

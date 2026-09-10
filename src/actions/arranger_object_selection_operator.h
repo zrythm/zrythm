@@ -84,9 +84,7 @@ public:
 Q_SIGNALS:
   /**
    * @brief Emitted when an operation is refused (e.g. it would place a
-   * time signature off a bar boundary).
-   *
-   * The UI is expected to surface the reason to the user.
+   * time signature off a bar boundary), with the reason.
    */
   void operationRefused (const QString &reason);
 
@@ -492,17 +490,6 @@ private:
     structure::arrangement::ArrangerObjectPtrVariant obj_var,
     const std::function<void (structure::arrangement::ArrangerObject &)>
       &mutate = {});
-
-  /**
-   * @brief Deletes the imported objects of @p paste from the registry
-   * (paste rollback), keeping the objects listed in @p ids_to_keep and
-   * everything they still need.
-   * @param ids_to_keep IDs that must stay registered (e.g. the roots that
-   *   were pasted successfully).
-   */
-  void discard_imported_objects (
-    const PreparedPaste      &paste,
-    const std::vector<QUuid> &ids_to_keep = {});
 
   /**
    * @brief Returns the positions of @p objects in their own position

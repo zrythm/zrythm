@@ -16,6 +16,7 @@ add_executable(zrythm_plugins_unit_tests
   plugin_descriptor_list_test.cpp
   plugin_factory_test.cpp
   plugin_group_test.cpp
+  plugin_instantiation_wait_test.cpp
   plugin_parameter_list_model_test.cpp
   plugin_preset_list_model_test.cpp
   plugin_protocol_test.cpp

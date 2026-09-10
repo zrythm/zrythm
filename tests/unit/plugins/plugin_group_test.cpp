@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2025 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/faust/faust_plugin.h"
@@ -230,6 +230,8 @@ TEST_F (DeviceGroupTest, QmlModelInterface)
   auto roles = device_group_->roleNames ();
   EXPECT_TRUE (roles.contains (PluginGroup::DeviceGroupPtrRole));
   EXPECT_EQ (roles[PluginGroup::DeviceGroupPtrRole], "deviceGroupOrPlugin");
+  EXPECT_TRUE (roles.contains (PluginGroup::PluginUuidStringRole));
+  EXPECT_EQ (roles[PluginGroup::PluginUuidStringRole], "pluginUuidString");
 
   // Test rowCount
   EXPECT_EQ (device_group_->rowCount (), 3);
@@ -251,6 +253,13 @@ TEST_F (DeviceGroupTest, QmlModelInterface)
         plugin->get_name (),
         utils::Utf8String::from_utf8_encoded_string (
           fmt::format ("Test FaustPlugin {}", i + 1)));
+
+      // The uuid-string role exposes the row plugin's brace-less UUID
+      const auto uuid_string =
+        device_group_->data (index, PluginGroup::PluginUuidStringRole);
+      EXPECT_EQ (
+        uuid_string.toString (),
+        type_safe::get (plugins[i].id ()).toString (QUuid::WithoutBraces));
     }
 
   // Test invalid index

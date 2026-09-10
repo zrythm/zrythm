@@ -99,12 +99,18 @@ JucePlugin::initialize_juce_plugin_async (bool generateNewPluginPortsAndParams)
   const double sample_rate = sample_rate_provider_ ().in (units::sample_rate);
   const int    buffer_size = buffer_size_provider_ ().in<int> (units::samples);
 
-  // Create plugin instance asynchronously
+  // Create plugin instance asynchronously. The plugin may be destroyed
+  // before the creation finishes (e.g. a refused paste deletes the
+  // imported plugin): the guard makes this callback a no-op in that
+  // case, as the destruction nulls it
   create_plugin_instance_async_func_ (
     *plugin_desc, sample_rate, buffer_size,
-    [this, generateNewPluginPortsAndParams] (
+    [this, generateNewPluginPortsAndParams, guard = self_guard_] (
       std::unique_ptr<juce::AudioPluginInstance> instance,
       const juce::String                        &error) {
+      if (guard == nullptr)
+        return;
+
       plugin_loading_ = false;
 
       if (!instance)

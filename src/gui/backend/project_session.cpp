@@ -138,8 +138,14 @@ ProjectSession::ProjectSession (
           },
           this)),
       plugin_operator_ (
-        utils::make_qobject_unique<
-          actions::PluginOperator> (*undo_stack_, project_->get_registry (), this)),
+        utils::make_qobject_unique<actions::PluginOperator> (
+          *undo_stack_,
+          project_->projectRegistry (),
+          clipboard_,
+          [this] () -> QString {
+            return project_->project_id ().toString (QUuid::WithoutBraces);
+          },
+          this)),
       file_importer_ (
         utils::make_qobject_unique<actions::FileImporter> (
           *undo_stack_,
