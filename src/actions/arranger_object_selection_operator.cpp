@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2025-2026 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "utils/format_qt.h"
+
 #include "actions/arranger_object_selection_operator.h"
 #include "commands/add_arranger_object_command.h"
 #include "commands/change_timebase_override_command.h"

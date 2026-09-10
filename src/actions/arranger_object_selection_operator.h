@@ -12,6 +12,7 @@
 #include "structure/arrangement/arranger_object_factory.h"
 #include "structure/arrangement/arranger_object_fwd.h"
 #include "structure/arrangement/tempo_object_manager.h"
+#include "structure/tracks/track_fwd.h"
 #include "undo/undo_stack.h"
 #include "utils/units.h"
 #include "utils/variant_helpers.h"
